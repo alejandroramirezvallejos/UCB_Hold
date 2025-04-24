@@ -1,0 +1,25 @@
+<!-- app.component.html -->
+<div class="container">
+  <div class="user-circle"></div>
+
+  <!-- Contenedor del logo -->
+ 
+    <img src="assets/logo-universidad.png" alt="Logo Universidad" class="logo-image">
+    <div class="logo-text">Sistema de Préstamos Universitarios</div>
+
+
+  <div class="grid-container">
+    <div *ngFor="let item of items" class="item-card" (click)="selectItem(item)">
+      <div class="item-image-container">
+        <img [src]="item.image" alt="{{item.name}}" (error)="handleImageError(item)" class="item-image">
+        <div *ngIf="!item.image" class="processing-state">
+          <div class="spinner"></div>
+          <span>Imagen no disponible</span>
+        </div>
+      </div>
+      <h3 class="item-title">{{item.name}}</h3>
+    </div>
+  </div>
+
+
+</div>
