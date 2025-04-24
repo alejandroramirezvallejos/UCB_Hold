@@ -1,11 +1,19 @@
 
 <section>
+  <app-navbar></app-navbar>
 
-  @if(eleccionobjeto == ''){
+  @if(eleccionObjeto == ''){
   <app-pantalla-main (itemSelected)="getitem($event)"></app-pantalla-main>
   }
   @else{
-  <h1>bienvenido a comprar</h1>
+      <app-objeto
+              [objeto]="{
+               nombre: eleccionObjeto,
+                  descripcion: 'Descripción detallada del producto...',
+                  imagenUrl: 'url-de-la-imagen.jpg'
+                }">
+
+                  ></app-objeto>
   }
 
 
