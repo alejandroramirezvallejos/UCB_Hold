@@ -7,37 +7,6 @@
   padding: 20px;
 }
 
-/* Usuario (círculo) */
-.user-circle {
-  position: absolute;
-  top: 20px;
-  right: 20px;
-  width: 45px;
-  height: 45px;
-  border-radius: 50%;
-  background-color: #007bff;
-  cursor: pointer;
-  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
-}
-
-
-.logo-image {
-  display: block;
-  margin: 0 auto; /* Centra la imagen en el contenedor */
-  width: 100px;
-  filter: drop-shadow(0 2px 5px rgba(0, 0, 0, 0.1));
-}
-
-
-/* Estilo combinado para el texto del logo (opcional) */
-.logo-text {
-  font-size: 1.4rem;
-  color: #333;
-  font-weight: 300;
-  letter-spacing: 1.5px;
-  text-align: center;
-  margin-top: 10px; /* Espacio entre el logo y el texto */
-}
 
 /* Grid para los item-cards */
 .grid-container {

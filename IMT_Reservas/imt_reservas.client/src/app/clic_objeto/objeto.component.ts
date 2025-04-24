@@ -1,5 +1,6 @@
+// objeto.component.ts
 import { CommonModule } from '@angular/common';
-import { Component } from '@angular/core';
+import { Component, Input } from '@angular/core';
 
 @Component({
   selector: 'app-objeto',
@@ -9,6 +10,9 @@ import { Component } from '@angular/core';
   styleUrl: './objeto.component.css'
 })
 export class ObjetoComponent {
-
-  
+  @Input() objeto: any = {
+    nombre: '',
+    descripcion: '',
+    imagenUrl: ''
+  };
 }
