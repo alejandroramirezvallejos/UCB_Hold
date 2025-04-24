@@ -1,7 +1,43 @@
+<!-- navbar.component.html -->
+<nav class="navbar-container">
+  <!-- Botón Home izquierda -->
+  <button class="home-button" (click)="seleccionar('home')">
+    <i class="fas fa-home"></i>
+  </button>
 
+  <!-- Logo central -->
+  <div class="logo-container">
+    <img src="assets/logo-universidad.png" alt="Logo Universidad" class="logo-image">
+    <div class="logo-text">Sistema de Préstamos Universitarios</div>
+  </div>
 
-<div class="user-circle"></div>
-<img src="assets/logo-universidad.png" alt="Logo Universidad" class="logo-image">
-<div class="logo-text">Sistema de Préstamos Universitarios</div>
+  <!-- Sección derecha -->
+  <div class="right-section">
+    <!-- Botón Carrito -->
+    <button class="cart-button" (click)="seleccionar('carrito')">
+      <i class="fas fa-shopping-cart"></i>
+      <span class="cart-count">0</span>
+    </button>
 
+    <!-- Menú usuario -->
+    <div class="user-menu">
+      <div class="user-circle" (click)="toggleUserMenu()">
+        <i class="fas fa-user"></i>
+      </div>
 
+      @if(showUserMenu) {
+      <div class="user-dropdown">
+        <div class="dropdown-item" (click)="seleccionar('perfil')">
+          <i class="fas fa-user-circle"></i> Ver Perfil
+        </div>
+        <div class="dropdown-item" (click)="seleccionar('historial')">
+          <i class="fas fa-history"></i> Historial
+        </div>
+        <div class="dropdown-item" (click)="seleccionar('cerrar-sesion')">
+          <i class="fas fa-sign-out-alt"></i> Cerrar Sesión
+        </div>
+      </div>
+      }
+    </div>
+  </div>
+</nav>

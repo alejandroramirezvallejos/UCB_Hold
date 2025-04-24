@@ -1,23 +1,20 @@
-
+<!-- app.component.html -->
 <section>
-  <app-navbar></app-navbar>
+  <app-navbar (seleccion)="getitemNavbar($event)"></app-navbar>
 
-  @if(eleccionObjeto == ''){
-  <app-pantalla-main (itemSelected)="getitem($event)"></app-pantalla-main>
+  @if (eleccionNavbar === 'home') {
+    <app-pantalla-main (itemSelected)="getitem($event)"></app-pantalla-main>
   }
-  @else{
-      <app-objeto
-              [objeto]="{
-               nombre: eleccionObjeto,
-                  descripcion: 'Descripción detallada del producto...',
-                  imagenUrl: 'url-de-la-imagen.jpg'
-                }">
-
-                  ></app-objeto>
+  @else if (eleccionObjeto) {
+    <app-objeto 
+      [objeto]="{
+        nombre: eleccionObjeto,
+        descripcion: 'Descripción detallada del producto...',
+        imagenUrl: 'url-de-la-imagen.jpg'
+      }">
+    </app-objeto>
   }
-
-
-
-
-
+  @else {
+    <app-pantalla-main (itemSelected)="getitem($event)"></app-pantalla-main>
+  }
 </section>
