@@ -1,16 +1,16 @@
-public class UsuarioCreateDto
+public record UsuarioCreateDto
 {
-    public string carnet_identidad { get; set; }
-    public string nombre { get; set; }
-    public string apellido_paterno { get; set; }
-    public string apellido_materno {  get; set; }
-    public string tipo_usuario { get; set; }
-    public string carrera { get; set; }
-    public string user_name { get; set; }
-    public string password { get; set; }
-    public string email { get; set; }
-    public string telefono { get; set; }
-    public string nombre_referencia { get; set; }
-    public string telefono_referencia { get; set; }
-    public string email_referencia { get; set; }
+    public string CarnetIdentidad    { get; init; }
+    public string Nombre             { get; init; }
+    public string ApellidoPaterno    { get; init; }
+    public string ApellidoMaterno    { get; init; }
+    public string TipoUsuario        { get; init; }
+    public string Carrera            { get; init; }
+    public string UserName           { get; init; }
+    public string Password           { get; init; }
+    public string Email              { get; init; }
+    public string Telefono           { get; init; }
+    public string NombreReferencia   { get; init; }
+    public string TelefonoReferencia { get; init; }
+    public string EmailReferencia    { get; init; }
 }

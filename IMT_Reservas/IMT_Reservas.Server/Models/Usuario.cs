@@ -1,16 +1,38 @@
-public class Usuario
+public enum TipoUsuario { Docente, Administrador, Estudiante } 
+
+public class Usuario //TODO: Convertir a clase abstracta
 {
-    public string Carnet { get; set; }
-    public string Nombre { get; set; }
-    public string Apellido_Paterno { get; set; }
-    public string Apellido_Materno { get; set; }
-    public string Rol { get; set; }
-    public int Id_Carrera { get; set; }
-    public string Contraseña { get; set; }
-    public string Email { get; set; }
-    public string Telefono { get; set; }
-    public string Telefono_Referencia { get; set; }
-    public string Nombre_Referencia { get; set; }
-    public string Email_Referencia { get; set; }
-    public Boolean Estado_Eliminado { get; set; }
+    public string      Carnet             { get; private set; }
+    public string      Nombre             { get; private set; }
+    public string      ApellidoPaterno    { get; private set; }
+    public string      ApellidoMaterno    { get; private set; }
+    public TipoUsuario Rol                { get; private set; }
+    public int         CarreraId          { get; private set; }
+    public Carrera     Carrera            { get; private set; }
+    public string      Contrasena         { get; private set; }
+    public string      Email              { get; private set; }
+    public string      Telefono           { get; private set; }
+    public string      NombreReferencia   { get; private set; }
+    public string      TelefonoReferencia { get; private set; }
+    public string      EmailReferencia    { get; private set; }
+    public bool        EstaEliminado      { get; private set; }
+
+    public Usuario(string carnet, string nombre, string apellidoPaterno, string apellidoMaterno, 
+                   TipoUsuario rol, int carreraId, string contrasena, string email, string telefono,
+                   string nombreReferencia, string telefonoReferencia, string emailReferencia)
+    {
+        Carnet             = carnet;
+        Nombre             = nombre;
+        ApellidoPaterno    = apellidoPaterno;
+        ApellidoMaterno    = apellidoMaterno;
+        Rol                = rol;
+        CarreraId          = carreraId;
+        Contrasena         = contrasena;
+        Email              = email;
+        Telefono           = telefono;
+        NombreReferencia   = nombreReferencia;
+        TelefonoReferencia = telefonoReferencia;
+        EmailReferencia    = emailReferencia;
+        EstaEliminado      = false;
+    }
 }

@@ -1,32 +1,40 @@
-public class UsuarioService
+/*  
+    INFO: Extraigo IUsuarioService de UsuarioService, de modo que el 
+    controlador UsuarioController dependa de una abstraccion, no de una implementacion concreta
+*/
+//SUGGESTION: Apliquen buenas practicas chicos
+public class UsuarioService : IUsuarioService
 {
-    private readonly UsuarioRepository _usuarioRepository;
+    private readonly IUsuarioRepository _usuarioRepository;
 
-    public UsuarioService(UsuarioRepository usuarioRepository)
+    public UsuarioService(IUsuarioRepository usuarioRepository)
     {
         _usuarioRepository = usuarioRepository;
     }
 
-    public async Task<UsuarioReadDto>? ObtenerUsuarioPorCarnet(string carnet)
+    public async Task<UsuarioReadDto?> ObtenerUsuarioPorCarnetAsync(string carnet)
     {
-        var usuario= await _usuarioRepository.obtenerUsuarioPorCarnet(carnet);
+        var usuario = await _usuarioRepository.GetByCarnetAsync(carnet);
+        if (usuario is null) return null;
+
         return new UsuarioReadDto
         {
-            Carnet = usuario.Carnet,
+            CarnetIdentidad = usuario.Carnet,
             Nombre = usuario.Nombre,
-            Apellido_Paterno = usuario.Apellido_Paterno,
-            Apellido_Materno = usuario.Apellido_Materno,
-            Rol = usuario.Rol,
-            Id_Carrera = usuario.Id_Carrera,
+            ApellidoPaterno = usuario.ApellidoPaterno,
+            ApellidoMaterno = usuario.ApellidoMaterno,
+            Rol = usuario.Rol.ToString(),
+            IdCarrera = usuario.CarreraId,
             Email = usuario.Email,
             Telefono = usuario.Telefono,
-            Telefono_Referencia = usuario.Telefono_Referencia,
-            Nombre_Referencia = usuario.Nombre_Referencia,
-            Email_Referencia = usuario.Email_Referencia
+            NombreReferencia = usuario.NombreReferencia,
+            TelefonoReferencia = usuario.TelefonoReferencia,
+            EmailReferencia = usuario.EmailReferencia
         };
     }
 
-    public void CrearUsuario(Usuario usuario)
+    public async Task CrearUsuarioAsync(Usuario usuario)
     {
+        await _usuarioRepository.InsertAsync(usuario);
     }
 }

@@ -1,12 +1,26 @@
 public class Mueble
 {
-    public int Id_Mueble { get; set; }
-    public string Nombre { get; set; }
-    public string Tipo { get; set; }
-    public string Ubicacion { get; set; }
-    public float Dimensiones { get; set; }
-    public int Numero_Gaveteros { get; set; }
-    public float Costo {  get; set; }
-    public int Id_Gavetero { get; set; }
-    public Boolean Estado_Eliminado { get; set; }
+    public int      Id              { get; private set; }
+    public string   Nombre          { get; private set; }
+    public string   Tipo            { get; private set; }
+    public string   Ubicacion       { get; private set; }
+    public string   Dimensiones     { get; private set; }
+    public int      NumeroGaveteros { get; private set; }
+    public decimal  Costo           { get; private set; }
+    public int      GaveteroId      { get; private set; }
+    public Gavetero Gavetero        { get; private set; }
+    public bool     EstaEliminado   { get; private set; }
+
+    public Mueble(string nombre, string tipo, string ubicacion, string dimensiones,
+                  int numeroGaveteros, decimal costo, int gaveteroId)
+    {
+        Nombre           = nombre;
+        Tipo             = tipo;
+        Ubicacion        = ubicacion;
+        Dimensiones      = dimensiones;
+        NumeroGaveteros  = numeroGaveteros;
+        Costo            = costo;
+        GaveteroId       = gaveteroId;
+        EstaEliminado    = false;
+    }
 }

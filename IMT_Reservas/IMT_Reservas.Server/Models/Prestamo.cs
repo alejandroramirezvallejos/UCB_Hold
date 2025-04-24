@@ -1,12 +1,30 @@
+public enum PrestamoEstado { Pendiente, Rechazado, Aprobado, Activo, Finalizado, Cancelado }
+
 public class Prestamo
 {
-    public int Id_Prestamo { get; set; }
-    public DateTime Fecha_Solicitud { get; set; }
-    public DateTime Fecha_Prestamo { get; set; }
-    public DateTime Fecha_Devolucion { get; set; }
-    public string Observacion { get; set; }
-    public string Estado_Prestamo { get; set; }
-    public string Carnet {  get; set; }
-    public int Id_Equipo { get; set; }
-    public Boolean Estado_Eliminado { get; set; }
+    public int            Id              { get; private set; }
+    public DateTimeOffset FechaSolicitud  { get; private set; }
+    public DateTimeOffset FechaPrestamo   { get; private set; }
+    public DateTimeOffset FechaDevolucion { get; private set; }
+    public string         Observacion     { get; private set; }
+    public PrestamoEstado EstadoPrestamo  { get; private set; }
+    public string         CarnetUsuario   { get; private set; }
+    public Usuario        Usuario         { get; private set; }
+    public int            EquipoId        { get; private set; }
+    public Equipo         Equipo          { get; private set; }
+    public bool           EstaEliminado   { get; private set; }
+
+    public Prestamo(DateTimeOffset fechaSolicitud, DateTimeOffset fechaPrestamo, 
+                    DateTimeOffset fechaDevolucion, string observacion, PrestamoEstado estado, 
+                    string carnetUsuario, int equipoId)
+    {
+        FechaSolicitud    = fechaSolicitud;
+        FechaPrestamo     = fechaPrestamo;
+        FechaDevolucion   = fechaDevolucion;
+        Observacion       = observacion;
+        EstadoPrestamo    = estado;
+        CarnetUsuario     = carnetUsuario;
+        EquipoId          = equipoId;
+        EstaEliminado     = false;
+    }
 }

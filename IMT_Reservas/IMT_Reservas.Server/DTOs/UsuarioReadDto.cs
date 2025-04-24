@@ -1,14 +1,14 @@
-public class UsuarioReadDto
+public record UsuarioReadDto
 {
-    public string Carnet { get; set; }
-    public string Nombre { get; set; }
-    public string Apellido_Paterno { get; set; }
-    public string Apellido_Materno { get; set; }
-    public string Rol { get; set; }
-    public int Id_Carrera { get; set; } //PREGUNTAR AL INGEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEE
-    public string Email { get; set; }
-    public string Telefono { get; set; }
-    public string Telefono_Referencia { get; set; }
-    public string Nombre_Referencia { get; set; }
-    public string Email_Referencia { get; set; }
+    public string CarnetIdentidad    { get; init; }
+    public string Nombre             { get; init; }
+    public string ApellidoPaterno    { get; init; }
+    public string ApellidoMaterno    { get; init; }
+    public string Rol                { get; init; }
+    public int    IdCarrera          { get; init; }
+    public string Email              { get; init; }
+    public string Telefono           { get; init; }
+    public string NombreReferencia   { get; init; }
+    public string TelefonoReferencia { get; init; }
+    public string EmailReferencia    { get; init; }
 }

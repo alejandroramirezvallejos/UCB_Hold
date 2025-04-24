@@ -1,15 +1,15 @@
-public class EquipoReadDto
+public record EquipoReadDto
 {
-    public int Clave { get; set; }
-    public string CodigoEquipo { get; set; }
-    public string CodigoIMT { get; set; }
-    public string CodigoUCB { get; set; }
-    public string Descripcion { get; set; }
-    public string EstadoTecnico { get; set; }
-    public string NumeroSerial { get; set; }
-    public string Ubicacion { get; set; }
-    public decimal? CostoReferencia { get; set; }
-    public int? TiempoMaximoPrestamo { get; set; }
-    public string Procedencia { get; set; }
-    public bool Disponible { get; set; }
+    public int      Clave                { get; init; }
+    public string   CodigoEquipo         { get; init; }
+    public string   CodigoImt            { get; init; }
+    public string   CodigoUcb            { get; init; }
+    public string   Descripcion          { get; init; }
+    public string   EstadoTecnico        { get; init; }
+    public string   NumeroSerial         { get; init; }
+    public string   Ubicacion            { get; init; }
+    public decimal? CostoReferencia      { get; init; }
+    public int?     TiempoMaximoPrestamo { get; init; }
+    public string   Procedencia          { get; init; }
+    public bool     Disponible           { get; init; }
 }
