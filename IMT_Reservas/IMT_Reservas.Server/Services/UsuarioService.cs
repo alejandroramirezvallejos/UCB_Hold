@@ -24,7 +24,7 @@ public class UsuarioService : IUsuarioService
             ApellidoPaterno = usuario.ApellidoPaterno,
             ApellidoMaterno = usuario.ApellidoMaterno,
             Rol = usuario.Rol.ToString(),
-            IdCarrera = usuario.CarreraId,
+            NombreCarrera = usuario.NombreCarrera,
             Email = usuario.Email,
             Telefono = usuario.Telefono,
             NombreReferencia = usuario.NombreReferencia,

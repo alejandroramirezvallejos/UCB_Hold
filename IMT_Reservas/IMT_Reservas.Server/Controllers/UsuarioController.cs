@@ -27,7 +27,7 @@ public class UsuarioController : ControllerBase
     [ProducesResponseType(StatusCodes.Status204NoContent)]
     public IActionResult CerrarSesion()
     {
-        // TODO: Implementar lógica de cierre de sesion
+        // TODO: Implementar logica de cierre de sesion
         return NoContent();
     }
 
@@ -39,36 +39,47 @@ public class UsuarioController : ControllerBase
         if (!ModelState.IsValid)
             return BadRequest(ModelState);
 
-        var usuario = new Usuario(
-            carnet: dto.CarnetIdentidad,
-            nombre: dto.Nombre,
-            apellidoPaterno: dto.ApellidoPaterno,
-            apellidoMaterno: dto.ApellidoMaterno,
-            rol: Enum.TryParse<TipoUsuario>(dto.TipoUsuario, out var rol) ? rol : TipoUsuario.Estudiante,
-            carreraId: int.TryParse(dto.Carrera, out var idCarrera) ? idCarrera : 0,
-            contrasena: dto.Password,
-            email: dto.Email,
-            telefono: dto.Telefono,
-            nombreReferencia: dto.NombreReferencia,
-            telefonoReferencia: dto.TelefonoReferencia,
-            emailReferencia: dto.EmailReferencia
-        );
+        if (!Enum.TryParse<TipoUsuario>(dto.TipoUsuario, true, out var rol))
+            return BadRequest($"Tipo de usuario inválido: '{dto.TipoUsuario}'");
+
+        var nombreCarrera = dto.Carrera?.Trim() ?? string.Empty;
+        Usuario usuario;
+        try
+        {
+            usuario = new Usuario(
+                carnet: dto.CarnetIdentidad,
+                nombre: dto.Nombre,
+                apellidoPaterno: dto.ApellidoPaterno,
+                apellidoMaterno: dto.ApellidoMaterno,
+                rol: rol,
+                nombreCarrera: nombreCarrera,
+                contrasena: dto.Password,
+                email: dto.Email,
+                telefono: dto.Telefono,
+                nombreReferencia: dto.NombreReferencia,
+                telefonoReferencia: dto.TelefonoReferencia,
+                emailReferencia: dto.EmailReferencia
+            );
+        }
+        catch (ArgumentException ex)
+        {
+            return BadRequest(new { Message = ex.Message });
+        }
 
         await _usuarioService.CrearUsuarioAsync(usuario);
-
         var usuarioDto = new UsuarioReadDto
         {
-            CarnetIdentidad = usuario.Carnet,
-            Nombre = usuario.Nombre,
-            ApellidoPaterno = usuario.ApellidoPaterno,
-            ApellidoMaterno = usuario.ApellidoMaterno,
-            Rol = usuario.Rol.ToString(),
-            IdCarrera = usuario.CarreraId,
-            Email = usuario.Email,
-            Telefono = usuario.Telefono,
-            NombreReferencia = usuario.NombreReferencia,
+            CarnetIdentidad    = usuario.Carnet,
+            Nombre             = usuario.Nombre,
+            ApellidoPaterno    = usuario.ApellidoPaterno,
+            ApellidoMaterno    = usuario.ApellidoMaterno,
+            Rol                = usuario.Rol.ToString(),
+            NombreCarrera      = usuario.NombreCarrera,
+            Email              = usuario.Email,
+            Telefono           = usuario.Telefono,
+            NombreReferencia   = usuario.NombreReferencia,
             TelefonoReferencia = usuario.TelefonoReferencia,
-            EmailReferencia = usuario.EmailReferencia
+            EmailReferencia    = usuario.EmailReferencia
         };
 
         return CreatedAtAction(

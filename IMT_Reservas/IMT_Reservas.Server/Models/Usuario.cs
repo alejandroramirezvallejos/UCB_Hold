@@ -17,7 +17,7 @@ public class Usuario
     private string      _apellidoPaterno;
     private string      _apellidoMaterno;
     private TipoUsuario _rol;
-    private int         _carreraId;
+    private string      _nombreCarrera;
     private string      _contrasena;
     private string      _email;
     private string      _telefono;
@@ -32,7 +32,7 @@ public class Usuario
         private set
         {
             if (string.IsNullOrWhiteSpace(value))
-                throw new ArgumentException("El carnet del usuario no puede estar vacio",
+                throw new ArgumentException("El carnet del usuario no puede estar vacio", 
                           nameof(value));
             _carnet = value.Trim();
         }
@@ -44,7 +44,7 @@ public class Usuario
         private set
         {
             if (string.IsNullOrWhiteSpace(value))
-                throw new ArgumentException("El nombre del usuario no puede estar vacio", 
+                throw new ArgumentException("El nombre del usuario no puede estar vacio",
                           nameof(value));
             _nombre = value.Trim();
         }
@@ -56,7 +56,7 @@ public class Usuario
         private set
         {
             if (string.IsNullOrWhiteSpace(value))
-                throw new ArgumentException("El apellido paterno del usuario no puede estar vacio", 
+                throw new ArgumentException("El apellido paterno del usuario no puede estar vacio",
                           nameof(value));
             _apellidoPaterno = value.Trim();
         }
@@ -80,21 +80,35 @@ public class Usuario
         private set
         {
             if (!Enum.IsDefined(typeof(TipoUsuario), value))
-                throw new ArgumentException($"El rol de usuario es invalido: '{value}'", 
+                throw new ArgumentException($"El rol de usuario es invalido: '{value}'",
                           nameof(value));
             _rol = value;
         }
     }
 
-    public int CarreraId
+    public string NombreCarrera
     {
-        get => _carreraId;
+        get => _nombreCarrera;
         private set
         {
-            if (value <= 0)
-                throw new ArgumentException($"El ID de carrera debe ser un numero natural: '{value}'",
+            if (string.IsNullOrWhiteSpace(value))
+                throw new ArgumentException("El nombre de carrera no puede estar vacio",
                           nameof(value));
-            _carreraId = value;
+
+            var limpio = value.Trim();
+            var nombres = Enum.GetNames(typeof(NombreCarrera));
+
+            foreach (var nombreEnum in nombres)
+            {
+                if (nombreEnum.Equals(limpio, StringComparison.OrdinalIgnoreCase))
+                {
+                    _nombreCarrera = limpio;
+                    return;
+                }
+            }
+
+            throw new ArgumentException($"El nombre de carrera es invalido: '{value}'",
+                      nameof(value));
         }
     }
 
@@ -106,7 +120,7 @@ public class Usuario
         private set
         {
             if (string.IsNullOrWhiteSpace(value))
-                throw new ArgumentException("La contraseña del usuario no puede estar vacia", 
+                throw new ArgumentException("La contraseña no puede estar vacia",
                           nameof(value));
             _contrasena = value;
         }
@@ -118,7 +132,7 @@ public class Usuario
         private set
         {
             if (string.IsNullOrWhiteSpace(value))
-                throw new ArgumentException("El email del usuario no puede estar vacio", 
+                throw new ArgumentException("El email no puede estar vacio",
                           nameof(value));
             _email = value.Trim();
         }
@@ -130,7 +144,7 @@ public class Usuario
         private set
         {
             if (string.IsNullOrWhiteSpace(value))
-                throw new ArgumentException("El telefono del usuario no puede estar vacio", 
+                throw new ArgumentException("El teléfono no puede estar vacio", 
                           nameof(value));
             _telefono = value.Trim();
         }
@@ -142,7 +156,7 @@ public class Usuario
         private set
         {
             if (string.IsNullOrWhiteSpace(value))
-                throw new ArgumentException("El nombre de referencia no puede estar vacio",
+                throw new ArgumentException("El nombre de referencia no puede estar vacio", 
                           nameof(value));
             _nombreReferencia = value.Trim();
         }
@@ -154,7 +168,7 @@ public class Usuario
         private set
         {
             if (string.IsNullOrWhiteSpace(value))
-                throw new ArgumentException("El telefono de referencia no puede estar vacio",
+                throw new ArgumentException("El telefono de referencia no puede estar vacio", 
                           nameof(value));
             _telefonoReferencia = value.Trim();
         }
@@ -166,7 +180,7 @@ public class Usuario
         private set
         {
             if (string.IsNullOrWhiteSpace(value))
-                throw new ArgumentException("El email del usuario de referencia no puede estar vacio",
+                throw new ArgumentException("El email de referencia no puede estar vacio", 
                           nameof(value));
             _emailReferencia = value.Trim();
         }
@@ -177,9 +191,8 @@ public class Usuario
         get => _estaEliminado;
         private set => _estaEliminado = value;
     }
-
     public Usuario(string carnet, string nombre, string apellidoPaterno, string apellidoMaterno,
-                   TipoUsuario rol, int carreraId, string contrasena, string email, string telefono,
+                   TipoUsuario rol, string nombreCarrera, string contrasena, string email, string telefono,
                    string nombreReferencia, string telefonoReferencia, string emailReferencia)
     {
         Carnet             = carnet;
@@ -187,7 +200,7 @@ public class Usuario
         ApellidoPaterno    = apellidoPaterno;
         ApellidoMaterno    = apellidoMaterno;
         Rol                = rol;
-        CarreraId          = carreraId;
+        NombreCarrera      = nombreCarrera;
         Contrasena         = contrasena;
         Email              = email;
         Telefono           = telefono;
