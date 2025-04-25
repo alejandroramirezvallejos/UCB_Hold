@@ -1,20 +1,16 @@
 import { CommonModule } from '@angular/common';
 import { Component,EventEmitter ,input, Output } from '@angular/core';
-import { RouterOutlet } from '@angular/router';
-import { ObjetoComponent } from '../clic_objeto/objeto.component';
+import { RouterModule } from '@angular/router';
 
 @Component({
   selector: 'app-pantalla-main',
   standalone: true,
-  imports: [CommonModule],
+  imports: [CommonModule,RouterModule],
   templateUrl: './pantalla-main.component.html',
   styleUrl: './pantalla-main.component.css'
 })
 export class PantallaMainComponent {
-  @Output() itemSelected = new EventEmitter<string>();
 
-
-  selectedItem: any;
 
   items = [
     { name: 'Portátil', image: 'assets/laptop.jpg' },
@@ -25,10 +21,6 @@ export class PantallaMainComponent {
     { name: 'Trípode', image: 'assets/tripode.jpg' }
   ];
 
-
-  selectItem(item: any) {
-    this.itemSelected.emit(item.name);
-  }
 
   handleImageError(item: any) {
     item.image = null; // Elimina la imagen fallida
