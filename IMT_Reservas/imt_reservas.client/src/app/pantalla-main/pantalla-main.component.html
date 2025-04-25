@@ -1,23 +1,23 @@
-<!-- app.component.html -->
 <div class="container">
-
-  <!-- Contenedor del logo -->
- 
-  
-
-
   <div class="grid-container">
-    <div *ngFor="let item of items" class="item-card" (click)="selectItem(item)">
-      <div class="item-image-container">
-        <img [src]="item.image" alt="{{item.name}}" (error)="handleImageError(item)" class="item-image">
-        <div *ngIf="!item.image" class="processing-state">
-          <div class="spinner"></div>
-          <span>Imagen no disponible</span>
+    @for (item of items; track item.name) {
+    <div class="item-card">
+      <a [routerLink]="['/Objeto', item.name]">
+        <div class="item-image-container">
+          <img [src]="item.image"
+               alt="{{ item.name }}"
+               (error)="handleImageError(item)"
+               class="item-image">
+          @if (!item.image) {
+          <div class="processing-state">
+            <div class="spinner"></div>
+            <span>Imagen no disponible</span>
+          </div>
+          }
         </div>
-      </div>
-      <h3 class="item-title">{{item.name}}</h3>
+        <h3 class="item-title">{{ item.name }}</h3>
+      </a>
     </div>
+    }
   </div>
-
-
 </div>

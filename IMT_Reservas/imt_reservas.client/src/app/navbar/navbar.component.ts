@@ -1,13 +1,16 @@
 // navbar.component.ts
 import { Component, Output, EventEmitter } from '@angular/core';
+import { RouterModule } from '@angular/router';
 
 @Component({
   selector: 'app-navbar',
   standalone: true,
-  imports: [],
+  imports: [RouterModule],
   templateUrl: './navbar.component.html',
   styleUrls: ['./navbar.component.css']
 })
+
+//TODO  : Eliminar lo no necesario
 export class NavbarComponent {
   @Output() seleccion = new EventEmitter<string>();
   showUserMenu = false;
