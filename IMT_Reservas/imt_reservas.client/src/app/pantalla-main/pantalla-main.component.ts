@@ -1,11 +1,11 @@
 import { CommonModule } from '@angular/common';
 import { Component,EventEmitter ,input, Output } from '@angular/core';
-import { RouterModule } from '@angular/router';
+import { ListaObjetosComponent } from '../lista-objetos/lista-objetos.component';
 
 @Component({
   selector: 'app-pantalla-main',
   standalone: true,
-  imports: [CommonModule,RouterModule],
+  imports: [CommonModule,ListaObjetosComponent],
   templateUrl: './pantalla-main.component.html',
   styleUrl: './pantalla-main.component.css'
 })
@@ -25,14 +25,6 @@ export class PantallaMainComponent {
   toggleCategories() {
     this.showCategories = !this.showCategories;
   }
-
-
-  handleImageError(item: any) {
-    item.image = null; // Elimina la imagen fallida
-  }
-
-
-
 
   solicitud: string = ''; // Para guardar el contenido del textarea
 
