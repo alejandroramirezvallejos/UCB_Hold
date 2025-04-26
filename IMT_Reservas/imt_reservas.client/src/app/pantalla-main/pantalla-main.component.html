@@ -1,4 +1,15 @@
 <div class="container">
+
+  
+    <textarea placeholder="Ingrese el nombre del equipo buscado" rows="0"
+          (keydown.enter)="submitRequest(); $event.preventDefault()"
+              ></textarea>
+
+
+
+
+
+
   <div class="grid-container">
     @for (item of items; track item.name) {
     <div class="item-card">
@@ -20,4 +31,8 @@
     </div>
     }
   </div>
+
+
+
+
 </div>

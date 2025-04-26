@@ -10,7 +10,7 @@ import { RouterModule } from '@angular/router';
   styleUrl: './pantalla-main.component.css'
 })
 export class PantallaMainComponent {
-
+  showCategories = false;
 
   items = [
     { name: 'Portátil', image: 'assets/laptop.jpg' },
@@ -21,8 +21,32 @@ export class PantallaMainComponent {
     { name: 'Trípode', image: 'assets/tripode.jpg' }
   ];
 
+  // Añade este método
+  toggleCategories() {
+    this.showCategories = !this.showCategories;
+  }
+
 
   handleImageError(item: any) {
     item.image = null; // Elimina la imagen fallida
   }
+
+
+
+
+  solicitud: string = ''; // Para guardar el contenido del textarea
+
+  submitRequest() {
+    if (this.solicitud.trim()) { // Asegúrate de que no esté vacío
+      console.log('Solicitud enviada:', this.solicitud);
+      // Aquí puedes manejar el envío de la solicitud (API, etc.)
+      alert('¡Solicitud enviada con éxito!');
+      this.solicitud = ''; // Limpia el campo después de enviar
+    } else {
+      alert('Por favor, escribe tu solicitud antes de enviarla.');
+    }
+  }
+
+
 }
+
