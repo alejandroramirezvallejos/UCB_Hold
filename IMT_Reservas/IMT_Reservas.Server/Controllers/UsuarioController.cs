@@ -1,22 +1,27 @@
+using System;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Http;
-using System.Threading.Tasks;
 
 [ApiController]
-[Route("api/[controller]")]
+[Route("usuario")]
 public class UsuarioController : ControllerBase
 {
     private readonly IUsuarioService _usuarioService;
 
     public UsuarioController(IUsuarioService usuarioService)
-        => _usuarioService = usuarioService;
+    {
+        _usuarioService = usuarioService ?? throw new ArgumentNullException(nameof(usuarioService));
+    }
 
     [HttpGet("{carnet}")]
     [ProducesResponseType(typeof(UsuarioReadDto), StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status404NotFound)]
-    public async Task<IActionResult> ObtenerPorCarnet(string carnet)
+    public IActionResult ObtenerPorCarnet(string carnet)
     {
-        var usuarioDto = await _usuarioService.ObtenerUsuarioPorCarnetAsync(carnet);
+        if (string.IsNullOrWhiteSpace(carnet))
+            return BadRequest(new { Message = "El carnet no puede ser nulo o vacío." });
+
+        var usuarioDto = _usuarioService.ObtenerUsuarioPorCarnet(carnet);
         if (usuarioDto is null)
             return NotFound(new { Message = "Usuario no encontrado" });
 
@@ -27,14 +32,14 @@ public class UsuarioController : ControllerBase
     [ProducesResponseType(StatusCodes.Status204NoContent)]
     public IActionResult CerrarSesion()
     {
-        // TODO: Implementar logica de cierre de sesion
+        // TODO: Implementar lógica de cierre de sesión
         return NoContent();
     }
 
     [HttpPost("crear-cuenta")]
     [ProducesResponseType(typeof(UsuarioReadDto), StatusCodes.Status201Created)]
     [ProducesResponseType(StatusCodes.Status400BadRequest)]
-    public async Task<IActionResult> CrearCuenta([FromBody] UsuarioCreateDto dto)
+    public IActionResult CrearCuenta([FromBody] UsuarioCreateDto dto)
     {
         if (!ModelState.IsValid)
             return BadRequest(ModelState);
@@ -47,18 +52,18 @@ public class UsuarioController : ControllerBase
         try
         {
             usuario = new Usuario(
-                carnet: dto.CarnetIdentidad,
-                nombre: dto.Nombre,
-                apellidoPaterno: dto.ApellidoPaterno,
-                apellidoMaterno: dto.ApellidoMaterno,
-                rol: rol,
-                nombreCarrera: nombreCarrera,
-                contrasena: dto.Password,
-                email: dto.Email,
-                telefono: dto.Telefono,
-                nombreReferencia: dto.NombreReferencia,
+                carnet:             dto.CarnetIdentidad,
+                nombre:             dto.Nombre,
+                apellidoPaterno:    dto.ApellidoPaterno,
+                apellidoMaterno:    dto.ApellidoMaterno,
+                rol:                rol,
+                nombreCarrera:      nombreCarrera,
+                contrasena:         dto.Password,
+                email:              dto.Email,
+                telefono:           dto.Telefono,
+                nombreReferencia:   dto.NombreReferencia,
                 telefonoReferencia: dto.TelefonoReferencia,
-                emailReferencia: dto.EmailReferencia
+                emailReferencia:    dto.EmailReferencia
             );
         }
         catch (ArgumentException ex)
@@ -66,7 +71,8 @@ public class UsuarioController : ControllerBase
             return BadRequest(new { Message = ex.Message });
         }
 
-        await _usuarioService.CrearUsuarioAsync(usuario);
+        _usuarioService.CrearUsuario(usuario);
+
         var usuarioDto = new UsuarioReadDto
         {
             CarnetIdentidad    = usuario.Carnet,

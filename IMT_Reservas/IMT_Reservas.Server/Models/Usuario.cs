@@ -1,3 +1,4 @@
+using Microsoft.AspNetCore.Components.Forms;
 using System.ComponentModel;
 
 public enum TipoUsuario
@@ -34,6 +35,7 @@ public class Usuario
             if (string.IsNullOrWhiteSpace(value))
                 throw new ArgumentException("El carnet del usuario no puede estar vacio", 
                           nameof(value));
+
             _carnet = value.Trim();
         }
     }
@@ -161,7 +163,7 @@ public class Usuario
             _nombreReferencia = value.Trim();
         }
     }
-
+    
     public string TelefonoReferencia
     {
         get => _telefonoReferencia;
