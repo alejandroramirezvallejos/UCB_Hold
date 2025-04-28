@@ -12,29 +12,39 @@ public class UsuarioService : IUsuarioService
         _usuarioRepository = usuarioRepository;
     }
 
-    public async Task<UsuarioReadDto?> ObtenerUsuarioPorCarnetAsync(string carnet)
+    public UsuarioReadDto? ObtenerUsuarioPorCarnet(string carnet)
     {
-        var usuario = await _usuarioRepository.GetByCarnetAsync(carnet);
-        if (usuario is null) return null;
+        if (string.IsNullOrWhiteSpace(carnet))
+            throw new ArgumentException("El carnet no puede ser nulo o vacío.",
+                      nameof(carnet));
+
+        var usuario = _usuarioRepository.GetByCarnet(carnet);
+        if (usuario == null)
+            return null;
 
         return new UsuarioReadDto
         {
-            CarnetIdentidad = usuario.Carnet,
-            Nombre = usuario.Nombre,
-            ApellidoPaterno = usuario.ApellidoPaterno,
-            ApellidoMaterno = usuario.ApellidoMaterno,
-            Rol = usuario.Rol.ToString(),
-            NombreCarrera = usuario.NombreCarrera,
-            Email = usuario.Email,
-            Telefono = usuario.Telefono,
-            NombreReferencia = usuario.NombreReferencia,
+            CarnetIdentidad    = usuario.Carnet,
+            Nombre             = usuario.Nombre,
+            ApellidoPaterno    = usuario.ApellidoPaterno,
+            ApellidoMaterno    = usuario.ApellidoMaterno,
+            Rol                = usuario.Rol.ToString(),
+            NombreCarrera      = usuario.NombreCarrera,
+            Email              = usuario.Email,
+            Telefono           = usuario.Telefono,
+            NombreReferencia   = usuario.NombreReferencia,
             TelefonoReferencia = usuario.TelefonoReferencia,
-            EmailReferencia = usuario.EmailReferencia
+            EmailReferencia    = usuario.EmailReferencia
         };
     }
 
-    public async Task CrearUsuarioAsync(Usuario usuario)
+
+    public void CrearUsuario(Usuario usuario)
     {
-        await _usuarioRepository.InsertAsync(usuario);
+        if (usuario == null)
+            throw new ArgumentNullException(nameof(usuario));
+
+        _usuarioRepository.Insert(usuario);
     }
 }
+

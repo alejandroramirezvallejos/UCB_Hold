@@ -1,8 +1,7 @@
 public interface IUsuarioRepository
 {
-    Task InsertAsync(Usuario usuario);
-    Task UpdateAsync(Usuario usuario);
-    Task DeleteByCarnetAsync(string carnet);
-    Task<Usuario?> GetByCarnetAsync(string carnet);
+    void Insert(Usuario usuario);
+    void Update(Usuario usuario);
+    void DeleteByCarnet(string carnet);
+    Usuario? GetByCarnet(string carnet);
 }
-
