@@ -1,7 +1,7 @@
 import { NgModule } from '@angular/core';
 import { RouterModule, Routes } from '@angular/router';
-import { PantallaMainComponent } from './pantalla-main/pantalla-main.component'; 
-import { ObjetoComponent } from './clic_objeto/objeto.component';
+import { PantallaMainComponent } from './componentes/pantalla-main/pantalla-main.component'; 
+import { ObjetoComponent } from './componentes/clic_objeto/objeto.component';
 
 
 const routes: Routes = [
