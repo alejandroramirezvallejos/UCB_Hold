@@ -13,10 +13,9 @@ import { GrupoEquipoService } from '../../services/grupo_equipo/grupo-equipo.ser
 export class ListaObjetosComponent {
 
   productos: any[] = [];
-  dataa: any=""
-  constructor(private servicio : GrupoEquipoService ) {}
+  dataa: any = ""
+  constructor(private servicio: GrupoEquipoService) { }
 
-  
   ngOnInit(): void {
     // Llama al servicio y suscríbete al Observable
     this.servicio.getGrupoEquipo().subscribe({
@@ -30,13 +29,8 @@ export class ListaObjetosComponent {
       }
     });
   }
-    
-
-  
 
   handleImageError(item: any) {
-    item.link  = null; // Elimina la imagen fallida
+    item.link = null; // Elimina la imagen fallida
   }
-
-
 }
