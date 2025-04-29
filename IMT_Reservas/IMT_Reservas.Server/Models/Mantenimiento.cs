@@ -1,138 +1,56 @@
-using System.ComponentModel;
-
-public enum TipoMantenimiento
-{
-    [Description("Correctivo")]
-    Correctivo,
-    [Description("Preventivo")]
-    Preventivo
-}
-
 public class Mantenimiento
 {
-    private int               _id;
-    private TipoMantenimiento _tipoMantenimiento;
-    private string            _descripcion;
-    private string            _celularResponsable;
-    private string            _detalle;
-    private double           _costo;
-    private DateOnly          _fechaMantenimiento;
-    private int               _equipoId;
-    private int               _empresaMantenimientoId;
-    private bool              _estaEliminado;
+    private int      _id;
+    private string   _tipoMantenimiento;
+    private string?  _descripcion = null;
+    private double?  _costo = null;
+    private DateOnly _fechaMantenimiento;
+    private int      _empresaMantenimientoId;
+    private bool     _estaEliminado = false;
 
     public int Id
     {
         get => _id;
-        private set
-        {
-            if (value <= 0)
-                throw new ArgumentException($"El ID del mantenimiento debe ser un numero natural: '{value}'",
-                          nameof(value));
-            _id = value;
-        }
+        private set => _id = Verificar.SiEsNatural(value, "El ID del mantenimiento");
     }
 
-    public TipoMantenimiento TipoMantenimiento
+    public string TipoMantenimiento
     {
         get => _tipoMantenimiento;
         private set
         {
-            if (!Enum.IsDefined(typeof(TipoMantenimiento), value))
-                throw new ArgumentException($"El tipo de mantenimiento es invalido: '{value}'",
-                          nameof(value));
-            _tipoMantenimiento = value;
+            Enum enumTipoDeMantenimiento = Verificar.SiEstaEnEnum<TipoDeMantenimiento>(value, "El tipo de mantenimiento");
+            _tipoMantenimiento = enumTipoDeMantenimiento.ToString();
         }
     }
 
-    public string Descripcion
+    public string? Descripcion
     {
         get => _descripcion;
-        private set
-        {
-            if (string.IsNullOrWhiteSpace(value))
-                throw new ArgumentException("La descripcion del mantenimiento no puede estar vacia",
-                          nameof(value));
-            _descripcion = value.Trim();
-        }
+        private set => _descripcion = value is not null
+                       ? Verificar.SiEsVacio(value, "La descripcion del mantenimiento")
+                       : null;
     }
 
-    public string CelularResponsable
-    {
-        get => _celularResponsable;
-        private set
-        {
-            if (string.IsNullOrWhiteSpace(value))
-                throw new ArgumentException("El celular del responsable no puede estar vacio",
-                          nameof(value));
-            _celularResponsable = value.Trim();
-        }
-    }
-
-    public string Detalle
-    {
-        get => _detalle;
-        private set
-        {
-            if (string.IsNullOrWhiteSpace(value))
-                throw new ArgumentException("El detalle del mantenimiento no puede estar vacio",
-                          nameof(value));
-            _detalle = value.Trim();
-        }
-    }
-
-    public double Costo
+    public double? Costo
     {
         get => _costo;
-        private set
-        {
-            if (value < 0)
-                throw new ArgumentException($"El costo de mantenimiento debe ser un numero natural: '{value}'",
-                          nameof(value));
-            _costo = value;
-        }
+        private set => _costo = value.HasValue
+                       ? Verificar.SiEsPositivo(value.Value, "El costo del mantenimiento")
+                       : null;
     }
 
     public DateOnly FechaMantenimiento
     {
         get => _fechaMantenimiento;
-        private set
-        {
-            var hoy = DateOnly.FromDateTime(DateTime.Now);
-            if (value > hoy)
-                throw new ArgumentException($"La fecha de mantenimiento no puede ser futura: '{value}'",
-                          nameof(value));
-            _fechaMantenimiento = value;
-        }
+        private set => _fechaMantenimiento = Verificar.SiNoEsFutura(value, "La fecha de mantenimiento");
     }
-
-    public int EquipoId
-    {
-        get => _equipoId;
-        private set
-        {
-            if (value <= 0)
-                throw new ArgumentException($"El ID del equipo debe ser un numero natural: '{value}'", 
-                          nameof(value));
-            _equipoId = value;
-        }
-    }
-
-    public Equipo Equipo { get; private set; }
 
     public int EmpresaMantenimientoId
     {
         get => _empresaMantenimientoId;
-        private set
-        {
-            if (value <= 0)
-                throw new ArgumentException($"El ID de la empresa de mantenimiento debe ser un numero natural: '{value}'",
-                          nameof(value));
-            _empresaMantenimientoId = value;
-        }
+        private set => _empresaMantenimientoId = Verificar.SiEsNatural(value, "El ID de la empresa de mantenimiento");
     }
-
-    public EmpresaMantenimiento EmpresaMantenimiento { get; private set; }
 
     public bool EstaEliminado
     {
@@ -140,18 +58,18 @@ public class Mantenimiento
         private set => _estaEliminado = value;
     }
 
-    public Mantenimiento(TipoMantenimiento tipoMantenimiento, string descripcion, string celularResponsable,
-                         string detalle, double costo, DateOnly fechaMantenimiento, int equipoId,
+    public Mantenimiento(string tipoMantenimiento, string? descripcion,
+                         double? costo, DateOnly fechaMantenimiento,
                          int empresaMantenimientoId)
     {
         TipoMantenimiento      = tipoMantenimiento;
         Descripcion            = descripcion;
-        CelularResponsable     = celularResponsable;
-        Detalle                = detalle;
         Costo                  = costo;
         FechaMantenimiento     = fechaMantenimiento;
-        EquipoId               = equipoId;
         EmpresaMantenimientoId = empresaMantenimientoId;
-        EstaEliminado          = false;
     }
+
+    public void Eliminar() => EstaEliminado = true;
+
+    public void Recuperar() => EstaEliminado = false;
 }

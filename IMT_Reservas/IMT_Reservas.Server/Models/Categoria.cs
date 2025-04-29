@@ -1,15 +1,3 @@
-using System.ComponentModel;
-
-public enum CategoriaEstado
-{
-    [Description("Disponible")]
-    Disponible,
-    [Description("Prestado")]
-    Prestado,
-    [Description("Retirado")]
-    Retirado
-}
-
 public class Categoria
 {
     private int    _id;
@@ -19,25 +7,13 @@ public class Categoria
     public int Id
     {
         get => _id;
-        private set
-        {
-            if (value <= 0)
-                throw new ArgumentException($"El ID de categoria debe ser un numero natural: '{value}'",
-                          nameof(value));
-            _id = value;
-        }
+        private set => _id = Verificar.SiEsNatural(value, "El ID de la categoria");
     }
 
     public string Nombre
     {
         get => _nombre;
-        private set
-        {
-            if (string.IsNullOrWhiteSpace(value))
-                throw new ArgumentException("El nombre de categoria no puede estar vacio",
-                          nameof(value));
-            _nombre = value.Trim();
-        }
+        private set => _nombre = Verificar.SiEsVacio(value, "El nombre de la categoria");
     }
 
     public string EstadoPrestamo
@@ -45,29 +21,13 @@ public class Categoria
         get => _estadoPrestamo;
         private set
         {
-            if (string.IsNullOrWhiteSpace(value))
-                throw new ArgumentException("El estado de categoria no puede estar vacio",
-                          nameof(value));
-
-            var cleaned = value.Trim().ToLowerInvariant();
-            var names = Enum.GetNames(typeof(CategoriaEstado));
-            foreach (var name in names)
-            {
-                if (string.Equals(name, cleaned, StringComparison.OrdinalIgnoreCase))
-                {
-                    _estadoPrestamo = cleaned;
-                    return;
-                }
-            }
-
-            throw new ArgumentException($"El estado de categoria es invalido: '{value}'",
-                      nameof(value));
+            Enum enumEstadoDeCategoria = Verificar.SiEstaEnEnum<EstadoDeCategoria>(value, "El estado de la categoria");
+            _estadoPrestamo = enumEstadoDeCategoria.ToString();
         }
     }
 
-    public Categoria(int id, string nombre, string estadoPrestamo)
+    public Categoria(string nombre, string estadoPrestamo)
     {
-        Id             = id;
         Nombre         = nombre;
         EstadoPrestamo = estadoPrestamo;
     }

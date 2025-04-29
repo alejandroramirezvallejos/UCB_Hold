@@ -2,101 +2,90 @@ public class Mueble : IDimensiones
 {
     private int     _id;
     private string  _nombre;
-    private string  _tipo;
-    private string  _ubicacion;
-    private int     _numeroGaveteros;
-    private decimal _costo;
-    private int     _gaveteroId;
-    private bool    _estaEliminado;
-    private double  _alto;
-    private double  _ancho;
-    private double  _largo;
+    private string? _tipo = null;
+    private string? _ubicacion = null;
+    private double? _numeroGaveteros = null;
+    private double? _costo = null;
+    private bool    _estaEliminado = false;
+    private double? _alto = null;
+    private double? _ancho = null;
+    private double? _largo = null;
 
     public int Id
     {
         get => _id;
-        private set
-        {
-            if (value <= 0)
-                throw new ArgumentException($"El ID del mueble debe ser un numero natural: '{value}'",
-                          nameof(value));
-            _id = value;
-        }
+        private set => _id = Verificar.SiEsNatural(value, "El ID del mueble");
     }
 
     public string Nombre
     {
         get => _nombre;
-        private set
-        {
-            if (string.IsNullOrWhiteSpace(value))
-                throw new ArgumentException("El nombre del mueble no puede estar vacio",
-                          nameof(value));
-            _nombre = value.Trim();
-        }
+        private set => _nombre = Verificar.SiEsVacio(value, "El nombre del mueble");
     }
 
-    public string Tipo
+    public string? Tipo
     {
         get => _tipo;
         private set
         {
-            if (string.IsNullOrWhiteSpace(value))
-                throw new ArgumentException("El tipo de mueble no puede estar vacio",
-                          nameof(value));
-            _tipo = value.Trim();
+            if (value is not null)
+            {
+                Enum enumTipoDeMueble = Verificar.SiEstaEnEnum<TipoDeMueble>(value, "El tipo de mueble");
+                _tipo = enumTipoDeMueble.ToString();
+            }
+            else
+            {
+                _tipo = null;
+            }
         }
     }
 
-    public string Ubicacion
+    public string? Ubicacion
     {
         get => _ubicacion;
-        private set
-        {
-            if (string.IsNullOrWhiteSpace(value))
-                throw new ArgumentException("La ubicacion del mueble no puede estar vacia",
-                          nameof(value));
-            _ubicacion = value.Trim();
-        }
+        private set => _ubicacion = value is not null
+                       ? Verificar.SiEsVacio(value, "La ubicacion del mueble")
+                       : null;
     }
 
-    public int NumeroGaveteros
+    public double? NumeroGaveteros
     {
         get => _numeroGaveteros;
-        private set
-        {
-            if (value < 0)
-                throw new ArgumentException($"El numero de gaveteros debe ser un numero natural: '{value}'",
-                          nameof(value));
-            _numeroGaveteros = value;
-        }
+        private set => _numeroGaveteros = value.HasValue
+                       ? Verificar.SiEsPositivo(value.Value, "El numero de gaveteros")
+                       : null;
     }
-
-    public decimal Costo
+    public double? Costo
     {
         get => _costo;
-        private set
-        {
-            if (value < 0)
-                throw new ArgumentException($"El costo debe ser un numero positivo: '{value}'",
-                          nameof(value));
-            _costo = value;
-        }
+        private set => _costo = value.HasValue
+                       ? Verificar.SiEsPositivo(value.Value, "El costo del mueble")
+                       : null;
     }
 
-    public int GaveteroId
+    public double? Alto
     {
-        get => _gaveteroId;
-        private set
-        {
-            if (value <= 0)
-                throw new ArgumentException($"El ID del gavetero debe ser un numero natural: '{value}'",
-                          nameof(value));
-            _gaveteroId = value;
-        }
+        get => _alto;
+        private set => _alto = value.HasValue
+                       ? Verificar.SiEsPositivo(value.Value, "El alto del mueble")
+                       : null;
     }
 
-    public Gavetero Gavetero { get; private set; }
+    public double? Ancho
+    {
+        get => _ancho;
+        private set => _ancho = value.HasValue
+                       ? Verificar.SiEsPositivo(value.Value, "El ancho del mueble")
+                       : null;
+    }
+
+    public double? Largo
+    {
+        get => _largo;
+        private set => _largo = value.HasValue
+                       ? Verificar.SiEsPositivo(value.Value, "El largo del mueble")
+                       : null;
+    }
 
     public bool EstaEliminado
     {
@@ -104,38 +93,28 @@ public class Mueble : IDimensiones
         private set => _estaEliminado = value;
     }
 
-    public Mueble(int id, string nombre, string tipo, string ubicacion,
-                  double alto, double ancho, double largo,
-                  int numeroGaveteros, decimal costo, int gaveteroId)
+    public Mueble(string nombre, string? tipo, string? ubicacion,
+                  double? alto, double? ancho, double? largo,
+                  double? numeroGaveteros, double? costo)
     {
-        Id              = id;
         Nombre          = nombre;
         Tipo            = tipo;
         Ubicacion       = ubicacion;
         NumeroGaveteros = numeroGaveteros;
         Costo           = costo;
-        GaveteroId      = gaveteroId;
-        EstaEliminado   = false;
         SetDimensiones(alto, ancho, largo);
     }
 
-    public void SetDimensiones(double alto, double ancho, double largo)
+    public void SetDimensiones(double? alto, double? ancho, double? largo)
     {
-        if (alto <= 0)
-            throw new ArgumentException($"El alto debe ser un numero positivo: '{alto}'",
-                      nameof(alto));
-        if (ancho <= 0)
-            throw new ArgumentException($"El ancho debe ser un numero positivo: '{ancho}'",
-                      nameof(ancho));
-        if (largo <= 0)
-            throw new ArgumentException($"El largo debe ser un numero positivo: '{largo}'",
-                      nameof(largo));
-
-        _alto  = alto;
-        _ancho = ancho;
-        _largo = largo;
+        Alto = alto;
+        Ancho = ancho;
+        Largo = largo;
     }
 
-    public (double alto, double ancho, double largo) GetDimensiones()
-        => (_alto, _ancho, _largo);
+    public (double? alto, double? ancho, double? largo) GetDimensiones() => (_alto, _ancho, _largo);
+
+    public void Eliminar() => EstaEliminado = true;
+
+    public void Recuperar() => EstaEliminado = false;
 }

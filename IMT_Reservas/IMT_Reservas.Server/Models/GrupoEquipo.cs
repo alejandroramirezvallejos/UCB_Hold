@@ -1,99 +1,64 @@
 public class GrupoEquipo
 {
-    private int    _id;
-    private string _nombre;
-    private string _modelo;
-    private Uri    _dataSheetUrl;
-    private int    _cantidad;
-    private string _marca;
-    private int    _categoriaId;
-    private bool   _estaEliminado;
+    private int     _id;
+    private string  _nombre;
+    private string  _modelo;
+    private string? _urlData = null;
+    private string  _urlImagen;
+    private int     _cantidad;
+    private string  _marca;
+    private int     _categoriaId;
+    private bool    _estaEliminado = false;
 
     public int Id
     {
         get => _id;
-        private set
-        {
-            if (value <= 0)
-                throw new ArgumentException($"El ID del grupo de equipo debe ser un numero natural: '{value}'",
-                          nameof(value));
-            _id = value;
-        }
+        private set => _id = Verificar.SiEsNatural(value, "El ID del grupo de equipo");
     }
 
     public string Nombre
     {
         get => _nombre;
-        private set
-        {
-            if (string.IsNullOrWhiteSpace(value))
-                throw new ArgumentException("El nombre del grupo de equipo no puede estar vacio",
-                          nameof(value));
-            _nombre = value.Trim();
-        }
+        private set => _nombre = Verificar.SiEsVacio(value, "El nombre del grupo de equipo");
     }
 
     public string Modelo
     {
         get => _modelo;
-        private set
-        {
-            if (string.IsNullOrWhiteSpace(value))
-                throw new ArgumentException("El modelo del grupo de equipo no puede estar vacio",
-                          nameof(value));
-            _modelo = value.Trim();
-        }
+        private set => _modelo = Verificar.SiEsVacio(value, "El modelo del grupo de equipo");
     }
 
-    public Uri DataSheetUrl
+    public string? UrlData
     {
-        get => _dataSheetUrl;
-        private set
-        {
-            if (value == null)
-                throw new ArgumentException("La URL de la hoja de datos (DataSheetUrl) del grupo de equipo no puede estar vacia",
-                          nameof(value));
-            _dataSheetUrl = value;
-        }
+        get => _urlData;
+        private set => _urlData = value is not null
+                       ? Verificar.SiEsVacio(value, "La URL del grupo de equipo")
+                       : null;
+    }
+
+    public string UrlImagen
+    {
+        get => _urlImagen;
+        private set => _urlImagen = Verificar.SiEsNulo(value, "La URL de la imagen del grupo de equipo");
     }
 
     public int Cantidad
     {
         get => _cantidad;
-        private set
-        {
-            if (value < 0)
-                throw new ArgumentException($"La cantidad de equipos debe ser un numero natural: '{value}'",
-                          nameof(value));
-            _cantidad = value;
-        }
+        private set => _cantidad = Verificar.SiEsNatural(value, "La cantidad de equipos");
     }
 
     public string Marca
     {
         get => _marca;
-        private set
-        {
-            if (string.IsNullOrWhiteSpace(value))
-                throw new ArgumentException("La marca del grupo de equipo no puede estar vacia",
-                          nameof(value));
-            _marca = value.Trim();
-        }
+        private set => _marca = Verificar.SiEsVacio(value, "La marca del grupo de equipo");
     }
 
     public int CategoriaId
     {
         get => _categoriaId;
-        private set
-        {
-            if (value <= 0)
-                throw new ArgumentException($"El ID de categoria debe ser un numero natural: '{value}'",
-                          nameof(value));
-            _categoriaId = value;
-        }
+        private set => _categoriaId = Verificar.SiEsNatural(value, "El ID de la categoria");
     }
-
-    public Categoria Categoria { get; private set; }
 
     public bool EstaEliminado
     {
@@ -101,16 +66,19 @@ public class GrupoEquipo
         private set => _estaEliminado = value;
     }
 
-    public GrupoEquipo(int id, string nombre, string modelo, Uri dataSheetUrl, int cantidad,
-                       string marca, int categoriaId)
+    public GrupoEquipo(string nombre, string modelo, string? urlData, string urlImagen, 
+                       int cantidad, string marca, int categoriaId)
     {
-        Id            = id;
-        Nombre        = nombre;
-        Modelo        = modelo;
-        DataSheetUrl  = dataSheetUrl;
-        Cantidad      = cantidad;
-        Marca         = marca;
-        CategoriaId   = categoriaId;
-        EstaEliminado = false;
+        Nombre      = nombre;
+        Modelo      = modelo;
+        UrlData     = urlData;
+        UrlImagen   = urlImagen;
+        Cantidad    = cantidad;
+        Marca       = marca;
+        CategoriaId = categoriaId;
     }
+
+    public void Eliminar() => EstaEliminado = true;
+
+    public void Recuperar() => EstaEliminado = false;
 }

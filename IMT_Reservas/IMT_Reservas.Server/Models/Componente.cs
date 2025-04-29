@@ -2,115 +2,79 @@ public class Componente
 {
     private int     _id;
     private string  _nombre;
-    private string  _descripcion;
-    private string  _modelo;
-    private Uri     _dataSheetUrl;
-    private string  _tipo;
-    private double _precioReferencia;
+    private string? _descripcion = null;
+    private string? _modelo = null;
+    private string? _url = null;
+    private string? _tipo = null;
+    private double? _precioReferencia = null;
     private int     _equipoId;
-    private Equipo  _equipo;
-    private bool    _estaEliminado;
-
+    private bool    _estaEliminado = false;
+     
     public int Id
     {
         get => _id;
-        private set
-        {
-            if (value <= 0)
-                throw new ArgumentException($"El ID de componente debe ser un numero natural: '{value}'",
-                          nameof(value));
-            _id = value;
-        }
+        private set => _id = Verificar.SiEsNatural(value, "El ID del componente");
     }
 
     public string Nombre
     {
         get => _nombre;
-        private set
-        {
-            if (string.IsNullOrWhiteSpace(value))
-                throw new ArgumentException("El nombre del componente no puede estar vacio",
-                          nameof(value));
-            _nombre = value.Trim();
-        }
+        private set => _nombre = Verificar.SiEsVacio(value, "El nombre del componente");
     }
 
-    public string Descripcion
+    public string? Descripcion
     {
         get => _descripcion;
-        private set
-        {
-            if (string.IsNullOrWhiteSpace(value))
-                throw new ArgumentException("El descripcion del componente no puede estar vacia",
-                          nameof(value));
-            _descripcion = value.Trim();
-        }
+        private set => _descripcion = value is not null
+                       ? Verificar.SiEsVacio(value, "La descripción del componente")
+                       : null;
     }
 
-    public string Modelo
+    public string? Modelo
     {
         get => _modelo;
-        private set
-        {
-            if (string.IsNullOrWhiteSpace(value))
-                throw new ArgumentException("El modelo del componente no puede estar vacio",
-                          nameof(value));
-            _modelo = value.Trim();
-        }
+        private set => _modelo = value is not null
+                       ? Verificar.SiEsVacio(value, "El modelo del componente")
+                       : null;
     }
 
-    public Uri DataSheetUrl
+    public string? Url
     {
-        get => _dataSheetUrl;
-        private set
-        {
-            if (value == null)
-                throw new ArgumentNullException("La URL de la hoja de datos (DataSheetUrl) del componente no puede estar vacio",
-                          nameof(value));
-            _dataSheetUrl = value;
-        }
+        get => _url;
+        private set => _url = value is not null
+                       ? Verificar.SiEsNulo(value, "La URL del componente")
+                       : null;
     }
 
-    public string Tipo
+    public string? Tipo
     {
         get => _tipo;
         private set
         {
-            if (string.IsNullOrWhiteSpace(value))
-                throw new ArgumentException("El tipo de componente no puede estar vacio",
-                          nameof(value));
-            _tipo = value.Trim().ToLowerInvariant();
+            if (value is not null)
+            {
+                Enum enumTipoDeComponente = Verificar.SiEstaEnEnum<TipoDeComponente>(value, "El tipo de componente");
+                _tipo = enumTipoDeComponente.ToString();
+            }
+            else
+            {
+                _tipo = null;
+            }
         }
     }
 
-    public double PrecioReferencia
+    public double? PrecioReferencia
     {
         get => _precioReferencia;
-        private set
-        {
-            if (value < 0)
-                throw new ArgumentException($"El precio de referencia del componente debe ser un numero positivo: '{value}'",
-                          nameof(value));
-            _precioReferencia = value;
-        }
+        private set => _precioReferencia = value.HasValue
+                       ? Verificar.SiEsPositivo(value.Value, "El precio de referencia del componente")
+                       : null;
     }
 
     public int EquipoId
     {
         get => _equipoId;
-        private set
-        {
-            if (value <= 0)
-                throw new ArgumentException($"El ID del equipo debe ser un numero natural: '{value}'",
-                          nameof(value));
-            _equipoId = value;
-        }
-    }
-
-    public Equipo Equipo
-    {
-        get => _equipo;
-        private set => _equipo = value;
+        private set => _equipoId = Verificar.SiEsNatural(value, "El ID del equipo");
     }
 
     public bool EstaEliminado
@@ -119,20 +83,19 @@ public class Componente
         private set => _estaEliminado = value;
     }
 
-    public Componente(int id, string nombre, string descripcion, string modelo,
-                      Uri dataSheetUrl, string tipo, double precioReferencia,
-                      int equipoId)
+    public Componente(string nombre, string? descripcion, string? modelo,
+        string? url, string? tipo, double? precioReferencia, int equipoId)
     {
-        Id               = id;
         Nombre           = nombre;
         Descripcion      = descripcion;
         Modelo           = modelo;
-        DataSheetUrl     = dataSheetUrl;
+        Url              = url;
         Tipo             = tipo;
         PrecioReferencia = precioReferencia;
         EquipoId         = equipoId;
-        EstaEliminado    = false;
     }
 
     public void Eliminar() => EstaEliminado = true;
+
+    public void Recuperar() => EstaEliminado = false;
 }

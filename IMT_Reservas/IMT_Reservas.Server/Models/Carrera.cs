@@ -1,28 +1,13 @@
-using System.ComponentModel;
-
-public enum NombreCarrera
-{
-    [Description("Ingenieria Mecatronica")]
-    IngenieriaMecatronica,
-    [Description("Ingenieria de Software")]
-    IngenieriaDeSoftware
-}
 public class Carrera
 {
     private int    _id;
     private string _nombre;
-    private bool   _estaEliminado;
+    private bool   _estaEliminado = false;
 
     public int Id
     {
         get => _id;
-        private set
-        {
-            if (value < 0)
-                throw new ArgumentException($"El ID de carrera debe ser un numero natural: '{value}'",
-                          nameof(value));
-            _id = value;
-        }
+        private set => _id = Verificar.SiEsNatural(value, "El ID de la carrera");
     }
 
     public string Nombre
@@ -30,24 +15,8 @@ public class Carrera
         get => _nombre;
         private set
         {
-            if (string.IsNullOrWhiteSpace(value))
-                throw new ArgumentException("El nombre de carrera no puede estar vacio",
-                          nameof(value));
-
-            var limpio = value.Trim();
-            var nombres = Enum.GetNames(typeof(NombreCarrera));
-
-            foreach (var nombreEnum in nombres)
-            {
-                if (nombreEnum.Equals(limpio, StringComparison.OrdinalIgnoreCase))
-                {
-                    _nombre = limpio;
-                    return;
-                }
-            }
-
-            throw new ArgumentException($"El nombre de carrera es invalido: '{value}'",
-                      nameof(value));
+            Enum enumVal = Verificar.SiEstaEnEnum<NombreDeCarrera>(value, "El nombre de la carrera");
+            _nombre = enumVal.ToString();
         }
     }
 
@@ -57,12 +26,12 @@ public class Carrera
         private set => _estaEliminado = value;
     }
 
-    public Carrera(int id, string nombre)
+    public Carrera(string nombre)
     {
-        Id            = id;
-        Nombre        = nombre;
-        EstaEliminado = false;
+        Nombre = nombre;
     }
 
     public void Eliminar() => EstaEliminado = true;
+
+    public void Recuperar() => EstaEliminado = false;
 }

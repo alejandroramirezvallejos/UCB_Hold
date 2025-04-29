@@ -48,26 +48,36 @@ public class UsuarioRepository : IUsuarioRepository
         if (string.IsNullOrWhiteSpace(carnet))
             throw new ArgumentException("El carnet no puede ser nulo o vacío.", nameof(carnet));
 
-        var parametros = new Dictionary<string, object> { ["carnet_input"] = carnet };
-        var tabla      = _db.EjecutarFuncionConRetorno(
-            "SELECT * FROM obtener_usuario_por_carnet(@carnet_input)",
-            parametros
-        ).GetAwaiter().GetResult();
+        var parametros = new Dictionary<string, object>
+        {
+            ["carnet_input"] = carnet
+        };
+        var tabla = _db
+            .EjecutarFuncionConRetorno(
+                "SELECT * FROM obtener_usuario_por_carnet(@carnet_input)",
+                parametros
+            )
+            .GetAwaiter()
+            .GetResult();
 
         if (tabla.Rows.Count == 0)
             return null;
 
-        var fila   = tabla.Rows[0];
+        var fila = tabla.Rows[0];
+
+        int carreraId = 0;
+        if (tabla.Columns.Contains("carrera_id") && fila["carrera_id"] != DBNull.Value)
+            carreraId = Convert.ToInt32(fila["carrera_id"]);
+
         var rolStr = fila["rol"]?.ToString() ?? string.Empty;
-        var rol    = Enum.TryParse<TipoUsuario>(rolStr, true, out var r) ? r : TipoUsuario.Estudiante;
 
         return new Usuario(
             carnet:             fila["carnet"]?.ToString()              ?? string.Empty,
             nombre:             fila["nombre"]?.ToString()              ?? string.Empty,
             apellidoPaterno:    fila["apellido_paterno"]?.ToString()    ?? string.Empty,
             apellidoMaterno:    fila["apellido_materno"]?.ToString()    ?? string.Empty,
-            rol:                rol,
-            nombreCarrera:      fila["nombre_carrera"]?.ToString()      ?? string.Empty,
+            rol:                rolStr,
+            carreraId:          carreraId,
             contrasena:         fila["contrasena"]?.ToString()          ?? string.Empty,
             email:              fila["email"]?.ToString()               ?? string.Empty,
             telefono:           fila["telefono"]?.ToString()            ?? string.Empty,
@@ -83,8 +93,8 @@ public class UsuarioRepository : IUsuarioRepository
         ["nombre"]              = usuario.Nombre,
         ["apellido_paterno"]    = usuario.ApellidoPaterno,
         ["apellido_materno"]    = usuario.ApellidoMaterno,
-        ["tipo_usuario"]        = usuario.Rol.ToString(),
-        ["nombre_carrera"]      = usuario.NombreCarrera,
+        ["tipo_usuario"]        = usuario.Rol,
+        ["carrera_id"]          = usuario.CarreraId,
         ["password"]            = usuario.Contrasena,
         ["email"]               = usuario.Email,
         ["telefono"]            = usuario.Telefono,

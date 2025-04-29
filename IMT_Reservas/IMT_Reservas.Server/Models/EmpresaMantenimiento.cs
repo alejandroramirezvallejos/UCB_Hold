@@ -1,98 +1,66 @@
+// WARNING: Esta clase se proporciona unicamente con fines legales
+// El autor no asume responsabilidad por su uso en actividades ilicitas
 public class EmpresaMantenimiento
 {
-    private int    _id;
-    private string _nombreEmpresa;
-    private string _direccion;
-    private string _nombreResponsable;
-    private string _apellidoResponsable;
-    private string _telefono;
-    private string _nit;
-    private bool   _estaEliminado;
+    private int     _id;
+    private string  _nombreEmpresa;
+    private string? _direccion = null;
+    private string? _nombreResponsable = null;
+    private string? _apellidoResponsable = null;
+    private string? _telefono = null;
+    private string? _nit = null;
+    private bool    _estaEliminado = false;
 
     public int Id
     {
         get => _id;
-        private set
-        {
-            if (value <= 0)
-                throw new ArgumentException($"El ID de la empresa debe ser un numero natural: '{value}'",
-                          nameof(value));
-            _id = value;
-        }
+        private set => _id = Verificar.SiEsNatural(value, "El ID de la empresa");
     }
 
     public string NombreEmpresa
     {
         get => _nombreEmpresa;
-        private set
-        {
-            if (string.IsNullOrWhiteSpace(value))
-                throw new ArgumentException("El nombre de la empresa no puede estar vacio",
-                          nameof(value));
-            _nombreEmpresa = value.Trim();
-        }
+        private set => _nombreEmpresa = Verificar.SiEsVacio(value, "El nombre de la empresa");
     }
 
-    public string Direccion
+    public string? Direccion
     {
         get => _direccion;
-        private set
-        {
-            if (string.IsNullOrWhiteSpace(value))
-                throw new ArgumentException("La direccion de la empresa no puede estar vacia",
-                          nameof(value));
-            _direccion = value.Trim();
-        }
+        private set => _direccion = value is not null
+                       ? Verificar.SiEsVacio(value, "La direccion de la empresa")
+                       : null;
     }
 
-    public string NombreResponsable
+    public string? NombreResponsable
     {
         get => _nombreResponsable;
-        private set
-        {
-            if (string.IsNullOrWhiteSpace(value))
-                throw new ArgumentException("El nombre del responsable no puede estar vacio",
-                          nameof(value));
-            _nombreResponsable = value.Trim();
-        }
+        private set => _nombreResponsable = value is not null
+                       ? Verificar.SiEsVacio(value, "El nombre del responsable")
+                       : null;
     }
 
-    public string ApellidoResponsable
+    public string? ApellidoResponsable
     {
         get => _apellidoResponsable;
-        private set
-        {
-            if (string.IsNullOrWhiteSpace(value))
-                throw new ArgumentException("El apellido del responsable no puede estar vacio",
-                          nameof(value));
-            _apellidoResponsable = value.Trim();
-        }
+        private set => _apellidoResponsable = value is not null
+                       ? Verificar.SiEsVacio(value, "El apellido del responsable")
+                       : null;
     }
 
-    public string Telefono
+    public string? Telefono
     {
         get => _telefono;
-        private set
-        {
-            if (string.IsNullOrWhiteSpace(value))
-                throw new ArgumentException("El telefono del responsable no puede estar vacio",
-                          nameof(value));
-
-            _telefono = value.Trim();
-        }
+        private set => _telefono = value is not null
+                      ? Verificar.SiEsVacio(value, "El telefono del responsable")
+                      : null;
     }
 
-    public string Nit
+    public string? Nit
     {
         get => _nit;
-        private set
-        {
-            if (string.IsNullOrWhiteSpace(value))
-                throw new ArgumentException("El NIT del responsable no puede estar vacio",
-                          nameof(value));
-
-            _nit = value.Trim();
-        }
+        private set => _nit = value is not null
+                       ? Verificar.SiEsVacio(value, "El NIT de la empresa")
+                       : null;
     }
 
     public bool EstaEliminado
@@ -101,18 +69,18 @@ public class EmpresaMantenimiento
         private set => _estaEliminado = value;
     }
 
-    public EmpresaMantenimiento(int id, string nombreEmpresa, string direccion, string nombreResponsable,
-                                string apellidoResponsable, string telefono, string nit)
+    public EmpresaMantenimiento(string nombreEmpresa, string? direccion, string? nombreResponsable,
+                                string? apellidoResponsable, string? telefono, string? nit)
     {
-        Id                  = id;
         NombreEmpresa       = nombreEmpresa;
         Direccion           = direccion;
         NombreResponsable   = nombreResponsable;
         ApellidoResponsable = apellidoResponsable;
         Telefono            = telefono;
         Nit                 = nit;
-        EstaEliminado       = false;
     }
 
     public void Eliminar() => EstaEliminado = true;
+
+    public void Recuperar() => EstaEliminado = false;
 }

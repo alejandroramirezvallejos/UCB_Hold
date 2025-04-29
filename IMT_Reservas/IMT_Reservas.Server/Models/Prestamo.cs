@@ -1,132 +1,75 @@
-using System.ComponentModel;
-
-public enum PrestamoEstado
-{
-    [Description("Pendiente")]
-    Pendiente,
-    [Description("Rechazado")]
-    Rechazado,
-    [Description("Aprobado")]
-    Aprobado,
-    [Description("Activo")]
-    Activo,
-    [Description("Finalizado")]
-    Finalizado,
-    [Description("Cancelado")]
-    Cancelado
-}
-
 public class Prestamo
 {
-    private int            _id;
-    private DateTimeOffset _fechaSolicitud;
-    private DateTimeOffset _fechaPrestamo;
-    private DateTimeOffset _fechaDevolucion;
-    private string         _observacion;
-    private PrestamoEstado _estadoPrestamo;
-    private string         _carnetUsuario;
-    private int            _equipoId;
-    private bool           _estaEliminado;
+    private int      _id;
+    private DateTime _fechaSolicitud;
+    private DateTime _fechaPrestamo;
+    private DateTime _fechaDevolucion;
+    private DateTime _fechaDevolucionEsperada;
+    private string?  _observacion = null;
+    private string   _estadoPrestamo;
+    private string   _carnetUsuario;
+    private int      _equipoId;
+    private bool     _estaEliminado = false;
 
     public int Id
     {
         get => _id;
-        private set
-        {
-            if (value <= 0)
-                throw new ArgumentException($"El ID del prestamo debe ser un numero natural: '{value}'", 
-                          nameof(value));
-            _id = value;
-        }
+        private set => _id = Verificar.SiEsNatural(value, "El ID del prestamo");
     }
 
-    public DateTimeOffset FechaSolicitud
+    public DateTime FechaSolicitud
     {
         get => _fechaSolicitud;
-        private set
-        {
-            var ahora = DateTimeOffset.Now;
-            if (value > ahora)
-                throw new ArgumentException($"La fecha de solicitud del prestamo no puede ser futura: '{value}'",
-                          nameof(value));
-            _fechaSolicitud = value;
-        }
+        private set => _fechaSolicitud = Verificar.SiNoEsFutura(value, "La fecha de solicitud del prestamo");
     }
 
-    public DateTimeOffset FechaPrestamo
+    public DateTime FechaPrestamo
     {
         get => _fechaPrestamo;
-        private set
-        {
-            if (value < _fechaSolicitud)
-                throw new ArgumentException($"La fecha de prestamo no puede ser anterior a la solicitud: '{value}'",
-                          nameof(value));
-            _fechaPrestamo = value;
-        }
+        private set => _fechaPrestamo = Verificar.SiNoEsAnteriorA(value, FechaSolicitud, "La fecha del prestamo", "la fecha de solicitud del prestamo");
     }
 
-    public DateTimeOffset FechaDevolucion
+    public DateTime FechaDevolucion
     {
         get => _fechaDevolucion;
-        private set
-        {
-            if (value < _fechaPrestamo)
-                throw new ArgumentException($"La fecha de devolucion no puede ser anterior al prestamo: '{value}'",
-                          nameof(value));
-            _fechaDevolucion = value;
-        }
+        private set => _fechaDevolucion = Verificar.SiNoEsAnteriorA(value, FechaPrestamo, "La fecha de devolucion del prestamo", "la fecha del prestamo");
     }
 
-    public string Observacion
+    public DateTime FechaDevolucionEsperada
+    {
+        get => _fechaDevolucionEsperada;
+        private set => _fechaDevolucionEsperada = Verificar.SiNoEsAnteriorA(value, FechaPrestamo, "La fecha de devolucion esperada", "la fecha del prestamo");
+    }
+
+    public string? Observacion
     {
         get => _observacion;
-        private set
-        {
-            if (string.IsNullOrWhiteSpace(value))
-                throw new ArgumentException("La observacion no puede estar vacia",
-                          nameof(value));
-            _observacion = value.Trim();
-        }
+        private set => _observacion = value is not null
+                       ? Verificar.SiEsVacio(value, "La observacion del prestamo")
+                       : null;
     }
 
-    public PrestamoEstado EstadoPrestamo
+    public string EstadoPrestamo
     {
         get => _estadoPrestamo;
         private set
         {
-            if (!Enum.IsDefined(typeof(PrestamoEstado), value))
-                throw new ArgumentException($"El estado de prestamo es invalido: '{value}'",
-                          nameof(value));
-            _estadoPrestamo = value;
+            Enum enumEstadoPrestamo = Verificar.SiEstaEnEnum<EstadoDelPrestamo>(value, "El estado del prestamo");
+            _estadoPrestamo = enumEstadoPrestamo.ToString();
         }
     }
 
     public string CarnetUsuario
     {
         get => _carnetUsuario;
-        private set
-        {
-            if (string.IsNullOrWhiteSpace(value))
-                throw new ArgumentException("El carnet de usuario no puede estar vacio",
-                          nameof(value));
-            _carnetUsuario = value.Trim();
-        }
+        private set => _carnetUsuario = Verificar.SiEsVacio(value, "El carnet de usuario");
     }
 
     public int EquipoId
     {
         get => _equipoId;
-        private set
-        {
-            if (value <= 0)
-                throw new ArgumentException($"El ID del equipo debe ser un numero natural: '{value}'",
-                          nameof(value));
-            _equipoId = value;
-        }
+        private set => _equipoId = Verificar.SiEsNatural(value, "El ID del equipo");
     }
-
-    public Usuario Usuario { get; private set; }
-    public Equipo Equipo { get; private set; }
 
     public bool EstaEliminado
     {
@@ -134,17 +77,22 @@ public class Prestamo
         private set => _estaEliminado = value;
     }
 
-    public Prestamo(DateTimeOffset fechaSolicitud, DateTimeOffset fechaPrestamo,
-                    DateTimeOffset fechaDevolucion, string observacion, PrestamoEstado estado,
+    public Prestamo(DateTime fechaSolicitud, DateTime fechaPrestamo,
+                    DateTime fechaDevolucion, DateTime fechaDevolucionEsperada, 
+                    string? observacion, string estado,
                     string carnetUsuario, int equipoId)
     {
-        FechaSolicitud  = fechaSolicitud;
-        FechaPrestamo   = fechaPrestamo;
-        FechaDevolucion = fechaDevolucion;
-        Observacion     = observacion;
-        EstadoPrestamo  = estado;
-        CarnetUsuario   = carnetUsuario;
-        EquipoId        = equipoId;
-        EstaEliminado   = false;
+        FechaSolicitud          = fechaSolicitud;
+        FechaPrestamo           = fechaPrestamo;
+        FechaDevolucion         = fechaDevolucion;
+        FechaDevolucionEsperada = fechaDevolucionEsperada;
+        Observacion             = observacion;
+        EstadoPrestamo          = estado;
+        CarnetUsuario           = carnetUsuario;
+        EquipoId                = equipoId;
     }
+
+    public void Eliminar() => EstaEliminado = true;
+
+    public void Recuperar() => EstaEliminado = false;
 }

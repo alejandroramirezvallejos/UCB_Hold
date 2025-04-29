@@ -1,129 +1,80 @@
-using System.ComponentModel;
-
-public enum AccesorioTipo
-{
-    [Description("Estandar")]
-    Estandar
-}
-
 public class Accesorio
 {
-    private int    _id;
-    private string _nombre;
-    private string _descripcion;
-    private string _modelo;
-    private Uri    _dataSheetUrl;
-    private double _precio;
-    private int    _equipoId;
-    private string _tipo;
-    private bool   _estaEliminado;
+    private int     _id;
+    private string  _nombre;
+    private string? _descripcion = null;
+    private string? _modelo = null;
+    private string? _url = null;
+    private double? _precio = null;
+    private int     _equipoId;
+    private string? _tipo = null;
+    private bool    _estaEliminado = false;
 
     public int Id
     {
         get => _id;
-        private set
-        {
-            if (value <= 0)
-                throw new ArgumentException($"El ID del accesorio debe ser un numero natural: '{value}'", 
-                          nameof(value));
-            _id = value;
-        }
+        private set => _id = Verificar.SiEsNatural(value, "El ID del accesorio");
     }
+
     public string Nombre
     {
         get => _nombre;
-        private set
-        {
-            if (string.IsNullOrWhiteSpace(value))
-                throw new ArgumentException("El nombre del accesorio no puede estar vacio",
-                          nameof(value));
-            _nombre = value.Trim();
-        }
+        private set => _nombre = Verificar.SiEsVacio(value, "El nombre del accesorio");
     }
 
-    public string Descripcion
+    public string? Descripcion
     {
         get => _descripcion;
-        private set
-        {
-            if (string.IsNullOrWhiteSpace(value))
-                throw new ArgumentException("La descripcion del accesorio no puede estar vacia", 
-                          nameof(value));
-            _descripcion = value.Trim();
-        }
+        private set => _descripcion = value is not null
+                       ? Verificar.SiEsVacio(value, "La descripcion del accesorio")
+                       : null;
     }
 
-    public string Modelo
+    public string? Modelo
     {
         get => _modelo;
-        private set
-        {
-            if (string.IsNullOrWhiteSpace(value))
-                throw new ArgumentException("El modelo del accesorio no puede estar vacio",
-                          nameof(value));
-            _modelo = value.Trim();
-        }
+        private set => _modelo = value is not null
+                       ? Verificar.SiEsVacio(value, "El modelo del accesorio")
+                       : null;
     }
 
-    public Uri DataSheetUrl
+    public string? Url
     {
-        get => _dataSheetUrl;
-        private set
-        {
-            if (value == null)
-                throw new ArgumentNullException("La URL de la hoja de datos (DataSheetUrl) del accesorio no puede estar vacia",
-                          nameof(value));
-            _dataSheetUrl = value;
-        }
+        get => _url;
+        private set => _url = value is not null
+                      ? Verificar.SiEsVacio(value, "La URL del accesorio")
+                      : null;
     }
 
-    public double Precio
+    public double? Precio
     {
         get => _precio;
-        private set
-        {
-            if (value < 0)
-                throw new ArgumentException($"El precio del accesorio debe ser un numero positivo: '{value}'",
-                          nameof(value));
-            _precio = value;
-        }
+        private set => _precio = value.HasValue
+                       ? Verificar.SiEsPositivo(value.Value, "El precio del accesorio")
+                       : null;
     }
+
 
     public int EquipoId
     {
         get => _equipoId;
-        private set
-        {
-            if (value <= 0)
-                throw new ArgumentException($"El ID del equipo debe ser un numero natural: '{value}'",
-                          nameof(value));
-            _equipoId = value;
-        }
+        private set => _equipoId = Verificar.SiEsNatural(value, "El ID del equipo");
     }
 
-    public Equipo Equipo { get; private set; }
-
-    public string Tipo
+    public string? Tipo
     {
         get => _tipo;
         private set
         {
-            if (string.IsNullOrWhiteSpace(value))
-                throw new ArgumentException("El tipo de accesorio de puede estar vacio",
-                          nameof(value));
-
-            var limpio = value.Trim().ToLowerInvariant();
-            var nombres = Enum.GetNames(typeof(AccesorioTipo));
-            foreach (var nombre in nombres)
+            if (value is not null)
             {
-                if (nombre.Equals(limpio, StringComparison.OrdinalIgnoreCase))
-                {
-                    _tipo = limpio;
-                    return;
-                }
+                Enum enumTipoDeAccesorio = Verificar.SiEstaEnEnum<TipoDeAccesorio>(value, "El tipo de accesorio");
+                _tipo = enumTipoDeAccesorio.ToString();
             }
-            throw new ArgumentException($"El tipo de accesorio ingresado es invalido: '{value}'",
-                      nameof(value));
+            else
+            {
+                _tipo = null;
+            }
         }
     }
 
@@ -133,19 +84,22 @@ public class Accesorio
         private set => _estaEliminado = value;
     }
 
-    public Accesorio(int id, string nombre, string descripcion, string modelo,
-                     Uri dataSheetUrl, double precio, int equipoId, string tipo)
+    public Accesorio(string nombre, string? descripcion, string? modelo,
+                     string? url, double? precio, int equipoId, string? tipo)
     {
-        Id            = id;
-        Nombre        = nombre;
-        Descripcion   = descripcion;
-        Modelo        = modelo;
-        DataSheetUrl  = dataSheetUrl;
-        Precio        = precio;
-        EquipoId      = equipoId;
-        Tipo          = tipo;
-        EstaEliminado = false;
+        Nombre      = nombre;
+        Descripcion = descripcion;
+        Modelo      = modelo;
+        Url         = url;
+        Precio      = precio;
+        EquipoId    = equipoId;
+        Tipo        = tipo;
     }
 
     public void Eliminar() => EstaEliminado = true;
+
+    public void Recuperar() => EstaEliminado = false;
 }
+
+
+

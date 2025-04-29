@@ -1,98 +1,51 @@
-using System.ComponentModel;
-
-public enum EstadoDisponibilidad
-{
-    [Description("Disponible")]
-    Disponible,
-    [Description("Reservado")]
-    Reservado,
-    [Description("Revision")]
-    Revision,
-    [Description("Mantenimiento")]
-    Mantenimiento
-}
-
-public enum EstadoEquipo
-{
-    [Description("Inoperativo")]
-    Inoperativo,
-    [Description("Parcialmente_Operativo")]
-    Parcialmente_Operativo,
-    [Description("Operativo")]
-    Operativo
-}
-
 public class Equipo
 {
     private int     _id;
     private int     _grupoEquipoId;
     private string  _codigoImt;
-    private string  _codigoUcb;
-    private string  _descripcion;
+    private string? _codigoUcb = null;
+    private string? _descripcion = null;
     private string  _estadoEquipo;
-    private string  _numeroSerial;
-    private string  _ubicacion;
-    private double? _costoReferencia;
-    private int?    _tiempoMaximoPrestamo;
-    private string  _procedencia;
-    private int     _gaveteroId;
+    private string? _numeroSerial = null;
+    private string? _ubicacion = null;
+    private double? _costoReferencia = null;
+    private int?    _tiempoMaximoPrestamo = null;
+    private string? _procedencia = null;
+    private int?    _gaveteroId = null;
     private string  _estadoDisponibilidad;
-    private bool    _estaEliminado;
-     
+    private bool    _estaEliminado = false;
+
     public int Id
     {
         get => _id;
-        private set => _id = value;
+        private set => _id = Verificar.SiEsNatural(value, "El ID del equipo");
     }
 
     public int GrupoEquipoId
     {
         get => _grupoEquipoId;
-        private set
-        {
-            if (value <= 0)
-                throw new ArgumentException($"El ID del grupo de equipo debe ser un numero natural : '{value}'",
-                          nameof(value));
-            _grupoEquipoId = value;
-        }
+        private set => _grupoEquipoId = Verificar.SiEsNatural(value, "El ID del grupo de equipo");
     }
-
-    public GrupoEquipo GrupoEquipo { get; private set; }
 
     public string CodigoImt
     {
         get => _codigoImt;
-        private set
-        {
-            if (string.IsNullOrWhiteSpace(value))
-                throw new ArgumentException("El codigo IMT no puede estar vacio",
-                          nameof(value));
-            _codigoImt = value.Trim();
-        }
+        private set => _codigoImt = Verificar.SiEsVacio(value, "El codigo IMT");
     }
 
-    public string CodigoUcb
+    public string? CodigoUcb
     {
         get => _codigoUcb;
-        private set
-        {
-            if (string.IsNullOrWhiteSpace(value))
-                throw new ArgumentException("El codigo UCB no puede estar vacio",
-                          nameof(value));
-            _codigoUcb = value.Trim();
-        }
+        private set => _codigoUcb = value is not null
+                       ? Verificar.SiEsVacio(value, "El codigo UCB")
+                       : null;
     }
-
-    public string Descripcion
+    public string? Descripcion
     {
         get => _descripcion;
-        private set
-        {
-            if (string.IsNullOrWhiteSpace(value))
-                throw new ArgumentException("La descripcion del equipo no puede estar vacia",
-                          nameof(value));
-            _descripcion = value.Trim();
-        }
+        private set => _descripcion = value is not null
+                       ? Verificar.SiEsVacio(value, "La descripcion del equipo")
+                       : null;
     }
 
     public string EstadoEquipo
@@ -100,105 +53,57 @@ public class Equipo
         get => _estadoEquipo;
         private set
         {
-            if (string.IsNullOrWhiteSpace(value))
-                throw new ArgumentException("El estado del equipo no puede estar vacio",
-                          nameof(value));
-
-            var limpio = value.Trim();
-            var nombres = Enum.GetNames(typeof(EstadoEquipo));
-
-            foreach (var nombre in nombres)
-            {
-                if (nombre.Equals(limpio, StringComparison.OrdinalIgnoreCase))
-                {
-                    _estadoEquipo = limpio;
-                    return;
-                }
-            }
-
-            throw new ArgumentException($"El estado de equipo es invalido: '{value}'",
-                      nameof(value));
+            Enum enumEstadoDelEquipo = Verificar.SiEstaEnEnum<EstadoDelEquipo>(value, "El estado del equipo");
+            _estadoEquipo = enumEstadoDelEquipo.ToString();
         }
     }
 
-    public string NumeroSerial
+    public string? NumeroSerial
     {
         get => _numeroSerial;
-        private set
-        {
-            if (string.IsNullOrWhiteSpace(value))
-                throw new ArgumentException("El numero de serie del equipo no puede estar vacio",
-                          nameof(value));
-            _numeroSerial = value.Trim();
-        }
+        private set => _numeroSerial = value is not null
+                       ? Verificar.SiEsVacio(value, "El numero serial del equipo")
+                       : null;
     }
 
-    public string Ubicacion
+    public string? Ubicacion
     {
         get => _ubicacion;
-        private set
-        {
-            if (string.IsNullOrWhiteSpace(value))
-                throw new ArgumentException("La ubicacion del equipo no puede estar vacia",
-                          nameof(value));
-            _ubicacion = value.Trim();
-        }
+        private set => _ubicacion = value is not null
+                       ? Verificar.SiEsVacio(value, "La ubicacion del equipo")
+                       : null;
     }
 
     public double? CostoReferencia
     {
         get => _costoReferencia;
-        private set
-        {
-            if (value < 0)
-                throw new ArgumentException($"El costo de referencia del equipo debe ser un numero positivo: '{value}'",
-                          nameof(value));
-            _costoReferencia = value;
-        }
+        private set => _costoReferencia = value.HasValue
+                       ? Verificar.SiEsPositivo(value.Value, "El costo de referencia del equipo")
+                       : null;
     }
 
     public int? TiempoMaximoPrestamo
     {
         get => _tiempoMaximoPrestamo;
-        private set
-        {
-            if (value < 0)
-                throw new ArgumentException($"El tiempo maximo de prestamo del equipo debe ser un numero natural: '{value}'", 
-                          nameof(value));
-            _tiempoMaximoPrestamo = value;
-        }
+        private set => _tiempoMaximoPrestamo = value.HasValue
+                       ? Verificar.SiEsNatural(value.Value, "El tiempo maximo de prestamo del equipo")
+                       : null;
     }
 
-    public string Procedencia
+    public string? Procedencia
     {
         get => _procedencia;
-        private set
-        {
-            if (string.IsNullOrWhiteSpace(value))
-                throw new ArgumentException("La procedencia del equipo no puede estar vacia",
-                          nameof(value));
-            _procedencia = value.Trim();
-        }
+        private set => _procedencia = value is not null
+                       ? Verificar.SiEsVacio(value, "La procedencia del equipo")
+                       : null;
     }
 
-    public int GaveteroId
+    public int? GaveteroId
     {
         get => _gaveteroId;
-        private set
-        {
-            if (value <= 0)
-                throw new ArgumentException($"El ID del gavetero debe ser un numero natural: '{value}'",
-                          nameof(value));
-            _gaveteroId = value;
-        }
-    }
-
-    public Gavetero Gavetero { get; private set; }
-
-    public bool EstaEliminado
-    {
-        get => _estaEliminado;
-        private set => _estaEliminado = value;
+        private set => _gaveteroId = value.HasValue
+                       ? Verificar.SiEsNatural(value.Value, "El ID del gavetero")
+                       : null;
     }
 
     public string EstadoDisponibilidad
@@ -206,30 +111,20 @@ public class Equipo
         get => _estadoDisponibilidad;
         private set
         {
-            if (string.IsNullOrWhiteSpace(value))
-                throw new ArgumentException("El estado de disponibilidad del equipo no puede estar vacio",
-                          nameof(value));
-
-            var limpio = value.Trim();
-            var nombres = Enum.GetNames(typeof(EstadoDisponibilidad));
-
-            foreach (var nombre in nombres)
-            {
-                if (nombre.Equals(limpio, StringComparison.OrdinalIgnoreCase))
-                {
-                    _estadoDisponibilidad = limpio;
-                    return;
-                }
-            }
-
-            throw new ArgumentException($"El estado de disponibilidad del equipo es invalido: '{value}'",
-                      nameof(value));
+            Enum enumDisponibilidad = Verificar.SiEstaEnEnum<Disponibilidad>(value, "El estado de disponibilidad del equipo");
+            _estadoDisponibilidad = enumDisponibilidad.ToString();
         }
     }
 
-    public Equipo(int grupoEquipoId, string codigoImt, string codigoUcb, string descripcion, 
-                  string estadoEquipo, string numeroSerial, string ubicacion, 
-                  double? costoReferencia, int? tiempoMaximoPrestamo, string procedencia, 
+    public bool EstaEliminado
+    {
+        get => _estaEliminado;
+        private set => _estaEliminado = value;
+    }
+
+    public Equipo(int grupoEquipoId, string codigoImt, string? codigoUcb, string? descripcion, 
+                  string estadoEquipo, string? numeroSerial, string? ubicacion, 
+                  double? costoReferencia, int? tiempoMaximoPrestamo, string? procedencia, 
                   int gaveteroId, string estadoDisponibilidad)
     {
         GrupoEquipoId        = grupoEquipoId;
@@ -244,6 +139,9 @@ public class Equipo
         Procedencia          = procedencia;
         GaveteroId           = gaveteroId;
         EstadoDisponibilidad = estadoDisponibilidad;
-        EstaEliminado        = false;
     }
+
+    public void Eliminar() => EstaEliminado = true;
+
+    public void Recuperar() => EstaEliminado = false;
 }

@@ -24,20 +24,21 @@ public class UsuarioService : IUsuarioService
 
         return new UsuarioReadDto
         {
-            CarnetIdentidad    = usuario.Carnet,
+            Carnet             = usuario.Carnet,
             Nombre             = usuario.Nombre,
             ApellidoPaterno    = usuario.ApellidoPaterno,
             ApellidoMaterno    = usuario.ApellidoMaterno,
-            Rol                = usuario.Rol.ToString(),
-            NombreCarrera      = usuario.NombreCarrera,
+            Rol                = usuario.Rol,
+            CarreraId          = usuario.CarreraId,
             Email              = usuario.Email,
             Telefono           = usuario.Telefono,
             NombreReferencia   = usuario.NombreReferencia,
             TelefonoReferencia = usuario.TelefonoReferencia,
-            EmailReferencia    = usuario.EmailReferencia
+            EmailReferencia    = usuario.EmailReferencia,
+            EstaEliminado      = usuario.EstaEliminado
         };
-    }
 
+    }
 
     public void CrearUsuario(Usuario usuario)
     {

@@ -23,7 +23,7 @@ public class UsuarioController : ControllerBase
 
         var usuarioDto = _usuarioService.ObtenerUsuarioPorCarnet(carnet);
         if (usuarioDto is null)
-            return NotFound(new { Message = "Usuario no encontrado" });
+            return NotFound(new { Message = "Usuario no encontrado." });
 
         return Ok(usuarioDto);
     }
@@ -44,21 +44,17 @@ public class UsuarioController : ControllerBase
         if (!ModelState.IsValid)
             return BadRequest(ModelState);
 
-        if (!Enum.TryParse<TipoUsuario>(dto.TipoUsuario, true, out var rol))
-            return BadRequest($"Tipo de usuario inválido: '{dto.TipoUsuario}'");
-
-        var nombreCarrera = dto.Carrera?.Trim() ?? string.Empty;
         Usuario usuario;
         try
         {
             usuario = new Usuario(
-                carnet:             dto.CarnetIdentidad,
+                carnet:             dto.Carnet,
                 nombre:             dto.Nombre,
                 apellidoPaterno:    dto.ApellidoPaterno,
                 apellidoMaterno:    dto.ApellidoMaterno,
-                rol:                rol,
-                nombreCarrera:      nombreCarrera,
-                contrasena:         dto.Password,
+                rol:                dto.Rol,
+                carreraId:          dto.CarreraId,
+                contrasena:         dto.Contrasena,
                 email:              dto.Email,
                 telefono:           dto.Telefono,
                 nombreReferencia:   dto.NombreReferencia,
@@ -73,25 +69,26 @@ public class UsuarioController : ControllerBase
 
         _usuarioService.CrearUsuario(usuario);
 
-        var usuarioDto = new UsuarioReadDto
+        var usuarioReadDto = new UsuarioReadDto
         {
-            CarnetIdentidad    = usuario.Carnet,
+            Carnet             = usuario.Carnet,
             Nombre             = usuario.Nombre,
             ApellidoPaterno    = usuario.ApellidoPaterno,
             ApellidoMaterno    = usuario.ApellidoMaterno,
-            Rol                = usuario.Rol.ToString(),
-            NombreCarrera      = usuario.NombreCarrera,
+            Rol                = usuario.Rol,
+            CarreraId          = usuario.CarreraId,
             Email              = usuario.Email,
             Telefono           = usuario.Telefono,
             NombreReferencia   = usuario.NombreReferencia,
             TelefonoReferencia = usuario.TelefonoReferencia,
-            EmailReferencia    = usuario.EmailReferencia
+            EmailReferencia    = usuario.EmailReferencia,
+            EstaEliminado      = usuario.EstaEliminado
         };
 
         return CreatedAtAction(
             nameof(ObtenerPorCarnet),
             new { carnet = usuario.Carnet },
-            usuarioDto
+            usuarioReadDto
         );
     }
 }
