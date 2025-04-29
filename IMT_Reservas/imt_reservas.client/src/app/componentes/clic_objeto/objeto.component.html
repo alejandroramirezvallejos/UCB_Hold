@@ -2,9 +2,9 @@
 <div class="contenedor-objeto">
   <div class="seccion-imagen">
     <div class="contenedor-imagen">
-      @if (objeto.imagenUrl) {
-      <img [src]="objeto.imagenUrl"
-           alt="{{ objeto.nombre }}"
+      @if (id) {
+      <img [src]="id"
+           alt="{{ id }}"
            class="imagen-producto">
       } @else {
       <div class="imagen-no-encontrada">
@@ -16,7 +16,9 @@
   </div>
 
   <div class="seccion-detalles">
-    <h2 class="nombre-objeto">{{ objeto.nombre }}</h2>
-    <p class="descripcion-objeto">{{ objeto.descripcion }}</p>
+    <h2 class="nombre-objeto">{{ id }}</h2>
+    <!-- hacer descripcion -->
+    <p class="descripcion-objeto">{{ id }}</p>
   </div>
 </div>
+

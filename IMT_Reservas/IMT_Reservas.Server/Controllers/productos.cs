@@ -13,7 +13,7 @@ namespace MiProyecto.Controllers
         {
             var parametro = new Dictionary<string, object>();
 
-            var conexion = new NpgsqlConnection("Host=localhost;Port=5432;Database=IMT_Reservas;Username=postgres;Password=Fernando");
+            var conexion = new NpgsqlConnection("Host=localhost;Port=5432;Database=IMT_Reservas;Username=postgres;Password=273153");
 
             conexion.Open();
 
@@ -26,9 +26,11 @@ namespace MiProyecto.Controllers
             while (resultado.Read())
             {
                 var fila = new 
-                {
-                     nombre = resultado["nombre"].ToString(),
-
+                {    id = resultado["id_grupo_equipo"].ToString(),
+                    nombre = resultado["nombre"].ToString(),
+                     link = resultado["link"].ToString(),
+                     marca = resultado["marca"].ToString(),
+                     modelo = resultado["modelo"].ToString(),
                 };
 
                 mandar.Add(fila);
