@@ -1,6 +1,7 @@
 /* objeto.component.css */
 .contenedor-objeto {
   display: flex;
+  position: relative;
   gap: 2rem;
   padding: 2rem;
   max-width: 1200px;
@@ -84,3 +85,16 @@
     width: 100%;
   }
 }
+
+.link-data-sheet {
+  position: absolute;
+  bottom: 10px; /* Ajusta la distancia desde abajo */
+  right: 10px; /* Ajusta la distancia desde la derecha */
+  font-size: 0.9rem;
+  color: blue;
+  text-decoration: underline;
+}
+
+  .link-data-sheet:hover {
+    color: darkblue;
+  }

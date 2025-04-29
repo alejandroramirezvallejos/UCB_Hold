@@ -4,20 +4,48 @@ import { Injectable } from '@angular/core';
   providedIn: 'root'
 })
 export class CarritoService {
-  id_productos: number = 0;
-  nombre: string = '';
+   carrito: Carrito = {};
+
+  cantidadtotal: number = 0; 
 
 
+  constructor() {}
 
 
-  constructor(id : number , name : string) {
-    this.id_productos = id;
-    this.nombre = name;
+  agregarproducto(id : number , nombre :string ) {
+    if (nombre == '' || nombre == undefined) {
+      return; 
+    }
 
+    if (!this.carrito[id]) {
+      this.carrito[id] = { nombre, cantidad: 1 }
+      this.cantidadtotal++;
+    }
+    else {
+      this.carrito[id].cantidad += 1;
+      this.cantidadtotal++; 
+    }
   }
 
+  quitarproducto(id: number) {
+    if (id in this.carrito) {
+      if (this.carrito[id].cantidad > 1) {
+        this.carrito[id].cantidad -= 1;
+        this.cantidadtotal--;
+      }
+      else {
+        delete this.carrito[id];
+        this.cantidadtotal--; 
+      }
+    }
+  }
 
+  obtenercarrito() {
+    return this.carrito; 
+  }
 
-
+  obtenertotal() {
+    return this.cantidadtotal; 
+  }
 
 }
