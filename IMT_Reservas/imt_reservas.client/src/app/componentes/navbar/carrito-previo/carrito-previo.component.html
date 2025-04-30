@@ -1,0 +1,29 @@
+<!-- Solo se muestra si showCarrito es true -->
+<div *ngIf="showCarrito" class="carrito-panel">
+  <div class="carrito-header">
+    <h3>Carrito de Compras</h3>
+    <button class="close-btn" (click)="toggleCarrito()">
+      <i class="fas fa-times"></i>
+    </button>
+  </div>
+
+  <div class="carrito-items">
+    <!-- Recorrer el diccionario usando pipe keyvalue -->
+    <div *ngFor="let item of carritoItems | keyvalue" class="carrito-item">
+      <div class="item-info">
+        <p class="item-name">{{ item.value.name }}</p>
+        <p class="item-price">{{ item.value.price | currency }}</p>
+      </div>
+      <div class="item-actions">
+        <button (click)="decreaseQuantity(item.key)" class="btn-qty">-</button>
+        <span class="item-quantity">{{ item.value.quantity }}</span>
+        <button (click)="increaseQuantity(item.key)" class="btn-qty">+</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Botón final para confirmar la reserva -->
+  <div class="carrito-footer">
+    <button class="confirm-btn" (click)="confirmReserva()">Confirmar Reserva</button>
+  </div>
+</div>

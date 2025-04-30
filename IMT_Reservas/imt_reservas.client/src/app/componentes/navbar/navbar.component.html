@@ -1,4 +1,3 @@
-<!-- navbar.component.html -->
 <nav class="navbar-container">
   <!-- Botón Home izquierda -->
   <button class="home-button" [routerLink]="['/home']">
@@ -14,19 +13,17 @@
   <!-- Sección derecha -->
   <div class="right-section">
     <!-- Botón Carrito -->
-    <button class="cart-button" (click)="seleccionar('carrito')">
+    <button class="cart-button" (click)="mostrarcarrito()">
       <i class="fas fa-shopping-cart"></i>
-      <span class="cart-count">{{totalproductos()}}</span>
+      <span class="cart-count">{{ totalproductos() }}</span>
     </button>
 
-    <!-- Menú usuario -->
+    <!-- Menú de Usuario -->
     <div class="user-menu">
-      <div class="user-circle" (click)="toggleUserMenu()">
+      <div class="user-circle" (click)="seleccionar('cuenta')">
         <i class="fas fa-user"></i>
       </div>
-
-      @if(showUserMenu) {
-      <div class="user-dropdown">
+      <div *ngIf="showUserMenu" class="user-dropdown">
         <div class="dropdown-item" (click)="seleccionar('perfil')">
           <i class="fas fa-user-circle"></i> Ver Perfil
         </div>
@@ -37,7 +34,15 @@
           <i class="fas fa-sign-out-alt"></i> Cerrar Sesión
         </div>
       </div>
-      }
     </div>
   </div>
 </nav>
+
+<!-- Aquí integramos el panel del carrito -->
+@if (showCarrito) {
+
+<app-carrito-previo (showCarritoevent)="obtenershow()" >
+
+ 
+</app-carrito-previo>
+}
