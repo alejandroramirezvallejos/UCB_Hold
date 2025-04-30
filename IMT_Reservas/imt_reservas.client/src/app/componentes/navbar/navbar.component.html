@@ -20,10 +20,12 @@
 
     <!-- Menú de Usuario -->
     <div class="user-menu">
-      <div class="user-circle" (click)="seleccionar('cuenta')">
+      <div class="user-circle" (click)="toggleUserMenu()">
         <i class="fas fa-user"></i>
       </div>
-      <div *ngIf="showUserMenu" class="user-dropdown">
+
+      @if(showUserMenu) {
+      <div class="user-dropdown">
         <div class="dropdown-item" (click)="seleccionar('perfil')">
           <i class="fas fa-user-circle"></i> Ver Perfil
         </div>
@@ -34,9 +36,16 @@
           <i class="fas fa-sign-out-alt"></i> Cerrar Sesión
         </div>
       </div>
+      }
     </div>
+
+
+
+
   </div>
 </nav>
+
+
 
 <!-- Aquí integramos el panel del carrito -->
 @if (showCarrito) {

@@ -1,14 +1,15 @@
 .carrito-panel {
   position: fixed;
-  right: 10px;
-  top: 60px;
+  right: 100px;
+  top: 100px;
   width: 300px;
   background: #fff;
-  border: 1px solid #ddd;
+  border: 1px transparent;
   border-radius: 5px;
   box-shadow: 0 2px 5px rgba(0,0,0,0.1);
   padding: 1rem;
   z-index: 100;
+  transition: background 0.2s ease;
 }
 
 .carrito-header {
@@ -72,7 +73,7 @@
 }
 
 .confirm-btn {
-  background-color: #28a745;
+  background-color: #7F7F7F;
   color: #fff;
   border: none;
   padding: 0.5rem 1rem;
@@ -81,5 +82,5 @@
 }
 
   .confirm-btn:hover {
-    background-color: #218838;
+    background-color: #FFDD05;
   }

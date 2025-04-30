@@ -1,5 +1,6 @@
 <!-- Solo se muestra si showCarrito es true -->
-<div *ngIf="showCarrito" class="carrito-panel">
+@if (showCarrito) {
+<div class="carrito-panel">
   <div class="carrito-header">
     <h3>Carrito de Compras</h3>
     <button class="close-btn" (click)="toggleCarrito()">
@@ -8,8 +9,8 @@
   </div>
 
   <div class="carrito-items">
-    <!-- Recorrer el diccionario usando pipe keyvalue -->
-    <div *ngFor="let item of carritoItems | keyvalue" class="carrito-item">
+    @for (item of carritoItems | keyvalue; track item.key) {
+    <div class="carrito-item">
       <div class="item-info">
         <p class="item-name">{{ item.value.name }}</p>
         <p class="item-price">{{ item.value.price | currency }}</p>
@@ -20,6 +21,7 @@
         <button (click)="increaseQuantity(item.key)" class="btn-qty">+</button>
       </div>
     </div>
+    }
   </div>
 
   <!-- Botón final para confirmar la reserva -->
@@ -27,3 +29,4 @@
     <button class="confirm-btn" (click)="confirmReserva()">Confirmar Reserva</button>
   </div>
 </div>
+}
