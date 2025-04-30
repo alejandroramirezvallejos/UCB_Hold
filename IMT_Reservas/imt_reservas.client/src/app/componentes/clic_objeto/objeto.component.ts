@@ -1,9 +1,11 @@
 // objeto.component.ts
 import { CommonModule } from '@angular/common';
 import { Component, Input } from '@angular/core';
-import { ActivatedRoute } from '@angular/router';
+import { ActivatedRoute, Router } from '@angular/router';
 import { ProductoService } from '../../services/producto/producto.service'; 
 import { GrupoEquipo } from '../../models/grupo_equipo';
+import { CarritoService } from '../../services/carrito/carrito.service';
+
 
 @Component({
   selector: 'app-objeto',
@@ -24,7 +26,7 @@ export class ObjetoComponent {
     url_data_sheet: '',
     link: ''
   };
-  constructor(private route: ActivatedRoute , private servicio : ProductoService) { }
+  constructor(private route: ActivatedRoute , private servicio : ProductoService, private carrito : CarritoService, private router : Router) { }
 
   // objeto.component.ts
   // no tocar por que no se como solucionarlo si s
@@ -42,6 +44,16 @@ export class ObjetoComponent {
     });
    
   }
+
+
+  addproductocarrito() {
+
+    this.carrito.agregarproducto(this.producto.id, this.producto.nombre);
+
+    this.router.navigate(['/home']);
+    
+  }
+
 
 }
 
