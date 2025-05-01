@@ -1,5 +1,5 @@
 export interface Carrito {
-  [id: string]: {
+  [id: number]: {
     nombre: string;
     cantidad: number;
   };

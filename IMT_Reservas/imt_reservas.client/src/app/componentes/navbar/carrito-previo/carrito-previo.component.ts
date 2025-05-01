@@ -1,6 +1,7 @@
 import { CommonModule } from '@angular/common';
 import { Component, Input ,Output , EventEmitter} from '@angular/core';
 import { CarritoService } from '../../../services/carrito/carrito.service';
+import {Carrito } from '../../../models/carrito'
 interface CarritoItem {
   name: string;
   price: number;
@@ -10,7 +11,7 @@ interface CarritoItem {
 @Component({
   selector: 'app-carrito-previo',
   standalone: true,
-  imports: [CommonModule],
+  imports: [CommonModule  ],
   templateUrl: './carrito-previo.component.html',
   styleUrls: ['./carrito-previo.component.css']
 })
@@ -20,10 +21,16 @@ export class CarritoPrevioComponent {
   showCarrito: boolean = true;
   @Output() showCarritoevent = new EventEmitter<boolean>();
   // Diccionario de productos (ejemplo)
-  carritoItems: { [key: string]: CarritoItem } = {
-    '1': { name: 'Producto 1', price: 100, quantity: 2 },
-    '2': { name: 'Producto 2', price: 200, quantity: 1 }
+  carritoItems: Carrito = {};
+
+
+  constructor(private serviciocarrito: CarritoService) {
+
+    this.carritoItems = serviciocarrito.obtenercarrito();
   };
+
+
+
 
   // Alterna la visibilidad del carrito (por ejemplo, al pulsar la "X")
   toggleCarrito() {
@@ -32,19 +39,13 @@ export class CarritoPrevioComponent {
 
   // Incrementa la cantidad de un producto
   increaseQuantity(itemKey: string) {
-    if (this.carritoItems[itemKey]) {
-      this.carritoItems[itemKey].quantity++;
-    }
+    this.serviciocarrito.sumarproducto(Number(itemKey));
   }
 
   // Decrementa la cantidad; si llega a 1, se elimina el producto (opcional)
   decreaseQuantity(itemKey: string) {
-    if (this.carritoItems[itemKey]) {
-      if (this.carritoItems[itemKey].quantity > 1) {
-        this.carritoItems[itemKey].quantity--;
-      } else {
-        delete this.carritoItems[itemKey];
-      }
+    if (this.carritoItems[Number(itemKey)]) {
+      this.serviciocarrito.quitarproducto(Number(itemKey));
     }
   }
 

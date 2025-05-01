@@ -1,23 +1,16 @@
 <!-- Solo se muestra si showCarrito es true -->
 @if (showCarrito) {
 <div class="carrito-panel">
-  <div class="carrito-header">
-    <h3>Carrito de Compras</h3>
-    <button class="close-btn" (click)="toggleCarrito()">
-      <i class="fas fa-times"></i>
-    </button>
-  </div>
 
   <div class="carrito-items">
     @for (item of carritoItems | keyvalue; track item.key) {
     <div class="carrito-item">
       <div class="item-info">
-        <p class="item-name">{{ item.value.name }}</p>
-        <p class="item-price">{{ item.value.price | currency }}</p>
+        <p class="item-name">{{ item.value.nombre }}</p>
       </div>
       <div class="item-actions">
         <button (click)="decreaseQuantity(item.key)" class="btn-qty">-</button>
-        <span class="item-quantity">{{ item.value.quantity }}</span>
+        <span class="item-quantity">{{ item.value.cantidad }}</span>
         <button (click)="increaseQuantity(item.key)" class="btn-qty">+</button>
       </div>
     </div>

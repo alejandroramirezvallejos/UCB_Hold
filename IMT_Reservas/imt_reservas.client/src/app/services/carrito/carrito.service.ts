@@ -40,6 +40,16 @@ export class CarritoService {
     }
   }
 
+  sumarproducto(id: number) {
+    if (id in this.carrito) {
+
+      this.carrito[id].cantidad++;
+      this.cantidadtotal++;
+    }
+
+  }
+
+
   obtenercarrito() {
     return this.carrito; 
   }
