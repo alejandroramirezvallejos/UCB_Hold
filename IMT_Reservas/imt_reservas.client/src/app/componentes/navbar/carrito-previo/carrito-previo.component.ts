@@ -1,7 +1,8 @@
 import { CommonModule } from '@angular/common';
-import { Component, Input ,Output , EventEmitter} from '@angular/core';
+import { Component, Output , EventEmitter} from '@angular/core';
 import { CarritoService } from '../../../services/carrito/carrito.service';
 import {Carrito } from '../../../models/carrito'
+import { Router } from '@angular/router';
 interface CarritoItem {
   name: string;
   price: number;
@@ -11,7 +12,7 @@ interface CarritoItem {
 @Component({
   selector: 'app-carrito-previo',
   standalone: true,
-  imports: [CommonModule  ],
+  imports: [CommonModule],
   templateUrl: './carrito-previo.component.html',
   styleUrls: ['./carrito-previo.component.css']
 })
@@ -24,7 +25,7 @@ export class CarritoPrevioComponent {
   carritoItems: Carrito = {};
 
 
-  constructor(private serviciocarrito: CarritoService) {
+  constructor(private serviciocarrito: CarritoService , private router : Router) {
 
     this.carritoItems = serviciocarrito.obtenercarrito();
   };
@@ -51,8 +52,12 @@ export class CarritoPrevioComponent {
 
   // Lógica para confirmar la reserva
   confirmReserva() {
-    console.log('¡Reserva confirmada!');
-    // Aquí puedes agregar la lógica para proceder con la reserva, por ejemplo,
-    // llamar a un servicio o redirigir a otra ruta.
+    if (this.carritoItems == null || Object.keys(this.carritoItems).length === 0) {
+
+    }
+    else {
+      this.router.navigate(['/ConfirmarReserva']);
+    }
+
   }
 }
