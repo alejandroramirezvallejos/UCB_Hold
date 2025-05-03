@@ -9,7 +9,7 @@
   .capsule {
     display: flex;
     align-items: center;       /* Centra verticalmente todos los elementos */
-    background-color: var(--capsule-bg, #d3d1d1);
+    background-color: var(--capsule-bg, #f3f2f2);
     border: 1px solid #ccc;
     border-radius: 15px;
     padding: 15px;
@@ -60,3 +60,21 @@
     margin-bottom: 5px;
   }
   
+
+  .boton-carrito {
+    background-color: #FFD814;
+    border: none;
+    border-radius: 20px;
+    padding: 1rem 2rem;
+    font-size: 1.1rem;
+    cursor: pointer;
+    width: 35%;
+    margin: 0 auto; /* Esto centra el botón horizontalmente */
+    transition: background-color 0.3s ease;
+    display: block; /* Asegura que se comporte como bloque */
+    
+  }
+  
+  .boton-carrito:hover {
+    background-color: #F7CA00;
+  }

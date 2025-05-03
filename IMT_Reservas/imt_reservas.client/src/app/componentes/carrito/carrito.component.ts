@@ -20,7 +20,10 @@ export class CarritoComponent {
   };
 
   
+  clickboton(){
 
+    console.log("boton clickado");
+  }
 
 
 
