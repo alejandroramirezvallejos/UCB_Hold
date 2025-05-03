@@ -25,11 +25,9 @@
   }
 
 .logo-container {
-  flex: 0;
-  text-align: center;
-  display: flex;
-  flex-direction: column; /* Asegura que la imagen y el texto queden en columna */
-  align-items: center;
+  position: absolute;
+  left: 50%;
+  transform: translateX(-50%);
 }
 
 .right-section {
@@ -112,15 +110,7 @@
 
 /* Mantener estilos existentes del logo */
 .logo-image {
-  width: 100px;
+  width: 90px;
   filter: drop-shadow(0 2px 5px rgba(0, 0, 0, 0.1));
 }
 
-.logo-text {
-  font-size: 1.4rem;
-  color: #333;
-  font-weight: 300;
-  letter-spacing: 1.5px;
-  margin-top: 5px;
-  white-space: nowrap;
-}

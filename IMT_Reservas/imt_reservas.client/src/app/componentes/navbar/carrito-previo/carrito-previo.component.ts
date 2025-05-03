@@ -56,6 +56,7 @@ export class CarritoPrevioComponent {
 
     }
     else {
+      this.toggleCarrito();
       this.router.navigate(['/ConfirmarReserva']);
     }
 

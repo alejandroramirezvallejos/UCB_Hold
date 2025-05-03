@@ -12,13 +12,13 @@ export class CarritoService {
   constructor() {}
 
 
-  agregarproducto(id : number , nombre :string ) {
+  agregarproducto(id : number , nombre :string , link : string ) {
     if (nombre == '' || nombre == undefined) {
       return; 
     }
 
     if (!this.carrito[id]) {
-      this.carrito[id] = { nombre, cantidad: 1 }
+      this.carrito[id] = { nombre, cantidad: 1 ,fecha_inicio : null,fecha_final : null , imagen : link};
       this.cantidadtotal++;
     }
     else {

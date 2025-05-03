@@ -1,1 +1,36 @@
-<p>carrito works!</p>
+<ul class="capsule-list">
+    @for(item of (carrito | keyvalue); track item.key) {
+      <li class="capsule">
+        <!-- Imagen del producto -->
+        <img 
+          class="product-img" 
+          src="{{ item.value.imagen || '' }}" 
+          alt="" 
+        />
+  
+        <!-- Contenedor de información -->
+        <div class="info-row">
+          <h3 class="product-title">{{ item.value.nombre }}</h3>
+          <div class="dates-container">
+            <div class="date-field">
+              <label for="fechaInicio_{{item.key}}">Inicio</label>
+              <input 
+                type="date" 
+                id="fechaInicio_{{item.key}}" 
+                [(ngModel)]="item.value.fecha_inicio" 
+              />
+            </div>
+            <div class="date-field">
+              <label for="fechaFin_{{item.key}}">Fin</label>
+              <input 
+                type="date" 
+                id="fechaFin_{{item.key}}" 
+                [(ngModel)]="item.value.fecha_final" 
+              />
+            </div>
+          </div>
+        </div>
+      </li>
+    }
+  </ul>
+  

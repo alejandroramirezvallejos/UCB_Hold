@@ -1,0 +1,62 @@
+/* Quitar viñetas y márgenes por defecto */
+.capsule-list {
+    list-style: none;
+    padding: 0;
+    margin: 1;
+  }
+  
+  /* Cápsula con fondo personalizable y borde redondeado */
+  .capsule {
+    display: flex;
+    align-items: center;       /* Centra verticalmente todos los elementos */
+    background-color: var(--capsule-bg, #d3d1d1);
+    border: 1px solid #ccc;
+    border-radius: 15px;
+    padding: 15px;
+    margin-bottom: 10px;
+  }
+  
+  /* Imagen del producto */
+  .product-img {
+    width: 60px;
+    height: 60px;
+    object-fit: cover;
+    border-radius: 5px;
+    margin-right: 15px;
+  }
+  
+  /* Contenedor principal para el nombre y las fechas */
+  .info-row {
+    display: flex;
+    align-items: center;       /* Centra verticalmente el título y el bloque de fechas */
+    justify-content: space-between;
+    width: 100%;
+  }
+  
+  /* Título del producto */
+  .product-title {
+    font-size: 1.2rem;
+    margin: 0;
+    /* Si el texto es muy corto, se mantendrá a la izquierda pero centrado verticalmente por .info-row */
+  }
+  
+  /* Contenedor para los dos campos de fecha, en fila */
+  .dates-container {
+    display: flex;
+    gap: 20px;                 /* Espacio entre los dos campos de fecha */
+    align-items: center;       /* Centra verticalmente cada grupo de fecha */
+  }
+  
+  /* Cada campo de fecha: etiqueta e input en columna y centrados */
+  .date-field {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+  }
+  
+  /* Estilo para las etiquetas de fecha */
+  .date-field label {
+    font-size: 0.9rem;
+    margin-bottom: 5px;
+  }
+  
