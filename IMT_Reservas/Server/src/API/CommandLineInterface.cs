@@ -113,6 +113,7 @@
         builder.Services.AddEndpointsApiExplorer();
         builder.Services.AddSwaggerGen();
         builder.Services.AddAuthorization();
+        builder.Services.AddScoped<IExecuteQuery, ExecuteQuery>();
         builder.Services.AddScoped<ICrearUsuarioComando, UsuarioUseCase>();
         builder.Services.AddScoped<IObtenerUsuarioConsulta, UsuarioUseCase>();
         builder.Services.AddScoped<IActualizarUsuarioComando, UsuarioUseCase>();

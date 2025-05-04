@@ -9,7 +9,7 @@ public class ExecuteQuery : IExecuteQuery
     {
         _connectionString = configuration.GetConnectionString("DefaultConnection")
                             ?? throw new InvalidOperationException(
-                                "La cadena de conexión 'DefaultConnection' no está configurada.");
+                                "La cadena de conexion 'DefaultConnection' no está configurada.");
     }
 
     public DataTable EjecutarSp(string nombreSp, Dictionary<string, object> parametros)
