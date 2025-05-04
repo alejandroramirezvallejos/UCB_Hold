@@ -3,9 +3,9 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 17
 VisualStudioVersion = 17.13.35931.197 d17.13
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{54A90642-561A-4BB1-A94E-469ADEE60C69}") = "imt_reservas.client", "imt_reservas.client\imt_reservas.client.esproj", "{415112C4-78ED-95A1-CA3D-8DB1BC9495BE}"
+Project("{54A90642-561A-4BB1-A94E-469ADEE60C69}") = "Client", "Client\IMT_Reservas.Client.esproj", "{415112C4-78ED-95A1-CA3D-8DB1BC9495BE}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "IMT_Reservas.Server", "IMT_Reservas.Server\IMT_Reservas.Server.csproj", "{3B927C25-A636-4FD3-ABDE-C2ED0EF06232}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Server", "Server\IMT_Reservas.Server.csproj", "{3B927C25-A636-4FD3-ABDE-C2ED0EF06232}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
