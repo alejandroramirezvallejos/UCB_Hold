@@ -1,94 +1,154 @@
-using System;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.AspNetCore.Http;
 
 [ApiController]
-[Route("usuario")]
+[Route("api/[controller]")]
 public class UsuarioController : ControllerBase
 {
-    private readonly IUsuarioService _usuarioService;
+    private readonly ICrearUsuarioComando      _crearUsuario;
+    private readonly IObtenerUsuarioConsulta   _obtenerUsuario;
+    private readonly IActualizarUsuarioComando _actualizarUsuario;
+    private readonly IEliminarUsuarioComando   _eliminarUsuario;
 
-    public UsuarioController(IUsuarioService usuarioService)
+    public UsuarioController(ICrearUsuarioComando crearUsuario, IObtenerUsuarioConsulta obtenerUsuario,
+        IActualizarUsuarioComando actualizarUsuario, IEliminarUsuarioComando eliminarUsuario)
     {
-        _usuarioService = usuarioService ?? throw new ArgumentNullException(nameof(usuarioService));
+        _crearUsuario      = crearUsuario;
+        _obtenerUsuario    = obtenerUsuario;
+        _actualizarUsuario = actualizarUsuario;
+        _eliminarUsuario   = eliminarUsuario;
+    }
+
+    [HttpPost]
+    public IActionResult CrearUsuario([FromBody] UsuarioRequestDto solicitud)
+    {
+        if (!ModelState.IsValid)
+        {
+            return BadRequest(ModelState);
+        }
+
+        CrearUsuarioComando comando = new CrearUsuarioComando
+        (
+            solicitud.Carnet,
+            solicitud.Nombre,
+            solicitud.ApellidoPaterno,
+            solicitud.ApellidoMaterno,
+            solicitud.Rol,
+            solicitud.CarreraId,
+            solicitud.Contrasena,
+            solicitud.Email,
+            solicitud.Telefono,
+            solicitud.NombreReferencia,
+            solicitud.TelefonoReferencia,
+            solicitud.EmailReferencia
+        );
+
+        UsuarioResponseDto resultado = _crearUsuario.Handle(comando);
+        UsuarioResponseDto respuesta = new UsuarioResponseDto
+        {
+            Carnet             = resultado.Carnet,
+            Nombre             = resultado.Nombre,
+            ApellidoPaterno    = resultado.ApellidoPaterno,
+            ApellidoMaterno    = resultado.ApellidoMaterno,
+            Rol                = resultado.Rol,
+            CarreraId          = resultado.CarreraId,
+            Email              = resultado.Email,
+            Telefono           = resultado.Telefono,
+            NombreReferencia   = resultado.NombreReferencia,
+            TelefonoReferencia = resultado.TelefonoReferencia,
+            EmailReferencia    = resultado.EmailReferencia,
+            EstaEliminado      = resultado.EstaEliminado
+        };
+
+        return CreatedAtAction(nameof(ObtenerUsuarioPorCarnet), 
+                               new { carnet = respuesta.Carnet }, respuesta);
     }
 
     [HttpGet("{carnet}")]
-    [ProducesResponseType(typeof(UsuarioReadDto), StatusCodes.Status200OK)]
-    [ProducesResponseType(StatusCodes.Status404NotFound)]
-    public IActionResult ObtenerPorCarnet(string carnet)
+    public ActionResult<UsuarioResponseDto> ObtenerUsuarioPorCarnet(string carnet)
     {
-        if (string.IsNullOrWhiteSpace(carnet))
-            return BadRequest(new { Message = "El carnet no puede ser nulo o vacío." });
-
-        var usuarioDto = _usuarioService.ObtenerUsuarioPorCarnet(carnet);
-        if (usuarioDto is null)
-            return NotFound(new { Message = "Usuario no encontrado." });
-
-        return Ok(usuarioDto);
-    }
-
-    [HttpPost("cerrar-sesion")]
-    [ProducesResponseType(StatusCodes.Status204NoContent)]
-    public IActionResult CerrarSesion()
-    {
-        // TODO: Implementar lógica de cierre de sesión
-        return NoContent();
-    }
-
-    [HttpPost("crear-cuenta")]
-    [ProducesResponseType(typeof(UsuarioReadDto), StatusCodes.Status201Created)]
-    [ProducesResponseType(StatusCodes.Status400BadRequest)]
-    public IActionResult CrearCuenta([FromBody] UsuarioCreateDto dto)
-    {
-        if (!ModelState.IsValid)
-            return BadRequest(ModelState);
-
-        Usuario usuario;
-        try
+        UsuarioResponseDto? resultado = _obtenerUsuario.Handle(new ObtenerUsuarioConsulta(carnet));
+        if (resultado == null)
         {
-            usuario = new Usuario(
-                carnet:             dto.Carnet,
-                nombre:             dto.Nombre,
-                apellidoPaterno:    dto.ApellidoPaterno,
-                apellidoMaterno:    dto.ApellidoMaterno,
-                rol:                dto.Rol,
-                carreraId:          dto.CarreraId,
-                contrasena:         dto.Contrasena,
-                email:              dto.Email,
-                telefono:           dto.Telefono,
-                nombreReferencia:   dto.NombreReferencia,
-                telefonoReferencia: dto.TelefonoReferencia,
-                emailReferencia:    dto.EmailReferencia
-            );
-        }
-        catch (ArgumentException ex)
-        {
-            return BadRequest(new { Message = ex.Message });
+            return NotFound();
         }
 
-        _usuarioService.CrearUsuario(usuario);
-
-        var usuarioReadDto = new UsuarioReadDto
+        UsuarioResponseDto respuesta = new UsuarioResponseDto
         {
-            Carnet             = usuario.Carnet,
-            Nombre             = usuario.Nombre,
-            ApellidoPaterno    = usuario.ApellidoPaterno,
-            ApellidoMaterno    = usuario.ApellidoMaterno,
-            Rol                = usuario.Rol,
-            CarreraId          = usuario.CarreraId,
-            Email              = usuario.Email,
-            Telefono           = usuario.Telefono,
-            NombreReferencia   = usuario.NombreReferencia,
-            TelefonoReferencia = usuario.TelefonoReferencia,
-            EmailReferencia    = usuario.EmailReferencia,
-            EstaEliminado      = usuario.EstaEliminado
+            Carnet             = resultado.Carnet,
+            Nombre             = resultado.Nombre,
+            ApellidoPaterno    = resultado.ApellidoPaterno,
+            ApellidoMaterno    = resultado.ApellidoMaterno,
+            Rol                = resultado.Rol,
+            CarreraId          = resultado.CarreraId,
+            Email              = resultado.Email,
+            Telefono           = resultado.Telefono,
+            NombreReferencia   = resultado.NombreReferencia,
+            TelefonoReferencia = resultado.TelefonoReferencia,
+            EmailReferencia    = resultado.EmailReferencia,
+            EstaEliminado      = resultado.EstaEliminado
         };
 
-        return CreatedAtAction(
-            nameof(ObtenerPorCarnet),
-            new { carnet = usuario.Carnet },
-            usuarioReadDto
+        return Ok(respuesta);
+    }
+
+    [HttpPut("{carnet}")]
+    public IActionResult ActualizarUsuario(string carnet, [FromBody] UsuarioRequestDto solicitud)
+    {
+        if (!ModelState.IsValid)
+        {
+            return BadRequest(ModelState);
+        }
+
+        ActualizarUsuarioComando comando = new ActualizarUsuarioComando
+        (
+            carnet,
+            solicitud.Nombre,
+            solicitud.ApellidoPaterno,
+            solicitud.ApellidoMaterno,
+            solicitud.Rol,
+            solicitud.CarreraId,
+            solicitud.Contrasena,
+            solicitud.Email,
+            solicitud.Telefono,
+            solicitud.NombreReferencia,
+            solicitud.TelefonoReferencia,
+            solicitud.EmailReferencia
         );
+
+        UsuarioResponseDto? resultado = _actualizarUsuario.Handle(comando);
+        if (resultado == null)
+        {
+            return NotFound();
+        }
+
+        UsuarioResponseDto respuesta = new UsuarioResponseDto
+        {
+            Carnet             = resultado.Carnet,
+            Nombre             = resultado.Nombre,
+            ApellidoPaterno    = resultado.ApellidoPaterno,
+            ApellidoMaterno    = resultado.ApellidoMaterno,
+            Rol                = resultado.Rol,
+            CarreraId          = resultado.CarreraId,
+            Email              = resultado.Email,
+            Telefono           = resultado.Telefono,
+            NombreReferencia   = resultado.NombreReferencia,
+            TelefonoReferencia = resultado.TelefonoReferencia,
+            EmailReferencia    = resultado.EmailReferencia,
+            EstaEliminado      = resultado.EstaEliminado
+        };
+
+        return Ok(respuesta);
+    }
+
+    [HttpDelete("{carnet}")]
+    public IActionResult EliminarUsuario(string carnet)
+    {
+        bool exito = _eliminarUsuario.Handle(new EliminarUsuarioComando(carnet));
+        if (!exito)
+        {
+            return NotFound();
+        }
+
+        return NoContent();
     }
 }
