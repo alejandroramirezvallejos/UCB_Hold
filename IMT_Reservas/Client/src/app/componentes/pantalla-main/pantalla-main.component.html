@@ -1,0 +1,56 @@
+
+<div class="container-search ">
+  <!-- Botón de categorías -->
+
+  <div class="categories-wrapper">
+    <button class="categories-btn" (click)="toggleCategories()">
+      <i class="fas fa-filter"></i>
+      @if (showCategories) {
+      Ocultar categorías
+      } @else {
+      @if(categoria==''){
+      Ver categorías
+      }
+      @else{
+      }
+      {{categoria}}
+      }
+    </button>
+
+    <!-- Panel de categorías -->
+    @if (showCategories) {
+    <div class="categories-panel">
+      <div class="categories-list">
+        <div class="no-category-item"
+             (click)="selectCategory('sin categoria')">
+          {{ "Sin Categoria" }}
+        </div>
+
+        @for (item of items; track item.name) {
+        <div class="category-item"
+             (click)="selectCategory(item.name)">
+          {{ item.name }}
+        </div>
+        }
+      </div>
+    </div>
+    }
+  </div>
+
+  <textarea [(ngModel)]="solicitud"
+            placeholder="Ingrese el nombre del equipo buscado" rows="0"
+            (keydown.enter)="submitRequest(); $event.preventDefault()"></textarea>
+</div>
+
+
+@if(enviar){
+<app-lista-objetos categoria={{categoria}}
+                   producto={{solicitud}}></app-lista-objetos>
+}
+@else {
+<app-lista-objetos categoria={{categoria}}
+                   producto={{solicitud}}></app-lista-objetos>
+
+}
+
+

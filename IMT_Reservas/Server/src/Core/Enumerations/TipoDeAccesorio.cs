@@ -1,0 +1,4 @@
+public enum TipoDeAccesorio
+{
+    Estandar
+}

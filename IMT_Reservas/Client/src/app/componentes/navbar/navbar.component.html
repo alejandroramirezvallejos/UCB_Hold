@@ -1,0 +1,57 @@
+<nav class="navbar-container">
+  <!-- Botón Home izquierda -->
+  <button class="home-button" (click)="botonhome()">
+    <i class="fas fa-home"></i>
+  </button>
+
+  <!-- Logo central -->
+  <div class="logo-container">
+    <img src="assets/logo-universidad.png" alt="Logo Universidad" class="logo-image">
+   
+  </div>
+
+  <!-- Sección derecha -->
+  <div class="right-section">
+    <!-- Botón Carrito -->
+    <button class="cart-button" (click)="mostrarcarrito()">
+      <i class="fas fa-shopping-cart"></i>
+      <span class="cart-count">{{ totalproductos() }}</span>
+    </button>
+
+    <!-- Menú de Usuario -->
+    <div class="user-menu">
+      <div class="user-circle" (click)="toggleUserMenu()">
+        <i class="fas fa-user"></i>
+      </div>
+
+      @if(showUserMenu) {
+      <div class="user-dropdown">
+        <div class="dropdown-item" (click)="seleccionar('perfil')">
+          <i class="fas fa-user-circle"></i> Ver Perfil
+        </div>
+        <div class="dropdown-item" (click)="seleccionar('historial')">
+          <i class="fas fa-history"></i> Historial
+        </div>
+        <div class="dropdown-item" (click)="seleccionar('cerrar-sesion')">
+          <i class="fas fa-sign-out-alt"></i> Cerrar Sesión
+        </div>
+      </div>
+      }
+    </div>
+
+
+
+
+  </div>
+</nav>
+
+
+
+<!-- Aquí integramos el panel del carrito -->
+@if (showCarrito) {
+
+<app-carrito-previo (showCarritoevent)="obtenershow()" >
+
+ 
+</app-carrito-previo>
+}
