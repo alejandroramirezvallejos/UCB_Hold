@@ -29,26 +29,24 @@ export class ObjetoComponent {
   constructor(private route: ActivatedRoute , private servicio : ProductoService, private carrito : CarritoService, private router : Router) { }
 
   // objeto.component.ts
-  // no tocar por que no se como solucionarlo si s
-  //TODO : recordar arreglar esto para que no sea una lista sino solo un objeto 
+  //WARNING  :  no tocar por que no se como solucionarlo si sale error
+
   ngOnInit(): void {
     const routeId = this.route.snapshot.paramMap.get('id');
-
     if (!routeId) {
       console.error('ID no proporcionado en la URL');
       return;
     }
     this.servicio.getproducto(routeId).subscribe({
-      next: (data) => this.producto = data[0],
+      next: (data) => this.producto = data, // Ya no accedes con [0]
       error: (error) => console.error('Error en componente:', error)
     });
-   
   }
 
 
   addproductocarrito() {
 
-    this.carrito.agregarproducto(this.producto.id, this.producto.nombre, this.producto.link?? '');
+    this.carrito.agregarproducto(this.producto.id, this.producto.nombre, this.producto.link?? '',  this.producto.marca ?? '' , this.producto.modelo ?? '');
 
     this.router.navigate(['/home']);
     
