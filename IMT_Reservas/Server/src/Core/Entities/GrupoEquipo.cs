@@ -9,6 +9,7 @@ public class GrupoEquipo : IGrupoEquipo, IEliminacionLogica
     private string  _marca         = string.Empty;
     private int     _categoriaId;
     private bool    _estaEliminado = false;
+    private string  _descripcion   = string.Empty;
 
     public int Id
     {
@@ -57,7 +58,7 @@ public class GrupoEquipo : IGrupoEquipo, IEliminacionLogica
     public int CategoriaId
     {
         get => _categoriaId;
-        private set => _categoriaId = Verificar.SiEsNatural(value, "El ID de la categoria");
+        private set => _categoriaId = Verificar.SiEsNatural(value, "El ID de la categoría");
     }
 
     public bool EstaEliminado
@@ -66,8 +67,14 @@ public class GrupoEquipo : IGrupoEquipo, IEliminacionLogica
         private set => _estaEliminado = value;
     }
 
-    public GrupoEquipo(string nombre, string modelo, string? urlData, string urlImagen, 
-                       int cantidad, string marca, int categoriaId)
+    public string Descripcion
+    {
+        get => _descripcion;
+        private set => _descripcion = Verificar.SiEsVacio(value, "La descripcion del grupo de equipo");
+    }
+
+    public GrupoEquipo(string nombre, string modelo, string? urlData, string urlImagen,
+                       int cantidad, string marca,int categoriaId, string descripcion)
     {
         Nombre      = nombre;
         Modelo      = modelo;
@@ -76,9 +83,9 @@ public class GrupoEquipo : IGrupoEquipo, IEliminacionLogica
         Cantidad    = cantidad;
         Marca       = marca;
         CategoriaId = categoriaId;
+        Descripcion = descripcion;
     }
 
-    public void Eliminar() => EstaEliminado = true;
-
-    public void Recuperar() => EstaEliminado = false;
+    public void Eliminar()   => EstaEliminado = true;
+    public void Recuperar()  => EstaEliminado = false;
 }

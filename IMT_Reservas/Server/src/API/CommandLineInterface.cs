@@ -1,4 +1,4 @@
-﻿public static class CommandLineInterface
+public static class CommandLineInterface
 {
     private static IHost? _webHost = null;
 
@@ -109,15 +109,31 @@
         Console.ResetColor();
 
         var builder = WebApplication.CreateBuilder();
-        builder.Services.AddControllers();
-        builder.Services.AddEndpointsApiExplorer();
-        builder.Services.AddSwaggerGen();
-        builder.Services.AddAuthorization();
         builder.Services.AddScoped<IExecuteQuery, ExecuteQuery>();
+
+        // Equipos
+        builder.Services.AddScoped<IObtenerEquipoConsulta, EquipoUseCase>();
+        builder.Services.AddScoped<ICrearEquipoComando, EquipoUseCase>();
+        builder.Services.AddScoped<IActualizarEquipoComando, EquipoUseCase>();
+        builder.Services.AddScoped<IEliminarEquipoComando, EquipoUseCase>();
+
+        // GrupoEquipo
+        builder.Services.AddScoped<IObtenerGrupoEquipoConsulta, GrupoEquipoUseCase>();
+        builder.Services.AddScoped<IObtenerGruposEquiposConsulta, GrupoEquipoUseCase>();
+        builder.Services.AddScoped<ICrearGrupoEquipoComando, GrupoEquipoUseCase>();
+        builder.Services.AddScoped<IActualizarGrupoEquipoComando, GrupoEquipoUseCase>();
+        builder.Services.AddScoped<IEliminarGrupoEquipoComando, GrupoEquipoUseCase>();
+
+        // Usuarios
         builder.Services.AddScoped<ICrearUsuarioComando, UsuarioUseCase>();
         builder.Services.AddScoped<IObtenerUsuarioConsulta, UsuarioUseCase>();
         builder.Services.AddScoped<IActualizarUsuarioComando, UsuarioUseCase>();
         builder.Services.AddScoped<IEliminarUsuarioComando, UsuarioUseCase>();
+
+        builder.Services.AddControllers();
+        builder.Services.AddEndpointsApiExplorer();
+        builder.Services.AddSwaggerGen();
+        builder.Services.AddAuthorization();
 
         builder.Services.AddCors(options =>
         {

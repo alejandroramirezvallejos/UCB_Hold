@@ -4,18 +4,18 @@ using Microsoft.AspNetCore.Mvc;
 [Route("api/[controller]")]
 public class UsuarioController : ControllerBase
 {
-    private readonly ICrearUsuarioComando      _crearUsuario;
-    private readonly IObtenerUsuarioConsulta   _obtenerUsuario;
-    private readonly IActualizarUsuarioComando _actualizarUsuario;
-    private readonly IEliminarUsuarioComando   _eliminarUsuario;
+    private readonly ICrearUsuarioComando      _crear;
+    private readonly IObtenerUsuarioConsulta   _obtener;
+    private readonly IActualizarUsuarioComando _actualizar;
+    private readonly IEliminarUsuarioComando   _eliminar;
 
-    public UsuarioController(ICrearUsuarioComando crearUsuario, IObtenerUsuarioConsulta obtenerUsuario,
-        IActualizarUsuarioComando actualizarUsuario, IEliminarUsuarioComando eliminarUsuario)
+    public UsuarioController(ICrearUsuarioComando crear, IObtenerUsuarioConsulta obtener,
+                             IActualizarUsuarioComando actualizar, IEliminarUsuarioComando eliminar)
     {
-        _crearUsuario      = crearUsuario;
-        _obtenerUsuario    = obtenerUsuario;
-        _actualizarUsuario = actualizarUsuario;
-        _eliminarUsuario   = eliminarUsuario;
+        _crear      = crear;
+        _obtener    = obtener;
+        _actualizar = actualizar;
+        _eliminar   = eliminar;
     }
 
     [HttpPost]
@@ -26,8 +26,7 @@ public class UsuarioController : ControllerBase
             return BadRequest(ModelState);
         }
 
-        CrearUsuarioComando comando = new CrearUsuarioComando
-        (
+        CrearUsuarioComando comando = new CrearUsuarioComando(
             solicitud.Carnet,
             solicitud.Nombre,
             solicitud.ApellidoPaterno,
@@ -42,7 +41,8 @@ public class UsuarioController : ControllerBase
             solicitud.EmailReferencia
         );
 
-        UsuarioResponseDto resultado = _crearUsuario.Handle(comando);
+        UsuarioResponseDto resultado = _crear.Handle(comando);
+
         UsuarioResponseDto respuesta = new UsuarioResponseDto
         {
             Carnet             = resultado.Carnet,
@@ -59,14 +59,22 @@ public class UsuarioController : ControllerBase
             EstaEliminado      = resultado.EstaEliminado
         };
 
-        return CreatedAtAction(nameof(ObtenerUsuarioPorCarnet), 
-                               new { carnet = respuesta.Carnet }, respuesta);
+        return CreatedAtAction(
+            nameof(ObtenerUsuarioPorCarnet),
+            new 
+            { 
+                carnet = respuesta.Carnet 
+            },
+            respuesta
+        );
     }
 
     [HttpGet("{carnet}")]
     public ActionResult<UsuarioResponseDto> ObtenerUsuarioPorCarnet(string carnet)
     {
-        UsuarioResponseDto? resultado = _obtenerUsuario.Handle(new ObtenerUsuarioConsulta(carnet));
+        ObtenerUsuarioConsulta consulta = new ObtenerUsuarioConsulta(carnet);
+        UsuarioResponseDto? resultado = _obtener.Handle(consulta);
+
         if (resultado == null)
         {
             return NotFound();
@@ -99,8 +107,7 @@ public class UsuarioController : ControllerBase
             return BadRequest(ModelState);
         }
 
-        ActualizarUsuarioComando comando = new ActualizarUsuarioComando
-        (
+        ActualizarUsuarioComando comando = new ActualizarUsuarioComando(
             carnet,
             solicitud.Nombre,
             solicitud.ApellidoPaterno,
@@ -115,7 +122,7 @@ public class UsuarioController : ControllerBase
             solicitud.EmailReferencia
         );
 
-        UsuarioResponseDto? resultado = _actualizarUsuario.Handle(comando);
+        UsuarioResponseDto? resultado = _actualizar.Handle(comando);
         if (resultado == null)
         {
             return NotFound();
@@ -143,7 +150,9 @@ public class UsuarioController : ControllerBase
     [HttpDelete("{carnet}")]
     public IActionResult EliminarUsuario(string carnet)
     {
-        bool exito = _eliminarUsuario.Handle(new EliminarUsuarioComando(carnet));
+        EliminarUsuarioComando comando = new EliminarUsuarioComando(carnet);
+        bool exito = _eliminar.Handle(comando);
+
         if (!exito)
         {
             return NotFound();

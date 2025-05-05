@@ -8,4 +8,5 @@ public interface IGrupoEquipo
     int     Cantidad    { get; }
     string  Marca       { get; }
     int     CategoriaId { get; }
+    string  Descripcion { get; }
 }
