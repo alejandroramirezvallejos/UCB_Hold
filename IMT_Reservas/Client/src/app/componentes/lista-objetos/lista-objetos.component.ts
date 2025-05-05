@@ -18,7 +18,7 @@ export class ListaObjetosComponent {
   constructor(private servicio: GrupoEquipoService) { };
 
   ngOnInit(): void {
-    this.servicio.getGrupoEquipo().subscribe({
+    this.servicio.getGrupoEquipo(this.categoria , this.producto).subscribe({
       next: (data) => this.productos = data,
       error: (error) => console.error('Error en componente:', error)
     });

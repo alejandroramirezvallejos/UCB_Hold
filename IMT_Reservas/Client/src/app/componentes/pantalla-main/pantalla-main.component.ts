@@ -2,6 +2,7 @@ import { CommonModule } from '@angular/common';
 import { Component,EventEmitter ,input, Output } from '@angular/core';
 import { ListaObjetosComponent } from '../lista-objetos/lista-objetos.component';
 import { FormsModule } from '@angular/forms';
+import { BuscadorService } from '../../services/buscador/buscador.service';
 
 @Component({
   selector: 'app-pantalla-main',
@@ -14,6 +15,7 @@ export class PantallaMainComponent {
   showCategories = false;
   solicitud: string = ''; 
   categoria: string = ''; 
+  enviar: boolean = false;
   items = [
     { name: 'Portátil', image: 'assets/laptop.jpg' },
     { name: 'Proyector', image: 'assets/proyector.jpg' },
@@ -23,6 +25,10 @@ export class PantallaMainComponent {
     { name: 'prueba', image: 'assets/tripode.jpg' }
   ];
 
+  constructor(private buscador: BuscadorService) {
+    this.solicitud = buscador.producto;
+    this.categoria = buscador.categoria;
+  }
   // Añade este método
   toggleCategories() {
     this.showCategories = !this.showCategories;
@@ -33,22 +39,22 @@ export class PantallaMainComponent {
       this.categoria = '';
     }
     else {
-      this.categoria = categoria;
+      this.categoria = categoria        ; 
       
     }
     this.toggleCategories();
-
+    this.submitRequest();
   }
 
+  //TODO : Optimizar esto seguro que es mala practica 
   submitRequest() {
-    if (this.solicitud.trim() || this.categoria!="") { // Asegúrate de que no esté vacío
-      console.log('Solicitud enviada:', this.solicitud);
-      // Aquí puedes manejar el envío de la solicitud (API, etc.)
-      alert('¡Solicitud enviada con éxito!');
-      this.solicitud = ''; // Limpia el campo después de enviar
-    } else {
-      alert('Por favor, escribe tu solicitud antes de enviarla o elije una categoria.');
-    }
+    // Actualiza el servicio con los datos actuales
+    this.buscador.producto = this.solicitud;
+    this.buscador.categoria = this.categoria;
+      this.enviar = false;
+      setTimeout(() => {
+        this.enviar = true;
+      }, 0);
   }
 
 

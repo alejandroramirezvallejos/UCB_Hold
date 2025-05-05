@@ -4,7 +4,8 @@ import { RouterModule } from '@angular/router';
 import { CarritoService } from '../../services/carrito/carrito.service';
 import { CarritoPrevioComponent } from './carrito-previo/carrito-previo.component'
 import { CommonModule } from '@angular/common';
-
+import { BuscadorService } from '../../services/buscador/buscador.service';
+import { Router } from '@angular/router';
 @Component({
   selector: 'app-navbar',
   standalone: true,
@@ -18,7 +19,13 @@ export class NavbarComponent {
   @Output() seleccion = new EventEmitter<string>();
   showUserMenu = false;
   showCarrito = false;
-  constructor(private carrito : CarritoService) { }
+  constructor(private carrito : CarritoService, private buscador : BuscadorService , private router : Router) { }
+
+
+  botonhome() {
+    this.buscador.reiniciar();
+    this.router.navigate(['/home']);
+  }
 
   obtenershow() {
     this.showCarrito = false;
