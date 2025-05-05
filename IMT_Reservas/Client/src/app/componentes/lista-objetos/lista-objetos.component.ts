@@ -1,4 +1,4 @@
-import { Component } from '@angular/core';
+import { Component, Input } from '@angular/core';
 import { RouterModule } from '@angular/router';
 import { GrupoEquipoService } from '../../services/grupo_equipo/grupo-equipo.service';
 import { GrupoEquipo } from '../../models/grupo_equipo';
@@ -11,7 +11,8 @@ import { Router } from '@angular/router';
   styleUrl: './lista-objetos.component.css'
 })
 export class ListaObjetosComponent {
-
+  @Input() categoria: string = ''; 
+  @Input() producto: string = '';
   productos: GrupoEquipo[] = [];
 
   constructor(private servicio: GrupoEquipoService) { };
