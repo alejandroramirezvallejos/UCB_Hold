@@ -84,3 +84,10 @@ textarea {
   overflow-y: auto;
 }
 
+.no-category-item {
+  padding: 12px;
+  margin: 5px;
+  background: #f5f5f5;
+  border-radius: 5px;
+  transition: background 0.2s;
+}

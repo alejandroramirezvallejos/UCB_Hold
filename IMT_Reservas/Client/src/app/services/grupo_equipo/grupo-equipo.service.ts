@@ -13,12 +13,12 @@ export class GrupoEquipoService {
 
   constructor(private http: HttpClient) { }
 
-  getGrupoEquipo(): Observable<GrupoEquipo[]>  {
-    
+  getGrupoEquipo(categoria : string , producto : string): Observable<GrupoEquipo[]>  {
+    var url : string   = this.apiUrl + '?nombre=' + producto + '&categoria=' + categoria;
 
-    return this.http.get<GrupoEquipo[]>(this.apiUrl).pipe(
+    return this.http.get<any[]>(url).pipe(
       map(data => data.map(item => ({
-        id: item.id,
+        id: item.id_grupo_equipo,
         nombre: item.nombre ,
         modelo: ' '+item.modelo || '',
         marca: ' '+item.marca || '',
