@@ -5,30 +5,28 @@ using System.Data;
 [Route("api/[controller]")]
 public class EquiposController : ControllerBase
 {
-    private readonly IExecuteQuery _consulta;
+    private readonly IExecuteQuery _ejecutarConsulta;
 
-    public EquiposController(IExecuteQuery consulta)
+    public EquiposController(IExecuteQuery ejecutarConsulta)
     {
-        _consulta = consulta;
+        _ejecutarConsulta = ejecutarConsulta;
     }
 
-    [HttpGet("equipos")]
-    public IActionResult ObtenerEquipos([FromQuery] string grupoNombre, [FromQuery] string categoria)
+    [HttpGet]
+    public IActionResult ObtenerEquipos([FromQuery] string? nombre, [FromQuery] string? categoria)
     {
-        if (string.IsNullOrWhiteSpace(grupoNombre) || string.IsNullOrWhiteSpace(categoria))
-        {
-            return BadRequest("Debe proporcionar el nombre o la categoria en los parámetros de consulta");
-        }
+        const string consulta = "SELECT * FROM public.obtener_grupos_equipos_por_nombre_y_categoria(@nombre_grupo_equipo_input, @categoria_input)";
 
-        const string EjecutarConsulta = "SELECT * FROM public.obtener_grupos_equipos_por_nombre_y_categoria(@grupoNombre, @categoria)";
+        string? nombreFiltro = string.IsNullOrWhiteSpace(nombre) ? null : nombre;
+        string? categoriaFiltro = string.IsNullOrWhiteSpace(categoria) ? null : categoria;
 
         var parametros = new Dictionary<string, object>
         {
-            { "@grupoNombre", grupoNombre },
-            { "@categoria", categoria }
+            { "nombre_grupo_equipo_input", nombreFiltro ?? (object)DBNull.Value },
+            { "categoria_input",       categoriaFiltro ?? (object)DBNull.Value }
         };
 
-        DataTable tabla = _consulta.EjecutarFuncion(EjecutarConsulta, parametros);
+        DataTable tabla = _ejecutarConsulta.EjecutarFuncion(consulta, parametros);
         List<Dictionary<string, object?>> listaEquipos = MapearTablaALista(tabla);
 
         return Ok(listaEquipos);
@@ -42,8 +40,7 @@ public class EquiposController : ControllerBase
             var dict = new Dictionary<string, object?>();
             foreach (DataColumn columna in tabla.Columns)
             {
-                object? valor = fila[columna] == DBNull.Value ? null : fila[columna];
-                dict[columna.ColumnName] = valor;
+                dict[columna.ColumnName] = fila[columna] == DBNull.Value ? null : fila[columna];
             }
             lista.Add(dict);
         }
