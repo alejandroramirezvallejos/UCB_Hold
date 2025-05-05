@@ -1,0 +1,32 @@
+<!-- objeto.component.html -->
+<div class="contenedor-objeto">
+    <div class="seccion-imagen">
+        <div class="contenedor-imagen">
+            @if (producto.link) {
+            <img [src]="producto.link"
+                 alt="{{ producto.nombre + producto.modelo + producto.marca }}"
+                 class="imagen-producto">
+            } @else {
+            <div class="imagen-no-encontrada">
+                No se encontró la imagen
+            </div>
+            }
+        </div>
+        <button (click)="addproductocarrito()" class="boton-carrito"> Añadir al carrito</button>
+    </div>
+
+    <div class="seccion-detalles">
+        <h2 class="nombre-objeto">{{ producto.nombre + producto.modelo + producto.marca }}</h2>
+        <!-- hacer descripcion -->
+        <p class="descripcion-objeto">{{ producto.descripcion  }}</p>
+    </div>
+
+    @if(producto.url_data_sheet) {
+    <a [href]="producto.url_data_sheet" target="_blank" class="link-data-sheet">
+        link del producto
+    </a>
+    }
+</div>
+
+
+
