@@ -124,6 +124,13 @@ public static class CommandLineInterface
         builder.Services.AddScoped<IActualizarGrupoEquipoComando, GrupoEquipoUseCase>();
         builder.Services.AddScoped<IEliminarGrupoEquipoComando, GrupoEquipoUseCase>();
 
+        // Categorias
+        builder.Services.AddScoped<ICrearCategoriaComando, CategoriaUseCase>();
+        builder.Services.AddScoped<IObtenerCategoriaConsulta, CategoriaUseCase>();
+        builder.Services.AddScoped<IObtenerCategoriasConsulta, CategoriaUseCase>();
+        builder.Services.AddScoped<IActualizarCategoriaComando, CategoriaUseCase>();
+        builder.Services.AddScoped<IEliminarCategoriaComando, CategoriaUseCase>();
+
         // Usuarios
         builder.Services.AddScoped<ICrearUsuarioComando, UsuarioUseCase>();
         builder.Services.AddScoped<IObtenerUsuarioConsulta, UsuarioUseCase>();

@@ -14,6 +14,7 @@ public class EquipoRequestDto
     public string? Descripcion          { get; set; }
 
     [Required]
+    [EnumDataType(typeof(EstadoDelEquipo), ErrorMessage = "Estado del equipo invalido")]
     public string  EstadoEquipo         { get; set; } = string.Empty;
 
     public string? NumeroSerial         { get; set; }
