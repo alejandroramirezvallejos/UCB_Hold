@@ -99,7 +99,7 @@
         if (_webHost != null)
         {
             Console.ForegroundColor = ConsoleColor.Yellow;
-            Console.WriteLine("[WARNING] El servidor ya esta en ejecucion");
+            Console.WriteLine("[WARNING] El servidor ya está en ejecución");
             Console.ResetColor();
             return;
         }
@@ -119,7 +119,15 @@
         builder.Services.AddScoped<IActualizarUsuarioComando, UsuarioUseCase>();
         builder.Services.AddScoped<IEliminarUsuarioComando, UsuarioUseCase>();
 
-        //builder.Services.AddScoped<IUsuarioService, UsuarioService>();
+        builder.Services.AddCors(options =>
+        {
+            options.AddPolicy("AllowAll", policy =>
+            {
+                policy.AllowAnyOrigin()
+                      .AllowAnyMethod()
+                      .AllowAnyHeader();
+            });
+        });
 
         var app = builder.Build();
         app.UseDefaultFiles();
@@ -132,18 +140,18 @@
         }
 
         app.UseHttpsRedirection();
+        app.UseCors("AllowAll");
         app.UseAuthorization();
         app.MapControllers();
         app.MapFallbackToFile("/index.html");
 
         Task.Run(() => app.Run());
 
-        _webHost = app;  
+        _webHost = app;
         Console.ForegroundColor = ConsoleColor.Green;
         Console.WriteLine("Servidor iniciado");
         Console.ResetColor();
     }
-
 
     private static void MostrarAyuda()
     {
