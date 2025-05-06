@@ -45,7 +45,10 @@ public class PrestamoUseCase : ICrearPrestamoComando, IObtenerPrestamoConsulta,
             SELECT * FROM public.prestamos
             WHERE id_prestamo = @id";
 
-        var parametros = new Dictionary<string, object> { ["id"] = consulta.Id };
+        Dictionary<string, object> parametros = new Dictionary<string, object>
+        {
+            ["id"] = consulta.Id
+        };
         DataTable dt = _ejecutarConsulta.EjecutarFuncion(sql, parametros);
         if (dt.Rows.Count == 0) return null;
         return MapearFilaADto(dt.Rows[0]);
@@ -67,7 +70,7 @@ public class PrestamoUseCase : ICrearPrestamoComando, IObtenerPrestamoConsulta,
             WHERE id_prestamo = @id
             RETURNING *;";
 
-        var parametros = new Dictionary<string, object>
+        Dictionary<string, object> parametros = new Dictionary<string, object>
         {
             ["id"]                      = comando.Id,
             ["fechaSolicitud"]          = comando.FechaSolicitud,
@@ -92,7 +95,10 @@ public class PrestamoUseCase : ICrearPrestamoComando, IObtenerPrestamoConsulta,
             SET estado_eliminado = true
             WHERE id_prestamo = @id";
 
-        _ejecutarConsulta.EjecutarSpNR(sql, new Dictionary<string, object> { ["id"] = comando.Id });
+        _ejecutarConsulta.EjecutarSpNR(sql, new Dictionary<string, object>
+        {
+            ["id"] = comando.Id 
+        });
         return true;
     }
 
@@ -107,7 +113,7 @@ public class PrestamoUseCase : ICrearPrestamoComando, IObtenerPrestamoConsulta,
             FechaDevolucionEsperada = Convert.ToDateTime(fila["fecha_devolucion_esperada"]),
             Observacion             = fila["observacion"] as string,
             EstadoPrestamo          = fila["estado_prestamo"].ToString() ?? string.Empty,
-            CarnetUsuario           = fila["carnet_usuario"].ToString() ?? string.Empty,
+            CarnetUsuario           = fila["carnet_usuario"].ToString()  ?? string.Empty,
             EquipoId                = Convert.ToInt32(fila["id_equipo"]),
             EstaEliminado           = Convert.ToBoolean(fila["estado_eliminado"])
         };
