@@ -3,6 +3,7 @@ import { Component,EventEmitter ,input, Output } from '@angular/core';
 import { ListaObjetosComponent } from '../lista-objetos/lista-objetos.component';
 import { FormsModule } from '@angular/forms';
 import { BuscadorService } from '../../services/buscador/buscador.service';
+import { CategoriasService } from '../../services/categorias/categorias.service';
 
 @Component({
   selector: 'app-pantalla-main',
@@ -16,19 +17,22 @@ export class PantallaMainComponent {
   solicitud: string = ''; 
   categoria: string = ''; 
   enviar: boolean = false;
-  items = [
-    { name: 'Portátil', image: 'assets/laptop.jpg' },
-    { name: 'Proyector', image: 'assets/proyector.jpg' },
-    { name: 'Cámara', image: 'assets/camara.jpg' },
-    { name: 'Micrófono', image: 'assets/microfono.jpg' },
-    { name: 'Tableta Gráfica', image: 'assets/tableta.jpg' },
-    { name: 'prueba', image: 'assets/tripode.jpg' }
-  ];
+  items : any[] = []; 
 
-  constructor(private buscador: BuscadorService) {
+  constructor(private buscador: BuscadorService, private categorias : CategoriasService) {
     this.solicitud = buscador.producto;
     this.categoria = buscador.categoria;
   }
+  
+  ngOnInit(): void {
+    this.categorias.obtenercategorias().subscribe({
+      next: (data) => this.items = data,
+      error: (error) => console.error('Error en componente:', error)
+    });
+  }
+  
+  
+  
   // Añade este método
   toggleCategories() {
     this.showCategories = !this.showCategories;

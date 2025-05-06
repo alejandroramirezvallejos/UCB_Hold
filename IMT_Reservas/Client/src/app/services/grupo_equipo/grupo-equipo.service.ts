@@ -9,7 +9,7 @@ import { map } from 'rxjs/operators';
 })
 export class GrupoEquipoService {
 
-  private apiUrl = environment.apiUrl + '/api/Equipos';
+  private apiUrl = environment.apiUrl + '/api/GrupoEquipo';
 
   constructor(private http: HttpClient) { }
 
@@ -23,7 +23,7 @@ export class GrupoEquipoService {
         modelo: ' '+item.modelo || '',
         marca: ' '+item.marca || '',
         url_data_sheet: item.url_data_sheet ,
-        link: item.link 
+        link: item.url_imagen
       })))
     );
 

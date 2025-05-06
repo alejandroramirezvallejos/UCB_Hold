@@ -9,25 +9,24 @@ import { map } from 'rxjs/operators';
   providedIn: 'root'
 })
 export class ProductoService {
-  private apiUrl = environment.apiUrl + '/api/producto';
+  private apiUrl = environment.apiUrl + '/api/GrupoEquipo';
 
   constructor(private http : HttpClient) { }
 
   // producto.service.ts
-  getproducto(id: string): Observable<GrupoEquipo[]> {
+  getproducto(id: string): Observable<GrupoEquipo> {
     const url = `${this.apiUrl}/${id}`;
-    return this.http.get<GrupoEquipo[]>(url).pipe(
-      map(data => data.map(item => ({
+    return this.http.get<any>(url).pipe(
+      map(item => ({
         id: item.id,
         descripcion: item.descripcion,
         nombre: item.nombre,
         modelo: ' ' + item.modelo || '',
         marca: ' ' + item.marca || '',
-        url_data_sheet: item.url_data_sheet,
-        link: item.link
-      })))
+        url_data_sheet: item.urlData,
+        link: item.urlImagen
+      }))
     );
   }
-
   
 }
