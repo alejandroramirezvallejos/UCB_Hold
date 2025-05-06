@@ -137,6 +137,13 @@ public static class CommandLineInterface
         builder.Services.AddScoped<IActualizarUsuarioComando, UsuarioUseCase>();
         builder.Services.AddScoped<IEliminarUsuarioComando, UsuarioUseCase>();
 
+        // Prestamos
+        builder.Services.AddScoped<ICrearPrestamoComando, PrestamoUseCase>();
+        builder.Services.AddScoped<IObtenerPrestamoConsulta, PrestamoUseCase>();
+        builder.Services.AddScoped<IActualizarPrestamoComando, PrestamoUseCase>();
+        builder.Services.AddScoped<IEliminarPrestamoComando, PrestamoUseCase>();
+
+
         builder.Services.AddControllers();
         builder.Services.AddEndpointsApiExplorer();
         builder.Services.AddSwaggerGen();

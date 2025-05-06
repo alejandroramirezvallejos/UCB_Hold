@@ -1,5 +1,3 @@
-using System;
-using System.Collections.Generic;
 using System.Data;
 
 public class GrupoEquipoUseCase :ICrearGrupoEquipoComando, IObtenerGrupoEquipoConsulta,
