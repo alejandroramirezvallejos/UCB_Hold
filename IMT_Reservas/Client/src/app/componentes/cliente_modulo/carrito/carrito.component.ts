@@ -3,11 +3,7 @@ import { CarritoService } from '../../../services/carrito/carrito.service';
 import {Carrito } from '../../../models/carrito'
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
-<<<<<<< HEAD:IMT_Reservas/Client/src/app/componentes/carrito/carrito.component.ts
-
-=======
 import { MandarcarritoService } from '../../../services/enviar/carrito/mandarcarrito.service';
->>>>>>> 6959957 (Subiendo estructura para el admin ya definida.):IMT_Reservas/Client/src/app/componentes/cliente_modulo/carrito/carrito.component.ts
 
 @Component({
   selector: 'app-carrito',
@@ -18,40 +14,40 @@ import { MandarcarritoService } from '../../../services/enviar/carrito/mandarcar
 })
 export class CarritoComponent {
   private error : boolean = false;
-  hoy : string;
+  hoy : Date= new Date();
  
 
   carrito: Carrito = {};
-  constructor(private carritoS: CarritoService  ) {
+  constructor(private carritoS: CarritoService , private MandarCarrito : MandarcarritoService ) {
     this.carrito  = this.carritoS.obtenercarrito();
-    const fechaLocal = new Date();
-    const año = fechaLocal.getFullYear();
-    const mes = (fechaLocal.getMonth() + 1).toString().padStart(2, '0');
-    const día = fechaLocal.getDate().toString().padStart(2, '0');
-    const fechaISO = `${año}-${mes}-${día}`;
-
-    this.hoy=fechaISO;
+    this.hoy.setHours(0, 0, 0, 0);
   };
-
-  // Parsear fechas como locales
-  private parseDateLocal = (dateString: string) => {
-      const [year, month, day] = dateString.split('-').map(Number);
-      return new Date(year, month - 1, day);
-    };
+ 
 
   verificarfecha(item: any) {
     if (!item.value.fecha_inicio || !item.value.fecha_final) {
       return "";
     }
   
-    const fechaInicio = this.parseDateLocal(item.value.fecha_inicio);
-    const fechaFinal = this.parseDateLocal(item.value.fecha_final);
+    // Parsear fechas como locales
+    const parseDateLocal = (dateString: string) => {
+      const [year, month, day] = dateString.split('-').map(Number);
+      return new Date(year, month - 1, day);
+    };
+  
+    const fechaInicio = parseDateLocal(item.value.fecha_inicio);
+    const fechaFinal = parseDateLocal(item.value.fecha_final);
+
 
     if (fechaInicio > fechaFinal) {
       this.error = true;
       return "Error: La fecha de inicio no puede ser mayor a la fecha final";
     }
   
+    if (fechaInicio < this.hoy || fechaFinal < this.hoy) {
+      this.error = true;
+      return "Error: Las fechas no pueden ser anteriores a hoy";
+    }
   
     this.error = false;
     return "";
@@ -61,7 +57,19 @@ export class CarritoComponent {
     if (this.error) {
       console.error("Error en la validación de fechas");
     } else {
-    
+      // Obtén el usuarioid según tu lógica (por ejemplo, a partir del usuario autenticado).
+      const usuarioid = 1; // Valor de ejemplo, reemplázalo con el valor real según tu flujo.
+      
+      this.MandarCarrito.ReservarCarrito(this.carrito, usuarioid)
+        .subscribe(
+          response => {
+            console.log("Respuesta del servidor:", response);
+            // Aquí puedes redirigir al usuario o actualizar la interfaz según el resultado.
+          },
+          err => {
+            console.error("Error al reservar carrito:", err);
+          }
+        );
     }
   }
 
