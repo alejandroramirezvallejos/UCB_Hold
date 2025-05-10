@@ -21,6 +21,7 @@
               type="date" 
               id="fechaInicio_{{item.key}}" 
               [(ngModel)]="item.value.fecha_inicio" 
+              [min]="hoy"
             />
           </div>
           <div class="date-field">
@@ -29,6 +30,7 @@
               type="date" 
               id="fechaFin_{{item.key}}" 
               [(ngModel)]="item.value.fecha_final" 
+              [min]="item.value.fecha_inicio"
             />
           </div>
         </div>

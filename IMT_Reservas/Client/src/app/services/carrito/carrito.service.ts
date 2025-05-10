@@ -18,8 +18,17 @@ export class CarritoService {
       return; 
     }
 
+
+    const fechaLocal = new Date();
+    const año = fechaLocal.getFullYear();
+    const mes = (fechaLocal.getMonth() + 1).toString().padStart(2, '0');
+    const día = fechaLocal.getDate().toString().padStart(2, '0');
+    const fechaISO = `${año}-${mes}-${día}`;
+
+
+
     if (!this.carrito[id]) {
-      this.carrito[id] = { nombre, cantidad: 1 ,fecha_inicio : null,fecha_final : null , imagen : link};
+      this.carrito[id] = { nombre, cantidad: 1 ,fecha_inicio : fechaISO ,fecha_final : null , imagen : link};
       this.cantidadtotal++;
     }
     else {
