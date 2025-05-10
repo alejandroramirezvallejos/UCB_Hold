@@ -1,4 +1,4 @@
-<Project Sdk="Microsoft.VisualStudio.JavaScript.Sdk/1.0.2191419">
+﻿<Project Sdk="Microsoft.VisualStudio.JavaScript.Sdk/1.0.2191419">
   <PropertyGroup>
     <StartupCommand>npm start</StartupCommand>
     <JavaScriptTestFramework>Jasmine</JavaScriptTestFramework>
@@ -7,6 +7,24 @@
     <!-- Folder where production build objects will be placed -->
     <BuildOutputFolder>$(MSBuildProjectDirectory)\dist\IMT_Reservas.Client\browser\</BuildOutputFolder>
   </PropertyGroup>
+  <ItemGroup>
+    <None Remove="src\app\componentes\admin_modulo\componentes\**" />
+    <None Remove="src\app\componentes\admin_modulo\detalles_mantenimientos\**" />
+    <None Remove="src\app\componentes\admin_modulo\detalles_prestamos\**" />
+    <None Remove="src\app\componentes\admin_modulo\NewFolder1\**" />
+    <None Remove="src\app\componentes\admin_modulo\NewFolder2\**" />
+    <None Remove="src\app\componentes\admin_modulo\NewFolder3\**" />
+    <None Remove="src\app\componentes\admin_modulo\NewFolder\**" />
+    <None Remove="src\app\componentes\NewFolder\**" />
+    <TypeScriptConfiguration Remove="src\app\componentes\admin_modulo\componentes\**" />
+    <TypeScriptConfiguration Remove="src\app\componentes\admin_modulo\detalles_mantenimientos\**" />
+    <TypeScriptConfiguration Remove="src\app\componentes\admin_modulo\detalles_prestamos\**" />
+    <TypeScriptConfiguration Remove="src\app\componentes\admin_modulo\NewFolder1\**" />
+    <TypeScriptConfiguration Remove="src\app\componentes\admin_modulo\NewFolder2\**" />
+    <TypeScriptConfiguration Remove="src\app\componentes\admin_modulo\NewFolder3\**" />
+    <TypeScriptConfiguration Remove="src\app\componentes\admin_modulo\NewFolder\**" />
+    <TypeScriptConfiguration Remove="src\app\componentes\NewFolder\**" />
+  </ItemGroup>
   <ItemGroup>
     <Folder Include="src\assets\" />
   </ItemGroup>
