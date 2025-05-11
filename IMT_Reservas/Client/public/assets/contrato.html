@@ -24,8 +24,7 @@
   }
   .contrato-container strong {
     display: inline;
-    /* Opcionalmente ajustar márgenes si fuera necesario */
-    margin: 0 5px;
+    
     font-size: 16px;
     color: #2c3e50;
   }
@@ -34,16 +33,39 @@
       border-collapse: collapse;
       margin: 20px 0;
       font-size: 14px;
+      border-spacing: 0;
   }
   .contrato-container table, 
-  .contrato-container th, 
+    .contrato-container td p {
+      margin: 0;
+      padding: 0;
+      line-height: 1.1 !important;  /* Más compacto que el general */
+      font-size: 13px;  /* Tamaño menor para detalles */
+  }
+
+  .contrato-container td strong {
+      display: block;  /* Para que el nombre quede en línea separada */
+      margin-bottom: 2px;
+      font-size: 14px;  /* Tamaño diferenciado */
+  }
+
+  /* Ajuste general para todas las celdas */
+  .contrato-container td {
+      padding: 4px 6px;
+      line-height: 1.2;
+      vertical-align: top;
+  }
   .contrato-container td {
       border: 1px solid #aaa;
-      padding: 12px;
+      padding: 4px 6px;  /* Reducido de 12px */
       text-align: left;
+      line-height: 1.2;  /* Añadido para compactar texto */
+      vertical-align: top; /* Alineación superior */
   }
   .contrato-container th {
       background-color: #e0e0e0;
+      padding: 6px 8px;  /* Padding ligeramente mayor para headers */
+      border: 1px solid #aaa;
   }
 .contrato-container .signature {
   margin-top: 40px;
@@ -101,14 +123,7 @@
       </tr>
     </thead>
     <tbody>
-      @for (item of [[equipos]]) {
-        <tr>
-          <td>{{item.no}}</td>
-          <td>{{item.nombre}}</td>
-          <td>{{item.descripcion}}</td>
-          <td>{{item.cantidad}}</td>
-        </tr>
-      }
+      [[tablaprimera]]
     </tbody>
   </table>
   
@@ -126,7 +141,7 @@
   
   <strong>Cuarta. De la duración y perfeccionamiento.-</strong>
   <p>
-    Este Comodato tendrá una vigencia de siete [[fechaMaxima]] días contados a partir de la firma del presente contrato, fecha en la cual se realizará la entrega material de los bienes objeto del comodato.
+    Este Comodato tendrá una vigencia de [[fechaMaxima]] días contados a partir de la firma del presente contrato, fecha en la cual se realizará la entrega material de los bienes objeto del comodato.
   </p>
   
   <strong>Quinta. Del valor de los bienes.-</strong>
@@ -146,16 +161,7 @@
       </tr>
     </thead>
     <tbody>
-      @for (item of [[equipos]]) {
-        <tr>
-          <td>{{item.no}}</td>
-          <td>{{item.nombre}}</td>
-          <td>{{item.descripcion}}</td>
-          <td>{{item.cantidad}}</td>
-          <td>{{item.precio_unitario}}</td>
-          <td>{{item.precio_total}}</td>
-        </tr>
-      }
+      [[tablasegunda]]
       <tr>
         <td colspan="5" style="text-align: right;"><strong>Total:</strong></td>
         <td><strong>[[precio]]</strong></td>

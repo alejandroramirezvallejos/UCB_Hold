@@ -4,6 +4,8 @@ import { DomSanitizer , SafeHtml  } from '@angular/platform-browser';
 import {Usuario} from '../../../models/usuario'
 import { FirmaComponent } from './firma/firma.component';
 import { CommonModule } from '@angular/common';
+import { CarritoService } from '../../../services/carrito/carrito.service';
+import {Carrito} from '../../../models/carrito'
 @Component({
   selector: 'app-formulario',
   standalone: true,
@@ -14,6 +16,7 @@ import { CommonModule } from '@angular/common';
 
 // TODO APRENDER QUE HACE
 export class FormularioComponent implements OnInit {
+  @ViewChild('contratoContainer', { static: false }) contratoContainer!: ElementRef;
   contenidoHtml!: SafeHtml;
   clickfirma : WritableSignal<boolean> = signal(false) 
   firma : string ="";
@@ -23,11 +26,12 @@ export class FormularioComponent implements OnInit {
     carnet :"11111"
   }
   
-  @ViewChild('contratoContainer', { static: false }) contratoContainer!: ElementRef;
+ 
   constructor(
     private http: HttpClient,
     private sanitizer: DomSanitizer,
-    private renderer : Renderer2
+    private renderer : Renderer2,
+    private carrito : CarritoService
   ) {}
 
   ngOnInit(): void {
@@ -41,8 +45,10 @@ export class FormularioComponent implements OnInit {
             año: new Date().getFullYear().toString(),
             usuario:  this.usuario.nombre!,
             usuario_ci : this.usuario.carnet!,
+            tablaprimera: this.primeradelobjeto(this.carrito.obtenercarrito()),
 
-
+            precio : this.carrito.preciototal().toString(),
+            tablasegunda : this.quintavalordebienes(this.carrito.obtenercarrito()),
 
             firmausuario : "",
 
@@ -79,9 +85,56 @@ export class FormularioComponent implements OnInit {
       this.renderer.setAttribute(signatureImage, 'src', this.firma);
     }
   }
+  }
+ 
+
+
+  private formatearCodigos(codigos?: string[]): string {
+  return (codigos ?? []).join(', ') || 'Por definirse';
+  }
+
+private primeradelobjeto(carrito: Carrito): string {
+   const items = Object.values(carrito)
+    .filter(item => typeof item === 'object' && 'nombre' in item);
+
+  return `
+    ${items.map((item, index) => `
+      <tr>
+        <td>${this.formatearCodigos(item.codigo_ucb_unico)}</td>
+        <td>
+        <strong>${item.nombre}</strong>
+        <p>Marca: ${item.marca} </p>
+        <p>Modelo: ${item.modelo} </p>
+        </td>
+        <td>${this.formatearCodigos(item.numero_serie_unico)}</td>
+        <td>${item.cantidad}</td> 
+      </tr>
+    `).join('')}
+  `;
 }
 
+private quintavalordebienes(carrito :  Carrito) : string{
+ const items = Object.values(carrito)
+    .filter(item => typeof item === 'object' && 'nombre' in item);
 
+  return `
+    ${items.map((item, index) => `
+      <tr>
+        <td>${this.formatearCodigos(item.codigo_ucb_unico)}</td>
+        <td>
+        <strong>${item.nombre}</strong>
+        <p>Marca: ${item.marca} </p>
+        <p>Modelo: ${item.modelo} </p>
+        </td>
+        <td>${this.formatearCodigos(item.numero_serie_unico)}</td>
+        <td>${item.cantidad}</td>
+        <td>${item.precio}</td>
+        <td>${item.precio * item.cantidad}</td> 
+      </tr>
+    `).join('')}
+  `;
+
+}
   
 }
 

@@ -46,10 +46,9 @@ export class ObjetoComponent {
 
   addproductocarrito() {
 
-    this.carrito.agregarproducto(this.producto.id, this.producto.nombre, this.producto.link?? '',  this.producto.marca ?? '' , this.producto.modelo ?? '');
+    this.carrito.agregarproducto(this.producto.id, this.producto.nombre, this.producto.link?? '',  this.producto.marca ?? '' , this.producto.modelo ?? '' , 20);
 
-    this.router.navigate(['/home']);
-    
+    this.router.navigate(['/home']);    
   }
 
 
