@@ -4,6 +4,7 @@ import { PantallaMainComponent } from './componentes/cliente_modulo/pantalla-mai
 import { ObjetoComponent } from './componentes/cliente_modulo/clic_objeto/objeto.component';
 import { CarritoComponent } from './componentes/cliente_modulo/carrito/carrito.component';
 import { AdministradorComponent } from './componentes/admin_modulo/administrador/administrador.component';
+import { FormularioComponent } from './componentes/cliente_modulo/formulario/formulario.component';
 
 
 const routes: Routes = [
@@ -11,6 +12,7 @@ const routes: Routes = [
   { path: 'home', component: PantallaMainComponent },
   { path: 'Objeto/:id', component: ObjetoComponent },
   { path: 'ConfirmarReserva', component: CarritoComponent },
+  { path: 'Formulario', component: FormularioComponent },
   { path: 'Admin', component: AdministradorComponent }
 ];
 

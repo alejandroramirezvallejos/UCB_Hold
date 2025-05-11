@@ -43,4 +43,16 @@
   }
 </ul>
 
-  <button (click)="clickboton()" class="boton-carrito"> Confirmar Reserva</button>
+  <button (click)="clickboton()" class="boton-carrito"> Confirmar Solicitud</button>
+
+
+  @if(errorboton()==1){
+    <app-mostrarerror
+    [error]="errorboton"
+    [mensaje]="mensajeerror"
+    ></app-mostrarerror>
+  }
+  @else if (errorboton()==0){
+     {{formulario()}}
+
+  }

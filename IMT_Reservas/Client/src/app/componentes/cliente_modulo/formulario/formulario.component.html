@@ -1,0 +1,23 @@
+<div class="contrato-container">
+  <!-- Contrato inyectado -->
+  <div #contratoContainer class="formulario" [innerHTML]="contenidoHtml"></div>
+
+  <!-- Contenedor de botones -->
+  <div class="botones-container">
+    <button class="boton boton-firmar" (click)="firmar()">
+      <i class="icono-firma"></i>
+      Firmar
+    </button>
+    
+    <button class="boton boton-aceptar">
+      <i class="icono-check"></i>
+      Aceptar
+    </button>
+  </div>
+</div>
+
+<!-- Componente de firma, se muestra cuando clickfirma() es verdadero -->
+@if (clickfirma()) {
+
+   <app-firma (firma)="guardarfirma($event)" [clickfirma]="clickfirma" ></app-firma>
+}
