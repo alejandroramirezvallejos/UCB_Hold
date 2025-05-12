@@ -76,6 +76,8 @@ import { DetallesMantenimientosCrearComponent } from './componentes/admin_modulo
 import { DetallesMantenimientosObtenerComponent } from './componentes/admin_modulo/detalles_mantenimientos/detalles-mantenimientos-obtener/detalles-mantenimientos-obtener.component';
 import { DetallesMantenimientosActualizarComponent } from './componentes/admin_modulo/detalles_mantenimientos/detalles-mantenimientos-actualizar/detalles-mantenimientos-actualizar.component';
 import { DetallesMantenimientosEliminarComponent } from './componentes/admin_modulo/detalles_mantenimientos/detalles-mantenimientos-eliminar/detalles-mantenimientos-eliminar.component';
+import { HistorialComponent } from './componentes/usuario/historial/historial.component';
+import { PerfilComponent } from './componentes/usuario/perfil/perfil.component';
 
 
 const routes: Routes = [
@@ -187,8 +189,9 @@ const routes: Routes = [
   { path: 'Objeto/:id', component: ObjetoComponent },
   { path: 'ConfirmarReserva', component: CarritoComponent },
   { path: 'Formulario', component: FormularioComponent },
-  { path: 'Iniciar-Sesion', component: IniciarSesionComponent }
- 
+  { path: 'Iniciar-Sesion', component: IniciarSesionComponent },
+  { path: 'Historial', component: HistorialComponent },
+ { path: 'Perfil', component: PerfilComponent }
 
 ];
 
