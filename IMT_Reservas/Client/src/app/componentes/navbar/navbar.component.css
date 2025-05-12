@@ -43,7 +43,7 @@
   background: none;
   border: none;
   font-size: 1.3rem;
-  color: #333;
+  color: #7F7F7F;
   cursor: pointer;
   padding: 0.5rem;
 }
@@ -52,8 +52,8 @@
   position: absolute;
   top: -5px;
   right: -10px;
-  background: #ff4444;
-  color: white;
+  background: #FFDD05;
+  color: rgb(0, 0, 0);
   border-radius: 50%;
   padding: 2px 8px;
   font-size: 0.8rem;

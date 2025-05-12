@@ -6,10 +6,14 @@ import { FirmaComponent } from './firma/firma.component';
 import { CommonModule } from '@angular/common';
 import { CarritoService } from '../../../services/carrito/carrito.service';
 import {Carrito} from '../../../models/carrito'
+import jsPDF from 'jspdf';
+import html2canvas from 'html2canvas';
+import { MostrarerrorComponent } from '../../mostrarerror/mostrarerror.component';
+import { Router } from '@angular/router';
 @Component({
   selector: 'app-formulario',
   standalone: true,
-  imports: [FirmaComponent , CommonModule],
+  imports: [FirmaComponent , CommonModule , MostrarerrorComponent],
   templateUrl: './formulario.component.html',
   styleUrl: './formulario.component.css'
 })
@@ -20,7 +24,8 @@ export class FormularioComponent implements OnInit {
   contenidoHtml!: SafeHtml;
   clickfirma : WritableSignal<boolean> = signal(false) 
   firma : string ="";
-  
+  error : WritableSignal<number> = signal(2); 
+  mensajeerror : string = "Error desconocido intente mas tarde"
   usuario : Usuario ={
     nombre: "josue Balbontin ",
     carnet :"11111"
@@ -31,7 +36,8 @@ export class FormularioComponent implements OnInit {
     private http: HttpClient,
     private sanitizer: DomSanitizer,
     private renderer : Renderer2,
-    private carrito : CarritoService
+    private carrito : CarritoService,
+    private router : Router
   ) {}
 
   ngOnInit(): void {
@@ -75,6 +81,22 @@ export class FormularioComponent implements OnInit {
 
   }
 
+  aceptar(){
+    if(!this.carrito || Object.keys(this.carrito.obtenercarrito()).length===0){
+      this.error.set(1); 
+    }
+    else if(this.firma=='' || undefined){
+      this.firmar();
+    }
+    else{
+      //TODO AGREGAR LA LOGICA PARA MANDAR Y PARA RELLENAR LO FALTANTE COMO FECHA Y FECHA MAXIMA 
+      // COMPLETAR EL UCB ID Y MODELOS
+      // RESERVAR 
+      this.generarPDF();
+      this.carrito.vaciarcarrito();
+      this.router.navigate(["/home"])
+    }
+  }
 
   guardarfirma(signatureData: string): void {
   this.firma = signatureData;
@@ -136,6 +158,47 @@ private quintavalordebienes(carrito :  Carrito) : string{
 
 }
   
+ generarPDF(): void {
+    const contrato = this.contratoContainer.nativeElement;
+
+    html2canvas(contrato, { scale: 2 }).then((canvas) => {
+      // Convertir el contenido del canvas a imagen (Base64)
+      const imgData = canvas.toDataURL('image/png');
+      
+      // Creamos el PDF en orientación vertical y tamaño A4
+      const pdf = new jsPDF('p', 'mm', 'a4');
+      
+      // Obtenemos dimensiones del PDF
+      const pdfWidth = pdf.internal.pageSize.getWidth();
+      const pdfHeight = pdf.internal.pageSize.getHeight();
+      
+      // Calculamos las dimensiones de la imagen manteniendo la proporción
+      // Utilizaremos la anchura completa de la página:
+      const imgProps = pdf.getImageProperties(imgData);
+      const imgHeight = (imgProps.height * pdfWidth) / imgProps.width;
+
+      // Si la imagen es más alta que la página, la dividimos en varias
+      let heightLeft = imgHeight;
+      let position = 0;
+
+      // Inserta la primera imagen en la primera página
+      pdf.addImage(imgData, 'PNG', 0, position, pdfWidth, imgHeight);
+      heightLeft -= pdfHeight;
+
+      // Agregar nuevas páginas mientras quede contenido
+      while (heightLeft > 0) {
+        position = heightLeft - imgHeight;
+        pdf.addPage();
+        pdf.addImage(imgData, 'PNG', 0, position, pdfWidth, imgHeight);
+        heightLeft -= pdfHeight;
+      }
+      
+      pdf.save('contrato.pdf');
+    });
+  }
+
+
+
 }
 
 

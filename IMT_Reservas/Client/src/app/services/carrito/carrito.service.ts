@@ -70,7 +70,10 @@ export class CarritoService {
     return this.cantidadtotal; 
   }
 
-
+  vaciarcarrito(){
+    this.carrito={};
+    this.cantidadtotal=0; 
+  }
 
   preciototal() : number{
     let total : number =0; 

@@ -9,7 +9,7 @@
       Firmar
     </button>
     
-    <button class="boton boton-aceptar">
+    <button (click)="aceptar()"   class="boton boton-aceptar">
       <i class="icono-check"></i>
       Aceptar
     </button>
@@ -20,4 +20,11 @@
 @if (clickfirma()) {
 
    <app-firma (firma)="guardarfirma($event)" [clickfirma]="clickfirma" ></app-firma>
+}
+
+@if (error()==1){
+  <app-mostrarerror
+  [error]="error"
+  [mensaje]="mensajeerror"
+  ></app-mostrarerror>
 }
