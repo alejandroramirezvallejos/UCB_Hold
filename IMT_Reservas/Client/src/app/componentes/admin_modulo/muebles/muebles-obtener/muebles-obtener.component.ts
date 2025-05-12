@@ -2,6 +2,7 @@ import { Component } from '@angular/core';
 
 @Component({
   selector: 'app-muebles-obtener',
+  standalone: true,
   imports: [],
   templateUrl: './muebles-obtener.component.html',
   styleUrl: './muebles-obtener.component.css'
