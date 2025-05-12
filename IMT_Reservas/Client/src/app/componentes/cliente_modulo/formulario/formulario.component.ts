@@ -1,7 +1,6 @@
 import { HttpClient } from '@angular/common/http';
 import { Component, OnInit ,ElementRef,ViewChild ,Renderer2, WritableSignal, signal } from '@angular/core';
 import { DomSanitizer , SafeHtml  } from '@angular/platform-browser';
-import {Usuario} from '../../../models/usuario'
 import { FirmaComponent } from './firma/firma.component';
 import { CommonModule } from '@angular/common';
 import { CarritoService } from '../../../services/carrito/carrito.service';
@@ -10,6 +9,10 @@ import jsPDF from 'jspdf';
 import html2canvas from 'html2canvas';
 import { MostrarerrorComponent } from '../../mostrarerror/mostrarerror.component';
 import { Router } from '@angular/router';
+import { UsuarioService } from '../../../services/usuario/usuario.service';
+
+
+
 @Component({
   selector: 'app-formulario',
   standalone: true,
@@ -26,10 +29,7 @@ export class FormularioComponent implements OnInit {
   firma : string ="";
   error : WritableSignal<number> = signal(2); 
   mensajeerror : string = "Error desconocido intente mas tarde"
-  usuario : Usuario ={
-    nombre: "josue Balbontin ",
-    carnet :"11111"
-  }
+
   
  
   constructor(
@@ -37,8 +37,12 @@ export class FormularioComponent implements OnInit {
     private sanitizer: DomSanitizer,
     private renderer : Renderer2,
     private carrito : CarritoService,
-    private router : Router
-  ) {}
+    private router : Router,
+    private usuario : UsuarioService
+  ) {
+
+    this.usuario.prueba();
+  }
 
   ngOnInit(): void {
     // Se hace una petición para obtener el archivo HTML desde assets
