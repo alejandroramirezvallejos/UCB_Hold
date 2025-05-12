@@ -19,16 +19,18 @@ export class UsuarioService {
 
   }
 
-  prueba(){
-    this.nombre= "josue Balbontin ";
-    this.carnet ="11111";
+
+  //TODO: MODIFICAR ESTO CUANDOE ESTE LISTO 
+  iniciarsesion(nombre : string , contraseña : string ) {
+    this.nombre=nombre;
+    this.carnet=contraseña; 
 
   }
-
-  iniciarsesion() {
-
-
+  vacio() : boolean{
+    if(!this.nombre || this.nombre.trim() ==="" || this.nombre==""){
+      return  true;
+    }
+    return false;
   }
-
 
 }

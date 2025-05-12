@@ -3,6 +3,7 @@ import { Component, Output , EventEmitter, Input, ɵunwrapWritableSignal, Writab
 import { CarritoService } from '../../../services/carrito/carrito.service';
 import {Carrito } from '../../../models/carrito'
 import { Router } from '@angular/router';
+import { UsuarioService } from '../../../services/usuario/usuario.service';
 
 
 @Component({
@@ -17,7 +18,7 @@ export class CarritoPrevioComponent {
   @Input() showCarritoevent  : WritableSignal<boolean> = signal(true) ;
   carritoItems: Carrito = {};
 
-  constructor(private serviciocarrito: CarritoService , private router : Router) {
+  constructor(private serviciocarrito: CarritoService , private router : Router , private usuario : UsuarioService) {
 
     this.carritoItems = serviciocarrito.obtenercarrito();
   };
@@ -36,6 +37,9 @@ export class CarritoPrevioComponent {
   confirmReserva() {
     if (this.carritoItems == null || Object.keys(this.carritoItems).length === 0) {
 
+    }
+    else if (this.usuario.vacio()){
+      this.router.navigate(['/Iniciar-Sesion']);
     }
     else {
       this.showCarritoevent.set(false);

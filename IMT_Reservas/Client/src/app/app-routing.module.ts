@@ -5,6 +5,7 @@ import { ObjetoComponent } from './componentes/cliente_modulo/clic_objeto/objeto
 import { CarritoComponent } from './componentes/cliente_modulo/carrito/carrito.component';
 import { AdministradorComponent } from './componentes/admin_modulo/administrador/administrador.component';
 import { FormularioComponent } from './componentes/cliente_modulo/formulario/formulario.component';
+import { IniciarSesionComponent } from './componentes/iniciar-sesion/iniciar-sesion.component';
 
 
 const routes: Routes = [
@@ -13,7 +14,8 @@ const routes: Routes = [
   { path: 'Objeto/:id', component: ObjetoComponent },
   { path: 'ConfirmarReserva', component: CarritoComponent },
   { path: 'Formulario', component: FormularioComponent },
-  { path: 'Admin', component: AdministradorComponent }
+  { path: 'Iniciar-Sesion', component: IniciarSesionComponent },
+  { path: 'admin', component: AdministradorComponent }
 ];
 
 @NgModule({

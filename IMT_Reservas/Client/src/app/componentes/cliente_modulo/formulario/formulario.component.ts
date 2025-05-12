@@ -41,7 +41,6 @@ export class FormularioComponent implements OnInit {
     private usuario : UsuarioService
   ) {
 
-    this.usuario.prueba();
   }
 
   ngOnInit(): void {

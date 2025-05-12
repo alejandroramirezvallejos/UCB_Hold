@@ -1,0 +1,81 @@
+<!-- iniciar-sesion.component.html -->
+<div class="login-container">
+  <div class="login-card">
+    <div class="logo-container">
+      <img src="../../../../public/assets/logo-universidad.png" 
+     alt="Logo Universidad"
+     class="logo"
+     width="300"
+     height="150">
+    </div>
+    
+    <h2 class="title">Iniciar Sesión</h2>
+    
+    <form (ngSubmit)="login()" class="login-form">
+      <div class="form-group">
+        <label for="email">Correo electrónico</label>
+        <input 
+          type="email" 
+          id="email" 
+          name="email" 
+          [(ngModel)]="email"
+          required
+          email
+          placeholder="tu@correo.com"
+          class="form-input"
+          #emailInput="ngModel"
+        >
+        @if (emailInput.invalid && (emailInput.dirty || emailInput.touched)) {
+          <div class="error-message">
+            @if (emailInput.errors?.['required']) {
+              <div>El correo electrónico es requerido</div>
+            }
+            @if (emailInput.errors?.['email']) {
+              <div>Formato de correo inválido</div>
+            }
+          </div>
+        }
+      </div>
+
+      <div class="form-group">
+        <label for="password">Contraseña</label>
+        <input 
+          type="password" 
+          id="password" 
+          name="contraseña" 
+          [(ngModel)]="contrasena"
+          required
+          minlength="6"
+          placeholder="••••••••"
+          class="form-input"
+          #passwordInput="ngModel"
+        >
+        @if (passwordInput.invalid && (passwordInput.dirty || passwordInput.touched)) {
+          <div class="error-message">
+            @if (passwordInput.errors?.['required']) {
+              <div>La contraseña es requerida</div>
+            }
+            @if (passwordInput.errors?.['minlength']) {
+              <div>Mínimo 6 caracteres</div>
+            }
+          </div>
+        }
+      </div>
+
+      <button type="submit" class="login-button" [disabled]="!email || !contrasena">
+        @if (!loading) {
+          <span>Ingresar</span>
+        } @else {
+          <div class="spinner"></div>
+        }
+      </button>
+
+      <div class="additional-options">
+        <a href="#" class="forgot-password">¿Olvidaste tu contraseña?</a>
+        <p class="register-link">
+          ¿No tienes cuenta? <a href="#">Regístrate aquí</a>
+        </p>
+      </div>
+    </form>
+  </div>
+</div>
