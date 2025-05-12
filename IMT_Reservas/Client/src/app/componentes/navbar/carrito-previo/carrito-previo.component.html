@@ -1,7 +1,6 @@
 <!-- Solo se muestra si showCarrito es true -->
-@if (showCarrito) {
-<div class="carrito-panel">
 
+<div class="carrito-panel">
   <div class="carrito-items">
     @for (item of carritoItems | keyvalue; track item.key) {
     <div class="carrito-item">
@@ -16,10 +15,9 @@
     </div>
     }
   </div>
-
   <!-- Botón final para confirmar la reserva -->
   <div class="carrito-footer">
     <button class="confirm-btn" (click)="confirmReserva()">Confirmar Reserva</button>
   </div>
 </div>
-}
+

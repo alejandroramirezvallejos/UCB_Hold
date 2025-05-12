@@ -16,7 +16,7 @@ import { UsuarioService } from '../../../services/usuario/usuario.service';
 @Component({
   selector: 'app-formulario',
   standalone: true,
-  imports: [FirmaComponent , CommonModule , MostrarerrorComponent],
+  imports: [FirmaComponent , CommonModule , MostrarerrorComponent ],
   templateUrl: './formulario.component.html',
   styleUrl: './formulario.component.css'
 })
