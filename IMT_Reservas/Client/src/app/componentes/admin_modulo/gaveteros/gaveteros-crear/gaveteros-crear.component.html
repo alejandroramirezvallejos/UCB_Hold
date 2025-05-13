@@ -1,1 +1,40 @@
-<p>gaveteros-crear works!</p>
+<div class="form-container">
+  <h2>Registrar Gavetero</h2>
+  <form id="gaveteroForm" method="POST">
+    <div class="form-group">
+      <label for="nombre">Nombre</label>
+      <input type="text" id="nombre" name="nombre" required />
+    </div>
+
+    <div class="form-group">
+      <label for="tipo">Tipo</label>
+      <input type="text" id="tipo" name="tipo" required />
+    </div>
+
+    <div class="form-group">
+      <label for="nombre_mueble">Nombre del Mueble</label>
+      <input type="text" id="nombre_mueble" name="nombre_mueble" required />
+    </div>
+
+    <div class="form-group">
+      <label for="longitud">Longitud (cm)</label>
+      <input type="number" step="0.01" id="longitud" name="longitud" required />
+    </div>
+
+    <div class="form-group">
+      <label for="profundidad">Profundidad (cm)</label>
+      <input type="number" step="0.01" id="profundidad" name="profundidad" required />
+    </div>
+
+    <div class="form-group">
+      <label for="altura">Altura (cm)</label>
+      <input type="number" step="0.01" id="altura" name="altura" required />
+    </div>
+
+    <div class="form-submit">
+      <button type="submit">Registrar</button>
+    </div>
+  </form>
+</div>
+
+

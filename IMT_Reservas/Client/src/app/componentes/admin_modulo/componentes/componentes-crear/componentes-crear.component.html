@@ -1,1 +1,47 @@
-<p>componentes-crear works!</p>
+<div class="form-container">
+  <h2>Registrar Componente</h2>
+  <form id="componenteForm" method="POST">
+
+    <div class="form-group">
+      <label for="nombre">Nombre</label>
+      <input type="text" id="nombre" name="nombre" required />
+    </div>
+
+    <div class="form-group">
+      <label for="modelo">Modelo</label>
+      <input type="text" id="modelo" name="modelo" required />
+    </div>
+
+    <div class="form-group">
+      <label for="tipo">Tipo</label>
+      <input type="text" id="tipo" name="tipo" required />
+    </div>
+
+    <div class="form-group">
+      <label for="descripcion">Descripción</label>
+      <textarea id="descripcion" name="descripcion" rows="3" required></textarea>
+    </div>
+
+    <div class="form-group">
+      <label for="url_data_sheet">URL Data Sheet</label>
+      <input type="url" id="url_data_sheet" name="url_data_sheet"
+             placeholder="https://ejemplo.com/datasheet.pdf" />
+    </div>
+
+    <div class="form-group">
+      <label for="codigo_imt">Código IMT Relacionado</label>
+      <input type="text" id="codigo_imt" name="codigo_imt" required/>
+    </div>
+
+    <div class="form-group">
+      <label for="precio_referencia">Precio de Referencia (Bs)</label>
+      <input type="number" id="precio_referencia" name="precio_referencia"
+             step="0.01" min="0" required
+             placeholder="Ej: 123.45" />
+    </div>
+
+    <div class="form-submit">
+      <button type="submit">Registrar</button>
+    </div>
+  </form>
+</div>

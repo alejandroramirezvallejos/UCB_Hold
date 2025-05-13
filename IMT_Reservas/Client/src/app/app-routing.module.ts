@@ -66,17 +66,6 @@ import { UsuariosActualizarComponent } from './componentes/admin_modulo/usuarios
 import { UsuariosCrearComponent } from './componentes/admin_modulo/usuarios/usuarios-crear/usuarios-crear.component';
 import { UsuariosEliminarComponent } from './componentes/admin_modulo/usuarios/usuarios-eliminar/usuarios-eliminar.component';
 import { UsuariosObtenerComponent } from './componentes/admin_modulo/usuarios/usuarios-obtener/usuarios-obtener.component';
-import { DetallesPrestamosComponent } from './componentes/admin_modulo/detalles_prestamos/detalles-prestamos/detalles-prestamos.component';
-import { DetallesPrestamosCrearComponent } from './componentes/admin_modulo/detalles_prestamos/detalles-prestamos-crear/detalles-prestamos-crear.component';
-import { DetallesPrestamosObtenerComponent } from './componentes/admin_modulo/detalles_prestamos/detalles-prestamos-obtener/detalles-prestamos-obtener.component';
-import { DetallesPrestamosActualizarComponent } from './componentes/admin_modulo/detalles_prestamos/detalles-prestamos-actualizar/detalles-prestamos-actualizar.component';
-import { DetallesPrestamosEliminarComponent } from './componentes/admin_modulo/detalles_prestamos/detalles-prestamos-eliminar/detalles-prestamos-eliminar.component';
-import { DetallesMantenimientosComponent } from './componentes/admin_modulo/detalles_mantenimientos/detalles-mantenimientos/detalles-mantenimientos.component';
-import { DetallesMantenimientosCrearComponent } from './componentes/admin_modulo/detalles_mantenimientos/detalles-mantenimientos-crear/detalles-mantenimientos-crear.component';
-import { DetallesMantenimientosObtenerComponent } from './componentes/admin_modulo/detalles_mantenimientos/detalles-mantenimientos-obtener/detalles-mantenimientos-obtener.component';
-import { DetallesMantenimientosActualizarComponent } from './componentes/admin_modulo/detalles_mantenimientos/detalles-mantenimientos-actualizar/detalles-mantenimientos-actualizar.component';
-import { DetallesMantenimientosEliminarComponent } from './componentes/admin_modulo/detalles_mantenimientos/detalles-mantenimientos-eliminar/detalles-mantenimientos-eliminar.component';
-
 
 const routes: Routes = [
   { path: '', redirectTo: '/home', pathMatch: 'full' },
@@ -167,20 +156,6 @@ const routes: Routes = [
   { path: 'admin/usuarios/obtener', component: UsuariosObtenerComponent },
   { path: 'admin/usuarios/actualizar', component: UsuariosActualizarComponent },
   { path: 'admin/usuarios/eliminar', component: UsuariosEliminarComponent },
-
-  // DETALLES DE PRÉSTAMOS
-  { path: 'admin/detalles_prestamos', component: DetallesPrestamosComponent },
-  { path: 'admin/detalles_prestamos/crear', component: DetallesPrestamosCrearComponent },
-  { path: 'admin/detalles_prestamos/obtener', component: DetallesPrestamosObtenerComponent },
-  { path: 'admin/detalles_prestamos/actualizar', component: DetallesPrestamosActualizarComponent },
-  { path: 'admin/detalles_prestamos/eliminar', component: DetallesPrestamosEliminarComponent },
-
-  // DETALLES DE MANTENIMIENTOS
-  { path: 'admin/detalles_mantenimientos', component: DetallesMantenimientosComponent },
-  { path: 'admin/detalles_mantenimientos/crear', component: DetallesMantenimientosCrearComponent },
-  { path: 'admin/detalles_mantenimientos/obtener', component: DetallesMantenimientosObtenerComponent },
-  { path: 'admin/detalles_mantenimientos/actualizar', component: DetallesMantenimientosActualizarComponent },
-  { path: 'admin/detalles_mantenimientos/eliminar', component: DetallesMantenimientosEliminarComponent },
 
   // RUTAS GENERALES
   { path: 'home', component: PantallaMainComponent },

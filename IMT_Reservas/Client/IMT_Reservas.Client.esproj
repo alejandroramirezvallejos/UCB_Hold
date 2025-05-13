@@ -8,7 +8,6 @@
     <BuildOutputFolder>$(MSBuildProjectDirectory)\dist\IMT_Reservas.Client\browser\</BuildOutputFolder>
   </PropertyGroup>
   <ItemGroup>
-    <None Remove="src\app\componentes\admin_modulo\componentes\**" />
     <None Remove="src\app\componentes\admin_modulo\detalles_mantenimientos\**" />
     <None Remove="src\app\componentes\admin_modulo\detalles_prestamos\**" />
     <None Remove="src\app\componentes\admin_modulo\NewFolder1\**" />
@@ -16,7 +15,6 @@
     <None Remove="src\app\componentes\admin_modulo\NewFolder3\**" />
     <None Remove="src\app\componentes\admin_modulo\NewFolder\**" />
     <None Remove="src\app\componentes\NewFolder\**" />
-    <TypeScriptConfiguration Remove="src\app\componentes\admin_modulo\componentes\**" />
     <TypeScriptConfiguration Remove="src\app\componentes\admin_modulo\detalles_mantenimientos\**" />
     <TypeScriptConfiguration Remove="src\app\componentes\admin_modulo\detalles_prestamos\**" />
     <TypeScriptConfiguration Remove="src\app\componentes\admin_modulo\NewFolder1\**" />

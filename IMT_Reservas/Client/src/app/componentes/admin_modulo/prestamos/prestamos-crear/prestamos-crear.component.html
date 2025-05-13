@@ -1,1 +1,140 @@
-<p>prestamos-crear works!</p>
+<div class="form-container">
+  <h2>Registrar Préstamo</h2>
+  <form id="prestamoForm" method="POST">
+    <!-- Información principal del préstamo -->
+    <div class="form-group">
+      <label for="carnet">Carnet</label>
+      <input type="text" id="carnet" name="carnet" required />
+    </div>
+
+    <div class="form-group">
+      <label for="fecha_prestamo_esperada">Fecha de Préstamo Esperada</label>
+      <input type="date" id="fecha_prestamo_esperada" name="fecha_prestamo_esperada" required />
+    </div>
+
+    <div class="form-group">
+      <label for="fecha_devolucion_esperada">Fecha de Devolución Esperada</label>
+      <input type="date" id="fecha_devolucion_esperada" name="fecha_devolucion_esperada" required />
+    </div>
+
+    <div class="form-group">
+      <label for="observacion">Observación</label>
+      <textarea id="observacion" name="observacion" rows="3"></textarea>
+    </div>
+
+    <!-- Sección para añadir equipos -->
+    <div class="equipos-section">
+      <h3>Equipos a Reservar</h3>
+
+      <div class="form-group">
+        <label for="cantidad_equipos">¿Cuántos equipos desea reservar?</label>
+        <input type="number" min="1" id="cantidad_equipos" name="cantidad_equipos" />
+        <button type="button" id="generar_equipos" class="btn-secondary">Generar campos</button>
+      </div>
+
+      <!-- Contenedor para equipos dinámicos -->
+      <div id="equipos_container">
+        <!-- Aquí se generarán dinámicamente los campos para equipos -->
+      </div>
+    </div>
+
+    <div class="form-submit">
+      <button type="submit">Registrar Préstamo</button>
+    </div>
+  </form>
+</div>
+
+<!-- Template para los campos de equipo que se generarán dinámicamente -->
+<template id="equipo_template">
+  <div class="equipo-item">
+    <h4>Equipo #<span class="equipo-numero"></span></h4>
+    <div class="form-group">
+      <label for="codigo_imt_">Código IMT</label>
+      <input type="text" id="codigo_imt_" name="codigo_imt_" required />
+    </div>
+    <hr class="equipo-separator">
+  </div>
+</template>
+
+<style>
+  .equipos-section {
+    margin-top: 20px;
+    padding: 15px;
+    border: 1px solid #ddd;
+    border-radius: 10px;
+    background-color: #f9f9f9;
+  }
+
+    .equipos-section h3 {
+      margin-bottom: 15px;
+      color: #444;
+    }
+
+  .btn-secondary {
+    background-color: #6c757d;
+    color: white;
+    padding: 8px 15px;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    margin-left: 10px;
+  }
+
+    .btn-secondary:hover {
+      background-color: #5a6268;
+    }
+
+  .equipo-item {
+    margin-top: 20px;
+    padding-bottom: 10px;
+  }
+
+    .equipo-item h4 {
+      margin-bottom: 10px;
+      color: #555;
+    }
+
+  .equipo-separator {
+    margin: 20px 0;
+    border: 0;
+    border-top: 1px dashed #ccc;
+  }
+</style>
+
+<script>// Este script debe ser implementado en el componente TypeScript
+  document.addEventListener('DOMContentLoaded', function() {
+    const generarBtn = document.getElementById('generar_equipos');
+    const cantidadInput = document.getElementById('cantidad_equipos');
+    const equiposContainer = document.getElementById('equipos_container');
+    const equipoTemplate = document.getElementById('equipo_template');
+
+    generarBtn.addEventListener('click', function() {
+      const cantidad = parseInt(cantidadInput.value);
+
+      if (cantidad && cantidad > 0) {
+        // Limpiar contenedor antes de generar nuevos campos
+        equiposContainer.innerHTML = '';
+
+        // Generar campos para cada equipo
+        for (let i = 1; i <= cantidad; i++) {
+          const equipoClone = equipoTemplate.content.cloneNode(true);
+
+          // Actualizar número de equipo
+          equipoClone.querySelector('.equipo-numero').textContent = i;
+
+          // Actualizar IDs y names para ser únicos
+          const inputs = equipoClone.querySelectorAll('input');
+          inputs.forEach(input => {
+            const baseId = input.id;
+            input.id = baseId + i;
+            input.name = baseId + i;
+          });
+
+          equiposContainer.appendChild(equipoClone);
+        }
+      } else {
+        alert('Por favor ingrese una cantidad válida mayor a cero');
+      }
+    });
+  });</script>
+
