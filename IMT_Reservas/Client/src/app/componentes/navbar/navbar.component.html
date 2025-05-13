@@ -42,6 +42,7 @@
       <span class="cart-count">{{ totalproductos() }}</span>
     </button>
     <div class="user-menu">
+<<<<<<< HEAD
       <button
         type="button"
         class="icon-button user-button"
@@ -87,3 +88,27 @@
   *ngIf="showCarrito"
   (showCarritoevent)="obtenershow()"
 ></app-carrito-previo>
+=======
+      <div class="user-circle" (click)="toggleUserMenu()">
+        <i class="fas fa-user"></i>
+      </div>
+
+      @if(showUserMenu()) {
+        <app-usuario-previo
+        [showUserMenu]="showUserMenu"
+        ></app-usuario-previo>
+      }
+    </div>
+  </div>
+</nav>
+
+
+
+<!-- Aquí integramos el panel del carrito -->
+@if (showCarrito()) {
+
+<app-carrito-previo
+[showCarritoevent]="showCarrito"
+></app-carrito-previo>
+}
+>>>>>>> 74ac4c51b29fde7745201bbfc1d86401ca8e36bf

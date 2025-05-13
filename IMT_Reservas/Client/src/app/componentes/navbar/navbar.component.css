@@ -116,6 +116,7 @@ body {
   max-height: 500px;
 }
 
+<<<<<<< HEAD
 .user-dropdown {
   position: fixed;
   top: calc(4.5rem - 36px);
@@ -153,4 +154,23 @@ body {
 }
 .dropdown-item:hover {
   color: #ffcf00;
+=======
+  .user-circle:hover {
+    background-color: #FFDD05;
+  }
+
+
+  .dropdown-item:hover {
+    background-color: #f8f9fa;
+  }
+
+  .dropdown-item i {
+    width: 25px;
+  }
+
+/* Mantener estilos existentes del logo */
+.logo-image {
+  width: 90px;
+  filter: drop-shadow(0 2px 5px rgba(0, 0, 0, 0.1));
+>>>>>>> 74ac4c51b29fde7745201bbfc1d86401ca8e36bf
 }
