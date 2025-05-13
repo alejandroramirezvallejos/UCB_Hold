@@ -21,7 +21,7 @@ export class IniciarSesionComponent {
   
   login(){
     this.loading = true;
-    this.usuario.iniciarsesion(this.email,this.contrasena)
+    this.usuario.iniciarsesion(this.email,this.contrasena, "administrador")
     this.router.navigate(["/home"])
   }
 

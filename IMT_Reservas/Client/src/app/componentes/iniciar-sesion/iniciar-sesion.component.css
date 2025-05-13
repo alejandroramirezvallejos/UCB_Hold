@@ -1,26 +1,34 @@
 /* iniciar-sesion.component.css */
+@import url('https://fonts.googleapis.com/css2?family=Open+Sans:wght@300;400;600;700&display=swap');
+
+:host {
+  font-family: 'Open Sans', sans-serif;
+}
+
 :root {
-  --primary-color: #2563eb;
-  --primary-hover: #1d4ed8;
+  --primary-color: #1e3a8a;
+  --primary-hover: #162d6b;
   --text-color: #1f2937;
   --background-color: #f8fafc;
-  --input-border: #e2e8f0;
+  --input-border: #e1e5ea;
 }
 
 .login-container {
   min-height: 100vh;
   display: flex;
-  align-items: center;
+  align-items: flex-start;
   justify-content: center;
-  background-color: var(--background-color);
-  padding: 2rem;
+  background: linear-gradient(135deg, #f0f4f8 0%, #d9e2ec 100%);
+  padding: 4rem 2rem 2rem;
 }
 
 .login-card {
   background: white;
   padding: 2.5rem;
   border-radius: 1rem;
-  box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
+  border: 1px solid #e1e5ea;
+  border-left: 4px solid var(--primary-color);
+  box-shadow: 0 15px 25px rgba(0, 0, 0, 0.1);
   width: 100%;
   max-width: 400px;
 }
@@ -37,10 +45,10 @@
 
 .title {
   text-align: center;
-  color: var(--text-color);
+  color: var(--primary-color);
   margin-bottom: 2rem;
-  font-size: 1.5rem;
-  font-weight: 600;
+  font-size: 2rem;
+  font-weight: 700;
 }
 
 .login-form {
@@ -81,8 +89,9 @@ label {
 }
 
 .login-button {
- background-color:  #5F6368;
+  background: var(--primary-color);
   color: rgb(255, 255, 255);
+  background-color: #5F6368;
   padding: 0.75rem;
   border: none;
   border-radius: 0.5rem;
@@ -93,7 +102,14 @@ label {
 }
 
 .login-button:hover {
-  background-color: #FFCF00;
+  background: #FFCF00;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+}
+
+.login-button:active {
+  background: #FFCF00;
+  transform: translateY(1px);
+  box-shadow: inset 0 3px 5px rgba(0, 0, 0, 0.125);
 }
 
 .login-button:disabled {

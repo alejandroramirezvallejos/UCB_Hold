@@ -1,4 +1,8 @@
-  <div class="user-dropdown">
+ 
+ @if(sesion==true && rol=="administrador"){
+
+
+ <div class="user-dropdown">
         <div class="dropdown-item" (click)="seleccionar('perfil')">
           <i class="fas fa-user-circle"></i> Ver Perfil
         </div>
@@ -12,3 +16,20 @@
           <i class="fas fa-sign-out-alt"></i> Modo Admin
         </div>
       </div>
+ }
+ @else if (sesion==true && rol=="usuario"){
+      <div class="dropdown-item" (click)="seleccionar('perfil')">
+          <i class="fas fa-user-circle"></i> Ver Perfil
+        </div>
+        <div class="dropdown-item" (click)="seleccionar('historial')">
+          <i class="fas fa-history"></i> Historial
+        </div>
+        <div class="dropdown-item" (click)="seleccionar('cerrar-sesion')">
+          <i class="fas fa-sign-out-alt"></i> Cerrar Sesión
+        </div>
+ }
+ @else{
+ <div class="dropdown-item" (click)="seleccionar('iniciarsesion')">
+          <i class="fas fa-user-circle"></i> Iniciar Sesion
+        </div>
+ }

@@ -66,6 +66,8 @@ import { UsuariosActualizarComponent } from './componentes/admin_modulo/usuarios
 import { UsuariosCrearComponent } from './componentes/admin_modulo/usuarios/usuarios-crear/usuarios-crear.component';
 import { UsuariosEliminarComponent } from './componentes/admin_modulo/usuarios/usuarios-eliminar/usuarios-eliminar.component';
 import { UsuariosObtenerComponent } from './componentes/admin_modulo/usuarios/usuarios-obtener/usuarios-obtener.component';
+import { HistorialComponent } from './componentes/usuario/historial/historial.component';
+import { PerfilComponent } from './componentes/usuario/perfil/perfil.component';
 
 const routes: Routes = [
   { path: '', redirectTo: '/home', pathMatch: 'full' },
@@ -162,8 +164,9 @@ const routes: Routes = [
   { path: 'Objeto/:id', component: ObjetoComponent },
   { path: 'ConfirmarReserva', component: CarritoComponent },
   { path: 'Formulario', component: FormularioComponent },
-  { path: 'Iniciar-Sesion', component: IniciarSesionComponent }
- 
+  { path: 'Iniciar-Sesion', component: IniciarSesionComponent },
+  { path: 'Historial', component: HistorialComponent },
+ { path: 'Perfil', component: PerfilComponent }
 
 ];
 
