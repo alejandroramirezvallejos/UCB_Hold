@@ -1,13 +1,10 @@
 import { CommonModule } from '@angular/common';
-import { Component, Output , EventEmitter} from '@angular/core';
+import { Component, Output , EventEmitter, Input, ɵunwrapWritableSignal, WritableSignal, signal} from '@angular/core';
 import { CarritoService } from '../../../services/carrito/carrito.service';
 import {Carrito } from '../../../models/carrito'
 import { Router } from '@angular/router';
-interface CarritoItem {
-  name: string;
-  price: number;
-  quantity: number;
-}
+import { UsuarioService } from '../../../services/usuario/usuario.service';
+
 
 @Component({
   selector: 'app-carrito-previo',
@@ -17,46 +14,35 @@ interface CarritoItem {
   styleUrls: ['./carrito-previo.component.css']
 })
 export class CarritoPrevioComponent {
-  // Para probar, inicializamos en true.  
-  // En producción deberás controlar su valor desde un componente padre o servicio.
-  showCarrito: boolean = true;
-  @Output() showCarritoevent = new EventEmitter<boolean>();
-  // Diccionario de productos (ejemplo)
+
+  @Input() showCarritoevent  : WritableSignal<boolean> = signal(true) ;
   carritoItems: Carrito = {};
 
-
-  constructor(private serviciocarrito: CarritoService , private router : Router) {
+  constructor(private serviciocarrito: CarritoService , private router : Router , private usuario : UsuarioService) {
 
     this.carritoItems = serviciocarrito.obtenercarrito();
   };
 
 
-
-
-  // Alterna la visibilidad del carrito (por ejemplo, al pulsar la "X")
-  toggleCarrito() {
-    this.showCarritoevent.emit(!this.showCarrito);
-  }
-
-  // Incrementa la cantidad de un producto
   increaseQuantity(itemKey: string) {
     this.serviciocarrito.sumarproducto(Number(itemKey));
   }
 
-  // Decrementa la cantidad; si llega a 1, se elimina el producto (opcional)
   decreaseQuantity(itemKey: string) {
     if (this.carritoItems[Number(itemKey)]) {
       this.serviciocarrito.quitarproducto(Number(itemKey));
     }
   }
 
-  // Lógica para confirmar la reserva
   confirmReserva() {
     if (this.carritoItems == null || Object.keys(this.carritoItems).length === 0) {
 
     }
+    else if (this.usuario.vacio()){
+      this.router.navigate(['/Iniciar-Sesion']);
+    }
     else {
-      this.toggleCarrito();
+      this.showCarritoevent.set(false);
       this.router.navigate(['/ConfirmarReserva']);
     }
 

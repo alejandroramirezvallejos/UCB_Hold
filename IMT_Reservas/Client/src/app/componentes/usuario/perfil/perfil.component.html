@@ -1,0 +1,45 @@
+<div class="profile-container">
+  <h2>Tu Perfil</h2>
+  <div class="avatar-container">
+    <img src="assets/avatar-placeholder.png" alt="Avatar" class="avatar" />
+  </div>
+
+  <!-- Mostrar datos actuales -->
+  <div *ngIf="!editMode" class="display-data">
+    <div class="form-group"><label>Nombre:</label><p>{{ profileForm.value.nombre || '-' }}</p></div>
+    <div class="form-group"><label>Apellido Paterno:</label><p>{{ profileForm.value.apellido_paterno || '-' }}</p></div>
+    <div class="form-group"><label>Apellido Materno:</label><p>{{ profileForm.value.apellido_materno || '-' }}</p></div>
+    <div class="form-group"><label>Correo:</label><p>{{ profileForm.value.correo || '-' }}</p></div>
+    <div class="form-group"><label>Teléfono:</label><p>{{ profileForm.value.telefono || '-' }}</p></div>
+    <div class="buttons">
+      <button type="button" (click)="toggleEdit()">Actualizar</button>
+    </div>
+  </div>
+
+  <!-- Formulario de edición -->
+  <form *ngIf="editMode" [formGroup]="profileForm" (ngSubmit)="saveProfile()">
+    <div class="form-group">
+      <label>Nombre</label>
+      <input formControlName="nombre" placeholder="Ingresa tu nombre" />
+    </div>
+    <div class="form-group">
+      <label>Apellido Paterno</label>
+      <input formControlName="apellido_paterno" placeholder="Ingresa tu apellido paterno" />
+    </div>
+    <div class="form-group">
+      <label>Apellido Materno</label>
+      <input formControlName="apellido_materno" placeholder="Ingresa tu apellido materno" />
+    </div>
+    <div class="form-group">
+      <label>Correo</label>
+      <input formControlName="correo" type="email" placeholder="correo@ejemplo.com" />
+    </div>
+    <div class="form-group">
+      <label>Teléfono</label>
+      <input formControlName="telefono" placeholder="Ingresa tu teléfono" />
+    </div>
+    <div class="buttons">
+      <button type="submit">Guardar</button>
+    </div>
+  </form>
+</div>

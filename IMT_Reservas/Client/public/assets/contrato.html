@@ -1,0 +1,204 @@
+<!-- contrato.html (ubicado en src/assets/contrato.html) -->
+<style>
+  /* Puedes incluir estilos específicos si lo necesitas */
+  .contrato-container {
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      line-height: 1.6;
+      max-width: 800px;
+      margin: 0 auto;
+      background-color: #f9f9f9;
+      color: #333;
+      padding: 20px;
+  }
+  .contrato-container h1 {
+      text-align: center;
+      font-size: 24px;
+      color: #2c3e50;
+      margin-bottom: 20px;
+      text-transform: uppercase;
+  }
+  .contrato-container p {
+      text-align: justify;
+      margin-bottom: 16px;
+      font-size: 16px;
+  }
+  .contrato-container strong {
+    display: inline;
+    
+    font-size: 16px;
+    color: #2c3e50;
+  }
+  .contrato-container table {
+      width: 100%;
+      border-collapse: collapse;
+      margin: 20px 0;
+      font-size: 14px;
+      border-spacing: 0;
+  }
+  .contrato-container table, 
+    .contrato-container td p {
+      margin: 0;
+      padding: 0;
+      line-height: 1.1 !important;  /* Más compacto que el general */
+      font-size: 13px;  /* Tamaño menor para detalles */
+  }
+
+  .contrato-container td strong {
+      display: block;  /* Para que el nombre quede en línea separada */
+      margin-bottom: 2px;
+      font-size: 14px;  /* Tamaño diferenciado */
+  }
+
+  /* Ajuste general para todas las celdas */
+  .contrato-container td {
+      padding: 4px 6px;
+      line-height: 1.2;
+      vertical-align: top;
+  }
+  .contrato-container td {
+      border: 1px solid #aaa;
+      padding: 4px 6px;  /* Reducido de 12px */
+      text-align: left;
+      line-height: 1.2;  /* Añadido para compactar texto */
+      vertical-align: top; /* Alineación superior */
+  }
+  .contrato-container th {
+      background-color: #e0e0e0;
+      padding: 6px 8px;  /* Padding ligeramente mayor para headers */
+      border: 1px solid #aaa;
+  }
+.contrato-container .signature {
+  margin-top: 40px;
+  display: flex;
+  justify-content: center;
+  align-items: flex-start; /* Alinea los bloques en la parte superior */
+  gap: 40px;
+}
+
+/* Nuevo contenedor para cada grupo de firma */
+.contrato-container .signature > div {
+  display: flex;
+  flex-direction: column;
+  align-items: center; /* Centra verticalmente los elementos */
+  text-align: center; /* Asegura que el texto esté centrado */
+  max-width: 300px; /* Ancho máximo para cada bloque de firma */
+}
+
+.contrato-container .signature img {
+  max-width: 200px;
+  height: auto;
+  border: 1px solid #ccc;
+  padding: 10px;
+  background-color: #fff;
+  margin-bottom: 10px; /* Espacio entre imagen y texto */
+}
+
+.contrato-container .signature p {
+   margin: 0px 0;
+  font-weight: bold;
+  text-align: center;
+} 
+  
+</style>
+
+<div class="contrato-container">
+  <h1>Minuta de PRÉSTAMO DE EQUIPOS DE LABORATORIO</h1>
+  
+  <p>
+    A los [[dia]] días del mes de [[mesliteral]] de [[año]], entre el Sr. <strong>Job Angel Ledezma Pérez</strong>, Director de Carrera de Ingeniería Mecatrónica de la Universidad Católica Boliviana "San Pablo" (UCB) Regional Santa Cruz, identificado con el C.I. <strong>5268336 CB </strong>y con domicilio en la ciudad de Santa Cruz de la Sierra, quien en adelante se denominará el COMODANTE, y de otra parte el usuario <strong>[[usuario]] </strong>, C.I. <strong>[[usuario_ci]]</strong>, quien se domicilia en la ciudad de Santa Cruz de la Sierra, celebran por medio de este instrumento el <strong>COMODATO</strong> sobre los equipos de laboratorio y en las condiciones que a continuación se describen:
+  </p>
+  
+  <strong>Primera. Del objeto.-</strong>
+  <p>
+    El COMODANTE entrega al GRUPO COMODATARIO y este recibe, a título de comodato, equipos de laboratorio pertenecientes a la Carrera de Ingeniería Mecatrónica, localizados en el Laboratorio de Robótica y Automatización y bajo la custodia del COMODANTE. El detalle de los equipos a ser otorgados se describe a continuación:
+  </p>
+  
+  <table>
+    <thead>
+      <tr>
+        <th>Código UCB</th>
+        <th>Descripción</th>
+        <th># Series</th>
+        <th>Cantidad</th>
+      </tr>
+    </thead>
+    <tbody>
+      [[tablaprimera]]
+    </tbody>
+  </table>
+  
+  <strong>Segunda. Del uso autorizado.-</strong>
+  <p>
+    El GRUPO COMODATARIO podrá utilizar los bienes descritos en el punto primero, única y exclusivamente para la realización de proyectos relacionados con las disciplinas que requieran de los mismos, quedando expresamente prohibido el retiro de dichos equipos fuera de las instalaciones del Campus de la Universidad Católica Boliviana "San Pablo" - Regional Santa Cruz, ubicado en el Km. 9, Carretera al Norte.
+  </p>
+  
+  <strong>Tercera. De las obligaciones del GRUPO COMODATARIO.-</strong>
+  <p>
+    Son obligaciones del GRUPO COMODATARIO mantener en buen estado los bienes recibidos, cuidar el comodato y responder por todo daño o deterioro, salvo los derivados del uso autorizado; asimismo, deberán responder por los daños a terceros que puedan ocasionar dichos bienes y restituir los mismos al COMODANTE o a quien éste designe al finalizar el término pactado o en caso de: <br>
+    (1) Necesidad imprevista y urgente del COMODANTE de disponer de los bienes. <br>
+    (2) Terminación o inviabilidad del proyecto o participación en alguna feria científica para la cual se prestaron los bienes.
+  </p>
+  
+  <strong>Cuarta. De la duración y perfeccionamiento.-</strong>
+  <p>
+    Este Comodato tendrá una vigencia de [[fechaMaxima]] días contados a partir de la firma del presente contrato, fecha en la cual se realizará la entrega material de los bienes objeto del comodato.
+  </p>
+  
+  <strong>Quinta. Del valor de los bienes.-</strong>
+  <p>
+    A pesar de que el Comodato es un préstamo sin costo, se acuerda que el valor total de los bienes es de [[precio]] Bs, en caso de que el GRUPO COMODATARIO se vea obligado a reembolsar dicho valor al COMODANTE. La descripción y el valor de cada uno de los bienes se detalla en la siguiente tabla:
+  </p>
+  
+  <table>
+    <thead>
+      <tr>
+        <th>Código UCB</th>
+        <th>Descripción</th>
+        <th># Series</th>
+        <th>Cantidad</th>
+        <th>Precio Unitario (Bs)</th>
+        <th>Precio Total (Bs)</th>
+      </tr>
+    </thead>
+    <tbody>
+      [[tablasegunda]]
+      <tr>
+        <td colspan="5" style="text-align: right;"><strong>Total:</strong></td>
+        <td><strong>[[precio]]</strong></td>
+      </tr>
+    </tbody>
+  </table>
+  
+  <strong>Sexta. Del estado de los bienes.-</strong>
+  <p>
+    Al momento de la firma del presente contrato y de la entrega material, los bienes se encuentran en perfecto estado de funcionamiento y sin daño físico visible.
+  </p>
+  
+  <strong>Séptima. De la cláusula compromisoria.-</strong>
+  <p>
+    En caso de conflicto en la ejecución o liquidación del presente contrato, se agotará previamente la vía de conciliación con el apoyo del Departamento Legal de la Universidad Católica Boliviana "San Pablo". Si dicha conciliación fracasa, las diferencias serán sometidas a un Tribunal de Arbitramento, el cual se ubicará en el domicilio del COMODATARIO o en el lugar donde se encuentren los bienes, con los costos a cargo de ambas partes.
+  </p>
+  
+  <p>
+    En la ciudad de Santa Cruz de la Sierra, a los [[dia_devolucion]] días del mes de [[mes_devolucion]] de [[año_devolucion]].
+  </p>
+  
+   <div class="signature">
+    <div>
+      <img src="[[firmadmin]]" alt="Firma del COMODANTE">
+      <p>Job Angel Ledezma Dr.Ing</p>
+      <p>Director de Carrera</p>
+      <p>Ingeniería Mecatrónica</p>
+      <p>UNIV. CATÓLICA BOLIVIANA "SAN PABLO"</p>
+      <p>COMODANTE</p>
+    </div>
+    <div>
+      <!-- Este es el espacio que actualizaremos cuando se reciba la firma -->
+      <img id="firmaUsuarioPlaceholder" src="[[firmausuario]]" alt="Firma del COMODATARIO">
+      <p>[[usuario]]</p>
+      <p>Estudiante de Ingeniería Mecatrónica</p>
+      <p>C.I. [[usuario_ci]]</p>
+      <p>COMODATARIO</p>
+    </div>
+  </div>
+</div>

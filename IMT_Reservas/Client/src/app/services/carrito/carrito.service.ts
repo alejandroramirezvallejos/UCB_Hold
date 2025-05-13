@@ -4,7 +4,9 @@ import { Carrito } from '../../models/carrito';
   providedIn: 'root'
 })
 export class CarritoService {
-   carrito: Carrito = {};
+   carrito: Carrito = {
+
+   };
 
   cantidadtotal: number = 0; 
 
@@ -12,14 +14,23 @@ export class CarritoService {
   constructor() {}
 
 
-  agregarproducto(id : number , nombre :string , link : string , marca : string , modelo : string) {
-    nombre = nombre + marca + modelo; 
+  agregarproducto(id : number , nombre :string , link : string , marca : string , modelo : string ,precio : number) {
+    nombre = nombre 
     if (nombre == '' || nombre == undefined) {
       return; 
     }
 
+
+    const fechaLocal = new Date();
+    const año = fechaLocal.getFullYear();
+    const mes = (fechaLocal.getMonth() + 1).toString().padStart(2, '0');
+    const día = fechaLocal.getDate().toString().padStart(2, '0');
+    const fechaISO = `${año}-${mes}-${día}`;
+
+
+    // cambiar precio
     if (!this.carrito[id]) {
-      this.carrito[id] = { nombre, cantidad: 1 ,fecha_inicio : null,fecha_final : null , imagen : link};
+      this.carrito[id] = { nombre,modelo,marca ,cantidad: 1 ,fecha_inicio : fechaISO ,fecha_final : null , imagen : link , precio};
       this.cantidadtotal++;
     }
     else {
@@ -58,5 +69,19 @@ export class CarritoService {
   obtenertotal() {
     return this.cantidadtotal; 
   }
+
+  vaciarcarrito(){
+    this.carrito={};
+    this.cantidadtotal=0; 
+  }
+
+  preciototal() : number{
+    let total : number =0; 
+    for(const clave in this.carrito){
+      total=total +this.carrito[clave].precio *this.carrito[clave].cantidad;
+    }
+    return total;
+  }
+
 
 }

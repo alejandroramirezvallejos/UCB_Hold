@@ -1,0 +1,108 @@
+<div class="admin-container">
+  <h1>Panel de Administración</h1>
+  <div class="entities-grid">
+
+    <div class="entity-card">
+      <h2>Accesorios</h2>
+      <div class="btn-group">
+        <button (click)="irAccesorios()">Ir a Accesorios</button>
+      </div>
+    </div>
+
+    <div class="entity-card">
+      <h2>Carreras</h2>
+      <div class="btn-group">
+        <button (click)="irCarreras()">Ir a Carreras</button>
+      </div>
+    </div>
+
+    <div class="entity-card">
+      <h2>Categorías</h2>
+      <div class="btn-group">
+        <button (click)="irCategorias()">Ir a Categorías</button>
+      </div>
+    </div>
+
+    <div class="entity-card">
+      <h2>Componentes</h2>
+      <div class="btn-group">
+        <button (click)="irComponentes()">Ir a Componentes</button>
+      </div>
+    </div>
+
+    <div class="entity-card">
+      <h2>Empresas Mantenimiento</h2>
+      <div class="btn-group">
+        <button (click)="irEmpresasMantenimiento()">Ir a Empresas</button>
+      </div>
+    </div>
+
+    <div class="entity-card">
+      <h2>Equipos</h2>
+      <div class="btn-group">
+        <button (click)="irEquipos()">Ir a Equipos</button>
+      </div>
+    </div>
+
+    <div class="entity-card">
+      <h2>Gaveteros</h2>
+      <div class="btn-group">
+        <button (click)="irGaveteros()">Ir a Gaveteros</button>
+      </div>
+    </div>
+
+    <div class="entity-card">
+      <h2>Grupos Equipos</h2>
+      <div class="btn-group">
+        <button (click)="irGruposEquipos()">Ir a Grupos Equipos</button>
+      </div>
+    </div>
+
+    <div class="entity-card">
+      <h2>Mantenimientos</h2>
+      <div class="btn-group">
+        <button (click)="irMantenimientos()">Ir a Mantenimientos</button>
+      </div>
+    </div>
+
+    <div class="entity-card">
+      <h2>Muebles</h2>
+      <div class="btn-group">
+        <button (click)="irMuebles()">Ir a Muebles</button>
+      </div>
+    </div>
+
+    <div class="entity-card">
+      <h2>Préstamos</h2>
+      <div class="btn-group">
+        <button (click)="irPrestamos()">Ir a Préstamos</button>
+      </div>
+    </div>
+
+    <div class="entity-card">
+      <h2>Usuarios</h2>
+      <div class="btn-group">
+        <button (click)="irUsuarios()">Ir a Usuarios</button>
+      </div>
+    </div>
+
+  </div>
+
+  <div class="special-views">
+    <h2>Datos Específicos</h2>
+
+    <div class="entity-card">
+      <h3>Equipos que Necesitan Mantenimiento</h3>
+      <div class="btn-group">
+        <button routerLink="/admin/equipos-necesitan-mantenimiento">Ver Datos</button>
+      </div>
+    </div>
+
+    <div class="entity-card">
+      <h3>Ubicaciones de Grupos de Equipos</h3>
+      <div class="btn-group">
+        <button routerLink="/admin/ubicaciones-grupos">Ver Ubicaciones</button>
+      </div>
+    </div>
+  </div>
+</div>
