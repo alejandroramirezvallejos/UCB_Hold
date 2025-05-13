@@ -1,4 +1,9 @@
-<nav class="navbar-container" role="navigation" aria-label="Main navigation">
+<nav
+  class="navbar-container"
+  [class.open]="showUserMenu"
+  role="navigation"
+  aria-label="Main navigation"
+>
   <div class="left-section">
     <button
       type="button"
@@ -8,16 +13,16 @@
     >
       <img
         #homeIcon
-        src="assets/home_line.png"
+        src="/assets/home_line.png"
         alt="Icono de inicio"
         class="icon-image"
-        (mouseenter)="homeIcon.src = 'assets/home_solid.png'"
-        (mouseleave)="homeIcon.src = 'assets/home_line.png'"
+        (mouseenter)="homeIcon.src = '/assets/home_solid.png'"
+        (mouseleave)="homeIcon.src = '/assets/home_line.png'"
       />
     </button>
   </div>
   <div class="logo-container">
-    <img src="assets/logo_universidad.png" alt="Logo UCB" class="logo-image" />
+    <img src="/assets/logo_universidad.png" alt="Logo UCB" class="logo-image" />
   </div>
   <div class="right-section">
     <button
@@ -28,11 +33,11 @@
     >
       <img
         #cartIcon
-        src="assets/shopping_card_line.png"
+        src="/assets/shopping_card_line.png"
         alt="Icono de carrito"
         class="icon-image"
-        (mouseenter)="cartIcon.src = 'assets/shopping_card_solid.png'"
-        (mouseleave)="cartIcon.src = 'assets/shopping_card_line.png'"
+        (mouseenter)="cartIcon.src = '/assets/shopping_card_solid.png'"
+        (mouseleave)="cartIcon.src = '/assets/shopping_card_line.png'"
       />
       <span class="cart-count">{{ totalproductos() }}</span>
     </button>
@@ -46,11 +51,11 @@
       >
         <img
           #userIcon
-          src="assets/profile_line.png"
+          src="/assets/profile_line.png"
           alt="Icono de usuario"
           class="icon-image"
-          (mouseenter)="userIcon.src = 'assets/profile_solid.png'"
-          (mouseleave)="userIcon.src = 'assets/profile_line.png'"
+          (mouseenter)="userIcon.src = '/assets/profile_solid.png'"
+          (mouseleave)="userIcon.src = '/assets/profile_line.png'"
         />
       </button>
       <ul
@@ -60,43 +65,18 @@
         aria-label="Opciones de usuario"
       >
         <li>
-          <button
-            type="button"
-            class="dropdown-item"
-            (click)="seleccionar('perfil')"
-            role="menuitem"
-          >
+          <button class="dropdown-item" (click)="seleccionar('perfil')">
             Ver Perfil
           </button>
         </li>
         <li>
-          <button
-            type="button"
-            class="dropdown-item"
-            (click)="seleccionar('historial')"
-            role="menuitem"
-          >
+          <button class="dropdown-item" (click)="seleccionar('historial')">
             Historial
           </button>
         </li>
         <li>
-          <button
-            type="button"
-            class="dropdown-item"
-            (click)="seleccionar('cerrar-sesion')"
-            role="menuitem"
-          >
+          <button class="dropdown-item" (click)="seleccionar('cerrar-sesion')">
             Cerrar Sesión
-          </button>
-        </li>
-        <li>
-          <button
-            type="button"
-            class="dropdown-item"
-            (click)="seleccionar('admin')"
-            role="menuitem"
-          >
-            Modo Admin
           </button>
         </li>
       </ul>
