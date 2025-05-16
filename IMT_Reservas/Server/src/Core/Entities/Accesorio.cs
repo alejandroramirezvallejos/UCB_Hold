@@ -54,7 +54,6 @@ public class Accesorio : IAccesorio, IEliminacionLogica
                        : null;
     }
 
-
     public int EquipoId
     {
         get => _equipoId;

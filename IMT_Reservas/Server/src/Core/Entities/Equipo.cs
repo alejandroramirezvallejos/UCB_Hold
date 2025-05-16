@@ -12,10 +12,9 @@ public class Equipo : IEquipo, IEliminacionLogica
     private int?     _tiempoMaximoPrestamo = null;
     private string?  _procedencia          = null;
     private int?     _gaveteroId           = null;
-    private string   _estadoDisponibilidad = string.Empty;
+    private string   _estadoDisponibilidad = string.Empty; //TODO: Quitar estado
     private bool     _estaEliminado        = false;
-    private DateOnly _fechaDeIngreso;
-
+    private DateOnly _fechaDeIngreso; 
     public int Id
     {
         get => _id;

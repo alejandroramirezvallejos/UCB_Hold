@@ -41,9 +41,9 @@ public class UsuarioController : ControllerBase
             solicitud.EmailReferencia
         );
 
-        UsuarioResponseDto resultado = _crear.Handle(comando);
+        UsuarioDto resultado = _crear.Handle(comando);
 
-        UsuarioResponseDto respuesta = new UsuarioResponseDto
+        UsuarioDto respuesta = new UsuarioDto
         {
             Carnet             = resultado.Carnet,
             Nombre             = resultado.Nombre,
@@ -70,17 +70,17 @@ public class UsuarioController : ControllerBase
     }
 
     [HttpGet("{carnet}")]
-    public ActionResult<UsuarioResponseDto> ObtenerUsuarioPorCarnet(string carnet)
+    public ActionResult<UsuarioDto> ObtenerUsuarioPorCarnet(string carnet)
     {
         ObtenerUsuarioConsulta consulta = new ObtenerUsuarioConsulta(carnet);
-        UsuarioResponseDto? resultado = _obtener.Handle(consulta);
+        UsuarioDto? resultado = _obtener.Handle(consulta);
 
         if (resultado == null)
         {
             return NotFound();
         }
 
-        UsuarioResponseDto respuesta = new UsuarioResponseDto
+        UsuarioDto respuesta = new UsuarioDto
         {
             Carnet             = resultado.Carnet,
             Nombre             = resultado.Nombre,
@@ -122,13 +122,13 @@ public class UsuarioController : ControllerBase
             solicitud.EmailReferencia
         );
 
-        UsuarioResponseDto? resultado = _actualizar.Handle(comando);
+        UsuarioDto? resultado = _actualizar.Handle(comando);
         if (resultado == null)
         {
             return NotFound();
         }
 
-        UsuarioResponseDto respuesta = new UsuarioResponseDto
+        UsuarioDto respuesta = new UsuarioDto
         {
             Carnet             = resultado.Carnet,
             Nombre             = resultado.Nombre,

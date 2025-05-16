@@ -1,4 +1,4 @@
 public interface ICrearUsuarioComando
 {
-    UsuarioResponseDto Handle(CrearUsuarioComando comando);
+    UsuarioDto Handle(CrearUsuarioComando comando);
 }

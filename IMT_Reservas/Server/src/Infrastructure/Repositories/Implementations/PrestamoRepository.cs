@@ -1,16 +1,17 @@
+using System;
+using System.Collections.Generic;
 using System.Data;
 
-public class PrestamoUseCase : ICrearPrestamoComando, IObtenerPrestamoConsulta, 
-                               IActualizarPrestamoComando, IEliminarPrestamoComando
+public class PrestamoRepository : IPrestamoRepository
 {
     private readonly IExecuteQuery _ejecutarConsulta;
 
-    public PrestamoUseCase(IExecuteQuery ejecutarConsulta)
+    public PrestamoRepository(IExecuteQuery ejecutarConsulta)
     {
         _ejecutarConsulta = ejecutarConsulta;
     }
 
-    public PrestamoDto Handle(CrearPrestamoComando comando)
+    public PrestamoDto Crear(CrearPrestamoComando comando)//TODO: Array
     {
         const string sql = @"
             INSERT INTO public.prestamos
@@ -39,7 +40,7 @@ public class PrestamoUseCase : ICrearPrestamoComando, IObtenerPrestamoConsulta,
         return MapearFilaADto(dt.Rows[0]);
     }
 
-    public PrestamoDto? Handle(ObtenerPrestamoConsulta consulta)
+    public PrestamoDto? ObtenerPorId(int id)
     {
         const string sql = @"
             SELECT * FROM public.prestamos
@@ -47,14 +48,14 @@ public class PrestamoUseCase : ICrearPrestamoComando, IObtenerPrestamoConsulta,
 
         Dictionary<string, object> parametros = new Dictionary<string, object>
         {
-            ["id"] = consulta.Id
+            ["id"] = id
         };
         DataTable dt = _ejecutarConsulta.EjecutarFuncion(sql, parametros);
         if (dt.Rows.Count == 0) return null;
         return MapearFilaADto(dt.Rows[0]);
     }
 
-    public PrestamoDto? Handle(ActualizarPrestamoComando comando)
+    public PrestamoDto? Actualizar(ActualizarPrestamoComando comando)
     {
         const string sql = @"
             UPDATE public.prestamos
@@ -88,7 +89,7 @@ public class PrestamoUseCase : ICrearPrestamoComando, IObtenerPrestamoConsulta,
         return MapearFilaADto(dt.Rows[0]);
     }
 
-    public bool Handle(EliminarPrestamoComando comando)
+    public bool Eliminar(int id)
     {
         const string sql = @"
             UPDATE public.prestamos
@@ -97,7 +98,7 @@ public class PrestamoUseCase : ICrearPrestamoComando, IObtenerPrestamoConsulta,
 
         _ejecutarConsulta.EjecutarSpNR(sql, new Dictionary<string, object>
         {
-            ["id"] = comando.Id 
+            ["id"] = id 
         });
         return true;
     }

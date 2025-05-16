@@ -1,10 +1,11 @@
 public class Prestamo : IPrestamo, IEliminacionLogica
 {
     private int      _id;
-    private DateTime _fechaSolicitud;
-    private DateTime _fechaPrestamo;
-    private DateTime _fechaDevolucion;
+    private DateTime _fechaSolicitud; //TODO: Puede ser nulo
+    private DateTime _fechaPrestamo; //TODO: Puede ser nulo
+    private DateTime _fechaDevolucion; //TODO: Puede ser nulo
     private DateTime _fechaDevolucionEsperada; 
+    // TODO: Fecha prestamoesperada, no puede ser nulo
     private string?  _observacion              = null;
     private string   _estadoPrestamo           = string.Empty;
     private string   _carnetUsuario            = string.Empty;

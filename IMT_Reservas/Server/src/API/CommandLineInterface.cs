@@ -111,37 +111,43 @@ public static class CommandLineInterface
         var builder = WebApplication.CreateBuilder();
         builder.Services.AddScoped<IExecuteQuery, ExecuteQuery>();
 
+        // Registrar los repositorios
+        builder.Services.AddScoped<IEquipoRepository, EquipoRepository>();
+        builder.Services.AddScoped<IGrupoEquipoRepository, GrupoEquipoRepository>();
+        builder.Services.AddScoped<ICategoriaRepository, CategoriaRepository>();
+        builder.Services.AddScoped<IPrestamoRepository, PrestamoRepository>();
+
         // Equipos
-        builder.Services.AddScoped<IObtenerEquipoConsulta, EquipoUseCase>();
-        builder.Services.AddScoped<ICrearEquipoComando, EquipoUseCase>();
-        builder.Services.AddScoped<IActualizarEquipoComando, EquipoUseCase>();
-        builder.Services.AddScoped<IEliminarEquipoComando, EquipoUseCase>();
+        builder.Services.AddScoped<IObtenerEquipoConsulta, EquipoService>();
+        builder.Services.AddScoped<ICrearEquipoComando, EquipoService>();
+        builder.Services.AddScoped<IActualizarEquipoComando, EquipoService>();
+        builder.Services.AddScoped<IEliminarEquipoComando, EquipoService>();
 
         // GrupoEquipo
-        builder.Services.AddScoped<IObtenerGrupoEquipoConsulta, GrupoEquipoUseCase>();
-        builder.Services.AddScoped<IObtenerGruposEquiposConsulta, GrupoEquipoUseCase>();
-        builder.Services.AddScoped<ICrearGrupoEquipoComando, GrupoEquipoUseCase>();
-        builder.Services.AddScoped<IActualizarGrupoEquipoComando, GrupoEquipoUseCase>();
-        builder.Services.AddScoped<IEliminarGrupoEquipoComando, GrupoEquipoUseCase>();
+        builder.Services.AddScoped<IObtenerGrupoEquipoConsulta, GrupoEquipoService>();
+        builder.Services.AddScoped<IObtenerGruposEquiposConsulta, GrupoEquipoService>();
+        builder.Services.AddScoped<ICrearGrupoEquipoComando, GrupoEquipoService>();
+        builder.Services.AddScoped<IActualizarGrupoEquipoComando, GrupoEquipoService>();
+        builder.Services.AddScoped<IEliminarGrupoEquipoComando, GrupoEquipoService>();
 
         // Categorias
-        builder.Services.AddScoped<ICrearCategoriaComando, CategoriaUseCase>();
-        builder.Services.AddScoped<IObtenerCategoriaConsulta, CategoriaUseCase>();
-        builder.Services.AddScoped<IObtenerCategoriasConsulta, CategoriaUseCase>();
-        builder.Services.AddScoped<IActualizarCategoriaComando, CategoriaUseCase>();
-        builder.Services.AddScoped<IEliminarCategoriaComando, CategoriaUseCase>();
+        builder.Services.AddScoped<ICrearCategoriaComando, CategoriaService>();
+        builder.Services.AddScoped<IObtenerCategoriaConsulta, CategoriaService>();
+        builder.Services.AddScoped<IObtenerCategoriasConsulta, CategoriaService>();
+        builder.Services.AddScoped<IActualizarCategoriaComando, CategoriaService>();
+        builder.Services.AddScoped<IEliminarCategoriaComando, CategoriaService>();
 
         // Usuarios
-        builder.Services.AddScoped<ICrearUsuarioComando, UsuarioUseCase>();
-        builder.Services.AddScoped<IObtenerUsuarioConsulta, UsuarioUseCase>();
-        builder.Services.AddScoped<IActualizarUsuarioComando, UsuarioUseCase>();
-        builder.Services.AddScoped<IEliminarUsuarioComando, UsuarioUseCase>();
+        //builder.Services.AddScoped<ICrearUsuarioComando, UsuarioService>();
+        //builder.Services.AddScoped<IObtenerUsuarioConsulta, UsuarioService>();
+        //builder.Services.AddScoped<IActualizarUsuarioComando, UsuarioService>();
+        //builder.Services.AddScoped<IEliminarUsuarioComando, UsuarioService>();
 
         // Prestamos
-        builder.Services.AddScoped<ICrearPrestamoComando, PrestamoUseCase>();
-        builder.Services.AddScoped<IObtenerPrestamoConsulta, PrestamoUseCase>();
-        builder.Services.AddScoped<IActualizarPrestamoComando, PrestamoUseCase>();
-        builder.Services.AddScoped<IEliminarPrestamoComando, PrestamoUseCase>();
+        builder.Services.AddScoped<ICrearPrestamoComando, PrestamoService>();
+        builder.Services.AddScoped<IObtenerPrestamoConsulta, PrestamoService>();
+        builder.Services.AddScoped<IActualizarPrestamoComando, PrestamoService>();
+        builder.Services.AddScoped<IEliminarPrestamoComando, PrestamoService>();
 
 
         builder.Services.AddControllers();

@@ -1,16 +1,17 @@
+using System;
+using System.Collections.Generic;
 using System.Data;
 
-public class EquipoUseCase : IObtenerEquipoConsulta, ICrearEquipoComando, 
-                             IActualizarEquipoComando, IEliminarEquipoComando
+public class EquipoRepository : IEquipoRepository
 {
     private readonly IExecuteQuery _ejecutarConsulta;
 
-    public EquipoUseCase(IExecuteQuery ejecutarConsulta)
+    public EquipoRepository(IExecuteQuery ejecutarConsulta)
     {
         _ejecutarConsulta = ejecutarConsulta;
     }
 
-    public EquipoDto Handle(CrearEquipoComando comando)
+    public EquipoDto Crear(CrearEquipoComando comando)
     {
         const string sql = @"
             INSERT INTO public.equipos
@@ -41,24 +42,25 @@ public class EquipoUseCase : IObtenerEquipoConsulta, ICrearEquipoComando,
 
         return MapearFilaADto(dt.Rows[0]);
     }
-    public EquipoDto? Handle(ActualizarEquipoComando comando)
+
+    public EquipoDto? Actualizar(ActualizarEquipoComando comando)
     {
         const string sql = @"
             UPDATE public.equipos
             SET
-                id_grupo_equipo      = @grupoEquipoId,
-                codigo_imt           = @codigoImt,
-                codigo_ucb           = @codigoUcb,
-                descripcion          = @descripcion,
-                estado_equipo        = @estadoEquipo,
-                numero_serial        = @numeroSerial,
-                ubicacion            = @ubicacion,
-                costo_referencia     = @costoReferencia,
-                tiempo_max_prestamo  = @tiempoMaximoPrestamo,
-                procedencia          = @procedencia,
-                id_gavetero          = @gaveteroId
-            WHERE id_equipo = @id;
-            SELECT * FROM public.equipos WHERE id_equipo = @id;
+              id_grupo_equipo = @grupoEquipoId,
+              codigo_imt = @codigoImt,
+              codigo_ucb = @codigoUcb,
+              descripcion = @descripcion,
+              estado_equipo = @estadoEquipo,
+              numero_serial = @numeroSerial,
+              ubicacion = @ubicacion,
+              costo_referencia = @costoReferencia,
+              tiempo_max_prestamo = @tiempoMaximoPrestamo,
+              procedencia = @procedencia,
+              id_gavetero = @gaveteroId
+            WHERE id_equipo = @id
+            RETURNING *;
         ";
 
         DataTable dt = _ejecutarConsulta.EjecutarFuncion(sql, new Dictionary<string, object?>
@@ -83,7 +85,7 @@ public class EquipoUseCase : IObtenerEquipoConsulta, ICrearEquipoComando,
         return MapearFilaADto(dt.Rows[0]);
     }
 
-    public bool Handle(EliminarEquipoComando comando)
+    public bool Eliminar(int id)
     {
         const string sql = @"
             UPDATE public.equipos
@@ -93,13 +95,13 @@ public class EquipoUseCase : IObtenerEquipoConsulta, ICrearEquipoComando,
 
         _ejecutarConsulta.EjecutarSpNR(sql, new Dictionary<string, object?>
         {
-            ["id"] = comando.Id
+            ["id"] = id
         });
 
         return true;
     }
 
-    public EquipoDto? Handle(ObtenerEquipoConsulta consulta)
+    public EquipoDto? ObtenerPorId(int id)
     {
         const string sql = @"
             SELECT
@@ -123,7 +125,7 @@ public class EquipoUseCase : IObtenerEquipoConsulta, ICrearEquipoComando,
 
         DataTable dt = _ejecutarConsulta.EjecutarFuncion(sql, new Dictionary<string, object>
         {
-            ["id_equipo_input"] = consulta.Id
+            ["id_equipo_input"] = id
         });
 
         if (dt.Rows.Count == 0)
@@ -136,27 +138,20 @@ public class EquipoUseCase : IObtenerEquipoConsulta, ICrearEquipoComando,
     {
         return new EquipoDto
         {
-            Id                   = Convert.ToInt32(fila["id_equipo"]),
-            GrupoEquipoId        = Convert.ToInt32(fila["id_grupo_equipo"]),
-            CodigoImt            = fila["codigo_imt"]?.ToString() ?? string.Empty,
-            CodigoUcb            = fila["codigo_ucb"] as string,
-            Descripcion          = fila["descripcion"] as string,
-            EstadoEquipo         = fila["estado_equipo"]?.ToString() ?? string.Empty,
-            NumeroSerial         = fila["numero_serial"] as string,
-            Ubicacion            = fila["ubicacion"] as string,
-            CostoReferencia      = fila["costo_referencia"] == DBNull.Value 
-                                   ? null 
-                                   : Convert.ToDouble(fila["costo_referencia"]),
-            TiempoMaximoPrestamo = fila["tiempo_max_prestamo"] == DBNull.Value 
-                                   ? null 
-                                   : Convert.ToInt32(fila["tiempo_max_prestamo"]),
-            Procedencia          = fila["procedencia"] as string,
-            GaveteroId           = fila["id_gavetero"] == DBNull.Value 
-                                   ? null 
-                                   : Convert.ToInt32(fila["id_gavetero"]),
-            EstadoDisponibilidad = fila["estado_equipo"]?.ToString() ?? string.Empty,
-            EstaEliminado        = Convert.ToBoolean(fila["estado_eliminado"]),
-            FechaDeIngreso       = DateOnly.FromDateTime(Convert.ToDateTime(fila["fecha_ingreso_equipo"]))
+            Id                  = Convert.ToInt32(fila["id_equipo"]),
+            GrupoEquipoId       = Convert.ToInt32(fila["id_grupo_equipo"]),
+            CodigoImt           = fila["codigo_imt"].ToString()!,
+            CodigoUcb           = fila["codigo_ucb"].ToString()!,
+            Descripcion         = fila["descripcion"].ToString()!,
+            EstadoEquipo        = fila["estado_equipo"].ToString()!,
+            NumeroSerial        = fila["numero_serial"].ToString()!,
+            Ubicacion           = fila["ubicacion"].ToString()!,
+            CostoReferencia = (double?)Convert.ToDecimal(fila["costo_referencia"]),
+            TiempoMaximoPrestamo = Convert.ToInt32(fila["tiempo_max_prestamo"]),
+            Procedencia         = fila["procedencia"].ToString()!,
+            GaveteroId          = fila["id_gavetero"] != DBNull.Value ? Convert.ToInt32(fila["id_gavetero"]) : null,
+            EstaEliminado       = Convert.ToBoolean(fila["estado_eliminado"]),
+            FechaDeIngreso = DateOnly.FromDateTime(Convert.ToDateTime(fila["fecha_ingreso_equipo"]))
         };
     }
 }

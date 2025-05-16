@@ -4,6 +4,7 @@ public class DetalleMantenimiento : IDetalleMantenimiento
     private int     _idMantenimiento; 
     private string? _descripcion      = null;
     private int     _idEquipo;
+    //TODO: Agregar IEliminacionLogica
 
     public int Id
     {

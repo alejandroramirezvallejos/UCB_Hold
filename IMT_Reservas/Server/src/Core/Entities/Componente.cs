@@ -3,7 +3,7 @@ public class Componente : IComponente, IEliminacionLogica
     private int     _id;
     private string  _nombre           = string.Empty;
     private string? _descripcion      = null;
-    private string? _modelo           = null;
+    private string? _modelo           = null; //TODO: No puede ser nulo
     private string? _url              = null;
     private string? _tipo             = null;
     private double? _precioReferencia = null;

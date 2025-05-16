@@ -1,17 +1,17 @@
+using System;
+using System.Collections.Generic;
 using System.Data;
 
-public class CategoriaUseCase : ICrearCategoriaComando, IObtenerCategoriaConsulta,
-                                IObtenerCategoriasConsulta, IActualizarCategoriaComando,
-                                IEliminarCategoriaComando
+public class CategoriaRepository : ICategoriaRepository
 {
     private readonly IExecuteQuery _ejecutarConsulta;
 
-    public CategoriaUseCase(IExecuteQuery ejecutarConsulta)
+    public CategoriaRepository(IExecuteQuery ejecutarConsulta)
     {
         _ejecutarConsulta = ejecutarConsulta;
     }
 
-    public CategoriaDto Handle(CrearCategoriaComando comando)
+    public CategoriaDto Crear(CrearCategoriaComando comando)
     {
         const string sql = @"
             INSERT INTO public.categorias
@@ -29,7 +29,7 @@ public class CategoriaUseCase : ICrearCategoriaComando, IObtenerCategoriaConsult
         return MapearFila(dt.Rows[0]);
     }
 
-    public CategoriaDto? Handle(ObtenerCategoriaConsulta consulta)
+    public CategoriaDto? ObtenerPorId(int id)
     {
         const string sql = @"
             SELECT id_categoria, nombre, estado_eliminado
@@ -39,7 +39,7 @@ public class CategoriaUseCase : ICrearCategoriaComando, IObtenerCategoriaConsult
 
         Dictionary<string, object> parametros = new Dictionary<string, object>
         {
-            ["id"] = consulta.Id
+            ["id"] = id
         };
 
         DataTable dt = _ejecutarConsulta.EjecutarFuncion(sql, parametros);
@@ -47,7 +47,7 @@ public class CategoriaUseCase : ICrearCategoriaComando, IObtenerCategoriaConsult
         return MapearFila(dt.Rows[0]);
     }
 
-    public List<CategoriaDto> Handle(ObtenerCategoriasConsulta consulta)
+    public List<CategoriaDto> ObtenerTodos()
     {
         const string sql = @"
             SELECT id_categoria, nombre, estado_eliminado
@@ -61,7 +61,7 @@ public class CategoriaUseCase : ICrearCategoriaComando, IObtenerCategoriaConsult
         return lista;
     }
 
-    public CategoriaDto? Handle(ActualizarCategoriaComando comando)
+    public CategoriaDto? Actualizar(ActualizarCategoriaComando comando)
     {
         const string sql = @"
             UPDATE public.categorias
@@ -84,7 +84,7 @@ public class CategoriaUseCase : ICrearCategoriaComando, IObtenerCategoriaConsult
         return MapearFila(dt.Rows[0]);
     }
 
-    public bool Handle(EliminarCategoriaComando comando)
+    public bool Eliminar(int id)
     {
         const string sql = @"
             UPDATE public.categorias
@@ -94,7 +94,7 @@ public class CategoriaUseCase : ICrearCategoriaComando, IObtenerCategoriaConsult
 
         _ejecutarConsulta.EjecutarSpNR(sql, new Dictionary<string, object>
         {
-            ["id"] = comando.Id
+            ["id"] = id
         });
         return true;
     }

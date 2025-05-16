@@ -1,17 +1,17 @@
+using System;
+using System.Collections.Generic;
 using System.Data;
 
-public class GrupoEquipoUseCase :ICrearGrupoEquipoComando, IObtenerGrupoEquipoConsulta,
-                                 IObtenerGruposEquiposConsulta, IActualizarGrupoEquipoComando,
-                                 IEliminarGrupoEquipoComando
+public class GrupoEquipoRepository : IGrupoEquipoRepository
 {
     private readonly IExecuteQuery _ejecutarConsulta;
 
-    public GrupoEquipoUseCase(IExecuteQuery ejecutarConsulta)
+    public GrupoEquipoRepository(IExecuteQuery ejecutarConsulta)
     {
         _ejecutarConsulta = ejecutarConsulta;
     }
 
-    public GrupoEquipoDto Handle(CrearGrupoEquipoComando comando)
+    public GrupoEquipoDto Crear(CrearGrupoEquipoComando comando)
     {
         const string sql = @"
             INSERT INTO public.grupo_equipos
@@ -44,7 +44,7 @@ public class GrupoEquipoUseCase :ICrearGrupoEquipoComando, IObtenerGrupoEquipoCo
         return MapearFilaADto(dt.Rows[0]);
     }
 
-    public GrupoEquipoDto? Handle(ObtenerGrupoEquipoConsulta consulta)
+    public GrupoEquipoDto? ObtenerPorId(int id)
     {
         const string sql = @"
             SELECT
@@ -64,7 +64,7 @@ public class GrupoEquipoUseCase :ICrearGrupoEquipoComando, IObtenerGrupoEquipoCo
 
         Dictionary<string, object> parametros = new Dictionary<string, object>
         {
-            ["id"] = consulta.Id
+            ["id"] = id
         };
 
         DataTable dt = _ejecutarConsulta.EjecutarFuncion(sql, parametros);
@@ -75,7 +75,7 @@ public class GrupoEquipoUseCase :ICrearGrupoEquipoComando, IObtenerGrupoEquipoCo
         return MapearFilaADto(dt.Rows[0]);
     }
 
-    public List<Dictionary<string, object?>> Handle(ObtenerGruposEquiposConsulta consulta)
+    public List<Dictionary<string, object?>> ObtenerPorNombreYCategoria(string? nombre, string? categoria)
     {
         const string sql = @"
             SELECT *
@@ -85,8 +85,8 @@ public class GrupoEquipoUseCase :ICrearGrupoEquipoComando, IObtenerGrupoEquipoCo
               );
         ";
 
-        object nombreDb    = string.IsNullOrWhiteSpace(consulta.Nombre)    ? (object)DBNull.Value : consulta.Nombre!;
-        object categoriaDb = string.IsNullOrWhiteSpace(consulta.Categoria) ? (object)DBNull.Value : consulta.Categoria!;
+        object nombreDb    = string.IsNullOrWhiteSpace(nombre)    ? (object)DBNull.Value : nombre!;
+        object categoriaDb = string.IsNullOrWhiteSpace(categoria) ? (object)DBNull.Value : categoria!;
 
         DataTable dt = _ejecutarConsulta.EjecutarFuncion(sql, new Dictionary<string, object>
         {
@@ -105,7 +105,7 @@ public class GrupoEquipoUseCase :ICrearGrupoEquipoComando, IObtenerGrupoEquipoCo
         return lista;
     }
 
-    public GrupoEquipoDto? Handle(ActualizarGrupoEquipoComando comando)
+    public GrupoEquipoDto? Actualizar(ActualizarGrupoEquipoComando comando)
     {
         const string sql = @"
             UPDATE public.grupo_equipos
@@ -148,7 +148,7 @@ public class GrupoEquipoUseCase :ICrearGrupoEquipoComando, IObtenerGrupoEquipoCo
         return MapearFilaADto(dt.Rows[0]);
     }
 
-    public bool Handle(EliminarGrupoEquipoComando comando)
+    public bool Eliminar(int id)
     {
         const string sql = @"
             UPDATE public.grupo_equipos
@@ -158,7 +158,7 @@ public class GrupoEquipoUseCase :ICrearGrupoEquipoComando, IObtenerGrupoEquipoCo
 
         _ejecutarConsulta.EjecutarSpNR(sql, new Dictionary<string, object?>
         {
-            ["id"] = comando.Id
+            ["id"] = id
         });
 
         return true;
