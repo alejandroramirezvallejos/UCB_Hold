@@ -15,7 +15,6 @@ export class AdministradorComponent {
   irAccesorios(){
     this.router.navigate(['/admin/accesorios']);
   }
-
   irCarreras(){
     this.router.navigate(['/admin/carreras']);
   }
@@ -27,12 +26,6 @@ export class AdministradorComponent {
   }
   irComponentes(){
     this.router.navigate(['/admin/componentes']);
-  }
-  irDetallesPrestamos(){
-    this.router.navigate(['/admin/detalles_prestamos']);
-  }
-  irDetallesMantenimientos(){
-    this.router.navigate(['/admin/detalles_mantenimientos']);
   }
   irEmpresasMantenimiento(){
     this.router.navigate(['/admin/empresas_mantenimiento']);

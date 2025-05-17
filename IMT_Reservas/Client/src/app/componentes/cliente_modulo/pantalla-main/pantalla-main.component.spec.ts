@@ -1,6 +1,5 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { PantallaMainComponent } from './pantalla-main.component';
-import { ObjetoComponent } from '../objeto/objeto.component';
 
 describe('PantallaMainComponent', () => {
   let component: PantallaMainComponent;
@@ -8,7 +7,7 @@ describe('PantallaMainComponent', () => {
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      imports: [PantallaMainComponent, ObjetoComponent]
+      imports: [PantallaMainComponent]
     }).compileComponents();
 
     fixture = TestBed.createComponent(PantallaMainComponent);

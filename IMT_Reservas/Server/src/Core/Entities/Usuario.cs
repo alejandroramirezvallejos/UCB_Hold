@@ -13,7 +13,6 @@ public class Usuario : IUsuario, IEliminacionLogica
     private string? _telefonoReferencia = null;
     private string? _emailReferencia    = null;
     private bool    _estaEliminado      = false;
-     
     public string Carnet
     {
         get => _carnet;

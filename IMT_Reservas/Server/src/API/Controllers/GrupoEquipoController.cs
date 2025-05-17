@@ -62,6 +62,15 @@ public class GrupoEquipoController : ControllerBase
         [FromQuery] string? nombre,
         [FromQuery] string? categoria)
     {
+        try
+        {
+            throw new UsuarioNuloException("Error en la obtencion de articulos del buscador");
+        }
+        catch(UsuarioNuloException e)
+        {
+            Console.WriteLine(e.Message);
+        }
+        
         var consulta = new ObtenerGruposEquiposConsulta(nombre, categoria);
         var lista    = _lista.Handle(consulta);
         return Ok(lista);
