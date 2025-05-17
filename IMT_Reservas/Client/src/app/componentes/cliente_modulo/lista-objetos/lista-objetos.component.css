@@ -1,69 +1,203 @@
+html,
+body {
+  height: 100%;
+  margin: 0;
+  padding: 0;
+}
+
+.page-wrapper {
+  display: flex;
+  flex-direction: column;
+  min-height: 100vh;
+}
+
 .container {
-    min-height: 100vh;
-    position: relative;
-    padding: 20px;
-  }
-  
-  /* Grid para los item-cards */
+  flex-grow: 1;
+  padding: 20px;
+  background: #f9f9f9;
+  display: flex;
+  flex-direction: column;
+}
+
+body {
+  margin: 0;
+  display: flex;
+  flex-direction: column;
+  min-height: 100vh;
+}
+
+body,
+.container,
+.grid-container,
+.item-card {
+  font-family: "Manrope";
+  font-weight: 600;
+}
+
+.grid-container {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 1rem;
+  justify-content: space-between;
+  max-width: none;
+  margin: 0;
+  padding: 0 calc(9rem - 1.6rem);
+  width: calc(100% - (2 * (9rem - 1.6rem)));
+  flex: unset;
+}
+
+.item-card a {
+  text-decoration: none;
+  color: inherit;
+}
+
+@media (max-width: 768px) {
   .grid-container {
-    display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
-    gap: 30px;
-    max-width: 1200px;
-    margin: 21px auto 0; /* Ajusta el margen superior para que no se superponga con el logo */
-    padding: 20px;
+    width: auto;
+    margin: 0 1rem;
+    grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+    justify-content: center;
   }
-  
-  /* Resto de estilos para los items */
-  .item-card {
-    background: white;
-    border-radius: 8px;
-    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
-    overflow: hidden;
-    transition: transform 0.2s ease;
-    cursor: pointer;
+}
+
+.item-card {
+  background: white;
+  overflow: hidden;
+  cursor: pointer;
+  border-radius: 20px;
+  padding: 0.75rem;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.05);
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+.item-card:hover {
+  transform: translateY(-5px) scale(1.02);
+  box-shadow: 0 8px 30px rgba(0, 0, 0, 0.1);
+}
+
+.item-image-container {
+  border-radius: 20px;
+  height: 200px;
+  overflow: hidden;
+  position: relative;
+}
+
+.item-image {
+  display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  border-bottom-left-radius: 0;
+  border-bottom-right-radius: 0;
+  transition: transform 0.3s ease, opacity 0.3s ease;
+  opacity: 0.96;
+}
+
+.processing-state {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  text-align: center;
+  color: #666;
+}
+
+.item-title {
+  margin: 0;
+  text-align: center;
+  font-family: "Manrope";
+  font-weight: 600;
+  font-size: 1rem;
+  margin-bottom: 0.25rem;
+  color: inherit;
+  text-shadow: 0 2px 4px rgba(0, 0, 0, 0.5);
+}
+
+.spinner {
+  width: 30px;
+  height: 30px;
+  border: 3px solid #ddd;
+  border-top-color: #007bff;
+  border-radius: 50%;
+  animation: spin 1s linear infinite;
+}
+
+.item-card:hover .item-image {
+  transform: scale(1.05);
+  opacity: 1;
+}
+
+.item-info {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  padding: 1rem;
+  background: none;
+  color: white;
+  text-align: center;
+  z-index: 2;
+}
+
+.glass-overlay {
+  position: absolute;
+  inset: 0;
+  background: rgba(255, 255, 255, 0.2);
+  border-radius: 20px;
+  z-index: 1;
+  pointer-events: none;
+}
+
+@keyframes spin {
+  to {
+    transform: rotate(360deg);
   }
-  
-    .item-card:hover {
-      transform: translateY(-3px);
-      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
-    }
-  
-  .item-image-container {
-    height: 250px;
-    background: #f8f9fa;
-    position: relative;
+}
+
+.site-footer {
+  background-color: #ffffff;
+  padding: 20px 0;
+  text-align: center;
+  font-size: 0.875rem;
+  color: #8f9195;
+  margin-top: auto;
+}
+
+.footer-content p {
+  margin: 0;
+  font-family: "Manrope";
+  font-weight: 500;
+  letter-spacing: 0.02em;
+}
+
+@media (min-width: 768px) {
+  .site-footer {
+    padding: 24px 0;
   }
-  
-  .item-image {
-    width: 100%;
-    height: 100%;
-    object-fit: contain;
-    padding: 20px;
-  }
-  
-  .processing-state {
-    position: absolute;
-    top: 50%;
-    left: 50%;
-    transform: translate(-50%, -50%);
-    text-align: center;
-    color: #666;
-  }
-  
-  .item-title {
-    margin: 15px;
-    font-size: 1.1rem;
-    color: #333;
-    text-align: center;
-    font-weight: 500;
-  }
-  
-  .spinner {
-    width: 30px;
-    height: 30px;
-    border: 3px solid #ddd;
-    border-top-color: #007bff;
-    border-radius: 50%;
-    animation: spin 1s linear infinite;
-  }
+}
+
+.no-results {
+  display: flex;
+  justify-content: center;
+  padding: 2rem 0;
+  margin-top: 9rem;
+}
+
+.no-results-content {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.no-results-icon {
+  width: 18px;
+  height: 18px;
+}
+
+.no-results-text {
+  font-size: 0.875rem;
+  color: #8f9195;
+  font-family: "Manrope";
+  font-weight: 500;
+  margin: 0;
+}
