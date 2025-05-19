@@ -1,9 +1,8 @@
 /* Updated sidebar styles for a modern, clean look */
 
 .sidebarinactivo, .sidebaractivo {
-  position: fixed;
-  top: 45px;
-  left: 0;
+  position: relative;
+  left: -16px;
   width: 60px; /* initial width is set via class override */
   height: calc(100vh - 45px);
   display: flex;

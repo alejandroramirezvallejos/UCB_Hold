@@ -15,7 +15,7 @@ export class HistorialComponent {
   datos: any[] = [
       {
         fecha_solicitud: "2023-10-01",
-        fecha_prestmo: "2023-10-02",
+        fecha_prestamo: "2023-10-02",
         fecha_devolucion_esperada: "2023-10-03",
         observacion: "Todo en orden",
         estado: "Activo",
@@ -24,7 +24,7 @@ export class HistorialComponent {
       },
       {
         fecha_solicitud: "2023-10-05",
-        fecha_prestmo: "2023-10-06",
+        fecha_prestamo: "2023-10-06",
         fecha_devolucion_esperada: "2023-10-07",
         observacion: "Todo en orden",
         estado: "Activo",
