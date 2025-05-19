@@ -1,15 +1,27 @@
-import { Component } from '@angular/core';
+import { Component, createNgModuleRef } from '@angular/core';
 import {Router} from '@angular/router';
-
+import { SidebardComponent } from '../../sidebard/sidebard.component';
+import { AccesoriosTablaComponent } from '../tablas/accesorios/accesorios-tabla/accesorios-tabla.component';
+import { CarrerasTablaComponent } from '../tablas/carreras/carreras-tabla/carreras-tabla.component';
+import { CategoriasTablaComponent } from '../tablas/categorias/categorias-tabla/categorias-tabla.component';
 @Component({
   selector: 'app-administrador',
   standalone: true,
-  imports: [],
+  imports: [SidebardComponent,AccesoriosTablaComponent,CarrerasTablaComponent,CategoriasTablaComponent],
   templateUrl: './administrador.component.html',
   styleUrls: ['./administrador.component.css']
 })
+//TODO : Agregar los componentes de las tablas
 export class AdministradorComponent {
+  tablas : string[] = ['Accesorios', 'Carreras', 'Usuarios', 'Categorias', 'Componentes', "Empresas de Mantenimiento", 'Equipos', 'Gaveteros', 'Grupos de Equipos', 'Mantenimientos', 'Muebles', 'Prestamos', "Equipos que Necesitan Mantenimiento", "Ubicacion de Grupos de Equipos"];
+  
+  item : string = 'Accesorios';
+
   constructor(public  router: Router) {
+  }
+
+  clickitem(item : string){
+    this.item = item;
   }
 
   irAccesorios(){

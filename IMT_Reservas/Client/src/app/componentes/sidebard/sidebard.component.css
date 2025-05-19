@@ -29,6 +29,7 @@
 }
 
 .boton {
+  flex-shrink: 0;
   background-color: #FFCF00;
   color: #5F6368;
   border: none;
@@ -37,7 +38,7 @@
   border-radius: 50%;
   box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
   font-size: 18px;
-  margin: 20px 0;
+  margin: 5px 0;
   cursor: pointer;
   display: flex;
   align-items: center;
