@@ -1,1 +1,13 @@
-<p>historial works!</p>
+<div class="container">
+<app-sidebard
+    [contenido]="contenido"
+    (item)="itemclick($event)"
+></app-sidebard>
+
+@for (item of datos; track $index) {
+  <div class="item" (click)="itemclick(item)">
+
+  </div>
+}
+
+</div>
