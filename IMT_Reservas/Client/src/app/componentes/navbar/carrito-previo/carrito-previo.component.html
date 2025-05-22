@@ -6,7 +6,7 @@
     @for (item of carritoItems | keyvalue; track item.key) {
     <div class="carrito-item">
       <div class="item-info">
-        <p class="item-name">{{ item.value.nombre }}</p>
+        <p class="item-name">{{ item.value.nombre + item.value.modelo + item.value.marca }}</p>
       </div>
       <div class="item-actions">
         <button (click)="decreaseQuantity(item.key)" class="btn-qty">-</button>

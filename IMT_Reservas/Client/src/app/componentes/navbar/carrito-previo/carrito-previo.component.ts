@@ -3,11 +3,7 @@ import { Component, Output , EventEmitter} from '@angular/core';
 import { CarritoService } from '../../../services/carrito/carrito.service';
 import {Carrito } from '../../../models/carrito'
 import { Router } from '@angular/router';
-interface CarritoItem {
-  name: string;
-  price: number;
-  quantity: number;
-}
+
 
 @Component({
   selector: 'app-carrito-previo',

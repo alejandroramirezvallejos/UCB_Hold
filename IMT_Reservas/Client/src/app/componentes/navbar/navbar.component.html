@@ -1,57 +1,85 @@
-<nav class="navbar-container">
-  <!-- Botón Home izquierda -->
-  <button class="home-button" (click)="botonhome()">
-    <i class="fas fa-home"></i>
-  </button>
-
-  <!-- Logo central -->
-  <div class="logo-container">
-    <img src="assets/logo-universidad.png" alt="Logo Universidad" class="logo-image">
-   
+<nav
+  class="navbar-container"
+  [class.open]="showUserMenu"
+  [class.scrolled]="isScrolled"
+  role="navigation"
+  aria-label="Main navigation"
+>
+  <div class="left-section">
+    <button
+      type="button"
+      class="icon-button home-button"
+      aria-label="Ir a inicio"
+      (click)="botonhome()"
+    >
+      <img
+        #homeIcon
+        src="/assets/home_line.png"
+        alt="Icono de inicio"
+        class="icon-image"
+        (mouseenter)="homeIcon.src = '/assets/home_solid.png'"
+        (mouseleave)="homeIcon.src = '/assets/home_line.png'"
+      />
+    </button>
   </div>
-
-  <!-- Sección derecha -->
+  <div class="logo-container">
+    <img src="/assets/logo_universidad.png" alt="Logo UCB" class="logo-image" />
+  </div>
   <div class="right-section">
-    <!-- Botón Carrito -->
-    <button class="cart-button" (click)="mostrarcarrito()">
-      <i class="fas fa-shopping-cart"></i>
+    <button
+      type="button"
+      class="icon-button cart-button"
+      aria-label="Mostrar carrito"
+      (click)="mostrarcarrito()"
+    >
+      <img
+        #cartIcon
+        src="/assets/shopping_card_line.png"
+        alt="Icono de carrito"
+        class="icon-image"
+        (mouseenter)="cartIcon.src = '/assets/shopping_card_solid.png'"
+        (mouseleave)="cartIcon.src = '/assets/shopping_card_line.png'"
+      />
       <span class="cart-count">{{ totalproductos() }}</span>
     </button>
-
-    <!-- Menú de Usuario -->
     <div class="user-menu">
-      <div class="user-circle" (click)="toggleUserMenu()">
-        <i class="fas fa-user"></i>
-      </div>
-
-      @if(showUserMenu) {
-      <div class="user-dropdown">
-        <div class="dropdown-item" (click)="seleccionar('perfil')">
-          <i class="fas fa-user-circle"></i> Ver Perfil
-        </div>
-        <div class="dropdown-item" (click)="seleccionar('historial')">
-          <i class="fas fa-history"></i> Historial
-        </div>
-        <div class="dropdown-item" (click)="seleccionar('cerrar-sesion')">
-          <i class="fas fa-sign-out-alt"></i> Cerrar Sesión
-        </div>
-      </div>
-      }
+      <button
+        type="button"
+        class="icon-button user-button"
+        aria-haspopup="true"
+        [attr.aria-expanded]="showUserMenu"
+        (click)="toggleUserMenu()"
+      >
+        <img
+          #userIcon
+          src="/assets/profile_line.png"
+          alt="Icono de usuario"
+          class="icon-image"
+          (mouseenter)="userIcon.src = '/assets/profile_solid.png'"
+          (mouseleave)="userIcon.src = '/assets/profile_line.png'"
+        />
+      </button>
+      <ul
+        *ngIf="showUserMenu"
+        class="user-dropdown"
+        role="menu"
+        aria-label="Opciones de usuario"
+      >
+        <li>
+          <button class="dropdown-item" (click)="seleccionar('perfil')">
+            Ver Perfil
+          </button>
+        </li>
+        <li>
+          <button class="dropdown-item" (click)="seleccionar('cerrar-sesion')">
+            Cerrar Sesión
+          </button>
+        </li>
+      </ul>
     </div>
-
-
-
-
   </div>
 </nav>
-
-
-
-<!-- Aquí integramos el panel del carrito -->
-@if (showCarrito) {
-
-<app-carrito-previo (showCarritoevent)="obtenershow()" >
-
- 
-</app-carrito-previo>
-}
+<app-carrito-previo
+  *ngIf="showCarrito"
+  (showCarritoevent)="obtenershow()"
+></app-carrito-previo>

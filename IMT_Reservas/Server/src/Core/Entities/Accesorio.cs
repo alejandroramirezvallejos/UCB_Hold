@@ -8,7 +8,7 @@ public class Accesorio : IAccesorio, IEliminacionLogica
     private double? _precio        = null;
     private int     _equipoId;
     private string? _tipo          = null;
-    private bool    _estaEliminado = false;
+    private bool    _estaEliminado = false; 
 
     public int Id
     {
@@ -45,7 +45,7 @@ public class Accesorio : IAccesorio, IEliminacionLogica
                        ? Verificar.SiEsVacio(value, "La URL del accesorio")
                        : null;
     }
-
+    
     public double? Precio
     {
         get => _precio;

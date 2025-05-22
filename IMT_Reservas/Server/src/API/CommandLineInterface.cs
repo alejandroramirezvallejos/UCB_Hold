@@ -19,7 +19,7 @@ public static class CommandLineInterface
     {
         while (true)
         {
-            Console.Write("imt> ");
+            Console.Write("ucb> ");
             var entrada = Console.ReadLine();
             if (string.IsNullOrWhiteSpace(entrada))
                 continue;
@@ -76,13 +76,13 @@ public static class CommandLineInterface
     {
         try
         {
-            Console.ForegroundColor = ConsoleColor.Green;
+            Console.ForegroundColor = ConsoleColor.DarkBlue;
             Console.WriteLine("Ejecutando pruebas...\n");
             Console.ResetColor();
 
             //TODO: Colocar las pruebas
 
-            Console.ForegroundColor = ConsoleColor.Green;
+            Console.ForegroundColor = ConsoleColor.DarkBlue;
             //Console.WriteLine($"Pruebas completadas: {total} ejecutadas");
             Console.ResetColor();
         }
@@ -104,7 +104,7 @@ public static class CommandLineInterface
             return;
         }
 
-        Console.ForegroundColor = ConsoleColor.Green;
+        Console.ForegroundColor = ConsoleColor.DarkBlue;
         Console.WriteLine("Iniciando programa...\n");
         Console.ResetColor();
 
@@ -184,7 +184,7 @@ public static class CommandLineInterface
         Task.Run(() => app.Run());
 
         _webHost = app;
-        Console.ForegroundColor = ConsoleColor.Green;
+        Console.ForegroundColor = ConsoleColor.DarkBlue;
         Console.WriteLine("Servidor iniciado");
         Console.ResetColor();
     }
@@ -201,16 +201,16 @@ public static class CommandLineInterface
 
     private static void MostrarBanner()
     {
-        Console.ForegroundColor = ConsoleColor.Green;
+        Console.ForegroundColor = ConsoleColor.Yellow;
         Console.WriteLine(@"
-        ██╗███╗   ███╗████████╗     ██████╗██╗     ██╗
-        ██║████╗ ████║╚══██╔══╝    ██╔════╝██║     ██║
-        ██║██╔████╔██║   ██║       ██║     ██║     ██║
-        ██║██║╚██╔╝██║   ██║       ██║     ██║     ██║
-        ██║██║ ╚═╝ ██║   ██║       ╚██████╗███████╗██║
-        ╚═╝╚═╝     ╚═╝   ╚═╝        ╚═════╝╚══════╝╚═╝
+        ██╗   ██╗ ██████╗██████╗      ██████╗██╗     ██╗
+        ██║   ██║██╔════╝██╔══██╗    ██╔════╝██║     ██║
+        ██║   ██║██║     ██████╔╝    ██║     ██║     ██║
+        ██║   ██║██║     ██╔══██╗    ██║     ██║     ██║
+        ╚██████╔╝╚██████╗██████╔╝    ╚██████╗███████╗██║
+         ╚═════╝  ╚═════╝╚═════╝      ╚═════╝╚══════╝╚═╝
 
-               IMT Command Line Interface 3.15
+               UCB Command Line Interface 3.15
         ");
         Console.ResetColor();
         Console.WriteLine();
