@@ -4,29 +4,30 @@
 
 ## 📷 Modelo Entidad–Relación
 
-> _Espacio reservado para el diagrama ER_  
+![Image](/Images/bd.png)
 
 ---
 
 ## 1. Tablas, Procedimientos Almacenados, Triggers y Vistas
 
 ### Tablas
+
 - `usuarios`, `prestamos`, `detalles_prestamos`, `categorias`, `carreras`, `empresas_mantenimiento`, `mantenimientos`, `detalles_mantenimientos`, `grupos_equipos`, `equipos`, `gaveteros`, `muebles`, `accesorios`, `componentes`.
 - Todas incluyen columna `estado_eliminado BOOLEAN DEFAULT FALSE` para borrado lógico.
 
 ### Triggers
-- **En `equipos`:**  
+
+- **En `equipos`:**
   - **AFTER INSERT/UPDATE/DELETE** sobre relación a `grupos_equipos` → Recalcula `cantidad_equipos` en `grupos_equipos`.
-- **En `gaveteros`:**  
+- **En `gaveteros`:**
   - **AFTER INSERT/UPDATE/DELETE** sobre relación a `muebles` → Recalcula `numero_gaveteros` en `muebles`.
 
-
 ### Vistas
-- **`vw_equipos_necesitan_mantenimiento`**  
+
+- **`vw_equipos_necesitan_mantenimiento`**
 - **`vw_ubicaciones_grupos_equipos`**
 
 ## 2. Índices Bien Diseñados y Queries Reescritas
-
 
 **usuarios**  
 Los índices sobre correo electrónico y estado de eliminación aceleran las búsquedas de usuario activo por su email, clave en operaciones de login y validación. Además, el índice sobre nombre y estado garantiza respuestas rápidas en listados y filtros de usuarios sin cargar filas dadas de baja.
@@ -67,7 +68,6 @@ Indexar la columna nombre junto al estado lógico agiliza las consultas para pob
 **accesorios**  
 El índice que agrupa nombre, equipo y estado de eliminación acelera la asociación y revisión de accesorios disponibles para cada equipo, fundamental para operaciones de complemento y preparación de solicitudes de mantenimiento.
 
-
 ### Análisis de Plan de Ejecución
 
 Consulta pesada sin indices
@@ -81,15 +81,18 @@ Consulta pesada con indices
 ## 3. Transacciones Funcionales y Niveles de Aislamiento
 
 En todos los procedures tenemos principios ACID con atomicidad y transacciones
-- **Nivel de aislamiento**: `SERIALIZABLE`  
-  - **Justificación**: Garantiza ausencia de lecturas no repetibles y lecturas fantasmas.  
+
+- **Nivel de aislamiento**: `SERIALIZABLE`
+  - **Justificación**: Garantiza ausencia de lecturas no repetibles y lecturas fantasmas.
 
 ### cosas a instalar
+
 npm install signature_pad --save
 
 npm install jspdf html2canvas
 
 ### Miembros
-- Fernando Terrazas Llanos
+
 - Josue Galo Balbontin Ugarteche
 - Alejandro Ramirez Vallejos
+- Fernando Terrazas Llanos
