@@ -72,11 +72,11 @@ body {
 
 .product-card__title {
   font-family: "Manrope";
-  font-weight: 500;
+  font-weight: 600;
   font-size: 0.9rem;
   line-height: 1.2;
   margin: 0;
-  color: #8f9195;
+  color: #6b7786;
   flex: 1;
   white-space: nowrap;
   overflow: hidden;
