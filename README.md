@@ -1,6 +1,4 @@
-# ProjectQ
-
-# Proyecto de Reservas y Gestion de Articulos de Mecatronica
+# UCB Hold: Reservas y Gestion de Articulos de Mecatronica
 
 ## 📷 Modelo Entidad–Relación
 
