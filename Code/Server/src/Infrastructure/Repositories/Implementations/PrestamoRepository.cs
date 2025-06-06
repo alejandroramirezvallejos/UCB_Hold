@@ -24,7 +24,7 @@ public class PrestamoRepository : IPrestamoRepository
              @carnetUsuario, @equipoId, false)
             RETURNING *;";
 
-        var parametros = new Dictionary<string, object>
+        var parametros = new Dictionary<string, object?>
         {
             ["fechaSolicitud"]          = comando.FechaSolicitud,
             ["fechaPrestamo"]           = comando.FechaPrestamo,
@@ -46,7 +46,7 @@ public class PrestamoRepository : IPrestamoRepository
             SELECT * FROM public.prestamos
             WHERE id_prestamo = @id";
 
-        Dictionary<string, object> parametros = new Dictionary<string, object>
+        Dictionary<string, object?> parametros = new Dictionary<string, object?>
         {
             ["id"] = id
         };
@@ -71,7 +71,7 @@ public class PrestamoRepository : IPrestamoRepository
             WHERE id_prestamo = @id
             RETURNING *;";
 
-        Dictionary<string, object> parametros = new Dictionary<string, object>
+        Dictionary<string, object?> parametros = new Dictionary<string, object?>
         {
             ["id"]                      = comando.Id,
             ["fechaSolicitud"]          = comando.FechaSolicitud,
@@ -96,7 +96,7 @@ public class PrestamoRepository : IPrestamoRepository
             SET estado_eliminado = true
             WHERE id_prestamo = @id";
 
-        _ejecutarConsulta.EjecutarSpNR(sql, new Dictionary<string, object>
+        _ejecutarConsulta.EjecutarSpNR(sql, new Dictionary<string, object?>
         {
             ["id"] = id 
         });

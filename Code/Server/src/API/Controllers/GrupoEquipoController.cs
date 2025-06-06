@@ -8,11 +8,11 @@ public class GrupoEquipoController : ControllerBase
     private readonly IObtenerGrupoEquipoConsulta   _obtener;
     private readonly IActualizarGrupoEquipoComando _actualizar;
     private readonly IEliminarGrupoEquipoComando   _eliminar;
-    private readonly IObtenerGruposEquiposConsulta _lista;
+    private readonly IObtenerGrupoEquipoConsulta _lista;
 
     public GrupoEquipoController(ICrearGrupoEquipoComando crear, IObtenerGrupoEquipoConsulta obtener,
                                  IActualizarGrupoEquipoComando actualizar, IEliminarGrupoEquipoComando eliminar,
-                                 IObtenerGruposEquiposConsulta lista)
+                                 IObtenerGrupoEquipoConsulta lista)
     {
         _crear      = crear;
         _obtener    = obtener;
@@ -59,10 +59,9 @@ public class GrupoEquipoController : ControllerBase
 
     [HttpGet]
     public ActionResult<List<Dictionary<string, object?>>> ObtenerGruposEquipos(
-        [FromQuery] string? nombre,
-        [FromQuery] string? categoria)
+        [FromQuery] int Id)
     {
-        var consulta = new ObtenerGruposEquiposConsulta(nombre, categoria);
+        var consulta = new ObtenerGrupoEquipoConsulta(Id);
         var lista    = _lista.Handle(consulta);
         return Ok(lista);
     }

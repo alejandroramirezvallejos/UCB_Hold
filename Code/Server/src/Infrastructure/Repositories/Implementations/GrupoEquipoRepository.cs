@@ -9,36 +9,34 @@ public class GrupoEquipoRepository : IGrupoEquipoRepository
     public GrupoEquipoRepository(IExecuteQuery ejecutarConsulta)
     {
         _ejecutarConsulta = ejecutarConsulta;
-    }
-
-    public GrupoEquipoDto Crear(CrearGrupoEquipoComando comando)
+    }    public GrupoEquipoDto Crear(CrearGrupoEquipoComando comando)
     {
         const string sql = @"
-            INSERT INTO public.grupo_equipos
-              (nombre, modelo, urldata, urlimagen, cantidad, marca, categoriaid, estaeliminado)
+            INSERT INTO public.grupos_equipos
+              (nombre, modelo, url_data_sheet, url_imagen, cantidad, marca, id_categoria, estado_eliminado, descripcion)
             VALUES
-              (@nombre, @modelo, @urldata, @urlimagen, @cantidad, @marca, @categoriaid, false)
+              (@nombre, @modelo, @urldata, @urlimagen, @cantidad, @marca, @categoriaid, false, @descripcion)
             RETURNING
               id_grupo_equipo,
               nombre,
               modelo,
-              urldata,
-              urlimagen,
+              url_data_sheet,
+              url_imagen,
               cantidad,
               marca,
-              categoriaid,
-              estaeliminado;
-        ";
-
-        DataTable dt = _ejecutarConsulta.EjecutarFuncion(sql, new Dictionary<string, object?>
+              id_categoria,
+              estado_eliminado,
+              descripcion;
+        ";        DataTable dt = _ejecutarConsulta.EjecutarFuncion(sql, new Dictionary<string, object?>
         {
             ["nombre"]      = comando.Nombre,
             ["modelo"]      = comando.Modelo,
-            ["urldata"]     = comando.UrlData,
+            ["urldata"]     = comando.UrlData ?? (object)DBNull.Value,
             ["urlimagen"]   = comando.UrlImagen,
             ["cantidad"]    = comando.Cantidad,
             ["marca"]       = comando.Marca,
-            ["categoriaid"] = comando.CategoriaId
+            ["categoriaid"] = comando.CategoriaId,
+            ["descripcion"] = (object)DBNull.Value
         });
 
         return MapearFilaADto(dt.Rows[0]);
@@ -62,7 +60,7 @@ public class GrupoEquipoRepository : IGrupoEquipoRepository
             WHERE id_grupo_equipo = @id;
         ";
 
-        Dictionary<string, object> parametros = new Dictionary<string, object>
+        Dictionary<string, object?> parametros = new Dictionary<string, object?>
         {
             ["id"] = id
         };
@@ -88,7 +86,7 @@ public class GrupoEquipoRepository : IGrupoEquipoRepository
         object nombreDb    = string.IsNullOrWhiteSpace(nombre)    ? (object)DBNull.Value : nombre!;
         object categoriaDb = string.IsNullOrWhiteSpace(categoria) ? (object)DBNull.Value : categoria!;
 
-        DataTable dt = _ejecutarConsulta.EjecutarFuncion(sql, new Dictionary<string, object>
+        DataTable dt = _ejecutarConsulta.EjecutarFuncion(sql, new Dictionary<string, object?>
         {
             ["nombre_grupo_equipo_input"] = nombreDb,
             ["categoria_input"]           = categoriaDb
@@ -103,41 +101,41 @@ public class GrupoEquipoRepository : IGrupoEquipoRepository
             lista.Add(dict);
         }
         return lista;
-    }
-
-    public GrupoEquipoDto? Actualizar(ActualizarGrupoEquipoComando comando)
+    }    public GrupoEquipoDto? Actualizar(ActualizarGrupoEquipoComando comando)
     {
         const string sql = @"
-            UPDATE public.grupo_equipos
+            UPDATE public.grupos_equipos
             SET
-                nombre      = @nombre,
-                modelo      = @modelo,
-                urldata     = @urldata,
-                urlimagen   = @urlimagen,
-                cantidad    = @cantidad,
-                marca       = @marca,
-                categoriaid = @categoriaid
+                nombre = @nombre,
+                modelo = @modelo,
+                url_data_sheet = @urldata,
+                url_imagen = @urlimagen,
+                cantidad = @cantidad,
+                marca = @marca,
+                id_categoria = @categoriaid
             WHERE id_grupo_equipo = @id;
+            
             SELECT
                 id_grupo_equipo,
                 nombre,
                 modelo,
-                urldata,
-                urlimagen,
+                url_data_sheet,
+                url_imagen,
                 cantidad,
                 marca,
-                categoriaid,
-                estaeliminado
-              FROM public.grupo_equipos
+                id_categoria,
+                estado_eliminado,
+                descripcion
+              FROM public.grupos_equipos
              WHERE id_grupo_equipo = @id;
         ";
 
-        DataTable dt = _ejecutarConsulta.EjecutarFuncion(sql, new Dictionary<string, object?>
+        DataTable dt = _ejecutarConsulta.EjecutarFuncion(sql, new Dictionary<string, object?>()
         {
             ["id"]           = comando.Id,
             ["nombre"]       = comando.Nombre,
             ["modelo"]       = comando.Modelo,
-            ["urldata"]      = comando.UrlData,
+            ["urldata"]      = comando.UrlData ?? (object)DBNull.Value,
             ["urlimagen"]    = comando.UrlImagen,
             ["cantidad"]     = comando.Cantidad,
             ["marca"]        = comando.Marca,
@@ -146,13 +144,11 @@ public class GrupoEquipoRepository : IGrupoEquipoRepository
 
         if (dt.Rows.Count == 0) return null;
         return MapearFilaADto(dt.Rows[0]);
-    }
-
-    public bool Eliminar(int id)
+    }    public bool Eliminar(int id)
     {
         const string sql = @"
-            UPDATE public.grupo_equipos
-            SET estaeliminado = true
+            UPDATE public.grupos_equipos
+            SET estado_eliminado = true
             WHERE id_grupo_equipo = @id;
         ";
 
@@ -162,22 +158,20 @@ public class GrupoEquipoRepository : IGrupoEquipoRepository
         });
 
         return true;
-    }
-
-    private static GrupoEquipoDto MapearFilaADto(DataRow fila)
+    }    private static GrupoEquipoDto MapearFilaADto(DataRow fila)
     {
         return new GrupoEquipoDto
         {
             Id            = Convert.ToInt32(fila["id_grupo_equipo"]),
-            Nombre        = fila["nombre"]?.ToString()      ?? string.Empty,
-            Modelo        = fila["modelo"]?.ToString()      ?? string.Empty,
-            UrlData       = fila["url_data_sheet"] as string,
-            UrlImagen     = fila["url_imagen"]?.ToString(),
+            Nombre        = fila["nombre"]?.ToString() ?? string.Empty,
+            Modelo        = fila["modelo"]?.ToString() ?? string.Empty,
+            UrlData       = fila["url_data_sheet"] == DBNull.Value ? null : fila["url_data_sheet"].ToString(),
+            UrlImagen     = fila["url_imagen"]?.ToString() ?? string.Empty,
             Cantidad      = Convert.ToInt32(fila["cantidad"]),
-            Marca         = fila["marca"]?.ToString()       ?? string.Empty,
+            Marca         = fila["marca"]?.ToString() ?? string.Empty,
             CategoriaId   = Convert.ToInt32(fila["id_categoria"]),
             EstaEliminado = Convert.ToBoolean(fila["estado_eliminado"]),
-            Descripcion   = fila["descripcion"]?.ToString() ?? string.Empty
+            Descripcion   = fila["descripcion"] == DBNull.Value ? string.Empty : fila["descripcion"].ToString()!
         };
     }
 }

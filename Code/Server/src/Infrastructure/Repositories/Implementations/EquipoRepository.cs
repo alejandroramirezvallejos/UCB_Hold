@@ -123,7 +123,7 @@ public class EquipoRepository : IEquipoRepository
             WHERE id_equipo = @id_equipo_input;
         ";
 
-        DataTable dt = _ejecutarConsulta.EjecutarFuncion(sql, new Dictionary<string, object>
+        DataTable dt = _ejecutarConsulta.EjecutarFuncion(sql, new Dictionary<string, object?>()
         {
             ["id_equipo_input"] = id
         });

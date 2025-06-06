@@ -14,7 +14,6 @@ public static class CommandLineInterface
             ModoInteractivo();
         }
     }
-
     private static void ModoInteractivo()
     {
         while (true)
@@ -33,7 +32,6 @@ public static class CommandLineInterface
             Console.WriteLine();
         }
     }
-
     private static void ProcesarComando(string[] args)
     {
         var comando = args[0].ToLower();
@@ -112,10 +110,48 @@ public static class CommandLineInterface
         builder.Services.AddScoped<IExecuteQuery, ExecuteQuery>();
 
         // Registrar los repositorios
-        builder.Services.AddScoped<IEquipoRepository, EquipoRepository>();
-        builder.Services.AddScoped<IGrupoEquipoRepository, GrupoEquipoRepository>();
+        builder.Services.AddScoped<IAccesorioRepository, AccesorioRepository>();
+        builder.Services.AddScoped<ICarreraRepository, CarreraRepository>();
         builder.Services.AddScoped<ICategoriaRepository, CategoriaRepository>();
+        builder.Services.AddScoped<IComponenteRepository, ComponenteRepository>();
+        builder.Services.AddScoped<IEmpresaMantenimientoRepository, EmpresaMantenimientoRepository>();
+        builder.Services.AddScoped<IEquipoRepository, EquipoRepository>();
+        builder.Services.AddScoped<IGaveteroRepository, GaveteroRepository>();
+        builder.Services.AddScoped<IGrupoEquipoRepository, GrupoEquipoRepository>();
+        builder.Services.AddScoped<IMantenimientoRepository, MantenimientoRepository>();
+        builder.Services.AddScoped<IMuebleRepository, MuebleRepository>();
         builder.Services.AddScoped<IPrestamoRepository, PrestamoRepository>();
+        builder.Services.AddScoped<IUsuarioRepository, UsuarioRepository>();
+
+        //Accesorios
+        builder.Services.AddScoped<IObtenerAccesorioConsulta, AccesorioService>();
+        builder.Services.AddScoped<ICrearAccesorioComando, AccesorioService>();
+        builder.Services.AddScoped<IActualizarAccesorioComando, AccesorioService>();
+        builder.Services.AddScoped<IEliminarAccesorioComando, AccesorioService>();
+
+        // Carreras
+        builder.Services.AddScoped<IObtenerCarreraConsulta, CarreraService>();
+        builder.Services.AddScoped<ICrearCarreraComando, CarreraService>();
+        builder.Services.AddScoped<IActualizarCarreraComando, CarreraService>();
+        builder.Services.AddScoped<IEliminarCarreraComando, CarreraService>();
+
+        // Categorias
+        builder.Services.AddScoped<ICrearCategoriaComando, CategoriaService>();
+        builder.Services.AddScoped<IObtenerCategoriaConsulta, CategoriaService>();
+        builder.Services.AddScoped<IActualizarCategoriaComando, CategoriaService>();
+        builder.Services.AddScoped<IEliminarCategoriaComando, CategoriaService>();
+
+        // Componentes
+        builder.Services.AddScoped<IObtenerComponenteConsulta, ComponenteService>();
+        builder.Services.AddScoped<ICrearComponenteComando, ComponenteService>();
+        builder.Services.AddScoped<IActualizarComponenteComando, ComponenteService>();
+        builder.Services.AddScoped<IEliminarComponenteComando, ComponenteService>();
+
+        // Empresas de Mantenimiento
+        builder.Services.AddScoped<IObtenerEmpresaMantenimientoConsulta, EmpresaMantenimientoService>();
+        builder.Services.AddScoped<ICrearEmpresaMantenimientoComando, EmpresaMantenimientoService>();
+        builder.Services.AddScoped<IActualizarEmpresaMantenimientoComando, EmpresaMantenimientoService>();
+        builder.Services.AddScoped<IEliminarEmpresaMantenimientoComando, EmpresaMantenimientoService>();
 
         // Equipos
         builder.Services.AddScoped<IObtenerEquipoConsulta, EquipoService>();
@@ -123,32 +159,39 @@ public static class CommandLineInterface
         builder.Services.AddScoped<IActualizarEquipoComando, EquipoService>();
         builder.Services.AddScoped<IEliminarEquipoComando, EquipoService>();
 
+        // Gaveteros
+        builder.Services.AddScoped<IObtenerGaveteroConsulta, GaveteroService>();
+        builder.Services.AddScoped<ICrearGaveteroComando, GaveteroService>();
+        builder.Services.AddScoped<IActualizarGaveteroComando, GaveteroService>();
+        builder.Services.AddScoped<IEliminarGaveteroComando, GaveteroService>();
+
         // GrupoEquipo
         builder.Services.AddScoped<IObtenerGrupoEquipoConsulta, GrupoEquipoService>();
-        builder.Services.AddScoped<IObtenerGruposEquiposConsulta, GrupoEquipoService>();
         builder.Services.AddScoped<ICrearGrupoEquipoComando, GrupoEquipoService>();
         builder.Services.AddScoped<IActualizarGrupoEquipoComando, GrupoEquipoService>();
         builder.Services.AddScoped<IEliminarGrupoEquipoComando, GrupoEquipoService>();
 
-        // Categorias
-        builder.Services.AddScoped<ICrearCategoriaComando, CategoriaService>();
-        builder.Services.AddScoped<IObtenerCategoriaConsulta, CategoriaService>();
-        builder.Services.AddScoped<IObtenerCategoriasConsulta, CategoriaService>();
-        builder.Services.AddScoped<IActualizarCategoriaComando, CategoriaService>();
-        builder.Services.AddScoped<IEliminarCategoriaComando, CategoriaService>();
+        // Mantenimientos
+        builder.Services.AddScoped<IObtenerMantenimientoConsulta, MantenimientoService>();
+        builder.Services.AddScoped<ICrearMantenimientoComando, MantenimientoService>();
+        builder.Services.AddScoped<IEliminarMantenimientoComando, MantenimientoService>();
 
-        // Usuarios
-        //builder.Services.AddScoped<ICrearUsuarioComando, UsuarioService>();
-        //builder.Services.AddScoped<IObtenerUsuarioConsulta, UsuarioService>();
-        //builder.Services.AddScoped<IActualizarUsuarioComando, UsuarioService>();
-        //builder.Services.AddScoped<IEliminarUsuarioComando, UsuarioService>();
+        // Muebles
+        builder.Services.AddScoped<IObtenerMuebleConsulta, MuebleService>();
+        builder.Services.AddScoped<ICrearMuebleComando, MuebleService>();
+        builder.Services.AddScoped<IActualizarMuebleComando, MuebleService>();
+        builder.Services.AddScoped<IEliminarMuebleComando, MuebleService>();
 
         // Prestamos
         builder.Services.AddScoped<ICrearPrestamoComando, PrestamoService>();
         builder.Services.AddScoped<IObtenerPrestamoConsulta, PrestamoService>();
-        builder.Services.AddScoped<IActualizarPrestamoComando, PrestamoService>();
         builder.Services.AddScoped<IEliminarPrestamoComando, PrestamoService>();
 
+        // Usuarios
+        builder.Services.AddScoped<ICrearUsuarioComando, UsuarioService>();
+        builder.Services.AddScoped<IObtenerUsuarioConsulta, UsuarioService>();
+        builder.Services.AddScoped<IActualizarUsuarioComando, UsuarioService>();
+        builder.Services.AddScoped<IEliminarUsuarioComando, UsuarioService>();
 
         builder.Services.AddControllers();
         builder.Services.AddEndpointsApiExplorer();

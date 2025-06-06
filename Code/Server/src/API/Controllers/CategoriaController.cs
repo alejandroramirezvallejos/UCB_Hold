@@ -7,12 +7,12 @@ public class CategoriaController : ControllerBase
 {
     private readonly ICrearCategoriaComando      _crear;
     private readonly IObtenerCategoriaConsulta   _obtener;
-    private readonly IObtenerCategoriasConsulta  _listar;
+    private readonly IObtenerCategoriaConsulta  _listar;
     private readonly IActualizarCategoriaComando _actualizar;
     private readonly IEliminarCategoriaComando   _eliminar;
 
     public CategoriaController(ICrearCategoriaComando crear, IObtenerCategoriaConsulta obtener,
-                               IObtenerCategoriasConsulta listar, IActualizarCategoriaComando actualizar,
+                               IObtenerCategoriaConsulta listar, IActualizarCategoriaComando actualizar,
                                IEliminarCategoriaComando eliminar)
     {
         _crear      = crear;
@@ -40,9 +40,9 @@ public class CategoriaController : ControllerBase
     }
 
     [HttpGet]
-    public ActionResult<List<CategoriaDto>> Listar()
+    public ActionResult<List<CategoriaDto>> Listar(int Id)
     {
-        var consulta = new ObtenerCategoriasConsulta();
+        var consulta = new ObtenerCategoriaConsulta(Id);
         return Ok(_listar.Handle(consulta));
     }
 

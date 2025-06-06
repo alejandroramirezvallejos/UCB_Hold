@@ -20,7 +20,7 @@ public class CategoriaRepository : ICategoriaRepository
             RETURNING id_categoria, nombre, estado_eliminado;
         ";
 
-        Dictionary<string, object> parametros = new Dictionary<string, object>
+        Dictionary<string, object?> parametros = new Dictionary<string, object?>
         {
             ["nombre"] = comando.Nombre
         };
@@ -37,7 +37,7 @@ public class CategoriaRepository : ICategoriaRepository
              WHERE id_categoria = @id;
         ";
 
-        Dictionary<string, object> parametros = new Dictionary<string, object>
+        Dictionary<string, object?> parametros = new Dictionary<string, object?>
         {
             ["id"] = id
         };
@@ -54,7 +54,7 @@ public class CategoriaRepository : ICategoriaRepository
               FROM public.categorias;
         ";
 
-        DataTable dt = _ejecutarConsulta.EjecutarFuncion(sql, new Dictionary<string, object>());
+        DataTable dt = _ejecutarConsulta.EjecutarFuncion(sql, new Dictionary<string, object?>());
         var lista = new List<CategoriaDto>(dt.Rows.Count);
         foreach (DataRow row in dt.Rows)
             lista.Add(MapearFila(row));
@@ -73,7 +73,7 @@ public class CategoriaRepository : ICategoriaRepository
              WHERE id_categoria = @id;
         ";
 
-        Dictionary<string, object> parametros = new Dictionary<string, object>
+        Dictionary<string, object?> parametros = new Dictionary<string, object?>
         {
             ["id"]     = comando.Id,
             ["nombre"] = comando.Nombre
@@ -92,7 +92,7 @@ public class CategoriaRepository : ICategoriaRepository
              WHERE id_categoria = @id;
         ";
 
-        _ejecutarConsulta.EjecutarSpNR(sql, new Dictionary<string, object>
+        _ejecutarConsulta.EjecutarSpNR(sql, new Dictionary<string, object?>
         {
             ["id"] = id
         });

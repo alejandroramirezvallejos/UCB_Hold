@@ -1,7 +1,7 @@
 using System.Collections.Generic;
 
 public class CategoriaService : ICrearCategoriaComando, IObtenerCategoriaConsulta,
-                                IObtenerCategoriasConsulta, IActualizarCategoriaComando,
+                                IActualizarCategoriaComando,
                                 IEliminarCategoriaComando
 {
     private readonly ICategoriaRepository _categoriaRepository;
@@ -19,11 +19,6 @@ public class CategoriaService : ICrearCategoriaComando, IObtenerCategoriaConsult
     public CategoriaDto? Handle(ObtenerCategoriaConsulta consulta)
     {
         return _categoriaRepository.ObtenerPorId(consulta.Id);
-    }
-
-    public List<CategoriaDto> Handle(ObtenerCategoriasConsulta consulta)
-    {
-        return _categoriaRepository.ObtenerTodos();
     }
 
     public CategoriaDto? Handle(ActualizarCategoriaComando comando)

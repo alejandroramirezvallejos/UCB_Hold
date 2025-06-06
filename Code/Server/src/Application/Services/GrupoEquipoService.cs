@@ -1,8 +1,8 @@
 using System.Data;
 
-public class GrupoEquipoService : ICrearGrupoEquipoComando, IObtenerGrupoEquipoConsulta,
-                                  IObtenerGruposEquiposConsulta, IActualizarGrupoEquipoComando,
-                                  IEliminarGrupoEquipoComando
+public class GrupoEquipoService :   ICrearGrupoEquipoComando, IObtenerGrupoEquipoConsulta,
+                                    IActualizarGrupoEquipoComando,
+                                    IEliminarGrupoEquipoComando
 {
     private readonly IGrupoEquipoRepository _grupoEquipoRepository;
 
@@ -19,11 +19,6 @@ public class GrupoEquipoService : ICrearGrupoEquipoComando, IObtenerGrupoEquipoC
     public GrupoEquipoDto? Handle(ObtenerGrupoEquipoConsulta consulta)
     {
         return _grupoEquipoRepository.ObtenerPorId(consulta.Id);
-    }
-
-    public List<Dictionary<string, object?>> Handle(ObtenerGruposEquiposConsulta consulta)
-    {
-        return _grupoEquipoRepository.ObtenerPorNombreYCategoria(consulta.Nombre, consulta.Categoria);
     }
 
     public GrupoEquipoDto? Handle(ActualizarGrupoEquipoComando comando)

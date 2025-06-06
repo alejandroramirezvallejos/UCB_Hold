@@ -4,4 +4,5 @@ public interface IEquipoRepository
     EquipoDto? Actualizar(ActualizarEquipoComando comando);
     bool Eliminar(int id);
     EquipoDto? ObtenerPorId(int id);
+    List<EquipoDto> ObtenerTodos();
 }

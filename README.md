@@ -85,9 +85,12 @@ En todos los procedures tenemos principios ACID con atomicidad y transacciones
 
 ### cosas a instalar
 
-npm install signature_pad --save
+npm install signature_pad
 
-npm install jspdf html2canvas
+npm install jspdf
+
+npm install html2canvas
+
 
 ### Miembros
 
