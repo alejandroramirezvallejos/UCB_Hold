@@ -1,16 +1,15 @@
 public class Prestamo : IPrestamo, IEliminacionLogica
 {
-    private int      _id;
-    private DateTime _fechaSolicitud; //TODO: Puede ser nulo
-    private DateTime _fechaPrestamo; //TODO: Puede ser nulo
-    private DateTime _fechaDevolucion; //TODO: Puede ser nulo
-    private DateTime _fechaDevolucionEsperada; 
-    // TODO: Fecha prestamoesperada, no puede ser nulo
-    private string?  _observacion              = null;
-    private string   _estadoPrestamo           = string.Empty;
-    private string   _carnetUsuario            = string.Empty;
-    private int      _equipoId;
-    private bool     _estaEliminado            = false;
+    private int       _id;
+    private DateTime? _fechaPrestamo            = null;
+    private DateTime? _fechaDevolucion          = null;
+    private DateTime  _fechaDevolucionEsperada;
+    private DateTime  _fechaPrestamoEsperado;
+    private string?   _observacion              = null;
+    private string    _estadoPrestamo           = string.Empty;
+    private string    _carnetUsuario            = string.Empty;
+    private int       _equipoId;
+    private bool      _estaEliminado            = false;
 
     public int Id
     {
@@ -18,28 +17,52 @@ public class Prestamo : IPrestamo, IEliminacionLogica
         private set => _id = Verificar.SiEsNatural(value, "El ID del prestamo");
     }
 
-    public DateTime FechaSolicitud
-    {
-        get => _fechaSolicitud;
-        private set => _fechaSolicitud = Verificar.SiNoEsFutura(value, "La fecha de solicitud del prestamo");
-    }
-
-    public DateTime FechaPrestamo
+    public DateTime? FechaPrestamo
     {
         get => _fechaPrestamo;
-        private set => _fechaPrestamo = Verificar.SiNoEsAnteriorA(value, FechaSolicitud, "La fecha del prestamo", "la fecha de solicitud del prestamo");
+        private set
+        {
+            if (value.HasValue)
+            {
+                _fechaPrestamo = Verificar.SiNoEsAnteriorA(value.Value, FechaPrestamoEsperado, "La fecha del préstamo", "la fecha de préstamo esperada");
+            }
+            else
+            {
+                _fechaPrestamo = null;
+            }
+        }
     }
 
-    public DateTime FechaDevolucion
+    public DateTime? FechaDevolucion 
     {
         get => _fechaDevolucion;
-        private set => _fechaDevolucion = Verificar.SiNoEsAnteriorA(value, FechaPrestamo, "La fecha de devolucion del prestamo", "la fecha del prestamo");
+        private set 
+        {
+            if (value.HasValue)
+            {
+                if (!FechaPrestamo.HasValue)
+                {
+                    throw new InvalidOperationException("No se puede establecer FechaDevolucion si FechaPrestamo no está establecida.");
+                }
+                _fechaDevolucion = Verificar.SiNoEsAnteriorA(value.Value, FechaPrestamo.Value, "La fecha de devolucion del prestamo", "la fecha del prestamo");
+            }
+            else
+            {
+                _fechaDevolucion = null;
+            }
+        }
     }
 
     public DateTime FechaDevolucionEsperada
     {
         get => _fechaDevolucionEsperada;
-        private set => _fechaDevolucionEsperada = Verificar.SiNoEsAnteriorA(value, FechaPrestamo, "La fecha de devolucion esperada", "la fecha del prestamo");
+        private set => _fechaDevolucionEsperada = Verificar.SiNoEsAnteriorA(value, FechaPrestamoEsperado, "La fecha de devolucion esperada", "la fecha de prestamo esperada");
+    }
+
+    public DateTime FechaPrestamoEsperado
+    {
+        get => _fechaPrestamoEsperado;
+        private set => _fechaPrestamoEsperado = value; 
     }
 
     public string? Observacion
@@ -78,15 +101,18 @@ public class Prestamo : IPrestamo, IEliminacionLogica
         private set => _estaEliminado = value;
     }
 
-    public Prestamo(DateTime fechaSolicitud, DateTime fechaPrestamo,
-                    DateTime fechaDevolucion, DateTime fechaDevolucionEsperada, 
-                    string? observacion, string estado,
-                    string carnetUsuario, int equipoId)
+    public Prestamo(
+        DateTime? fechaPrestamo,
+        DateTime? fechaDevolucion,
+        DateTime fechaDevolucionEsperada,
+        DateTime fechaPrestamoEsperado,
+        string? observacion, string estado,
+        string carnetUsuario, int equipoId)
     {
-        FechaSolicitud          = fechaSolicitud;
+        FechaPrestamoEsperado   = fechaPrestamoEsperado;
+        FechaDevolucionEsperada = fechaDevolucionEsperada;
         FechaPrestamo           = fechaPrestamo;
         FechaDevolucion         = fechaDevolucion;
-        FechaDevolucionEsperada = fechaDevolucionEsperada;
         Observacion             = observacion;
         EstadoPrestamo          = estado;
         CarnetUsuario           = carnetUsuario;

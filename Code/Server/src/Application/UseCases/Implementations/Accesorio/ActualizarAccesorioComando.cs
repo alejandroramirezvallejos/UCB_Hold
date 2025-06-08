@@ -1,4 +1,4 @@
-public record ActualizarAccesorioComando //No cambiar los use cases, estan justo como la bd
+public record ActualizarAccesorioComando 
 (
     int     Id,
     string?  Nombre,

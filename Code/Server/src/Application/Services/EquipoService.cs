@@ -1,5 +1,3 @@
-using System.Data;
-
 public class EquipoService : IObtenerEquipoConsulta, ICrearEquipoComando,
                              IActualizarEquipoComando, IEliminarEquipoComando
 {

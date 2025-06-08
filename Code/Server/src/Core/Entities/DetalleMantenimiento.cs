@@ -1,10 +1,10 @@
-public class DetalleMantenimiento : IDetalleMantenimiento
+public class DetalleMantenimiento : IDetalleMantenimiento, IEliminacionLogica
 {
     private int     _id;
     private int     _idMantenimiento; 
     private string? _descripcion      = null;
     private int     _idEquipo;
-    //TODO: Agregar IEliminacionLogica
+    private bool    _estaEliminado    = false; 
 
     public int Id
     {
@@ -32,10 +32,20 @@ public class DetalleMantenimiento : IDetalleMantenimiento
         private set => _idEquipo = Verificar.SiEsNatural(value, "El ID del equipo");
     }
 
+    public bool EstaEliminado
+    {
+        get => _estaEliminado;
+        private set => _estaEliminado = value;
+    }
+    
     public DetalleMantenimiento(int idMantenimiento, string? descripcion, int idEquipo)
     {
         IdMantenimiento = idMantenimiento;
         Descripcion     = descripcion;
         IdEquipo        = idEquipo;
     }
+    
+    public void Eliminar() => EstaEliminado = true;
+
+    public void Recuperar() => EstaEliminado = false;
 }

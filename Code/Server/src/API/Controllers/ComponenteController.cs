@@ -1,5 +1,7 @@
 using Microsoft.AspNetCore.Mvc;
 using System.ComponentModel.DataAnnotations;
+using API.ViewModels;
+namespace API.Controllers;
 
 [ApiController]
 [Route("api/[controller]")]
@@ -13,10 +15,10 @@ public class ComponenteController : ControllerBase
     public ComponenteController(ICrearComponenteComando crear, IObtenerComponenteConsulta obtener,
                                IActualizarComponenteComando actualizar, IEliminarComponenteComando eliminar)
     {
-        _crear = crear;
-        _obtener = obtener;
+        _crear      = crear;
+        _obtener    = obtener;
         _actualizar = actualizar;
-        _eliminar = eliminar;
+        _eliminar   = eliminar;
     }
 
     [HttpPost]

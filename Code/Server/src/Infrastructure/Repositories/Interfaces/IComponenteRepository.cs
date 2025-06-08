@@ -1,4 +1,3 @@
-//implementar
 public interface IComponenteRepository
 {
     void Crear(CrearComponenteComando comando);

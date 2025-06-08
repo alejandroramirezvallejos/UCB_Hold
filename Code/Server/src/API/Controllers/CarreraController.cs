@@ -1,22 +1,24 @@
 using Microsoft.AspNetCore.Mvc;
 using System.ComponentModel.DataAnnotations;
+using API.ViewModels;
+namespace API.Controllers;
 
 [ApiController]
 [Route("api/[controller]")]
 public class CarreraController : ControllerBase
 {
-    private readonly ICrearCarreraComando _crear;
-    private readonly IObtenerCarreraConsulta _obtener;
+    private readonly ICrearCarreraComando      _crear;
+    private readonly IObtenerCarreraConsulta   _obtener;
     private readonly IActualizarCarreraComando _actualizar;
-    private readonly IEliminarCarreraComando _eliminar;
+    private readonly IEliminarCarreraComando   _eliminar;
 
     public CarreraController(ICrearCarreraComando crear, IObtenerCarreraConsulta obtener,
                             IActualizarCarreraComando actualizar, IEliminarCarreraComando eliminar)
     {
-        _crear = crear;
-        _obtener = obtener;
+        _crear      = crear;
+        _obtener    = obtener;
         _actualizar = actualizar;
-        _eliminar = eliminar;
+        _eliminar   = eliminar;
     }
 
     [HttpPost]

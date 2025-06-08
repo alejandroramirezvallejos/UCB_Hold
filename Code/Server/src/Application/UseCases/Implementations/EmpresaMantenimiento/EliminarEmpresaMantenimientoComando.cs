@@ -1,5 +1,5 @@
-//Implementar
+//TODO: Implementar
 public record EliminarEmpresaMantenimientoComando
 (
-    int     Id       
+    int Id       
 );

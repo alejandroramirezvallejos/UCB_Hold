@@ -1,5 +1,3 @@
-//implementar
-
 using System.Data;
 
 public class MuebleRepository : IMuebleRepository

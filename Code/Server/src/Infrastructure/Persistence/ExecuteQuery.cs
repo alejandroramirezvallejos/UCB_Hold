@@ -9,7 +9,7 @@ public class ExecuteQuery : IExecuteQuery
     {
         _connectionString = configuration.GetConnectionString("DefaultConnection")
                             ?? throw new InvalidOperationException(
-                                "La cadena de conexion 'DefaultConnection' no está configurada.");
+                                "La cadena de conexiÃ³n 'DefaultConnection' no estÃ¡ configurada.");
     }
 
     public DataTable EjecutarSp(string nombreSp, Dictionary<string, object> parametros)
@@ -105,15 +105,14 @@ public class ExecuteQuery : IExecuteQuery
         {
             NpgsqlConnection conn = new NpgsqlConnection(_connectionString);
             conn.Open();
-            Console.WriteLine("Conexión exitosa");
+            Console.WriteLine("Conexiï¿½n exitosa");
             conn.Close();
             return true;
         }
         catch (Exception ex)
         {
-            Console.WriteLine($"Error de conexión: {ex.Message}");
+            Console.WriteLine($"Error de conexiï¿½n: {ex.Message}");
             return false;
         }
     }
 }
-

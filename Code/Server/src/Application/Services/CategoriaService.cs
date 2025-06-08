@@ -1,4 +1,3 @@
-using System.Collections.Generic;
 public class CategoriaService : ICrearCategoriaComando, IObtenerCategoriaConsulta,
                                 IActualizarCategoriaComando,
                                 IEliminarCategoriaComando

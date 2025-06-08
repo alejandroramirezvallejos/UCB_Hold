@@ -1,4 +1,3 @@
-//implementar
 using System.Data;
 public class CarreraRepository : ICarreraRepository
 {

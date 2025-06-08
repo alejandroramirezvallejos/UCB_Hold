@@ -1,5 +1,5 @@
-//Implementar
+//TODO: Implementar
 public record ObtenerGaveteroConsulta
 (
-    int      Id
+    int Id
 );

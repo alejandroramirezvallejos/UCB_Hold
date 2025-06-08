@@ -1,16 +1,15 @@
 using API.ViewModels;
 using Microsoft.AspNetCore.Mvc;
-
 namespace API.Controllers;
 
 [ApiController]
 [Route("api/[controller]")]
 public class UsuarioController : ControllerBase
 {
-    private readonly ICrearUsuarioComando _crearUsuarioComando;
-    private readonly IObtenerUsuarioConsulta _obtenerUsuarioConsulta;
+    private readonly ICrearUsuarioComando      _crearUsuarioComando;
+    private readonly IObtenerUsuarioConsulta   _obtenerUsuarioConsulta;
     private readonly IActualizarUsuarioComando _actualizarUsuarioComando;
-    private readonly IEliminarUsuarioComando _eliminarUsuarioComando;
+    private readonly IEliminarUsuarioComando   _eliminarUsuarioComando;
 
     public UsuarioController(
         ICrearUsuarioComando crearUsuarioComando,
@@ -18,10 +17,10 @@ public class UsuarioController : ControllerBase
         IActualizarUsuarioComando actualizarUsuarioComando,
         IEliminarUsuarioComando eliminarUsuarioComando)
     {
-        _crearUsuarioComando = crearUsuarioComando;
-        _obtenerUsuarioConsulta = obtenerUsuarioConsulta;
+        _crearUsuarioComando      = crearUsuarioComando;
+        _obtenerUsuarioConsulta   = obtenerUsuarioConsulta;
         _actualizarUsuarioComando = actualizarUsuarioComando;
-        _eliminarUsuarioComando = eliminarUsuarioComando;
+        _eliminarUsuarioComando   = eliminarUsuarioComando;
     }
 
     [HttpPost]
@@ -29,31 +28,26 @@ public class UsuarioController : ControllerBase
     {
         try
         {
-            // Validaciones de ModelState
             if (!ModelState.IsValid)
             {
                 return BadRequest(ModelState);
             }
-
-            // Validaciones adicionales de negocio
+            
             if (string.IsNullOrWhiteSpace(dto.Carnet))
             {
                 return BadRequest("El carnet es obligatorio");
             }
 
-            // Validación de formato de carnet (opcional - ajustar según reglas de negocio)
             if (dto.Carnet.Length < 3 || dto.Carnet.Length > 20)
             {
                 return BadRequest("El carnet debe tener entre 3 y 20 caracteres");
             }
 
-            // Validación de email único (opcional - depende de reglas de negocio)
             if (!IsValidEmail(dto.Email))
             {
                 return BadRequest("El formato del email no es válido");
             }
-
-            // Validación de teléfonos
+            
             if (!string.IsNullOrEmpty(dto.TelefonoReferencia) && dto.TelefonoReferencia.Length < 7)
             {
                 return BadRequest("El teléfono de referencia debe tener al menos 7 caracteres");
@@ -115,31 +109,26 @@ public class UsuarioController : ControllerBase
     {
         try
         {
-            // Validaciones de ModelState
             if (!ModelState.IsValid)
             {
                 return BadRequest(ModelState);
             }
 
-            // Validar que el carnet del parámetro coincida con el del DTO
             if (carnet != dto.Carnet)
             {
                 return BadRequest("El carnet del parámetro no coincide con el del cuerpo de la solicitud");
             }
 
-            // Validaciones adicionales
             if (string.IsNullOrWhiteSpace(carnet))
             {
                 return BadRequest("El carnet es obligatorio");
             }
 
-            // Validar email si se proporciona
             if (!string.IsNullOrEmpty(dto.Email) && !IsValidEmail(dto.Email))
             {
                 return BadRequest("El formato del email no es válido");
             }
 
-            // Validar teléfonos si se proporcionan
             if (!string.IsNullOrEmpty(dto.Telefono) && dto.Telefono.Length < 7)
             {
                 return BadRequest("El teléfono debe tener al menos 7 caracteres");
@@ -191,8 +180,7 @@ public class UsuarioController : ControllerBase
             {
                 return BadRequest("El carnet es obligatorio");
             }
-
-            // Validación de formato de carnet
+            
             if (carnet.Length < 3 || carnet.Length > 20)
             {
                 return BadRequest("El carnet debe tener entre 3 y 20 caracteres");

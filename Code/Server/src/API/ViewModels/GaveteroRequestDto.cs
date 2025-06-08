@@ -1,4 +1,5 @@
 using System.ComponentModel.DataAnnotations;
+namespace API.ViewModels;
 
 public class GaveteroRequestDto
 {

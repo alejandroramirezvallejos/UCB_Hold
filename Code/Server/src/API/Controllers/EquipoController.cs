@@ -1,23 +1,25 @@
 using Microsoft.AspNetCore.Mvc;
 using System.ComponentModel.DataAnnotations;
+using API.ViewModels;
+namespace API.Controllers;
 
 [ApiController]
 [Route("api/[controller]")]
 public class EquipoController : ControllerBase
-{    private readonly ICrearEquipoComando _crear;
-    private readonly IObtenerEquipoConsulta _obtener;
-    private readonly IActualizarEquipoComando _actualizar;
-    private readonly IEliminarEquipoComando _eliminar;
+{    private readonly ICrearEquipoComando             _crear;
+    private readonly IObtenerEquipoConsulta           _obtener;
+    private readonly IActualizarEquipoComando         _actualizar;
+    private readonly IEliminarEquipoComando           _eliminar;
     private readonly IObtenerGrupoEquipoPorIdConsulta _obtenerGrupoEquipo;
 
     public EquipoController(ICrearEquipoComando crear, IObtenerEquipoConsulta obtener,
                            IActualizarEquipoComando actualizar, IEliminarEquipoComando eliminar,
                            IObtenerGrupoEquipoPorIdConsulta obtenerGrupoEquipo)
     {
-        _crear = crear;
-        _obtener = obtener;
-        _actualizar = actualizar;
-        _eliminar = eliminar;
+        _crear              = crear;
+        _obtener            = obtener;
+        _actualizar         = actualizar;
+        _eliminar           = eliminar;
         _obtenerGrupoEquipo = obtenerGrupoEquipo;
     }
 
@@ -88,8 +90,7 @@ public class EquipoController : ControllerBase
 
             if (dto == null)
                 return BadRequest("Los datos del equipo son requeridos");
-
-            // Si se proporciona GrupoEquipoId, verificar que existe
+            
             string? nombreGrupoEquipo = null;
             if (dto.GrupoEquipoId > 0)
             {

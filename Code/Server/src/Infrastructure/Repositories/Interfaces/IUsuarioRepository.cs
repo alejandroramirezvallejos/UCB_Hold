@@ -1,4 +1,3 @@
-//implementar
 public interface IUsuarioRepository
 {
     void Crear(CrearUsuarioComando comando);

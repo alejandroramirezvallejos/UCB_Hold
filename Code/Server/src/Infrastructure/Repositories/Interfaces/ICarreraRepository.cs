@@ -1,4 +1,3 @@
-//implementar
 public interface ICarreraRepository
 {
     void Crear(CrearCarreraComando comando);

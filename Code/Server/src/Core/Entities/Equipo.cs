@@ -8,10 +8,10 @@ public class Equipo : IEquipo, IEliminacionLogica
     private string   _estadoEquipo         = string.Empty;
     private string?  _numeroSerial         = null;
     private string?  _ubicacion            = null;
-    private double?  _costoReferencia      = null;    private int?     _tiempoMaximoPrestamo = null;
+    private double?  _costoReferencia      = null;    
+    private int?     _tiempoMaximoPrestamo = null;
     private string?  _procedencia          = null;
     private string?  _nombreGavetero       = null;
-    private string   _estadoDisponibilidad = string.Empty; //TODO: Quitar estado
     private bool     _estaEliminado        = false;
     private DateOnly _fechaDeIngreso; 
     public int Id
@@ -103,16 +103,6 @@ public class Equipo : IEquipo, IEliminacionLogica
                        : null;
     }
 
-    public string EstadoDisponibilidad
-    {
-        get => _estadoDisponibilidad;
-        private set
-        {
-            Enum enumDisponibilidad = Verificar.SiEstaEnEnum<Disponibilidad>(value, "El estado de disponibilidad del equipo");
-            _estadoDisponibilidad = enumDisponibilidad.ToString();
-        }
-    }
-
     public bool EstaEliminado
     {
         get => _estaEliminado;
@@ -126,7 +116,7 @@ public class Equipo : IEquipo, IEliminacionLogica
     }    public Equipo(int grupoEquipoId, string codigoImt, string? codigoUcb, string? descripcion, 
                   string estadoEquipo, string? numeroSerial, string? ubicacion, 
                   double? costoReferencia, int? tiempoMaximoPrestamo, string? procedencia, 
-                  string? nombreGavetero, string estadoDisponibilidad, DateOnly fechaDeIngreso)
+                  string? nombreGavetero, DateOnly fechaDeIngreso)
     {
         GrupoEquipoId        = grupoEquipoId;
         CodigoImt            = codigoImt;
@@ -139,7 +129,6 @@ public class Equipo : IEquipo, IEliminacionLogica
         TiempoMaximoPrestamo = tiempoMaximoPrestamo;
         Procedencia          = procedencia;
         NombreGavetero       = nombreGavetero;
-        EstadoDisponibilidad = estadoDisponibilidad;
         FechaDeIngreso       = fechaDeIngreso;
     }
 
