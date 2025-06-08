@@ -1,8 +1,7 @@
 public interface ICategoriaRepository
 {
-    CategoriaDto Crear(CrearCategoriaComando comando);
-    CategoriaDto? ObtenerPorId(int id);
+    void Crear(CrearCategoriaComando comando);
     List<CategoriaDto> ObtenerTodos();
-    CategoriaDto? Actualizar(ActualizarCategoriaComando comando);
-    bool Eliminar(int id);
+    void Actualizar(ActualizarCategoriaComando comando);
+    void Eliminar(int id);
 }

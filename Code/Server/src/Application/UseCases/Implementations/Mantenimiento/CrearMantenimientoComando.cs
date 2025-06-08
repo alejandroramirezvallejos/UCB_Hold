@@ -4,8 +4,8 @@ public record CrearMantenimientoComando(
     DateOnly FechaFinalDeMantenimiento,
     string      NombreEmpresaMantenimiento,
     double?  Costo,
-    string?  Descripcion,
+    string?  DescripcionMantenimiento,
     int[] CodigoIMT,
     TipoDeMantenimiento[]   TipoMantenimiento,
-    string[]?  DescripcionMantenimiento
+    string[]?  DescripcionEquipo
 );

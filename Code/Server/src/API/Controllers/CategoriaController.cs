@@ -12,12 +12,11 @@ public class CategoriaController : ControllerBase
     private readonly IEliminarCategoriaComando   _eliminar;
 
     public CategoriaController(ICrearCategoriaComando crear, IObtenerCategoriaConsulta obtener,
-                               IObtenerCategoriaConsulta listar, IActualizarCategoriaComando actualizar,
+                               IActualizarCategoriaComando actualizar,
                                IEliminarCategoriaComando eliminar)
     {
         _crear      = crear;
         _obtener    = obtener;
-        _listar     = listar;
         _actualizar = actualizar;
         _eliminar   = eliminar;
     }
@@ -28,15 +27,6 @@ public class CategoriaController : ControllerBase
         var comando = new CrearCategoriaComando(dto.Nombre);
         var resultado = _crear.Handle(comando);
         return CreatedAtAction(nameof(ObtenerPorId), new { id = resultado.Id }, resultado);
-    }
-
-    [HttpGet("{id}")]
-    public ActionResult<CategoriaDto> ObtenerPorId(int id)
-    {
-        var consulta = new ObtenerCategoriaConsulta(id);
-        var dto = _obtener.Handle(consulta);
-        if (dto is null) return NotFound();
-        return Ok(dto);
     }
 
     [HttpGet]

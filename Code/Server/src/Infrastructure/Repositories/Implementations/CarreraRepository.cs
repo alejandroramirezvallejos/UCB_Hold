@@ -9,28 +9,89 @@ public class CarreraRepository : ICarreraRepository
             _ejecutarConsulta = ejecutarConsulta;
         }
 
-        public CarreraDto Crear(CrearCarreraComando comando)
+        public void Crear(CrearCarreraComando comando)
         {
-            // Implementar lógica para crear una nueva carrera
+            const string sql = @"
+            CALL public.insertar_carrera(
+	        @nombre
+            )";
+
+            var parametros = new Dictionary<string, object?>
+            {
+                ["nombre"] = comando.Nombre
+            };
+            try
+            {
+                _ejecutarConsulta.EjecutarSpNR(sql, parametros);
+            }
+            catch (Exception ex)
+            {
+                throw new Exception("Error al crear la carrera", ex);
+            }
         }
 
-        public CarreraDto? ObtenerPorId(int id)
+        public void Eliminar(int id)
         {
-            // Implementar lógica para obtener una carrera por su ID
+            const string sql = @"
+                CALL public.eliminar_carrera(
+	            @id
+            )";
+            try
+            {
+                _ejecutarConsulta.EjecutarSpNR(sql, new Dictionary<string, object?>
+                {
+                    ["id"] = id
+                });
+            }
+            catch (Exception ex)
+            {
+                throw new Exception("Error al eliminar la carrera", ex);
+            }
         }
 
-        public CarreraDto? Actualizar(ActualizarCarreraComando comando)
+        public void Actualizar(ActualizarCarreraComando comando)
         {
-            // Implementar lógica para actualizar una carrera existente
-        }
+        const string sql = @"
+                CALL public.actualizar_carrera(
+                    @id,
+                    @nombre
+                )";
 
-        public bool Eliminar(int id)
-        {
-            // Implementar lógica para eliminar una carrera por su ID
+            var parametros = new Dictionary<string, object?>
+            {
+                ["id"] = comando.Id,
+                ["nombre"] = comando.Nombre ?? (object)DBNull.Value
+            };
+            try
+            {
+                _ejecutarConsulta.EjecutarSpNR(sql, parametros);
+            }
+            catch (Exception ex)
+            {
+                throw new Exception("Error al actualizar la carrera", ex);
+            }
         }
-
         public List<CarreraDto> ObtenerTodas()
         {
-            // Implementar lógica para obtener todas las carreras
+            const string sql = @"
+                SELECT * from public.obtener_carreras()
+            ";
+        try
+        {
+            DataTable dt = _ejecutarConsulta.EjecutarFuncion(sql, new Dictionary<string, object?>());
+            var lista = new List<CarreraDto>(dt.Rows.Count);
+            foreach (DataRow fila in dt.Rows)
+            {
+                lista.Add(new CarreraDto
+                {
+                    Nombre = fila["nombre"] == DBNull.Value ? null : fila["nombre"].ToString()
+                });
+            }
+            return lista;
         }
+        catch (Exception ex)
+        {
+            throw new Exception("Error al obtener las carreras", ex);
+        }
+    }
 }

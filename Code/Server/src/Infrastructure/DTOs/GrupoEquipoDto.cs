@@ -1,13 +1,11 @@
 public class GrupoEquipoDto
 {
-    public int    Id            { get; set; }
-    public string Nombre        { get; set; } = string.Empty;
-    public string Modelo        { get; set; } = string.Empty;
-    public string? UrlData      { get; set; }
-    public string UrlImagen     { get; set; } = string.Empty;
-    public int    Cantidad      { get; set; }
-    public string Marca         { get; set; } = string.Empty;
-    public int    CategoriaId   { get; set; }
-    public bool   EstaEliminado { get; set; }
-    public string Descripcion   { get; set; } = string.Empty;
+    public string? Nombre { get; set; } = null;
+    public string? Modelo { get; set; } = null;
+    public string? Marca { get; set; } = null;
+    public string? NombreCategoria { get; set; } = null;
+    public int? Cantidad { get; set; } = null;
+    public string? Descripcion { get; set; } = null;
+    public string? UrlDataSheet { get; set; } = null;
+    public string? UrlImagen { get; set; } = null;
 }

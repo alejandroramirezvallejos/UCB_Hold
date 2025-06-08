@@ -50,16 +50,9 @@ public class EquiposController : ControllerBase
             solicitud.GaveteroId
         );
 
-        EquipoDto resultado = _crear.Handle(comando);
+        _crear.Handle(comando);
 
-        return CreatedAtAction(
-            nameof(ObtenerPorId),
-            new
-            { 
-                id = resultado.Id 
-            },
-            resultado
-        );
+        return Created();
     }
 
     [HttpPut("{id}")]

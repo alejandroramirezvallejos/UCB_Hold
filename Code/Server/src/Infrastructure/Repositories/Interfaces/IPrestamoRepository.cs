@@ -1,7 +1,6 @@
 public interface IPrestamoRepository
 {
-    PrestamoDto Crear(CrearPrestamoComando comando);
-    PrestamoDto? ObtenerPorId(int id);
-    bool Eliminar(int id);
+    void Crear(CrearPrestamoComando comando);
+    void Eliminar(int id);
     List<PrestamoDto> ObtenerTodos();
 }

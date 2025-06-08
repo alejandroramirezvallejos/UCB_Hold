@@ -11,147 +11,136 @@ public class EquipoRepository : IEquipoRepository
         _ejecutarConsulta = ejecutarConsulta;
     }
 
-    public EquipoDto Crear(CrearEquipoComando comando)
+    public void Crear(CrearEquipoComando comando)
     {
         const string sql = @"
-            INSERT INTO public.equipos
-              (id_grupo_equipo, codigo_imt, codigo_ucb, descripcion, estado_equipo,
-               numero_serial, ubicacion, costo_referencia, tiempo_max_prestamo,
-               procedencia, id_gavetero, estado_eliminado, fecha_ingreso_equipo)
-            VALUES
-              (@grupoEquipoId, @codigoImt, @codigoUcb, @descripcion, @estadoEquipo,
-               @numeroSerial, @ubicacion, @costoReferencia, @tiempoMaximoPrestamo,
-               @procedencia, @gaveteroId, false, NOW())
-            RETURNING *;
-        ";
-
-        DataTable dt = _ejecutarConsulta.EjecutarFuncion(sql, new Dictionary<string, object?>
+            CALL public.insertar_equipo(
+	        @nombre,
+	        @modelo,
+	        @marca,
+	        @codigoUcb,
+	        @descripcion,
+	        @numeroSerial,
+	        @ubicacion,
+	        @procedencia,
+	        @costoReferencia,
+	        @tiempoMaximoPrestamo,
+	        @nombreGavetero
+            )";
+        Dictionary<string, object?> parametros = new Dictionary<string, object?>{
+            ["nombre"]                = comando.NombreGrupoEquipo,
+            ["modelo"]                = comando.Modelo ?? (object)DBNull.Value,
+            ["marca"]                 = comando.Marca ?? (object)DBNull.Value,
+            ["codigoUcb"]             = comando.CodigoUcb ?? (object)DBNull.Value,
+            ["descripcion"]           = comando.Descripcion ?? (object)DBNull.Value,
+            ["numeroSerial"]          = comando.NumeroSerial ?? (object)DBNull.Value,
+            ["ubicacion"]             = comando.Ubicacion ?? (object)DBNull.Value,
+            ["procedencia"]           = comando.Procedencia ?? (object)DBNull.Value,
+            ["costoReferencia"]       = comando.CostoReferencia ?? (object)DBNull.Value,
+            ["tiempoMaximoPrestamo"]  = comando.TiempoMaximoPrestamo ?? (object)DBNull.Value,
+            ["nombreGavetero"]        = comando.NombreGavetero ?? (object)DBNull.Value
+        };
+        try
         {
-            ["grupoEquipoId"]        = comando.GrupoEquipoId,
-            ["codigoImt"]            = comando.CodigoImt,
-            ["codigoUcb"]            = comando.CodigoUcb,
-            ["descripcion"]          = comando.Descripcion,
-            ["estadoEquipo"]         = comando.EstadoEquipo,
-            ["numeroSerial"]         = comando.NumeroSerial,
-            ["ubicacion"]            = comando.Ubicacion,
-            ["costoReferencia"]      = comando.CostoReferencia,
-            ["tiempoMaximoPrestamo"] = comando.TiempoMaximoPrestamo,
-            ["procedencia"]          = comando.Procedencia,
-            ["gaveteroId"]           = comando.GaveteroId
-        });
-
-        return MapearFilaADto(dt.Rows[0]);
+            _ejecutarConsulta.EjecutarSpNR(sql, parametros);
+        }
+        catch (Exception ex)
+        {
+            throw new Exception("Error al crear el equipo", ex);
+        }
     }
 
-    public EquipoDto? Actualizar(ActualizarEquipoComando comando)
+    public void Actualizar(ActualizarEquipoComando comando)
     {
         const string sql = @"
-            UPDATE public.equipos
-            SET
-              id_grupo_equipo = @grupoEquipoId,
-              codigo_imt = @codigoImt,
-              codigo_ucb = @codigoUcb,
-              descripcion = @descripcion,
-              estado_equipo = @estadoEquipo,
-              numero_serial = @numeroSerial,
-              ubicacion = @ubicacion,
-              costo_referencia = @costoReferencia,
-              tiempo_max_prestamo = @tiempoMaximoPrestamo,
-              procedencia = @procedencia,
-              id_gavetero = @gaveteroId
-            WHERE id_equipo = @id
-            RETURNING *;
-        ";
-
-        DataTable dt = _ejecutarConsulta.EjecutarFuncion(sql, new Dictionary<string, object?>
+        CALL public.actualizar_equipo(
+	    @id,
+	    @nombre,
+	    @codigoUcb,
+	    @descripcion,
+	    @numeroSerial,
+	    @ubicacion,
+	    @procedencia,
+	    @costoReferencia,
+	    @tiempoMaximoPrestamo,
+	    @nombreGavetero,
+	    @estadoEquipo
+        )";
+        Dictionary<string, object?> parametros = new Dictionary<string, object?>
         {
-            ["id"]                   = comando.Id,
-            ["grupoEquipoId"]        = comando.GrupoEquipoId,
-            ["codigoImt"]            = comando.CodigoImt,
-            ["codigoUcb"]            = comando.CodigoUcb,
-            ["descripcion"]          = comando.Descripcion,
-            ["estadoEquipo"]         = comando.EstadoEquipo,
-            ["numeroSerial"]         = comando.NumeroSerial,
-            ["ubicacion"]            = comando.Ubicacion,
-            ["costoReferencia"]      = comando.CostoReferencia,
-            ["tiempoMaximoPrestamo"] = comando.TiempoMaximoPrestamo,
-            ["procedencia"]          = comando.Procedencia,
-            ["gaveteroId"]           = comando.GaveteroId
-        });
-
-        if (dt.Rows.Count == 0)
-            return null;
-
-        return MapearFilaADto(dt.Rows[0]);
+            ["id"]                    = comando.Id,
+            ["nombre"]                = comando.NombreGrupoEquipo ?? (object)DBNull.Value,
+            ["codigoUcb"]             = comando.CodigoUcb ?? (object)DBNull.Value,
+            ["descripcion"]           = comando.Descripcion ?? (object)DBNull.Value,
+            ["numeroSerial"]          = comando.NumeroSerial ?? (object)DBNull.Value,
+            ["ubicacion"]             = comando.Ubicacion ?? (object)DBNull.Value,
+            ["procedencia"]           = comando.Procedencia ?? (object)DBNull.Value,
+            ["costoReferencia"]       = comando.CostoReferencia ?? (object)DBNull.Value,
+            ["tiempoMaximoPrestamo"]  = comando.TiempoMaximoPrestamo ?? (object)DBNull.Value,
+            ["nombreGavetero"]        = comando.NombreGavetero ?? (object)DBNull.Value,
+            ["estadoEquipo"]          = comando.EstadoEquipo ?? (object)DBNull.Value
+        };
+        try
+        {
+            _ejecutarConsulta.EjecutarSpNR(sql, parametros);
+        }
+        catch (Exception ex)
+        {
+            throw new Exception("Error al actualizar el equipo", ex);
+        }   
     }
 
-    public bool Eliminar(int id)
+    public void Eliminar(int id)
     {
         const string sql = @"
-            UPDATE public.equipos
-            SET estado_eliminado = true
-            WHERE id_equipo = @id;
-        ";
-
-        _ejecutarConsulta.EjecutarSpNR(sql, new Dictionary<string, object?>
+        CALL public.eliminar_equipo(
+	    @id
+        )";
+        try
         {
-            ["id"] = id
-        });
-
-        return true;
+            _ejecutarConsulta.EjecutarSpNR(sql, new Dictionary<string, object?>
+            {
+                ["id"] = id
+            });
+        }
+        catch (Exception ex)
+        {
+            throw new Exception("Error al eliminar el equipo", ex);
+        }
     }
-
-    public EquipoDto? ObtenerPorId(int id)
+    public List<EquipoDto> ObtenerTodos()
     {
         const string sql = @"
-            SELECT
-                id_equipo,
-                id_grupo_equipo,
-                codigo_imt,
-                codigo_ucb,
-                descripcion,
-                estado_equipo,
-                numero_serial,
-                ubicacion,
-                costo_referencia,
-                tiempo_max_prestamo,
-                procedencia,
-                id_gavetero,
-                estado_eliminado,
-                fecha_ingreso_equipo
-            FROM public.equipos
-            WHERE id_equipo = @id_equipo_input;
+            SELECT * from public.obtener_equipos()
         ";
-
-        DataTable dt = _ejecutarConsulta.EjecutarFuncion(sql, new Dictionary<string, object?>()
+        try
         {
-            ["id_equipo_input"] = id
-        });
-
-        if (dt.Rows.Count == 0)
-            return null;
-
-        return MapearFilaADto(dt.Rows[0]);
+            DataTable dt = _ejecutarConsulta.EjecutarFuncion(sql, new Dictionary<string, object?>());
+            var lista = new List<EquipoDto>(dt.Rows.Count);
+            foreach (DataRow row in dt.Rows)
+                lista.Add(MapearFilaADto(row));
+            return lista;
+        }
+        catch (Exception ex)
+        {
+            throw new Exception("Error al obtener los equipos", ex);
+        }
     }
-
     private static EquipoDto MapearFilaADto(DataRow fila)
     {
         return new EquipoDto
         {
-            Id                  = Convert.ToInt32(fila["id_equipo"]),
-            GrupoEquipoId       = Convert.ToInt32(fila["id_grupo_equipo"]),
-            CodigoImt           = fila["codigo_imt"].ToString()!,
-            CodigoUcb           = fila["codigo_ucb"].ToString()!,
-            Descripcion         = fila["descripcion"].ToString()!,
-            EstadoEquipo        = fila["estado_equipo"].ToString()!,
-            NumeroSerial        = fila["numero_serial"].ToString()!,
-            Ubicacion           = fila["ubicacion"].ToString()!,
-            CostoReferencia = (double?)Convert.ToDecimal(fila["costo_referencia"]),
-            TiempoMaximoPrestamo = Convert.ToInt32(fila["tiempo_max_prestamo"]),
-            Procedencia         = fila["procedencia"].ToString()!,
-            GaveteroId          = fila["id_gavetero"] != DBNull.Value ? Convert.ToInt32(fila["id_gavetero"]) : null,
-            EstaEliminado       = Convert.ToBoolean(fila["estado_eliminado"]),
-            FechaDeIngreso = DateOnly.FromDateTime(Convert.ToDateTime(fila["fecha_ingreso_equipo"]))
+            NombreGrupoEquipo = fila["nombre"] == DBNull.Value ? null : fila["nombre"].ToString(),
+            CodigoImt = fila["codigo_imt"] == DBNull.Value ? null : Convert.ToInt32(fila["codigo_imt"]),
+            CodigoUcb = fila["codigo_ucb"] == DBNull.Value ? null : fila["codigo_ucb"].ToString(),
+            Descripcion = fila["descripcion"] == DBNull.Value ? null : fila["descripcion"].ToString(),
+            NumeroSerial = fila["numero_serial"] == DBNull.Value ? null : fila["numero_serial"].ToString(),
+            Ubicacion = fila["ubicacion"] == DBNull.Value ? null : fila["ubicacion"].ToString(),
+            Procedencia = fila["procedencia"] == DBNull.Value ? null : fila["procedencia"].ToString(),
+            TiempoMaximoPrestamo = fila["tiempo_maximo_prestamo"] == DBNull.Value ? null : Convert.ToInt32(fila["tiempo_maximo_prestamo"]),
+            NombreGavetero = fila["nombre_gavetero"] == DBNull.Value ? null : fila["nombre_gavetero"].ToString(),
+            EstadoEquipo = fila["estado_equipo"] == DBNull.Value ? null : fila["estado_equipo"].ToString(),
+            CostoReferencia = fila["costo_referencia"] == DBNull.Value ? null : Convert.ToDouble(fila["costo_referencia"]),
         };
     }
 }

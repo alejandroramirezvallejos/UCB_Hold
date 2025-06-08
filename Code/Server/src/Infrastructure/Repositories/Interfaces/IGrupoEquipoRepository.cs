@@ -1,8 +1,9 @@
 public interface IGrupoEquipoRepository
 {
-    GrupoEquipoDto Crear(CrearGrupoEquipoComando comando);
+    void Crear(CrearGrupoEquipoComando comando);
     GrupoEquipoDto? ObtenerPorId(int id);
-    List<Dictionary<string, object?>> ObtenerPorNombreYCategoria(string? nombre, string? categoria);
-    GrupoEquipoDto? Actualizar(ActualizarGrupoEquipoComando comando);
-    bool Eliminar(int id);
+    List<GrupoEquipoDto> ObtenerPorNombreYCategoria(string? nombre, string? categoria);
+    void Actualizar(ActualizarGrupoEquipoComando comando);
+    void Eliminar(int id);
+    List<GrupoEquipoDto> ObtenerTodos();
 }

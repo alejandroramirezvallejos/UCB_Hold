@@ -6,6 +6,6 @@ public record ActualizarGrupoEquipoComando
     string?  Marca,
     string?  Descripcion,
     string?  NombreCategoria,
-    string?  UrlData,
+    string?  UrlDataSheet,
     string?  UrlImagen
 );

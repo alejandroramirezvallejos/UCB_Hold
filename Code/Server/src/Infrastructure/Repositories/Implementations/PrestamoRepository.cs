@@ -11,112 +11,91 @@ public class PrestamoRepository : IPrestamoRepository
         _ejecutarConsulta = ejecutarConsulta;
     }
 
-    public PrestamoDto Crear(CrearPrestamoComando comando)//TODO: Array
+    public void Crear(CrearPrestamoComando comando)//TODO: Array
     {
         const string sql = @"
-            INSERT INTO public.prestamos
-            (fecha_solicitud, fecha_prestamo, fecha_devolucion,
-             fecha_devolucion_esperada, observacion, estado_prestamo,
-             carnet_usuario, id_equipo, estado_eliminado)
-            VALUES
-            (@fechaSolicitud, @fechaPrestamo, @fechaDevolucion,
-             @fechaDevolucionEsperada, @observacion, @estadoPrestamo,
-             @carnetUsuario, @equipoId, false)
-            RETURNING *;";
+            CALL public.insertar_prestamo(
+	        @GrupoEquipoId,
+	        @fechaPrestamoEsperada,
+	        @fechaDevolucionEsperada,
+	        @observacion,
+	        @carnetUsuario,
+	        @contrato)";
 
         var parametros = new Dictionary<string, object?>
         {
-            ["fechaSolicitud"]          = comando.FechaSolicitud,
-            ["fechaPrestamo"]           = comando.FechaPrestamo,
-            ["fechaDevolucion"]         = comando.FechaDevolucion,
-            ["fechaDevolucionEsperada"] = comando.FechaDevolucionEsperada,
+            ["GrupoEquipoId"]          = comando.GrupoEquipoId ?? (object)DBNull.Value,
+            ["fechaPrestamoEsperada"]   = comando.FechaPrestamoEsperada,
+            ["fechaDevolucionEsperada"] = comando.FechaDevolucionEsperada ,
             ["observacion"]             = comando.Observacion ?? (object)DBNull.Value,
-            ["estadoPrestamo"]          = comando.EstadoPrestamo,
-            ["carnetUsuario"]           = comando.CarnetUsuario,
-            ["equipoId"]                = comando.EquipoId
+            ["carnetUsuario"]           = comando.CarnetUsuario ?? (object)DBNull.Value,
+            ["contrato"]                = comando.Contrato ?? (object)DBNull.Value
         };
-
-        DataTable dt = _ejecutarConsulta.EjecutarFuncion(sql, parametros);
-        return MapearFilaADto(dt.Rows[0]);
+        try
+        {
+            _ejecutarConsulta.EjecutarSpNR(sql, parametros);
+        }
+        catch (Exception ex)
+        {
+            throw new Exception("Error al crear el préstamo", ex);
+        }
     }
-
-    public PrestamoDto? ObtenerPorId(int id)
+    public void Eliminar(int id)
     {
         const string sql = @"
-            SELECT * FROM public.prestamos
-            WHERE id_prestamo = @id";
-
-        Dictionary<string, object?> parametros = new Dictionary<string, object?>
+        CALL public.eliminar_prestamo(
+	    @id
+        )";
+        try
         {
-            ["id"] = id
-        };
-        DataTable dt = _ejecutarConsulta.EjecutarFuncion(sql, parametros);
-        if (dt.Rows.Count == 0) return null;
-        return MapearFilaADto(dt.Rows[0]);
+            _ejecutarConsulta.EjecutarSpNR(sql, new Dictionary<string, object?>
+            {
+                ["id"] = id
+            });
+        }
+        catch (Exception ex)
+        {
+            throw new Exception("Error al eliminar el préstamo", ex);
+        }
     }
 
-    public PrestamoDto? Actualizar(ActualizarPrestamoComando comando)
+    public List<PrestamoDto> ObtenerTodos()
     {
         const string sql = @"
-            UPDATE public.prestamos
-            SET
-              fecha_solicitud = @fechaSolicitud,
-              fecha_prestamo = @fechaPrestamo,
-              fecha_devolucion = @fechaDevolucion,
-              fecha_devolucion_esperada = @fechaDevolucionEsperada,
-              observacion = @observacion,
-              estado_prestamo = @estadoPrestamo,
-              carnet_usuario = @carnetUsuario,
-              id_equipo = @equipoId
-            WHERE id_prestamo = @id
-            RETURNING *;";
-
-        Dictionary<string, object?> parametros = new Dictionary<string, object?>
+            SELECT * from public.obtener_prestamos()
+        ";
+        try
         {
-            ["id"]                      = comando.Id,
-            ["fechaSolicitud"]          = comando.FechaSolicitud,
-            ["fechaPrestamo"]           = comando.FechaPrestamo,
-            ["fechaDevolucion"]         = comando.FechaDevolucion,
-            ["fechaDevolucionEsperada"] = comando.FechaDevolucionEsperada,
-            ["observacion"]             = comando.Observacion ?? (object)DBNull.Value,
-            ["estadoPrestamo"]          = comando.EstadoPrestamo,
-            ["carnetUsuario"]           = comando.CarnetUsuario,
-            ["equipoId"]                = comando.EquipoId
-        };
-
-        DataTable dt = _ejecutarConsulta.EjecutarFuncion(sql, parametros);
-        if (dt.Rows.Count == 0) return null;
-        return MapearFilaADto(dt.Rows[0]);
-    }
-
-    public bool Eliminar(int id)
-    {
-        const string sql = @"
-            UPDATE public.prestamos
-            SET estado_eliminado = true
-            WHERE id_prestamo = @id";
-
-        _ejecutarConsulta.EjecutarSpNR(sql, new Dictionary<string, object?>
+            DataTable dt = _ejecutarConsulta.EjecutarFuncion(sql, new Dictionary<string, object?>());
+            var lista = new List<PrestamoDto>(dt.Rows.Count);
+            foreach (DataRow fila in dt.Rows)
+            {
+                lista.Add(MapearFilaADto(fila));
+            }
+            return lista;
+        }
+        catch (Exception ex)
         {
-            ["id"] = id 
-        });
-        return true;
+            throw new Exception("Error al obtener los préstamos", ex);
+        }
     }
-
     private static PrestamoDto MapearFilaADto(DataRow fila)
     {
         return new PrestamoDto
         {
-            Id                      = Convert.ToInt32(fila["id_prestamo"]),
-            FechaSolicitud          = Convert.ToDateTime(fila["fecha_solicitud"]),
-            FechaPrestamo           = Convert.ToDateTime(fila["fecha_prestamo"]),
-            FechaDevolucion         = Convert.ToDateTime(fila["fecha_devolucion"]),
-            FechaDevolucionEsperada = Convert.ToDateTime(fila["fecha_devolucion_esperada"]),
-            Observacion             = fila["observacion"] as string,
-            EstadoPrestamo          = fila["estado_prestamo"].ToString() ?? string.Empty,
-            CarnetUsuario           = fila["carnet_usuario"].ToString()  ?? string.Empty,
-            EquipoId                = Convert.ToInt32(fila["id_equipo"]),
-            EstaEliminado           = Convert.ToBoolean(fila["estado_eliminado"])
+            CarnetUsuario           = fila["carnet"]==DBNull.Value ? null : fila["carnet"].ToString(),
+            NombreUsuario           = fila["nombre"]==DBNull.Value ? null : fila["nombre"].ToString(),
+            ApellidoPaternoUsuario  = fila["apellido_paterno"]==DBNull.Value ? null : fila["apellido_paterno"].ToString(),
+            TelefonoUsuario         = fila["telefono"]==DBNull.Value ? null : fila["telefono"].ToString(),
+            NombreGrupoEquipo       = fila["nombre_grupo_equipo"]==DBNull.Value ? null : fila["nombre_grupo_equipo"].ToString(),
+            CodigoImt               = fila["codigo_imt"]==DBNull.Value ? null : fila["codigo_imt"].ToString(),
+            FechaSolicitud          = fila["fecha_solicitud"]==DBNull.Value ? null : Convert.ToDateTime(fila["fecha_solicitud"]),
+            FechaPrestamoEsperada   = fila["fecha_prestamo_esperada"]==DBNull.Value ? null : Convert.ToDateTime(fila["fecha_prestamo_esperada"]),
+            FechaPrestamo           = fila["fecha_prestamo"]==DBNull.Value ? null : Convert.ToDateTime(fila["fecha_prestamo"]),
+            FechaDevolucionEsperada = fila["fecha_devolucion_esperada"]==DBNull.Value ? null : Convert.ToDateTime(fila["fecha_devolucion_esperada"]),
+            FechaDevolucion         = fila["fecha_devolucion"]==DBNull.Value ? null : Convert.ToDateTime(fila["fecha_devolucion"]),
+            Observacion             = fila["observacion"]==DBNull.Value ? null : fila["observacion"].ToString(),
+            EstadoPrestamo          = fila["estado_prestamo"]==DBNull.Value ? null : fila["estado_prestamo"].ToString(),
         };
     }
 }

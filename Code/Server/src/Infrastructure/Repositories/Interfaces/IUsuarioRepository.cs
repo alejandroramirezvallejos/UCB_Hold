@@ -1,9 +1,8 @@
 //implementar
 public interface IUsuarioRepository
 {
-    UsuarioDto Crear(CrearUsuarioComando comando);
-    UsuarioDto? ObtenerPorId(int id);
-    UsuarioDto? Actualizar(ActualizarUsuarioComando comando);
-    bool Eliminar(int id);
+    void Crear(CrearUsuarioComando comando);
+    void Actualizar(ActualizarUsuarioComando comando);
+    void Eliminar(int carnet);
     List<UsuarioDto> ObtenerTodos();
 }

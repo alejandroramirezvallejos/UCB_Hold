@@ -1,15 +1,14 @@
 public class UsuarioDto
 {
-    public string  Carnet             { get; set; } = string.Empty;
-    public string  Nombre             { get; set; } = string.Empty;
-    public string  ApellidoPaterno    { get; set; } = string.Empty;
-    public string  ApellidoMaterno    { get; set; } = string.Empty;
-    public string  Rol                { get; set; } = string.Empty;
-    public int     CarreraId          { get; set; }
-    public string  Email              { get; set; } = string.Empty;
-    public string  Telefono           { get; set; } = string.Empty;
-    public string? NombreReferencia   { get; set; } = null;
+    public string?  Carnet             { get; set; } = null;
+    public string?  Nombre             { get; set; } = null;
+    public string?  ApellidoPaterno    { get; set; } = null;
+    public string?  ApellidoMaterno    { get; set; } = null;
+    public string?  CarreraNombre      { get; set; } = null;
+    public string?  Rol                { get; set; } = null;
+    public string?  Email              { get; set; } = null;
+    public string?  Telefono           { get; set; } = null;
     public string? TelefonoReferencia { get; set; } = null;
+    public string? NombreReferencia { get; set; } = null;
     public string? EmailReferencia    { get; set; } = null;
-    public bool    EstaEliminado      { get; set; } = false;
 }

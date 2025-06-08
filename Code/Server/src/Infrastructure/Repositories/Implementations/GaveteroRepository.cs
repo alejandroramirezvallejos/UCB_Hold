@@ -1,4 +1,6 @@
 //implementar
+using System.Data;
+
 public class GaveteroRepository : IGaveteroRepository
 {
     private readonly IExecuteQuery _ejecutarConsulta;
@@ -7,28 +9,111 @@ public class GaveteroRepository : IGaveteroRepository
         _ejecutarConsulta = ejecutarConsulta;
     }
 
-    public GaveteroDto Crear(CrearGaveteroComando comando)
+    public void Crear(CrearGaveteroComando comando)
     {
-        // Implementar lógica para crear un nuevo gavetero
+        const string sql = @"
+        CALL public.insertar_gavetero(
+	    @nombre,
+	    @tipo,
+	    @nombreMueble,
+	    @longitud,
+	    @profundidad,
+	    @altura
+        )";
+        Dictionary<string, object?> parametros = new Dictionary<string, object?>
+        {
+            ["nombre"] = comando.Nombre,
+            ["tipo"] = comando.Tipo ?? (object)DBNull.Value,
+            ["nombreMueble"] = comando.NombreMueble ?? (object)DBNull.Value,
+            ["longitud"] = comando.Longitud ?? (object)DBNull.Value,
+            ["profundidad"] = comando.Profundidad ?? (object)DBNull.Value,
+            ["altura"] = comando.Altura ?? (object)DBNull.Value
+        };
+        try
+        {
+            _ejecutarConsulta.EjecutarSpNR(sql, parametros);
+        }
+        catch (Exception ex)
+        {
+            throw new Exception("Error al crear el gavetero", ex);
+        }
     }
 
-    public GaveteroDto? ObtenerPorId(int id)
+
+    public void Actualizar(ActualizarGaveteroComando comando)
     {
-        // Implementar lógica para obtener un gavetero por su ID
+        const string sql = @"
+        CALL public.actualizar_gavetero(
+	    @id,
+	    @nombre,
+	    @tipo,
+	    @nombreMueble,
+	    @longitud,
+	    @profundidad,
+	    @altura
+        )";
+        Dictionary<string, object?> parametros = new Dictionary<string, object?>
+        {
+            ["id"] = comando.Id,
+            ["nombre"] = comando.Nombre ?? (object)DBNull.Value,
+            ["tipo"] = comando.Tipo ?? (object)DBNull.Value,
+            ["nombreMueble"] = comando.NombreMueble ?? (object)DBNull.Value,
+            ["longitud"] = comando.Longitud ?? (object)DBNull.Value,
+            ["profundidad"] = comando.Profundidad ?? (object)DBNull.Value,
+            ["altura"] = comando.Altura ?? (object)DBNull.Value
+        };
+        try
+        {
+            _ejecutarConsulta.EjecutarSpNR(sql, parametros);
+        }
+        catch (Exception ex)
+        {
+            throw new Exception("Error al actualizar el gavetero", ex);
+        }
     }
 
-    public GaveteroDto? Actualizar(ActualizarGaveteroComando comando)
+    public void Eliminar(int id)
     {
-        // Implementar lógica para actualizar un gavetero existente
-    }
-
-    public bool Eliminar(int id)
-    {
-        // Implementar lógica para eliminar un gavetero por su ID
+        const string sql = @"
+        CALL public.eliminar_gavetero(
+	    @id
+        )";
+        try
+        {
+            _ejecutarConsulta.EjecutarSpNR(sql, new Dictionary<string, object?>
+            {
+                ["id"] = id
+            });
+        }
+        catch (Exception ex)
+        {
+            throw new Exception("Error al eliminar el gavetero", ex);
+        }
     }
 
     public List<GaveteroDto> ObtenerTodos()
     {
-        // Implementar lógica para obtener todos los gaveteros
+        const string sql = @"
+        SELECT * from public.obtener_gaveteros()
+        ";
+
+        DataTable dt = _ejecutarConsulta.EjecutarFuncion(sql, new Dictionary<string, object?>());
+        var lista = new List<GaveteroDto>(dt.Rows.Count);
+        foreach (DataRow fila in dt.Rows)
+            lista.Add(MapearFilaADto(fila));
+        return lista;
+    }
+    private GaveteroDto MapearFilaADto(DataRow fila)
+    {
+        return new GaveteroDto
+        {
+            Nombre = fila["nombre"] == DBNull.Value ? null : Convert.ToString(fila["nombre"]),
+            Tipo = fila["tipo"] == DBNull.Value ? null : Convert.ToString(fila["tipo"]),
+            NombreMueble = fila["nombre_mueble"] == DBNull.Value ? null : Convert.ToString(fila["nombre_mueble"]),
+            Longitud = fila["longitud"] == DBNull.Value ? null : Convert.ToDouble(fila["longitud"]),
+            Profundidad = fila["profundidad"] == DBNull.Value ? null : Convert.ToDouble(fila["profundidad"]),
+            Altura = fila["altura"] == DBNull.Value ? null : Convert.ToDouble(fila["altura"])
+        };
     }
 }
+

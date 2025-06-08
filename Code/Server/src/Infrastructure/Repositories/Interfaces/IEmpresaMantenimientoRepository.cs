@@ -1,9 +1,8 @@
 //implementar
 public interface IEmpresaMantenimientoRepository
 {
-    EmpresaMantenimientoDto Crear(CrearEmpresaMantenimientoComando comando);
-    EmpresaMantenimientoDto? ObtenerPorId(int id);
-    EmpresaMantenimientoDto? Actualizar(ActualizarEmpresaMantenimientoComando comando);
-    bool Eliminar(int id);
+    void Crear(CrearEmpresaMantenimientoComando comando);
+    void Actualizar(ActualizarEmpresaMantenimientoComando comando);
+    void Eliminar(int id);
     List<EmpresaMantenimientoDto> ObtenerTodos();
 }

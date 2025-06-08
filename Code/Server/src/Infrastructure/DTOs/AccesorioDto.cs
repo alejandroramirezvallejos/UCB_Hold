@@ -1,12 +1,10 @@
-public class AccesorioDto
+public class AccesorioDto //TODOS LOS DTOS SE PUSIERON IGUAL QUE LA DEVOLUCION DE SELECTS EN LA DB
 {
-    public int     Id            { get; set; }
-    public string  Nombre        { get; set; } = string.Empty;
-    public string? Descripcion   { get; set; } = null;
+    public string?  Nombre        { get; set; } = null;
     public string? Modelo        { get; set; } = null;
-    public string? Url           { get; set; } = null;
-    public double? Precio        { get; set; } = null;
-    public int     EquipoId      { get; set; }
     public string? Tipo          { get; set; } = null;
-    public bool    EstaEliminado { get; set; } = false;
+    public double? Precio        { get; set; } = null;
+    public string? NombreEquipoAsociado { get; set; } = null;
+    public int? CodigoImtEquipoAsociado { get; set; } = null;
+    public string? Descripcion   { get; set; } = null;
 }

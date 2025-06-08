@@ -1,8 +1,7 @@
 public interface IAccesorioRepository
 {
-    AccesorioDto Crear(CrearAccesorioComando comando);
-    AccesorioDto? ObtenerPorId(int id);
+    void Crear(CrearAccesorioComando comando);
     List<AccesorioDto> ObtenerTodos();
-    AccesorioDto? Actualizar(ActualizarAccesorioComando comando);
-    bool Eliminar(int id);
+    void Actualizar(ActualizarAccesorioComando comando);
+    void Eliminar(int id);
 }

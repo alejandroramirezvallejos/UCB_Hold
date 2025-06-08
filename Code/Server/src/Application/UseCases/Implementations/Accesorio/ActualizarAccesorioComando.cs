@@ -1,4 +1,4 @@
-public record ActualizarAccesorioComando
+public record ActualizarAccesorioComando //No cambiar los use cases, estan justo como la bd
 (
     int     Id,
     string?  Nombre,
@@ -7,5 +7,5 @@ public record ActualizarAccesorioComando
     int?     CodigoIMT,
     string? Descripcion,
     double? Precio,
-    string? Url
+    string? UrlDataSheet
 );

@@ -7,5 +7,5 @@ public record ActualizarComponenteComando(
     int?    CodigoIMT       ,
     string? Descripcion      ,
     double? PrecioReferencia ,
-    string? Url              
+    string? UrlDataSheet              
 ) ;

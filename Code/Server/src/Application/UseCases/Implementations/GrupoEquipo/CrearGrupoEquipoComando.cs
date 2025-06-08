@@ -5,6 +5,6 @@ public record CrearGrupoEquipoComando
     string  Marca,
     string  Descripcion,
     string  NombreCategoria,
-    string? UrlData,
+    string? UrlDataSheet,
     string  UrlImagen
 );

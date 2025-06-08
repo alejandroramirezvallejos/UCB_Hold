@@ -1,9 +1,8 @@
 //implementar
 public interface IComponenteRepository
 {
-    ComponenteDto Crear(CrearComponenteComando comando);
-    ComponenteDto? ObtenerPorId(int id);
-    ComponenteDto? Actualizar(ActualizarComponenteComando comando);
-    bool Eliminar(int id);
+    void Crear(CrearComponenteComando comando);
+    void Actualizar(ActualizarComponenteComando comando);
+    void Eliminar(int id);
     List<ComponenteDto> ObtenerTodos();
 }

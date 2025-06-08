@@ -9,55 +9,43 @@ public class AccesorioRepository : IAccesorioRepository
         _ejecutarConsulta = ejecutarConsulta;
     }
 
-    public AccesorioDto Crear(CrearAccesorioComando comando)
+    public void Crear(CrearAccesorioComando comando)
     {
         const string sql = @"
-            INSERT INTO public.accesorios
-              (nombre, descripcion, modelo, url, precio, id_equipo, tipo, estado_eliminado)
-            VALUES (@nombre, @descripcion, @modelo, @url, @precio, @equipoId, @tipo, false)
-            RETURNING id_accesorio, nombre, descripcion, modelo, url, precio, id_equipo, tipo, estado_eliminado;
-        ";
+        CALL public.insertar_accesorios(
+	    @nombre,
+	    @modelo,
+	    @tipo,
+	    @codigoImt,
+	    @descripcion,
+	    @precio,
+	    @urlDataSheet
+        )";
 
         Dictionary<string, object?> parametros = new Dictionary<string, object?>
         {
             ["nombre"]      = comando.Nombre,
-            ["descripcion"] = comando.Descripcion ?? (object)DBNull.Value,
             ["modelo"]      = comando.Modelo ?? (object)DBNull.Value,
-            ["url"]         = comando.Url ?? (object)DBNull.Value,
+            ["tipo"]        = comando.Tipo ?? (object)DBNull.Value,
+            ["codigoImt"]   = comando.CodigoIMT ?? (object)DBNull.Value,
+            ["descripcion"] = comando.Descripcion ?? (object)DBNull.Value,
             ["precio"]      = comando.Precio ?? (object)DBNull.Value,
-            ["equipoId"]    = comando.EquipoId,
-            ["tipo"]        = comando.Tipo ?? (object)DBNull.Value
+            ["urlDataSheet"] = comando.UrlDataSheet ?? (object)DBNull.Value
         };
-
-        DataTable dt = _ejecutarConsulta.EjecutarFuncion(sql, parametros);
-        return MapearFilaADto(dt.Rows[0]);
-    }
-
-    public AccesorioDto? ObtenerPorId(int id)
-    {
-        const string sql = @"
-            SELECT id_accesorio, nombre, descripcion, modelo, url, precio, id_equipo, tipo, estado_eliminado
-              FROM public.accesorios
-             WHERE id_accesorio = @id
-               AND estado_eliminado = false;
-        ";
-
-        Dictionary<string, object?> parametros = new Dictionary<string, object?>
+        try
         {
-            ["id"] = id
-        };
-
-        DataTable dt = _ejecutarConsulta.EjecutarFuncion(sql, parametros);
-        if (dt.Rows.Count == 0) return null;
-        return MapearFilaADto(dt.Rows[0]);
+            _ejecutarConsulta.EjecutarSpNR(sql, parametros);
+        }
+        catch (Exception ex)
+        {
+            throw new Exception("Error al crear el accesorio", ex);
+        }
     }
 
     public List<AccesorioDto> ObtenerTodos()
     {
         const string sql = @"
-            SELECT id_accesorio, nombre, descripcion, modelo, url, precio, id_equipo, tipo, estado_eliminado
-              FROM public.accesorios
-             WHERE estado_eliminado = false;
+            SELECT * from public.obtener_accesorios()
         ";
 
         DataTable dt = _ejecutarConsulta.EjecutarFuncion(sql, new Dictionary<string, object?>());
@@ -67,90 +55,71 @@ public class AccesorioRepository : IAccesorioRepository
         return lista;
     }
 
-    public List<AccesorioDto> ObtenerPorEquipoId(int equipoId)
+    public void Actualizar(ActualizarAccesorioComando comando)
     {
         const string sql = @"
-            SELECT id_accesorio, nombre, descripcion, modelo, url, precio, id_equipo, tipo, estado_eliminado
-              FROM public.accesorios
-             WHERE id_equipo = @equipoId
-               AND estado_eliminado = false;
-        ";
-
-        Dictionary<string, object?> parametros = new Dictionary<string, object?>
-        {
-            ["equipoId"] = equipoId
-        };
-
-        DataTable dt = _ejecutarConsulta.EjecutarFuncion(sql, parametros);
-        var lista = new List<AccesorioDto>(dt.Rows.Count);
-        foreach (DataRow row in dt.Rows)
-            lista.Add(MapearFilaADto(row));
-        return lista;
-    }
-
-    public AccesorioDto? Actualizar(ActualizarAccesorioComando comando)
-    {
-        const string sql = @"
-            UPDATE public.accesorios
-               SET nombre      = @nombre,
-                   descripcion = @descripcion,
-                   modelo      = @modelo,
-                   url         = @url,
-                   precio      = @precio,
-                   id_equipo   = @equipoId,
-                   tipo        = @tipo
-             WHERE id_accesorio = @id;
-
-            SELECT id_accesorio, nombre, descripcion, modelo, url, precio, id_equipo, tipo, estado_eliminado
-              FROM public.accesorios
-             WHERE id_accesorio = @id;
-        ";
+            CALL public.actualizar_accesorio(
+	        @id,
+	        @nombre,
+	        @modelo,
+	        @tipo,
+	        @codigoImt,
+	        @descripcion,
+	        @precio,
+	        @urlDataSheet
+            )";
 
         Dictionary<string, object?> parametros = new Dictionary<string, object?>
         {
             ["id"]          = comando.Id,
-            ["nombre"]      = comando.Nombre,
-            ["descripcion"] = comando.Descripcion ?? (object)DBNull.Value,
+            ["nombre"]      = comando.Nombre ?? (object)DBNull.Value,
             ["modelo"]      = comando.Modelo ?? (object)DBNull.Value,
-            ["url"]         = comando.Url ?? (object)DBNull.Value,
+            ["tipo"]        = comando.Tipo ?? (object)DBNull.Value,
+            ["codigoImt"]   = comando.CodigoIMT ?? (object)DBNull.Value,
+            ["descripcion"] = comando.Descripcion ?? (object)DBNull.Value,
             ["precio"]      = comando.Precio ?? (object)DBNull.Value,
-            ["equipoId"]    = comando.EquipoId,
-            ["tipo"]        = comando.Tipo ?? (object)DBNull.Value
+            ["urlDataSheet"] = comando.UrlDataSheet ?? (object)DBNull.Value
         };
-
-        DataTable dt = _ejecutarConsulta.EjecutarFuncion(sql, parametros);
-        if (dt.Rows.Count == 0) return null;
-        return MapearFilaADto(dt.Rows[0]);
+        try
+        {
+            _ejecutarConsulta.EjecutarSpNR(sql, parametros);
+        }
+        catch (Exception ex)
+        {
+            throw new Exception("Error al actualizar el accesorio", ex);
+        }
     }
 
-    public bool Eliminar(int id)
+    public void Eliminar(int id)
     {
         const string sql = @"
-            UPDATE public.accesorios
-               SET estado_eliminado = true
-             WHERE id_accesorio = @id;
-        ";
-
-        _ejecutarConsulta.EjecutarSpNR(sql, new Dictionary<string, object?>
+        CALL public.eliminar_accesorio(
+	    @id
+        )";
+        try
         {
-            ["id"] = id
-        });
-        return true;
+            _ejecutarConsulta.EjecutarSpNR(sql, new Dictionary<string, object?>
+            {
+                ["id"] = id
+            });
+        }
+        catch (Exception ex)
+        {
+            throw new Exception("Error al eliminar el accesorio", ex);
+        }
     }
 
     private static AccesorioDto MapearFilaADto(DataRow fila)
     {
         return new AccesorioDto
         {
-            Id            = Convert.ToInt32(fila["id_accesorio"]),
-            Nombre        = fila["nombre"]?.ToString() ?? string.Empty,
-            Descripcion   = fila["descripcion"] == DBNull.Value ? null : fila["descripcion"].ToString(),
-            Modelo        = fila["modelo"] == DBNull.Value ? null : fila["modelo"].ToString(),
-            Url           = fila["url"] == DBNull.Value ? null : fila["url"].ToString(),
-            Precio        = fila["precio"] == DBNull.Value ? null : Convert.ToDouble(fila["precio"]),
-            EquipoId      = Convert.ToInt32(fila["id_equipo"]),
-            Tipo          = fila["tipo"] == DBNull.Value ? null : fila["tipo"].ToString(),
-            EstaEliminado = Convert.ToBoolean(fila["estado_eliminado"])
+            Nombre = fila["nombre_accesorio"]==DBNull.Value? null : fila["nombre_accesorio"].ToString(),
+            Modelo = fila["modelo_accesorio"] == DBNull.Value ? null : fila["modelo_accesorio"].ToString(),
+            Tipo = fila["tipo_accesorio"] == DBNull.Value ? null : fila["tipo_accesorio"].ToString(),
+            Precio = fila["precio_accesorio"] == DBNull.Value ? null : Convert.ToDouble(fila["precio_accesorio"]),
+            NombreEquipoAsociado = fila["nombre_equipo_asociado"] == DBNull.Value ? null : fila["nombre_equipo_asociado"].ToString(),
+            CodigoImtEquipoAsociado = fila["codigo_imt_equipo_asociado"] == DBNull.Value ? null : Convert.ToInt32(fila["codigo_imt_equipo_asociado"]),
+            Descripcion = fila["descripcion_accesorio"] == DBNull.Value ? null : fila["descripcion_accesorio"].ToString(),
         };
     }
 }

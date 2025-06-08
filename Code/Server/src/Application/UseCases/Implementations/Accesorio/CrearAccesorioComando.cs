@@ -6,5 +6,5 @@ public record CrearAccesorioComando
     int?     CodigoIMT,
     string? Descripcion,
     double? Precio,
-    string? Url
+    string? UrlDataSheet
 );

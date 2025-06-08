@@ -1,8 +1,7 @@
 //implementar
 public interface IMuebleRepository{
-    MuebleDto? ObtenerPorId(Guid id);
-    MuebleDto Crear(MuebleDto mueble);
-    MuebleDto? Actualizar(MuebleDto mueble);
-    bool Eliminar(Guid id);
+    void Crear(CrearMuebleComando mueble);
+    void Actualizar(ActualizarMuebleComando mueble);
+    void Eliminar(int id);
     List<MuebleDto> ObtenerTodos();
 }

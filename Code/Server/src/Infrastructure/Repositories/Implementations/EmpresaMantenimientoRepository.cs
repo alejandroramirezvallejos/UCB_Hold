@@ -1,4 +1,6 @@
 //implementar
+using System.Data;
+
 public class EmpresaMantenimientoRepository : IEmpresaMantenimientoRepository
 {
     private readonly IExecuteQuery _ejecutarConsulta;
@@ -8,28 +10,118 @@ public class EmpresaMantenimientoRepository : IEmpresaMantenimientoRepository
         _ejecutarConsulta = ejecutarConsulta;
     }
 
-    public EmpresaMantenimientoDto Crear(CrearEmpresaMantenimientoComando comando)
+    public void Crear(CrearEmpresaMantenimientoComando comando)
     {
-        // Implementar lógica para crear una nueva empresa de mantenimiento
+        const string sql = @"
+        CALL public.insertar_empresa_mantenimiento(
+	    @nombre,
+	    @nombreResponsable,
+	    @apellidoResponsable,
+	    @telefono,
+	    @direccion,
+	    @nit
+        )";
+        Dictionary<string, object?> parametros = new Dictionary<string, object?>
+        {
+            ["nombre"] = comando.NombreEmpresa,
+            ["nombreResponsable"] = comando.NombreResponsable ?? (object)DBNull.Value,
+            ["apellidoResponsable"] = comando.ApellidoResponsable ?? (object)DBNull.Value,
+            ["telefono"] = comando.Telefono ?? (object)DBNull.Value,
+            ["direccion"] = comando.Direccion ?? (object)DBNull.Value,
+            ["nit"] = comando.Nit ?? (object)DBNull.Value
+        };
+        try
+        {
+            _ejecutarConsulta.EjecutarSpNR(sql, parametros);
+        }
+        catch (Exception ex)
+        {
+            throw new Exception("Error al crear la empresa de mantenimiento", ex);
+        }
     }
 
-    public EmpresaMantenimientoDto? ObtenerPorId(int id)
+
+    public void Actualizar(ActualizarEmpresaMantenimientoComando comando)
     {
-        // Implementar lógica para obtener una empresa de mantenimiento por su ID
+        const string sql = @"
+        CALL public.actualizar_empresa_mantenimiento(
+	    @id,
+	    @nombre,
+	    @nombreResponsable,
+	    @apellidoResponsable,
+	    @telefono,
+	    @direccion,
+	    @nit
+        )";
+
+        Dictionary<string, object?> parametros = new Dictionary<string, object?>
+        {
+            ["id"] = comando.Id,
+            ["nombre"] = comando.NombreEmpresa ?? (object)DBNull.Value,
+            ["nombreResponsable"] = comando.NombreResponsable ?? (object)DBNull.Value,
+            ["apellidoResponsable"] = comando.ApellidoResponsable ?? (object)DBNull.Value,
+            ["telefono"] = comando.Telefono ?? (object)DBNull.Value,
+            ["direccion"] = comando.Direccion ?? (object)DBNull.Value,
+            ["nit"] = comando.Nit ?? (object)DBNull.Value
+        };
+        try
+        {
+            _ejecutarConsulta.EjecutarSpNR(sql, parametros);
+        }
+        catch (Exception ex)
+        {
+            throw new Exception("Error al actualizar la empresa de mantenimiento", ex);
+        }
     }
 
-    public EmpresaMantenimientoDto? Actualizar(ActualizarEmpresaMantenimientoComando comando)
+    public void Eliminar(int id)
     {
-        // Implementar lógica para actualizar una empresa de mantenimiento existente
+        const string sql = @"
+        CALL public.eliminar_empresas_mantenimiento(
+	    @id
+        )";
+        try
+        {
+            _ejecutarConsulta.EjecutarSpNR(sql, new Dictionary<string, object?>
+            {
+                ["id"] = id
+            });
+        }
+        catch (Exception ex)
+        {
+            throw new Exception("Error al eliminar la empresa de mantenimiento", ex);
+        }
     }
 
-    public bool Eliminar(int id)
+    public List<EmpresaMantenimientoDto> ObtenerTodos()
     {
-        // Implementar lógica para eliminar una empresa de mantenimiento por su ID
+        const string sql = @"
+        SELECT * from public.obtener_empresas_mantenimiento()
+        ";
+        try
+        {
+            DataTable dt = _ejecutarConsulta.EjecutarFuncion(sql, new Dictionary<string, object?>());
+            var lista = new List<EmpresaMantenimientoDto>(dt.Rows.Count);
+            foreach (DataRow row in dt.Rows)
+                lista.Add(MapearFilaADto(row));
+            return lista;
+        }
+        catch (Exception ex)
+        {
+            throw new Exception("Error al obtener las empresas de mantenimiento", ex);
+        }
     }
 
-    public List<EmpresaMantenimientoDto> ObtenerTodas()
+    private static EmpresaMantenimientoDto MapearFilaADto(DataRow fila)
     {
-        // Implementar lógica para obtener todas las empresas de mantenimiento
+        return new EmpresaMantenimientoDto
+        {
+            NombreEmpresa = fila["nombre"].ToString() ?? string.Empty,
+            NombreResponsable = fila["nombre_responsable"].ToString() ?? string.Empty,
+            ApellidoResponsable = fila["apellido_responsable"].ToString() ?? string.Empty,
+            Telefono = fila["telefono"].ToString() ?? string.Empty,
+            Direccion = fila["direccion"].ToString() ?? string.Empty,
+            Nit = fila["nit"].ToString() ?? string.Empty
+        };
     }
 }
