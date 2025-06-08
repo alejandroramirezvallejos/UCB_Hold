@@ -5,5 +5,5 @@ public record CrearPrestamoComando
     DateTime FechaDevolucionEsperada,
     string?  Observacion,
     string   CarnetUsuario,
-    byte[]   Contrato
+    byte[]?   Contrato
 );

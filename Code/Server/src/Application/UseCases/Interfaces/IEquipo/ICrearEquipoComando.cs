@@ -1,4 +1,4 @@
 public interface ICrearEquipoComando
 {
-    EquipoDto Handle(CrearEquipoComando comando);
+    void Handle(CrearEquipoComando comando);
 }

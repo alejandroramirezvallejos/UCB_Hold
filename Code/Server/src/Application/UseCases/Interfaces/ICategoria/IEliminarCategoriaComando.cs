@@ -1,4 +1,4 @@
 public interface IEliminarCategoriaComando
 {
-    bool Handle(EliminarCategoriaComando comando);
+    void Handle(EliminarCategoriaComando comando);
 }

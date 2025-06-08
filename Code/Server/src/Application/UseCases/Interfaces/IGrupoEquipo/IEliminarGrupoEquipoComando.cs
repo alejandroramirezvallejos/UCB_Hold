@@ -1,4 +1,4 @@
 public interface IEliminarGrupoEquipoComando
 {
-    bool Handle(EliminarGrupoEquipoComando comando);
+    void Handle(EliminarGrupoEquipoComando comando);
 }

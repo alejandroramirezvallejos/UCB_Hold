@@ -1,4 +1,4 @@
 public interface IActualizarUsuarioComando
 {
-    UsuarioDto? Handle(ActualizarUsuarioComando comando);
+    void Handle(ActualizarUsuarioComando comando);
 }

@@ -1,4 +1,4 @@
 public interface IActualizarCarreraComando
 {
-    bool Handle(ActualizarCarreraComando comando);
+    void Handle(ActualizarCarreraComando comando);
 }

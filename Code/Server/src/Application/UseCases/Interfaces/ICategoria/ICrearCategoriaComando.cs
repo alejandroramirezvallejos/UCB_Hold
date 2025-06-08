@@ -1,4 +1,4 @@
 public interface ICrearCategoriaComando
 {
-    CategoriaDto Handle(CrearCategoriaComando comando);
+    void Handle(CrearCategoriaComando comando);
 }

@@ -1,4 +1,4 @@
 public interface IObtenerAccesorioConsulta
 {
-    bool Handle(ObtenerAccesorioConsulta comando);
+    List<AccesorioDto>? Handle();
 }

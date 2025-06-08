@@ -1,5 +1,5 @@
 
 public interface ICrearAccesorioComando
 {
-    AccesorioDto Handle(CrearAccesorioComando comando);
+    void Handle(CrearAccesorioComando comando);
 }

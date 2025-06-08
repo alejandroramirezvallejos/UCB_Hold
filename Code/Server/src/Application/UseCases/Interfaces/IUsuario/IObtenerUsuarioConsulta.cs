@@ -1,4 +1,4 @@
 public interface IObtenerUsuarioConsulta
 {
-    UsuarioDto? Handle(ObtenerUsuarioConsulta consulta);
+    List<UsuarioDto>? Handle();
 }

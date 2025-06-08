@@ -26,7 +26,7 @@ public class ComponenteRepository : IComponenteRepository
             ["nombre"] = comando.Nombre,
             ["modelo"] = comando.Modelo ?? (object)DBNull.Value,
             ["tipo"] = comando.Tipo ?? (object)DBNull.Value,
-            ["codigoImt"] = comando.CodigoIMT ?? (object)DBNull.Value,
+            ["codigoImt"] = comando.CodigoIMT,
             ["descripcion"] = comando.Descripcion ?? (object)DBNull.Value,
             ["precioReferencia"] = comando.PrecioReferencia ?? (object)DBNull.Value,
             ["urlDataSheet"] = comando.UrlDataSheet ?? (object)DBNull.Value

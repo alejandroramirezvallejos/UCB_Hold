@@ -1,4 +1,4 @@
 public interface IObtenerCategoriaConsulta
 {
-    CategoriaDto? Handle(ObtenerCategoriaConsulta consulta);
+    List<CategoriaDto>? Handle();
 }

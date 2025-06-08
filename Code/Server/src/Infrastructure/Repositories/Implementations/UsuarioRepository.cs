@@ -94,7 +94,7 @@ public class UsuarioRepository : IUsuarioRepository
         }
     }
 
-    public void Eliminar(int carnet)
+    public void Eliminar(string carnet)
     {
         const string sql = @"
         CALL public.eliminar_usuario(

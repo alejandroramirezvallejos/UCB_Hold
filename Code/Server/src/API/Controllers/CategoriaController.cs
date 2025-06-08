@@ -7,7 +7,6 @@ public class CategoriaController : ControllerBase
 {
     private readonly ICrearCategoriaComando      _crear;
     private readonly IObtenerCategoriaConsulta   _obtener;
-    private readonly IObtenerCategoriaConsulta  _listar;
     private readonly IActualizarCategoriaComando _actualizar;
     private readonly IEliminarCategoriaComando   _eliminar;
 
@@ -22,34 +21,73 @@ public class CategoriaController : ControllerBase
     }
 
     [HttpPost]
-    public ActionResult<CategoriaDto> Crear([FromBody] CategoriaRequestDto dto)
+    public ActionResult Crear([FromBody] CategoriaRequestDto dto)
     {
-        var comando = new CrearCategoriaComando(dto.Nombre);
-        var resultado = _crear.Handle(comando);
-        return CreatedAtAction(nameof(ObtenerPorId), new { id = resultado.Id }, resultado);
+        try
+        {
+            if (dto == null || string.IsNullOrWhiteSpace(dto.Nombre))
+                return BadRequest("El nombre de la categoría es requerido");
+
+            var comando = new CrearCategoriaComando(dto.Nombre);
+            _crear.Handle(comando);
+            return Created();
+        }
+        catch (Exception ex)
+        {
+            return BadRequest($"Error al crear categoría: {ex.Message}");
+        }
     }
 
     [HttpGet]
-    public ActionResult<List<CategoriaDto>> Listar(int Id)
+    public ActionResult<List<CategoriaDto>> ObtenerTodos()
     {
-        var consulta = new ObtenerCategoriaConsulta(Id);
-        return Ok(_listar.Handle(consulta));
+        try
+        {
+            var resultado = _obtener.Handle();
+            return Ok(resultado);
+        }
+        catch (Exception ex)
+        {
+            return BadRequest($"Error al obtener categorías: {ex.Message}");
+        }
     }
 
     [HttpPut("{id}")]
-    public ActionResult<CategoriaDto> Actualizar(int id, [FromBody] CategoriaRequestDto dto)
+    public ActionResult Actualizar(int id, [FromBody] CategoriaRequestDto dto)
     {
-        var comando = new ActualizarCategoriaComando(id, dto.Nombre);
-        var actualizado = _actualizar.Handle(comando);
-        if (actualizado is null) return NotFound();
-        return Ok(actualizado);
-    }
+        try
+        {
+            if (id <= 0)
+                return BadRequest("El ID debe ser mayor a 0");
 
+            if (dto == null || string.IsNullOrWhiteSpace(dto.Nombre))
+                return BadRequest("El nombre de la categoría es requerido");
+
+            var comando = new ActualizarCategoriaComando(id, dto.Nombre);
+            _actualizar.Handle(comando);
+            
+            return Ok("Categoría actualizada exitosamente");
+        }
+        catch (Exception ex)
+        {
+            return BadRequest($"Error al actualizar categoría: {ex.Message}");
+        }
+    }
     [HttpDelete("{id}")]
     public ActionResult Eliminar(int id)
     {
-        var comando = new EliminarCategoriaComando(id);
-        _eliminar.Handle(comando);
-        return NoContent();
+        try
+        {
+            if (id <= 0)
+                return BadRequest("El ID debe ser mayor a 0");
+
+            var comando = new EliminarCategoriaComando(id);
+            _eliminar.Handle(comando);
+            return NoContent();
+        }
+        catch (Exception ex)
+        {
+            return BadRequest($"Error al eliminar categoría: {ex.Message}");
+        }
     }
 }

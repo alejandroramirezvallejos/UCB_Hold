@@ -22,12 +22,10 @@ public class EquipoRequestDto
     public string? Ubicacion            { get; set; }
 
     [Range(0, double.MaxValue, ErrorMessage = "El costo de referencia debe ser un numero positivo")]
-    public double? CostoReferencia      { get; set; }
-
-    [Range(0, int.MaxValue, ErrorMessage = "El tiempo maximo de prestamo debe ser un numero positivo")]
+    public double? CostoReferencia      { get; set; }    [Range(0, int.MaxValue, ErrorMessage = "El tiempo maximo de prestamo debe ser un numero positivo")]
     public int?    TiempoMaximoPrestamo { get; set; }
 
     public string? Procedencia          { get; set; }
 
-    public int?    GaveteroId           { get; set; }
+    public string? NombreGavetero       { get; set; }
 }

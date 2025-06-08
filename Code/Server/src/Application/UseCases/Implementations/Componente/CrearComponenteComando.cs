@@ -1,9 +1,9 @@
 //Implementar
 public record CrearComponenteComando(
     string  Nombre           ,
-    string? Modelo           ,
+    string Modelo           ,
     string? Tipo             ,
-    int?     CodigoIMT        ,
+    int     CodigoIMT        ,
     string? Descripcion      ,
     double? PrecioReferencia ,
     string? UrlDataSheet              

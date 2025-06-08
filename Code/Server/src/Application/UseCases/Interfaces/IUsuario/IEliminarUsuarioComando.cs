@@ -1,4 +1,4 @@
 public interface IEliminarUsuarioComando
 {
-    bool Handle(EliminarUsuarioComando comando);
+    void Handle(EliminarUsuarioComando comando);
 }

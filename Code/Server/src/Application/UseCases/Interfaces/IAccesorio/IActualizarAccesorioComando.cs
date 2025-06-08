@@ -2,5 +2,5 @@
 
 public interface IActualizarAccesorioComando
 {
-    AccesorioDto? Handle(ActualizarAccesorioComando comando);
+    void Handle(ActualizarAccesorioComando comando);
 }

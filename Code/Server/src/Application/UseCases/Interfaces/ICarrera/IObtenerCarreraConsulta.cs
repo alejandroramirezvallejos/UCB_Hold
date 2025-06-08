@@ -1,4 +1,4 @@
 public interface IObtenerCarreraConsulta
 {
-    bool Handle(ObtenerCarreraConsulta comando);
+    List<CarreraDto>? Handle();
 }

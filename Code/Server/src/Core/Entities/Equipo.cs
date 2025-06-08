@@ -8,10 +8,9 @@ public class Equipo : IEquipo, IEliminacionLogica
     private string   _estadoEquipo         = string.Empty;
     private string?  _numeroSerial         = null;
     private string?  _ubicacion            = null;
-    private double?  _costoReferencia      = null;
-    private int?     _tiempoMaximoPrestamo = null;
+    private double?  _costoReferencia      = null;    private int?     _tiempoMaximoPrestamo = null;
     private string?  _procedencia          = null;
-    private int?     _gaveteroId           = null;
+    private string?  _nombreGavetero       = null;
     private string   _estadoDisponibilidad = string.Empty; //TODO: Quitar estado
     private bool     _estaEliminado        = false;
     private DateOnly _fechaDeIngreso; 
@@ -96,13 +95,11 @@ public class Equipo : IEquipo, IEliminacionLogica
         private set => _procedencia = value is not null
                        ? Verificar.SiEsVacio(value, "La procedencia del equipo")
                        : null;
-    }
-
-    public int? GaveteroId
+    }    public string? NombreGavetero
     {
-        get => _gaveteroId;
-        private set => _gaveteroId = value.HasValue
-                       ? Verificar.SiEsNatural(value.Value, "El ID del gavetero")
+        get => _nombreGavetero;
+        private set => _nombreGavetero = value is not null
+                       ? Verificar.SiEsVacio(value, "El nombre del gavetero")
                        : null;
     }
 
@@ -126,12 +123,10 @@ public class Equipo : IEquipo, IEliminacionLogica
     {
         get => _fechaDeIngreso;
         private set => _fechaDeIngreso = Verificar.SiNoEsFutura(value, "La fecha de ingreso del equipo");
-    }
-
-    public Equipo(int grupoEquipoId, string codigoImt, string? codigoUcb, string? descripcion, 
+    }    public Equipo(int grupoEquipoId, string codigoImt, string? codigoUcb, string? descripcion, 
                   string estadoEquipo, string? numeroSerial, string? ubicacion, 
                   double? costoReferencia, int? tiempoMaximoPrestamo, string? procedencia, 
-                  int gaveteroId, string estadoDisponibilidad, DateOnly fechaDeIngreso)
+                  string? nombreGavetero, string estadoDisponibilidad, DateOnly fechaDeIngreso)
     {
         GrupoEquipoId        = grupoEquipoId;
         CodigoImt            = codigoImt;
@@ -143,7 +138,7 @@ public class Equipo : IEquipo, IEliminacionLogica
         CostoReferencia      = costoReferencia;
         TiempoMaximoPrestamo = tiempoMaximoPrestamo;
         Procedencia          = procedencia;
-        GaveteroId           = gaveteroId;
+        NombreGavetero       = nombreGavetero;
         EstadoDisponibilidad = estadoDisponibilidad;
         FechaDeIngreso       = fechaDeIngreso;
     }

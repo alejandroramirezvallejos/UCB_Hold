@@ -1,4 +1,4 @@
 public interface IObtenerGrupoEquipoConsulta
 {
-    GrupoEquipoDto? Handle(ObtenerGrupoEquipoConsulta consulta);
+    List<GrupoEquipoDto>? Handle();
 }

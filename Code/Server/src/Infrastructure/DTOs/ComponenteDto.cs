@@ -1,5 +1,5 @@
 public class ComponenteDto
-{//   varying, codigo_imt_equipo integer
+{
     public string?  Nombre           { get; set; } = null;
     public string? Modelo           { get; set; } = null;
     public string? Tipo             { get; set; } = null;

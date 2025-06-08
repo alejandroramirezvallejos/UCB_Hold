@@ -1,6 +1,6 @@
 using System.Data;
 
-public class EquipoService : IObtenerEquipoConsulta, ICrearEquipoComando, 
+public class EquipoService : IObtenerEquipoConsulta, ICrearEquipoComando,
                              IActualizarEquipoComando, IEliminarEquipoComando
 {
     private readonly IEquipoRepository _equipoRepository;
@@ -8,25 +8,45 @@ public class EquipoService : IObtenerEquipoConsulta, ICrearEquipoComando,
     public EquipoService(IEquipoRepository equipoRepository)
     {
         _equipoRepository = equipoRepository;
-    }
-
-    public EquipoDto Handle(CrearEquipoComando comando)
+    }    public void Handle(CrearEquipoComando comando)
     {
-        return _equipoRepository.Crear(comando);
-    }
-
-    public EquipoDto? Handle(ActualizarEquipoComando comando)
+        try
+        {
+            _equipoRepository.Crear(comando);
+        }
+        catch (Exception ex)
+        {
+            throw new Exception("Error en el servicio al crear equipo", ex);
+        }
+    }    public void Handle(ActualizarEquipoComando comando)
     {
-        return _equipoRepository.Actualizar(comando);
-    }
-
-    public bool Handle(EliminarEquipoComando comando)
+        try
+        {
+            _equipoRepository.Actualizar(comando);
+        }
+        catch (Exception ex)
+        {
+            throw new Exception("Error en el servicio al actualizar equipo", ex);
+        }
+    }    public void Handle(EliminarEquipoComando comando)
     {
-        return _equipoRepository.Eliminar(comando.Id);
-    }
-
-    public EquipoDto? Handle(ObtenerEquipoConsulta consulta)
+        try
+        {
+            _equipoRepository.Eliminar(comando.Id);
+        }
+        catch (Exception ex)
+        {
+            throw new Exception("Error en el servicio al eliminar equipo", ex);
+        }
+    }    public List<EquipoDto>? Handle()
     {
-        return _equipoRepository.ObtenerPorId(consulta.Id);
+        try
+        {
+            return _equipoRepository.ObtenerTodos();
+        }
+        catch (Exception ex)
+        {
+            throw new Exception("Error en el servicio al obtener equipos", ex);
+        }
     }
 }

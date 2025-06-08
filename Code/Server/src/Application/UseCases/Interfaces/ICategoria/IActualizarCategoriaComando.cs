@@ -1,4 +1,4 @@
 public interface IActualizarCategoriaComando
 {
-    CategoriaDto? Handle(ActualizarCategoriaComando comando);
+    void Handle(ActualizarCategoriaComando comando);
 }

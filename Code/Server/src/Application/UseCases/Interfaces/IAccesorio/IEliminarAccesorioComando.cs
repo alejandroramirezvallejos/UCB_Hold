@@ -2,5 +2,5 @@
 
 public interface IEliminarAccesorioComando
 {
-    bool Handle(EliminarAccesorioComando comando);
+    void Handle(EliminarAccesorioComando comando);
 }

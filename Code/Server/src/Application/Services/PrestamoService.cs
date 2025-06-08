@@ -1,32 +1,42 @@
 using System.Data;
 
 public class PrestamoService : ICrearPrestamoComando, IObtenerPrestamoConsulta,
-                               IActualizarPrestamoComando, IEliminarPrestamoComando
+                                IEliminarPrestamoComando
 {
     private readonly IPrestamoRepository _prestamoRepository;
 
     public PrestamoService(IPrestamoRepository prestamoRepository)
     {
         _prestamoRepository = prestamoRepository;
-    }
-
-    public PrestamoDto Handle(CrearPrestamoComando comando)
+    }    public void Handle(CrearPrestamoComando comando)
     {
-        return _prestamoRepository.Crear(comando);
-    }
-
-    public PrestamoDto? Handle(ObtenerPrestamoConsulta consulta)
+        try
+        {
+            _prestamoRepository.Crear(comando);
+        }
+        catch (Exception ex)
+        {
+            throw new Exception("Error en el servicio al crear préstamo", ex);
+        }
+    }    public List<PrestamoDto>? Handle()
     {
-        return _prestamoRepository.ObtenerPorId(consulta.Id);
-    }
-
-    public PrestamoDto? Handle(ActualizarPrestamoComando comando)
+        try
+        {
+            return _prestamoRepository.ObtenerTodos();
+        }
+        catch (Exception ex)
+        {
+            throw new Exception("Error en el servicio al obtener préstamos", ex);
+        }
+    }    public void Handle(EliminarPrestamoComando comando)
     {
-        return _prestamoRepository.Actualizar(comando);
-    }
-
-    public bool Handle(EliminarPrestamoComando comando)
-    {
-        return _prestamoRepository.Eliminar(comando.Id);
+        try
+        {
+            _prestamoRepository.Eliminar(comando.Id);
+        }
+        catch (Exception ex)
+        {
+            throw new Exception("Error en el servicio al eliminar préstamo", ex);
+        }
     }
 }

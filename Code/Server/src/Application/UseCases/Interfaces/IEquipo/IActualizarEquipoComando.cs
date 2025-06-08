@@ -1,4 +1,4 @@
 public interface IActualizarEquipoComando
 {
-    EquipoDto? Handle(ActualizarEquipoComando comando);
+    void Handle(ActualizarEquipoComando comando);
 }

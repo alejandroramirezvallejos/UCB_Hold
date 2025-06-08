@@ -1,4 +1,4 @@
 public interface IObtenerPrestamoConsulta
 {
-    PrestamoDto? Handle(ObtenerPrestamoConsulta consulta);
+    List<PrestamoDto>? Handle();
 }

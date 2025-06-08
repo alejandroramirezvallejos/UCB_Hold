@@ -170,6 +170,8 @@ public static class CommandLineInterface
         builder.Services.AddScoped<ICrearGrupoEquipoComando, GrupoEquipoService>();
         builder.Services.AddScoped<IActualizarGrupoEquipoComando, GrupoEquipoService>();
         builder.Services.AddScoped<IEliminarGrupoEquipoComando, GrupoEquipoService>();
+        builder.Services.AddScoped<IObtenerGrupoEquipoPorIdConsulta, GrupoEquipoService>();
+        builder.Services.AddScoped<IObtenerGrupoEquipoPorNombreYCategoriaConsulta, GrupoEquipoService>();
 
         // Mantenimientos
         builder.Services.AddScoped<IObtenerMantenimientoConsulta, MantenimientoService>();

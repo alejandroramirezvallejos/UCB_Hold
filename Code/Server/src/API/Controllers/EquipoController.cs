@@ -1,104 +1,141 @@
 using Microsoft.AspNetCore.Mvc;
+using System.ComponentModel.DataAnnotations;
 
 [ApiController]
 [Route("api/[controller]")]
-public class EquiposController : ControllerBase
-{
-    private readonly ICrearEquipoComando      _crear;
-    private readonly IObtenerEquipoConsulta   _obtener;
+public class EquipoController : ControllerBase
+{    private readonly ICrearEquipoComando _crear;
+    private readonly IObtenerEquipoConsulta _obtener;
     private readonly IActualizarEquipoComando _actualizar;
-    private readonly IEliminarEquipoComando   _eliminar;
+    private readonly IEliminarEquipoComando _eliminar;
+    private readonly IObtenerGrupoEquipoPorIdConsulta _obtenerGrupoEquipo;
 
-    public EquiposController(ICrearEquipoComando crear, IObtenerEquipoConsulta obtener,
-                             IActualizarEquipoComando actualizar, IEliminarEquipoComando eliminar)
+    public EquipoController(ICrearEquipoComando crear, IObtenerEquipoConsulta obtener,
+                           IActualizarEquipoComando actualizar, IEliminarEquipoComando eliminar,
+                           IObtenerGrupoEquipoPorIdConsulta obtenerGrupoEquipo)
     {
-        _crear       = crear;
-        _obtener     = obtener;
-        _actualizar  = actualizar;
-        _eliminar    = eliminar;
-    }
-
-    [HttpGet("{id}")]
-    public ActionResult<EquipoDto> ObtenerPorId(int id)
-    {
-        EquipoDto? resultado = _obtener.Handle(new ObtenerEquipoConsulta(id));
-        if (resultado == null)
-            return NotFound($"No se encontro el equipo con ID {id}");
-
-        return Ok(resultado);
+        _crear = crear;
+        _obtener = obtener;
+        _actualizar = actualizar;
+        _eliminar = eliminar;
+        _obtenerGrupoEquipo = obtenerGrupoEquipo;
     }
 
     [HttpPost]
-    public IActionResult Crear([FromBody] EquipoRequestDto solicitud)
+    public ActionResult Crear([FromBody] EquipoRequestDto dto)
     {
-        if (!ModelState.IsValid)
+        try
         {
-            return BadRequest(ModelState);
+            if (dto == null)
+                return BadRequest("Los datos del equipo son requeridos");
+
+            if (dto.GrupoEquipoId <= 0)
+                return BadRequest("El ID del grupo de equipo es requerido");
+
+            if (string.IsNullOrWhiteSpace(dto.CodigoImt))
+                return BadRequest("El código IMT es requerido");
+
+            if (string.IsNullOrWhiteSpace(dto.EstadoEquipo))
+                return BadRequest("El estado del equipo es requerido");            // Verificar que el grupo de equipo existe
+            var grupoEquipo = _obtenerGrupoEquipo.Handle(new ObtenerGrupoEquipoPorIdConsulta(dto.GrupoEquipoId));
+            if (grupoEquipo == null)
+                return BadRequest($"No existe el grupo de equipo con ID {dto.GrupoEquipoId}");
+
+            var comando = new CrearEquipoComando(
+                grupoEquipo.Nombre!,
+                grupoEquipo.Modelo!,
+                grupoEquipo.Marca!,
+                dto.CodigoUcb,
+                dto.Descripcion,
+                dto.NumeroSerial,
+                dto.Ubicacion,
+                dto.Procedencia,
+                dto.CostoReferencia,
+                dto.TiempoMaximoPrestamo,
+                dto.NombreGavetero
+            );
+
+            _crear.Handle(comando);
+            return Created();
         }
+        catch (Exception ex)
+        {
+            return BadRequest($"Error al crear equipo: {ex.Message}");
+        }
+    }
 
-        CrearEquipoComando comando = new CrearEquipoComando(
-            solicitud.GrupoEquipoId,
-            solicitud.CodigoImt,
-            solicitud.CodigoUcb,
-            solicitud.Descripcion,
-            solicitud.EstadoEquipo,
-            solicitud.NumeroSerial,
-            solicitud.Ubicacion,
-            solicitud.CostoReferencia,
-            solicitud.TiempoMaximoPrestamo,
-            solicitud.Procedencia,
-            solicitud.GaveteroId
-        );
-
-        _crear.Handle(comando);
-
-        return Created();
+    [HttpGet]
+    public ActionResult<List<EquipoDto>> ObtenerTodos()
+    {
+        try
+        {
+            var resultado = _obtener.Handle();
+            return Ok(resultado);
+        }
+        catch (Exception ex)
+        {
+            return BadRequest($"Error al obtener equipos: {ex.Message}");
+        }
     }
 
     [HttpPut("{id}")]
-    public IActionResult Actualizar(int id, [FromBody] EquipoRequestDto solicitud)
+    public ActionResult Actualizar([Range(1, int.MaxValue)] int id, [FromBody] EquipoRequestDto dto)
     {
-        if (!ModelState.IsValid)
+        try
         {
-            return BadRequest(ModelState);
+            if (id <= 0)
+                return BadRequest("El ID debe ser mayor a 0");
+
+            if (dto == null)
+                return BadRequest("Los datos del equipo son requeridos");
+
+            // Si se proporciona GrupoEquipoId, verificar que existe
+            string? nombreGrupoEquipo = null;
+            if (dto.GrupoEquipoId > 0)
+            {
+                var grupoEquipo = _obtenerGrupoEquipo.Handle(new ObtenerGrupoEquipoPorIdConsulta(dto.GrupoEquipoId));
+                if (grupoEquipo == null)
+                    return BadRequest($"No existe el grupo de equipo con ID {dto.GrupoEquipoId}");
+                nombreGrupoEquipo = grupoEquipo.Nombre;
+            }
+            var comando = new ActualizarEquipoComando(
+                id,
+                nombreGrupoEquipo,
+                dto.CodigoUcb,
+                dto.Descripcion,
+                dto.NumeroSerial,
+                dto.Ubicacion,
+                dto.Procedencia,
+                dto.CostoReferencia,
+                dto.TiempoMaximoPrestamo,
+                dto.NombreGavetero,
+                dto.EstadoEquipo
+            );
+
+            _actualizar.Handle(comando);
+            return Ok("Equipo actualizado exitosamente");
         }
-
-        ActualizarEquipoComando comando = new ActualizarEquipoComando(
-            id,
-            solicitud.GrupoEquipoId,
-            solicitud.CodigoImt,
-            solicitud.CodigoUcb,
-            solicitud.Descripcion,
-            solicitud.EstadoEquipo,
-            solicitud.NumeroSerial,
-            solicitud.Ubicacion,
-            solicitud.CostoReferencia,
-            solicitud.TiempoMaximoPrestamo,
-            solicitud.Procedencia,
-            solicitud.GaveteroId
-        );
-
-        EquipoDto? resultado = _actualizar.Handle(comando);
-
-        if (resultado == null)
+        catch (Exception ex)
         {
-            return NotFound($"No se encontro el equipo con ID {id} para actualizar");
+            return BadRequest($"Error al actualizar equipo: {ex.Message}");
         }
-
-        return Ok(resultado);
     }
 
     [HttpDelete("{id}")]
-    public IActionResult Eliminar(int id)
+    public ActionResult Eliminar([Range(1, int.MaxValue)] int id)
     {
-        EliminarEquipoComando comando = new EliminarEquipoComando(id);
-        bool exito = _eliminar.Handle(comando);
-
-        if (!exito)
+        try
         {
-            return NotFound($"No se encontro el equipo con ID {id} para eliminar");
-        }
+            if (id <= 0)
+                return BadRequest("El ID debe ser mayor a 0");
 
-        return NoContent();
+            var comando = new EliminarEquipoComando(id);
+            _eliminar.Handle(comando);
+            return NoContent();
+        }
+        catch (Exception ex)
+        {
+            return BadRequest($"Error al eliminar equipo: {ex.Message}");
+        }
     }
 }

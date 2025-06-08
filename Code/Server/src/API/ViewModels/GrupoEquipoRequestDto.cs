@@ -2,27 +2,31 @@ using System.ComponentModel.DataAnnotations;
 
 public class GrupoEquipoRequestDto
 {
-    [Required]
-    public string  Nombre      { get; set; } = string.Empty;
+    [Required(ErrorMessage = "El nombre del grupo de equipo es requerido")]
+    [StringLength(100, ErrorMessage = "El nombre no puede exceder 100 caracteres")]
+    public string Nombre { get; set; } = string.Empty;
 
-    [Required]
-    public string  Modelo      { get; set; } = string.Empty;
+    [Required(ErrorMessage = "El modelo del grupo de equipo es requerido")]
+    [StringLength(100, ErrorMessage = "El modelo no puede exceder 100 caracteres")]
+    public string Modelo { get; set; } = string.Empty;
 
-    [Url(ErrorMessage = "La URL de datos no tiene un formato valido")]
-    public string? UrlData     { get; set; } = null;
+    [Required(ErrorMessage = "La marca del grupo de equipo es requerida")]
+    [StringLength(100, ErrorMessage = "La marca no puede exceder 100 caracteres")]
+    public string Marca { get; set; } = string.Empty;
 
-    [Required]
-    [Url(ErrorMessage = "La URL de la imagen no tiene un formato valido")]
-    public string  UrlImagen   { get; set; } = string.Empty;
-   
-    [Required]
-    [Range(1, int.MaxValue, ErrorMessage = "La cantidad debe ser al menos 1")]
-    public int     Cantidad    { get; set; }
+    [Required(ErrorMessage = "El nombre de la categoría es requerido")]
+    [StringLength(100, ErrorMessage = "El nombre de la categoría no puede exceder 100 caracteres")]
+    public string NombreCategoria { get; set; } = string.Empty;
 
-    [Required]
-    public string  Marca       { get; set; } = string.Empty;
+    [Required(ErrorMessage = "La descripción del grupo de equipo es requerida")]
+    [StringLength(500, ErrorMessage = "La descripción no puede exceder 500 caracteres")]
+    public string Descripcion { get; set; } = string.Empty;
 
-    [Required]
-    [Range(1, int.MaxValue, ErrorMessage = "El ID de la categoria debe ser un numero natural")]
-    public int     CategoriaId { get; set; }
+    [Url(ErrorMessage = "La URL del datasheet no tiene un formato válido")]
+    public string? UrlDataSheet { get; set; }
+
+    [Required(ErrorMessage = "La URL de la imagen es requerida")]
+    [Url(ErrorMessage = "La URL de la imagen no tiene un formato válido")]
+    public string UrlImagen { get; set; } = string.Empty;
 }
+

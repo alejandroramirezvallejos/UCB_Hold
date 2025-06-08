@@ -1,4 +1,4 @@
 public interface IEliminarPrestamoComando
 {
-    bool Handle(EliminarPrestamoComando comando);
+    void Handle(EliminarPrestamoComando comando);
 }

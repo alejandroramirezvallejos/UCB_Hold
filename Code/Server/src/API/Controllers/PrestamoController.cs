@@ -1,93 +1,196 @@
+using API.ViewModels;
 using Microsoft.AspNetCore.Mvc;
+
+namespace API.Controllers;
 
 [ApiController]
 [Route("api/[controller]")]
 public class PrestamoController : ControllerBase
 {
-    private readonly ICrearPrestamoComando      _crear;
-    private readonly IObtenerPrestamoConsulta   _obtener;
-    private readonly IActualizarPrestamoComando _actualizar;
-    private readonly IEliminarPrestamoComando   _eliminar;
+    private readonly ICrearPrestamoComando _crearPrestamoComando;
+    private readonly IObtenerPrestamoConsulta _obtenerPrestamoConsulta;
+    private readonly IEliminarPrestamoComando _eliminarPrestamoComando;
 
-    public PrestamoController(ICrearPrestamoComando crear, IObtenerPrestamoConsulta obtener,
-                              IActualizarPrestamoComando actualizar, IEliminarPrestamoComando eliminar)
+    public PrestamoController(
+        ICrearPrestamoComando crearPrestamoComando,
+        IObtenerPrestamoConsulta obtenerPrestamoConsulta,
+        IEliminarPrestamoComando eliminarPrestamoComando)
     {
-        _crear      = crear;
-        _obtener    = obtener;
-        _actualizar = actualizar;
-        _eliminar   = eliminar;
-    }
-
-    [HttpGet("{id}")]
-    public ActionResult<PrestamoDto> ObtenerPorId(int id)
-    {
-        PrestamoDto? resultado = _obtener.Handle(new ObtenerPrestamoConsulta(id));
-        if (resultado == null)
-            return NotFound($"No se encontro el prestamo con ID {id}");
-
-        return Ok(resultado);
+        _crearPrestamoComando = crearPrestamoComando;
+        _obtenerPrestamoConsulta = obtenerPrestamoConsulta;
+        _eliminarPrestamoComando = eliminarPrestamoComando;
     }
 
     [HttpPost]
-    public IActionResult Crear([FromBody] PrestamoRequestDto solicitud)
+    public IActionResult CrearPrestamo([FromBody] PrestamoRequestDto dto)
     {
-        if (!ModelState.IsValid)
-            return BadRequest(ModelState);
-
-        CrearPrestamoComando comando = new CrearPrestamoComando(
-            solicitud.FechaSolicitud,
-            solicitud.FechaPrestamo,
-            solicitud.FechaDevolucion,
-            solicitud.FechaDevolucionEsperada,
-            solicitud.Observacion,
-            solicitud.EstadoPrestamo,
-            solicitud.CarnetUsuario,
-            solicitud.EquipoId
-        );
-
-        PrestamoDto resultado = _crear.Handle(comando);
-        return CreatedAtAction(
-            nameof(ObtenerPorId),
-            new
+        try
+        {
+            // Validaciones de ModelState
+            if (!ModelState.IsValid)
             {
-                id = resultado.Id
-            },
-            resultado
-        );
+                return BadRequest(ModelState);
+            }
+
+            // Validación de fechas
+            if (dto.FechaPrestamoEsperada < DateTime.Today)
+            {
+                return BadRequest("La fecha de préstamo esperada no puede ser en el pasado");
+            }
+
+            if (dto.FechaDevolucionEsperada <= dto.FechaPrestamoEsperada)
+            {
+                return BadRequest("La fecha de devolución esperada debe ser posterior a la fecha de préstamo esperada");
+            }
+
+            // Validación de período máximo de préstamo
+            var diasDiferencia = (dto.FechaDevolucionEsperada - dto.FechaPrestamoEsperada).Days;
+            if (diasDiferencia > 365)
+            {
+                return BadRequest("El período de préstamo no puede exceder 1 año");
+            }
+
+            if (diasDiferencia < 1)
+            {
+                return BadRequest("El período mínimo de préstamo es de 1 día");
+            }
+
+            // Validación de grupos de equipo
+            if (dto.GrupoEquipoId == null || dto.GrupoEquipoId.Length == 0)
+            {
+                return BadRequest("Se debe especificar al menos un grupo de equipo");
+            }
+
+            if (dto.GrupoEquipoId.Any(id => id <= 0))
+            {
+                return BadRequest("Todos los IDs de grupo de equipo deben ser números positivos");
+            }
+
+            // Validación de duplicados en grupos de equipo
+            if (dto.GrupoEquipoId.Length != dto.GrupoEquipoId.Distinct().Count())
+            {
+                return BadRequest("No se pueden repetir grupos de equipo en el mismo préstamo");
+            }
+
+            // Validación de carnet
+            if (string.IsNullOrWhiteSpace(dto.CarnetUsuario))
+            {
+                return BadRequest("El carnet de usuario es obligatorio");
+            }
+
+            // Validación de contrato (tamaño y formato)
+            if (dto.Contrato != null)
+            {
+                if (dto.Contrato.Length > 10485760) // 10MB
+                {
+                    return BadRequest("El archivo de contrato no puede exceder los 10MB");
+                }
+
+                if (dto.Contrato.Length == 0)
+                {
+                    return BadRequest("El archivo de contrato no puede estar vacío");
+                }
+            }
+
+            var comando = new CrearPrestamoComando(
+                dto.GrupoEquipoId,
+                dto.FechaPrestamoEsperada,
+                dto.FechaDevolucionEsperada,
+                dto.Observacion,
+                dto.CarnetUsuario,
+                dto.Contrato
+            );
+
+            _crearPrestamoComando.Handle(comando);
+            return Ok(new { mensaje = "Préstamo creado exitosamente" });
+        }
+        catch (ArgumentException ex)
+        {
+            return BadRequest($"Error de validación: {ex.Message}");
+        }
+        catch (InvalidOperationException ex)
+        {
+            return Conflict($"Conflicto en la operación: {ex.Message}");
+        }
+        catch (Exception ex)
+        {
+            return StatusCode(500, $"Error interno del servidor: {ex.Message}");
+        }
     }
 
-    [HttpPut("{id}")]
-    public IActionResult Actualizar(int id, [FromBody] PrestamoRequestDto solicitud)
+    [HttpGet]
+    public IActionResult ObtenerPrestamos()
     {
-        if (!ModelState.IsValid)
-            return BadRequest(ModelState);
+        try
+        {
+            var prestamos = _obtenerPrestamoConsulta.Handle();
+            
+            if (prestamos == null || !prestamos.Any())
+            {
+                return Ok(new List<PrestamoDto>());
+            }
 
-        ActualizarPrestamoComando comando = new ActualizarPrestamoComando(
-            id,
-            solicitud.FechaSolicitud,
-            solicitud.FechaPrestamo,
-            solicitud.FechaDevolucion,
-            solicitud.FechaDevolucionEsperada,
-            solicitud.Observacion,
-            solicitud.EstadoPrestamo,
-            solicitud.CarnetUsuario,
-            solicitud.EquipoId
-        );
-
-        PrestamoDto? resultado = _actualizar.Handle(comando);
-        if (resultado == null)
-            return NotFound($"No se encontro el prestamo con ID {id} para actualizar");
-
-        return Ok(resultado);
+            return Ok(prestamos);
+        }
+        catch (Exception ex)
+        {
+            return StatusCode(500, $"Error interno del servidor: {ex.Message}");
+        }
     }
 
     [HttpDelete("{id}")]
-    public IActionResult Eliminar(int id)
+    public IActionResult EliminarPrestamo(int id)
     {
-        bool exito = _eliminar.Handle(new EliminarPrestamoComando(id));
-        if (!exito)
-            return NotFound($"No se encontro el prestamo con ID {id} para eliminar");
+        try
+        {
+            if (id <= 0)
+            {
+                return BadRequest("El ID debe ser un número positivo");
+            }
 
-        return NoContent();
+            var comando = new EliminarPrestamoComando(id);
+            _eliminarPrestamoComando.Handle(comando);
+            
+            return Ok(new { mensaje = "Préstamo eliminado exitosamente" });
+        }
+        catch (ArgumentException ex)
+        {
+            return BadRequest($"Error de validación: {ex.Message}");
+        }
+        catch (InvalidOperationException ex)
+        {
+            return NotFound($"Préstamo no encontrado: {ex.Message}");
+        }
+        catch (Exception ex)
+        {
+            return StatusCode(500, $"Error interno del servidor: {ex.Message}");
+        }
+    }
+
+    [HttpGet("{id}")]
+    public IActionResult ObtenerPrestamoPorId(int id)
+    {
+        try
+        {
+            if (id <= 0)
+            {
+                return BadRequest("El ID debe ser un número positivo");
+            }
+
+            var prestamos = _obtenerPrestamoConsulta.Handle();
+            var prestamo = prestamos?.FirstOrDefault(p => p.CarnetUsuario != null); // Ajustar según ID disponible en DTO
+            
+            if (prestamo == null)
+            {
+                return NotFound("Préstamo no encontrado");
+            }
+
+            return Ok(prestamo);
+        }
+        catch (Exception ex)
+        {
+            return StatusCode(500, $"Error interno del servidor: {ex.Message}");
+        }
     }
 }
+

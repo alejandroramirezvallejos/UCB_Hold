@@ -1,7 +1,7 @@
 //Implementar
 public record CrearGaveteroComando
 (
-    string?  Nombre,
+    string  Nombre,
     string?  Tipo,
     string   NombreMueble,
     double?  Longitud,

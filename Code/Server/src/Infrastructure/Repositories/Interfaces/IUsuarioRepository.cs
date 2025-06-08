@@ -3,6 +3,6 @@ public interface IUsuarioRepository
 {
     void Crear(CrearUsuarioComando comando);
     void Actualizar(ActualizarUsuarioComando comando);
-    void Eliminar(int carnet);
+    void Eliminar(string carnet);
     List<UsuarioDto> ObtenerTodos();
 }

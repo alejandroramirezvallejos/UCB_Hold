@@ -1,4 +1,4 @@
 public interface ICrearPrestamoComando
 {
-    PrestamoDto Handle(CrearPrestamoComando comando);
+    void Handle(CrearPrestamoComando comando);
 }
