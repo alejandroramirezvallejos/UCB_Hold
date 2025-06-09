@@ -1,0 +1,18 @@
+.container{
+   display: flex;
+    position: relative;
+    top: 25px;
+    flex-direction: row;
+    align-items: flex-start;
+    justify-content: flex-start;
+    margin-top: 20px;
+}
+
+.container > app-sidebard {
+  flex: 0 0 auto;
+}
+
+.container > *:not(app-sidebard) {
+  flex: 1;
+  display: block;
+}
