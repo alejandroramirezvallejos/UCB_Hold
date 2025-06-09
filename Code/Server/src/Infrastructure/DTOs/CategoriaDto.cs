@@ -1,4 +1,4 @@
 public class CategoriaDto
 {
-    public string? Nombre        { get; set; } = null;
+    public string? Nombre { get; set; } = null;
 }

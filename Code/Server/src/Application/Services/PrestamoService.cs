@@ -1,5 +1,3 @@
-using System.Data;
-
 public class PrestamoService : ICrearPrestamoComando, IObtenerPrestamoConsulta,
                                 IEliminarPrestamoComando
 {

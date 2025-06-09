@@ -1,22 +1,24 @@
 using Microsoft.AspNetCore.Mvc;
 using System.ComponentModel.DataAnnotations;
+using API.ViewModels;
+namespace API.Controllers;
 
 [ApiController]
 [Route("api/[controller]")]
 public class GaveteroController : ControllerBase
 {
-    private readonly ICrearGaveteroComando _crear;
-    private readonly IObtenerGaveteroConsulta _obtener;
+    private readonly ICrearGaveteroComando      _crear;
+    private readonly IObtenerGaveteroConsulta   _obtener;
     private readonly IActualizarGaveteroComando _actualizar;
-    private readonly IEliminarGaveteroComando _eliminar;
+    private readonly IEliminarGaveteroComando   _eliminar;
 
     public GaveteroController(ICrearGaveteroComando crear, IObtenerGaveteroConsulta obtener,
                              IActualizarGaveteroComando actualizar, IEliminarGaveteroComando eliminar)
     {
-        _crear = crear;
-        _obtener = obtener;
+        _crear      = crear;
+        _obtener    = obtener;
         _actualizar = actualizar;
-        _eliminar = eliminar;
+        _eliminar   = eliminar;
     }
 
     [HttpPost]

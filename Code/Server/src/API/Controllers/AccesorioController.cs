@@ -1,23 +1,25 @@
 using Microsoft.AspNetCore.Mvc;
 using System.ComponentModel.DataAnnotations;
+using API.ViewModels;
+namespace API.Controllers;
 
 [ApiController]
 [Route("api/[controller]")]
 public class AccesorioController : ControllerBase
 {
-    private readonly ICrearAccesorioComando _crear;
-    private readonly IObtenerAccesorioConsulta _obtener;
+    private readonly ICrearAccesorioComando      _crear;
+    private readonly IObtenerAccesorioConsulta   _obtener;
     private readonly IActualizarAccesorioComando _actualizar;
-    private readonly IEliminarAccesorioComando _eliminar;
+    private readonly IEliminarAccesorioComando   _eliminar;
 
     public AccesorioController(ICrearAccesorioComando crear, IObtenerAccesorioConsulta obtener,
                                IActualizarAccesorioComando actualizar,
                                IEliminarAccesorioComando eliminar)
     {
-        _crear = crear;
-        _obtener = obtener;
+        _crear      = crear;
+        _obtener    = obtener;
         _actualizar = actualizar;
-        _eliminar = eliminar;
+        _eliminar   = eliminar;
     }
 
     [HttpPost]

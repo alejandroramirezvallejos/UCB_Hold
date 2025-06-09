@@ -1,4 +1,3 @@
-//implementar
 public interface IEmpresaMantenimientoRepository
 {
     void Crear(CrearEmpresaMantenimientoComando comando);

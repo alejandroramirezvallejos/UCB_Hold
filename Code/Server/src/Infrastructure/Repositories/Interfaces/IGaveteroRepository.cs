@@ -1,4 +1,3 @@
-//implementar
 public interface IGaveteroRepository
 {
     void Crear(CrearGaveteroComando comando);

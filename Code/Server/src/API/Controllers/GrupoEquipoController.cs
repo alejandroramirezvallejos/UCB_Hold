@@ -1,15 +1,17 @@
 using Microsoft.AspNetCore.Mvc;
 using System.ComponentModel.DataAnnotations;
+using API.ViewModels;
+namespace API.Controllers;
 
 [ApiController]
 [Route("api/[controller]")]
 public class GrupoEquipoController : ControllerBase
 {
-    private readonly ICrearGrupoEquipoComando _crear;
-    private readonly IObtenerGrupoEquipoConsulta _obtener;
-    private readonly IActualizarGrupoEquipoComando _actualizar;
-    private readonly IEliminarGrupoEquipoComando _eliminar;
-    private readonly IObtenerGrupoEquipoPorIdConsulta _obtenerPorId;
+    private readonly ICrearGrupoEquipoComando                       _crear;
+    private readonly IObtenerGrupoEquipoConsulta                    _obtener;
+    private readonly IActualizarGrupoEquipoComando                  _actualizar;
+    private readonly IEliminarGrupoEquipoComando                    _eliminar;
+    private readonly IObtenerGrupoEquipoPorIdConsulta               _obtenerPorId;
     private readonly IObtenerGrupoEquipoPorNombreYCategoriaConsulta _obtenerPorNombreYCategoria;
 
     public GrupoEquipoController(ICrearGrupoEquipoComando crear, IObtenerGrupoEquipoConsulta obtener,
@@ -17,11 +19,11 @@ public class GrupoEquipoController : ControllerBase
                                 IObtenerGrupoEquipoPorIdConsulta obtenerPorId,
                                 IObtenerGrupoEquipoPorNombreYCategoriaConsulta obtenerPorNombreYCategoria)
     {
-        _crear = crear;
-        _obtener = obtener;
-        _actualizar = actualizar;
-        _eliminar = eliminar;
-        _obtenerPorId = obtenerPorId;
+        _crear                      = crear;
+        _obtener                    = obtener;
+        _actualizar                 = actualizar;
+        _eliminar                   = eliminar;
+        _obtenerPorId               = obtenerPorId;
         _obtenerPorNombreYCategoria = obtenerPorNombreYCategoria;
     }
 

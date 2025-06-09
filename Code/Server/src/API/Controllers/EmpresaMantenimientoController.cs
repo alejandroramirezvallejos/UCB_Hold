@@ -1,24 +1,26 @@
 using Microsoft.AspNetCore.Mvc;
 using System.ComponentModel.DataAnnotations;
+using API.ViewModels;
+namespace API.Controllers;
 
 [ApiController]
 [Route("api/[controller]")]
 public class EmpresaMantenimientoController : ControllerBase
 {
-    private readonly ICrearEmpresaMantenimientoComando _crear;
-    private readonly IObtenerEmpresaMantenimientoConsulta _obtener;
+    private readonly ICrearEmpresaMantenimientoComando      _crear;
+    private readonly IObtenerEmpresaMantenimientoConsulta   _obtener;
     private readonly IActualizarEmpresaMantenimientoComando _actualizar;
-    private readonly IEliminarEmpresaMantenimientoComando _eliminar;
+    private readonly IEliminarEmpresaMantenimientoComando   _eliminar;
 
     public EmpresaMantenimientoController(ICrearEmpresaMantenimientoComando crear, 
                                          IObtenerEmpresaMantenimientoConsulta obtener,
                                          IActualizarEmpresaMantenimientoComando actualizar, 
                                          IEliminarEmpresaMantenimientoComando eliminar)
     {
-        _crear = crear;
-        _obtener = obtener;
+        _crear      = crear;
+        _obtener    = obtener;
         _actualizar = actualizar;
-        _eliminar = eliminar;
+        _eliminar   = eliminar;
     }
 
     [HttpPost]

@@ -1,19 +1,21 @@
 using Microsoft.AspNetCore.Mvc;
 using System.ComponentModel.DataAnnotations;
+using API.ViewModels;
+namespace API.Controllers;
 
 [ApiController]
 [Route("api/[controller]")]
 public class MantenimientoController : ControllerBase
 {
-    private readonly ICrearMantenimientoComando _crear;
+    private readonly ICrearMantenimientoComando    _crear;
     private readonly IObtenerMantenimientoConsulta _obtener;
     private readonly IEliminarMantenimientoComando _eliminar;
 
     public MantenimientoController(ICrearMantenimientoComando crear, IObtenerMantenimientoConsulta obtener,
                                   IEliminarMantenimientoComando eliminar)
     {
-        _crear = crear;
-        _obtener = obtener;
+        _crear    = crear;
+        _obtener  = obtener;
         _eliminar = eliminar;
     }
 
@@ -49,12 +51,10 @@ public class MantenimientoController : ControllerBase
             if (dto.DescripcionEquipo != null && dto.DescripcionEquipo.Length > 0 && 
                 dto.DescripcionEquipo.Length != dto.CodigoIMT.Length)
                 return BadRequest("Si se proporcionan descripciones de equipo, debe haber una por cada código IMT");
-
-            // Validar que todos los códigos IMT sean positivos
+            
             if (dto.CodigoIMT.Any(codigo => codigo <= 0))
                 return BadRequest("Todos los códigos IMT deben ser números positivos");
-
-            // Validar que el costo sea positivo si se proporciona
+            
             if (dto.Costo.HasValue && dto.Costo.Value < 0)
                 return BadRequest("El costo debe ser un número positivo");
 

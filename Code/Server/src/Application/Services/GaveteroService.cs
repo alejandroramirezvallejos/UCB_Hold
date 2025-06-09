@@ -1,5 +1,3 @@
-using System.Data;
-
 public class GaveteroService : IObtenerGaveteroConsulta, ICrearGaveteroComando,
                              IActualizarGaveteroComando, IEliminarGaveteroComando
 {

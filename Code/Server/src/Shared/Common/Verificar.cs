@@ -1,4 +1,4 @@
-// TODO: Verificar si existe un id (realizar consulta con la db)
+//TODO: Verificar si existe un id (realizar consulta con la db)
 public static class Verificar
 {
     public static T SiEsNulo<T>(T valor, string nombre)

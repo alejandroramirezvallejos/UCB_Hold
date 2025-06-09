@@ -1,22 +1,24 @@
 using Microsoft.AspNetCore.Mvc;
 using System.ComponentModel.DataAnnotations;
+using API.ViewModels;
+namespace API.Controllers;
 
 [ApiController]
 [Route("api/[controller]")]
 public class MuebleController : ControllerBase
 {
-    private readonly ICrearMuebleComando _crear;
-    private readonly IObtenerMuebleConsulta _obtener;
+    private readonly ICrearMuebleComando      _crear;
+    private readonly IObtenerMuebleConsulta   _obtener;
     private readonly IActualizarMuebleComando _actualizar;
-    private readonly IEliminarMuebleComando _eliminar;
+    private readonly IEliminarMuebleComando   _eliminar;
 
     public MuebleController(ICrearMuebleComando crear, IObtenerMuebleConsulta obtener,
                            IActualizarMuebleComando actualizar, IEliminarMuebleComando eliminar)
     {
-        _crear = crear;
-        _obtener = obtener;
+        _crear      = crear;
+        _obtener    = obtener;
         _actualizar = actualizar;
-        _eliminar = eliminar;
+        _eliminar   = eliminar;
     }
 
     [HttpPost]
@@ -29,8 +31,7 @@ public class MuebleController : ControllerBase
 
             if (string.IsNullOrWhiteSpace(dto.Nombre))
                 return BadRequest("El nombre del mueble es requerido");
-
-            // Validar dimensiones positivas si se proporcionan
+            
             if (dto.Longitud.HasValue && dto.Longitud.Value < 0)
                 return BadRequest("La longitud debe ser un número positivo");
 
@@ -39,8 +40,7 @@ public class MuebleController : ControllerBase
 
             if (dto.Altura.HasValue && dto.Altura.Value < 0)
                 return BadRequest("La altura debe ser un número positivo");
-
-            // Validar costo positivo si se proporciona
+            
             if (dto.Costo.HasValue && dto.Costo.Value < 0)
                 return BadRequest("El costo debe ser un número positivo");
 
@@ -87,8 +87,7 @@ public class MuebleController : ControllerBase
 
             if (dto == null)
                 return BadRequest("Los datos del mueble son requeridos");
-
-            // Validar dimensiones positivas si se proporcionan
+            
             if (dto.Longitud.HasValue && dto.Longitud.Value < 0)
                 return BadRequest("La longitud debe ser un número positivo");
 
@@ -97,8 +96,7 @@ public class MuebleController : ControllerBase
 
             if (dto.Altura.HasValue && dto.Altura.Value < 0)
                 return BadRequest("La altura debe ser un número positivo");
-
-            // Validar costo positivo si se proporciona
+            
             if (dto.Costo.HasValue && dto.Costo.Value < 0)
                 return BadRequest("El costo debe ser un número positivo");
 

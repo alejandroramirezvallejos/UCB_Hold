@@ -1,5 +1,3 @@
-using System.Data;
-
 public class GrupoEquipoService :   ICrearGrupoEquipoComando, IObtenerGrupoEquipoConsulta,
                                     IActualizarGrupoEquipoComando,
                                     IEliminarGrupoEquipoComando, IObtenerGrupoEquipoPorIdConsulta,

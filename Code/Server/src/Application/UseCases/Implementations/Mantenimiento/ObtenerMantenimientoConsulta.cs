@@ -1,3 +1,3 @@
 public record ObtenerMantenimientoConsulta(
-    int      Id
+    int Id
 );
