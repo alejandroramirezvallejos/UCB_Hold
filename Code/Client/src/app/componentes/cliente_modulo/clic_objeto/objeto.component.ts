@@ -2,7 +2,7 @@
 import { CommonModule } from '@angular/common';
 import { Component, Input } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
-import { ProductoService } from '../../../services/producto/producto.service'; 
+import { ProductoService } from '../../../services/APIS/obtener/producto/producto.service'; 
 import { GrupoEquipo } from '../../../models/grupo_equipo';
 import { CarritoService } from '../../../services/carrito/carrito.service';
 

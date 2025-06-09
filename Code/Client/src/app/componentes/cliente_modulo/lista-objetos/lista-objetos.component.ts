@@ -1,6 +1,6 @@
 import { Component, Input } from '@angular/core';
 import { RouterModule } from '@angular/router';
-import { GrupoEquipoService } from '../../../services/grupo_equipo/grupo-equipo.service';
+import { GrupoEquipoService } from '../../../services/APIS/obtener/grupo_equipo/grupo-equipo.service';
 import { GrupoEquipo } from '../../../models/grupo_equipo';
 import { Router } from '@angular/router';
 @Component({
@@ -22,6 +22,8 @@ export class ListaObjetosComponent {
       next: (data) => this.productos = data,
       error: (error) => console.error('Error en componente:', error)
     });
+
+    console.log(this.productos)
   }
 
   handleImageError(item: GrupoEquipo) {

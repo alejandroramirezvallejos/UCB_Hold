@@ -1,13 +1,13 @@
 import { TestBed } from '@angular/core/testing';
 
-import { MandarcarritoService } from './mandarcarrito.service';
+import { IniciarSesionService } from './iniciar-sesion.service';
 
-describe('MandarcarritoService', () => {
-  let service: MandarcarritoService;
+describe('IniciarSesionService', () => {
+  let service: IniciarSesionService;
 
   beforeEach(() => {
     TestBed.configureTestingModule({});
-    service = TestBed.inject(MandarcarritoService);
+    service = TestBed.inject(IniciarSesionService);
   });
 
   it('should be created', () => {
