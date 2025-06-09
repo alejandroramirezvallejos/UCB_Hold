@@ -83,7 +83,7 @@ public class CarreraRepository : ICarreraRepository
             {
                 lista.Add(new CarreraDto
                 {
-                    Nombre = fila["nombre"] == DBNull.Value ? null : fila["nombre"].ToString()
+                    Nombre = fila["nombre_carrera"] == DBNull.Value ? null : fila["nombre_carrera"].ToString()
                 });
             }
             return lista;

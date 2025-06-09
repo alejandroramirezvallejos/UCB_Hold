@@ -112,14 +112,14 @@ public class MuebleRepository : IMuebleRepository
     {
         return new MuebleDto
         {
-            Nombre = fila["nombre"] == DBNull.Value ? null : fila["nombre"].ToString(),
-            NumeroGaveteros = fila["numero_gaveteros"] == DBNull.Value ? null : Convert.ToInt32(fila["numero_gaveteros"]),
-            Ubicacion = fila["ubicacion"] == DBNull.Value ? null : fila["ubicacion"].ToString(),
-            Tipo = fila["tipo"] == DBNull.Value ? null : fila["tipo"].ToString(),
-            Costo = fila["costo"] == DBNull.Value ? null : Convert.ToDouble(fila["costo"]),
-            Longitud = fila["longitud"] == DBNull.Value ? null : Convert.ToDouble(fila["longitud"]),
-            Profundidad = fila["profundidad"] == DBNull.Value ? null : Convert.ToDouble(fila["profundidad"]),
-            Altura = fila["altura"] == DBNull.Value ? null : Convert.ToDouble(fila["altura"])
+            Nombre = fila["nombre_mueble"] == DBNull.Value ? null : fila["nombre_mueble"].ToString(),
+            NumeroGaveteros = fila["numero_gaveteros_mueble"] == DBNull.Value ? null : Convert.ToInt32(fila["numero_gaveteros_mueble"]),
+            Ubicacion = fila["ubicacion_mueble"] == DBNull.Value ? null : fila["ubicacion_mueble"].ToString(),
+            Tipo = fila["tipo_mueble"] == DBNull.Value ? null : fila["tipo_mueble"].ToString(),
+            Costo = fila["costo_mueble"] == DBNull.Value ? null : Convert.ToDouble(fila["costo_mueble"]),
+            Longitud = fila["longitud_mueble"] == DBNull.Value ? null : Convert.ToDouble(fila["longitud_mueble"]),
+            Profundidad = fila["profundidad_mueble"] == DBNull.Value ? null : Convert.ToDouble(fila["profundidad_mueble"]),
+            Altura = fila["altura_mueble"] == DBNull.Value ? null : Convert.ToDouble(fila["altura_mueble"])
         };
     }
 }

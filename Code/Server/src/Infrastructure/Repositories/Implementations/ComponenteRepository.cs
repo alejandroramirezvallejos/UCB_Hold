@@ -109,11 +109,11 @@ public class ComponenteRepository : IComponenteRepository
     {
         return new ComponenteDto
         {
-            Nombre = fila["nombre"] == DBNull.Value ? null : fila["nombre"].ToString(),
-            Modelo = fila["modelo"] == DBNull.Value ? null : fila["modelo"].ToString(),
-            Tipo = fila["tipo"] == DBNull.Value ? null : fila["tipo"].ToString(),
-            Descripcion = fila["descripcion"] == DBNull.Value ? null : fila["descripcion"].ToString(),
-            PrecioReferencia = fila["precio_referencia"] == DBNull.Value ? null : Convert.ToDouble(fila["precio_referencia"]),
+            Nombre = fila["nombre_componente"] == DBNull.Value ? null : fila["nombre_componente"].ToString(),
+            Modelo = fila["modelo_componente"] == DBNull.Value ? null : fila["modelo_componente"].ToString(),
+            Tipo = fila["tipo_componente"] == DBNull.Value ? null : fila["tipo_componente"].ToString(),
+            Descripcion = fila["descripcion_componente"] == DBNull.Value ? null : fila["descripcion_componente"].ToString(),
+            PrecioReferencia = fila["precio_referencia_componente"] == DBNull.Value ? null : Convert.ToDouble(fila["precio_referencia_componente"]),
             NombreEquipo = fila["nombre_equipo"] == DBNull.Value ? null : fila["nombre_equipo"].ToString(),
             CodigoImtEquipo = fila["codigo_imt_equipo"] == DBNull.Value ? null : Convert.ToInt32(fila["codigo_imt_equipo"])
         };

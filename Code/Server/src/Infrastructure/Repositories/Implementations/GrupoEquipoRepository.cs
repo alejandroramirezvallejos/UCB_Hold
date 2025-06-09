@@ -43,7 +43,7 @@ public class GrupoEquipoRepository : IGrupoEquipoRepository
     public GrupoEquipoDto? ObtenerPorId(int id)
     {
         const string sql = @"
-            SELECT public.obtener_grupo_equipo_especifico_por_id(
+            SELECT * from public.obtener_grupo_equipo_especifico_por_id(
 	        @id
             )";
 
@@ -69,7 +69,7 @@ public class GrupoEquipoRepository : IGrupoEquipoRepository
     public List<GrupoEquipoDto> ObtenerPorNombreYCategoria(string? nombre, string? categoria)
     {
         const string sql = @"
-            SELECT public.obtener_grupos_equipos_por_nombre_y_categoria(
+            SELECT * from public.obtener_grupos_equipos_por_nombre_y_categoria(
 	        @nombre,
 	        @categoria    
             )";
@@ -132,9 +132,8 @@ public class GrupoEquipoRepository : IGrupoEquipoRepository
     {
         const string sql = @"
             CALL public.eliminar_grupo_equipo(
-	        <IN p_id_grupo_equipo integer>
-            )
-        ";
+	        @id
+            )";
         try
         {
             _ejecutarConsulta.EjecutarSpNR(sql, new Dictionary<string, object?>
@@ -165,14 +164,14 @@ public class GrupoEquipoRepository : IGrupoEquipoRepository
     {
         return new GrupoEquipoDto
         {
-            Nombre = fila["nombre"] == DBNull.Value ? null : fila["nombre"].ToString(),
-            Modelo = fila["modelo"] == DBNull.Value ? null : fila["modelo"].ToString(),
-            Marca = fila["marca"] == DBNull.Value ? null : fila["marca"].ToString(),
-            Descripcion = fila["descripcion"] == DBNull.Value ? null : fila["descripcion"].ToString(),
+            Nombre = fila["nombre_grupo_equipo"] == DBNull.Value ? null : fila["nombre_grupo_equipo"].ToString(),
+            Modelo = fila["modelo_grupo_equipo"] == DBNull.Value ? null : fila["modelo_grupo_equipo"].ToString(),
+            Marca = fila["marca_grupo_equipo"] == DBNull.Value ? null : fila["marca_grupo_equipo"].ToString(),
+            Descripcion = fila["descripcion_grupo_equipo"] == DBNull.Value ? null : fila["descripcion_grupo_equipo"].ToString(),
             NombreCategoria = fila["nombre_categoria"] == DBNull.Value ? null : fila["nombre_categoria"].ToString(),
-            UrlDataSheet = fila["url_data_sheet"] == DBNull.Value ? null : fila["url_data_sheet"].ToString(),
-            UrlImagen = fila["url_imagen"] == DBNull.Value ? null : fila["url_imagen"].ToString(),
-            Cantidad = fila["cantidad"] == DBNull.Value ? null : Convert.ToInt32(fila["cantidad"]),
+            UrlDataSheet = fila["url_data_sheet_grupo_equipo"] == DBNull.Value ? null : fila["url_data_sheet_grupo_equipo"].ToString(),
+            UrlImagen = fila["url_imagen_grupo_equipo"] == DBNull.Value ? null : fila["url_imagen_grupo_equipo"].ToString(),
+            Cantidad = fila["cantidad_grupo_equipo"] == DBNull.Value ? null : Convert.ToInt32(fila["cantidad_grupo_equipo"]),
         };
     }
 }

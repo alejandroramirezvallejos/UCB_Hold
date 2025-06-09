@@ -128,17 +128,17 @@ public class EquipoRepository : IEquipoRepository
     {
         return new EquipoDto
         {
-            NombreGrupoEquipo = fila["nombre"] == DBNull.Value ? null : fila["nombre"].ToString(),
-            CodigoImt = fila["codigo_imt"] == DBNull.Value ? null : Convert.ToInt32(fila["codigo_imt"]),
-            CodigoUcb = fila["codigo_ucb"] == DBNull.Value ? null : fila["codigo_ucb"].ToString(),
-            Descripcion = fila["descripcion"] == DBNull.Value ? null : fila["descripcion"].ToString(),
-            NumeroSerial = fila["numero_serial"] == DBNull.Value ? null : fila["numero_serial"].ToString(),
-            Ubicacion = fila["ubicacion"] == DBNull.Value ? null : fila["ubicacion"].ToString(),
-            Procedencia = fila["procedencia"] == DBNull.Value ? null : fila["procedencia"].ToString(),
-            TiempoMaximoPrestamo = fila["tiempo_maximo_prestamo"] == DBNull.Value ? null : Convert.ToInt32(fila["tiempo_maximo_prestamo"]),
-            NombreGavetero = fila["nombre_gavetero"] == DBNull.Value ? null : fila["nombre_gavetero"].ToString(),
-            EstadoEquipo = fila["estado_equipo"] == DBNull.Value ? null : fila["estado_equipo"].ToString(),
-            CostoReferencia = fila["costo_referencia"] == DBNull.Value ? null : Convert.ToDouble(fila["costo_referencia"]),
+            NombreGrupoEquipo = fila["nombre_grupo_equipo"] == DBNull.Value ? null : fila["nombre_grupo_equipo"].ToString(),
+            CodigoImt = fila["codigo_imt_equipo"] == DBNull.Value ? null : Convert.ToInt32(fila["codigo_imt_equipo"]),
+            CodigoUcb = fila["codigo_ucb_equipo"] == DBNull.Value ? null : fila["codigo_ucb"].ToString(),
+            Descripcion = fila["descripcion_equipo"] == DBNull.Value ? null : fila["descripcion_equipo"].ToString(),
+            NumeroSerial = fila["numero_serial_equipo"] == DBNull.Value ? null : fila["numero_serial_equipo"].ToString(),
+            Ubicacion = fila["ubicacion_equipo"] == DBNull.Value ? null : fila["ubicacion_equipo"].ToString(),
+            Procedencia = fila["procedencia_equipo"] == DBNull.Value ? null : fila["procedencia_equipo"].ToString(),
+            TiempoMaximoPrestamo = fila["tiempo_max_prestamo_equipo"] == DBNull.Value ? null : Convert.ToInt32(fila["tiempo_max_prestamo_equipo"]),
+            NombreGavetero = fila["nombre_gavetero_equipo"] == DBNull.Value ? null : fila["nombre_gavetero_equipo"].ToString(),
+            EstadoEquipo = fila["estado_equipo_equipo"] == DBNull.Value ? null : fila["estado_equipo_equipo"].ToString(),
+            CostoReferencia = fila["costo_referencia_equipo"] == DBNull.Value ? null : Convert.ToDouble(fila["costo_referencia_equipo"]),
         };
     }
 }
