@@ -112,6 +112,7 @@ public class MuebleRepository : IMuebleRepository
     {
         return new MuebleDto
         {
+            Id = Convert.ToInt32(fila["id_mueble"]),
             Nombre = fila["nombre_mueble"] == DBNull.Value ? null : fila["nombre_mueble"].ToString(),
             NumeroGaveteros = fila["numero_gaveteros_mueble"] == DBNull.Value ? null : Convert.ToInt32(fila["numero_gaveteros_mueble"]),
             Ubicacion = fila["ubicacion_mueble"] == DBNull.Value ? null : fila["ubicacion_mueble"].ToString(),

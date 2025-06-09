@@ -106,6 +106,7 @@ public class GaveteroRepository : IGaveteroRepository
     {
         return new GaveteroDto
         {
+            Id = Convert.ToInt32(fila["id_gavetero"]),
             Nombre = fila["nombre_gavetero"] == DBNull.Value ? null : Convert.ToString(fila["nombre_gavetero"]),
             Tipo = fila["tipo_gavetero"] == DBNull.Value ? null : Convert.ToString(fila["tipo_gavetero"]),
             NombreMueble = fila["nombre_mueble"] == DBNull.Value ? null : Convert.ToString(fila["nombre_mueble"]),

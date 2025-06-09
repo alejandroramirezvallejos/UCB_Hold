@@ -1,6 +1,7 @@
 public class PrestamoDto
 {
-    public string?   CarnetUsuario           { get; set; } = null;
+    public int Id              { get; set; }
+    public string? CarnetUsuario { get; set; } = null;
     public string?   NombreUsuario           { get; set; } = null;
     public string?   ApellidoPaternoUsuario  { get; set; } = null;
     public string?   TelefonoUsuario         { get; set; } = null;

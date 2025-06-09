@@ -1,6 +1,7 @@
 public class MantenimientoDto
 {
-    public string?   NombreEmpresaMantenimiento { get; set; } = null;
+    public int Id              { get; set; }
+    public string? NombreEmpresaMantenimiento { get; set; } = null;
     public DateOnly? FechaMantenimiento         { get; set; } = null;
     public DateOnly? FechaFinalDeMantenimiento  { get; set; } = null;
     public double?   Costo                      { get; set; } = null;

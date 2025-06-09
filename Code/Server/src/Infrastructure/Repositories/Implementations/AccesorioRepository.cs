@@ -113,7 +113,7 @@ public class AccesorioRepository : IAccesorioRepository
     {
         return new AccesorioDto
         {
-            
+            Id = Convert.ToInt32(fila["id_accesorio"]),
             Nombre = fila["nombre_accesorio"]==DBNull.Value? null : fila["nombre_accesorio"].ToString(),
             Modelo = fila["modelo_accesorio"] == DBNull.Value ? null : fila["modelo_accesorio"].ToString(),
             Tipo = fila["tipo_accesorio"] == DBNull.Value ? null : fila["tipo_accesorio"].ToString(),

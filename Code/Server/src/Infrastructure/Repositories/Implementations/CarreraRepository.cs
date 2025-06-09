@@ -83,6 +83,7 @@ public class CarreraRepository : ICarreraRepository
             {
                 lista.Add(new CarreraDto
                 {
+                    Id = Convert.ToInt32(fila["id_carrera"]),
                     Nombre = fila["nombre_carrera"] == DBNull.Value ? null : fila["nombre_carrera"].ToString()
                 });
             }

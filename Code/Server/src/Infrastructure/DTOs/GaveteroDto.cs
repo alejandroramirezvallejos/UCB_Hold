@@ -1,6 +1,7 @@
 public class GaveteroDto
 {   
-    public string? Nombre       { get; set; } = null;
+    public int Id              { get; set; }
+    public string? Nombre { get; set; } = null;
     public string? Tipo         { get; set; } = null;
     public string? NombreMueble { get; set; } = null;
     public double? Longitud     { get; set; } = null;

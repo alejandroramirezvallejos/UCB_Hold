@@ -1,6 +1,7 @@
 public class EquipoDto
 {
-    public string? NombreGrupoEquipo     { get; set; } = null;
+    public int Id              { get; set; }
+    public string? NombreGrupoEquipo { get; set; } = null;
     public int? CodigoImt                { get; set; } = null;
     public string? CodigoUcb             { get; set; } = null;
     public string? NumeroSerial          { get; set; } = null;

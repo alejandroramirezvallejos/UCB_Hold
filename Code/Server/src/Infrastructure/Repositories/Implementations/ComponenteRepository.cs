@@ -109,6 +109,7 @@ public class ComponenteRepository : IComponenteRepository
     {
         return new ComponenteDto
         {
+            Id = Convert.ToInt32(fila["id_componente"]),
             Nombre = fila["nombre_componente"] == DBNull.Value ? null : fila["nombre_componente"].ToString(),
             Modelo = fila["modelo_componente"] == DBNull.Value ? null : fila["modelo_componente"].ToString(),
             Tipo = fila["tipo_componente"] == DBNull.Value ? null : fila["tipo_componente"].ToString(),

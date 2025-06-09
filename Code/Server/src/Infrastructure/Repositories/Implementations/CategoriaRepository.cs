@@ -97,7 +97,8 @@ public class CategoriaRepository : ICategoriaRepository
     {
         return new CategoriaDto
         {
-            Nombre        = fila["categoria"] == DBNull.Value ? null : fila["categoria"].ToString(),
+            Id = Convert.ToInt32(fila["id_categoria"]),
+            Nombre = fila["categoria"] == DBNull.Value ? null : fila["categoria"].ToString(),
         };
     }
 }

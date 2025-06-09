@@ -115,6 +115,7 @@ public class EmpresaMantenimientoRepository : IEmpresaMantenimientoRepository
     {
         return new EmpresaMantenimientoDto
         {
+            Id = Convert.ToInt32(fila["id_empresa_mantenimiento"]),
             NombreEmpresa = fila["nombre_empresa"] == DBNull.Value ? null : fila["nombre_empresa"].ToString(),
             NombreResponsable = fila["nombre_responsable_empresa"] == DBNull.Value ? null : fila["nombre_responsable_empresa"].ToString(),
             ApellidoResponsable = fila["apellido_responsable_empresa"] == DBNull.Value ? null : fila["apellido_responsable_empresa"].ToString(),

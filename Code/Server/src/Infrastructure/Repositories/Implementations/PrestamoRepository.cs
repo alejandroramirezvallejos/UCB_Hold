@@ -81,6 +81,7 @@ public class PrestamoRepository : IPrestamoRepository
     {
         return new PrestamoDto
         {
+            Id = Convert.ToInt32(fila["id_prestamo"]),
             CarnetUsuario           = fila["carnet"]==DBNull.Value ? null : fila["carnet"].ToString(),
             NombreUsuario           = fila["nombre"]==DBNull.Value ? null : fila["nombre"].ToString(),
             ApellidoPaternoUsuario  = fila["apellido_paterno"]==DBNull.Value ? null : fila["apellido_paterno"].ToString(),
