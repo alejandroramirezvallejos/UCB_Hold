@@ -5,18 +5,24 @@
   ></app-sidebard>
 
   <div class="items-wrapper">
-    @for (item of datos; track $index) {
-      <div class="item" >
-        <div class="item-header">{{ item.nombre }}</div>
-        <div class="item-body">
-          <span><strong>Solicitud:</strong> {{ item.fecha_solicitud }}</span>
-          <span><strong>Préstamo:</strong> {{ item.fecha_prestamo }}</span>
-          <span><strong>Esperada:</strong> {{ item.fecha_devolucion_esperada }}</span>
-          <span><strong>Observación:</strong> {{ item.observacion }}</span>
-          <span><strong>Devolución:</strong> {{ item.fecha_devolucion }}</span>
-          <span><strong>Estado:</strong> {{ item.estado }}</span>
-        </div>
-      </div>
+    @if(item=="Activo"){
+      <app-activo></app-activo>
     }
+    @else if(item=="Aprobado"){
+      <app-aprobado></app-aprobado>
+    }
+    @else if(item=="Pendiente"){
+      <app-pendiente></app-pendiente>
+    }
+    @else if(item=="Rechazado"){
+      <app-rechazado></app-rechazado>
+    }
+    @else if(item=="Finalizado"){
+      <app-finalizado></app-finalizado>
+    }
+    @else if(item=="Cancelado"){
+      <app-cancelado></app-cancelado>
+    }
+  
   </div>
 </div>

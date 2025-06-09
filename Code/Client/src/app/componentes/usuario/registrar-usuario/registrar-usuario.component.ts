@@ -4,6 +4,8 @@ import { UsuarioService } from '../../../services/usuario/usuario.service';
 import { Usuario } from '../../../models/usuario';
 import { FormsModule } from '@angular/forms';
 import { Router } from '@angular/router';
+import { RegistrarCuentaService } from '../../../services/APIS/crear/registrar-cuenta/registrar-cuenta.service';
+import { ObtenercarrerasService } from '../../../services/APIS/obtener/carreras/obtenercarreras.service';
 
 @Component({
   selector: 'app-registrar-usuario',
@@ -15,16 +17,37 @@ export class RegistrarUsuarioComponent {
   nuevoUsuario: Usuario = new Usuario();
   password: string = '';
   confirmPassword: string = '';
+  carreras: string[] = []; 
+  constructor(private usuarioS: UsuarioService, private router: Router , private registrarcuenta : RegistrarCuentaService , private carrerasS : ObtenercarrerasService) {}
 
-  constructor(private usuarioS: UsuarioService, private router: Router) {}
+
+  ngOnInit() {
+    this.carrerasS.obtenerCarreras().subscribe(
+      (response: any[]) => {
+        this.carreras = response.map(carrera => carrera.nombre); 
+      },
+      (error) => {
+        console.error('Error al obtener las carreras:', error);
+      }
+    );
+
+  }
 
   // TODO : mandar a la base de datos
   registrar() {
     this.nuevoUsuario.rol = 'usuario';
 
-    this.usuarioS.usuario = this.nuevoUsuario;
+/*    this.registrarcuenta.registrarCuenta(this.nuevoUsuario,this.password).subscribe(
+      (response) => {
+        console.log('Usuario registrado exitosamente:', response);
+      },
+      (error) => {
+        alert('Error al registrar el usuario:' + error);
+      } 
+    )
+*/
 
-    
+    this.usuarioS.usuario = this.nuevoUsuario;
     this.router.navigate(['/home']);
   }
 

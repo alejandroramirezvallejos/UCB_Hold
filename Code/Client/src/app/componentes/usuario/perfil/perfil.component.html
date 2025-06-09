@@ -13,6 +13,7 @@
     <div class="form-group"><label>Apellido Materno:</label><p>{{ profileForm.value.apellido_materno || '-' }}</p></div>
     <div class="form-group"><label>Correo:</label><p>{{ profileForm.value.correo || '-' }}</p></div>
     <div class="form-group"><label>Teléfono:</label><p>{{ profileForm.value.telefono || '-' }}</p></div>
+    <div class="form-group"><label>Carrera:</label><p>{{ profileForm.value.carrera || '-' }}</p></div>
     <div class="form-group"><label>Nombre de Referencia:</label><p>{{ profileForm.value.nombre_referencia || '-' }}</p></div>
     <div class="form-group"><label>Telefono de Referencia:</label><p>{{ profileForm.value.telefono_referencia || '-' }}</p></div>
     <div class="form-group"><label>Email de Referencia:</label><p>{{ profileForm.value.email_referencia || '-' }}</p></div>
@@ -52,7 +53,18 @@
     <div class="form-group">
       <label>Teléfono</label>
       <input formControlName="telefono" placeholder="Ingresa tu teléfono" />
+    </div>    <div class="form-group">
+      <label>Carrera</label>
+       <select 
+          formControlName="carrera"
+          required
+        >
+          @for (carrera of carreras; track carrera) {
+             <option [value]="carrera">{{ carrera }}</option>
+           }
+        </select>
     </div>
+
     <div class="form-group">
       <label>Nombre de Referencia</label>
       <input formControlName="nombre_referencia" placeholder="Ingrese el nombre de la persona de contacto" />

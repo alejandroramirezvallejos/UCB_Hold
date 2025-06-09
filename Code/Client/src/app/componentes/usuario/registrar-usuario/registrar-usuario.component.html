@@ -1,5 +1,6 @@
 
 <div class="register-container">
+
   <div class="register-card">
     <h2 class="title">Crear Cuenta</h2>
     
@@ -107,7 +108,31 @@
             <div class="error-message"> El telefono es invalido</div>
           }
         </div>
+        
+      <div class="form-group">
+        <label for="carrera">Elige tu carrera</label>
+        <select 
+          name="carrera" 
+          [(ngModel)]="nuevoUsuario.carrera"
+          required
+          class="form-input"
+          #carreraInput="ngModel"
+        >
+          @for (carrera of carreras; track carrera) {
+             <option [value]="carrera">{{ carrera }}</option>
+           }
+        </select>
+         @if(carreraInput.invalid && (carreraInput.dirty || carreraInput.touched)) {
+            <div class="error-message"> La carrera no seleccionada</div>
+          }
+      
       </div>
+
+      </div>
+
+
+
+
 
       <!-- Información de contacto de emergencia -->
       <div class="form-section">
