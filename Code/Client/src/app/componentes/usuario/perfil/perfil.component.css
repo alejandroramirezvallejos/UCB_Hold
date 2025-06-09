@@ -1,6 +1,6 @@
 .profile-container {
   max-width: 400px;
-  margin: auto;
+  margin: 4rem auto 2rem auto;
   background: #ffffff;
   padding: 2rem;
   border-radius: 8px;
@@ -93,36 +93,6 @@ button[type="button"]:hover {
 .display-data .buttons {
   margin-top: 2rem; /* Más espacio antes del botón de actualizar */
   justify-content: center; /* Centrar el botón 'Actualizar' */
-}
-.error-message {
-  color: #e74c3c;
-  font-size: 0.8rem;
-  margin-top: 5px;
-  display: block;
-}
-.error-message {
-  color: #e74c3c;
-  font-size: 0.8rem;
-  margin-top: 5px;
-  display: block;
-}
-.error-message {
-  color: #e74c3c;
-  font-size: 0.8rem;
-  margin-top: 5px;
-  display: block;
-}
-.error-message {
-  color: #e74c3c;
-  font-size: 0.8rem;
-  margin-top: 5px;
-  display: block;
-}
-.error-message {
-  color: #e74c3c;
-  font-size: 0.8rem;
-  margin-top: 5px;
-  display: block;
 }
 .error-message {
   color: #e74c3c;

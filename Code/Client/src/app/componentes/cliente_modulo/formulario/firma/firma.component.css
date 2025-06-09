@@ -60,3 +60,10 @@ button:hover {
   background-color: #FFDD05;
   color: black;
 }
+
+.signature-instructions{
+  font-size: 0.9em;
+  color: #555;
+  margin-top: 10px;
+  text-align: center;
+}

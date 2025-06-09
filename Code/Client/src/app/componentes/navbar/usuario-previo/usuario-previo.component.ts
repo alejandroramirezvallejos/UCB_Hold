@@ -10,14 +10,14 @@ import { UsuarioService } from '../../../services/usuario/usuario.service';
 })
 export class UsuarioPrevioComponent {
 
-  sesion :boolean;
-  rol : string;
-  @Input() showUserMenu : WritableSignal<Boolean> = signal(true);
+  sesion :boolean; 
+  rol : string; 
+  @Input() showUserMenu : WritableSignal<Boolean> = signal(true); 
 
-
+  
   constructor(private router : Router , private usuario : UsuarioService){
-    this.sesion=!usuario.vacio() ;
-    this.rol=usuario.obtenerrol();
+    this.sesion=!usuario.vacio(); 
+    this.rol=usuario.obtenerrol(); 
   }
 
     seleccionar(item: string) {
@@ -39,7 +39,9 @@ export class UsuarioPrevioComponent {
       else if(item=='admin'){
         this.router.navigate(["/admin"])
       }
-
-      this.showUserMenu.set(false);
+    
+    
+    
+      this.showUserMenu.set(false); 
   }
 }

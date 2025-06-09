@@ -1,27 +1,25 @@
 import { Injectable } from '@angular/core';
-import { Carrito } from '../../models/carrito';
+import { Carrito } from '../../models/carrito'; 
 @Injectable({
-  providedIn: 'root',
+  providedIn: 'root'
 })
 export class CarritoService {
-  carrito: Carrito = {};
+   carrito: Carrito = {
 
-  cantidadtotal: number = 0;
+   };
+
+  cantidadtotal: number = 0; 
+
 
   constructor() {}
 
-  agregarproducto(
-    id: number,
-    nombre: string,
-    link: string,
-    marca: string,
-    modelo: string,
-    precio: number
-  ) {
-    nombre = nombre;
+
+  agregarproducto(id : number , nombre :string , link : string , marca : string , modelo : string ,precio : number) {
+    nombre = nombre 
     if (nombre == '' || nombre == undefined) {
-      return;
+      return; 
     }
+
 
     const fechaLocal = new Date();
     const año = fechaLocal.getFullYear();
@@ -29,22 +27,15 @@ export class CarritoService {
     const día = fechaLocal.getDate().toString().padStart(2, '0');
     const fechaISO = `${año}-${mes}-${día}`;
 
+
     // cambiar precio
     if (!this.carrito[id]) {
-      this.carrito[id] = {
-        nombre,
-        modelo,
-        marca,
-        cantidad: 1,
-        fecha_inicio: fechaISO,
-        fecha_final: null,
-        imagen: link,
-        precio,
-      };
+      this.carrito[id] = { nombre,modelo,marca ,cantidad: 1 ,fecha_inicio : fechaISO ,fecha_final : null , imagen : link , precio};
       this.cantidadtotal++;
-    } else {
+    }
+    else {
       this.carrito[id].cantidad += 1;
-      this.cantidadtotal++;
+      this.cantidadtotal++; 
     }
   }
 
@@ -53,48 +44,58 @@ export class CarritoService {
       if (this.carrito[id].cantidad > 1) {
         this.carrito[id].cantidad -= 1;
         this.cantidadtotal--;
-      } else {
+      }
+      else {
         delete this.carrito[id];
-        this.cantidadtotal--;
+        this.cantidadtotal--; 
       }
     }
   }
 
   sumarproducto(id: number) {
     if (id in this.carrito) {
+
       this.carrito[id].cantidad++;
       this.cantidadtotal++;
     }
+
   }
 
+
   obtenercarrito() {
-    return this.carrito;
+    return this.carrito; 
   }
 
   obtenertotal() {
-    return this.cantidadtotal;
+    return this.cantidadtotal; 
   }
 
-  vaciarcarrito() {
-    this.carrito = {};
-    this.cantidadtotal = 0;
+  vaciarcarrito(){
+    this.carrito={};
+    this.cantidadtotal=0; 
   }
 
-  preciototal(): number {
-    let total: number = 0;
-    for (const clave in this.carrito) {
-      total = total + this.carrito[clave].precio * this.carrito[clave].cantidad;
+  preciototal() : number{
+    let total : number =0; 
+    for(const clave in this.carrito){
+      total=total +this.carrito[clave].precio *this.carrito[clave].cantidad;
     }
     return total;
   }
-  //! NO EDITAR NADA NO TOCAR PELIGRO
-  //!PELIGROOOOOOOOO
-  // TODO: CORREGIR POSIBLE CANTIDAD NEGATIVA
-  editarcantidad(key: number, numero: number) {
-    this.cantidadtotal = this.cantidadtotal - this.carrito[key].cantidad;
+
+ editarcantidad(key: number, numero: number) {
+
+  if(this.carrito[key].cantidad < numero) {
+    this.cantidadtotal = this.cantidadtotal + (numero - this.carrito[key].cantidad);
     this.carrito[key].cantidad = numero;
-    if (numero <= 0) {
-      delete this.carrito[key];
-    }
   }
+  else if(this.carrito[key].cantidad > numero) {
+    this.cantidadtotal = this.cantidadtotal - (this.carrito[key].cantidad - numero);
+    this.carrito[key].cantidad = numero;
+  }
+  if (this.carrito[key].cantidad <= 0) {
+    delete this.carrito[key];
+  }
+}
+
 }

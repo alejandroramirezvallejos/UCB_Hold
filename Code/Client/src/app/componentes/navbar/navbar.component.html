@@ -1,7 +1,5 @@
 <nav
   class="navbar-container"
-  [class.open]="showUserMenu"
-  [class.scrolled]="isScrolled"
   role="navigation"
   aria-label="Main navigation"
 >
@@ -43,11 +41,10 @@
       <span class="cart-count">{{ totalproductos() }}</span>
     </button>
     <div class="user-menu">
-      <button
+       <button
         type="button"
         class="icon-button user-button"
         aria-haspopup="true"
-        [attr.aria-expanded]="showUserMenu"
         (click)="toggleUserMenu()"
       >
         <img
@@ -59,27 +56,16 @@
           (mouseleave)="userIcon.src = '/assets/profile_line.png'"
         />
       </button>
-      <ul
-        *ngIf="showUserMenu"
-        class="user-dropdown"
-        role="menu"
-        aria-label="Opciones de usuario"
-      >
-        <li>
-          <button class="dropdown-item" (click)="seleccionar('perfil')">
-            Ver Perfil
-          </button>
-        </li>
-        <li>
-          <button class="dropdown-item" (click)="seleccionar('cerrar-sesion')">
-            Cerrar Sesión
-          </button>
-        </li>
-      </ul>
     </div>
   </div>
 </nav>
-<app-carrito-previo
-  *ngIf="showCarrito"
-  (showCarritoevent)="obtenershow()"
-></app-carrito-previo>
+
+<!-- Espaciador para empujar el contenido hacia abajo -->
+<div class="navbar-spacer"></div>
+
+@if(showUserMenu()) {
+  <app-usuario-previo
+    [showUserMenu]="showUserMenu"
+  ></app-usuario-previo>
+}
+

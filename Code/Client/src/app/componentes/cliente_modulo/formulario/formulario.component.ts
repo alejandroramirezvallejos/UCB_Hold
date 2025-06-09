@@ -16,7 +16,7 @@ import { UsuarioService } from '../../../services/usuario/usuario.service';
 @Component({
   selector: 'app-formulario',
   standalone: true,
-  imports: [FirmaComponent , CommonModule , MostrarerrorComponent],
+  imports: [FirmaComponent , CommonModule , MostrarerrorComponent ],
   templateUrl: './formulario.component.html',
   styleUrl: './formulario.component.css'
 })
@@ -41,7 +41,6 @@ export class FormularioComponent implements OnInit {
     private usuario : UsuarioService
   ) {
 
-    this.usuario.prueba();
   }
 
   ngOnInit(): void {
@@ -53,8 +52,8 @@ export class FormularioComponent implements OnInit {
             dia : new Date().getDate().toString() ,
             mesliteral : new Intl.DateTimeFormat('es-ES', { month: 'long' }).format(new Date()),
             año: new Date().getFullYear().toString(),
-            usuario:  this.usuario.nombre!,
-            usuario_ci : this.usuario.carnet!,
+            usuario:  this.usuario.usuario.nombre!,
+            usuario_ci : this.usuario.usuario.carnet!,
             tablaprimera: this.primeradelobjeto(this.carrito.obtenercarrito()),
 
             precio : this.carrito.preciototal().toString(),

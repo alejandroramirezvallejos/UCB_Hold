@@ -2,7 +2,7 @@ import { Component, OnInit } from '@angular/core';
 import {CommonModule, NgOptimizedImage} from '@angular/common';
 import { ReactiveFormsModule, FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { UsuarioService } from '../../../services/usuario/usuario.service';
-
+import { Usuario } from '../../../models/usuario';
 
 @Component({
   selector: 'app-perfil',
@@ -17,20 +17,20 @@ export class PerfilComponent implements OnInit {
 
   constructor(
     private fb: FormBuilder,
-    private usuario: UsuarioService
+    private usuarioS: UsuarioService
   ) {}
 
   ngOnInit() {
     this.profileForm = this.fb.group({
-      nombre: [this.usuario.nombre || '', Validators.required],
-      carnet: [this.usuario.carnet || ''],
-      apellido_paterno: [this.usuario.apellido_paterno || ''],
-      apellido_materno: [this.usuario.apellido_materno || ''],
-      correo: [this.usuario.correo || '', [Validators.required, Validators.email]],
-      telefono: [this.usuario.telefono || ''],
-      nombre_referencia: [this.usuario.nombre_referencia || ''],
-      telefono_referencia: [this.usuario.telefono_referencia || ''],
-      email_referencia: [this.usuario.email_referencia || '']
+      nombre: [this.usuarioS.usuario.nombre || '', Validators.required],
+      carnet: [this.usuarioS.usuario.carnet || ''],
+      apellido_paterno: [this.usuarioS.usuario.apellido_paterno || ''],
+      apellido_materno: [this.usuarioS.usuario.apellido_materno || ''],
+      correo: [this.usuarioS.usuario.correo || '', [Validators.required, Validators.email]],
+      telefono: [this.usuarioS.usuario.telefono || ''],
+      nombre_referencia: [this.usuarioS.usuario.nombre_referencia || ''],
+      telefono_referencia: [this.usuarioS.usuario.telefono_referencia || ''],
+      email_referencia: [this.usuarioS.usuario.email_referencia || '']
     });
     this.profileForm.disable();
   }
@@ -44,17 +44,20 @@ export class PerfilComponent implements OnInit {
     if (this.profileForm.valid) {
       const { nombre, carnet, apellido_paterno, apellido_materno, correo, telefono, nombre_referencia, telefono_referencia, email_referencia } = this.profileForm.value;
       // Asegurar que se guardan strings vacíos y no valores undefined o null
-      this.usuario.nombre = nombre || '';
-      this.usuario.carnet = carnet || '';
-      this.usuario.apellido_paterno = apellido_paterno || '';
-      this.usuario.apellido_materno = apellido_materno || '';
-      this.usuario.correo = correo || '';
-      this.usuario.telefono = telefono || '';
-      this.usuario.nombre_referencia = nombre_referencia || '';
-      this.usuario.telefono_referencia = telefono_referencia || '';
-      this.usuario.email_referencia = email_referencia || '';
-
-      console.log('Perfil guardado:', this.usuario);
+      const usuario : Usuario = {
+        id : this.usuarioS.usuario.id,
+        carnet: carnet || '',
+        nombre: nombre || '',
+        apellido_materno: apellido_materno || '',
+        apellido_paterno: apellido_paterno || '',
+        rol: this.usuarioS.usuario.rol || '',
+        correo: correo || '',
+        telefono: telefono || '',
+        nombre_referencia: nombre_referencia || '',
+        telefono_referencia: telefono_referencia || '',
+        email_referencia: email_referencia || ''
+      };
+      this.usuarioS.usuario = usuario;
       this.profileForm.disable();
       this.editMode = false;
     } else {

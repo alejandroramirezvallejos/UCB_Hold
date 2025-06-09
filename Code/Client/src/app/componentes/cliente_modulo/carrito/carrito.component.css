@@ -177,3 +177,9 @@ body {
   margin-bottom: 0.2rem;
   font-family: "Manrope", sans-serif;
 }
+
+.boton-carrito:disabled {
+  cursor: not-allowed !important;
+  opacity: 0.6;
+  pointer-events: auto; 
+}

@@ -54,7 +54,9 @@
     }
   </ul>
 
-  <button (click)="clickboton()" class="boton-carrito">
+  <button (click)="clickboton()" class="boton-carrito"
+    [disabled]="carritovacio()"
+  >
     Confirmar Solicitud
   </button>
 
@@ -64,6 +66,6 @@
     [mensaje]="mensajeerror"
   ></app-mostrarerror>
   } @else if (errorboton()==0){
-  {{ formulario() }}
+  {{ validarformulario() }}
   }
 </div>
