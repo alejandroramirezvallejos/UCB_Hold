@@ -12,9 +12,9 @@ public class MantenimientoService : IObtenerMantenimientoConsulta, ICrearManteni
         {
             _mantenimientoRepository.Crear(comando);
         }
-        catch (Exception ex)
+        catch
         {
-            throw new Exception("Error en el servicio al crear mantenimiento", ex);
+            throw;
         }
     }    public void Handle(EliminarMantenimientoComando comando)
     {
@@ -22,9 +22,9 @@ public class MantenimientoService : IObtenerMantenimientoConsulta, ICrearManteni
         {
             _mantenimientoRepository.Eliminar(comando.Id);
         }
-        catch (Exception ex)
+        catch
         {
-            throw new Exception("Error en el servicio al eliminar mantenimiento", ex);
+            throw;
         }
     }    public List<MantenimientoDto>? Handle()
     {
@@ -32,9 +32,9 @@ public class MantenimientoService : IObtenerMantenimientoConsulta, ICrearManteni
         {
             return _mantenimientoRepository.ObtenerTodos();
         }
-        catch (Exception ex)
+        catch
         {
-            throw new Exception("Error en el servicio al obtener mantenimientos", ex);
+            throw;
         }
     }
 }

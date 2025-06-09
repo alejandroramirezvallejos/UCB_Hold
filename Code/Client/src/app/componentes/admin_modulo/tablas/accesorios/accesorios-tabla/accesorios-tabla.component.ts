@@ -4,16 +4,27 @@ import { FormsModule, ReactiveFormsModule, FormBuilder, FormGroup, Validators } 
 import { HttpClient } from '@angular/common/http';
 import { environment } from '../../../../../../environments/environment';
 
-// Interfaz para Accesorios
+// Interfaz para Accesorios - alineada con AccesorioDto del backend
 interface Accesorio {
   id: number;
+  nombre?: string;
+  modelo?: string;
+  tipo?: string;
+  descripcion?: string;
+  precio?: number;
+  nombreEquipoAsociado?: string;
+  codigoImtEquipoAsociado?: number;
+}
+
+// Interfaz para el formulario y request al backend - actualizada para coincidir con AccesorioRequestDto
+interface AccesorioRequest {
   nombre: string;
   modelo: string;
-  tipo: string;
-  descripcion?: string;
-  codigo_imt: string;
-  precio: number;
-  url_data_sheet?: string;
+  tipo?: string | null;
+  descripcion?: string | null;
+  codigoIMT: number;
+  precio?: number | null;
+  urlDataSheet?: string | null;
 }
 
 // Estado del modal
@@ -31,9 +42,8 @@ interface ModalState {
   templateUrl: './accesorios-tabla.component.html',
   styleUrls: ['./accesorios-tabla.component.css']
 })
-export class AccesoriosTablaComponent implements OnInit {
-  // URL base para API
-  private apiUrl = `${environment.apiUrl}/accesorios`;
+export class AccesoriosTablaComponent implements OnInit {  // URL base para API - corregida para usar la ruta completa del controlador
+  private apiUrl = `${environment.apiUrl}/api/Accesorio`;
   
   // Datos
   accesorios: Accesorio[] = [];
@@ -63,16 +73,15 @@ export class AccesoriosTablaComponent implements OnInit {
   constructor(
     private http: HttpClient,
     private fb: FormBuilder
-  ) {
-    // Inicializar formulario
+  ) {    // Inicializar formulario - actualizado para backend
     this.accesorioForm = this.fb.group({
       nombre: ['', Validators.required],
       modelo: ['', Validators.required],
-      tipo: ['', Validators.required],
+      tipo: [''],
       descripcion: [''],
-      codigo_imt: ['', Validators.required],
-      precio: ['', [Validators.required, Validators.min(0)]],
-      url_data_sheet: ['', Validators.pattern('https?://.+')]
+      codigoIMT: ['', [Validators.required, Validators.min(1)]],
+      precio: ['', [Validators.min(0)]],
+      urlDataSheet: ['', Validators.pattern('https?://.+')]
     });
   }
   
@@ -96,16 +105,14 @@ export class AccesoriosTablaComponent implements OnInit {
         this.cargarDatosDemostracion();
       }
     );
-  }
-  
-  cargarDatosDemostracion(): void {
-    // Datos de ejemplo para demostración
+  }  cargarDatosDemostracion(): void {
+    // Datos de ejemplo para demostración - actualizados para coincidir con AccesorioDto
     this.accesorios = [
-      { id: 1, nombre: 'Cable USB', modelo: 'USB-A a USB-B', tipo: 'Cable', codigo_imt: 'ACC-001', precio: 25.00, descripcion: 'Cable para conectar dispositivos USB', url_data_sheet: 'https://example.com/usb.pdf' },
-      { id: 2, nombre: 'Sensor Ultrasónico', modelo: 'HC-SR04', tipo: 'Sensor', codigo_imt: 'ACC-002', precio: 45.50, descripcion: 'Sensor de distancia por ultrasonido' },
-      { id: 3, nombre: 'Jumpers M-M', modelo: 'JMM-40', tipo: 'Cable', codigo_imt: 'ACC-003', precio: 15.00, descripcion: 'Set de 40 cables jumpers macho-macho' },
-      { id: 4, nombre: 'Pantalla LCD', modelo: 'LCD1602', tipo: 'Display', codigo_imt: 'ACC-004', precio: 60.00, descripcion: '16x2 caracteres con I2C', url_data_sheet: 'https://example.com/lcd.pdf' },
-      { id: 5, nombre: 'Módulo Bluetooth', modelo: 'HC-05', tipo: 'Comunicaciones', codigo_imt: 'ACC-005', precio: 75.25 }
+      { id: 1, nombre: 'Cable USB', modelo: 'USB-A a USB-B', tipo: 'Cable', precio: 25.00, descripcion: 'Cable para conectar dispositivos USB', codigoImtEquipoAsociado: 1001 },
+      { id: 2, nombre: 'Sensor Ultrasónico', modelo: 'HC-SR04', tipo: 'Sensor', precio: 45.50, descripcion: 'Sensor de distancia por ultrasonido', codigoImtEquipoAsociado: 1002 },
+      { id: 3, nombre: 'Jumpers M-M', modelo: 'JMM-40', tipo: 'Cable', precio: 15.00, descripcion: 'Set de 40 cables jumpers macho-macho', codigoImtEquipoAsociado: 1003 },
+      { id: 4, nombre: 'Pantalla LCD', modelo: 'LCD1602', tipo: 'Display', precio: 60.00, descripcion: '16x2 caracteres con I2C', codigoImtEquipoAsociado: 1004 },
+      { id: 5, nombre: 'Módulo Bluetooth', modelo: 'HC-05', tipo: 'Comunicaciones', precio: 75.25, codigoImtEquipoAsociado: 1005 }
     ];
     this.accesoriosFiltrados = [...this.accesorios];
     this.aplicarOrdenamiento();
@@ -113,7 +120,6 @@ export class AccesoriosTablaComponent implements OnInit {
   }
   
   // ====== MÉTODOS DE BÚSQUEDA Y ORDENAMIENTO ======
-  
   buscar(): void {
     if (!this.terminoBusqueda.trim()) {
       this.accesoriosFiltrados = [...this.accesorios];
@@ -121,10 +127,10 @@ export class AccesoriosTablaComponent implements OnInit {
       const termino = this.terminoBusqueda.toLowerCase().trim();
       this.accesoriosFiltrados = this.accesorios.filter(
         accesorio => 
-          accesorio.nombre.toLowerCase().includes(termino) ||
-          accesorio.modelo.toLowerCase().includes(termino) ||
-          accesorio.tipo.toLowerCase().includes(termino) ||
-          accesorio.codigo_imt.toLowerCase().includes(termino) ||
+          (accesorio.nombre && accesorio.nombre.toLowerCase().includes(termino)) ||
+          (accesorio.modelo && accesorio.modelo.toLowerCase().includes(termino)) ||
+          (accesorio.tipo && accesorio.tipo.toLowerCase().includes(termino)) ||
+          (accesorio.codigoImtEquipoAsociado && accesorio.codigoImtEquipoAsociado.toString().includes(termino)) ||
           (accesorio.descripcion && accesorio.descripcion.toLowerCase().includes(termino))
       );
     }
@@ -225,16 +231,15 @@ export class AccesoriosTablaComponent implements OnInit {
     this.accesorioForm.reset();
     this.modalAccesorio = { visible: true, editar: false };
   }
-  
-  abrirModalEditar(accesorio: Accesorio): void {
+    abrirModalEditar(accesorio: Accesorio): void {
     this.accesorioForm.patchValue({
       nombre: accesorio.nombre,
       modelo: accesorio.modelo,
-      tipo: accesorio.tipo,
+      tipo: accesorio.tipo || '',
       descripcion: accesorio.descripcion || '',
-      codigo_imt: accesorio.codigo_imt,
-      precio: accesorio.precio,
-      url_data_sheet: accesorio.url_data_sheet || ''
+      codigoIMT: accesorio.codigoImtEquipoAsociado || '',
+      precio: accesorio.precio || '',
+      urlDataSheet: ''
     });
     
     this.modalAccesorio = { 
@@ -263,84 +268,140 @@ export class AccesoriosTablaComponent implements OnInit {
   cancelarEliminacion(): void {
     this.modalConfirmacion.visible = false;
   }
-  
-  // ====== MÉTODOS PARA OPERACIONES CRUD ======
-  
-  guardarAccesorio(): void {
+    // ====== MÉTODOS PARA OPERACIONES CRUD ======
+    guardarAccesorio(): void {
     if (this.accesorioForm.invalid) {
+      console.error('Formulario inválido:', this.accesorioForm.errors);
+      this.marcarCamposComoTocados();
       return;
     }
     
-    const accesorioData = this.accesorioForm.value;
+    const formValue = this.accesorioForm.value;
+    console.log('Valores del formulario:', formValue);
+      // Validar campos requeridos manualmente
+    if (!formValue.nombre || !formValue.modelo || !formValue.codigoIMT) {
+      console.error('Campos requeridos faltantes:', {
+        nombre: formValue.nombre,
+        modelo: formValue.modelo,
+        codigoIMT: formValue.codigoIMT
+      });
+      alert('Por favor, complete todos los campos requeridos: Nombre, Modelo y Código IMT');
+      this.marcarCamposComoTocados();
+      return;
+    }
+
+    // Validar que CodigoIMT sea un número positivo
+    const codigoIMT = parseInt(formValue.codigoIMT);
+    if (isNaN(codigoIMT) || codigoIMT <= 0) {
+      alert('El Código IMT debe ser un número natural (mayor a 0)');
+      this.marcarCamposComoTocados();
+      return;
+    }    // Asegurar que el dato del backend coincida con el DTO esperado
+    const accesorioData: AccesorioRequest = {
+      nombre: formValue.nombre.trim(),
+      modelo: formValue.modelo.trim(),
+      tipo: formValue.tipo?.trim() || null,
+      descripcion: formValue.descripcion?.trim() || null,
+      codigoIMT: codigoIMT,
+      precio: formValue.precio ? parseFloat(formValue.precio) : null,
+      urlDataSheet: formValue.urlDataSheet?.trim() || null
+    };
+    
+    console.log('Datos a enviar al backend:', accesorioData);
     
     if (this.modalAccesorio.editar && this.modalAccesorio.id) {
       // Actualizar accesorio existente
+      console.log(`Actualizando accesorio con ID: ${this.modalAccesorio.id}`);
       this.http.put(`${this.apiUrl}/${this.modalAccesorio.id}`, accesorioData).subscribe(
-        () => {
+        (response) => {
+          console.log('Accesorio actualizado exitosamente:', response);
           this.cargarAccesorios();
           this.cerrarModal();
         },
         (error) => {
           console.error('Error al actualizar accesorio:', error);
-          // Para demostración, actualizamos localmente
-          if (this.modalAccesorio.id !== undefined) {
-            this.actualizarAccesorioLocal(this.modalAccesorio.id, accesorioData);
-          }
-          this.cerrarModal();
+          console.error('Detalles del error:', error.error);
+          alert(`Error al actualizar: ${error.error?.message || error.message}`);
         }
       );
     } else {
       // Crear nuevo accesorio
+      console.log('Creando nuevo accesorio');
       this.http.post(this.apiUrl, accesorioData).subscribe(
         (response: any) => {
+          console.log('Accesorio creado exitosamente:', response);
           this.cargarAccesorios();
           this.cerrarModal();
         },
         (error) => {
           console.error('Error al crear accesorio:', error);
-          // Para demostración, creamos localmente
-          this.crearAccesorioLocal(accesorioData);
-          this.cerrarModal();
+          console.error('Detalles del error:', error.error);
+          alert(`Error al crear: ${error.error?.message || error.message}`);
         }
       );
     }
   }
-  
-  eliminarAccesorio(): void {
+
+  // Método auxiliar para marcar todos los campos como tocados y mostrar errores
+  private marcarCamposComoTocados(): void {
+    Object.keys(this.accesorioForm.controls).forEach(key => {
+      this.accesorioForm.get(key)?.markAsTouched();
+    });
+  }
+    eliminarAccesorio(): void {
     if (!this.modalConfirmacion.id) {
+      console.error('No hay ID para eliminar');
       return;
     }
     
+    console.log(`Eliminando accesorio con ID: ${this.modalConfirmacion.id}`);
+    
     this.http.delete(`${this.apiUrl}/${this.modalConfirmacion.id}`).subscribe(
-      () => {
+      (response) => {
+        console.log('Accesorio eliminado exitosamente:', response);
         this.cargarAccesorios();
         this.modalConfirmacion.visible = false;
       },
       (error) => {
         console.error('Error al eliminar accesorio:', error);
-        // Para demostración, eliminamos localmente
-        this.eliminarAccesorioLocal(this.modalConfirmacion.id);
+        console.error('Detalles del error:', error.error);
+        alert(`Error al eliminar: ${error.error?.message || error.message}`);
         this.modalConfirmacion.visible = false;
       }
     );
   }
-  
-  // ====== MÉTODOS DE AYUDA PARA DATOS LOCALES (DEMOSTRACIÓN) ======
-  
-  actualizarAccesorioLocal(id: number, datos: any): void {
+    // ====== MÉTODOS DE AYUDA PARA DATOS LOCALES (DEMOSTRACIÓN) ======
+  actualizarAccesorioLocal(id: number, datos: AccesorioRequest): void {
     const index = this.accesorios.findIndex(a => a.id === id);
     if (index !== -1) {
-      this.accesorios[index] = { ...this.accesorios[index], ...datos };
+      // Convertir AccesorioRequest a Accesorio para actualización local
+      this.accesorios[index] = { 
+        ...this.accesorios[index], 
+        nombre: datos.nombre,
+        modelo: datos.modelo,
+        tipo: datos.tipo || undefined,
+        descripcion: datos.descripcion || undefined,
+        precio: datos.precio || undefined,
+        codigoImtEquipoAsociado: datos.codigoIMT
+      };
       this.accesoriosFiltrados = [...this.accesorios];
       this.aplicarOrdenamiento();
       this.actualizarPaginacion();
     }
   }
   
-  crearAccesorioLocal(datos: any): void {
+  crearAccesorioLocal(datos: AccesorioRequest): void {
     // Generar ID único para demostración
     const nuevoId = Math.max(0, ...this.accesorios.map(a => a.id)) + 1;
-    const nuevoAccesorio: Accesorio = { id: nuevoId, ...datos };
+    const nuevoAccesorio: Accesorio = { 
+      id: nuevoId, 
+      nombre: datos.nombre,
+      modelo: datos.modelo,
+      tipo: datos.tipo || undefined,
+      descripcion: datos.descripcion || undefined,
+      precio: datos.precio || undefined,
+      codigoImtEquipoAsociado: datos.codigoIMT
+    };
     
     this.accesorios.push(nuevoAccesorio);
     this.accesoriosFiltrados = [...this.accesorios];

@@ -37,14 +37,14 @@ public class EquipoRepository : IEquipoRepository
             ["costoReferencia"]       = comando.CostoReferencia ?? (object)DBNull.Value,
             ["tiempoMaximoPrestamo"]  = comando.TiempoMaximoPrestamo ?? (object)DBNull.Value,
             ["nombreGavetero"]        = comando.NombreGavetero ?? (object)DBNull.Value
-        };
-        try
+        };        try
         {
             _ejecutarConsulta.EjecutarSpNR(sql, parametros);
         }
         catch (Exception ex)
         {
-            throw new Exception("Error al crear el equipo", ex);
+            var innerError = ex.InnerException?.Message ?? ex.Message;
+            throw new Exception($"Error en BD al crear equipo: {innerError}. SQL: {sql}. Parámetros: nombre={comando.NombreGrupoEquipo}, modelo={comando.Modelo}, marca={comando.Marca}, codigoUcb={comando.CodigoUcb}", ex);
         }
     }
 
@@ -77,15 +77,15 @@ public class EquipoRepository : IEquipoRepository
             ["tiempoMaximoPrestamo"]  = comando.TiempoMaximoPrestamo ?? (object)DBNull.Value,
             ["nombreGavetero"]        = comando.NombreGavetero ?? (object)DBNull.Value,
             ["estadoEquipo"]          = comando.EstadoEquipo ?? (object)DBNull.Value
-        };
-        try
+        };        try
         {
             _ejecutarConsulta.EjecutarSpNR(sql, parametros);
         }
         catch (Exception ex)
         {
-            throw new Exception("Error al actualizar el equipo", ex);
-        }   
+            var innerError = ex.InnerException?.Message ?? ex.Message;
+            throw new Exception($"Error en BD al actualizar equipo: {innerError}. SQL: {sql}. Parámetros: id={comando.Id}, nombre={comando.NombreGrupoEquipo}", ex);
+        }
     }
 
     public void Eliminar(int id)
@@ -93,8 +93,7 @@ public class EquipoRepository : IEquipoRepository
         const string sql = @"
         CALL public.eliminar_equipo(
 	    @id
-        )";
-        try
+        )";        try
         {
             _ejecutarConsulta.EjecutarSpNR(sql, new Dictionary<string, object?>
             {
@@ -103,7 +102,8 @@ public class EquipoRepository : IEquipoRepository
         }
         catch (Exception ex)
         {
-            throw new Exception("Error al eliminar el equipo", ex);
+            var innerError = ex.InnerException?.Message ?? ex.Message;
+            throw new Exception($"Error en BD al eliminar equipo: {innerError}. SQL: {sql}. Parámetros: id={id}", ex);
         }
     }
     public List<EquipoDto> ObtenerTodos()
@@ -118,10 +118,10 @@ public class EquipoRepository : IEquipoRepository
             foreach (DataRow row in dt.Rows)
                 lista.Add(MapearFilaADto(row));
             return lista;
-        }
-        catch (Exception ex)
+        }        catch (Exception ex)
         {
-            throw new Exception("Error al obtener los equipos", ex);
+            var innerError = ex.InnerException?.Message ?? ex.Message;
+            throw new Exception($"Error en BD al obtener equipos: {innerError}. SQL: {sql}", ex);
         }
     }
     private static EquipoDto MapearFilaADto(DataRow fila)

@@ -28,14 +28,14 @@ public class EmpresaMantenimientoRepository : IEmpresaMantenimientoRepository
             ["telefono"] = comando.Telefono ?? (object)DBNull.Value,
             ["direccion"] = comando.Direccion ?? (object)DBNull.Value,
             ["nit"] = comando.Nit ?? (object)DBNull.Value
-        };
-        try
+        };        try
         {
             _ejecutarConsulta.EjecutarSpNR(sql, parametros);
         }
         catch (Exception ex)
         {
-            throw new Exception("Error al crear la empresa de mantenimiento", ex);
+            var innerError = ex.InnerException?.Message ?? ex.Message;
+            throw new Exception($"Error en BD al crear empresa de mantenimiento: {innerError}. SQL: {sql}. Parámetros: nombre={comando.NombreEmpresa}, nit={comando.Nit}", ex);
         }
     }
 
@@ -62,14 +62,14 @@ public class EmpresaMantenimientoRepository : IEmpresaMantenimientoRepository
             ["telefono"] = comando.Telefono ?? (object)DBNull.Value,
             ["direccion"] = comando.Direccion ?? (object)DBNull.Value,
             ["nit"] = comando.Nit ?? (object)DBNull.Value
-        };
-        try
+        };        try
         {
             _ejecutarConsulta.EjecutarSpNR(sql, parametros);
         }
         catch (Exception ex)
         {
-            throw new Exception("Error al actualizar la empresa de mantenimiento", ex);
+            var innerError = ex.InnerException?.Message ?? ex.Message;
+            throw new Exception($"Error en BD al actualizar empresa de mantenimiento: {innerError}. SQL: {sql}. Parámetros: id={comando.Id}, nombre={comando.NombreEmpresa}", ex);
         }
     }
 
@@ -78,8 +78,7 @@ public class EmpresaMantenimientoRepository : IEmpresaMantenimientoRepository
         const string sql = @"
         CALL public.eliminar_empresas_mantenimiento(
 	    @id
-        )";
-        try
+        )";        try
         {
             _ejecutarConsulta.EjecutarSpNR(sql, new Dictionary<string, object?>
             {
@@ -88,7 +87,8 @@ public class EmpresaMantenimientoRepository : IEmpresaMantenimientoRepository
         }
         catch (Exception ex)
         {
-            throw new Exception("Error al eliminar la empresa de mantenimiento", ex);
+            var innerError = ex.InnerException?.Message ?? ex.Message;
+            throw new Exception($"Error en BD al eliminar empresa de mantenimiento: {innerError}. SQL: {sql}. Parámetros: id={id}", ex);
         }
     }
 
@@ -104,10 +104,10 @@ public class EmpresaMantenimientoRepository : IEmpresaMantenimientoRepository
             foreach (DataRow row in dt.Rows)
                 lista.Add(MapearFilaADto(row));
             return lista;
-        }
-        catch (Exception ex)
+        }        catch (Exception ex)
         {
-            throw new Exception("Error al obtener las empresas de mantenimiento", ex);
+            var innerError = ex.InnerException?.Message ?? ex.Message;
+            throw new Exception($"Error en BD al obtener empresas de mantenimiento: {innerError}. SQL: {sql}", ex);
         }
     }
 

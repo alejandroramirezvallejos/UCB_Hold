@@ -37,15 +37,14 @@ public class UsuarioRepository : IUsuarioRepository
             ["telefonoReferencia"] = comando.TelefonoReferencia ?? (object)DBNull.Value,
             ["nombreReferencia"] = comando.NombreReferencia ?? (object)DBNull.Value,
             ["emailReferencia"] = comando.EmailReferencia ?? (object)DBNull.Value
-        };
-
-        try
+        };        try
         {
             _ejecutarConsulta.EjecutarSpNR(sql, parametros);
         }
         catch (Exception ex)
         {
-            throw new Exception("Error al crear el usuario", ex);
+            var innerError = ex.InnerException?.Message ?? ex.Message;
+            throw new Exception($"Error en BD al crear usuario: {innerError}. SQL: {sql}. Parámetros: carnet={comando.Carnet}, email={comando.Email}", ex);
         }
     }
 
@@ -81,15 +80,14 @@ public class UsuarioRepository : IUsuarioRepository
             ["telefonoReferencia"] = comando.TelefonoReferencia,
             ["nombreReferencia"] = comando.NombreReferencia,
             ["emailReferencia"] = comando.EmailReferencia
-        };
-
-        try
+        };        try
         {
             _ejecutarConsulta.EjecutarSpNR(sql, parametros);
         }
         catch (Exception ex)
         {
-            throw new Exception("Error al actualizar el usuario", ex);
+            var innerError = ex.InnerException?.Message ?? ex.Message;
+            throw new Exception($"Error en BD al actualizar usuario: {innerError}. SQL: {sql}. Parámetros: carnet={comando.Carnet}, email={comando.Email}", ex);
         }
     }
 
@@ -98,8 +96,7 @@ public class UsuarioRepository : IUsuarioRepository
         const string sql = @"
         CALL public.eliminar_usuario(
 	    @carnet
-        )";
-        try
+        )";        try
         {
             _ejecutarConsulta.EjecutarSpNR(sql, new Dictionary<string, object?>
             {
@@ -108,7 +105,8 @@ public class UsuarioRepository : IUsuarioRepository
         }
         catch (Exception ex)
         {
-            throw new Exception("Error al eliminar el usuario", ex);
+            var innerError = ex.InnerException?.Message ?? ex.Message;
+            throw new Exception($"Error en BD al eliminar usuario: {innerError}. SQL: {sql}. Parámetros: carnet={carnet}", ex);
         }
     }
 
@@ -125,10 +123,10 @@ public class UsuarioRepository : IUsuarioRepository
                 usuarios.Add(MapearUsuarioADto(fila));
             }
             return usuarios;
-        }
-        catch (Exception ex)
+        }        catch (Exception ex)
         {
-            throw new Exception("Error al obtener los usuarios", ex);
+            var innerError = ex.InnerException?.Message ?? ex.Message;
+            throw new Exception($"Error en BD al obtener usuarios: {innerError}. SQL: {sql}", ex);
         }
     }
 
@@ -151,10 +149,10 @@ public class UsuarioRepository : IUsuarioRepository
                 return null;
 
             return MapearUsuarioADto(resultado.Rows[0]);
-        }
-        catch (Exception ex)
+        }        catch (Exception ex)
         {
-            throw new Exception("Error al obtener el usuario por email y contraseña", ex);
+            var innerError = ex.InnerException?.Message ?? ex.Message;
+            throw new Exception($"Error en BD al obtener usuario por email y contraseña: {innerError}. SQL: {sql}. Parámetros: email={email}", ex);
         }
     }
 

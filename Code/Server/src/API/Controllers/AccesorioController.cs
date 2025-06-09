@@ -1,5 +1,4 @@
 using Microsoft.AspNetCore.Mvc;
-using System.ComponentModel.DataAnnotations;
 using API.ViewModels;
 namespace API.Controllers;
 
@@ -32,12 +31,17 @@ public class AccesorioController : ControllerBase
 
             if (string.IsNullOrWhiteSpace(dto.Nombre))
                 return BadRequest("El nombre del accesorio es requerido");
+            
+            if( string.IsNullOrWhiteSpace(dto.Modelo))
+                return BadRequest("El modelo del accesorio es requerido");
+            if(dto.CodigoIMT == null)
+                return BadRequest("El código IMT del accesorio es requerido");
 
             var comando = new CrearAccesorioComando(
                 dto.Nombre,
                 dto.Modelo,
                 dto.Tipo,
-                dto.CodigoIMT,
+                (int)dto.CodigoIMT,
                 dto.Descripcion,
                 dto.Precio,
                 dto.UrlDataSheet
@@ -64,10 +68,8 @@ public class AccesorioController : ControllerBase
         {
             return BadRequest($"Error al obtener accesorios: {ex.Message}");
         }
-    }
-
-    [HttpPut("{id}")]
-    public ActionResult Actualizar([Range(1, int.MaxValue)] int id, [FromBody] AccesorioRequestDto dto)
+    }    [HttpPut("{id}")]
+    public ActionResult Actualizar(int id, [FromBody] AccesorioRequestDto dto)
     {
         try
         {
@@ -95,9 +97,8 @@ public class AccesorioController : ControllerBase
         {
             return BadRequest($"Error al actualizar accesorio: {ex.Message}");
         }
-    }
-    [HttpDelete("{id}")]
-    public ActionResult Eliminar([Range(1, int.MaxValue)] int id)
+    }    [HttpDelete("{id}")]
+    public ActionResult Eliminar(int id)
     {
         try
         {

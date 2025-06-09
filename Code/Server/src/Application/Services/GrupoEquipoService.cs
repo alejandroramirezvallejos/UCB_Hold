@@ -14,9 +14,9 @@ public class GrupoEquipoService :   ICrearGrupoEquipoComando, IObtenerGrupoEquip
         {
             _grupoEquipoRepository.Crear(comando);
         }
-        catch (Exception ex)
+        catch
         {
-            throw new Exception("Error en el servicio al crear grupo de equipo", ex);
+            throw;
         }
     }    public GrupoEquipoDto? Handle(ObtenerGrupoEquipoPorIdConsulta consulta)
     {
@@ -24,9 +24,9 @@ public class GrupoEquipoService :   ICrearGrupoEquipoComando, IObtenerGrupoEquip
         {
             return _grupoEquipoRepository.ObtenerPorId(consulta.Id);
         }
-        catch (Exception ex)
+        catch
         {
-            throw new Exception("Error en el servicio al obtener grupo de equipo por ID", ex);
+            throw;
         }
     }    public List<GrupoEquipoDto>? Handle()
     {
@@ -34,9 +34,9 @@ public class GrupoEquipoService :   ICrearGrupoEquipoComando, IObtenerGrupoEquip
         {
             return _grupoEquipoRepository.ObtenerTodos();
         }
-        catch (Exception ex)
+        catch
         {
-            throw new Exception("Error en el servicio al obtener grupos de equipo", ex);
+            throw;
         }
     }    public List<GrupoEquipoDto>? Handle(ObtenerGrupoEquipoPorNombreYCategoriaConsulta consulta)
     {
@@ -44,9 +44,9 @@ public class GrupoEquipoService :   ICrearGrupoEquipoComando, IObtenerGrupoEquip
         {
             return _grupoEquipoRepository.ObtenerPorNombreYCategoria(consulta.Nombre, consulta.Categoria);
         }
-        catch (Exception ex)
+        catch
         {
-            throw new Exception("Error en el servicio al obtener grupos de equipo por nombre y categoría", ex);
+            throw;
         }
     }    public void Handle(ActualizarGrupoEquipoComando comando)
     {
@@ -54,9 +54,9 @@ public class GrupoEquipoService :   ICrearGrupoEquipoComando, IObtenerGrupoEquip
         {
             _grupoEquipoRepository.Actualizar(comando);
         }
-        catch (Exception ex)
+        catch
         {
-            throw new Exception("Error en el servicio al actualizar grupo de equipo", ex);
+            throw;
         }
     }    public void Handle(EliminarGrupoEquipoComando comando)
     {
@@ -64,9 +64,9 @@ public class GrupoEquipoService :   ICrearGrupoEquipoComando, IObtenerGrupoEquip
         {
             _grupoEquipoRepository.Eliminar(comando.Id);
         }
-        catch (Exception ex)
+        catch
         {
-            throw new Exception("Error en el servicio al eliminar grupo de equipo", ex);
+            throw;
         }
     }
 }

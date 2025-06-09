@@ -2,40 +2,37 @@ using System.Data;
 
 public class PrestamoRepository : IPrestamoRepository
 {
-    private readonly IExecuteQuery _ejecutarConsulta;
-
-    public PrestamoRepository(IExecuteQuery ejecutarConsulta)
+    private readonly IExecuteQuery _ejecutarConsulta;    public PrestamoRepository(IExecuteQuery ejecutarConsulta)
     {
         _ejecutarConsulta = ejecutarConsulta;
-    }
-
-    public void Crear(CrearPrestamoComando comando)//TODO: Array
+    }    public void Crear(CrearPrestamoComando comando)
     {
         const string sql = @"
             CALL public.insertar_prestamo(
-	        @GrupoEquipoId,
-	        @fechaPrestamoEsperada,
-	        @fechaDevolucionEsperada,
-	        @observacion,
-	        @carnetUsuario,
-	        @contrato)";
+            @GrupoEquipoId,
+            @fechaPrestamoEsperada,
+            @fechaDevolucionEsperada,
+            @observacion,
+            @carnetUsuario,
+            @contrato)";
 
         var parametros = new Dictionary<string, object?>
         {
-            ["GrupoEquipoId"]          = comando.GrupoEquipoId ?? (object)DBNull.Value,
+            ["GrupoEquipoId"]           = comando.GrupoEquipoId, // Pasar el array completo
             ["fechaPrestamoEsperada"]   = comando.FechaPrestamoEsperada,
-            ["fechaDevolucionEsperada"] = comando.FechaDevolucionEsperada ,
+            ["fechaDevolucionEsperada"] = comando.FechaDevolucionEsperada,
             ["observacion"]             = comando.Observacion ?? (object)DBNull.Value,
             ["carnetUsuario"]           = comando.CarnetUsuario ?? (object)DBNull.Value,
             ["contrato"]                = comando.Contrato ?? (object)DBNull.Value
         };
-        try
+          try
         {
             _ejecutarConsulta.EjecutarSpNR(sql, parametros);
         }
         catch (Exception ex)
         {
-            throw new Exception("Error al crear el préstamo", ex);
+            var innerError = ex.InnerException?.Message ?? ex.Message;
+            throw new Exception($"Error en BD al crear préstamo: {innerError}. SQL: {sql}. Parámetros: carnetUsuario={comando.CarnetUsuario}, fechaPrestamoEsperada={comando.FechaPrestamoEsperada}", ex);
         }
     }
     public void Eliminar(int id)
@@ -43,8 +40,7 @@ public class PrestamoRepository : IPrestamoRepository
         const string sql = @"
         CALL public.eliminar_prestamo(
 	    @id
-        )";
-        try
+        )";        try
         {
             _ejecutarConsulta.EjecutarSpNR(sql, new Dictionary<string, object?>
             {
@@ -53,7 +49,8 @@ public class PrestamoRepository : IPrestamoRepository
         }
         catch (Exception ex)
         {
-            throw new Exception("Error al eliminar el préstamo", ex);
+            var innerError = ex.InnerException?.Message ?? ex.Message;
+            throw new Exception($"Error en BD al eliminar préstamo: {innerError}. SQL: {sql}. Parámetros: id={id}", ex);
         }
     }
 
@@ -71,10 +68,10 @@ public class PrestamoRepository : IPrestamoRepository
                 lista.Add(MapearFilaADto(fila));
             }
             return lista;
-        }
-        catch (Exception ex)
+        }        catch (Exception ex)
         {
-            throw new Exception("Error al obtener los préstamos", ex);
+            var innerError = ex.InnerException?.Message ?? ex.Message;
+            throw new Exception($"Error en BD al obtener préstamos: {innerError}. SQL: {sql}", ex);
         }
     }
     private static PrestamoDto MapearFilaADto(DataRow fila)

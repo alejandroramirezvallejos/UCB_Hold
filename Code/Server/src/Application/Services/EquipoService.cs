@@ -12,9 +12,9 @@ public class EquipoService : IObtenerEquipoConsulta, ICrearEquipoComando,
         {
             _equipoRepository.Crear(comando);
         }
-        catch (Exception ex)
+        catch
         {
-            throw new Exception("Error en el servicio al crear equipo", ex);
+            throw;
         }
     }    public void Handle(ActualizarEquipoComando comando)
     {
@@ -22,9 +22,9 @@ public class EquipoService : IObtenerEquipoConsulta, ICrearEquipoComando,
         {
             _equipoRepository.Actualizar(comando);
         }
-        catch (Exception ex)
+        catch
         {
-            throw new Exception("Error en el servicio al actualizar equipo", ex);
+            throw;
         }
     }    public void Handle(EliminarEquipoComando comando)
     {
@@ -32,9 +32,9 @@ public class EquipoService : IObtenerEquipoConsulta, ICrearEquipoComando,
         {
             _equipoRepository.Eliminar(comando.Id);
         }
-        catch (Exception ex)
+        catch
         {
-            throw new Exception("Error en el servicio al eliminar equipo", ex);
+            throw;
         }
     }    public List<EquipoDto>? Handle()
     {
@@ -42,9 +42,9 @@ public class EquipoService : IObtenerEquipoConsulta, ICrearEquipoComando,
         {
             return _equipoRepository.ObtenerTodos();
         }
-        catch (Exception ex)
+        catch
         {
-            throw new Exception("Error en el servicio al obtener equipos", ex);
+            throw;
         }
     }
 }

@@ -18,14 +18,14 @@ public class CarreraRepository : ICarreraRepository
             var parametros = new Dictionary<string, object?>
             {
                 ["nombre"] = comando.Nombre
-            };
-            try
+            };            try
             {
                 _ejecutarConsulta.EjecutarSpNR(sql, parametros);
             }
             catch (Exception ex)
             {
-                throw new Exception("Error al crear la carrera", ex);
+                var innerError = ex.InnerException?.Message ?? ex.Message;
+                throw new Exception($"Error en BD al crear carrera: {innerError}. SQL: {sql}. Parámetros: nombre={comando.Nombre}", ex);
             }
         }
 
@@ -34,8 +34,7 @@ public class CarreraRepository : ICarreraRepository
             const string sql = @"
                 CALL public.eliminar_carrera(
 	            @id
-            )";
-            try
+            )";            try
             {
                 _ejecutarConsulta.EjecutarSpNR(sql, new Dictionary<string, object?>
                 {
@@ -44,7 +43,8 @@ public class CarreraRepository : ICarreraRepository
             }
             catch (Exception ex)
             {
-                throw new Exception("Error al eliminar la carrera", ex);
+                var innerError = ex.InnerException?.Message ?? ex.Message;
+                throw new Exception($"Error en BD al eliminar carrera: {innerError}. SQL: {sql}. Parámetros: id={id}", ex);
             }
         }
 
@@ -60,14 +60,14 @@ public class CarreraRepository : ICarreraRepository
             {
                 ["id"] = comando.Id,
                 ["nombre"] = comando.Nombre ?? (object)DBNull.Value
-            };
-            try
+            };            try
             {
                 _ejecutarConsulta.EjecutarSpNR(sql, parametros);
             }
             catch (Exception ex)
             {
-                throw new Exception("Error al actualizar la carrera", ex);
+                var innerError = ex.InnerException?.Message ?? ex.Message;
+                throw new Exception($"Error en BD al actualizar carrera: {innerError}. SQL: {sql}. Parámetros: id={comando.Id}, nombre={comando.Nombre}", ex);
             }
         }
         public List<CarreraDto> ObtenerTodas()
@@ -88,10 +88,10 @@ public class CarreraRepository : ICarreraRepository
                 });
             }
             return lista;
-        }
-        catch (Exception ex)
+        }        catch (Exception ex)
         {
-            throw new Exception("Error al obtener las carreras", ex);
+            var innerError = ex.InnerException?.Message ?? ex.Message;
+            throw new Exception($"Error en BD al obtener carreras: {innerError}. SQL: {sql}", ex);
         }
     }
 }

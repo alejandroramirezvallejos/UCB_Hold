@@ -12,9 +12,9 @@ public class MuebleService : IObtenerMuebleConsulta, ICrearMuebleComando,
         {
             _muebleRepository.Crear(comando);
         }
-        catch (Exception ex)
+        catch
         {
-            throw new Exception("Error en el servicio al crear mueble", ex);
+            throw;
         }
     }    public void Handle(ActualizarMuebleComando comando)
     {
@@ -22,9 +22,9 @@ public class MuebleService : IObtenerMuebleConsulta, ICrearMuebleComando,
         {
             _muebleRepository.Actualizar(comando);
         }
-        catch (Exception ex)
+        catch
         {
-            throw new Exception("Error en el servicio al actualizar mueble", ex);
+            throw;
         }
     }    public void Handle(EliminarMuebleComando comando)
     {
@@ -32,9 +32,9 @@ public class MuebleService : IObtenerMuebleConsulta, ICrearMuebleComando,
         {
             _muebleRepository.Eliminar(comando.Id);
         }
-        catch (Exception ex)
+        catch
         {
-            throw new Exception("Error en el servicio al eliminar mueble", ex);
+            throw;
         }
     }    public List<MuebleDto>? Handle()
     {
@@ -42,9 +42,9 @@ public class MuebleService : IObtenerMuebleConsulta, ICrearMuebleComando,
         {
             return _muebleRepository.ObtenerTodos();
         }
-        catch (Exception ex)
+        catch
         {
-            throw new Exception("Error en el servicio al obtener muebles", ex);
+            throw;
         }
     }
 }

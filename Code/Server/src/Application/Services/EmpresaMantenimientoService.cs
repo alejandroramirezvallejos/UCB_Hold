@@ -12,9 +12,10 @@ public class EmpresaMantenimientoService : ICrearEmpresaMantenimientoComando, IO
         {
             _empresaMantenimientoRepository.Crear(comando);
         }
-        catch (Exception ex)
+        catch
         {
-            throw new Exception("Error en el servicio al crear empresa de mantenimiento", ex);
+            // Re-lanzar la excepción original con el mensaje detallado del repository
+            throw;
         }
     }    public List<EmpresaMantenimientoDto>? Handle()
     {
@@ -22,9 +23,9 @@ public class EmpresaMantenimientoService : ICrearEmpresaMantenimientoComando, IO
         {
             return _empresaMantenimientoRepository.ObtenerTodos();
         }
-        catch (Exception ex)
+        catch
         {
-            throw new Exception("Error en el servicio al obtener empresas de mantenimiento", ex);
+            throw;
         }
     }    public void Handle(ActualizarEmpresaMantenimientoComando comando)
     {
@@ -32,9 +33,9 @@ public class EmpresaMantenimientoService : ICrearEmpresaMantenimientoComando, IO
         {
             _empresaMantenimientoRepository.Actualizar(comando);
         }
-        catch (Exception ex)
+        catch
         {
-            throw new Exception("Error en el servicio al actualizar empresa de mantenimiento", ex);
+            throw;
         }
     }    public void Handle(EliminarEmpresaMantenimientoComando comando)
     {
@@ -42,9 +43,9 @@ public class EmpresaMantenimientoService : ICrearEmpresaMantenimientoComando, IO
         {
             _empresaMantenimientoRepository.Eliminar(comando.Id);
         }
-        catch (Exception ex)
+        catch
         {
-            throw new Exception("Error en el servicio al eliminar empresa de mantenimiento", ex);
+            throw;
         }
     }
 }

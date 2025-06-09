@@ -29,14 +29,14 @@ public class MuebleRepository : IMuebleRepository
             ["longitud"] = comando.Longitud ?? (object)DBNull.Value,
             ["profundidad"] = comando.Profundidad ?? (object)DBNull.Value,
             ["altura"] = comando.Altura ?? (object)DBNull.Value
-        };
-        try
+        };        try
         {
             _ejecutarConsulta.EjecutarSpNR(sql, parametros);
         }
         catch (Exception ex)
         {
-            throw new Exception("Error al crear el mueble", ex);
+            var innerError = ex.InnerException?.Message ?? ex.Message;
+            throw new Exception($"Error en BD al crear mueble: {innerError}. SQL: {sql}. Parámetros: nombre={comando.Nombre}, tipo={comando.Tipo}", ex);
         }
     }
 
@@ -64,14 +64,14 @@ public class MuebleRepository : IMuebleRepository
             ["longitud"] = comando.Longitud ?? (object)DBNull.Value,
             ["profundidad"] = comando.Profundidad ?? (object)DBNull.Value,
             ["altura"] = comando.Altura ?? (object)DBNull.Value
-        };
-        try
+        };        try
         {
             _ejecutarConsulta.EjecutarSpNR(sql, parametros);
         }
         catch (Exception ex)
         {
-            throw new Exception("Error al actualizar el mueble", ex);
+            var innerError = ex.InnerException?.Message ?? ex.Message;
+            throw new Exception($"Error en BD al actualizar mueble: {innerError}. SQL: {sql}. Parámetros: id={comando.Id}, nombre={comando.Nombre}", ex);
         }
     }
 
@@ -80,8 +80,7 @@ public class MuebleRepository : IMuebleRepository
         const string sql = @"
         CALL public.eliminar_mueble(
 	    @id
-        )";
-        try
+        )";        try
         {
             _ejecutarConsulta.EjecutarSpNR(sql, new Dictionary<string, object?>
             {
@@ -90,23 +89,30 @@ public class MuebleRepository : IMuebleRepository
         }
         catch (Exception ex)
         {
-            throw new Exception("Error al eliminar el mueble", ex);
+            var innerError = ex.InnerException?.Message ?? ex.Message;
+            throw new Exception($"Error en BD al eliminar mueble: {innerError}. SQL: {sql}. Parámetros: id={id}", ex);
         }
-    }
-
-    public List<MuebleDto> ObtenerTodos()
+    }    public List<MuebleDto> ObtenerTodos()
     {
         const string sql = @"
         SELECT * from public.obtener_muebles()
         ";
 
-        var resultado = _ejecutarConsulta.EjecutarFuncion(sql, new Dictionary<string, object?>());
-        List<MuebleDto> muebles = new List<MuebleDto>();
-        foreach (DataRow fila in resultado.Rows)
+        try
         {
-            muebles.Add(mapearDto(fila));
+            var resultado = _ejecutarConsulta.EjecutarFuncion(sql, new Dictionary<string, object?>());
+            List<MuebleDto> muebles = new List<MuebleDto>();
+            foreach (DataRow fila in resultado.Rows)
+            {
+                muebles.Add(mapearDto(fila));
+            }
+            return muebles;
         }
-        return muebles;
+        catch (Exception ex)
+        {
+            var innerError = ex.InnerException?.Message ?? ex.Message;
+            throw new Exception($"Error en BD al obtener muebles: {innerError}. SQL: {sql}", ex);
+        }
     }
     private MuebleDto mapearDto(DataRow fila)
     {

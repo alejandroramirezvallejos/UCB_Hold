@@ -25,31 +25,6 @@ public class PrestamoController : ControllerBase
     {
         try
         {
-            if (!ModelState.IsValid)
-            {
-                return BadRequest(ModelState);
-            }
-            
-            if (dto.FechaPrestamoEsperada < DateTime.Today)
-            {
-                return BadRequest("La fecha de préstamo esperada no puede ser en el pasado");
-            }
-
-            if (dto.FechaDevolucionEsperada <= dto.FechaPrestamoEsperada)
-            {
-                return BadRequest("La fecha de devolución esperada debe ser posterior a la fecha de préstamo esperada");
-            }
-            
-            var diasDiferencia = (dto.FechaDevolucionEsperada - dto.FechaPrestamoEsperada).Days;
-            if (diasDiferencia > 365)
-            {
-                return BadRequest("El período de préstamo no puede exceder 1 año");
-            }
-
-            if (diasDiferencia < 1)
-            {
-                return BadRequest("El período mínimo de préstamo es de 1 día");
-            }
             
             if (dto.GrupoEquipoId == null || dto.GrupoEquipoId.Length == 0)
             {
@@ -61,33 +36,20 @@ public class PrestamoController : ControllerBase
                 return BadRequest("Todos los IDs de grupo de equipo deben ser números positivos");
             }
             
-            if (dto.GrupoEquipoId.Length != dto.GrupoEquipoId.Distinct().Count())
-            {
-                return BadRequest("No se pueden repetir grupos de equipo en el mismo préstamo");
-            }
-            
             if (string.IsNullOrWhiteSpace(dto.CarnetUsuario))
             {
                 return BadRequest("El carnet de usuario es obligatorio");
             }
-            
-            if (dto.Contrato != null)
-            {
-                if (dto.Contrato.Length > 10485760) 
-                {
-                    return BadRequest("El archivo de contrato no puede exceder los 10MB");
-                }
-
-                if (dto.Contrato.Length == 0)
-                {
-                    return BadRequest("El archivo de contrato no puede estar vacío");
-                }
+            if(dto.FechaPrestamoEsperada==null){
+                return BadRequest("La fecha de préstamo esperada es obligatoria");
             }
-
+            if(dto.FechaDevolucionEsperada==null){
+                return BadRequest("La fecha de devolución esperada es obligatoria");
+            }
             var comando = new CrearPrestamoComando(
                 dto.GrupoEquipoId,
-                dto.FechaPrestamoEsperada,
-                dto.FechaDevolucionEsperada,
+                (DateTime)dto.FechaPrestamoEsperada,
+                (DateTime)dto.FechaDevolucionEsperada,
                 dto.Observacion,
                 dto.CarnetUsuario,
                 dto.Contrato

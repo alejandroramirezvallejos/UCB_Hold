@@ -1,4 +1,5 @@
 using Npgsql;
+using NpgsqlTypes;
 using System.Data;
 
 public class ExecuteQuery : IExecuteQuery
@@ -30,21 +31,31 @@ public class ExecuteQuery : IExecuteQuery
         reader.Close();
         conn.Close();
         return dt;
-    }
-
-    public void EjecutarSpNR(string nombreSp, Dictionary<string, object?> parametros)
+    }    public void EjecutarSpNR(string nombreSp, Dictionary<string, object?> parametros)
     {
-        NpgsqlConnection conn = new NpgsqlConnection(_connectionString);
-        conn.Open();
-
-        NpgsqlCommand cmd = new NpgsqlCommand(nombreSp, conn)
+        try
         {
-            CommandType = CommandType.StoredProcedure
-        };
-        AgregarParametros(cmd, parametros);
+            NpgsqlConnection conn = new NpgsqlConnection(_connectionString);
+            conn.Open();
 
-        cmd.ExecuteNonQuery();
-        conn.Close();
+            // EjecutarSpNR siempre maneja declaraciones CALL, que en PostgreSQL deben ejecutarse como Text
+            NpgsqlCommand cmd = new NpgsqlCommand(nombreSp, conn)
+            {
+                CommandType = CommandType.Text
+            };
+            AgregarParametros(cmd, parametros);
+
+            cmd.ExecuteNonQuery();
+            conn.Close();
+        }
+        catch (Exception ex)
+        {
+            // Log más información detallada para debugging
+            var parametrosStr = parametros != null 
+                ? string.Join(", ", parametros.Select(p => $"{p.Key}={p.Value}"))
+                : "null";
+            throw new Exception($"Error ejecutando comando: {nombreSp}\nParámetros: {parametrosStr}\nError original: {ex.Message}", ex);
+        }
     }
 
     public DataTable EjecutarFuncion(string consultaSql, Dictionary<string, object?> parametros)
@@ -84,9 +95,7 @@ public class ExecuteQuery : IExecuteQuery
         }
 
         return lista;
-    }
-
-    private void AgregarParametros(NpgsqlCommand cmd, Dictionary<string, object?> parametros)
+    }    private void AgregarParametros(NpgsqlCommand cmd, Dictionary<string, object?> parametros)
     {
         if (parametros == null)
         {
@@ -95,8 +104,124 @@ public class ExecuteQuery : IExecuteQuery
 
         foreach (KeyValuePair<string, object?> param in parametros)
         {
-            cmd.Parameters.AddWithValue(param.Key, param.Value ?? DBNull.Value);
+            // Manejar diferentes tipos de arrays y listas para PostgreSQL
+            if (param.Value != null && EsArrayOLista(param.Value))
+            {
+                var npgsqlParam = CrearParametroArray(param.Key, param.Value);
+                cmd.Parameters.Add(npgsqlParam);
+            }
+            else
+            {
+                cmd.Parameters.AddWithValue(param.Key, param.Value ?? DBNull.Value);
+            }
         }
+    }
+
+    private bool EsArrayOLista(object value)
+    {
+        var type = value.GetType();
+        
+        // Verificar si es array
+        if (type.IsArray)
+            return true;
+            
+        // Verificar si es List<T>
+        if (type.IsGenericType && type.GetGenericTypeDefinition() == typeof(List<>))
+            return true;
+            
+        // Verificar si implementa IEnumerable<T> (excluyendo string)
+        if (value is not string && type.GetInterfaces()
+            .Any(i => i.IsGenericType && i.GetGenericTypeDefinition() == typeof(IEnumerable<>)))
+            return true;
+            
+        return false;
+    }    private NpgsqlParameter CrearParametroArray(string nombreParametro, object arrayValue)
+    {
+        // Convertir listas a arrays para PostgreSQL
+        var processedValue = ConvertirAArray(arrayValue);
+        
+        return processedValue switch
+        {
+            int[] intArray => new NpgsqlParameter(nombreParametro, NpgsqlDbType.Array | NpgsqlDbType.Integer)
+            {
+                Value = intArray
+            },
+            long[] longArray => new NpgsqlParameter(nombreParametro, NpgsqlDbType.Array | NpgsqlDbType.Bigint)
+            {
+                Value = longArray
+            },
+            string[] stringArray => new NpgsqlParameter(nombreParametro, NpgsqlDbType.Array | NpgsqlDbType.Text)
+            {
+                Value = stringArray
+            },
+            double[] doubleArray => new NpgsqlParameter(nombreParametro, NpgsqlDbType.Array | NpgsqlDbType.Double)
+            {
+                Value = doubleArray
+            },
+            decimal[] decimalArray => new NpgsqlParameter(nombreParametro, NpgsqlDbType.Array | NpgsqlDbType.Numeric)
+            {
+                Value = decimalArray
+            },
+            bool[] boolArray => new NpgsqlParameter(nombreParametro, NpgsqlDbType.Array | NpgsqlDbType.Boolean)
+            {
+                Value = boolArray
+            },
+            DateTime[] dateTimeArray => new NpgsqlParameter(nombreParametro, NpgsqlDbType.Array | NpgsqlDbType.Timestamp)
+            {
+                Value = dateTimeArray
+            },
+            Guid[] guidArray => new NpgsqlParameter(nombreParametro, NpgsqlDbType.Array | NpgsqlDbType.Uuid)
+            {
+                Value = guidArray
+            },
+            byte[][] byteArrayArray => new NpgsqlParameter(nombreParametro, NpgsqlDbType.Array | NpgsqlDbType.Bytea)
+            {
+                Value = byteArrayArray
+            },
+            short[] shortArray => new NpgsqlParameter(nombreParametro, NpgsqlDbType.Array | NpgsqlDbType.Smallint)
+            {
+                Value = shortArray
+            },
+            float[] floatArray => new NpgsqlParameter(nombreParametro, NpgsqlDbType.Array | NpgsqlDbType.Real)
+            {
+                Value = floatArray
+            },
+            // Para arrays genéricos, intentar inferir el tipo
+            _ => new NpgsqlParameter(nombreParametro, NpgsqlDbType.Array | NpgsqlDbType.Unknown)
+            {
+                Value = processedValue
+            }
+        };
+    }
+
+    private object ConvertirAArray(object value)
+    {
+        var type = value.GetType();
+        
+        // Si ya es array, retornarlo tal como está
+        if (type.IsArray)
+            return value;
+            
+        // Si es List<T>, convertir a array
+        if (type.IsGenericType && type.GetGenericTypeDefinition() == typeof(List<>))
+        {
+            var elementType = type.GetGenericArguments()[0];
+            var toArrayMethod = typeof(Enumerable).GetMethod("ToArray")?.MakeGenericMethod(elementType);
+            return toArrayMethod?.Invoke(null, new[] { value }) ?? value;
+        }
+        
+        // Si es IEnumerable<T>, intentar convertir a array
+        var enumerableInterface = type.GetInterfaces()
+            .FirstOrDefault(i => i.IsGenericType && i.GetGenericTypeDefinition() == typeof(IEnumerable<>));
+            
+        if (enumerableInterface != null)
+        {
+            var elementType = enumerableInterface.GetGenericArguments()[0];
+            var toArrayMethod = typeof(Enumerable).GetMethod("ToArray")?.MakeGenericMethod(elementType);
+            return toArrayMethod?.Invoke(null, new[] { value }) ?? value;
+        }
+        
+        return value;
     }
 
     public bool ProbarConexion()

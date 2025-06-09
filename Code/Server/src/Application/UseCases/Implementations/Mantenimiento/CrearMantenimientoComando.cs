@@ -6,6 +6,6 @@ public record CrearMantenimientoComando(
     double?               Costo,
     string?               DescripcionMantenimiento,
     int[]                 CodigoIMT,
-    TipoDeMantenimiento[] TipoMantenimiento,
-    string[]?             DescripcionEquipo
+    string[]              TipoMantenimiento,
+    string?[]?            DescripcionEquipo
 );

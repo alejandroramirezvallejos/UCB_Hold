@@ -12,9 +12,9 @@ public class PrestamoService : ICrearPrestamoComando, IObtenerPrestamoConsulta,
         {
             _prestamoRepository.Crear(comando);
         }
-        catch (Exception ex)
+        catch
         {
-            throw new Exception("Error en el servicio al crear préstamo", ex);
+            throw;
         }
     }    public List<PrestamoDto>? Handle()
     {
@@ -22,9 +22,9 @@ public class PrestamoService : ICrearPrestamoComando, IObtenerPrestamoConsulta,
         {
             return _prestamoRepository.ObtenerTodos();
         }
-        catch (Exception ex)
+        catch
         {
-            throw new Exception("Error en el servicio al obtener préstamos", ex);
+            throw;
         }
     }    public void Handle(EliminarPrestamoComando comando)
     {
@@ -32,9 +32,9 @@ public class PrestamoService : ICrearPrestamoComando, IObtenerPrestamoConsulta,
         {
             _prestamoRepository.Eliminar(comando.Id);
         }
-        catch (Exception ex)
+        catch
         {
-            throw new Exception("Error en el servicio al eliminar préstamo", ex);
+            throw;
         }
     }
 }

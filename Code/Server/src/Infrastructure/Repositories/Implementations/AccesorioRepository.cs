@@ -31,14 +31,14 @@ public class AccesorioRepository : IAccesorioRepository
             ["descripcion"] = comando.Descripcion ?? (object)DBNull.Value,
             ["precio"]      = comando.Precio ?? (object)DBNull.Value,
             ["urlDataSheet"] = comando.UrlDataSheet ?? (object)DBNull.Value
-        };
-        try
+        };        try
         {
             _ejecutarConsulta.EjecutarSpNR(sql, parametros);
         }
         catch (Exception ex)
         {
-            throw new Exception("Error al crear el accesorio", ex);
+            var innerError = ex.InnerException?.Message ?? ex.Message;
+            throw new Exception($"Error en BD al crear accesorio: {innerError}. SQL: {sql}. Parámetros: nombre={comando.Nombre}, codigoIMT={comando.CodigoIMT}", ex);
         }
     }
 

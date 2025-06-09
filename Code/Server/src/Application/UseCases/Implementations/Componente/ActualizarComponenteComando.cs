@@ -8,4 +8,4 @@ public record ActualizarComponenteComando(
     string? Descripcion,      
     double? PrecioReferencia, 
     string? UrlDataSheet            
-) ;
+);

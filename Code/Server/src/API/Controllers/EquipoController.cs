@@ -1,5 +1,4 @@
 using Microsoft.AspNetCore.Mvc;
-using System.ComponentModel.DataAnnotations;
 using API.ViewModels;
 namespace API.Controllers;
 
@@ -31,22 +30,17 @@ public class EquipoController : ControllerBase
             if (dto == null)
                 return BadRequest("Los datos del equipo son requeridos");
 
-            if (dto.GrupoEquipoId <= 0)
-                return BadRequest("El ID del grupo de equipo es requerido");
-
-            if (string.IsNullOrWhiteSpace(dto.CodigoImt))
-                return BadRequest("El código IMT es requerido");
-
-            if (string.IsNullOrWhiteSpace(dto.EstadoEquipo))
-                return BadRequest("El estado del equipo es requerido");            // Verificar que el grupo de equipo existe
-            var grupoEquipo = _obtenerGrupoEquipo.Handle(new ObtenerGrupoEquipoPorIdConsulta(dto.GrupoEquipoId));
-            if (grupoEquipo == null)
-                return BadRequest($"No existe el grupo de equipo con ID {dto.GrupoEquipoId}");
+            if (dto.NombreGrupoEquipo == null )
+                return BadRequest("El nombre del grupo de equipo es requerido");
+            if (string.IsNullOrWhiteSpace(dto.Modelo))
+                return BadRequest("El modelo es requerido");
+            if (string.IsNullOrWhiteSpace(dto.Marca))
+                return BadRequest("La marca es requerida");
 
             var comando = new CrearEquipoComando(
-                grupoEquipo.Nombre!,
-                grupoEquipo.Modelo!,
-                grupoEquipo.Marca!,
+                dto.NombreGrupoEquipo,
+                dto.Modelo,
+                dto.Marca,
                 dto.CodigoUcb,
                 dto.Descripcion,
                 dto.NumeroSerial,
@@ -81,7 +75,7 @@ public class EquipoController : ControllerBase
     }
 
     [HttpPut("{id}")]
-    public ActionResult Actualizar([Range(1, int.MaxValue)] int id, [FromBody] EquipoRequestDto dto)
+    public ActionResult Actualizar(int id, [FromBody] EquipoRequestDto dto)
     {
         try
         {
@@ -91,17 +85,9 @@ public class EquipoController : ControllerBase
             if (dto == null)
                 return BadRequest("Los datos del equipo son requeridos");
             
-            string? nombreGrupoEquipo = null;
-            if (dto.GrupoEquipoId > 0)
-            {
-                var grupoEquipo = _obtenerGrupoEquipo.Handle(new ObtenerGrupoEquipoPorIdConsulta(dto.GrupoEquipoId));
-                if (grupoEquipo == null)
-                    return BadRequest($"No existe el grupo de equipo con ID {dto.GrupoEquipoId}");
-                nombreGrupoEquipo = grupoEquipo.Nombre;
-            }
             var comando = new ActualizarEquipoComando(
                 id,
-                nombreGrupoEquipo,
+                dto.NombreGrupoEquipo,
                 dto.CodigoUcb,
                 dto.Descripcion,
                 dto.NumeroSerial,
@@ -123,7 +109,7 @@ public class EquipoController : ControllerBase
     }
 
     [HttpDelete("{id}")]
-    public ActionResult Eliminar([Range(1, int.MaxValue)] int id)
+    public ActionResult Eliminar(int id)
     {
         try
         {

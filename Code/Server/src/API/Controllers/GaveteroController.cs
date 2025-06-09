@@ -1,5 +1,4 @@
 using Microsoft.AspNetCore.Mvc;
-using System.ComponentModel.DataAnnotations;
 using API.ViewModels;
 namespace API.Controllers;
 
@@ -68,7 +67,7 @@ public class GaveteroController : ControllerBase
     }
 
     [HttpPut("{id}")]
-    public ActionResult Actualizar([Range(1, int.MaxValue)] int id, [FromBody] GaveteroRequestDto dto)
+    public ActionResult Actualizar(int id, [FromBody] GaveteroRequestDto dto)
     {
         try
         {
@@ -98,7 +97,7 @@ public class GaveteroController : ControllerBase
     }
 
     [HttpDelete("{id}")]
-    public ActionResult Eliminar([Range(1, int.MaxValue)] int id)
+    public ActionResult Eliminar(int id)
     {
         try
         {

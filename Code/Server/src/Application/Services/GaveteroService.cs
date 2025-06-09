@@ -12,9 +12,9 @@ public class GaveteroService : IObtenerGaveteroConsulta, ICrearGaveteroComando,
         {
             _gaveteroRepository.Crear(comando);
         }
-        catch (Exception ex)
+        catch
         {
-            throw new Exception("Error en el servicio al crear gavetero", ex);
+            throw;
         }
     }    public void Handle(ActualizarGaveteroComando comando)
     {
@@ -22,9 +22,9 @@ public class GaveteroService : IObtenerGaveteroConsulta, ICrearGaveteroComando,
         {
             _gaveteroRepository.Actualizar(comando);
         }
-        catch (Exception ex)
+        catch
         {
-            throw new Exception("Error en el servicio al actualizar gavetero", ex);
+            throw;
         }
     }    public void Handle(EliminarGaveteroComando comando)
     {
@@ -32,9 +32,9 @@ public class GaveteroService : IObtenerGaveteroConsulta, ICrearGaveteroComando,
         {
             _gaveteroRepository.Eliminar(comando.Id);
         }
-        catch (Exception ex)
+        catch
         {
-            throw new Exception("Error en el servicio al eliminar gavetero", ex);
+            throw;
         }
     }    public List<GaveteroDto>? Handle()
     {
@@ -42,9 +42,9 @@ public class GaveteroService : IObtenerGaveteroConsulta, ICrearGaveteroComando,
         {
             return _gaveteroRepository.ObtenerTodos();
         }
-        catch (Exception ex)
+        catch
         {
-            throw new Exception("Error en el servicio al obtener gaveteros", ex);
+            throw;
         }
     }
 }

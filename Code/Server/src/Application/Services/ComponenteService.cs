@@ -12,9 +12,9 @@ public class ComponenteService : ICrearComponenteComando, IObtenerComponenteCons
         {
             _componenteRepository.Crear(comando);
         }
-        catch (Exception ex)
+        catch
         {
-            throw new Exception("Error en el servicio al crear componente", ex);
+            throw;
         }
     }    public List<ComponenteDto>? Handle()
     {
@@ -22,9 +22,9 @@ public class ComponenteService : ICrearComponenteComando, IObtenerComponenteCons
         {
             return _componenteRepository.ObtenerTodos();
         }
-        catch (Exception ex)
+        catch
         {
-            throw new Exception("Error en el servicio al obtener componentes", ex);
+            throw;
         }
     }    public void Handle(ActualizarComponenteComando comando)
     {
@@ -32,9 +32,9 @@ public class ComponenteService : ICrearComponenteComando, IObtenerComponenteCons
         {
             _componenteRepository.Actualizar(comando);
         }
-        catch (Exception ex)
+        catch
         {
-            throw new Exception("Error en el servicio al actualizar componente", ex);
+            throw;
         }
     }    public void Handle(EliminarComponenteComando comando)
     {
@@ -42,9 +42,9 @@ public class ComponenteService : ICrearComponenteComando, IObtenerComponenteCons
         {
             _componenteRepository.Eliminar(comando.Id);
         }
-        catch (Exception ex)
+        catch
         {
-            throw new Exception("Error en el servicio al eliminar componente", ex);
+            throw;
         }
     }
 }

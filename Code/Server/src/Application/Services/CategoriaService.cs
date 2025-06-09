@@ -12,9 +12,9 @@ public class CategoriaService : ICrearCategoriaComando, IObtenerCategoriaConsult
         {
             _categoriaRepository.Crear(comando);
         }
-        catch (Exception ex)
+        catch
         {
-            throw new Exception("Error en el servicio al crear categoría", ex);
+            throw;
         }
     }    public List<CategoriaDto>? Handle()
     {
@@ -22,9 +22,9 @@ public class CategoriaService : ICrearCategoriaComando, IObtenerCategoriaConsult
         {
             return _categoriaRepository.ObtenerTodos();
         }
-        catch (Exception ex)
+        catch
         {
-            throw new Exception("Error en el servicio al obtener categorías", ex);
+            throw;
         }
     }    public void Handle(ActualizarCategoriaComando comando)
     {
@@ -32,9 +32,9 @@ public class CategoriaService : ICrearCategoriaComando, IObtenerCategoriaConsult
         {
             _categoriaRepository.Actualizar(comando);
         }
-        catch (Exception ex)
+        catch
         {
-            throw new Exception("Error en el servicio al actualizar categoría", ex);
+            throw;
         }
     }    public void Handle(EliminarCategoriaComando comando)
     {
@@ -42,9 +42,9 @@ public class CategoriaService : ICrearCategoriaComando, IObtenerCategoriaConsult
         {
             _categoriaRepository.Eliminar(comando.Id);
         }
-        catch (Exception ex)
+        catch
         {
-            throw new Exception("Error en el servicio al eliminar categoría", ex);
+            throw;
         }
     }
 }

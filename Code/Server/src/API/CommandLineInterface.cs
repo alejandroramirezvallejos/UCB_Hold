@@ -1,3 +1,5 @@
+using Microsoft.AspNetCore.Mvc;
+
 public static class CommandLineInterface
 {
     private static IHost? _webHost = null;
@@ -193,10 +195,15 @@ public static class CommandLineInterface
         builder.Services.AddScoped<ICrearUsuarioComando, UsuarioService>();
         builder.Services.AddScoped<IObtenerUsuarioConsulta, UsuarioService>();
         builder.Services.AddScoped<IActualizarUsuarioComando, UsuarioService>();
-        builder.Services.AddScoped<IEliminarUsuarioComando, UsuarioService>();
-        builder.Services.AddScoped<IIniciarSesionUsuarioConsulta, UsuarioService>();
+        builder.Services.AddScoped<IEliminarUsuarioComando, UsuarioService>();        builder.Services.AddScoped<IIniciarSesionUsuarioConsulta, UsuarioService>();
 
-        builder.Services.AddControllers();
+        builder.Services.AddControllers()
+            .AddJsonOptions(options =>
+            {
+                options.JsonSerializerOptions.PropertyNamingPolicy = null;
+                options.JsonSerializerOptions.PropertyNameCaseInsensitive = true;
+            });
+
         builder.Services.AddEndpointsApiExplorer();
         builder.Services.AddSwaggerGen();
         builder.Services.AddAuthorization();
@@ -219,9 +226,8 @@ public static class CommandLineInterface
         {
             app.UseSwagger();
             app.UseSwaggerUI();
-        }
-
-        app.UseHttpsRedirection();
+        }        app.UseHttpsRedirection();
+        app.UseRouting();
         app.UseCors("AllowAll");
         app.UseAuthorization();
         app.MapControllers();

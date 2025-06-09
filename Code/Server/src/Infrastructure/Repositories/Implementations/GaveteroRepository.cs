@@ -27,14 +27,14 @@ public class GaveteroRepository : IGaveteroRepository
             ["longitud"] = comando.Longitud ?? (object)DBNull.Value,
             ["profundidad"] = comando.Profundidad ?? (object)DBNull.Value,
             ["altura"] = comando.Altura ?? (object)DBNull.Value
-        };
-        try
+        };        try
         {
             _ejecutarConsulta.EjecutarSpNR(sql, parametros);
         }
         catch (Exception ex)
         {
-            throw new Exception("Error al crear el gavetero", ex);
+            var innerError = ex.InnerException?.Message ?? ex.Message;
+            throw new Exception($"Error en BD al crear gavetero: {innerError}. SQL: {sql}. Parámetros: nombre={comando.Nombre}, tipo={comando.Tipo}", ex);
         }
     }
 
@@ -60,14 +60,14 @@ public class GaveteroRepository : IGaveteroRepository
             ["longitud"] = comando.Longitud ?? (object)DBNull.Value,
             ["profundidad"] = comando.Profundidad ?? (object)DBNull.Value,
             ["altura"] = comando.Altura ?? (object)DBNull.Value
-        };
-        try
+        };        try
         {
             _ejecutarConsulta.EjecutarSpNR(sql, parametros);
         }
         catch (Exception ex)
         {
-            throw new Exception("Error al actualizar el gavetero", ex);
+            var innerError = ex.InnerException?.Message ?? ex.Message;
+            throw new Exception($"Error en BD al actualizar gavetero: {innerError}. SQL: {sql}. Parámetros: id={comando.Id}, nombre={comando.Nombre}", ex);
         }
     }
 
@@ -76,8 +76,7 @@ public class GaveteroRepository : IGaveteroRepository
         const string sql = @"
         CALL public.eliminar_gavetero(
 	    @id
-        )";
-        try
+        )";        try
         {
             _ejecutarConsulta.EjecutarSpNR(sql, new Dictionary<string, object?>
             {
@@ -86,21 +85,28 @@ public class GaveteroRepository : IGaveteroRepository
         }
         catch (Exception ex)
         {
-            throw new Exception("Error al eliminar el gavetero", ex);
+            var innerError = ex.InnerException?.Message ?? ex.Message;
+            throw new Exception($"Error en BD al eliminar gavetero: {innerError}. SQL: {sql}. Parámetros: id={id}", ex);
         }
-    }
-
-    public List<GaveteroDto> ObtenerTodos()
+    }    public List<GaveteroDto> ObtenerTodos()
     {
         const string sql = @"
         SELECT * from public.obtener_gaveteros()
         ";
 
-        DataTable dt = _ejecutarConsulta.EjecutarFuncion(sql, new Dictionary<string, object?>());
-        var lista = new List<GaveteroDto>(dt.Rows.Count);
-        foreach (DataRow fila in dt.Rows)
-            lista.Add(MapearFilaADto(fila));
-        return lista;
+        try
+        {
+            DataTable dt = _ejecutarConsulta.EjecutarFuncion(sql, new Dictionary<string, object?>());
+            var lista = new List<GaveteroDto>(dt.Rows.Count);
+            foreach (DataRow fila in dt.Rows)
+                lista.Add(MapearFilaADto(fila));
+            return lista;
+        }
+        catch (Exception ex)
+        {
+            var innerError = ex.InnerException?.Message ?? ex.Message;
+            throw new Exception($"Error en BD al obtener gaveteros: {innerError}. SQL: {sql}", ex);
+        }
     }
     private GaveteroDto MapearFilaADto(DataRow fila)
     {

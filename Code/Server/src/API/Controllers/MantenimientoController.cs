@@ -1,5 +1,4 @@
 using Microsoft.AspNetCore.Mvc;
-using System.ComponentModel.DataAnnotations;
 using API.ViewModels;
 namespace API.Controllers;
 
@@ -27,10 +26,10 @@ public class MantenimientoController : ControllerBase
             if (dto == null)
                 return BadRequest("Los datos del mantenimiento son requeridos");
 
-            if (dto.FechaMantenimiento == default)
+            if (dto.FechaMantenimiento == null)
                 return BadRequest("La fecha de mantenimiento es requerida");
 
-            if (dto.FechaFinalDeMantenimiento == default)
+            if (dto.FechaFinalDeMantenimiento == null)
                 return BadRequest("La fecha final de mantenimiento es requerida");
 
             if (dto.FechaFinalDeMantenimiento < dto.FechaMantenimiento)
@@ -59,8 +58,8 @@ public class MantenimientoController : ControllerBase
                 return BadRequest("El costo debe ser un número positivo");
 
             var comando = new CrearMantenimientoComando(
-                dto.FechaMantenimiento,
-                dto.FechaFinalDeMantenimiento,
+                (DateOnly)dto.FechaMantenimiento,
+                (DateOnly)dto.FechaFinalDeMantenimiento,
                 dto.NombreEmpresaMantenimiento,
                 dto.Costo,
                 dto.DescripcionMantenimiento,
@@ -90,10 +89,8 @@ public class MantenimientoController : ControllerBase
         {
             return BadRequest($"Error al obtener mantenimientos: {ex.Message}");
         }
-    }
-
-    [HttpDelete("{id}")]
-    public ActionResult Eliminar([Range(1, int.MaxValue)] int id)
+    }    [HttpDelete("{id}")]
+    public ActionResult Eliminar(int id)
     {
         try
         {

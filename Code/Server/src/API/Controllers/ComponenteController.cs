@@ -1,5 +1,4 @@
 using Microsoft.AspNetCore.Mvc;
-using System.ComponentModel.DataAnnotations;
 using API.ViewModels;
 namespace API.Controllers;
 
@@ -20,23 +19,25 @@ public class ComponenteController : ControllerBase
         _actualizar = actualizar;
         _eliminar   = eliminar;
     }
-
     [HttpPost]
     public ActionResult Crear([FromBody] ComponenteRequestDto dto)
     {
         try
         {
             if (dto == null)
-                return BadRequest("Los datos del componente son requeridos");
-
+                return BadRequest("Los datos del componente son requeridos");            // Validaciones específicas para CREAR
             if (string.IsNullOrWhiteSpace(dto.Nombre))
                 return BadRequest("El nombre del componente es requerido");
+            if (string.IsNullOrWhiteSpace(dto.Modelo))
+                return BadRequest("El modelo del componente es requerido");
+            if (!dto.CodigoIMT.HasValue || dto.CodigoIMT.Value <= 0)
+                return BadRequest("El código IMT del componente es requerido y debe ser mayor a 0");
 
             var comando = new CrearComponenteComando(
-                dto.Nombre,
-                dto.Modelo,
+                dto.Nombre!,
+                dto.Modelo!,
                 dto.Tipo,
-                dto.CodigoIMT,
+                dto.CodigoIMT.Value, 
                 dto.Descripcion,
                 dto.PrecioReferencia,
                 dto.UrlDataSheet
@@ -44,10 +45,11 @@ public class ComponenteController : ControllerBase
 
             _crear.Handle(comando);
             return Created();
-        }
-        catch (Exception ex)
+        }        catch (Exception ex)
         {
-            return BadRequest($"Error al crear componente: {ex.Message}");
+            // Mostrar el error completo para debugging
+            var fullError = ex.InnerException?.Message ?? ex.Message;
+            return BadRequest($"Error al crear componente: {fullError}");
         }
     }
 
@@ -63,10 +65,8 @@ public class ComponenteController : ControllerBase
         {
             return BadRequest($"Error al obtener componentes: {ex.Message}");
         }
-    }
-
-    [HttpPut("{id}")]
-    public ActionResult Actualizar([Range(1, int.MaxValue)] int id, [FromBody] ComponenteRequestDto dto)
+    }    [HttpPut("{id}")]
+    public ActionResult Actualizar(int id, [FromBody] ComponenteRequestDto dto)
     {
         try
         {
@@ -76,6 +76,8 @@ public class ComponenteController : ControllerBase
             if (dto == null)
                 return BadRequest("Los datos del componente son requeridos");
 
+            // Para actualizar, no validamos campos requeridos
+            // ya que puede ser una actualización parcial
             var comando = new ActualizarComponenteComando(
                 id,
                 dto.Nombre,
@@ -97,7 +99,7 @@ public class ComponenteController : ControllerBase
     }
 
     [HttpDelete("{id}")]
-    public ActionResult Eliminar([Range(1, int.MaxValue)] int id)
+    public ActionResult Eliminar(int id)
     {
         try
         {

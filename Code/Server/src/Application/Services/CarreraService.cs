@@ -12,9 +12,9 @@ public class CarreraService : ICrearCarreraComando, IObtenerCarreraConsulta,
         {
             _carreraRepository.Crear(comando);
         }
-        catch (Exception ex)
+        catch
         {
-            throw new Exception("Error en el servicio al crear carrera", ex);
+            throw;
         }
     }    public List<CarreraDto>? Handle()
     {
@@ -22,9 +22,9 @@ public class CarreraService : ICrearCarreraComando, IObtenerCarreraConsulta,
         {
             return _carreraRepository.ObtenerTodas();
         }
-        catch (Exception ex)
+        catch
         {
-            throw new Exception("Error en el servicio al obtener carreras", ex);
+            throw;
         }
     }    public void Handle(ActualizarCarreraComando comando)
     {
@@ -32,9 +32,9 @@ public class CarreraService : ICrearCarreraComando, IObtenerCarreraConsulta,
         {
             _carreraRepository.Actualizar(comando);
         }
-        catch (Exception ex)
+        catch
         {
-            throw new Exception("Error en el servicio al actualizar carrera", ex);
+            throw;
         }
     }    public void Handle(EliminarCarreraComando comando)
     {
@@ -42,9 +42,9 @@ public class CarreraService : ICrearCarreraComando, IObtenerCarreraConsulta,
         {
             _carreraRepository.Eliminar(comando.Id);
         }
-        catch (Exception ex)
+        catch
         {
-            throw new Exception("Error en el servicio al eliminar carrera", ex);
+            throw;
         }
     }
 }

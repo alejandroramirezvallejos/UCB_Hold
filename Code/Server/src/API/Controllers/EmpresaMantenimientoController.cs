@@ -1,5 +1,4 @@
 using Microsoft.AspNetCore.Mvc;
-using System.ComponentModel.DataAnnotations;
 using API.ViewModels;
 namespace API.Controllers;
 
@@ -67,7 +66,7 @@ public class EmpresaMantenimientoController : ControllerBase
     }
 
     [HttpPut("{id}")]
-    public ActionResult Actualizar([Range(1, int.MaxValue)] int id, [FromBody] EmpresaMantenimientoRequestDto dto)
+    public ActionResult Actualizar(int id, [FromBody] EmpresaMantenimientoRequestDto dto)
     {
         try
         {
@@ -97,7 +96,7 @@ public class EmpresaMantenimientoController : ControllerBase
     }
 
     [HttpDelete("{id}")]
-    public ActionResult Eliminar([Range(1, int.MaxValue)] int id)
+    public ActionResult Eliminar(int id)
     {
         try
         {

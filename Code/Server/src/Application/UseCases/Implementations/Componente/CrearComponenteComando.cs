@@ -7,4 +7,4 @@ public record CrearComponenteComando(
     string? Descripcion,     
     double? PrecioReferencia, 
     string? UrlDataSheet              
-) ;
+);

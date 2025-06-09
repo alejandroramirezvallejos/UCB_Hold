@@ -7,60 +7,55 @@ public class UsuarioService : ICrearUsuarioComando, IObtenerUsuarioConsulta,
     public UsuarioService(IUsuarioRepository usuarioRepository)
     {
         _usuarioRepository = usuarioRepository;
-    }
-    public void Handle(CrearUsuarioComando comando)
+    }    public void Handle(CrearUsuarioComando comando)
     {
         try
         {
             _usuarioRepository.Crear(comando);
         }
-        catch (Exception ex)
+        catch
         {
-            throw new Exception("Error en el servicio al crear usuario", ex);
+            throw;
         }
-    }
-    public List<UsuarioDto>? Handle()
+    }    public List<UsuarioDto>? Handle()
     {
         try
         {
             return _usuarioRepository.ObtenerTodos();
         }
-        catch (Exception ex)
+        catch
         {
-            throw new Exception("Error en el servicio al obtener usuarios", ex);
+            throw;
         }
-    }
-    public void Handle(ActualizarUsuarioComando comando)
+    }    public void Handle(ActualizarUsuarioComando comando)
     {
         try
         {
             _usuarioRepository.Actualizar(comando);
         }
-        catch (Exception ex)
+        catch
         {
-            throw new Exception("Error en el servicio al actualizar usuario", ex);
+            throw;
         }
-    }
-    public void Handle(EliminarUsuarioComando comando)
+    }    public void Handle(EliminarUsuarioComando comando)
     {
         try
         {
             _usuarioRepository.Eliminar(comando.Carnet);
         }
-        catch (Exception ex)
+        catch
         {
-            throw new Exception("Error en el servicio al eliminar usuario", ex);
+            throw;
         }
-    }
-    public UsuarioDto? Handle(IniciarSesionUsuarioConsulta consulta)
+    }    public UsuarioDto? Handle(IniciarSesionUsuarioConsulta consulta)
     {
         try
         {
             return _usuarioRepository.ObtenerPorEmailYContrasena(consulta.Email, consulta.Contrasena);
         }
-        catch (Exception ex)
+        catch
         {
-            throw new Exception("Error en el servicio al obtener usuario por email y contraseña", ex);
+            throw;
         }
     }
 }

@@ -29,14 +29,14 @@ public class GrupoEquipoRepository : IGrupoEquipoRepository
             ["nombreCategoria"] = comando.NombreCategoria ?? (object)DBNull.Value,
             ["urlDataSheet"] = comando.UrlDataSheet ?? (object)DBNull.Value,
             ["urlImagen"] = comando.UrlImagen ?? (object)DBNull.Value
-        };
-        try
+        };        try
         {
             _ejecutarConsulta.EjecutarSpNR(sql, parametros);
         }
         catch (Exception ex)
         {
-            throw new Exception("Error al crear el grupo de equipo", ex);
+            var innerError = ex.InnerException?.Message ?? ex.Message;
+            throw new Exception($"Error en BD al crear grupo de equipo: {innerError}. SQL: {sql}. Parámetros: nombre={comando.Nombre}, marca={comando.Marca}", ex);
         }
     }
 
@@ -59,10 +59,10 @@ public class GrupoEquipoRepository : IGrupoEquipoRepository
                 return null;
             }
             return MapearFilaADto(dt.Rows[0]);
-        }
-        catch (Exception ex)
+        }        catch (Exception ex)
         {
-            throw new Exception("Error al obtener el grupo de equipo por ID", ex);
+            var innerError = ex.InnerException?.Message ?? ex.Message;
+            throw new Exception($"Error en BD al obtener grupo de equipo por ID: {innerError}. SQL: {sql}. Parámetros: id={id}", ex);
         }
     }
 
@@ -87,10 +87,10 @@ public class GrupoEquipoRepository : IGrupoEquipoRepository
                 lista.Add(MapearFilaADto(fila));
             }
             return lista;
-        }
-        catch (Exception ex)
+        }        catch (Exception ex)
         {
-            throw new Exception("Error al obtener grupos de equipos por nombre y categoría", ex);
+            var innerError = ex.InnerException?.Message ?? ex.Message;
+            throw new Exception($"Error en BD al obtener grupos de equipos por nombre y categoría: {innerError}. SQL: {sql}. Parámetros: nombre={nombre}, categoria={categoria}", ex);
         }
     }
 
@@ -117,14 +117,14 @@ public class GrupoEquipoRepository : IGrupoEquipoRepository
             ["nombreCategoria"] = comando.NombreCategoria ?? (object)DBNull.Value,
             ["urlDataSheet"] = comando.UrlDataSheet ?? (object)DBNull.Value,
             ["urlImagen"] = comando.UrlImagen ?? (object)DBNull.Value
-        };
-        try
+        };        try
         {
             _ejecutarConsulta.EjecutarSpNR(sql, parametros);
         }
         catch (Exception ex)
         {
-            throw new Exception("Error al actualizar el grupo de equipo", ex);
+            var innerError = ex.InnerException?.Message ?? ex.Message;
+            throw new Exception($"Error en BD al actualizar grupo de equipo: {innerError}. SQL: {sql}. Parámetros: id={comando.Id}, nombre={comando.Nombre}", ex);
         }
     }
 
@@ -133,8 +133,7 @@ public class GrupoEquipoRepository : IGrupoEquipoRepository
         const string sql = @"
             CALL public.eliminar_grupo_equipo(
 	        @id
-            )";
-        try
+            )";        try
         {
             _ejecutarConsulta.EjecutarSpNR(sql, new Dictionary<string, object?>
             {
@@ -143,21 +142,28 @@ public class GrupoEquipoRepository : IGrupoEquipoRepository
         }
         catch (Exception ex)
         {
-            throw new Exception("Error al eliminar el grupo de equipo", ex);
+            var innerError = ex.InnerException?.Message ?? ex.Message;
+            throw new Exception($"Error en BD al eliminar grupo de equipo: {innerError}. SQL: {sql}. Parámetros: id={id}", ex);
         }
-    }
-
-    public List<GrupoEquipoDto> ObtenerTodos()
+    }    public List<GrupoEquipoDto> ObtenerTodos()
     {
         const string sql = @"
             SELECT * from public.obtener_grupos_equipos()
         ";
 
-        DataTable dt = _ejecutarConsulta.EjecutarFuncion(sql, new Dictionary<string, object?>());
-        var lista = new List<GrupoEquipoDto>(dt.Rows.Count);
-        foreach (DataRow row in dt.Rows)
-            lista.Add(MapearFilaADto(row));
-        return lista;
+        try
+        {
+            DataTable dt = _ejecutarConsulta.EjecutarFuncion(sql, new Dictionary<string, object?>());
+            var lista = new List<GrupoEquipoDto>(dt.Rows.Count);
+            foreach (DataRow row in dt.Rows)
+                lista.Add(MapearFilaADto(row));
+            return lista;
+        }
+        catch (Exception ex)
+        {
+            var innerError = ex.InnerException?.Message ?? ex.Message;
+            throw new Exception($"Error en BD al obtener grupos de equipos: {innerError}. SQL: {sql}", ex);
+        }
     }
 
     private GrupoEquipoDto MapearFilaADto(DataRow fila)

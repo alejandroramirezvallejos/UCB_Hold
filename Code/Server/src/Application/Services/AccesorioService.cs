@@ -6,53 +6,45 @@ public class AccesorioService : ICrearAccesorioComando, IObtenerAccesorioConsult
     public AccesorioService(IAccesorioRepository accesorioRepository)
     {
         _accesorioRepository = accesorioRepository;
-    }
-
-    public void Handle(CrearAccesorioComando comando)
+    }    public void Handle(CrearAccesorioComando comando)
     {
         try
         {
             _accesorioRepository.Crear(comando);
         }
-        catch (Exception ex)
+        catch
         {
-            throw new Exception("Error en el servicio al crear el accesorio", ex);
+            throw;
         }
-    }
-
-    public List<AccesorioDto>? Handle()
+    }    public List<AccesorioDto>? Handle()
     {
         try
         {
             return _accesorioRepository.ObtenerTodos();
         }
-        catch (Exception ex)
+        catch
         {
-            throw new Exception("Error en el servicio al obtener los accesorios", ex);
+            throw;
         }
-    }
-
-    public void Handle(ActualizarAccesorioComando comando)
+    }    public void Handle(ActualizarAccesorioComando comando)
     {
         try
         {
             _accesorioRepository.Actualizar(comando);
         }
-        catch (Exception ex)
+        catch
         {
-            throw new Exception("Error en el servicio al actualizar el accesorio", ex);
+            throw;
         }
-    }
-
-    public void Handle(EliminarAccesorioComando comando)
+    }    public void Handle(EliminarAccesorioComando comando)
     {
         try
         {
             _accesorioRepository.Eliminar(comando.Id);
         }
-        catch (Exception ex)
+        catch
         {
-            throw new Exception("Error en el servicio al eliminar el accesorio", ex);
+            throw;
         }
     }
 }

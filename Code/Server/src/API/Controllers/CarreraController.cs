@@ -1,5 +1,4 @@
 using Microsoft.AspNetCore.Mvc;
-using System.ComponentModel.DataAnnotations;
 using API.ViewModels;
 namespace API.Controllers;
 
@@ -19,9 +18,7 @@ public class CarreraController : ControllerBase
         _obtener    = obtener;
         _actualizar = actualizar;
         _eliminar   = eliminar;
-    }
-
-    [HttpPost]
+    }    [HttpPost]
     public ActionResult Crear([FromBody] CarreraRequestDto dto)
     {
         try
@@ -80,10 +77,8 @@ public class CarreraController : ControllerBase
         {
             return BadRequest($"Error al actualizar carrera: {ex.Message}");
         }
-    }
-
-    [HttpDelete("{id}")]
-    public ActionResult Eliminar([Range(1, int.MaxValue)] int id)
+    }    [HttpDelete("{id}")]
+    public ActionResult Eliminar(int id)
     {
         try
         {

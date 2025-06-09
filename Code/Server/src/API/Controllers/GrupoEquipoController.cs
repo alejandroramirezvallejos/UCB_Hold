@@ -1,5 +1,4 @@
 using Microsoft.AspNetCore.Mvc;
-using System.ComponentModel.DataAnnotations;
 using API.ViewModels;
 namespace API.Controllers;
 
@@ -87,7 +86,7 @@ public class GrupoEquipoController : ControllerBase
     }
 
     [HttpGet("{id}")]
-    public ActionResult<GrupoEquipoDto> ObtenerPorId([Range(1, int.MaxValue)] int id)
+    public ActionResult<GrupoEquipoDto> ObtenerPorId(int id)
     {
         try
         {
@@ -121,10 +120,8 @@ public class GrupoEquipoController : ControllerBase
         {
             return BadRequest($"Error al buscar grupos de equipo: {ex.Message}");
         }
-    }
-
-    [HttpPut("{id}")]
-    public ActionResult Actualizar([Range(1, int.MaxValue)] int id, [FromBody] GrupoEquipoRequestDto dto)
+    }    [HttpPut("{id}")]
+    public ActionResult Actualizar(int id, [FromBody] GrupoEquipoRequestDto dto)
     {
         try
         {
@@ -152,10 +149,8 @@ public class GrupoEquipoController : ControllerBase
         {
             return BadRequest($"Error al actualizar grupo de equipo: {ex.Message}");
         }
-    }
-
-    [HttpDelete("{id}")]
-    public ActionResult Eliminar([Range(1, int.MaxValue)] int id)
+    }    [HttpDelete("{id}")]
+    public ActionResult Eliminar(int id)
     {
         try
         {

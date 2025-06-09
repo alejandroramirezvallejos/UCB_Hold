@@ -1,5 +1,4 @@
 using Microsoft.AspNetCore.Mvc;
-using System.ComponentModel.DataAnnotations;
 using API.ViewModels;
 namespace API.Controllers;
 
@@ -75,10 +74,8 @@ public class MuebleController : ControllerBase
         {
             return BadRequest($"Error al obtener muebles: {ex.Message}");
         }
-    }
-
-    [HttpPut("{id}")]
-    public ActionResult Actualizar([Range(1, int.MaxValue)] int id, [FromBody] MuebleRequestDto dto)
+    }    [HttpPut("{id}")]
+    public ActionResult Actualizar(int id, [FromBody] MuebleRequestDto dto)
     {
         try
         {
@@ -121,7 +118,7 @@ public class MuebleController : ControllerBase
     }
 
     [HttpDelete("{id}")]
-    public ActionResult Eliminar([Range(1, int.MaxValue)] int id)
+    public ActionResult Eliminar(int id)
     {
         try
         {

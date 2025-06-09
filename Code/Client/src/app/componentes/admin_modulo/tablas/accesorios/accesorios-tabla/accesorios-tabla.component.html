@@ -49,10 +49,9 @@
             Tipo 
             <i *ngIf="sortColumn === 'tipo'" 
                [class]="sortDirection === 'asc' ? 'fas fa-sort-up' : 'fas fa-sort-down'"></i>
-          </th>
-          <th (click)="ordenarPor('codigo_imt')">
+          </th>          <th (click)="ordenarPor('codigoImtEquipoAsociado')">
             Código IMT 
-            <i *ngIf="sortColumn === 'codigo_imt'" 
+            <i *ngIf="sortColumn === 'codigoImtEquipoAsociado'" 
                [class]="sortDirection === 'asc' ? 'fas fa-sort-up' : 'fas fa-sort-down'"></i>
           </th>
           <th (click)="ordenarPor('precio')">
@@ -63,13 +62,12 @@
           <th>Acciones</th>
         </tr>
       </thead>
-      <tbody>
-        <tr *ngFor="let accesorio of accesoriosPaginados" (click)="abrirModalEditar(accesorio)">
-          <td>{{accesorio.nombre}}</td>
-          <td>{{accesorio.modelo}}</td>
-          <td>{{accesorio.tipo}}</td>
-          <td>{{accesorio.codigo_imt}}</td>
-          <td class="precio-column">{{accesorio.precio | currency:'Bs ':'symbol':'1.2-2'}}</td>
+      <tbody>        <tr *ngFor="let accesorio of accesoriosPaginados" (click)="abrirModalEditar(accesorio)">
+          <td>{{accesorio.nombre || 'N/A'}}</td>
+          <td>{{accesorio.modelo || 'N/A'}}</td>
+          <td>{{accesorio.tipo || 'N/A'}}</td>
+          <td>{{accesorio.codigoImtEquipoAsociado || 'N/A'}}</td>
+          <td class="precio-column">{{accesorio.precio ? (accesorio.precio | currency:'Bs ':'symbol':'1.2-2') : 'N/A'}}</td>
           <td class="actions-column">
             <button class="btn-icon btn-delete" (click)="confirmarEliminar(accesorio, $event)">
               <i class="fas fa-trash-alt"></i>
@@ -150,44 +148,36 @@
                class="error-message">
             El modelo es requerido
           </div>
-        </div>
-
-        <div class="form-group">
-          <label for="tipo">Tipo <span class="required">*</span></label>
+        </div>        <div class="form-group">
+          <label for="tipo">Tipo</label>
           <input type="text" id="tipo" formControlName="tipo" />
-          <div *ngIf="accesorioForm.get('tipo')?.invalid && accesorioForm.get('tipo')?.touched" 
-               class="error-message">
-            El tipo es requerido
-          </div>
         </div>
 
         <div class="form-group">
           <label for="descripcion">Descripción</label>
           <textarea id="descripcion" formControlName="descripcion" rows="3"></textarea>
-        </div>
-
-        <div class="form-group">
-          <label for="codigo_imt">Código IMT de Equipo Vinculado <span class="required">*</span></label>
-          <input type="text" id="codigo_imt" formControlName="codigo_imt" />
-          <div *ngIf="accesorioForm.get('codigo_imt')?.invalid && accesorioForm.get('codigo_imt')?.touched" 
+        </div>        <div class="form-group">
+          <label for="codigoIMT">Código IMT <span class="required">*</span></label>
+          <input type="number" id="codigoIMT" formControlName="codigoIMT" />
+          <div *ngIf="accesorioForm.get('codigoIMT')?.invalid && accesorioForm.get('codigoIMT')?.touched" 
                class="error-message">
-            El código IMT es requerido
+            El código IMT es requerido y debe ser un número positivo
           </div>
         </div>
 
         <div class="form-group">
-          <label for="precio">Precio (Bs) <span class="required">*</span></label>
+          <label for="precio">Precio (Bs)</label>
           <input type="number" id="precio" formControlName="precio" step="any" />
           <div *ngIf="accesorioForm.get('precio')?.invalid && accesorioForm.get('precio')?.touched" 
                class="error-message">
-            El precio es requerido y debe ser un valor numérico
+            El precio debe ser un valor numérico positivo
           </div>
         </div>
 
         <div class="form-group">
-          <label for="url_data_sheet">URL Data Sheet</label>
-          <input type="url" id="url_data_sheet" formControlName="url_data_sheet" />
-          <div *ngIf="accesorioForm.get('url_data_sheet')?.invalid && accesorioForm.get('url_data_sheet')?.touched" 
+          <label for="urlDataSheet">URL Data Sheet</label>
+          <input type="url" id="urlDataSheet" formControlName="urlDataSheet" />
+          <div *ngIf="accesorioForm.get('urlDataSheet')?.invalid && accesorioForm.get('urlDataSheet')?.touched" 
                class="error-message">
             Debe ingresar una URL válida
           </div>
