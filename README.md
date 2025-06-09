@@ -83,7 +83,11 @@ En todos los procedures tenemos principios ACID con atomicidad y transacciones
 - **Nivel de aislamiento**: `SERIALIZABLE`
   - **Justificación**: Garantiza ausencia de lecturas no repetibles y lecturas fantasmas.
 
-## 5. ⬇️ Instalar
+## 5. 📖 Historias de Usuario
+
+[Ir a las Historias de Usuario](https://github.com/alejandroramirezvallejos/UCB_Hold/blob/main/Documentation/HistoriasDeUsuario.md)
+
+## 6. ⬇️ Instalar
 
 npm install signature_pad
 
@@ -92,7 +96,7 @@ npm install jspdf
 npm install html2canvas
 
 
-## 6. 👥 Miembros
+## 7. 👥 Miembros
 
 - [Josue Galo Balbontin Ugarteche](https://github.com/josue-balbontin)
 - [Alejandro Ramirez Vallejos](https://github.com/alejandroramirezvallejos)
