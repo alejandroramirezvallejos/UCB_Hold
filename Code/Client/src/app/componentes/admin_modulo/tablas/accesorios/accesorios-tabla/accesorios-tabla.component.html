@@ -5,223 +5,119 @@
       <h1>Accesorios</h1>
       <p class="subtitle">Gestión de accesorios para equipos de mecatrónica</p>
     </div>
-    <button class="button" (click)="abrirModalCrear()">
-      <i class="fa-solid fa-plus"></i> Nuevo Accesorio
+    <button class="botoncrear" (click)="crearaccesorio()">
+       Nuevo Accesorio
     </button>
   </div>
 
   <!-- BUSCADOR-->
   <div class="search-container">
     <div class="search-input-wrapper">
-      <i class="fas fa-search search-icon"></i>
-      <input 
+      <i class="fas fa-search search-icon"></i>      <input 
         type="text" 
         [(ngModel)]="terminoBusqueda" 
-        (input)="buscar()"
+        (keydown.enter)="buscar()"
         placeholder="Buscar accesorios..." 
         class="search-input"
       />
-      <button *ngIf="terminoBusqueda" class="clear-search" (click)="limpiarBusqueda()">
-        <i class="fas fa-times"></i>
-      </button>
+      @if (terminoBusqueda) {
+        <button class="clear-search" (click)="limpiarBusqueda()">
+          <i class="fas fa-times"></i>
+        </button>
+      }
     </div>
-    <div class="search-stats" *ngIf="accesoriosFiltrados.length !== accesorios.length">
-      Mostrando {{accesoriosFiltrados.length}} de {{accesorios.length}} accesorios
-    </div>
+
   </div>
 
   <!-- TABLA -->
   <div class="table-responsive">
     <table class="data-table">
-      <thead>
-        <tr>
+      <thead>        <tr>
           <th (click)="ordenarPor('nombre')">
             Nombre 
-            <i *ngIf="sortColumn === 'nombre'" 
-               [class]="sortDirection === 'asc' ? 'fas fa-sort-up' : 'fas fa-sort-down'"></i>
+            @if (sortColumn === 'nombre') {
+              <i [class]="sortDirection === 'asc' ? 'fas fa-sort-up' : 'fas fa-sort-down'"></i>
+            }
           </th>
           <th (click)="ordenarPor('modelo')">
             Modelo 
-            <i *ngIf="sortColumn === 'modelo'" 
-               [class]="sortDirection === 'asc' ? 'fas fa-sort-up' : 'fas fa-sort-down'"></i>
+            @if (sortColumn === 'modelo') {
+              <i [class]="sortDirection === 'asc' ? 'fas fa-sort-up' : 'fas fa-sort-down'"></i>
+            }
           </th>
           <th (click)="ordenarPor('tipo')">
             Tipo 
-            <i *ngIf="sortColumn === 'tipo'" 
-               [class]="sortDirection === 'asc' ? 'fas fa-sort-up' : 'fas fa-sort-down'"></i>
+            @if (sortColumn === 'tipo') {
+              <i [class]="sortDirection === 'asc' ? 'fas fa-sort-up' : 'fas fa-sort-down'"></i>
+            }
           </th>
           <th (click)="ordenarPor('codigo_imt')">
-            Código IMT 
-            <i *ngIf="sortColumn === 'codigo_imt'" 
-               [class]="sortDirection === 'asc' ? 'fas fa-sort-up' : 'fas fa-sort-down'"></i>
+            Código IMT del Equipo
+            @if (sortColumn === 'codigo_imt') {
+              <i [class]="sortDirection === 'asc' ? 'fas fa-sort-up' : 'fas fa-sort-down'"></i>
+            }
           </th>
           <th (click)="ordenarPor('precio')">
             Precio 
-            <i *ngIf="sortColumn === 'precio'" 
-               [class]="sortDirection === 'asc' ? 'fas fa-sort-up' : 'fas fa-sort-down'"></i>
+            @if (sortColumn === 'precio') {
+              <i [class]="sortDirection === 'asc' ? 'fas fa-sort-up' : 'fas fa-sort-down'"></i>
+            }
           </th>
           <th>Acciones</th>
         </tr>
-      </thead>
-      <tbody>
-        <tr *ngFor="let accesorio of accesoriosPaginados" (click)="abrirModalEditar(accesorio)">
-          <td>{{accesorio.nombre}}</td>
-          <td>{{accesorio.modelo}}</td>
-          <td>{{accesorio.tipo}}</td>
-          <td>{{accesorio.codigo_imt}}</td>
-          <td class="precio-column">{{accesorio.precio | currency:'Bs ':'symbol':'1.2-2'}}</td>
-          <td class="actions-column">
-            <button class="btn-icon btn-delete" (click)="confirmarEliminar(accesorio, $event)">
-              <i class="fas fa-trash-alt"></i>
-            </button>
-          </td>
-        </tr>
-        <tr *ngIf="accesoriosFiltrados.length === 0">
-          <td colspan="6" class="empty-table">
-            <div class="empty-state">
-              <i class="fas fa-search fa-3x"></i>
-              <p>No se encontraron accesorios</p>
-              <button class="btn btn-outline" (click)="limpiarBusqueda()">Limpiar filtros</button>
-            </div>
-          </td>
-        </tr>
+      </thead>      <tbody>
+        @for (accesorio of accesorios; track $index ; let i = $index) {
+            <tr>
+            <td>{{accesorio.nombre}}</td>
+            <td>{{accesorio.modelo}}</td>
+            <td>{{accesorio.tipo}}</td>
+            <td>{{accesorio.codigo_imt}}</td>
+            <td class="precio-column">{{accesorio.precio | currency:'Bs ':'symbol':'1.2-2'}}</td>
+            <td class="actions-column">
+              <button class="btn-icon btn-delete" (click)="eliminarAccesorio(i)">
+                <i class="fas fa-trash-alt"></i>
+              </button>
+              <button class="btn-icon btn-edit" (click)="editarAccesorio(accesorio)">
+                <i class="fas fa-pencil-alt"></i>
+              </button>
+     
+
+
+            </td>        </tr>  
+        }
+        @if (accesorios.length === 0) {
+          <tr>
+            <td colspan="6" class="empty-table">
+              <div class="empty-state">
+                <i class="fas fa-search fa-3x"></i>
+                <p>No se encontraron accesorios</p>
+                <button class="btn btn-outline" (click)="limpiarBusqueda()">Limpiar filtros</button>
+              </div>
+            </td>
+          </tr>
+        }
       </tbody>
-    </table>
-  </div>
-
-  <!-- Paginación -->
-  <div class="pagination-container" *ngIf="accesoriosFiltrados.length > itemsPorPagina">
-    <div class="pagination-info">
-      Mostrando {{ inicio + 1 }} - {{ Math.min(inicio + itemsPorPagina, accesoriosFiltrados.length) }} 
-      de {{ accesoriosFiltrados.length }} registros
-    </div>
-    <div class="pagination-controls">
-      <button 
-        class="pagination-btn" 
-        [disabled]="inicio === 0"
-        (click)="cambiarPagina(inicio - itemsPorPagina)">
-        <i class="fas fa-chevron-left"></i>
-      </button>
-      <span class="pagination-pages">
-        <button 
-          *ngFor="let pagina of paginasArray" 
-          class="page-number" 
-          [class.active]="pagina.activa"
-          (click)="cambiarPagina((pagina.numero - 1) * itemsPorPagina)">
-          {{ pagina.numero }}
-        </button>
-      </span>
-      <button 
-        class="pagination-btn" 
-        [disabled]="inicio + itemsPorPagina >= accesoriosFiltrados.length"
-        (click)="cambiarPagina(inicio + itemsPorPagina)">
-        <i class="fas fa-chevron-right"></i>
-      </button>
-    </div>
-  </div>
-</div>
-
-<!-- Modal para crear o editar accesorio -->
-<div class="modal" [class.active]="modalAccesorio.visible">
-  <div class="modal-overlay" (click)="cerrarModal()"></div>
-  <div class="modal-container">
-    <div class="modal-header">
-      <h3>{{ modalAccesorio.editar ? 'Editar' : 'Nuevo' }} Accesorio</h3>
-      <button class="btn-icon btn-close" (click)="cerrarModal()">
-        <i class="fas fa-times"></i>
-      </button>
-    </div>
-
-    <div class="modal-body">
-      <form [formGroup]="accesorioForm" (ngSubmit)="guardarAccesorio()">
-        <div class="form-group">
-          <label for="nombre">Nombre <span class="required">*</span></label>
-          <input type="text" id="nombre" formControlName="nombre" />
-          <div *ngIf="accesorioForm.get('nombre')?.invalid && accesorioForm.get('nombre')?.touched" 
-               class="error-message">
-            El nombre es requerido
-          </div>
-        </div>
-
-        <div class="form-group">
-          <label for="modelo">Modelo <span class="required">*</span></label>
-          <input type="text" id="modelo" formControlName="modelo" />
-          <div *ngIf="accesorioForm.get('modelo')?.invalid && accesorioForm.get('modelo')?.touched" 
-               class="error-message">
-            El modelo es requerido
-          </div>
-        </div>
-
-        <div class="form-group">
-          <label for="tipo">Tipo <span class="required">*</span></label>
-          <input type="text" id="tipo" formControlName="tipo" />
-          <div *ngIf="accesorioForm.get('tipo')?.invalid && accesorioForm.get('tipo')?.touched" 
-               class="error-message">
-            El tipo es requerido
-          </div>
-        </div>
-
-        <div class="form-group">
-          <label for="descripcion">Descripción</label>
-          <textarea id="descripcion" formControlName="descripcion" rows="3"></textarea>
-        </div>
-
-        <div class="form-group">
-          <label for="codigo_imt">Código IMT de Equipo Vinculado <span class="required">*</span></label>
-          <input type="text" id="codigo_imt" formControlName="codigo_imt" />
-          <div *ngIf="accesorioForm.get('codigo_imt')?.invalid && accesorioForm.get('codigo_imt')?.touched" 
-               class="error-message">
-            El código IMT es requerido
-          </div>
-        </div>
-
-        <div class="form-group">
-          <label for="precio">Precio (Bs) <span class="required">*</span></label>
-          <input type="number" id="precio" formControlName="precio" step="any" />
-          <div *ngIf="accesorioForm.get('precio')?.invalid && accesorioForm.get('precio')?.touched" 
-               class="error-message">
-            El precio es requerido y debe ser un valor numérico
-          </div>
-        </div>
-
-        <div class="form-group">
-          <label for="url_data_sheet">URL Data Sheet</label>
-          <input type="url" id="url_data_sheet" formControlName="url_data_sheet" />
-          <div *ngIf="accesorioForm.get('url_data_sheet')?.invalid && accesorioForm.get('url_data_sheet')?.touched" 
-               class="error-message">
-            Debe ingresar una URL válida
-          </div>
-        </div>
-
-        <div class="form-actions">
-          <button type="button" class="btn btn-secondary" (click)="cerrarModal()">Cancelar</button>
-          <button type="submit" class="btn btn-primary" [disabled]="accesorioForm.invalid">
-            {{ modalAccesorio.editar ? 'Actualizar' : 'Crear' }}
-          </button>
-        </div>
-      </form>
-    </div>
-  </div>
-</div>
-
-<!-- Modal de confirmación para eliminar -->
-<div class="modal" [class.active]="modalConfirmacion.visible">
-  <div class="modal-overlay" (click)="cancelarEliminacion()"></div>
-  <div class="modal-container modal-small">
-    <div class="modal-header">
-      <h3>Confirmar eliminación</h3>
-      <button class="btn-icon btn-close" (click)="cancelarEliminacion()">
-        <i class="fas fa-times"></i>
-      </button>
-    </div>
-    <div class="modal-body">
-      <p>¿Está seguro de que desea eliminar el accesorio "{{ modalConfirmacion.nombre }}"?</p>
-      <p class="warning-text">Esta acción no se puede deshacer.</p>
-      
-      <div class="form-actions">
-        <button class="btn btn-secondary" (click)="cancelarEliminacion()">Cancelar</button>
-        <button class="btn btn-danger" (click)="eliminarAccesorio()">Eliminar</button>
+    </table>  </div>  <!-- ALERTA DE ELIMINACIÓN -->
+  @if(alertaeliminar){
+    <div class="alerta-eliminar">
+      <div class="modal-content">
+        <p>¿Estás seguro de que deseas eliminar este accesorio?</p>
+        <button class="btn btn-confirm" (click)="confirmarEliminacion()">Sí</button>
+        <button class="btn btn-cancel" (click)="cancelarEliminacion()">No</button>
       </div>
     </div>
-  </div>
+  }
 </div>
+
+@if(botoncrear()){
+  <app-accesorios-crear
+  [botoncrear]="botoncrear"
+  ></app-accesorios-crear>
+}
+
+@if(botoneditar()){
+  <app-accesorios-editar
+  [botoneditar]="botoneditar"
+  [accesorio]="accesorioSeleccionado"
+  ></app-accesorios-editar>
+}

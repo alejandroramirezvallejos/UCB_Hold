@@ -1,4 +1,4 @@
-/* accesorios-crear.component.css */
+/* accesorios-editar.component.css */
 @import url('https://fonts.googleapis.com/css2?family=Open+Sans:wght@300;400;600;700&display=swap');
 
 :host {
@@ -105,12 +105,14 @@
 
 .form-input:focus {
   outline: none;
-  border-color: var(--primary-color);
+  border-color: var(--primary-color) !important;
+  border-width: 2px !important;
   box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.1);
 }
 
 .form-input:invalid {
-  border-color: #dc2626;
+  border-color: #dc2626 !important;
+  border-width: 2px !important;
 }
 
 textarea.form-input {

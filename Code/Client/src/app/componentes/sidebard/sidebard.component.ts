@@ -1,11 +1,12 @@
 import { CommonModule } from '@angular/common';
-import { Component, EventEmitter, Input, input, Output, signal, WritableSignal } from '@angular/core';
+import { Component, EventEmitter, Input, input, Output, signal, WritableSignal, ViewEncapsulation } from '@angular/core';
 
 @Component({
   selector: 'app-sidebard',
   imports: [CommonModule],
   templateUrl: './sidebard.component.html',
-  styleUrl: './sidebard.component.css'
+  styleUrl: './sidebard.component.css',
+  encapsulation: ViewEncapsulation.None
 })
 export class SidebardComponent {
 
