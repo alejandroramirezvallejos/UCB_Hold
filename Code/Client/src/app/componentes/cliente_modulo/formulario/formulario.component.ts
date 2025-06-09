@@ -10,6 +10,7 @@ import html2canvas from 'html2canvas';
 import { MostrarerrorComponent } from '../../mostrarerror/mostrarerror.component';
 import { Router } from '@angular/router';
 import { UsuarioService } from '../../../services/usuario/usuario.service';
+import { MandarPrestamoService } from '../../../services/APIS/crear/mandar-prestamo.service';
 
 
 
@@ -38,7 +39,8 @@ export class FormularioComponent implements OnInit {
     private renderer : Renderer2,
     private carrito : CarritoService,
     private router : Router,
-    private usuario : UsuarioService
+    private usuario : UsuarioService,
+    private mandarprestamo : MandarPrestamoService
   ) {
 
   }
@@ -83,24 +85,26 @@ export class FormularioComponent implements OnInit {
     this.clickfirma.set(true);
 
   }
-
   aceptar(){
     if(!this.carrito || Object.keys(this.carrito.obtenercarrito()).length===0){
       this.error.set(1); 
     }
     else if(this.firma=='' || undefined){
       this.firmar();
-    }
+    } 
     else{
-      //TODO AGREGAR LA LOGICA PARA MANDAR Y PARA RELLENAR LO FALTANTE COMO FECHA Y FECHA MAXIMA 
-      // COMPLETAR EL UCB ID Y MODELOS
-      // RESERVAR 
-      this.generarPDF();
-      this.carrito.vaciarcarrito();
-      this.router.navigate(["/home"])
+      this.mandarprestamo.crearPrestamo(this.carrito.obtenercarrito(),this.usuario.usuario.carnet!,null).subscribe({
+        next: (response) => {
+          this.carrito.vaciarcarrito();
+          this.generarPDF(); 
+          this.router.navigate(["/home"]);
+        },
+        error: (error) => {
+          this.error.set(1);
+        }
+      })
     }
   }
-
   guardarfirma(signatureData: string): void {
   this.firma = signatureData;
   // Actualiza la imagen de la firma en el contrato sin reprocesar todo el contenido.
@@ -110,6 +114,30 @@ export class FormularioComponent implements OnInit {
       this.renderer.setAttribute(signatureImage, 'src', this.firma);
     }
   }
+  }
+
+  // Función para enviar el préstamo con el contrato
+  enviarPrestamo(): void {
+    this.generarPDFBinario().then(pdfBlob => {
+      this.mandarprestamo.crearPrestamo(
+        this.carrito.obtenercarrito(),
+        this.usuario.usuario.carnet!,
+        pdfBlob
+      ).subscribe({
+        next: (response) => {
+          this.carrito.vaciarcarrito();
+          this.generarPDF(); 
+          this.router.navigate(["/home"]);
+        },
+        error: (error) => {
+          console.error('Error al crear préstamo:', error);
+          this.error.set(1);
+        }
+      });
+    }).catch(error => {
+      console.error('Error al generar PDF:', error);
+      this.error.set(1);
+    });
   }
  
 
@@ -160,7 +188,7 @@ private quintavalordebienes(carrito :  Carrito) : string{
   `;
 
 }
-  
+    
  generarPDF(): void {
     const contrato = this.contratoContainer.nativeElement;
 
@@ -197,6 +225,41 @@ private quintavalordebienes(carrito :  Carrito) : string{
       }
       
       pdf.save('contrato.pdf');
+    });
+  }
+
+  // Método para generar PDF como binario
+  async generarPDFBinario(): Promise<Blob> {
+    const contrato = this.contratoContainer.nativeElement;
+
+    return new Promise((resolve, reject) => {
+      html2canvas(contrato, { scale: 2 }).then((canvas) => {
+        const imgData = canvas.toDataURL('image/png');
+        const pdf = new jsPDF('p', 'mm', 'a4');
+        
+        const pdfWidth = pdf.internal.pageSize.getWidth();
+        const pdfHeight = pdf.internal.pageSize.getHeight();
+        
+        const imgProps = pdf.getImageProperties(imgData);
+        const imgHeight = (imgProps.height * pdfWidth) / imgProps.width;
+
+        let heightLeft = imgHeight;
+        let position = 0;
+
+        pdf.addImage(imgData, 'PNG', 0, position, pdfWidth, imgHeight);
+        heightLeft -= pdfHeight;
+
+        while (heightLeft > 0) {
+          position = heightLeft - imgHeight;
+          pdf.addPage();
+          pdf.addImage(imgData, 'PNG', 0, position, pdfWidth, imgHeight);
+          heightLeft -= pdfHeight;
+        }
+        
+        // Convertir el PDF a Blob
+        const pdfBlob = pdf.output('blob');
+        resolve(pdfBlob);
+      }).catch(reject);
     });
   }
 

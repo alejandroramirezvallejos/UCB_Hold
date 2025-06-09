@@ -18,16 +18,23 @@
           class="form-input"
           #emailInput="ngModel"
         >
-        @if (emailInput.invalid && (emailInput.dirty || emailInput.touched)) {
-          <div class="error-message">
-            @if (emailInput.errors?.['required']) {
-              <div>El correo electrónico es requerido</div>
-            }
-            @if (emailInput.errors?.['email']) {
-              <div>Formato de correo inválido</div>
-            }
-          </div>
-        }
+        <div class="error-message">
+          @if (emailInput.invalid && (emailInput.dirty || emailInput.touched)) {
+            
+              @if (emailInput.errors?.['required']) {
+                <div>El correo electrónico es requerido</div>
+              }
+              @if (emailInput.errors?.['email']) {
+                <div>Formato de correo inválido</div>
+              }
+              
+          
+          }
+          @if(incorrecto==true){
+                <div>Correo o contraseña incorrectos</div>
+              }
+
+         </div>
       </div>
 
       <div class="form-group">
@@ -43,16 +50,22 @@
           class="form-input"
           #passwordInput="ngModel"
         >
-        @if (passwordInput.invalid && (passwordInput.dirty || passwordInput.touched)) {
           <div class="error-message">
-            @if (passwordInput.errors?.['required']) {
-              <div>La contraseña es requerida</div>
+          @if (passwordInput.invalid && (passwordInput.dirty || passwordInput.touched)) {
+          
+              @if (passwordInput.errors?.['required']) {
+                <div>La contraseña es requerida</div>
+              }
+              @if (passwordInput.errors?.['minlength']) {
+                <div>Mínimo 6 caracteres</div>
+              }
+
+          
+          }
+          @if(incorrecto==true){
+                <div>Correo o contraseña incorrectos</div>
             }
-            @if (passwordInput.errors?.['minlength']) {
-              <div>Mínimo 6 caracteres</div>
-            }
-          </div>
-        }
+        </div>
       </div>
 
       <button type="submit" class="login-button" [disabled]="!email || !contrasena">
@@ -74,3 +87,11 @@
     </form>
   </div>
 </div>
+
+
+@if(errorraro()==1){
+  <app-mostrarerror
+  [error]="errorraro"
+  mensaje="Error desconocido"
+  ></app-mostrarerror>
+}

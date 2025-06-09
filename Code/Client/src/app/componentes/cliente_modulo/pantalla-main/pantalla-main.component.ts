@@ -3,7 +3,7 @@ import { Component, EventEmitter, input, Output } from '@angular/core';
 import { ListaObjetosComponent } from '../lista-objetos/lista-objetos.component';
 import { FormsModule } from '@angular/forms';
 import { BuscadorService } from '../../../services/buscador/buscador.service';
-import { CategoriasService } from '../../../services/categorias/categorias.service';
+import { CategoriasService } from '../../../services/APIS/obtener/categorias/categorias.service';
 
 @Component({
   selector: 'app-pantalla-main',

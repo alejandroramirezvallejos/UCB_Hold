@@ -1,8 +1,8 @@
 import { Injectable } from '@angular/core';
-import { environment } from '../../../environments/environment';
+import { environment } from '../../../../../environments/environment';
 import { HttpClient } from '@angular/common/http';
 import { Observable } from 'rxjs';
-import { GrupoEquipo } from '../../models/grupo_equipo';
+import { GrupoEquipo } from '../../../../models/grupo_equipo';
 import { map } from 'rxjs/operators';
 @Injectable({
   providedIn: 'root'
@@ -15,21 +15,19 @@ export class GrupoEquipoService {
 
   getGrupoEquipo(categoria : string , producto : string): Observable<GrupoEquipo[]>  {
     var url : string   = this.apiUrl + '?nombre=' + producto + '&categoria=' + categoria;
-
     return this.http.get<any[]>(url).pipe(
       map(data => data.map(item => ({
-        id: item.id_grupo_equipo,
+        id: item.id,
         nombre: item.nombre ,
-        modelo: ' '+item.modelo || '',
-        marca: ' '+item.marca || '',
-        urlDataSheet: item.url_data_sheet ,
-        urlImagen: item.url_imagen,
         descripcion : item.descripcion  || '', 
+        modelo: ' '+item.modelo || '',
+        url_data_sheet: item.urlDataSheet || '' ,
+        marca: ' '+item.marca || '',
+        link: item.urlImagen ,
+     
       })))
     );
 
-
-    
   }
 
 }
