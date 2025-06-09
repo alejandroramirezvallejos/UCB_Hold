@@ -116,12 +116,12 @@ public class EmpresaMantenimientoRepository : IEmpresaMantenimientoRepository
     {
         return new EmpresaMantenimientoDto
         {
-            NombreEmpresa = fila["nombre"].ToString() ?? string.Empty,
-            NombreResponsable = fila["nombre_responsable"].ToString() ?? string.Empty,
-            ApellidoResponsable = fila["apellido_responsable"].ToString() ?? string.Empty,
-            Telefono = fila["telefono"].ToString() ?? string.Empty,
-            Direccion = fila["direccion"].ToString() ?? string.Empty,
-            Nit = fila["nit"].ToString() ?? string.Empty
+            NombreEmpresa = fila["nombre_empresa"] == DBNull.Value ? null : fila["nombre_empresa"].ToString(),
+            NombreResponsable = fila["nombre_responsable_empresa"] == DBNull.Value ? null : fila["nombre_responsable_empresa"].ToString(),
+            ApellidoResponsable = fila["apellido_responsable_empresa"] == DBNull.Value ? null : fila["apellido_responsable_empresa"].ToString(),
+            Telefono = fila["telefono_empresa"] == DBNull.Value ? null : fila["telefono_empresa"].ToString(),
+            Direccion = fila["direccion_empresa"] == DBNull.Value ? null : fila["direccion_empresa"].ToString(),
+            Nit = fila["nit_empresa"] == DBNull.Value ? null : fila["nit_empresa"].ToString()
         };
     }
 }

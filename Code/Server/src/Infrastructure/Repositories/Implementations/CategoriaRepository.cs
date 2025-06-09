@@ -99,7 +99,7 @@ public class CategoriaRepository : ICategoriaRepository
     {
         return new CategoriaDto
         {
-            Nombre        = fila["nombre"] == DBNull.Value ? null : fila["nombre"].ToString(),
+            Nombre        = fila["categoria"] == DBNull.Value ? null : fila["categoria"].ToString(),
         };
     }
 }

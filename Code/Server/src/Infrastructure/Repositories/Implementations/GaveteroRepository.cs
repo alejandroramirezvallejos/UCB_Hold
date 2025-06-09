@@ -107,12 +107,12 @@ public class GaveteroRepository : IGaveteroRepository
     {
         return new GaveteroDto
         {
-            Nombre = fila["nombre"] == DBNull.Value ? null : Convert.ToString(fila["nombre"]),
-            Tipo = fila["tipo"] == DBNull.Value ? null : Convert.ToString(fila["tipo"]),
+            Nombre = fila["nombre_gavetero"] == DBNull.Value ? null : Convert.ToString(fila["nombre_gavetero"]),
+            Tipo = fila["tipo_gavetero"] == DBNull.Value ? null : Convert.ToString(fila["tipo_gavetero"]),
             NombreMueble = fila["nombre_mueble"] == DBNull.Value ? null : Convert.ToString(fila["nombre_mueble"]),
-            Longitud = fila["longitud"] == DBNull.Value ? null : Convert.ToDouble(fila["longitud"]),
-            Profundidad = fila["profundidad"] == DBNull.Value ? null : Convert.ToDouble(fila["profundidad"]),
-            Altura = fila["altura"] == DBNull.Value ? null : Convert.ToDouble(fila["altura"])
+            Longitud = fila["longitud_gavetero"] == DBNull.Value ? null : Convert.ToDouble(fila["longitud_gavetero"]),
+            Profundidad = fila["profundidad_gavetero"] == DBNull.Value ? null : Convert.ToDouble(fila["profundidad_gavetero"]),
+            Altura = fila["altura_gavetero"] == DBNull.Value ? null : Convert.ToDouble(fila["altura_gavetero"])
         };
     }
 }
