@@ -3,6 +3,7 @@ import {CommonModule, NgOptimizedImage} from '@angular/common';
 import { ReactiveFormsModule, FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { UsuarioService } from '../../../services/usuario/usuario.service';
 import { Usuario } from '../../../models/usuario';
+import { ObtenercarrerasService } from '../../../services/APIS/obtener/carreras/obtenercarreras.service';
 
 @Component({
   selector: 'app-perfil',
@@ -14,10 +15,12 @@ import { Usuario } from '../../../models/usuario';
 export class PerfilComponent implements OnInit {
   profileForm!: FormGroup;
   editMode = false;
+  carreras: string[] = [];
 
   constructor(
     private fb: FormBuilder,
-    private usuarioS: UsuarioService
+    private usuarioS: UsuarioService,
+    private carrerasapi: ObtenercarrerasService
   ) {}
 
   ngOnInit() {
@@ -30,19 +33,30 @@ export class PerfilComponent implements OnInit {
       telefono: [this.usuarioS.usuario.telefono || ''],
       nombre_referencia: [this.usuarioS.usuario.nombre_referencia || ''],
       telefono_referencia: [this.usuarioS.usuario.telefono_referencia || ''],
-      email_referencia: [this.usuarioS.usuario.email_referencia || '']
+      email_referencia: [this.usuarioS.usuario.email_referencia || ''],
+      carrera: [this.usuarioS.usuario.carrera || '']
     });
     this.profileForm.disable();
+
+    this.carrerasapi.obtenerCarreras().subscribe(
+      (data: any[]) => {
+        this.carreras = data.map(carrera => carrera.nombre);
+      },
+      (error) => {
+        console.error('Error al obtener las carreras:', error);
+      }
+    );
+
+
   }
 
   toggleEdit() {
     this.editMode = true;
     this.profileForm.enable();
   }
-
   saveProfile() {
     if (this.profileForm.valid) {
-      const { nombre, carnet, apellido_paterno, apellido_materno, correo, telefono, nombre_referencia, telefono_referencia, email_referencia } = this.profileForm.value;
+      const { nombre, carnet, apellido_paterno, apellido_materno, correo, telefono, nombre_referencia, telefono_referencia, email_referencia, carrera } = this.profileForm.value;
       // Asegurar que se guardan strings vacíos y no valores undefined o null
       const usuario : Usuario = {
         id : this.usuarioS.usuario.id,
@@ -55,7 +69,8 @@ export class PerfilComponent implements OnInit {
         telefono: telefono || '',
         nombre_referencia: nombre_referencia || '',
         telefono_referencia: telefono_referencia || '',
-        email_referencia: email_referencia || ''
+        email_referencia: email_referencia || '',
+        carrera: carrera || ''
       };
       this.usuarioS.usuario = usuario;
       this.profileForm.disable();

@@ -29,17 +29,72 @@ label {
   color: #333333;
   margin-bottom: 0.5rem;
 }
-input {
+input, select {
   padding: 0.5rem 0.75rem;
   font-size: 1rem;
   border: 1px solid #cccccc;
   border-radius: 4px;
   transition: border-color 0.3s, box-shadow 0.3s;
+  background-color: #ffffff;
+  width: 100%;
+  box-sizing: border-box;
 }
-input:focus {
+
+input:focus, select:focus {
   border-color: #007bff;
   box-shadow: 0 0 5px rgba(0,123,255,0.4);
   outline: none;
+}
+
+/* Estilos específicos para el select de carrera */
+select {
+  cursor: pointer;
+  appearance: none; /* Remover el estilo nativo del navegador */
+  background-image: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="12" height="6" viewBox="0 0 12 6"><path fill="%23666" d="M6 6L0 0h12z"/></svg>');
+  background-repeat: no-repeat;
+  background-position: right 0.75rem center;
+  background-size: 12px;
+  padding-right: 2.5rem; /* Espacio para la flecha personalizada */
+  font-weight: 500;
+}
+
+select:hover {
+  border-color: #007bff;
+  background-color: #f8f9fa;
+  transform: translateY(-1px);
+  box-shadow: 0 2px 8px rgba(0,123,255,0.15);
+}
+
+select:focus {
+  background-color: #ffffff;
+  transform: translateY(0);
+}
+
+select:invalid {
+  color: #999999;
+}
+
+select:valid {
+  color: #333333;
+}
+
+/* Estilos para las opciones del select */
+select option {
+  padding: 0.5rem;
+  font-size: 1rem;
+  background-color: #ffffff;
+  color: #333333;
+  font-weight: 400;
+}
+
+select option:hover {
+  background-color: #f8f9fa;
+}
+
+/* Estilo especial para la opción placeholder */
+select option[value=""] {
+  color: #999999;
+  font-style: italic;
 }
 .buttons {
   margin-top: 1.5rem;

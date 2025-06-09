@@ -11,11 +11,10 @@ export class UsuarioService {
   }
 
 
-  //TODO: MODIFICAR ESTO CUANDOE ESTE LISTO
-  iniciarsesion(nombre : string , contraseña : string , admin: string) {
-    this.usuario.nombre=nombre;
-    this.usuario.carnet=contraseña;
-    this.usuario.rol=admin;
+  
+  iniciarsesion(usuario : Usuario ) {
+    this.usuario = usuario;
+
   }
 
   vacio() : boolean{
