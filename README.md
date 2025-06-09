@@ -25,7 +25,7 @@
 - **`vw_equipos_necesitan_mantenimiento`**
 - **`vw_ubicaciones_grupos_equipos`**
 
-## 3. Índices Bien Diseñados y Queries Reescritas
+## 3. 🔗 Índices Bien Diseñados y Queries Reescritas
 
 **Usuarios**  
 Los índices sobre correo electrónico y estado de eliminación aceleran las búsquedas de usuario activo por su email, clave en operaciones de login y validación. Además, el índice sobre nombre y estado garantiza respuestas rápidas en listados y filtros de usuarios sin cargar filas dadas de baja.
