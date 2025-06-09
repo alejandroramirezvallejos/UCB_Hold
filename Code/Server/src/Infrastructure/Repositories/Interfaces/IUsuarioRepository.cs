@@ -4,4 +4,5 @@ public interface IUsuarioRepository
     void Actualizar(ActualizarUsuarioComando comando);
     void Eliminar(string carnet);
     List<UsuarioDto> ObtenerTodos();
+    UsuarioDto? ObtenerPorEmailYContrasena(string email, string contrasena);
 }

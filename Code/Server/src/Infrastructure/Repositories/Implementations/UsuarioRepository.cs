@@ -132,6 +132,32 @@ public class UsuarioRepository : IUsuarioRepository
         }
     }
 
+    public UsuarioDto? ObtenerPorEmailYContrasena(string email, string contrasena)
+    {
+        const string sql = @"
+        SELECT * from public.obtener_usuario_iniciar_sesion(
+            @email,
+            @contrasena
+        )";
+        try
+        {
+            var resultado = _ejecutarConsulta.EjecutarFuncion(sql, new Dictionary<string, object?>
+            {
+                ["email"] = email,
+                ["contrasena"] = contrasena
+            });
+
+            if (resultado.Rows.Count == 0)
+                return null;
+
+            return MapearUsuarioADto(resultado.Rows[0]);
+        }
+        catch (Exception ex)
+        {
+            throw new Exception("Error al obtener el usuario por email y contraseña", ex);
+        }
+    }
+
     private UsuarioDto MapearUsuarioADto(DataRow fila)
     {
         return new UsuarioDto

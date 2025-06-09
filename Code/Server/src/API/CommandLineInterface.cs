@@ -194,6 +194,7 @@ public static class CommandLineInterface
         builder.Services.AddScoped<IObtenerUsuarioConsulta, UsuarioService>();
         builder.Services.AddScoped<IActualizarUsuarioComando, UsuarioService>();
         builder.Services.AddScoped<IEliminarUsuarioComando, UsuarioService>();
+        builder.Services.AddScoped<IIniciarSesionUsuarioConsulta, UsuarioService>();
 
         builder.Services.AddControllers();
         builder.Services.AddEndpointsApiExplorer();

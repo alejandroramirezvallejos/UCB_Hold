@@ -10,17 +10,20 @@ public class UsuarioController : ControllerBase
     private readonly IObtenerUsuarioConsulta   _obtenerUsuarioConsulta;
     private readonly IActualizarUsuarioComando _actualizarUsuarioComando;
     private readonly IEliminarUsuarioComando   _eliminarUsuarioComando;
+    private readonly IIniciarSesionUsuarioConsulta _iniciarSesionUsuarioConsulta;
 
     public UsuarioController(
         ICrearUsuarioComando crearUsuarioComando,
         IObtenerUsuarioConsulta obtenerUsuarioConsulta,
         IActualizarUsuarioComando actualizarUsuarioComando,
-        IEliminarUsuarioComando eliminarUsuarioComando)
+        IEliminarUsuarioComando eliminarUsuarioComando,
+        IIniciarSesionUsuarioConsulta iniciarSesionUsuarioConsulta)
     {
-        _crearUsuarioComando      = crearUsuarioComando;
-        _obtenerUsuarioConsulta   = obtenerUsuarioConsulta;
+        _crearUsuarioComando = crearUsuarioComando;
+        _obtenerUsuarioConsulta = obtenerUsuarioConsulta;
         _actualizarUsuarioComando = actualizarUsuarioComando;
-        _eliminarUsuarioComando   = eliminarUsuarioComando;
+        _eliminarUsuarioComando = eliminarUsuarioComando;
+        _iniciarSesionUsuarioConsulta = iniciarSesionUsuarioConsulta;
     }
 
     [HttpPost]
@@ -221,6 +224,31 @@ public class UsuarioController : ControllerBase
             if (usuario == null)
             {
                 return NotFound("Usuario no encontrado");
+            }
+
+            return Ok(usuario);
+        }
+        catch (Exception ex)
+        {
+            return StatusCode(500, $"Error interno del servidor: {ex.Message}");
+        }
+    }
+    [HttpGet("iniciarSesion")]
+    public IActionResult IniciarSesion([FromQuery] string email,[FromQuery] string contrasena)
+    {
+        try
+        {
+            if (!ModelState.IsValid)
+            {
+                return BadRequest(ModelState);
+            }
+
+            var consulta = new IniciarSesionUsuarioConsulta(email, contrasena);
+            var usuario = _iniciarSesionUsuarioConsulta.Handle(consulta);
+
+            if (usuario == null)
+            {
+                return Unauthorized("Email o contraseña incorrectos");
             }
 
             return Ok(usuario);
