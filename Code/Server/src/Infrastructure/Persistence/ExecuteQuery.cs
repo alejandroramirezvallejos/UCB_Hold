@@ -12,7 +12,7 @@ public class ExecuteQuery : IExecuteQuery
                                 "La cadena de conexión 'DefaultConnection' no está configurada.");
     }
 
-    public DataTable EjecutarSp(string nombreSp, Dictionary<string, object> parametros)
+    public DataTable EjecutarSp(string nombreSp, Dictionary<string, object?> parametros)
     {
         NpgsqlConnection conn = new NpgsqlConnection(_connectionString);
         conn.Open();
@@ -32,7 +32,7 @@ public class ExecuteQuery : IExecuteQuery
         return dt;
     }
 
-    public void EjecutarSpNR(string nombreSp, Dictionary<string, object> parametros)
+    public void EjecutarSpNR(string nombreSp, Dictionary<string, object?> parametros)
     {
         NpgsqlConnection conn = new NpgsqlConnection(_connectionString);
         conn.Open();
@@ -47,7 +47,7 @@ public class ExecuteQuery : IExecuteQuery
         conn.Close();
     }
 
-    public DataTable EjecutarFuncion(string consultaSql, Dictionary<string, object> parametros)
+    public DataTable EjecutarFuncion(string consultaSql, Dictionary<string, object?> parametros)
     {
         NpgsqlConnection conn = new NpgsqlConnection(_connectionString);
         conn.Open();
@@ -67,14 +67,14 @@ public class ExecuteQuery : IExecuteQuery
         return dt;
     }
 
-    public List<Dictionary<string, object>> EjecutarFuncionDic(string consultaSql, Dictionary<string, object> parametros)
+    public List<Dictionary<string, object?>> EjecutarFuncionDic(string consultaSql, Dictionary<string, object?> parametros)
     {
         DataTable dt = EjecutarFuncion(consultaSql, parametros);
-        List<Dictionary<string, object>> lista = new List<Dictionary<string, object>>();
+        List<Dictionary<string, object?>> lista = new List<Dictionary<string, object?>>();
 
         foreach (DataRow fila in dt.Rows)
         {
-            Dictionary<string, object> dic = new Dictionary<string, object>();
+            Dictionary<string, object?> dic = new Dictionary<string, object?>();
             foreach (DataColumn columna in dt.Columns)
             {
                 dic[columna.ColumnName] = fila[columna] != DBNull.Value ? fila[columna] : null;
@@ -86,14 +86,14 @@ public class ExecuteQuery : IExecuteQuery
         return lista;
     }
 
-    private void AgregarParametros(NpgsqlCommand cmd, Dictionary<string, object> parametros)
+    private void AgregarParametros(NpgsqlCommand cmd, Dictionary<string, object?> parametros)
     {
         if (parametros == null)
         {
             return;
         }
 
-        foreach (KeyValuePair<string, object> param in parametros)
+        foreach (KeyValuePair<string, object?> param in parametros)
         {
             cmd.Parameters.AddWithValue(param.Key, param.Value ?? DBNull.Value);
         }
