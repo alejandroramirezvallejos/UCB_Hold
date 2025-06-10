@@ -1,12 +1,24 @@
 # UCB Hold: Reservas y Gestion de Articulos de Mecatronica
 
-## 1. 🛢️ Modelo Entidad–Relación
+## 1. 🫂 Diseño del sistema utilizando UML
+
+![Image](/Documentation/uml.svg)
+
+---
+
+## 2. 🛢️ Modelo Entidad–Relación
 
 ![Image](/Images/bd.png)
 
 ---
 
-## 2. 𝄜 Tablas, Procedimientos Almacenados, Triggers y Vistas
+## 3. 📖 Historias de Usuario
+
+[Ir a las Historias de Usuario](https://github.com/alejandroramirezvallejos/UCB_Hold/blob/main/Documentation/HistoriasDeUsuario.md)
+
+---
+
+## 4. 𝄜 Tablas, Procedimientos Almacenados, Triggers y Vistas
 
 ### Tablas
 
@@ -25,7 +37,9 @@
 - **`vw_equipos_necesitan_mantenimiento`**
 - **`vw_ubicaciones_grupos_equipos`**
 
-## 3. 🔗 Índices Bien Diseñados y Queries Reescritas
+---
+
+## 5. 🔗 Índices Bien Diseñados y Queries Reescritas
 
 **Usuarios**  
 Los índices sobre correo electrónico y estado de eliminación aceleran las búsquedas de usuario activo por su email, clave en operaciones de login y validación. Además, el índice sobre nombre y estado garantiza respuestas rápidas en listados y filtros de usuarios sin cargar filas dadas de baja.
@@ -66,28 +80,28 @@ Indexar la columna nombre junto al estado lógico agiliza las consultas para pob
 **Accesorios**  
 El índice que agrupa nombre, equipo y estado de eliminación acelera la asociación y revisión de accesorios disponibles para cada equipo, fundamental para operaciones de complemento y preparación de solicitudes de mantenimiento.
 
-### 📈 Análisis de Plan de Ejecución
+## 6. 📈 Análisis de Plan de Ejecución
 
-Consulta pesada sin indices
+### Consulta pesada sin indices
 
 ![Image](https://github.com/user-attachments/assets/90820cbc-6f9d-4186-8b0d-4777f01e61f9)
 
-Consulta pesada con indices
+### Consulta pesada con indices
 
 ![Image](https://github.com/user-attachments/assets/102805fd-879f-4817-845c-df516831b876)
 
-## 4. 🚀 Transacciones Funcionales y Niveles de Aislamiento
+---
+
+## 7. 🚀 Transacciones Funcionales y Niveles de Aislamiento
 
 En todos los procedures tenemos principios ACID con atomicidad y transacciones
 
 - **Nivel de aislamiento**: `SERIALIZABLE`
   - **Justificación**: Garantiza ausencia de lecturas no repetibles y lecturas fantasmas.
+ 
+---
 
-## 5. 📖 Historias de Usuario
-
-[Ir a las Historias de Usuario](https://github.com/alejandroramirezvallejos/UCB_Hold/blob/main/Documentation/HistoriasDeUsuario.md)
-
-## 6. ⬇️ Instalar
+## 8. ⬇️ Instalar
 
 npm install signature_pad
 
@@ -95,8 +109,9 @@ npm install jspdf
 
 npm install html2canvas
 
+---
 
-## 7. 👥 Miembros
+## 9. 👥 Miembros
 
 - [Josue Galo Balbontin Ugarteche](https://github.com/josue-balbontin)
 - [Alejandro Ramirez Vallejos](https://github.com/alejandroramirezvallejos)
