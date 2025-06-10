@@ -31,31 +31,38 @@ public class UsuarioController : ControllerBase
     {
         try
         {
-            if (!ModelState.IsValid)
-            {
-                return BadRequest(ModelState);
-            }
             
             if (string.IsNullOrWhiteSpace(dto.Carnet))
             {
                 return BadRequest("El carnet es obligatorio");
             }
-
-            if (dto.Carnet.Length < 3 || dto.Carnet.Length > 20)
+            if (dto.Nombre == null)
             {
-                return BadRequest("El carnet debe tener entre 3 y 20 caracteres");
+                return BadRequest("El nombre es obligatorio");
             }
-
-            if (!IsValidEmail(dto.Email))
+            if(dto.ApellidoPaterno==null){
+                return BadRequest("El apellido paterno es obligatorio");
+            }
+            if(dto.ApellidoMaterno==null){
+                return BadRequest("El apellido materno es obligatorio");
+            }
+            if (string.IsNullOrWhiteSpace(dto.Email) || !IsValidEmail(dto.Email))
             {
-                return BadRequest("El formato del email no es válido");
+                return BadRequest("El email es obligatorio");
             }
-            
-            if (!string.IsNullOrEmpty(dto.TelefonoReferencia) && dto.TelefonoReferencia.Length < 7)
+            if (string.IsNullOrWhiteSpace(dto.Contrasena) )
             {
-                return BadRequest("El teléfono de referencia debe tener al menos 7 caracteres");
+                return BadRequest("La contraseña es obligatoria");
             }
-
+            if (dto.NombreCarrera == null)
+            {
+                return BadRequest("El nombre de la carrera es obligatorio");
+            }
+            if (dto.Telefono == null)
+            {
+                return BadRequest("El teléfono es obligatorio");
+            }
+        
             var comando = new CrearUsuarioComando(
                 dto.Carnet,
                 dto.Nombre,
@@ -105,45 +112,20 @@ public class UsuarioController : ControllerBase
         {
             return StatusCode(500, $"Error interno del servidor: {ex.Message}");
         }
-    }
-
-    [HttpPut("{carnet}")]
+    }    [HttpPut("{carnet}")]
     public IActionResult ActualizarUsuario(string carnet, [FromBody] ActualizarUsuarioRequestDto dto)
     {
         try
         {
-            if (!ModelState.IsValid)
-            {
-                return BadRequest(ModelState);
-            }
-
-            if (carnet != dto.Carnet)
-            {
-                return BadRequest("El carnet del parámetro no coincide con el del cuerpo de la solicitud");
-            }
 
             if (string.IsNullOrWhiteSpace(carnet))
             {
                 return BadRequest("El carnet es obligatorio");
             }
 
-            if (!string.IsNullOrEmpty(dto.Email) && !IsValidEmail(dto.Email))
-            {
-                return BadRequest("El formato del email no es válido");
-            }
-
-            if (!string.IsNullOrEmpty(dto.Telefono) && dto.Telefono.Length < 7)
-            {
-                return BadRequest("El teléfono debe tener al menos 7 caracteres");
-            }
-
-            if (!string.IsNullOrEmpty(dto.TelefonoReferencia) && dto.TelefonoReferencia.Length < 7)
-            {
-                return BadRequest("El teléfono de referencia debe tener al menos 7 caracteres");
-            }
 
             var comando = new ActualizarUsuarioComando(
-                dto.Carnet,
+                carnet,
                 dto.Nombre,
                 dto.ApellidoPaterno,
                 dto.ApellidoMaterno,

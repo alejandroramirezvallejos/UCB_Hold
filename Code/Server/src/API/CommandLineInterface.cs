@@ -92,9 +92,7 @@ public static class CommandLineInterface
             Console.WriteLine($"[ERROR] Excepcion durante las pruebas: {ex.Message}");
             Console.ResetColor();
         }
-    }
-
-    private static void EjecutarPrograma()
+    }    private static void EjecutarPrograma()
     {
         if (_webHost != null)
         {
@@ -102,9 +100,7 @@ public static class CommandLineInterface
             Console.WriteLine("[WARNING] El servidor ya está en ejecución");
             Console.ResetColor();
             return;
-        }
-
-        Console.ForegroundColor = ConsoleColor.DarkBlue;
+        }        Console.ForegroundColor = ConsoleColor.DarkBlue;
         Console.WriteLine("Iniciando programa...\n");
         Console.ResetColor();
 

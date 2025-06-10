@@ -181,8 +181,7 @@ public class ExecuteQuery : IExecuteQuery
             short[] shortArray => new NpgsqlParameter(nombreParametro, NpgsqlDbType.Array | NpgsqlDbType.Smallint)
             {
                 Value = shortArray
-            },
-            float[] floatArray => new NpgsqlParameter(nombreParametro, NpgsqlDbType.Array | NpgsqlDbType.Real)
+            },            float[] floatArray => new NpgsqlParameter(nombreParametro, NpgsqlDbType.Array | NpgsqlDbType.Real)
             {
                 Value = floatArray
             },

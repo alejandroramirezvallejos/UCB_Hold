@@ -120,31 +120,5 @@ public class PrestamoController : ControllerBase
             return StatusCode(500, $"Error interno del servidor: {ex.Message}");
         }
     }
-
-    [HttpGet("{id}")]
-    public IActionResult ObtenerPrestamoPorId(int id)
-    {
-        try
-        {
-            if (id <= 0)
-            {
-                return BadRequest("El ID debe ser un número positivo");
-            }
-
-            var prestamos = _obtenerPrestamoConsulta.Handle();
-            var prestamo = prestamos?.FirstOrDefault(p => p.CarnetUsuario != null); // Ajustar según ID disponible en DTO
-            
-            if (prestamo == null)
-            {
-                return NotFound("Préstamo no encontrado");
-            }
-
-            return Ok(prestamo);
-        }
-        catch (Exception ex)
-        {
-            return StatusCode(500, $"Error interno del servidor: {ex.Message}");
-        }
-    }
 }
 

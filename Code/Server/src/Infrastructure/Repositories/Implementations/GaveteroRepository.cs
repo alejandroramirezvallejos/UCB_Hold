@@ -76,7 +76,8 @@ public class GaveteroRepository : IGaveteroRepository
         const string sql = @"
         CALL public.eliminar_gavetero(
 	    @id
-        )";        try
+        )";
+        try
         {
             _ejecutarConsulta.EjecutarSpNR(sql, new Dictionary<string, object?>
             {

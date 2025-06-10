@@ -52,9 +52,7 @@ public class MantenimientoController : ControllerBase
                 return BadRequest("Si se proporcionan descripciones de equipo, debe haber una por cada código IMT");
             
             if (dto.CodigoIMT.Any(codigo => codigo <= 0))
-                return BadRequest("Todos los códigos IMT deben ser números positivos");
-            
-            if (dto.Costo.HasValue && dto.Costo.Value < 0)
+                return BadRequest("Todos los códigos IMT deben ser números positivos");            if (dto.Costo.HasValue && dto.Costo.Value < 0)
                 return BadRequest("El costo debe ser un número positivo");
 
             var comando = new CrearMantenimientoComando(
