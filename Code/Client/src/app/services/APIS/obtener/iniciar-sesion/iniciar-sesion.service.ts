@@ -14,18 +14,18 @@ iniciarsesion(correo: string, contraseña: string) {
   const api = `${this.apiUrl}?email=${correo}&contrasena=${contraseña}`;
   return this.http.get<any>(api).pipe(
     map(item=>({
-      id : item.carnet,
-      carnet: item.carnet,
-      nombre: item.nombre,
-      apellido_materno: item.apellidoMaterno,
-      apellido_paterno: item.apellidoPaterno,
-      rol: item.rol,
-      carrera: item.carreraNombre,
-      correo: item.email,
-      telefono: item.telefono,
-      nombre_referencia: item.nombreReferencia,
-      telefono_referencia: item.telefonoReferencia,
-      email_referencia: item.emailReferencia
+      id : item.Carnet,
+      carnet: item.Carnet,
+      nombre: item.Nombre,
+      apellido_materno: item.ApellidoMaterno,
+      apellido_paterno: item.ApellidoPaterno,
+      rol: item.Rol,
+      carrera: item.CarreraNombre,
+      correo: item.Email,
+      telefono: item.Telefono,
+      nombre_referencia: item.NombreReferencia,
+      telefono_referencia: item.TelefonoReferencia,
+      email_referencia: item.EmailReferencia
     })));
 }
 

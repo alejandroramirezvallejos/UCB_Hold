@@ -17,14 +17,14 @@ export class GrupoEquipoService {
     var url : string   = this.apiUrl + '?nombre=' + producto + '&categoria=' + categoria;
     return this.http.get<any[]>(url).pipe(
       map(data => data.map(item => ({
-        id: item.id,
-        nombre: item.nombre ,
-        descripcion : item.descripcion  || '', 
-        modelo: ' '+item.modelo || '',
-        url_data_sheet: item.urlDataSheet || '' ,
-        marca: ' '+item.marca || '',
-        link: item.urlImagen ,
-     
+        id: item.Id,
+        nombre: item.Nombre ,
+        descripcion : item.Descripcion  || '', 
+        modelo: ' '+item.Modelo || '',
+        url_data_sheet: item.UrlDataSheet || '' ,
+        marca: ' '+item.Marca || '',
+        link: item.UrlImagen ,
+
       })))
     );
 

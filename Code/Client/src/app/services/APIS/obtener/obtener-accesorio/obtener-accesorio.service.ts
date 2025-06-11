@@ -13,14 +13,14 @@ export class ObtenerAccesorioService {
   obtenerAccesorios() {
     return this.http.get<any[]>(this.apiurl).pipe(
       map(data => data.map(item => ({
-        id: item.id,
-        nombre: item.nombre,
-        modelo: item.modelo,
-        tipo: item.tipo,
-        descripcion: item.descripcion,
-        codigo_imt: item.codigoImtEquipoAsociado,
-        precio: item.precio,
-        nombreEquipoAsociado: item.nombreEquipoAsociado
+        id: item.Id,
+        nombre: item.Nombre,
+        modelo: item.Modelo,
+        tipo: item.Tipo,
+        descripcion: item.Descripcion,
+        codigo_imt: item.CodigoImtEquipoAsociado,
+        precio: item.Precio,
+        nombreEquipoAsociado: item.NombreEquipoAsociado
       })))
     );
   }

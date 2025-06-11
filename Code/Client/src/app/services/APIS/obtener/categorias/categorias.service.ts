@@ -15,7 +15,8 @@ export class CategoriasService {
 
     return this.http.get<any[]>(this.apiurl).pipe(
           map(data => data.map(item => ({
-            name: item.nombre ,
+            id : item.Id,
+            name: item.Nombre,
           })))
         );
 

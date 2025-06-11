@@ -18,13 +18,13 @@ export class ProductoService {
     const url = `${this.apiUrl}/${id}`;
     return this.http.get<any>(url).pipe(
       map(item => ({
-        id: item.id,
-        descripcion: item.descripcion,
-        nombre: item.nombre,
-        modelo: ' ' + item.modelo || '',
-        marca: ' ' + item.marca || '',
-        url_data_sheet: item.urlData,
-        link: item.urlImagen
+        id: item.Id,
+        descripcion: item.Descripcion,
+        nombre: item.Nombre,
+        modelo: ' ' + item.Modelo || '',
+        marca: ' ' + item.Marca || '',
+        url_data_sheet: item.UrlData,
+        link: item.UrlImagen
       }))
     );
   }

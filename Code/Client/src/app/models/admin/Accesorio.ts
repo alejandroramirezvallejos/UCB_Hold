@@ -7,5 +7,5 @@ export interface Accesorio {
   codigo_imt: string;
   precio: number;
   url_data_sheet?: string;
-  nombreEquipoAsociado ? : string;
+  nombreEquipoAsociado?: string;
 }
