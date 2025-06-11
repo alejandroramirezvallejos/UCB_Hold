@@ -1,0 +1,85 @@
+<div class="profile-container">
+  <h2>Tu Perfil</h2>
+  <div class="avatar-container">
+    <img ngSrc="assets/profile_line.png"
+         width="64" height="64" alt="Avatar de usuario">
+  </div>
+
+  <!-- Mostrar datos actuales -->
+  <div *ngIf="!editMode" class="display-data">
+    <div class="form-group"><label>Nombre:</label><p>{{ profileForm.value.nombre || '-' }}</p></div>
+    <div class="form-group"><label>Carnet:</label><p>{{ profileForm.value.carnet || '-' }}</p></div>
+    <div class="form-group"><label>Apellido Paterno:</label><p>{{ profileForm.value.apellido_paterno || '-' }}</p></div>
+    <div class="form-group"><label>Apellido Materno:</label><p>{{ profileForm.value.apellido_materno || '-' }}</p></div>
+    <div class="form-group"><label>Correo:</label><p>{{ profileForm.value.correo || '-' }}</p></div>
+    <div class="form-group"><label>Teléfono:</label><p>{{ profileForm.value.telefono || '-' }}</p></div>
+    <div class="form-group"><label>Carrera:</label><p>{{ profileForm.value.carrera || '-' }}</p></div>
+    <div class="form-group"><label>Nombre de Referencia:</label><p>{{ profileForm.value.nombre_referencia || '-' }}</p></div>
+    <div class="form-group"><label>Telefono de Referencia:</label><p>{{ profileForm.value.telefono_referencia || '-' }}</p></div>
+    <div class="form-group"><label>Email de Referencia:</label><p>{{ profileForm.value.email_referencia || '-' }}</p></div>
+    <div class="buttons">
+      <button type="button" (click)="toggleEdit()">Actualizar</button>
+    </div>
+  </div>
+
+  <!-- Formulario de edición -->
+  <form *ngIf="editMode" [formGroup]="profileForm" (ngSubmit)="saveProfile()">
+    <div class="form-group">
+      <label>Nombre</label>
+      <input formControlName="nombre" placeholder="Ingresa tu nombre" />
+      <small class="error-message" *ngIf="profileForm.get('nombre')?.invalid && profileForm.get('nombre')?.touched">
+        El nombre es obligatorio
+      </small>
+    </div>
+    <div class="form-group">
+      <label>Carnet</label>
+      <input formControlName="carnet" placeholder="Ingresa tu carnet" />
+    </div>
+    <div class="form-group">
+      <label>Apellido Paterno</label>
+      <input formControlName="apellido_paterno" placeholder="Ingresa tu apellido paterno" />
+    </div>
+    <div class="form-group">
+      <label>Apellido Materno</label>
+      <input formControlName="apellido_materno" placeholder="Ingresa tu apellido materno" />
+    </div>
+    <div class="form-group">
+      <label>Correo</label>
+      <input formControlName="correo" type="email" placeholder="correo@ejemplo.com" />
+      <small class="error-message" *ngIf="profileForm.get('correo')?.invalid && profileForm.get('correo')?.touched">
+        Por favor, ingresa un correo electrónico válido
+      </small>
+    </div>
+    <div class="form-group">
+      <label>Teléfono</label>
+      <input formControlName="telefono" placeholder="Ingresa tu teléfono" />
+    </div>    <div class="form-group">
+      <label>Carrera</label>
+       <select 
+          formControlName="carrera"
+          required
+        >
+          @for (carrera of carreras; track carrera) {
+             <option [value]="carrera">{{ carrera }}</option>
+           }
+        </select>
+    </div>
+
+    <div class="form-group">
+      <label>Nombre de Referencia</label>
+      <input formControlName="nombre_referencia" placeholder="Ingrese el nombre de la persona de contacto" />
+    </div>
+    <div class="form-group">
+      <label>Teléfono de Referencia</label>
+      <input formControlName="telefono_referencia" placeholder="Ingresa el teléfono de la persona de contacto" />
+    </div>
+    <div class="form-group">
+      <label>Email de Referencia</label>
+      <input formControlName="email_referencia" placeholder="Ingresa el email de la persona de contacto" />
+    </div>
+    <div class="buttons">
+      <button type="submit">Guardar</button>
+      <button type="button" (click)="editMode = false">Cancelar</button>
+    </div>
+  </form>
+</div>

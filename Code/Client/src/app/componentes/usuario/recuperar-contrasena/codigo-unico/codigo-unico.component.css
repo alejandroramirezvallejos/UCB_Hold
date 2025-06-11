@@ -1,0 +1,155 @@
+/* codigo-unico.component.css */
+@import url('https://fonts.googleapis.com/css2?family=Open+Sans:wght@300;400;600;700&display=swap');
+
+:host {
+  font-family: 'Open Sans', sans-serif;
+}
+
+:root {
+  --primary-color: #1e3a8a;
+  --primary-hover: #162d6b;
+  --text-color: #1f2937;
+  --background-color: #f8fafc;
+  --input-border: #e1e5ea;
+}
+
+.codigo-container {
+  text-align: center;
+  width: 100%;
+}
+
+.title {
+  color: var(--primary-color);
+  margin-bottom: 1rem;
+  font-size: 1.75rem;
+  font-weight: 700;
+}
+
+.description {
+  color: var(--text-color);
+  margin-bottom: 2rem;
+  font-size: 0.95rem;
+  line-height: 1.5;
+}
+
+.description strong {
+  color: var(--primary-color);
+  font-weight: 600;
+}
+
+.codigo-form {
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+}
+
+.form-group {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+  text-align: left;
+}
+
+label {
+  font-weight: 500;
+  color: var(--text-color);
+}
+
+.form-input {
+  padding: 0.75rem;
+  border: 2px solid var(--input-border);
+  border-radius: 0.5rem;
+  font-size: 1rem;
+  transition: border-color 0.2s;
+}
+
+.codigo-input {
+  text-align: center;
+  font-size: 1.5rem;
+  font-weight: 600;
+  letter-spacing: 0.5rem;
+  font-family: 'Courier New', monospace;
+  border: 3px solid var(--primary-color) !important;
+  box-shadow: 0 0 0 1px rgba(30, 58, 138, 0.2);
+}
+
+.form-input:focus {
+  outline: none;
+  border-color: var(--primary-color);
+  box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.1);
+}
+
+.error-message {
+  color: #dc2626;
+  font-size: 0.875rem;
+  margin-top: 0.25rem;
+  text-align: center;
+}
+
+.codigo-button {
+  background: var(--primary-color);
+  color: rgb(255, 255, 255);
+  background-color: #5F6368;
+  padding: 0.75rem;
+  border: none;
+  border-radius: 0.5rem;
+  font-size: 1rem;
+  font-weight: 500;
+  cursor: pointer;
+  transition: background-color 0.2s;
+}
+
+.codigo-button:hover {
+  background: #FFCF00;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+}
+
+.codigo-button:active {
+  background: #FFCF00;
+  transform: translateY(1px);
+  box-shadow: inset 0 3px 5px rgba(0, 0, 0, 0.125);
+}
+
+.codigo-button:disabled {
+  opacity: 0.7;
+  cursor: not-allowed;
+}
+
+.additional-options {
+  text-align: center;
+  margin-top: 1rem;
+}
+
+.resend-link {
+  color: #64748b;
+  font-size: 0.875rem;
+  margin: 0;
+}
+
+.resend-link a {
+  color: var(--primary-color);
+  text-decoration: none;
+  font-weight: 500;
+  cursor: pointer;
+}
+
+.resend-link a:hover {
+  text-decoration: underline;
+  color: #162d6b;
+}
+
+.spinner {
+  width: 24px;
+  height: 24px;
+  border: 3px solid rgba(255, 255, 255, 0.3);
+  border-radius: 50%;
+  border-top-color: white;
+  animation: spin 1s ease-in-out infinite;
+  margin: 0 auto;
+}
+
+@keyframes spin {
+  to {
+    transform: rotate(360deg);
+  }
+}

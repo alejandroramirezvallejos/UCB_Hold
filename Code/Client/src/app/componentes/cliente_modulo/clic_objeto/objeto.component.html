@@ -1,0 +1,31 @@
+<div class="contenedor-objeto">
+  <div class="seccion-imagen">
+    <div class="contenedor-imagen">
+      <ng-container *ngIf="producto.link; else noImg">
+        <img
+          [src]="producto.link"
+          alt="{{ producto.nombre }}"
+          class="imagen-producto"
+        />
+      </ng-container>
+      <ng-template #noImg>
+        <div class="imagen-no-encontrada">No se encontró la imagen</div>
+      </ng-template>
+    </div>
+  </div>
+
+  <div class="seccion-detalles">
+    <h2 class="nombre-objeto">
+      {{ producto.nombre + " " + producto.modelo + " " + producto.marca }}
+    </h2>
+    <p class="descripcion-objeto">{{ producto.descripcion }}</p>
+    <button
+      (click)="addproductocarrito()"
+      class="boton-carrito"
+      [class.plomo]="addedToCart"
+      [disabled]="addedToCart"
+    >
+      {{ addedToCart ? "Agregado al carrito" : "Agregar al carrito" }}
+    </button>
+  </div>
+</div>

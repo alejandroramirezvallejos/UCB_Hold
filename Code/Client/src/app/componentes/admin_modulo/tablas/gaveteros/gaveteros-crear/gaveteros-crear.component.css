@@ -1,0 +1,86 @@
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+/* Modificado para que funcione correctamente en componentes Angular */
+:host {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  min-height: 100vh;
+  width: 100%;
+  background: linear-gradient(135deg, #e0f7fa, #f8f9fa);
+  padding: 20px;
+}
+
+.form-container {
+  background-color: #ffffff;
+  padding: 30px;
+  border-radius: 16px;
+  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.1);
+  max-width: 450px;
+  width: 100%;
+}
+
+  .form-container h2 {
+    margin-bottom: 20px;
+    color: #333;
+    text-align: center;
+  }
+
+.form-group {
+  margin-bottom: 15px;
+}
+
+  .form-group label {
+    display: block;
+    margin-bottom: 6px;
+    color: #444;
+    font-weight: 600;
+  }
+
+  .form-group input,
+  .form-group select {
+    width: 100%;
+    padding: 10px 12px;
+    border: 1px solid #ccc;
+    border-radius: 10px;
+    background-color: #f9f9f9;
+    font-size: 16px;
+    transition: border-color 0.3s ease, background-color 0.3s ease;
+  }
+
+    .form-group input:focus,
+    .form-group select:focus {
+      border-color: #007BFF;
+      background-color: #fff;
+      outline: none;
+    }
+
+.form-submit {
+  text-align: center;
+  margin-top: 20px;
+}
+
+  .form-submit button {
+    background-color: #007BFF;
+    color: white;
+    padding: 12px 25px;
+    font-size: 16px;
+    border: none;
+    border-radius: 10px;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+  }
+
+    .form-submit button:hover {
+      background-color: #0056b3;
+    }
+
+@media (max-width: 500px) {
+  .form-container {
+    margin: 0;
+  }
+}

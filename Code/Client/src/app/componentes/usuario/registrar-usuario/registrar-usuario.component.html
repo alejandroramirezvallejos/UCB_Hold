@@ -1,0 +1,238 @@
+
+<div class="register-container">
+
+  <div class="register-card">
+    <h2 class="title">Crear Cuenta</h2>
+    
+    <form (ngSubmit)="registrar()" class="register-form" #registerForm="ngForm">
+      <!-- Información personal -->
+      <div class="form-section">
+        <h3>Información Personal</h3>
+        
+        <div class="form-group">
+          <label for="nombre">Nombre</label>
+          <input 
+            type="text" 
+            name="nombre" 
+            [(ngModel)]="nuevoUsuario.nombre"
+            required
+            placeholder="Ingresa tu nombre"
+            class="form-input"
+            #nombreInput="ngModel"
+          >
+          @if (nombreInput.invalid && (nombreInput.dirty || nombreInput.touched)) {
+            <div class="error-message">El nombre es requerido</div>
+          }
+        </div>
+
+        <div class="form-row">
+          <div class="form-group">
+            <label for="apellidoPaterno">Apellido paterno</label>
+            <input 
+              type="text" 
+              name="apellidoPaterno" 
+              [(ngModel)]="nuevoUsuario.apellido_paterno"
+              required
+              placeholder="Apellido paterno"
+              class="form-input"
+            >
+          </div>
+
+          <div class="form-group">
+            <label for="apellidoMaterno">Apellido materno</label>
+            <input 
+              type="text" 
+              name="apellidoMaterno" 
+              [(ngModel)]="nuevoUsuario.apellido_materno"
+              required
+              placeholder="Apellido materno"
+              class="form-input"
+            >
+          </div>
+        </div>
+
+        <div class="form-group">
+          <label for="carnet">Carnet de identidad </label>
+          <input 
+            type="text" 
+            name="carnet" 
+            [(ngModel)]="nuevoUsuario.carnet"
+            required
+            placeholder="Ingresa tu carnet"
+            required
+            class="form-input"
+            #carnetInput="ngModel"
+          >
+          @if (carnetInput.invalid && (carnetInput.dirty || carnetInput.touched)) {
+            <div class="error-message">El carnet es requerido</div>
+          }
+        </div>
+
+        <div class="form-group">
+          <label for="correo">Correo electrónico </label>
+          <input 
+            type="email" 
+            name="correo" 
+            [(ngModel)]="nuevoUsuario.correo"
+            required
+            email
+            placeholder="tu@ucb.edu.bo"
+            required
+            class="form-input"
+            #correoInput="ngModel"
+          >
+          @if (correoInput.invalid && (correoInput.dirty || correoInput.touched)) {
+            <div class="error-message">
+              @if (correoInput.errors?.['required']) {
+                <div>El correo electrónico es requerido</div>
+              }
+              @if (correoInput.errors?.['email']) {
+                <div>Formato de correo inválido</div>
+              }
+            </div>
+          }
+        </div>
+
+        <div class="form-group">
+          <label for="telefono">Teléfono</label>
+          <input 
+            type="tel" 
+            name="telefono" 
+            [(ngModel)]="nuevoUsuario.telefono"
+            required
+            placeholder="70000000"
+            class="form-input"
+            #telefonoInput="ngModel"
+          >
+          @if(telefonoInput.invalid && (telefonoInput.dirty || telefonoInput.touched) || validartelefono(telefonoInput.value)) {
+            <div class="error-message"> El telefono es invalido</div>
+          }
+        </div>
+        
+      <div class="form-group">
+        <label for="carrera">Elige tu carrera</label>
+        <select 
+          name="carrera" 
+          [(ngModel)]="nuevoUsuario.carrera"
+          required
+          class="form-input"
+          #carreraInput="ngModel"
+        >
+          @for (carrera of carreras; track carrera) {
+             <option [value]="carrera">{{ carrera }}</option>
+           }
+        </select>
+         @if(carreraInput.invalid && (carreraInput.dirty || carreraInput.touched)) {
+            <div class="error-message"> La carrera no seleccionada</div>
+          }
+      
+      </div>
+
+      </div>
+
+
+
+
+
+      <!-- Información de contacto de emergencia -->
+      <div class="form-section">
+        <h3>Contacto de Emergencia</h3>
+        
+        <div class="form-group">
+          <label for="nombreReferencia">Nombre de referencia</label>
+          <input 
+            type="text" 
+            name="nombreReferencia" 
+            [(ngModel)]="nuevoUsuario.nombre_referencia"
+            placeholder="Nombre del contacto de emergencia"
+            class="form-input"
+          >
+        </div>
+
+        <div class="form-group">
+          <label for="telefonoReferencia">Teléfono de referencia</label>
+          <input 
+            type="tel" 
+            name="telefonoReferencia" 
+            [(ngModel)]="nuevoUsuario.telefono_referencia"
+            placeholder="70000000"
+            class="form-input"
+          >
+        </div>
+
+        <div class="form-group">
+          <label for="emailReferencia">Email de referencia</label>
+          <input 
+            type="email" 
+            name="emailReferencia" 
+            [(ngModel)]="nuevoUsuario.email_referencia"
+            placeholder="contacto@email.com"
+            class="form-input"
+          >
+        </div>
+      </div>
+
+      <!-- Contraseña -->
+      <div class="form-section">
+        <h3>Seguridad</h3>
+        
+        <div class="form-group">
+          <label for="password">Contraseña</label>
+          <input 
+            type="password" 
+            name="password" 
+            [(ngModel)]="password"
+            required
+            minlength="6"
+            placeholder="••••••••"
+            class="form-input"
+            #passwordInput="ngModel"
+          >
+          @if (passwordInput.invalid && (passwordInput.dirty || passwordInput.touched)) {
+            <div class="error-message">
+              @if (passwordInput.errors?.['required']) {
+                <div>La contraseña es requerida</div>
+              }
+              @if (passwordInput.errors?.['minlength']) {
+                <div>Mínimo 6 caracteres</div>
+              }
+            </div>
+          }
+        </div>
+
+        <div class="form-group">
+          <label for="confirmPassword">Confirmar contraseña </label>
+          <input 
+            type="password" 
+            name="confirmPassword" 
+            [(ngModel)]="confirmPassword"
+            required
+            placeholder="••••••••"
+            class="form-input"
+            #confirmPasswordInput="ngModel"
+          >
+          @if (confirmPasswordInput.invalid && (confirmPasswordInput.dirty || confirmPasswordInput.touched)) {
+            <div class="error-message">Confirma tu contraseña</div>
+          }
+          @if (password && confirmPassword && password !== confirmPassword) {
+            <div class="error-message">Las contraseñas no coinciden</div>
+          }
+        </div>
+      </div>
+
+      <button 
+        type="submit" 
+        class="register-button" 
+        [disabled]="!registerForm.valid || password !== confirmPassword  || validartelefono(telefonoInput.value) || !carnetInput.valid || !correoInput.valid"
+      >
+        <span>Crear Cuenta</span>
+      </button>
+
+      <div class="additional-options">
+        <p class="login-link">
+          ¿Ya tienes cuenta? <a (click)="irALogin()">Inicia sesión aquí</a>
+        </p>
+      </div>
+    </form>
+  </div>
+</div>

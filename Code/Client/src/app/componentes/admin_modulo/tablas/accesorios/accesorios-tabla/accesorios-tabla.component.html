@@ -1,0 +1,123 @@
+<div class="accesorios-container">
+  <!-- ESTO ES PARA EL TITULO Y EL BOTON CREAR -->
+  <div class="table-header">
+    <div class="header-title">
+      <h1>Accesorios</h1>
+      <p class="subtitle">Gestión de accesorios para equipos de mecatrónica</p>
+    </div>
+    <button class="botoncrear" (click)="crearaccesorio()">
+       Nuevo Accesorio
+    </button>
+  </div>
+
+  <!-- BUSCADOR-->
+  <div class="search-container">
+    <div class="search-input-wrapper">
+      <i class="fas fa-search search-icon"></i>      <input 
+        type="text" 
+        [(ngModel)]="terminoBusqueda" 
+        (keydown.enter)="buscar()"
+        placeholder="Buscar accesorios..." 
+        class="search-input"
+      />
+      @if (terminoBusqueda) {
+        <button class="clear-search" (click)="limpiarBusqueda()">
+          <i class="fas fa-times"></i>
+        </button>
+      }
+    </div>
+
+  </div>
+
+  <!-- TABLA -->
+  <div class="table-responsive">
+    <table class="data-table">
+      <thead>        <tr>
+          <th (click)="ordenarPor('nombre')">
+            Nombre 
+            @if (sortColumn === 'nombre') {
+              <i [class]="sortDirection === 'asc' ? 'fas fa-sort-up' : 'fas fa-sort-down'"></i>
+            }
+          </th>
+          <th (click)="ordenarPor('modelo')">
+            Modelo 
+            @if (sortColumn === 'modelo') {
+              <i [class]="sortDirection === 'asc' ? 'fas fa-sort-up' : 'fas fa-sort-down'"></i>
+            }
+          </th>
+          <th (click)="ordenarPor('tipo')">
+            Tipo 
+            @if (sortColumn === 'tipo') {
+              <i [class]="sortDirection === 'asc' ? 'fas fa-sort-up' : 'fas fa-sort-down'"></i>
+            }
+          </th>
+          <th (click)="ordenarPor('codigo_imt')">
+            Código IMT del Equipo
+            @if (sortColumn === 'codigo_imt') {
+              <i [class]="sortDirection === 'asc' ? 'fas fa-sort-up' : 'fas fa-sort-down'"></i>
+            }
+          </th>
+          <th (click)="ordenarPor('precio')">
+            Precio 
+            @if (sortColumn === 'precio') {
+              <i [class]="sortDirection === 'asc' ? 'fas fa-sort-up' : 'fas fa-sort-down'"></i>
+            }
+          </th>
+          <th>Acciones</th>
+        </tr>
+      </thead>      <tbody>
+        @for (accesorio of accesorios; track $index ; let i = $index) {
+            <tr>
+            <td>{{accesorio.nombre}}</td>
+            <td>{{accesorio.modelo}}</td>
+            <td>{{accesorio.tipo}}</td>
+            <td>{{accesorio.codigo_imt}}</td>
+            <td class="precio-column">{{accesorio.precio | currency:'Bs ':'symbol':'1.2-2'}}</td>
+            <td class="actions-column">
+              <button class="btn-icon btn-delete" (click)="eliminarAccesorio(i)">
+                <i class="fas fa-trash-alt"></i>
+              </button>
+              <button class="btn-icon btn-edit" (click)="editarAccesorio(accesorio)">
+                <i class="fas fa-pencil-alt"></i>
+              </button>
+     
+
+
+            </td>        </tr>  
+        }
+        @if (accesorios.length === 0) {
+          <tr>
+            <td colspan="6" class="empty-table">
+              <div class="empty-state">
+                <i class="fas fa-search fa-3x"></i>
+                <p>No se encontraron accesorios</p>
+                <button class="btn btn-outline" (click)="limpiarBusqueda()">Limpiar filtros</button>
+              </div>
+            </td>
+          </tr>
+        }
+      </tbody>
+    </table>  </div>  <!-- ALERTA DE ELIMINACIÓN -->
+  @if(alertaeliminar){
+    <div class="alerta-eliminar">
+      <div class="modal-content">
+        <p>¿Estás seguro de que deseas eliminar este accesorio?</p>
+        <button class="btn btn-confirm" (click)="confirmarEliminacion()">Sí</button>
+        <button class="btn btn-cancel" (click)="cancelarEliminacion()">No</button>
+      </div>
+    </div>
+  }
+</div>
+
+@if(botoncrear()){
+  <app-accesorios-crear
+  [botoncrear]="botoncrear"
+  ></app-accesorios-crear>
+}
+
+@if(botoneditar()){
+  <app-accesorios-editar
+  [botoneditar]="botoneditar"
+  [accesorio]="accesorioSeleccionado"
+  ></app-accesorios-editar>
+}
