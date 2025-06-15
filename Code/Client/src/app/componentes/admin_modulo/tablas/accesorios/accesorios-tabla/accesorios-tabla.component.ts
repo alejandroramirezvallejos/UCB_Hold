@@ -4,7 +4,7 @@ import { FormsModule, ReactiveFormsModule, FormBuilder, FormGroup, Validators } 
 import { Accesorio } from '../../../../../models/admin/Accesorio';
 import { AccesoriosCrearComponent } from '../accesorios-crear/accesorios-crear.component';
 import { AccesoriosEditarComponent } from '../accesorios-editar/accesorios-editar.component';
-import { ObtenerAccesorioService } from '../../../../../services/APIS/obtener/obtener-accesorio/obtener-accesorio.service';
+import { AccesoriosService } from '../../../../../services/APIS/Accesorio/accesorios.service';
 
 
 
@@ -38,8 +38,8 @@ export class AccesoriosTablaComponent {
 
   terminoBusqueda: string = '';
 
-  
-  constructor(private accesoriosapi : ObtenerAccesorioService){}; 
+
+  constructor(private accesoriosapi : AccesoriosService){}; 
 
 
   // ----

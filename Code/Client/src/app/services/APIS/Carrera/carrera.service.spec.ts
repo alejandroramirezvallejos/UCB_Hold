@@ -1,13 +1,13 @@
 import { TestBed } from '@angular/core/testing';
 
-import { IniciarSesionService } from './iniciar-sesion.service';
+import { CarreraService } from './carrera.service';
 
-describe('IniciarSesionService', () => {
-  let service: IniciarSesionService;
+describe('CarreraService', () => {
+  let service: CarreraService;
 
   beforeEach(() => {
     TestBed.configureTestingModule({});
-    service = TestBed.inject(IniciarSesionService);
+    service = TestBed.inject(CarreraService);
   });
 
   it('should be created', () => {

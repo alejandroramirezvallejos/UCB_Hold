@@ -1,6 +1,6 @@
 import { Component, Input } from '@angular/core';
 import { RouterModule } from '@angular/router';
-import { GrupoEquipoService } from '../../../services/APIS/obtener/grupo_equipo/grupo-equipo.service';
+import { GrupoequipoService } from '../../../services/APIS/GrupoEquipo/grupoequipo.service';
 import { GrupoEquipo } from '../../../models/grupo_equipo';
 import { Router } from '@angular/router';
 @Component({
@@ -15,7 +15,7 @@ export class ListaObjetosComponent {
   @Input() producto: string = '';
   productos: GrupoEquipo[] = [];
 
-  constructor(private servicio: GrupoEquipoService) { };
+  constructor(private servicio: GrupoequipoService) { };
 
   ngOnInit(): void {
     this.servicio.getGrupoEquipo(this.categoria , this.producto).subscribe({

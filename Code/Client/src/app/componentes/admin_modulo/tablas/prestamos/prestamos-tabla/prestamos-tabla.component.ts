@@ -4,7 +4,7 @@ import { FormsModule, ReactiveFormsModule, FormBuilder, FormGroup, Validators } 
 import { Prestamos } from '../../../../../models/admin/Prestamos';
 import { PrestamosCrearComponent } from '../prestamos-crear/prestamos-crear.component';
 import { PrestamosEditarComponent } from '../prestamos-editar/prestamos-editar.component';
-import { PrestamosAPIService } from '../../../../../services/APIS/prestamo/prestamos-api.service';
+import { PrestamosAPIService } from '../../../../../services/APIS/Prestamo/prestamos-api.service';
 
 @Component({
   selector: 'app-prestamos-tabla',

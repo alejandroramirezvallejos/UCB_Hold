@@ -4,8 +4,8 @@ import { UsuarioService } from '../../../services/usuario/usuario.service';
 import { Usuario } from '../../../models/usuario';
 import { FormsModule } from '@angular/forms';
 import { Router } from '@angular/router';
-import { RegistrarCuentaService } from '../../../services/APIS/crear/registrar-cuenta/registrar-cuenta.service';
-import { ObtenercarrerasService } from '../../../services/APIS/obtener/carreras/obtenercarreras.service';
+import { UsuarioServiceAPI } from '../../../services/APIS/Usuario/usuario.service';
+import { CarreraService } from '../../../services/APIS/Carrera/carrera.service';
 
 @Component({
   selector: 'app-registrar-usuario',
@@ -18,7 +18,7 @@ export class RegistrarUsuarioComponent {
   password: string = '';
   confirmPassword: string = '';
   carreras: string[] = []; 
-  constructor(private usuarioS: UsuarioService, private router: Router , private registrarcuenta : RegistrarCuentaService , private carrerasS : ObtenercarrerasService) {}
+  constructor(private usuarioS: UsuarioService, private router: Router , private registrarcuenta : UsuarioServiceAPI , private carrerasS : CarreraService) {}
 
 
   ngOnInit() {

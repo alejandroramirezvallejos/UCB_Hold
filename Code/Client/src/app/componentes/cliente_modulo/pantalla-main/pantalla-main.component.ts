@@ -3,7 +3,7 @@ import { Component, EventEmitter, input, Output } from '@angular/core';
 import { ListaObjetosComponent } from '../lista-objetos/lista-objetos.component';
 import { FormsModule } from '@angular/forms';
 import { BuscadorService } from '../../../services/buscador/buscador.service';
-import { CategoriasService } from '../../../services/APIS/obtener/categorias/categorias.service';
+import { CategoriaService } from '../../../services/APIS/Categoria/categoria.service';
 
 @Component({
   selector: 'app-pantalla-main',
@@ -32,7 +32,7 @@ export class PantallaMainComponent {
 
   constructor(
     private buscador: BuscadorService,
-    private categorias: CategoriasService
+    private categorias: CategoriaService
   ) {
     this.solicitud = buscador.producto;
     this.categoria = buscador.categoria;

@@ -4,7 +4,7 @@ import { FormsModule } from '@angular/forms';
 import { CommonModule, NgFor, NgIf } from '@angular/common';
 import { UsuarioService } from '../../../services/usuario/usuario.service';
 import { Router } from '@angular/router';
-import { IniciarSesionService } from '../../../services/APIS/obtener/iniciar-sesion/iniciar-sesion.service';
+import { UsuarioServiceAPI } from '../../../services/APIS/Usuario/usuario.service';
 import { MostrarerrorComponent } from '../../mostrarerror/mostrarerror.component';
 
 
@@ -21,7 +21,7 @@ export class IniciarSesionComponent {
   loading: boolean = false;
   incorrecto : boolean = false;
   errorraro : WritableSignal<number> = signal(0);
-  constructor(private usuario : UsuarioService , private router : Router , private usuarioapi : IniciarSesionService){};
+  constructor(private usuario : UsuarioService , private router : Router , private usuarioapi : UsuarioServiceAPI){};
 
   login(){
     this.loading = true;
@@ -39,6 +39,7 @@ export class IniciarSesionComponent {
         }
         else{
           this.errorraro.set(1); 
+          alert(error.message);
           
         }
         this.loading = false;

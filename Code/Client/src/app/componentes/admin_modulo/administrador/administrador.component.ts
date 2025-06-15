@@ -13,6 +13,7 @@ import { GruposEquiposTablaComponent } from '../tablas/grupos_equipos/grupos-equ
 import { MantenimientosTablaComponent } from '../tablas/mantenimientos/mantenimientos-tabla/mantenimientos-tabla.component';
 import { MueblesTablaComponent } from '../tablas/muebles/muebles-tabla/muebles-tabla.component';
 import { PrestamosTablaComponent } from '../tablas/prestamos/prestamos-tabla/prestamos-tabla.component';
+
 @Component({
   selector: 'app-administrador',
   standalone: true,

@@ -2,7 +2,7 @@
 import { CommonModule } from '@angular/common';
 import { Component, Input } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
-import { ProductoService } from '../../../services/APIS/obtener/producto/producto.service'; 
+import { GrupoequipoService } from '../../../services/APIS/GrupoEquipo/grupoequipo.service'; 
 import { GrupoEquipo } from '../../../models/grupo_equipo';
 import { CarritoService } from '../../../services/carrito/carrito.service';
 
@@ -29,7 +29,7 @@ export class ObjetoComponent {
 
    addedToCart = false;
 
-  constructor(private route: ActivatedRoute , private servicio : ProductoService, private carrito : CarritoService, private router : Router) { }
+  constructor(private route: ActivatedRoute , private servicio : GrupoequipoService, private carrito : CarritoService, private router : Router) { }
 
   // objeto.component.ts
   //WARNING  :  no tocar por que no se como solucionarlo si sale error

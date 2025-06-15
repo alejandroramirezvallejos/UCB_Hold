@@ -10,7 +10,7 @@ import html2canvas from 'html2canvas';
 import { MostrarerrorComponent } from '../../mostrarerror/mostrarerror.component';
 import { Router } from '@angular/router';
 import { UsuarioService } from '../../../services/usuario/usuario.service';
-import { MandarPrestamoService } from '../../../services/APIS/crear/mandar-prestamo.service';
+import { PrestamosAPIService } from '../../../services/APIS/Prestamo/prestamos-api.service';
 
 
 
@@ -40,7 +40,7 @@ export class FormularioComponent implements OnInit {
     private carrito : CarritoService,
     private router : Router,
     private usuario : UsuarioService,
-    private mandarprestamo : MandarPrestamoService
+    private mandarprestamo : PrestamosAPIService
   ) {
 
   }

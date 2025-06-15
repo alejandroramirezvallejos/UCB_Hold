@@ -3,7 +3,7 @@ import {CommonModule, NgOptimizedImage} from '@angular/common';
 import { ReactiveFormsModule, FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { UsuarioService } from '../../../services/usuario/usuario.service';
 import { Usuario } from '../../../models/usuario';
-import { ObtenercarrerasService } from '../../../services/APIS/obtener/carreras/obtenercarreras.service';
+import { CarreraService } from '../../../services/APIS/Carrera/carrera.service';
 
 @Component({
   selector: 'app-perfil',
@@ -20,7 +20,7 @@ export class PerfilComponent implements OnInit {
   constructor(
     private fb: FormBuilder,
     private usuarioS: UsuarioService,
-    private carrerasapi: ObtenercarrerasService
+    private carrerasapi: CarreraService
   ) {}
 
   ngOnInit() {

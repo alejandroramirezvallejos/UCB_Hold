@@ -1,13 +1,13 @@
-import { HttpClient } from '@angular/common/http';
 import { Injectable } from '@angular/core';
-import { map } from 'rxjs/operators';
-import { environment } from '../../../../../environments/environment';
+import { environment } from '../../../../environments/environment';
+import { HttpClient } from '@angular/common/http';
+import { map } from 'rxjs';
 
 @Injectable({
   providedIn: 'root'
 })
-export class ObtenerAccesorioService {
-  private apiurl = environment.apiUrl + '/api/Accesorio'; 
+export class AccesoriosService {
+    private apiurl = environment.apiUrl + '/api/Accesorio'; 
   constructor(private http : HttpClient) { }
 
   obtenerAccesorios() {
@@ -24,6 +24,5 @@ export class ObtenerAccesorioService {
       })))
     );
   }
-  }
 
-
+}
