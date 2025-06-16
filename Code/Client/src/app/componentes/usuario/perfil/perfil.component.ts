@@ -4,6 +4,7 @@ import { ReactiveFormsModule, FormBuilder, FormGroup, Validators } from '@angula
 import { UsuarioService } from '../../../services/usuario/usuario.service';
 import { Usuario } from '../../../models/usuario';
 import { CarreraService } from '../../../services/APIS/Carrera/carrera.service';
+import { UsuarioServiceAPI } from '../../../services/APIS/Usuario/usuario.service';
 
 @Component({
   selector: 'app-perfil',
@@ -20,7 +21,8 @@ export class PerfilComponent implements OnInit {
   constructor(
     private fb: FormBuilder,
     private usuarioS: UsuarioService,
-    private carrerasapi: CarreraService
+    private carrerasapi: CarreraService,
+    private usuarioapi : UsuarioServiceAPI
   ) {}
 
   ngOnInit() {
@@ -72,9 +74,19 @@ export class PerfilComponent implements OnInit {
         email_referencia: email_referencia || '',
         carrera: carrera || ''
       };
-      this.usuarioS.usuario = usuario;
-      this.profileForm.disable();
-      this.editMode = false;
+
+      this.usuarioapi.actualizarUsuario(usuario).subscribe(
+        (response) => {
+          this.usuarioS.usuario = usuario;
+          this.profileForm.disable();
+          this.editMode = false;
+        },
+        (error) => {
+          alert('Error al actualizar el perfil:'+ error.message);
+        }
+      );
+
+    
     } else {
       console.error('El formulario no es válido');
       // Marcar los campos con error para que el usuario pueda identificarlos

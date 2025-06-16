@@ -63,30 +63,31 @@
       "
     />
   </div>
-
-  <div class="categories-panel" *ngIf="showCategories">
-    <div class="categories-list">
-      <div class="no-category-item" (click)="selectCategory('')">
-        Sin categoría
-      </div>
-      <ng-container *ngFor="let item of items">
-        <div class="category-item" (click)="selectCategory(item.name)">
-          {{ item.name }}
+  @if (showCategories) {
+    <div class="categories-panel">
+      <div class="categories-list">
+        <div class="no-category-item" (click)="selectCategory('')">
+          Sin categoría
         </div>
-      </ng-container>
+        @for (item of items; track item.nombre) {
+          <div class="category-item" (click)="selectCategory(item.nombre)">
+            {{ item.nombre }}
+          </div>
+        }
+      </div>
     </div>
-  </div>
+  }
 </div>
 
 <!-- 3. Lista de resultados fuera del buscador -->
-<app-lista-objetos
-  *ngIf="enviar; else sinEnviar"
-  [categoria]="categoria"
-  [producto]="solicitud"
-></app-lista-objetos>
-<ng-template #sinEnviar>
+@if (enviar) {
   <app-lista-objetos
     [categoria]="categoria"
     [producto]="solicitud"
   ></app-lista-objetos>
-</ng-template>
+} @else {
+  <app-lista-objetos
+    [categoria]="categoria"
+    [producto]="solicitud"
+  ></app-lista-objetos>
+}

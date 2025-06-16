@@ -39,7 +39,6 @@ export class IniciarSesionComponent {
         }
         else{
           this.errorraro.set(1); 
-          alert(error.message);
           
         }
         this.loading = false;

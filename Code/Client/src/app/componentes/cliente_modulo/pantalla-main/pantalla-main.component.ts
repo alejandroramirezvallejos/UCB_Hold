@@ -41,8 +41,10 @@ export class PantallaMainComponent {
   ngOnInit(): void {
     this.categorias.obtenercategorias().subscribe({
       next: (data) => (this.items = data),
-      error: (error) => console.error('Error en componente:', error),
+      error: (error) => alert('Error en componente:' + error),
     });
+
+    
   }
 
   // Añade este método
