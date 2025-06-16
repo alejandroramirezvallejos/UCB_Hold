@@ -7,4 +7,5 @@ export class Componente{
   PrecioReferencia: number | null = null;
   NombreEquipo: string | null = null;
   CodigoImtEquipo: number | null = null;
+  UrlDataSheet: string | null = null;
 }

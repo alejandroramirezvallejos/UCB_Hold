@@ -59,6 +59,10 @@ export class PrestamosAPIService {
       return this.http.post(this.url, formulario);
     }
 
+    eliminarPrestamo(id: number) {
+    return this.http.delete(`${this.url}/${id}`);
+    }
+
 
 
 }

@@ -1,5 +1,8 @@
 export class Equipos{
     Id: number = 0;
+    Nombre: string | null = null;
+    Modelo: string | null = null;
+    Marca: string | null = null;
     NombreGrupoEquipo: string | null = null;
     CodigoImt: number | null = null;
     CodigoUcb: string | null = null;

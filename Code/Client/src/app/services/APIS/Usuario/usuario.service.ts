@@ -69,5 +69,56 @@ export class UsuarioServiceAPI {
 
   }
 
+
+  obtenerUsuarios() {
+    return this.http.get<any[]>(this.apiUrl).pipe(
+      map(data => data.map(item => ({
+        id: item.Carnet,
+        carnet: item.Carnet,
+        nombre: item.Nombre,
+        apellido_materno: item.ApellidoMaterno,
+        apellido_paterno: item.ApellidoPaterno,
+        rol: item.Rol,
+        correo: item.Email,
+        telefono: item.Telefono,
+        telefono_referencia: item.TelefonoReferencia,
+        nombre_referencia: item.NombreReferencia,
+        email_referencia: item.EmailReferencia,
+        carrera_Id: item.CarreraId,
+        carrera: item.CarreraNombre,
+
+
+
+      })))
+    );
+  }
+
+  editarUsuario(usuario: Usuario , contrasena: string) {
+    const envio = {
+      Carnet: usuario.carnet,
+      Nombre: usuario.nombre,
+      ApellidoPaterno: usuario.apellido_paterno,
+      ApellidoMaterno: usuario.apellido_materno,
+      Email: usuario.correo,
+      Contrasena: contrasena,
+      Rol: usuario.rol,
+      NombreCarrera: usuario.carrera,
+      Telefono: usuario.telefono,
+      TelefonoReferencia: usuario.telefono_referencia,
+      NombreReferencia: usuario.nombre_referencia,
+      EmailReferencia: usuario.email_referencia
+    };
+
+    return this.http.put<Usuario>(`${this.apiUrl}/${usuario.id}`, envio);
+  }
+
+  eliminarUsuario(id: string) {
+    return this.http.delete(`${this.apiUrl}/${id}`);
+  }
+
+  
+    
+
+
  
 }

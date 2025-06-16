@@ -13,6 +13,23 @@ export class GrupoequipoService {
 
   constructor(private http: HttpClient) { }
 
+  crearGrupoEquipo(grupoEquipo: GrupoEquipo){
+    const envio = {
+      Nombre: grupoEquipo.nombre,
+      Modelo: grupoEquipo.modelo,
+      Marca: grupoEquipo.marca,
+      NombreCategoria: grupoEquipo.nombreCategoria,
+      Descripcion: grupoEquipo.descripcion,
+      UrlDataSheet: grupoEquipo.url_data_sheet,
+      UrlImagen: grupoEquipo.link
+    };
+
+    return this.http.post<any>(this.apiUrl, envio);
+
+  }
+
+
+
   getGrupoEquipo(categoria : string , producto : string): Observable<GrupoEquipo[]>  {
     var url : string   = this.apiUrl +'/buscar' + '?nombre=' + producto + '&categoria=' + categoria;
     return this.http.get<any[]>(url).pipe(
@@ -45,6 +62,23 @@ export class GrupoequipoService {
   }
 
 
+  editarGrupoEquipo(grupoEquipo: GrupoEquipo) {
+    const envio = {
+      Nombre: grupoEquipo.nombre,
+      Modelo: grupoEquipo.modelo,
+      Marca: grupoEquipo.marca,
+      NombreCategoria: grupoEquipo.nombreCategoria,
+      Descripcion: grupoEquipo.descripcion,
+      UrlDataSheet: grupoEquipo.url_data_sheet,
+      UrlImagen: grupoEquipo.link
+    };
 
-  
+    return this.http.put<any>(`${this.apiUrl}/${grupoEquipo.id}`, envio);
+  }
+
+
+  eliminarGrupoEquipo(id: number) {
+    return this.http.delete<any>(`${this.apiUrl}/${id}`);
+  }
+
 }
