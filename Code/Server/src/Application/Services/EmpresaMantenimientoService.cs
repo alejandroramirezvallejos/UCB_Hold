@@ -1,12 +1,12 @@
-public class EmpresaMantenimientoService : ICrearEmpresaMantenimientoComando, IObtenerEmpresaMantenimientoConsulta,
-                                IActualizarEmpresaMantenimientoComando,
-                                IEliminarEmpresaMantenimientoComando
+using System.Data;
+public class EmpresaMantenimientoService
 {
-    private readonly IEmpresaMantenimientoRepository _empresaMantenimientoRepository;
-    public EmpresaMantenimientoService(IEmpresaMantenimientoRepository empresaMantenimientoRepository)
+    private readonly EmpresaMantenimientoRepository _empresaMantenimientoRepository;
+    public EmpresaMantenimientoService(EmpresaMantenimientoRepository empresaMantenimientoRepository)
     {
         _empresaMantenimientoRepository = empresaMantenimientoRepository;
-    }    public void Handle(CrearEmpresaMantenimientoComando comando)
+    }
+    public void CrearEmpresaMantenimiento(CrearEmpresaMantenimientoComando comando)
     {
         try
         {
@@ -14,20 +14,27 @@ public class EmpresaMantenimientoService : ICrearEmpresaMantenimientoComando, IO
         }
         catch
         {
-            // Re-lanzar la excepción original con el mensaje detallado del repository
             throw;
         }
-    }    public List<EmpresaMantenimientoDto>? Handle()
+    }
+    public List<EmpresaMantenimientoDto>? ObtenerTodasEmpresasMantenimiento()
     {
         try
         {
-            return _empresaMantenimientoRepository.ObtenerTodos();
+            DataTable resultado = _empresaMantenimientoRepository.ObtenerTodos();
+            var lista = new List<EmpresaMantenimientoDto>(resultado.Rows.Count);
+            foreach (DataRow fila in resultado.Rows)
+            {
+                lista.Add(MapearFilaADto(fila));
+            }
+            return lista;
         }
         catch
         {
             throw;
         }
-    }    public void Handle(ActualizarEmpresaMantenimientoComando comando)
+    }
+    public void ActualizarEmpresaMantenimiento(ActualizarEmpresaMantenimientoComando comando)
     {
         try
         {
@@ -37,7 +44,8 @@ public class EmpresaMantenimientoService : ICrearEmpresaMantenimientoComando, IO
         {
             throw;
         }
-    }    public void Handle(EliminarEmpresaMantenimientoComando comando)
+    }
+    public void EliminarEmpresaMantenimiento(EliminarEmpresaMantenimientoComando comando)
     {
         try
         {
@@ -47,5 +55,18 @@ public class EmpresaMantenimientoService : ICrearEmpresaMantenimientoComando, IO
         {
             throw;
         }
+    }
+    private static EmpresaMantenimientoDto MapearFilaADto(DataRow fila)
+    {
+        return new EmpresaMantenimientoDto
+        {
+            Id = Convert.ToInt32(fila["id_empresa_mantenimiento"]),
+            NombreEmpresa = fila["nombre_empresa"] == DBNull.Value ? null : fila["nombre_empresa"].ToString(),
+            NombreResponsable = fila["nombre_responsable_empresa"] == DBNull.Value ? null : fila["nombre_responsable_empresa"].ToString(),
+            ApellidoResponsable = fila["apellido_responsable_empresa"] == DBNull.Value ? null : fila["apellido_responsable_empresa"].ToString(),
+            Telefono = fila["telefono_empresa"] == DBNull.Value ? null : fila["telefono_empresa"].ToString(),
+            Direccion = fila["direccion_empresa"] == DBNull.Value ? null : fila["direccion_empresa"].ToString(),
+            Nit = fila["nit_empresa"] == DBNull.Value ? null : fila["nit_empresa"].ToString()
+        };
     }
 }

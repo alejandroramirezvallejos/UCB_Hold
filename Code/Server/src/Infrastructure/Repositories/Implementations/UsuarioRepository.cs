@@ -2,8 +2,8 @@ using System.Data;
 
 public class UsuarioRepository : IUsuarioRepository
 {
-    private readonly IExecuteQuery _ejecutarConsulta;
-    public UsuarioRepository(IExecuteQuery ejecutarConsulta)
+    private readonly ExecuteQuery _ejecutarConsulta;
+    public UsuarioRepository(ExecuteQuery ejecutarConsulta)
     {
         _ejecutarConsulta = ejecutarConsulta;
     }
@@ -23,7 +23,7 @@ public class UsuarioRepository : IUsuarioRepository
 	    @telefonoReferencia,
 	    @nombreReferencia,
 	    @emailReferencia
-	)";
+	    )";
         Dictionary<string, object?> parametros = new Dictionary<string, object?>
         {
             ["carnet"] = comando.Carnet,
@@ -37,7 +37,8 @@ public class UsuarioRepository : IUsuarioRepository
             ["telefonoReferencia"] = comando.TelefonoReferencia ?? (object)DBNull.Value,
             ["nombreReferencia"] = comando.NombreReferencia ?? (object)DBNull.Value,
             ["emailReferencia"] = comando.EmailReferencia ?? (object)DBNull.Value
-        };        try
+        };
+        try
         {
             _ejecutarConsulta.EjecutarSpNR(sql, parametros);
         }
@@ -80,7 +81,8 @@ public class UsuarioRepository : IUsuarioRepository
             ["telefonoReferencia"] = comando.TelefonoReferencia,
             ["nombreReferencia"] = comando.NombreReferencia,
             ["emailReferencia"] = comando.EmailReferencia
-        };        try
+        };
+        try
         {
             _ejecutarConsulta.EjecutarSpNR(sql, parametros);
         }
@@ -96,7 +98,8 @@ public class UsuarioRepository : IUsuarioRepository
         const string sql = @"
         CALL public.eliminar_usuario(
 	    @carnet
-        )";        try
+        )";
+        try
         {
             _ejecutarConsulta.EjecutarSpNR(sql, new Dictionary<string, object?>
             {
@@ -110,27 +113,23 @@ public class UsuarioRepository : IUsuarioRepository
         }
     }
 
-    public List<UsuarioDto> ObtenerTodos()
+    public DataTable ObtenerTodos()
     {
         const string sql = @"
         SELECT * from public.obtener_usuarios()";
         try
         {
-            var resultado = _ejecutarConsulta.EjecutarFuncion(sql, new Dictionary<string, object?>());
-            List<UsuarioDto> usuarios = new List<UsuarioDto>();
-            foreach (DataRow fila in resultado.Rows)
-            {
-                usuarios.Add(MapearUsuarioADto(fila));
-            }
-            return usuarios;
-        }        catch (Exception ex)
+            var dt = _ejecutarConsulta.EjecutarFuncion(sql, new Dictionary<string, object?>());
+            return dt;
+        }
+        catch (Exception ex)
         {
             var innerError = ex.InnerException?.Message ?? ex.Message;
             throw new Exception($"Error en BD al obtener usuarios: {innerError}. SQL: {sql}", ex);
         }
     }
 
-    public UsuarioDto? ObtenerPorEmailYContrasena(string email, string contrasena)
+    public DataTable? ObtenerPorEmailYContrasena(string email, string contrasena)
     {
         const string sql = @"
         SELECT * from public.obtener_usuario_iniciar_sesion(
@@ -139,38 +138,21 @@ public class UsuarioRepository : IUsuarioRepository
         )";
         try
         {
-            var resultado = _ejecutarConsulta.EjecutarFuncion(sql, new Dictionary<string, object?>
+            var dt = _ejecutarConsulta.EjecutarFuncion(sql, new Dictionary<string, object?>
             {
                 ["email"] = email,
                 ["contrasena"] = contrasena
             });
 
-            if (resultado.Rows.Count == 0)
+            if (dt.Rows.Count == 0)
                 return null;
 
-            return MapearUsuarioADto(resultado.Rows[0]);
-        }        catch (Exception ex)
+            return dt;
+        }
+        catch (Exception ex)
         {
             var innerError = ex.InnerException?.Message ?? ex.Message;
             throw new Exception($"Error en BD al obtener usuario por email y contraseña: {innerError}. SQL: {sql}. Parámetros: email={email}", ex);
         }
-    }
-
-    private UsuarioDto MapearUsuarioADto(DataRow fila)
-    {
-        return new UsuarioDto
-        {
-            Carnet = fila["carnet"] == DBNull.Value ? null : fila["carnet"].ToString(),
-            Nombre = fila["nombre"] == DBNull.Value ? null : fila["nombre"].ToString(),
-            ApellidoPaterno = fila["apellido_paterno"] == DBNull.Value ? null : fila["apellido_paterno"].ToString(),
-            ApellidoMaterno = fila["apellido_materno"] == DBNull.Value ? null : fila["apellido_materno"].ToString(),
-            CarreraNombre = fila["carrera"] == DBNull.Value ? null : fila["carrera"].ToString(),
-            Rol = fila["rol"] == DBNull.Value ? null : fila["rol"].ToString(),
-            Email = fila["email"] == DBNull.Value ? null : fila["email"].ToString(),
-            Telefono = fila["telefono"] == DBNull.Value ? null : fila["telefono"].ToString(),
-            TelefonoReferencia = fila["telefono_referencia"] == DBNull.Value ? null : fila["telefono_referencia"].ToString(),
-            NombreReferencia = fila["nombre_referencia"] == DBNull.Value ? null : fila["nombre_referencia"].ToString(),
-            EmailReferencia = fila["email_referencia"] == DBNull.Value ? null : fila["email_referencia"].ToString()
-        };
     }
 }

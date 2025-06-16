@@ -1,7 +1,9 @@
+using System.Data;
+
 public interface IAccesorioRepository
 {
     void Crear(CrearAccesorioComando comando);
-    List<AccesorioDto> ObtenerTodos();
+    DataTable ObtenerTodos();
     void Actualizar(ActualizarAccesorioComando comando);
     void Eliminar(int id);
 }

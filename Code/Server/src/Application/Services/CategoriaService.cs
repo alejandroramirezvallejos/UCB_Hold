@@ -1,12 +1,12 @@
-public class CategoriaService : ICrearCategoriaComando, IObtenerCategoriaConsulta,
-                                IActualizarCategoriaComando,
-                                IEliminarCategoriaComando
+using System.Data;
+public class CategoriaService
 {
-    private readonly ICategoriaRepository _categoriaRepository;
-    public CategoriaService(ICategoriaRepository categoriaRepository)
+    private readonly CategoriaRepository _categoriaRepository;
+    public CategoriaService(CategoriaRepository categoriaRepository)
     {
         _categoriaRepository = categoriaRepository;
-    }    public void Handle(CrearCategoriaComando comando)
+    }
+    public void CrearCategoria(CrearCategoriaComando comando)
     {
         try
         {
@@ -16,17 +16,25 @@ public class CategoriaService : ICrearCategoriaComando, IObtenerCategoriaConsult
         {
             throw;
         }
-    }    public List<CategoriaDto>? Handle()
+    }
+    public List<CategoriaDto>? ObtenerTodasCategorias()
     {
         try
         {
-            return _categoriaRepository.ObtenerTodos();
+            DataTable resultado = _categoriaRepository.ObtenerTodos();
+            var lista = new List<CategoriaDto>(resultado.Rows.Count);
+            foreach (DataRow fila in resultado.Rows)
+            {
+                lista.Add(MapearFilaADto(fila));
+            }
+            return lista;
         }
         catch
         {
             throw;
         }
-    }    public void Handle(ActualizarCategoriaComando comando)
+    }
+    public void ActualizarCategoria(ActualizarCategoriaComando comando)
     {
         try
         {
@@ -36,7 +44,8 @@ public class CategoriaService : ICrearCategoriaComando, IObtenerCategoriaConsult
         {
             throw;
         }
-    }    public void Handle(EliminarCategoriaComando comando)
+    }
+    public void EliminarCategoria(EliminarCategoriaComando comando)
     {
         try
         {
@@ -46,5 +55,13 @@ public class CategoriaService : ICrearCategoriaComando, IObtenerCategoriaConsult
         {
             throw;
         }
+    }
+    private static CategoriaDto MapearFilaADto(DataRow fila)
+    {
+        return new CategoriaDto
+        {
+            Id = Convert.ToInt32(fila["id_categoria"]),
+            Nombre = fila["categoria"] == DBNull.Value ? null : fila["categoria"].ToString(),
+        };
     }
 }

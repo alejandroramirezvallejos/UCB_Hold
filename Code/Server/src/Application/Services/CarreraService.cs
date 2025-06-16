@@ -1,12 +1,13 @@
-public class CarreraService : ICrearCarreraComando, IObtenerCarreraConsulta,
-                                IActualizarCarreraComando,
-                                IEliminarCarreraComando
+using System.Data;
+
+public class CarreraService
 {
-    private readonly ICarreraRepository _carreraRepository;
-    public CarreraService(ICarreraRepository carreraRepository)
+    private readonly CarreraRepository _carreraRepository;
+    public CarreraService(CarreraRepository carreraRepository)
     {
         _carreraRepository = carreraRepository;
-    }    public void Handle(CrearCarreraComando comando)
+    }
+    public void CrearCarrera(CrearCarreraComando comando)
     {
         try
         {
@@ -16,17 +17,25 @@ public class CarreraService : ICrearCarreraComando, IObtenerCarreraConsulta,
         {
             throw;
         }
-    }    public List<CarreraDto>? Handle()
+    }
+    public List<CarreraDto>? ObtenerTodasCarreras()
     {
         try
         {
-            return _carreraRepository.ObtenerTodas();
+            DataTable resultado = _carreraRepository.ObtenerTodas();
+            var lista = new List<CarreraDto>(resultado.Rows.Count);
+            foreach (DataRow fila in resultado.Rows)
+            {
+                lista.Add(MapearFilaADto(fila));
+            }
+            return lista;
         }
         catch
         {
             throw;
         }
-    }    public void Handle(ActualizarCarreraComando comando)
+    }
+    public void ActualizarCarrera(ActualizarCarreraComando comando)
     {
         try
         {
@@ -36,7 +45,8 @@ public class CarreraService : ICrearCarreraComando, IObtenerCarreraConsulta,
         {
             throw;
         }
-    }    public void Handle(EliminarCarreraComando comando)
+    }
+    public void EliminarCarrera(EliminarCarreraComando comando)
     {
         try
         {
@@ -46,5 +56,13 @@ public class CarreraService : ICrearCarreraComando, IObtenerCarreraConsulta,
         {
             throw;
         }
+    }
+    private CarreraDto MapearFilaADto(DataRow fila)
+    {
+        return new CarreraDto
+        {
+            Id = Convert.ToInt32(fila["id_carrera"]),
+            Nombre = fila["nombre_carrera"] == DBNull.Value ? null : fila["nombre_carrera"].ToString()
+        };
     }
 }

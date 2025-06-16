@@ -2,8 +2,8 @@ using System.Data;
 
 public class MantenimientoRepository : IMantenimientoRepository
 {
-    private readonly IExecuteQuery _ejecutarConsulta;
-    public MantenimientoRepository(IExecuteQuery ejecutarConsulta)
+    private readonly ExecuteQuery _ejecutarConsulta;
+    public MantenimientoRepository(ExecuteQuery ejecutarConsulta)
     {
         _ejecutarConsulta = ejecutarConsulta;
     }
@@ -30,7 +30,8 @@ public class MantenimientoRepository : IMantenimientoRepository
             ["codigosImt"] = comando.CodigoIMT ?? (object)DBNull.Value,
             ["tiposMantenimiento"] = comando.TipoMantenimiento ?? (object)DBNull.Value,
             ["descripcionesEquipo"] = comando.DescripcionEquipo ?? (object)DBNull.Value
-        };        try
+        };
+        try
         {
             _ejecutarConsulta.EjecutarSpNR(sql, parametros);
         }
@@ -45,7 +46,8 @@ public class MantenimientoRepository : IMantenimientoRepository
         const string sql = @"
         CALL public.eliminar_mantenimiento(
 	    @id
-        )";        try
+        )";
+        try
         {
             _ejecutarConsulta.EjecutarSpNR(sql, new Dictionary<string, object?>
             {
@@ -57,7 +59,8 @@ public class MantenimientoRepository : IMantenimientoRepository
             var innerError = ex.InnerException?.Message ?? ex.Message;
             throw new Exception($"Error en BD al eliminar mantenimiento: {innerError}. SQL: {sql}. Parámetros: id={id}", ex);
         }
-    }    public List<MantenimientoDto> ObtenerTodos()
+    }
+    public DataTable ObtenerTodos()
     {
         const string sql = @"
         SELECT * FROM public.obtener_mantenimientos()
@@ -66,31 +69,12 @@ public class MantenimientoRepository : IMantenimientoRepository
         try
         {
             DataTable dt = _ejecutarConsulta.EjecutarFuncion(sql, new Dictionary<string, object?>());
-            var lista = new List<MantenimientoDto>(dt.Rows.Count);
-            foreach (DataRow fila in dt.Rows)
-                lista.Add(MapearFila(fila));
-            return lista;
+            return dt;
         }
         catch (Exception ex)
         {
             var innerError = ex.InnerException?.Message ?? ex.Message;
             throw new Exception($"Error en BD al obtener mantenimientos: {innerError}. SQL: {sql}", ex);
         }
-    }
-    private MantenimientoDto MapearFila(DataRow fila)
-    {
-        return new MantenimientoDto
-        {
-            Id = Convert.ToInt32(fila["id_mantenimiento"]),
-            FechaMantenimiento = fila["fecha_mantenimiento"] == DBNull.Value ? null : DateOnly.FromDateTime(Convert.ToDateTime(fila["fecha_mantenimiento"])),
-            FechaFinalDeMantenimiento = fila["fecha_final_mantenimiento"] == DBNull.Value ? null : DateOnly.FromDateTime(Convert.ToDateTime(fila["fecha_final_mantenimiento"])),
-            NombreEmpresaMantenimiento = fila["nombre_empresa_mantenimiento"] == DBNull.Value ? null : fila["nombre_empresa_mantenimiento"].ToString(),
-            Costo = fila["costo_mantenimiento"] == DBNull.Value ? null : Convert.ToDouble(fila["costo_mantenimiento"]),
-            Descripcion = fila["descripcion_mantenimiento"] == DBNull.Value ? null : fila["descripcion_mantenimiento"].ToString(),
-            CodigoImtEquipo = fila["codigo_imt_equipo"] == DBNull.Value ? null : Convert.ToInt32(fila["codigo_imt_equipo"]),
-            NombreGrupoEquipo = fila["nombre_grupo_equipo"] == DBNull.Value ? null : fila["nombre_grupo_equipo"].ToString(),
-            TipoMantenimiento = fila["tipo_detalle_mantenimiento"] == DBNull.Value ? null : fila["tipo_detalle_mantenimiento"].ToString(),
-            DescripcionEquipo = fila["descripcion_equipo"] == DBNull.Value ? null : fila["descripcion_equipo"].ToString()
-        };
     }
 }

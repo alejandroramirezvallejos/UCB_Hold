@@ -2,9 +2,9 @@ using System.Data;
 
 public class AccesorioRepository : IAccesorioRepository
 {
-    private readonly IExecuteQuery _ejecutarConsulta;
+    private readonly ExecuteQuery _ejecutarConsulta;
 
-    public AccesorioRepository(IExecuteQuery ejecutarConsulta)
+    public AccesorioRepository(ExecuteQuery ejecutarConsulta)
     {
         _ejecutarConsulta = ejecutarConsulta;
     }
@@ -31,7 +31,8 @@ public class AccesorioRepository : IAccesorioRepository
             ["descripcion"] = comando.Descripcion ?? (object)DBNull.Value,
             ["precio"]      = comando.Precio ?? (object)DBNull.Value,
             ["urlDataSheet"] = comando.UrlDataSheet ?? (object)DBNull.Value
-        };        try
+        };
+        try
         {
             _ejecutarConsulta.EjecutarSpNR(sql, parametros);
         }
@@ -42,17 +43,14 @@ public class AccesorioRepository : IAccesorioRepository
         }
     }
 
-    public List<AccesorioDto> ObtenerTodos()
+    public DataTable ObtenerTodos()
     {
         const string sql = @"
             SELECT * from public.obtener_accesorios()
         ";
 
         DataTable dt = _ejecutarConsulta.EjecutarFuncion(sql, new Dictionary<string, object?>());
-        var lista = new List<AccesorioDto>(dt.Rows.Count);
-        foreach (DataRow row in dt.Rows)
-            lista.Add(MapearFilaADto(row));
-        return lista;
+        return dt;
     }
 
     public void Actualizar(ActualizarAccesorioComando comando)
@@ -107,20 +105,5 @@ public class AccesorioRepository : IAccesorioRepository
         {
             throw new Exception("Error al eliminar el accesorio", ex);
         }
-    }
-
-    private static AccesorioDto MapearFilaADto(DataRow fila)
-    {
-        return new AccesorioDto
-        {
-            Id = Convert.ToInt32(fila["id_accesorio"]),
-            Nombre = fila["nombre_accesorio"]==DBNull.Value? null : fila["nombre_accesorio"].ToString(),
-            Modelo = fila["modelo_accesorio"] == DBNull.Value ? null : fila["modelo_accesorio"].ToString(),
-            Tipo = fila["tipo_accesorio"] == DBNull.Value ? null : fila["tipo_accesorio"].ToString(),
-            Precio = fila["precio_accesorio"] == DBNull.Value ? null : Convert.ToDouble(fila["precio_accesorio"]),
-            NombreEquipoAsociado = fila["nombre_equipo_asociado"] == DBNull.Value ? null : fila["nombre_equipo_asociado"].ToString(),
-            CodigoImtEquipoAsociado = fila["codigo_imt_equipo_asociado"] == DBNull.Value ? null : Convert.ToInt32(fila["codigo_imt_equipo_asociado"]),
-            Descripcion = fila["descripcion_accesorio"] == DBNull.Value ? null : fila["descripcion_accesorio"].ToString(),
-        };
     }
 }

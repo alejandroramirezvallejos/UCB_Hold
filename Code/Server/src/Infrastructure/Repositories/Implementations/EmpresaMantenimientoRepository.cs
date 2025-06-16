@@ -2,9 +2,9 @@ using System.Data;
 
 public class EmpresaMantenimientoRepository : IEmpresaMantenimientoRepository
 {
-    private readonly IExecuteQuery _ejecutarConsulta;
+    private readonly ExecuteQuery _ejecutarConsulta;
 
-    public EmpresaMantenimientoRepository(IExecuteQuery ejecutarConsulta)
+    public EmpresaMantenimientoRepository(ExecuteQuery ejecutarConsulta)
     {
         _ejecutarConsulta = ejecutarConsulta;
     }
@@ -62,7 +62,8 @@ public class EmpresaMantenimientoRepository : IEmpresaMantenimientoRepository
             ["telefono"] = comando.Telefono ?? (object)DBNull.Value,
             ["direccion"] = comando.Direccion ?? (object)DBNull.Value,
             ["nit"] = comando.Nit ?? (object)DBNull.Value
-        };        try
+        };
+        try
         {
             _ejecutarConsulta.EjecutarSpNR(sql, parametros);
         }
@@ -78,7 +79,8 @@ public class EmpresaMantenimientoRepository : IEmpresaMantenimientoRepository
         const string sql = @"
         CALL public.eliminar_empresas_mantenimiento(
 	    @id
-        )";        try
+        )";
+        try
         {
             _ejecutarConsulta.EjecutarSpNR(sql, new Dictionary<string, object?>
             {
@@ -92,7 +94,7 @@ public class EmpresaMantenimientoRepository : IEmpresaMantenimientoRepository
         }
     }
 
-    public List<EmpresaMantenimientoDto> ObtenerTodos()
+    public DataTable ObtenerTodos()
     {
         const string sql = @"
         SELECT * from public.obtener_empresas_mantenimiento()
@@ -100,28 +102,12 @@ public class EmpresaMantenimientoRepository : IEmpresaMantenimientoRepository
         try
         {
             DataTable dt = _ejecutarConsulta.EjecutarFuncion(sql, new Dictionary<string, object?>());
-            var lista = new List<EmpresaMantenimientoDto>(dt.Rows.Count);
-            foreach (DataRow row in dt.Rows)
-                lista.Add(MapearFilaADto(row));
-            return lista;
-        }        catch (Exception ex)
+            return dt;
+        }
+        catch (Exception ex)
         {
             var innerError = ex.InnerException?.Message ?? ex.Message;
             throw new Exception($"Error en BD al obtener empresas de mantenimiento: {innerError}. SQL: {sql}", ex);
         }
-    }
-
-    private static EmpresaMantenimientoDto MapearFilaADto(DataRow fila)
-    {
-        return new EmpresaMantenimientoDto
-        {
-            Id = Convert.ToInt32(fila["id_empresa_mantenimiento"]),
-            NombreEmpresa = fila["nombre_empresa"] == DBNull.Value ? null : fila["nombre_empresa"].ToString(),
-            NombreResponsable = fila["nombre_responsable_empresa"] == DBNull.Value ? null : fila["nombre_responsable_empresa"].ToString(),
-            ApellidoResponsable = fila["apellido_responsable_empresa"] == DBNull.Value ? null : fila["apellido_responsable_empresa"].ToString(),
-            Telefono = fila["telefono_empresa"] == DBNull.Value ? null : fila["telefono_empresa"].ToString(),
-            Direccion = fila["direccion_empresa"] == DBNull.Value ? null : fila["direccion_empresa"].ToString(),
-            Nit = fila["nit_empresa"] == DBNull.Value ? null : fila["nit_empresa"].ToString()
-        };
     }
 }

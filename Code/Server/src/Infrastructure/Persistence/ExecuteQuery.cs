@@ -38,7 +38,7 @@ public class ExecuteQuery : IExecuteQuery
             NpgsqlConnection conn = new NpgsqlConnection(_connectionString);
             conn.Open();
 
-            // EjecutarSpNR siempre maneja declaraciones CALL, que en PostgreSQL deben ejecutarse como Text
+            // EjecutarSpNR siempre maneja declaraciones CALL, que en PostgreSQL son Insert, Update o Delete 
             NpgsqlCommand cmd = new NpgsqlCommand(nombreSp, conn)
             {
                 CommandType = CommandType.Text
@@ -50,7 +50,7 @@ public class ExecuteQuery : IExecuteQuery
         }
         catch (Exception ex)
         {
-            // Log más información detallada para debugging
+            
             var parametrosStr = parametros != null 
                 ? string.Join(", ", parametros.Select(p => $"{p.Key}={p.Value}"))
                 : "null";
@@ -95,7 +95,8 @@ public class ExecuteQuery : IExecuteQuery
         }
 
         return lista;
-    }    private void AgregarParametros(NpgsqlCommand cmd, Dictionary<string, object?> parametros)
+    }
+    private void AgregarParametros(NpgsqlCommand cmd, Dictionary<string, object?> parametros)
     {
         if (parametros == null)
         {
@@ -121,25 +122,22 @@ public class ExecuteQuery : IExecuteQuery
     {
         var type = value.GetType();
         
-        // Verificar si es array
         if (type.IsArray)
             return true;
             
-        // Verificar si es List<T>
         if (type.IsGenericType && type.GetGenericTypeDefinition() == typeof(List<>))
             return true;
             
-        // Verificar si implementa IEnumerable<T> (excluyendo string)
         if (value is not string && type.GetInterfaces()
             .Any(i => i.IsGenericType && i.GetGenericTypeDefinition() == typeof(IEnumerable<>)))
             return true;
             
         return false;
-    }    private NpgsqlParameter CrearParametroArray(string nombreParametro, object arrayValue)
+    }
+    private NpgsqlParameter CrearParametroArray(string nombreParametro, object arrayValue)
     {
-        // Convertir listas a arrays para PostgreSQL
         var processedValue = ConvertirAArray(arrayValue);
-        
+
         return processedValue switch
         {
             int[] intArray => new NpgsqlParameter(nombreParametro, NpgsqlDbType.Array | NpgsqlDbType.Integer)
@@ -181,11 +179,11 @@ public class ExecuteQuery : IExecuteQuery
             short[] shortArray => new NpgsqlParameter(nombreParametro, NpgsqlDbType.Array | NpgsqlDbType.Smallint)
             {
                 Value = shortArray
-            },            float[] floatArray => new NpgsqlParameter(nombreParametro, NpgsqlDbType.Array | NpgsqlDbType.Real)
+            },
+            float[] floatArray => new NpgsqlParameter(nombreParametro, NpgsqlDbType.Array | NpgsqlDbType.Real)
             {
                 Value = floatArray
             },
-            // Para arrays genéricos, intentar inferir el tipo
             _ => new NpgsqlParameter(nombreParametro, NpgsqlDbType.Array | NpgsqlDbType.Unknown)
             {
                 Value = processedValue

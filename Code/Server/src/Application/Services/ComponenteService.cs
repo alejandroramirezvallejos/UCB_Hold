@@ -1,12 +1,12 @@
-public class ComponenteService : ICrearComponenteComando, IObtenerComponenteConsulta,
-                                IActualizarComponenteComando,
-                                IEliminarComponenteComando
+using System.Data;
+public class ComponenteService
 {
-    private readonly IComponenteRepository _componenteRepository;
-    public ComponenteService(IComponenteRepository componenteRepository)
+    private readonly ComponenteRepository _componenteRepository;
+    public ComponenteService(ComponenteRepository componenteRepository)
     {
         _componenteRepository = componenteRepository;
-    }    public void Handle(CrearComponenteComando comando)
+    }
+    public void CrearComponente(CrearComponenteComando comando)
     {
         try
         {
@@ -16,17 +16,25 @@ public class ComponenteService : ICrearComponenteComando, IObtenerComponenteCons
         {
             throw;
         }
-    }    public List<ComponenteDto>? Handle()
+    }
+    public List<ComponenteDto>? ObtenerTodosComponentes()
     {
         try
         {
-            return _componenteRepository.ObtenerTodos();
+            DataTable resultado = _componenteRepository.ObtenerTodos();
+            var lista = new List<ComponenteDto>(resultado.Rows.Count);
+            foreach (DataRow fila in resultado.Rows)
+            {
+                lista.Add(MapearFilaADto(fila));
+            }
+            return lista;
         }
         catch
         {
             throw;
         }
-    }    public void Handle(ActualizarComponenteComando comando)
+    }
+    public void ActualizarComponente(ActualizarComponenteComando comando)
     {
         try
         {
@@ -36,7 +44,8 @@ public class ComponenteService : ICrearComponenteComando, IObtenerComponenteCons
         {
             throw;
         }
-    }    public void Handle(EliminarComponenteComando comando)
+    }
+    public void EliminarComponente(EliminarComponenteComando comando)
     {
         try
         {
@@ -46,5 +55,19 @@ public class ComponenteService : ICrearComponenteComando, IObtenerComponenteCons
         {
             throw;
         }
+    }
+    private static ComponenteDto MapearFilaADto(DataRow fila)
+    {
+        return new ComponenteDto
+        {
+            Id = Convert.ToInt32(fila["id_componente"]),
+            Nombre = fila["nombre_componente"] == DBNull.Value ? null : fila["nombre_componente"].ToString(),
+            Modelo = fila["modelo_componente"] == DBNull.Value ? null : fila["modelo_componente"].ToString(),
+            Tipo = fila["tipo_componente"] == DBNull.Value ? null : fila["tipo_componente"].ToString(),
+            Descripcion = fila["descripcion_componente"] == DBNull.Value ? null : fila["descripcion_componente"].ToString(),
+            PrecioReferencia = fila["precio_referencia_componente"] == DBNull.Value ? null : Convert.ToDouble(fila["precio_referencia_componente"]),
+            NombreEquipo = fila["nombre_equipo"] == DBNull.Value ? null : fila["nombre_equipo"].ToString(),
+            CodigoImtEquipo = fila["codigo_imt_equipo"] == DBNull.Value ? null : Convert.ToInt32(fila["codigo_imt_equipo"])
+        };
     }
 }

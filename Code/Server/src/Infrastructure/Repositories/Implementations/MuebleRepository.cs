@@ -2,8 +2,8 @@ using System.Data;
 
 public class MuebleRepository : IMuebleRepository
 {
-    private readonly IExecuteQuery _ejecutarConsulta;
-    public MuebleRepository(IExecuteQuery ejecutarConsulta)
+    private readonly ExecuteQuery _ejecutarConsulta;
+    public MuebleRepository(ExecuteQuery ejecutarConsulta)
     {
         _ejecutarConsulta = ejecutarConsulta;
     }
@@ -29,7 +29,8 @@ public class MuebleRepository : IMuebleRepository
             ["longitud"] = comando.Longitud ?? (object)DBNull.Value,
             ["profundidad"] = comando.Profundidad ?? (object)DBNull.Value,
             ["altura"] = comando.Altura ?? (object)DBNull.Value
-        };        try
+        };
+        try
         {
             _ejecutarConsulta.EjecutarSpNR(sql, parametros);
         }
@@ -64,7 +65,8 @@ public class MuebleRepository : IMuebleRepository
             ["longitud"] = comando.Longitud ?? (object)DBNull.Value,
             ["profundidad"] = comando.Profundidad ?? (object)DBNull.Value,
             ["altura"] = comando.Altura ?? (object)DBNull.Value
-        };        try
+        };
+        try
         {
             _ejecutarConsulta.EjecutarSpNR(sql, parametros);
         }
@@ -80,7 +82,8 @@ public class MuebleRepository : IMuebleRepository
         const string sql = @"
         CALL public.eliminar_mueble(
 	    @id
-        )";        try
+        )";
+        try
         {
             _ejecutarConsulta.EjecutarSpNR(sql, new Dictionary<string, object?>
             {
@@ -92,7 +95,8 @@ public class MuebleRepository : IMuebleRepository
             var innerError = ex.InnerException?.Message ?? ex.Message;
             throw new Exception($"Error en BD al eliminar mueble: {innerError}. SQL: {sql}. Parámetros: id={id}", ex);
         }
-    }    public List<MuebleDto> ObtenerTodos()
+    }
+    public DataTable ObtenerTodos()
     {
         const string sql = @"
         SELECT * from public.obtener_muebles()
@@ -100,13 +104,8 @@ public class MuebleRepository : IMuebleRepository
 
         try
         {
-            var resultado = _ejecutarConsulta.EjecutarFuncion(sql, new Dictionary<string, object?>());
-            List<MuebleDto> muebles = new List<MuebleDto>();
-            foreach (DataRow fila in resultado.Rows)
-            {
-                muebles.Add(mapearDto(fila));
-            }
-            return muebles;
+            var dt = _ejecutarConsulta.EjecutarFuncion(sql, new Dictionary<string, object?>());
+            return dt;
         }
         catch (Exception ex)
         {
@@ -114,19 +113,5 @@ public class MuebleRepository : IMuebleRepository
             throw new Exception($"Error en BD al obtener muebles: {innerError}. SQL: {sql}", ex);
         }
     }
-    private MuebleDto mapearDto(DataRow fila)
-    {
-        return new MuebleDto
-        {
-            Id = Convert.ToInt32(fila["id_mueble"]),
-            Nombre = fila["nombre_mueble"] == DBNull.Value ? null : fila["nombre_mueble"].ToString(),
-            NumeroGaveteros = fila["numero_gaveteros_mueble"] == DBNull.Value ? null : Convert.ToInt32(fila["numero_gaveteros_mueble"]),
-            Ubicacion = fila["ubicacion_mueble"] == DBNull.Value ? null : fila["ubicacion_mueble"].ToString(),
-            Tipo = fila["tipo_mueble"] == DBNull.Value ? null : fila["tipo_mueble"].ToString(),
-            Costo = fila["costo_mueble"] == DBNull.Value ? null : Convert.ToDouble(fila["costo_mueble"]),
-            Longitud = fila["longitud_mueble"] == DBNull.Value ? null : Convert.ToDouble(fila["longitud_mueble"]),
-            Profundidad = fila["profundidad_mueble"] == DBNull.Value ? null : Convert.ToDouble(fila["profundidad_mueble"]),
-            Altura = fila["altura_mueble"] == DBNull.Value ? null : Convert.ToDouble(fila["altura_mueble"])
-        };
-    }
+    
 }

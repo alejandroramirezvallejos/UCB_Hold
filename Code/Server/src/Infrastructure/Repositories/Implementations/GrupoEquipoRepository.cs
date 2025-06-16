@@ -2,9 +2,9 @@ using System.Data;
 
 public class GrupoEquipoRepository : IGrupoEquipoRepository
 {
-    private readonly IExecuteQuery _ejecutarConsulta;
+    private readonly ExecuteQuery _ejecutarConsulta;
 
-    public GrupoEquipoRepository(IExecuteQuery ejecutarConsulta)
+    public GrupoEquipoRepository(ExecuteQuery ejecutarConsulta)
     {
         _ejecutarConsulta = ejecutarConsulta;
     }
@@ -40,7 +40,7 @@ public class GrupoEquipoRepository : IGrupoEquipoRepository
         }
     }
 
-    public GrupoEquipoDto? ObtenerPorId(int id)
+    public DataTable? ObtenerPorId(int id)
     {
         const string sql = @"
             SELECT * from public.obtener_grupo_equipo_especifico_por_id(
@@ -58,15 +58,16 @@ public class GrupoEquipoRepository : IGrupoEquipoRepository
             {
                 return null;
             }
-            return MapearFilaADto(dt.Rows[0]);
-        }        catch (Exception ex)
+            return dt;
+        }
+        catch (Exception ex)
         {
             var innerError = ex.InnerException?.Message ?? ex.Message;
             throw new Exception($"Error en BD al obtener grupo de equipo por ID: {innerError}. SQL: {sql}. Parámetros: id={id}", ex);
         }
     }
 
-    public List<GrupoEquipoDto> ObtenerPorNombreYCategoria(string? nombre, string? categoria)
+    public DataTable ObtenerPorNombreYCategoria(string? nombre, string? categoria)
     {
         const string sql = @"
             SELECT * from public.obtener_grupos_equipos_por_nombre_y_categoria(
@@ -81,13 +82,9 @@ public class GrupoEquipoRepository : IGrupoEquipoRepository
                 ["categoria"] = categoria ?? (object)DBNull.Value
             });
             
-            var lista = new List<GrupoEquipoDto>();
-            foreach (DataRow fila in dt.Rows)
-            {
-                lista.Add(MapearFilaADto(fila));
-            }
-            return lista;
-        }        catch (Exception ex)
+            return dt;
+        }
+        catch (Exception ex)
         {
             var innerError = ex.InnerException?.Message ?? ex.Message;
             throw new Exception($"Error en BD al obtener grupos de equipos por nombre y categoría: {innerError}. SQL: {sql}. Parámetros: nombre={nombre}, categoria={categoria}", ex);
@@ -117,7 +114,8 @@ public class GrupoEquipoRepository : IGrupoEquipoRepository
             ["nombreCategoria"] = comando.NombreCategoria ?? (object)DBNull.Value,
             ["urlDataSheet"] = comando.UrlDataSheet ?? (object)DBNull.Value,
             ["urlImagen"] = comando.UrlImagen ?? (object)DBNull.Value
-        };        try
+        };
+        try
         {
             _ejecutarConsulta.EjecutarSpNR(sql, parametros);
         }
@@ -133,7 +131,8 @@ public class GrupoEquipoRepository : IGrupoEquipoRepository
         const string sql = @"
             CALL public.eliminar_grupo_equipo(
 	        @id
-            )";        try
+            )";
+        try
         {
             _ejecutarConsulta.EjecutarSpNR(sql, new Dictionary<string, object?>
             {
@@ -145,7 +144,8 @@ public class GrupoEquipoRepository : IGrupoEquipoRepository
             var innerError = ex.InnerException?.Message ?? ex.Message;
             throw new Exception($"Error en BD al eliminar grupo de equipo: {innerError}. SQL: {sql}. Parámetros: id={id}", ex);
         }
-    }    public List<GrupoEquipoDto> ObtenerTodos()
+    }
+    public DataTable ObtenerTodos()
     {
         const string sql = @"
             SELECT * from public.obtener_grupos_equipos()
@@ -154,31 +154,12 @@ public class GrupoEquipoRepository : IGrupoEquipoRepository
         try
         {
             DataTable dt = _ejecutarConsulta.EjecutarFuncion(sql, new Dictionary<string, object?>());
-            var lista = new List<GrupoEquipoDto>(dt.Rows.Count);
-            foreach (DataRow row in dt.Rows)
-                lista.Add(MapearFilaADto(row));
-            return lista;
+            return dt;
         }
         catch (Exception ex)
         {
             var innerError = ex.InnerException?.Message ?? ex.Message;
             throw new Exception($"Error en BD al obtener grupos de equipos: {innerError}. SQL: {sql}", ex);
         }
-    }
-
-    private GrupoEquipoDto MapearFilaADto(DataRow fila)
-    {
-        return new GrupoEquipoDto
-        {
-            Id = Convert.ToInt32(fila["id_grupo_equipo"]),
-            Nombre = fila["nombre_grupo_equipo"] == DBNull.Value ? null : fila["nombre_grupo_equipo"].ToString(),
-            Modelo = fila["modelo_grupo_equipo"] == DBNull.Value ? null : fila["modelo_grupo_equipo"].ToString(),
-            Marca = fila["marca_grupo_equipo"] == DBNull.Value ? null : fila["marca_grupo_equipo"].ToString(),
-            Descripcion = fila["descripcion_grupo_equipo"] == DBNull.Value ? null : fila["descripcion_grupo_equipo"].ToString(),
-            NombreCategoria = fila["nombre_categoria"] == DBNull.Value ? null : fila["nombre_categoria"].ToString(),
-            UrlDataSheet = fila["url_data_sheet_grupo_equipo"] == DBNull.Value ? null : fila["url_data_sheet_grupo_equipo"].ToString(),
-            UrlImagen = fila["url_imagen_grupo_equipo"] == DBNull.Value ? null : fila["url_imagen_grupo_equipo"].ToString(),
-            Cantidad = fila["cantidad_grupo_equipo"] == DBNull.Value ? null : Convert.ToInt32(fila["cantidad_grupo_equipo"])
-        };
     }
 }

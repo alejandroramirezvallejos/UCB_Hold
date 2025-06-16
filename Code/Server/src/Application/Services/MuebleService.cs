@@ -1,12 +1,13 @@
-public class MuebleService : IObtenerMuebleConsulta, ICrearMuebleComando,
-                             IActualizarMuebleComando, IEliminarMuebleComando
+using System.Data;
+public class MuebleService
 {
-    private readonly IMuebleRepository _muebleRepository;
+    private readonly MuebleRepository _muebleRepository;
 
-    public MuebleService(IMuebleRepository muebleRepository)
+    public MuebleService(MuebleRepository muebleRepository)
     {
         _muebleRepository = muebleRepository;
-    }    public void Handle(CrearMuebleComando comando)
+    }
+    public void CrearMueble(CrearMuebleComando comando)
     {
         try
         {
@@ -16,7 +17,8 @@ public class MuebleService : IObtenerMuebleConsulta, ICrearMuebleComando,
         {
             throw;
         }
-    }    public void Handle(ActualizarMuebleComando comando)
+    }
+    public void ActualizarMueble(ActualizarMuebleComando comando)
     {
         try
         {
@@ -26,7 +28,8 @@ public class MuebleService : IObtenerMuebleConsulta, ICrearMuebleComando,
         {
             throw;
         }
-    }    public void Handle(EliminarMuebleComando comando)
+    }
+    public void EliminarMueble(EliminarMuebleComando comando)
     {
         try
         {
@@ -36,15 +39,37 @@ public class MuebleService : IObtenerMuebleConsulta, ICrearMuebleComando,
         {
             throw;
         }
-    }    public List<MuebleDto>? Handle()
+    }
+    public List<MuebleDto>? ObtenerTodosMuebles()
     {
         try
         {
-            return _muebleRepository.ObtenerTodos();
+            DataTable resultado = _muebleRepository.ObtenerTodos();
+            var lista = new List<MuebleDto>(resultado.Rows.Count);
+            foreach (DataRow fila in resultado.Rows)
+            {
+                lista.Add(MapearFilaADto(fila));
+            }
+            return lista;
         }
         catch
         {
             throw;
         }
+    }
+    private MuebleDto MapearFilaADto(DataRow fila)
+    {
+        return new MuebleDto
+        {
+            Id = Convert.ToInt32(fila["id_mueble"]),
+            Nombre = fila["nombre_mueble"] == DBNull.Value ? null : fila["nombre_mueble"].ToString(),
+            NumeroGaveteros = fila["numero_gaveteros_mueble"] == DBNull.Value ? null : Convert.ToInt32(fila["numero_gaveteros_mueble"]),
+            Ubicacion = fila["ubicacion_mueble"] == DBNull.Value ? null : fila["ubicacion_mueble"].ToString(),
+            Tipo = fila["tipo_mueble"] == DBNull.Value ? null : fila["tipo_mueble"].ToString(),
+            Costo = fila["costo_mueble"] == DBNull.Value ? null : Convert.ToDouble(fila["costo_mueble"]),
+            Longitud = fila["longitud_mueble"] == DBNull.Value ? null : Convert.ToDouble(fila["longitud_mueble"]),
+            Profundidad = fila["profundidad_mueble"] == DBNull.Value ? null : Convert.ToDouble(fila["profundidad_mueble"]),
+            Altura = fila["altura_mueble"] == DBNull.Value ? null : Convert.ToDouble(fila["altura_mueble"])
+        };
     }
 }

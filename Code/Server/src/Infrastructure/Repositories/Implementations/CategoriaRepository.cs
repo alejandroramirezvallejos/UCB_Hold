@@ -2,9 +2,9 @@ using System.Data;
 
 public class CategoriaRepository : ICategoriaRepository
 {
-    private readonly IExecuteQuery _ejecutarConsulta;
+    private readonly ExecuteQuery _ejecutarConsulta;
 
-    public CategoriaRepository(IExecuteQuery ejecutarConsulta)
+    public CategoriaRepository(ExecuteQuery ejecutarConsulta)
     {
         _ejecutarConsulta = ejecutarConsulta;
     }
@@ -19,7 +19,8 @@ public class CategoriaRepository : ICategoriaRepository
         Dictionary<string, object?> parametros = new Dictionary<string, object?>
         {
             ["nombre"] = comando.Nombre
-        };        try
+        };
+        try
         {
             _ejecutarConsulta.EjecutarSpNR(sql, parametros);
         }
@@ -30,7 +31,7 @@ public class CategoriaRepository : ICategoriaRepository
         }
     }
 
-    public List<CategoriaDto> ObtenerTodos()
+    public DataTable ObtenerTodos()
     {
         const string sql = @"
             SELECT * from public.obtener_categorias()
@@ -38,11 +39,9 @@ public class CategoriaRepository : ICategoriaRepository
         try
         {
             DataTable dt = _ejecutarConsulta.EjecutarFuncion(sql, new Dictionary<string, object?>());
-            var lista = new List<CategoriaDto>(dt.Rows.Count);
-            foreach (DataRow row in dt.Rows)
-                lista.Add(MapearFila(row));
-            return lista;
-        }        catch (Exception ex)
+            return dt;
+        }
+        catch (Exception ex)
         {
             var innerError = ex.InnerException?.Message ?? ex.Message;
             throw new Exception($"Error en BD al obtener categorías: {innerError}. SQL: {sql}", ex);
@@ -61,7 +60,8 @@ public class CategoriaRepository : ICategoriaRepository
         {
             ["id"]     = comando.Id,
             ["nombre"] = comando.Nombre == null ? null : comando.Nombre
-        };        try
+        };
+        try
         {
             _ejecutarConsulta.EjecutarSpNR(sql, parametros);
         }
@@ -82,7 +82,8 @@ public class CategoriaRepository : ICategoriaRepository
         Dictionary<string, object?> parametros = new Dictionary<string, object?>
         {
             ["id"] = id
-        };        try
+        };
+        try
         {
             _ejecutarConsulta.EjecutarSpNR(sql, parametros);
         }
@@ -91,14 +92,5 @@ public class CategoriaRepository : ICategoriaRepository
             var innerError = ex.InnerException?.Message ?? ex.Message;
             throw new Exception($"Error en BD al eliminar categoría: {innerError}. SQL: {sql}. Parámetros: id={id}", ex);
         }
-    }
-
-    private static CategoriaDto MapearFila(DataRow fila)
-    {
-        return new CategoriaDto
-        {
-            Id = Convert.ToInt32(fila["id_categoria"]),
-            Nombre = fila["categoria"] == DBNull.Value ? null : fila["categoria"].ToString(),
-        };
     }
 }
