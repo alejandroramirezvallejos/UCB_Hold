@@ -5,11 +5,22 @@ public class ComponenteService : IComponenteService
     public ComponenteService(ComponenteRepository componenteRepository)
     {
         _componenteRepository = componenteRepository;
-    }
-    public void CrearComponente(CrearComponenteComando comando)
+    }    public void CrearComponente(CrearComponenteComando comando)
     {
         try
         {
+            if (comando == null)
+                throw new ArgumentNullException(nameof(comando), "Los datos del componente son requeridos");
+
+            if (string.IsNullOrWhiteSpace(comando.Nombre))
+                throw new ArgumentException("El nombre del componente es requerido", nameof(comando.Nombre));
+
+            if (comando.Nombre.Length > 100)
+                throw new ArgumentException("El nombre del componente no puede exceder 100 caracteres", nameof(comando.Nombre));
+
+            if (!string.IsNullOrWhiteSpace(comando.Modelo) && comando.Modelo.Length > 50)
+                throw new ArgumentException("El modelo del componente no puede exceder 50 caracteres", nameof(comando.Modelo));
+
             _componenteRepository.Crear(comando);
         }
         catch

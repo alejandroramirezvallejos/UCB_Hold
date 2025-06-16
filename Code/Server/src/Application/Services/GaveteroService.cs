@@ -6,11 +6,28 @@ public class GaveteroService : IGaveteroService
     public GaveteroService(GaveteroRepository gaveteroRepository)
     {
         _gaveteroRepository = gaveteroRepository;
-    }
-    public void CrearGavetero(CrearGaveteroComando comando)
+    }    public void CrearGavetero(CrearGaveteroComando comando)
     {
         try
         {
+            if (comando == null)
+                throw new ArgumentNullException(nameof(comando), "Los datos del gavetero son requeridos");
+
+            if (string.IsNullOrWhiteSpace(comando.Nombre))
+                throw new ArgumentException("El nombre del gavetero es requerido", nameof(comando.Nombre));
+
+            if (string.IsNullOrWhiteSpace(comando.NombreMueble))
+                throw new ArgumentException("El nombre del mueble es requerido", nameof(comando.NombreMueble));
+
+            if (comando.Longitud.HasValue && comando.Longitud <= 0)
+                throw new ArgumentException("La longitud debe ser mayor a 0", nameof(comando.Longitud));
+
+            if (comando.Profundidad.HasValue && comando.Profundidad <= 0)
+                throw new ArgumentException("La profundidad debe ser mayor a 0", nameof(comando.Profundidad));
+
+            if (comando.Altura.HasValue && comando.Altura <= 0)
+                throw new ArgumentException("La altura debe ser mayor a 0", nameof(comando.Altura));
+
             _gaveteroRepository.Crear(comando);
         }
         catch

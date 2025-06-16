@@ -6,11 +6,28 @@ public class MuebleService : IMuebleService
     public MuebleService(MuebleRepository muebleRepository)
     {
         _muebleRepository = muebleRepository;
-    }
-    public void CrearMueble(CrearMuebleComando comando)
+    }    public void CrearMueble(CrearMuebleComando comando)
     {
         try
         {
+            if (comando == null)
+                throw new ArgumentNullException(nameof(comando), "Los datos del mueble son requeridos");
+
+            if (string.IsNullOrWhiteSpace(comando.Nombre))
+                throw new ArgumentException("El nombre del mueble es requerido", nameof(comando.Nombre));
+
+            if (comando.Costo.HasValue && comando.Costo < 0)
+                throw new ArgumentException("El costo no puede ser negativo", nameof(comando.Costo));
+
+            if (comando.Longitud.HasValue && comando.Longitud <= 0)
+                throw new ArgumentException("La longitud debe ser mayor a 0", nameof(comando.Longitud));
+
+            if (comando.Profundidad.HasValue && comando.Profundidad <= 0)
+                throw new ArgumentException("La profundidad debe ser mayor a 0", nameof(comando.Profundidad));
+
+            if (comando.Altura.HasValue && comando.Altura <= 0)
+                throw new ArgumentException("La altura debe ser mayor a 0", nameof(comando.Altura));
+
             _muebleRepository.Crear(comando);
         }
         catch

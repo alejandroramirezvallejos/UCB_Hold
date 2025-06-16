@@ -5,11 +5,19 @@ public class CategoriaService : ICategoriaService
     public CategoriaService(CategoriaRepository categoriaRepository)
     {
         _categoriaRepository = categoriaRepository;
-    }
-    public void CrearCategoria(CrearCategoriaComando comando)
+    }    public void CrearCategoria(CrearCategoriaComando comando)
     {
         try
         {
+            if (comando == null)
+                throw new ArgumentNullException(nameof(comando), "Los datos de la categoría son requeridos");
+
+            if (string.IsNullOrWhiteSpace(comando.Nombre))
+                throw new ArgumentException("El nombre de la categoría es requerido", nameof(comando.Nombre));
+
+            if (comando.Nombre.Length > 50)
+                throw new ArgumentException("El nombre de la categoría no puede exceder 50 caracteres", nameof(comando.Nombre));
+
             _categoriaRepository.Crear(comando);
         }
         catch

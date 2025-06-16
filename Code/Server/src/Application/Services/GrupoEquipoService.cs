@@ -7,22 +7,47 @@ public class GrupoEquipoService : IGrupoEquipoService
     public GrupoEquipoService(GrupoEquipoRepository grupoEquipoRepository)
     {
         _grupoEquipoRepository = grupoEquipoRepository;
-    }
-    public void CrearGrupoEquipo(CrearGrupoEquipoComando comando)
+    }    public void CrearGrupoEquipo(CrearGrupoEquipoComando comando)
     {
         try
         {
+            if (comando == null)
+                throw new ArgumentNullException(nameof(comando), "Los datos del grupo de equipo son requeridos");
+
+            if (string.IsNullOrWhiteSpace(comando.Nombre))
+                throw new ArgumentException("El nombre es requerido", nameof(comando.Nombre));
+
+            if (string.IsNullOrWhiteSpace(comando.Modelo))
+                throw new ArgumentException("El modelo es requerido", nameof(comando.Modelo));
+
+            if (string.IsNullOrWhiteSpace(comando.Marca))
+                throw new ArgumentException("La marca es requerida", nameof(comando.Marca));
+
+            if (string.IsNullOrWhiteSpace(comando.Descripcion))
+                throw new ArgumentException("La descripción es requerida", nameof(comando.Descripcion));
+
+            if (string.IsNullOrWhiteSpace(comando.NombreCategoria))
+                throw new ArgumentException("El nombre de la categoría es requerido", nameof(comando.NombreCategoria));
+
+            if (string.IsNullOrWhiteSpace(comando.UrlImagen))
+                throw new ArgumentException("La URL de la imagen es requerida", nameof(comando.UrlImagen));
+
             _grupoEquipoRepository.Crear(comando);
         }
         catch
         {
             throw;
         }
-    }
-    public GrupoEquipoDto? ObtenerGrupoEquipoPorId(ObtenerGrupoEquipoPorIdConsulta consulta)
+    }    public GrupoEquipoDto? ObtenerGrupoEquipoPorId(ObtenerGrupoEquipoPorIdConsulta consulta)
     {
         try
         {
+            if (consulta == null)
+                throw new ArgumentNullException(nameof(consulta), "La consulta es requerida");
+
+            if (consulta.Id <= 0)
+                throw new ArgumentException("El ID debe ser mayor a 0", nameof(consulta.Id));
+
             DataTable? resultado = _grupoEquipoRepository.ObtenerPorId(consulta.Id);
             if (resultado?.Rows.Count > 0)
             {

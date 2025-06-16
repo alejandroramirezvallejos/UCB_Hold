@@ -6,22 +6,50 @@ public class EquipoService : IEquipoService
     public EquipoService(EquipoRepository equipoRepository)
     {
         _equipoRepository = equipoRepository;
-    }
-    public void CrearEquipo(CrearEquipoComando comando)
+    }    public void CrearEquipo(CrearEquipoComando comando)
     {
         try
         {
+            if (comando == null)
+                throw new ArgumentNullException(nameof(comando), "Los datos del equipo son requeridos");
+
+            if (string.IsNullOrWhiteSpace(comando.NombreGrupoEquipo))
+                throw new ArgumentException("El nombre del grupo de equipo es requerido", nameof(comando.NombreGrupoEquipo));
+
+            if (string.IsNullOrWhiteSpace(comando.Modelo))
+                throw new ArgumentException("El modelo es requerido", nameof(comando.Modelo));
+
+            if (string.IsNullOrWhiteSpace(comando.Marca))
+                throw new ArgumentException("La marca es requerida", nameof(comando.Marca));
+
+            if (comando.CostoReferencia.HasValue && comando.CostoReferencia < 0)
+                throw new ArgumentException("El costo de referencia no puede ser negativo", nameof(comando.CostoReferencia));
+
+            if (comando.TiempoMaximoPrestamo.HasValue && comando.TiempoMaximoPrestamo <= 0)
+                throw new ArgumentException("El tiempo máximo de préstamo debe ser mayor a 0", nameof(comando.TiempoMaximoPrestamo));
+
             _equipoRepository.Crear(comando);
         }
         catch
         {
             throw;
         }
-    }
-    public void ActualizarEquipo(ActualizarEquipoComando comando)
+    }    public void ActualizarEquipo(ActualizarEquipoComando comando)
     {
         try
         {
+            if (comando == null)
+                throw new ArgumentNullException(nameof(comando), "Los datos del equipo son requeridos");
+
+            if (comando.Id <= 0)
+                throw new ArgumentException("El ID del equipo debe ser mayor a 0", nameof(comando.Id));
+
+            if (comando.CostoReferencia.HasValue && comando.CostoReferencia < 0)
+                throw new ArgumentException("El costo de referencia no puede ser negativo", nameof(comando.CostoReferencia));
+
+            if (comando.TiempoMaximoPrestamo.HasValue && comando.TiempoMaximoPrestamo <= 0)
+                throw new ArgumentException("El tiempo máximo de préstamo debe ser mayor a 0", nameof(comando.TiempoMaximoPrestamo));
+
             _equipoRepository.Actualizar(comando);
         }
         catch

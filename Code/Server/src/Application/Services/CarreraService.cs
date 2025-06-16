@@ -6,11 +6,19 @@ public class CarreraService : ICarreraService
     public CarreraService(CarreraRepository carreraRepository)
     {
         _carreraRepository = carreraRepository;
-    }
-    public void CrearCarrera(CrearCarreraComando comando)
+    }    public void CrearCarrera(CrearCarreraComando comando)
     {
         try
         {
+            if (comando == null)
+                throw new ArgumentNullException(nameof(comando), "Los datos de la carrera son requeridos");
+
+            if (string.IsNullOrWhiteSpace(comando.Nombre))
+                throw new ArgumentException("El nombre de la carrera es requerido", nameof(comando.Nombre));
+
+            if (comando.Nombre.Length > 100)
+                throw new ArgumentException("El nombre de la carrera no puede exceder 100 caracteres", nameof(comando.Nombre));
+
             _carreraRepository.Crear(comando);
         }
         catch

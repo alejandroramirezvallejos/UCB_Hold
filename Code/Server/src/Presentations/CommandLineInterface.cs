@@ -117,9 +117,7 @@ public static class CommandLineInterface
 
         builder.Services.AddEndpointsApiExplorer();
         builder.Services.AddSwaggerGen();
-        builder.Services.AddAuthorization();
-
-        builder.Services.AddCors(options =>
+        builder.Services.AddAuthorization();        builder.Services.AddCors(options =>
         {
             options.AddPolicy("AllowAll", policy =>
             {
@@ -128,6 +126,36 @@ public static class CommandLineInterface
                       .AllowAnyHeader();
             });
         });
+
+        builder.Services.AddScoped<ExecuteQuery>();
+
+        // Registrar servicios
+        builder.Services.AddScoped<AccesorioService>();
+        builder.Services.AddScoped<CarreraService>();
+        builder.Services.AddScoped<CategoriaService>();
+        builder.Services.AddScoped<ComponenteService>();
+        builder.Services.AddScoped<EmpresaMantenimientoService>();
+        builder.Services.AddScoped<EquipoService>();
+        builder.Services.AddScoped<GaveteroService>();
+        builder.Services.AddScoped<GrupoEquipoService>();
+        builder.Services.AddScoped<MantenimientoService>();
+        builder.Services.AddScoped<MuebleService>();
+        builder.Services.AddScoped<PrestamoService>();
+        builder.Services.AddScoped<UsuarioService>();
+
+        // Registrar repositorios
+        builder.Services.AddScoped<AccesorioRepository>();
+        builder.Services.AddScoped<CarreraRepository>();
+        builder.Services.AddScoped<CategoriaRepository>();
+        builder.Services.AddScoped<ComponenteRepository>();
+        builder.Services.AddScoped<EmpresaMantenimientoRepository>();
+        builder.Services.AddScoped<EquipoRepository>();
+        builder.Services.AddScoped<GaveteroRepository>();
+        builder.Services.AddScoped<GrupoEquipoRepository>();
+        builder.Services.AddScoped<MantenimientoRepository>();
+        builder.Services.AddScoped<MuebleRepository>();
+        builder.Services.AddScoped<PrestamoRepository>();
+        builder.Services.AddScoped<UsuarioRepository>();
 
         var app = builder.Build();
         app.UseDefaultFiles();

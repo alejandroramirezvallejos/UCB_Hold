@@ -1,4 +1,5 @@
 using System.Data;
+using System.Linq;
 public class PrestamoService : IPrestamoService
 {
     private readonly PrestamoRepository _prestamoRepository;
@@ -6,11 +7,28 @@ public class PrestamoService : IPrestamoService
     public PrestamoService(PrestamoRepository prestamoRepository)
     {
         _prestamoRepository = prestamoRepository;
-    }
-    public void CrearPrestamo(CrearPrestamoComando comando)
+    }    public void CrearPrestamo(CrearPrestamoComando comando)
     {
         try
         {
+            if (comando == null)
+                throw new ArgumentNullException(nameof(comando), "Los datos del préstamo son requeridos");
+
+            if (comando.GrupoEquipoId == null || comando.GrupoEquipoId.Length == 0)
+                throw new ArgumentException("Al menos un grupo de equipo es requerido", nameof(comando.GrupoEquipoId));
+
+            if (comando.GrupoEquipoId.Any(id => id <= 0))
+                throw new ArgumentException("Todos los IDs de grupo de equipo deben ser mayores a 0", nameof(comando.GrupoEquipoId));
+
+            if (string.IsNullOrWhiteSpace(comando.CarnetUsuario))
+                throw new ArgumentException("El carnet del usuario es requerido", nameof(comando.CarnetUsuario));
+
+            if (comando.FechaDevolucionEsperada <= comando.FechaPrestamoEsperada)
+                throw new ArgumentException("La fecha de devolución debe ser posterior a la fecha de préstamo", nameof(comando.FechaDevolucionEsperada));
+
+            if (comando.FechaPrestamoEsperada < DateTime.Now.Date)
+                throw new ArgumentException("La fecha de préstamo no puede ser anterior a hoy", nameof(comando.FechaPrestamoEsperada));
+
             _prestamoRepository.Crear(comando);
         }
         catch

@@ -6,43 +6,35 @@ public class UsuarioService : IUsuarioService
     public UsuarioService(UsuarioRepository usuarioRepository)
     {
         _usuarioRepository = usuarioRepository;
-    }
-    public void CrearUsuario(CrearUsuarioComando comando)
+    }    public void CrearUsuario(CrearUsuarioComando comando)
     {
         try
         {
+            if (comando == null)
+                throw new ArgumentNullException(nameof(comando), "Los datos del usuario son requeridos");
+
             if (string.IsNullOrWhiteSpace(comando.Carnet))
-            {
-                throw new Exception("El carnet es obligatorio");
-            }
-            if (comando.Nombre == null)
-            {
-                throw new Exception("El nombre es obligatorio");
-            }
-            if (comando.ApellidoPaterno == null)
-            {
-                throw new Exception("El apellido paterno es obligatorio");
-            }
-            if (comando.ApellidoMaterno == null)
-            {
-                throw new Exception("El apellido materno es obligatorio");
-            }
+                throw new ArgumentException("El carnet es obligatorio", nameof(comando.Carnet));
+
+            if (string.IsNullOrWhiteSpace(comando.Nombre))
+                throw new ArgumentException("El nombre es obligatorio", nameof(comando.Nombre));
+
+            if (string.IsNullOrWhiteSpace(comando.ApellidoPaterno))
+                throw new ArgumentException("El apellido paterno es obligatorio", nameof(comando.ApellidoPaterno));
+
+            if (string.IsNullOrWhiteSpace(comando.ApellidoMaterno))
+                throw new ArgumentException("El apellido materno es obligatorio", nameof(comando.ApellidoMaterno));
+
             if (string.IsNullOrWhiteSpace(comando.Email) || !IsValidEmail(comando.Email))
-            {
-                throw new Exception("El email es obligatorio y debe ser válido");
-            }
-            if (string.IsNullOrWhiteSpace(comando.Contrasena))
-            {
-                throw new Exception("La contraseña es obligatoria");
-            }
-            if (comando.NombreCarrera == null)
-            {
-                throw new Exception("El nombre de la carrera es obligatorio");
-            }
-            if (comando.Telefono == null)
-            {
-                throw new Exception("El teléfono es obligatorio");
-            }
+                throw new ArgumentException("El email es obligatorio y debe ser válido", nameof(comando.Email));            if (string.IsNullOrWhiteSpace(comando.Contrasena))
+                throw new ArgumentException("La contraseña es obligatoria", nameof(comando.Contrasena));
+
+            if (string.IsNullOrWhiteSpace(comando.NombreCarrera))
+                throw new ArgumentException("El nombre de la carrera es obligatorio", nameof(comando.NombreCarrera));
+
+            if (string.IsNullOrWhiteSpace(comando.Telefono))
+                throw new ArgumentException("El teléfono es obligatorio", nameof(comando.Telefono));
+
             _usuarioRepository.Crear(comando);
         }
         catch
