@@ -1,6 +1,6 @@
 using System.Data;
 
-public class CarreraService
+public class CarreraService : ICarreraService
 {
     private readonly CarreraRepository _carreraRepository;
     public CarreraService(CarreraRepository carreraRepository)

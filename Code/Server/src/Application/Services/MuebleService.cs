@@ -1,5 +1,5 @@
 using System.Data;
-public class MuebleService
+public class MuebleService : IMuebleService
 {
     private readonly MuebleRepository _muebleRepository;
 

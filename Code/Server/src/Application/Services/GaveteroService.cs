@@ -1,5 +1,5 @@
 using System.Data;
-public class GaveteroService
+public class GaveteroService : IGaveteroService
 {
     private readonly GaveteroRepository _gaveteroRepository;
 

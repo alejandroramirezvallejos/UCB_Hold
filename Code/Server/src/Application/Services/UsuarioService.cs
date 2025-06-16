@@ -1,5 +1,5 @@
 using System.Data;
-public class UsuarioService
+public class UsuarioService : IUsuarioService
 {
     private readonly UsuarioRepository _usuarioRepository;
 

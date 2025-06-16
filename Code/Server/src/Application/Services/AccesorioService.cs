@@ -1,5 +1,5 @@
 using System.Data;
-public class AccesorioService
+public class AccesorioService : IAccesorioService
 {
     private readonly AccesorioRepository _accesorioRepository;
     public AccesorioService(AccesorioRepository accesorioRepository)

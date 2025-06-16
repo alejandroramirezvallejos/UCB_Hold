@@ -1,5 +1,6 @@
 using System.Data;
-public class GrupoEquipoService
+
+public class GrupoEquipoService : IGrupoEquipoService
 {
     private readonly GrupoEquipoRepository _grupoEquipoRepository;
 

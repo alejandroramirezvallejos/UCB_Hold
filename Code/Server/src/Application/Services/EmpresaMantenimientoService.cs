@@ -1,5 +1,5 @@
 using System.Data;
-public class EmpresaMantenimientoService
+public class EmpresaMantenimientoService : IEmpresaMantenimientoService
 {
     private readonly EmpresaMantenimientoRepository _empresaMantenimientoRepository;
     public EmpresaMantenimientoService(EmpresaMantenimientoRepository empresaMantenimientoRepository)

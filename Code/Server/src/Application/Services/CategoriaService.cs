@@ -1,5 +1,5 @@
 using System.Data;
-public class CategoriaService
+public class CategoriaService : ICategoriaService
 {
     private readonly CategoriaRepository _categoriaRepository;
     public CategoriaService(CategoriaRepository categoriaRepository)

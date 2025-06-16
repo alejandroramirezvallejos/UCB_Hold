@@ -1,5 +1,5 @@
 using System.Data;
-public class PrestamoService
+public class PrestamoService : IPrestamoService
 {
     private readonly PrestamoRepository _prestamoRepository;
 

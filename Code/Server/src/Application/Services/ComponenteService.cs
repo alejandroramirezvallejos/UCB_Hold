@@ -1,5 +1,5 @@
 using System.Data;
-public class ComponenteService
+public class ComponenteService : IComponenteService
 {
     private readonly ComponenteRepository _componenteRepository;
     public ComponenteService(ComponenteRepository componenteRepository)
