@@ -1,0 +1,115 @@
+<div class="form-container">
+  <button class="btn-close" (click)="cerrar()">
+    <i class="fas fa-times"></i>
+  </button>
+  <h2>Editar Préstamo</h2>  <form (ngSubmit)="confirmar()">
+    <div class="form-group">
+      <label for="carnetUsuario">Carnet Usuario</label>
+      <input 
+        type="text" 
+        id="carnetUsuario" 
+        name="carnetUsuario" 
+        [(ngModel)]="prestamo.CarnetUsuario"
+        required 
+        placeholder="Ingresa el carnet del usuario"
+        class="form-input"
+      />
+    </div>
+
+    <div class="form-group">
+      <label for="nombreUsuario">Nombre Usuario</label>
+      <input 
+        type="text" 
+        id="nombreUsuario" 
+        name="nombreUsuario" 
+        [(ngModel)]="prestamo.NombreUsuario"
+        required 
+        placeholder="Nombre del usuario"
+        class="form-input"
+      />
+    </div>
+
+    <div class="form-group">
+      <label for="apellidoPaternoUsuario">Apellido Paterno</label>
+      <input 
+        type="text" 
+        id="apellidoPaternoUsuario" 
+        name="apellidoPaternoUsuario" 
+        [(ngModel)]="prestamo.ApellidoPaternoUsuario"
+        placeholder="Apellido paterno"
+        class="form-input"
+      />
+    </div>
+
+    <div class="form-group">
+      <label for="telefonoUsuario">Teléfono Usuario</label>
+      <input 
+        type="tel" 
+        id="telefonoUsuario" 
+        name="telefonoUsuario" 
+        [(ngModel)]="prestamo.TelefonoUsuario"
+        placeholder="Teléfono del usuario"
+        class="form-input"
+      />
+    </div>
+
+    <div class="form-group">
+      <label for="nombreGrupoEquipo">Nombre Grupo Equipo</label>
+      <input 
+        type="text" 
+        id="nombreGrupoEquipo" 
+        name="nombreGrupoEquipo" 
+        [(ngModel)]="prestamo.NombreGrupoEquipo"
+        required 
+        placeholder="Nombre del grupo de equipo"
+        class="form-input"
+      />
+    </div>
+
+    <div class="form-group">
+      <label for="codigoImt">Código IMT</label>
+      <input 
+        type="text" 
+        id="codigoImt" 
+        name="codigoImt" 
+        [(ngModel)]="prestamo.CodigoImt"
+        required 
+        placeholder="Código IMT del equipo"
+        class="form-input"
+      />
+    </div><div class="form-group">
+      <label for="estadoPrestamo">Estado Préstamo</label>
+      <select 
+        id="estadoPrestamo" 
+        name="estadoPrestamo" 
+        [(ngModel)]="prestamo.EstadoPrestamo"
+        required
+        class="form-input"
+      >
+        <option value="">Seleccionar estado</option>
+        <option value="Pendiente">Pendiente</option>
+        <option value="Aprobado">Aprobado</option>
+        <option value="Activo">Activo</option>
+        <option value="Finalizado">Finalizado</option>
+        <option value="Rechazado">Rechazado</option>
+        <option value="Cancelado">Cancelado</option>
+      </select>
+    </div>    <div class="form-group">
+      <label for="observacion">Observaciones</label>
+      <textarea 
+        id="observacion" 
+        name="observacion" 
+        [(ngModel)]="prestamo.Observacion"
+        rows="4"
+        placeholder="Observaciones adicionales sobre el préstamo"
+        class="form-input"
+      ></textarea>
+    </div>
+
+    <div class="form-submit">
+      <button type="submit" class="register-button">
+        <span>Actualizar Préstamo</span>
+      </button>
+    </div>
+  </form>
+</div>
