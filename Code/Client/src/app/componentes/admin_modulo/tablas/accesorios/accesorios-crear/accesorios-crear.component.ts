@@ -1,6 +1,7 @@
-import { Component, Input, signal, WritableSignal } from '@angular/core';
+import { Component, EventEmitter, Input, Output, signal, WritableSignal } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { Accesorio } from '../../../../../models/admin/Accesorio';
+import { AccesoriosService } from '../../../../../services/APIS/Accesorio/accesorios.service';
 
 @Component({
   selector: 'app-accesorios-crear',
@@ -12,6 +13,8 @@ import { Accesorio } from '../../../../../models/admin/Accesorio';
 export class AccesoriosCrearComponent {
 
   @Input() botoncrear: WritableSignal<boolean> = signal(true);
+  @Output() Actualizar = new EventEmitter<void>();
+
 
   accesorio : Accesorio = {
     id: 0,
@@ -25,11 +28,23 @@ export class AccesoriosCrearComponent {
     nombreEquipoAsociado: ''
   };
 
+
+  constructor(private accesorioapi : AccesoriosService){}; 
+
   // TODO : implementar
   registrar(){
-    console.log('Registrando accesorio:', this.accesorio);
-    // Aquí iría la lógica para enviar al backend
-    this.cerrar();
+
+    this.accesorioapi.crearAccesorio(this.accesorio).subscribe(
+      response => {
+        this.Actualizar.emit(); 
+        this.cerrar();
+      },
+      error => {
+        alert('Error al crear accesorio: ' + error);
+        this.cerrar();
+      }
+    );
+   
   }
 
   cerrar(){

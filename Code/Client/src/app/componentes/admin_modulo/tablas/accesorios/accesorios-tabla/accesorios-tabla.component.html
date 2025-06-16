@@ -74,7 +74,7 @@
             <td>{{accesorio.codigo_imt}}</td>
             <td class="precio-column">{{accesorio.precio | currency:'Bs ':'symbol':'1.2-2'}}</td>
             <td class="actions-column">
-              <button class="btn-icon btn-delete" (click)="eliminarAccesorio(i)">
+              <button class="btn-icon btn-delete" (click)="eliminarAccesorio(accesorio)">
                 <i class="fas fa-trash-alt"></i>
               </button>
               <button class="btn-icon btn-edit" (click)="editarAccesorio(accesorio)">
@@ -112,6 +112,7 @@
 @if(botoncrear()){
   <app-accesorios-crear
   [botoncrear]="botoncrear"
+  (Actualizar)="cargarAccesorios()"
   ></app-accesorios-crear>
 }
 
@@ -119,5 +120,6 @@
   <app-accesorios-editar
   [botoneditar]="botoneditar"
   [accesorio]="accesorioSeleccionado"
+  (actualizar)="cargarAccesorios()"
   ></app-accesorios-editar>
 }

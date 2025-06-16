@@ -21,7 +21,6 @@ export class AccesoriosTablaComponent {
   botoneditar : WritableSignal<boolean> = signal(false);
 
   alertaeliminar : boolean = false;
-  valoreliminar: number =0;
   accesorios : Accesorio[] = [];
   accesorioscopia: Accesorio[] = [];
 
@@ -33,7 +32,8 @@ export class AccesoriosTablaComponent {
     descripcion: '',
     codigo_imt: '',
     precio: 0,
-    nombreEquipoAsociado: ''
+    nombreEquipoAsociado: '',
+    url_data_sheet: ''
   }  ;
 
   terminoBusqueda: string = '';
@@ -53,16 +53,32 @@ export class AccesoriosTablaComponent {
   }
 
 
+  limpiarAccesorioSeleccionado() {
+    this.accesorioSeleccionado = {
+      id: 0,
+      nombre: '',
+      modelo: '',
+      tipo: '',
+      descripcion: '',
+      codigo_imt: '',
+      precio: 0,
+      nombreEquipoAsociado: '',
+      url_data_sheet: ''
+    };
+  }
+
+
+
   crearaccesorio() {
     this.botoncrear.set(true);
   }
 
   cargarAccesorios() {
-    // Simulación de carga de accesorios, en un caso real se haría una llamada a un servicio
+ 
     this.accesoriosapi.obtenerAccesorios().subscribe(
       (data: Accesorio[]) => {
         this.accesorios = data;
-        this.accesorioscopia = [...this.accesorios]; // Guardar una copia para la búsqueda
+        this.accesorioscopia = [...this.accesorios]; 
       },
       (error) => {
         console.error('Error al cargar los accesorios:', error);
@@ -74,13 +90,14 @@ export class AccesoriosTablaComponent {
 buscar(){
   if(this.terminoBusqueda.trim() === '') {
     this.limpiarBusqueda(); 
+    return ; 
   }
 
-  this.accesorios = this.accesorios.filter(accesorio =>
+  this.accesorios = this.accesorioscopia.filter(accesorio =>
     accesorio.nombre.toLowerCase().includes(this.terminoBusqueda.toLowerCase()) ||
     accesorio.modelo.toLowerCase().includes(this.terminoBusqueda.toLowerCase()) ||
     accesorio.tipo.toLowerCase().includes(this.terminoBusqueda.toLowerCase()) ||
-    accesorio.codigo_imt.toLowerCase().includes(this.terminoBusqueda.toLowerCase()) ||
+    String(accesorio.codigo_imt || '').toLowerCase().includes(this.terminoBusqueda.toLowerCase()) ||
     accesorio.nombreEquipoAsociado?.toLowerCase().includes(this.terminoBusqueda.toLowerCase()) 
   );
 }
@@ -93,25 +110,34 @@ limpiarBusqueda(){
 
 editarAccesorio(accesorio : Accesorio) {
   this.botoncrear.set(false);
-  this.accesorioSeleccionado = accesorio;
+  this.accesorioSeleccionado = { ...accesorio }; // Crear una copia del objeto
   this.botoneditar.set(true);
 }
 
-eliminarAccesorio(i : number) {
-  this.valoreliminar = i;
+eliminarAccesorio(accesorio : Accesorio) {
+  this.accesorioSeleccionado = accesorio;
   this.alertaeliminar = true;
  
 }
 
 confirmarEliminacion() {
-  this.accesorios.splice(this.valoreliminar, 1);
+  this.accesoriosapi.eliminarAccesorio(this.accesorioSeleccionado.id).subscribe(
+    (response) => {
+
+       this.cargarAccesorios(); 
+
+    },
+    (error) => {
+      alert('Error al eliminar el accesorio: ' + error);
+    }
+  );
+  this.limpiarAccesorioSeleccionado();
   this.alertaeliminar = false;
-  this.valoreliminar = 0; 
 }
 
 cancelarEliminacion(){
   this.alertaeliminar = false; 
-  this.valoreliminar = 0; 
+  this.limpiarAccesorioSeleccionado(); 
 }
 
 

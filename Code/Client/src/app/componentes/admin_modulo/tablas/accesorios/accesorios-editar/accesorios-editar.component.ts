@@ -1,6 +1,7 @@
-import { Component, Input, signal, WritableSignal } from '@angular/core';
+import { Component, EventEmitter, Input, Output, signal, WritableSignal } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { Accesorio } from '../../../../../models/admin/Accesorio';
+import { AccesoriosService } from '../../../../../services/APIS/Accesorio/accesorios.service';
 
 @Component({
   selector: 'app-accesorios-editar',
@@ -10,6 +11,7 @@ import { Accesorio } from '../../../../../models/admin/Accesorio';
 })
 export class AccesoriosEditarComponent {
   @Input() botoneditar: WritableSignal<boolean> = signal(true);
+  @Output() actualizar: EventEmitter<void> = new EventEmitter<void>();
   @Input() accesorio : Accesorio ={
     id: 0,
     nombre: '',
@@ -21,10 +23,25 @@ export class AccesoriosEditarComponent {
     url_data_sheet: '',
     nombreEquipoAsociado: ''
   };
+
+  constructor(private accesorioapi: AccesoriosService) {}; 
+
+  
+
+
   confirmar (){
-    console.log('Confirmando edición de accesorio:', this.accesorio);
-    // Aquí iría la lógica para enviar al backend
-    this.cerrar();
+ 
+    this.accesorioapi.editarAccesorio(this.accesorio).subscribe(
+      response => {
+        alert( response);
+        this.actualizar.emit();
+        this.cerrar();
+      },
+      error => {
+        alert('Error al editar accesorio: ' + error.message);
+        this.cerrar();
+      }
+    );
   }
 
   cerrar(){
