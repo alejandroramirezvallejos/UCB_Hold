@@ -13,17 +13,17 @@ export class RegistrarCuentaService {
 
   registrarCuenta(usuario : Usuario , contrasena : string){
     const envio={
-    carnet: usuario.carnet,
-    nombre: usuario.nombre,
-    apellidoPaterno: usuario.apellido_paterno,
-    apellidoMaterno: usuario.apellido_materno,
-    email: usuario.correo,
-    contrasena: contrasena,
-    nombreCarrera: usuario.carrera,
-    telefono: usuario.telefono,
-    telefonoReferencia: usuario.telefono_referencia,
-    nombreReferencia: usuario.nombre_referencia,
-    emailReferencia: usuario.email_referencia
+    Carnet: usuario.carnet,
+    Nombre: usuario.nombre,
+    ApellidoPaterno: usuario.apellido_paterno,
+    ApellidoMaterno: usuario.apellido_materno,
+    Email: usuario.correo,
+    Contrasena: contrasena,
+    NombreCarrera: usuario.carrera,
+    Telefono: usuario.telefono,
+    TelefonoReferencia: usuario.telefono_referencia,
+    NombreReferencia: usuario.nombre_referencia,
+    EmailReferencia: usuario.email_referencia
     } 
 
     return this.http.post(this.apiUrl, envio)

@@ -6,6 +6,13 @@
     align-items: flex-start;
     justify-content: flex-start;
     margin-top: 20px;
+
+    margin-left: 60px; /* Space for inactive sidebar */
+    transition: margin-left 0.3s ease;
+}
+
+.container:has(app-sidebard .sidebaractivo) {
+    margin-left: 240px; /* Space for active sidebar */
 }
 
 .items-wrapper {

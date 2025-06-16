@@ -3,17 +3,14 @@ import { FormsModule } from '@angular/forms';
 import { Accesorio } from '../../../../../models/admin/Accesorio';
 
 @Component({
-  selector: 'app-accesorios-crear',
-  standalone: true,
+  selector: 'app-accesorios-editar',
   imports: [FormsModule],
-  templateUrl: './accesorios-crear.component.html',
-  styleUrl: './accesorios-crear.component.css'
+  templateUrl: './accesorios-editar.component.html',
+  styleUrl: './accesorios-editar.component.css'
 })
-export class AccesoriosCrearComponent {
-
-  @Input() botoncrear: WritableSignal<boolean> = signal(true);
-
-  accesorio : Accesorio = {
+export class AccesoriosEditarComponent {
+  @Input() botoneditar: WritableSignal<boolean> = signal(true);
+  @Input() accesorio : Accesorio ={
     id: 0,
     nombre: '',
     modelo: '',
@@ -24,16 +21,14 @@ export class AccesoriosCrearComponent {
     url_data_sheet: '',
     nombreEquipoAsociado: ''
   };
-
-  // TODO : implementar
-  registrar(){
-    console.log('Registrando accesorio:', this.accesorio);
+  confirmar (){
+    console.log('Confirmando edición de accesorio:', this.accesorio);
     // Aquí iría la lógica para enviar al backend
     this.cerrar();
   }
 
   cerrar(){
-    this.botoncrear.set(false);
+    this.botoneditar.set(false);
   }
 
 }

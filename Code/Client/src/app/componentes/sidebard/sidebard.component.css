@@ -1,10 +1,11 @@
 /* Updated sidebar styles for a modern, clean look */
 
 .sidebarinactivo, .sidebaractivo {
-  position: relative;
-  left: -16px;
+  position: fixed;
+  left: 0;
+  top: 80px;
   width: 60px; /* initial width is set via class override */
-  height: calc(100vh - 45px);
+  height: 100vh;
   display: flex;
   flex-direction: column;
   align-items: center;
@@ -14,6 +15,7 @@
   box-shadow: 2px 0 5px rgba(0, 0, 0, 0.1);
   margin: 0;
   border-radius: 0 8px 8px 0;
+  z-index: 999;
 }
 
 .sidebarinactivo {
@@ -56,22 +58,26 @@
   display: flex;
   flex-direction: column;
   align-items: center;
-  padding: 10px;
-  gap: 10px;
+  padding: 5px;
+  gap: 2px;
+  overflow-y: auto;
 }
 
 .item {
-  width: 90%;
-  height: 50px;
+  width: 95%;
+  min-height: 40px;
   display: flex;
   align-items: center;
-  padding: 0 15px;
-  font-size: 16px;
+  padding: 6px 10px;
+  font-size: 15px;
   color: #fff;
   background-color: rgba(255, 255, 255, 0.1);
-  border-radius: 8px;
+  border-radius: 6px;
   cursor: pointer;
   transition: background 0.2s ease;
+  word-wrap: break-word;
+  overflow-wrap: break-word;
+  line-height: 1.2;
 }
 .item:hover {
   background-color: rgba(255, 255, 255, 0.2);

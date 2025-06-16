@@ -24,7 +24,7 @@ export class RegistrarUsuarioComponent {
   ngOnInit() {
     this.carrerasS.obtenerCarreras().subscribe(
       (response: any[]) => {
-        this.carreras = response.map(carrera => carrera.nombre); 
+        this.carreras = response.map(carrera => carrera.Nombre); 
       },
       (error) => {
         console.error('Error al obtener las carreras:', error);
@@ -37,15 +37,15 @@ export class RegistrarUsuarioComponent {
   registrar() {
     this.nuevoUsuario.rol = 'usuario';
 
-/*    this.registrarcuenta.registrarCuenta(this.nuevoUsuario,this.password).subscribe(
+    this.registrarcuenta.registrarCuenta(this.nuevoUsuario,this.password).subscribe(
       (response) => {
         console.log('Usuario registrado exitosamente:', response);
       },
       (error) => {
         alert('Error al registrar el usuario:' + error);
-      } 
-    )
-*/
+      }
+    );
+
 
     this.usuarioS.usuario = this.nuevoUsuario;
     this.router.navigate(['/home']);

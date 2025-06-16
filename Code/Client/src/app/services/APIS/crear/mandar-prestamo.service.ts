@@ -21,17 +21,16 @@ export class MandarPrestamoService {
         }
     }
 
-    console.log(grupoid); 
+
 
     const formulario = {
-      grupoEquipoId: grupoid,
-      fechaPrestamoEsperada: carrito[grupoid[0]].fecha_inicio,
-      fechaDevolucionEsperada: carrito[grupoid[0]].fecha_final,
-      carnetUsuario : carnet,
-      contrato : null,
-      observacion : null,
+      GrupoEquipoId: grupoid,
+      FechaPrestamoEsperada: carrito[grupoid[0]].fecha_inicio,
+      FechaDevolucionEsperada: carrito[grupoid[0]].fecha_final,
+      CarnetUsuario : carnet,
+      Contrato : null,
+      Observacion : null,
     };
-
 
     return this.http.post(this.apiUrl, formulario);
 

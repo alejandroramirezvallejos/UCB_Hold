@@ -84,23 +84,28 @@ export class FormularioComponent implements OnInit {
 
     this.clickfirma.set(true);
 
-  }
+  }  
+  
   aceptar(){
     if(!this.carrito || Object.keys(this.carrito.obtenercarrito()).length===0){
       this.error.set(1); 
+      this.mensajeerror = "El carrito está vacío. Agregue elementos antes de continuar.";
     }
-    else if(this.firma=='' || undefined){
+    else if(!this.firma || this.firma === ''){
       this.firmar();
     } 
     else{
       this.mandarprestamo.crearPrestamo(this.carrito.obtenercarrito(),this.usuario.usuario.carnet!,null).subscribe({
         next: (response) => {
+          console.log('Préstamo creado exitosamente:', response);
           this.carrito.vaciarcarrito();
           this.generarPDF(); 
           this.router.navigate(["/home"]);
         },
         error: (error) => {
+          console.error('Error al crear préstamo:', error);
           this.error.set(1);
+          this.mensajeerror = "Error al enviar el préstamo. Por favor, inténtelo más tarde.";
         }
       })
     }
@@ -116,30 +121,7 @@ export class FormularioComponent implements OnInit {
   }
   }
 
-  // Función para enviar el préstamo con el contrato
-  enviarPrestamo(): void {
-    this.generarPDFBinario().then(pdfBlob => {
-      this.mandarprestamo.crearPrestamo(
-        this.carrito.obtenercarrito(),
-        this.usuario.usuario.carnet!,
-        pdfBlob
-      ).subscribe({
-        next: (response) => {
-          this.carrito.vaciarcarrito();
-          this.generarPDF(); 
-          this.router.navigate(["/home"]);
-        },
-        error: (error) => {
-          console.error('Error al crear préstamo:', error);
-          this.error.set(1);
-        }
-      });
-    }).catch(error => {
-      console.error('Error al generar PDF:', error);
-      this.error.set(1);
-    });
-  }
- 
+
 
 
   private formatearCodigos(codigos?: string[]): string {

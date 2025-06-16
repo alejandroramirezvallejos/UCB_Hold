@@ -2,8 +2,8 @@
   <button class="btn-close" (click)="cerrar()">
     <i class="fas fa-times"></i>
   </button>
-  <h2>Registrar Accesorio</h2>
-  <form #form="ngForm" (ngSubmit)="registrar()">
+  <h2>Editar Accesorio</h2>
+  <form (ngSubmit)="confirmar()">
     <div class="form-group">
       <label for="nombre">Nombre</label>
       <input 
@@ -96,8 +96,8 @@
     </div>
 
     <div class="form-submit">
-      <button type="submit" class="register-button" [disabled]="!form.valid">
-        <span>Registrar Accesorio</span>
+      <button type="submit" class="register-button">
+        <span>Confirmar Cambios</span>
       </button>
     </div>
   </form>
