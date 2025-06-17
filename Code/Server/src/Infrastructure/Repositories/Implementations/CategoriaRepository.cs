@@ -1,4 +1,6 @@
 using System.Data;
+using Npgsql;
+using Shared.Common;
 
 public class CategoriaRepository : ICategoriaRepository
 {
@@ -19,33 +21,23 @@ public class CategoriaRepository : ICategoriaRepository
         Dictionary<string, object?> parametros = new Dictionary<string, object?>
         {
             ["nombre"] = comando.Nombre
-        };
-        try
+        };        try
         {
             _ejecutarConsulta.EjecutarSpNR(sql, parametros);
         }
         catch (Exception ex)
         {
-            var innerError = ex.InnerException?.Message ?? ex.Message;
-            throw new Exception($"Error en BD al crear categoría: {innerError}. SQL: {sql}. Parámetros: nombre={comando.Nombre}", ex);
+            throw PostgreSqlErrorInterpreter.InterpretarError(ex, "crear", "categoría", parametros);
         }
-    }
-
+    }    
     public DataTable ObtenerTodos()
     {
         const string sql = @"
             SELECT * from public.obtener_categorias()
         ";
-        try
-        {
-            DataTable dt = _ejecutarConsulta.EjecutarFuncion(sql, new Dictionary<string, object?>());
-            return dt;
-        }
-        catch (Exception ex)
-        {
-            var innerError = ex.InnerException?.Message ?? ex.Message;
-            throw new Exception($"Error en BD al obtener categorías: {innerError}. SQL: {sql}", ex);
-        }
+
+        DataTable dt = _ejecutarConsulta.EjecutarFuncion(sql, new Dictionary<string, object?>());
+        return dt;
     }
 
     public void Actualizar(ActualizarCategoriaComando comando)
@@ -60,15 +52,13 @@ public class CategoriaRepository : ICategoriaRepository
         {
             ["id"]     = comando.Id,
             ["nombre"] = comando.Nombre == null ? null : comando.Nombre
-        };
-        try
+        };        try
         {
             _ejecutarConsulta.EjecutarSpNR(sql, parametros);
         }
         catch (Exception ex)
         {
-            var innerError = ex.InnerException?.Message ?? ex.Message;
-            throw new Exception($"Error en BD al actualizar categoría: {innerError}. SQL: {sql}. Parámetros: id={comando.Id}, nombre={comando.Nombre}", ex);
+            throw PostgreSqlErrorInterpreter.InterpretarError(ex, "actualizar", "categoría", parametros);
         }
     }
 
@@ -77,20 +67,17 @@ public class CategoriaRepository : ICategoriaRepository
         const string sql = @"
         CALL public.eliminar_categoria(
 	    @id
-        )";
-
-        Dictionary<string, object?> parametros = new Dictionary<string, object?>
+        )";        Dictionary<string, object?> parametros = new Dictionary<string, object?>
         {
             ["id"] = id
         };
-        try
+          try
         {
             _ejecutarConsulta.EjecutarSpNR(sql, parametros);
         }
         catch (Exception ex)
         {
-            var innerError = ex.InnerException?.Message ?? ex.Message;
-            throw new Exception($"Error en BD al eliminar categoría: {innerError}. SQL: {sql}. Parámetros: id={id}", ex);
+            throw PostgreSqlErrorInterpreter.InterpretarError(ex, "eliminar", "categoría", parametros);
         }
     }
 }

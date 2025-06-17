@@ -1,5 +1,7 @@
 using System.Data;
 using System.Linq;
+using Shared.Common;
+
 public class PrestamoService : IPrestamoService
 {
     private readonly PrestamoRepository _prestamoRepository;
@@ -11,31 +13,136 @@ public class PrestamoService : IPrestamoService
     {
         try
         {
-            if (comando == null)
-                throw new ArgumentNullException(nameof(comando), "Los datos del préstamo son requeridos");
-
-            if (comando.GrupoEquipoId == null || comando.GrupoEquipoId.Length == 0)
-                throw new ArgumentException("Al menos un grupo de equipo es requerido", nameof(comando.GrupoEquipoId));
-
-            if (comando.GrupoEquipoId.Any(id => id <= 0))
-                throw new ArgumentException("Todos los IDs de grupo de equipo deben ser mayores a 0", nameof(comando.GrupoEquipoId));
-
-            if (string.IsNullOrWhiteSpace(comando.CarnetUsuario))
-                throw new ArgumentException("El carnet del usuario es requerido", nameof(comando.CarnetUsuario));
-
-            if (comando.FechaDevolucionEsperada <= comando.FechaPrestamoEsperada)
-                throw new ArgumentException("La fecha de devolución debe ser posterior a la fecha de préstamo", nameof(comando.FechaDevolucionEsperada));
-
-            if (comando.FechaPrestamoEsperada < DateTime.Now.Date)
-                throw new ArgumentException("La fecha de préstamo no puede ser anterior a hoy", nameof(comando.FechaPrestamoEsperada));
-
+            // 1. Validaciones de entrada
+            ValidarEntradaCreacion(comando);
+            
+            // 2. Intentar crear en repository
             _prestamoRepository.Crear(comando);
         }
-        catch
+        catch (ErrorNombreRequerido)
+        {
+            throw; // Re-lanzar excepciones de validación
+        }
+        catch (ErrorIdInvalido)
+        {
+            throw; // Re-lanzar excepciones de validación  
+        }
+        catch (ErrorCarnetUsuarioNoEncontrado)
+        {
+            throw; // Re-lanzar excepciones específicas
+        }
+        catch (ErrorNoEquiposDisponibles)
+        {
+            throw; // Re-lanzar excepciones específicas
+        }
+        catch (Exception ex)
+        {
+            // 3. Interpretar errores específicos del procedimiento insertar_prestamo
+            throw InterpretarErrorCreacionPrestamo(ex, comando);
+        }
+    }
+
+    private void ValidarEntradaCreacion(CrearPrestamoComando comando)
+    {
+        if (comando == null)
+            throw new ArgumentNullException(nameof(comando));
+
+        if (string.IsNullOrWhiteSpace(comando.CarnetUsuario))
+            throw new ErrorNombreRequerido("carnet del usuario");
+
+        if (comando.GrupoEquipoId == null || comando.GrupoEquipoId.Length == 0)
+            throw new ErrorIdInvalido("grupos de equipos");
+
+        if (comando.GrupoEquipoId.Any(id => id <= 0))
+            throw new ErrorIdInvalido("ID de grupo de equipos");
+
+        if (comando.FechaPrestamoEsperada < DateTime.Now.Date)
+            throw new ArgumentException("La fecha de préstamo no puede ser anterior a hoy");
+
+        if (comando.FechaDevolucionEsperada <= comando.FechaPrestamoEsperada)
+            throw new ArgumentException("La fecha de devolución debe ser posterior a la fecha de préstamo");
+    }
+
+    private Exception InterpretarErrorCreacionPrestamo(Exception ex, CrearPrestamoComando comando)
+    {
+        var errorMessage = ex.Message.ToLower();
+        
+        // Errores específicos del procedimiento insertar_prestamo
+        
+        // Error: Usuario no encontrado (Foreign Key en carnet)
+        if (errorMessage.Contains("23503") && (errorMessage.Contains("carnet") || errorMessage.Contains("usuarios")))
+        {
+            return new ErrorCarnetUsuarioNoEncontrado(comando.CarnetUsuario);
+        }
+        
+        // Error: Grupo no existe o está eliminado
+        if (errorMessage.Contains("grupo id") && errorMessage.Contains("no existe"))
+        {
+            var match = System.Text.RegularExpressions.Regex.Match(errorMessage, @"grupo id (\d+) no existe");
+            if (match.Success && int.TryParse(match.Groups[1].Value, out int grupoId))
+            {
+                return new ErrorRegistroNoEncontrado("grupo de equipos", grupoId.ToString());
+            }
+            return new ErrorRegistroNoEncontrado("grupo de equipos");
+        }
+        
+        // Error: No equipo disponible para grupo
+        if (errorMessage.Contains("no se encontró equipo disponible") || errorMessage.Contains("para el grupo id"))
+        {
+            var match = System.Text.RegularExpressions.Regex.Match(errorMessage, @"grupo id (\d+)");
+            if (match.Success && int.TryParse(match.Groups[1].Value, out int grupoId))
+            {
+                return new ErrorNoEquiposDisponibles(grupoId, comando.FechaPrestamoEsperada, comando.FechaDevolucionEsperada);
+            }
+            return new ErrorNoEquiposDisponibles();
+        }
+        
+        // Error: Fallo crítico al crear préstamo
+        if (errorMessage.Contains("fallo crítico") || errorMessage.Contains("no se pudo obtener el id"))
+        {
+            return new Exception("Fallo crítico: No se pudo crear el préstamo");
+        }
+        
+        // Usar intérprete genérico como fallback
+        var parametros = new Dictionary<string, object?>
+        {
+            ["carnetUsuario"] = comando.CarnetUsuario,
+            ["fechaInicio"] = comando.FechaPrestamoEsperada,
+            ["fechaFin"] = comando.FechaDevolucionEsperada
+        };        
+        return PostgreSqlErrorInterpreter.InterpretarError(ex, "crear", "préstamo", parametros);
+    }
+
+    public void EliminarPrestamo(EliminarPrestamoComando comando)
+    {
+        try
+        {
+            ValidarEntradaEliminacion(comando);
+            _prestamoRepository.Eliminar(comando.Id);
+        }
+        catch (ErrorIdInvalido)
         {
             throw;
         }
+        catch (Exception ex)
+        {
+            var parametros = new Dictionary<string, object?>
+            {
+                ["id"] = comando.Id
+            };
+            throw PostgreSqlErrorInterpreter.InterpretarError(ex, "eliminar", "préstamo", parametros);
+        }
     }
+
+    private void ValidarEntradaEliminacion(EliminarPrestamoComando comando)
+    {
+        if (comando == null)
+            throw new ArgumentNullException(nameof(comando));
+
+        if (comando.Id <= 0)
+            throw new ErrorIdInvalido("préstamo");
+    }
+
     public List<PrestamoDto>? ObtenerTodosPrestamos()
     {
         try
@@ -53,17 +160,7 @@ public class PrestamoService : IPrestamoService
             throw;
         }
     }
-    public void EliminarPrestamo(EliminarPrestamoComando comando)
-    {
-        try
-        {
-            _prestamoRepository.Eliminar(comando.Id);
-        }
-        catch
-        {
-            throw;
-        }
-    }
+
     private static PrestamoDto MapearFilaADto(DataRow fila)
     {
         return new PrestamoDto

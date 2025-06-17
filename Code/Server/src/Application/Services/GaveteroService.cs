@@ -1,4 +1,5 @@
 using System.Data;
+using Shared.Common;
 public class GaveteroService : IGaveteroService
 {
     private readonly GaveteroRepository _gaveteroRepository;
@@ -10,52 +11,131 @@ public class GaveteroService : IGaveteroService
     {
         try
         {
-            if (comando == null)
-                throw new ArgumentNullException(nameof(comando), "Los datos del gavetero son requeridos");
-
-            if (string.IsNullOrWhiteSpace(comando.Nombre))
-                throw new ArgumentException("El nombre del gavetero es requerido", nameof(comando.Nombre));
-
-            if (string.IsNullOrWhiteSpace(comando.NombreMueble))
-                throw new ArgumentException("El nombre del mueble es requerido", nameof(comando.NombreMueble));
-
-            if (comando.Longitud.HasValue && comando.Longitud <= 0)
-                throw new ArgumentException("La longitud debe ser mayor a 0", nameof(comando.Longitud));
-
-            if (comando.Profundidad.HasValue && comando.Profundidad <= 0)
-                throw new ArgumentException("La profundidad debe ser mayor a 0", nameof(comando.Profundidad));
-
-            if (comando.Altura.HasValue && comando.Altura <= 0)
-                throw new ArgumentException("La altura debe ser mayor a 0", nameof(comando.Altura));
-
+            ValidarEntradaCreacion(comando);
             _gaveteroRepository.Crear(comando);
         }
-        catch
+        catch (ErrorNombreRequerido)
         {
             throw;
         }
+        catch (ErrorValorNegativo)
+        {
+            throw;
+        }
+        catch (Exception ex)
+        {
+            var parametros = new Dictionary<string, object?>
+            {
+                ["nombre"] = comando.Nombre,
+                ["nombreMueble"] = comando.NombreMueble,
+                ["tipo"] = comando.Tipo
+            };
+            throw PostgreSqlErrorInterpreter.InterpretarError(ex, "crear", "gavetero", parametros);
+        }
     }
-    public void ActualizarGavetero(ActualizarGaveteroComando comando)
+
+    private void ValidarEntradaCreacion(CrearGaveteroComando comando)
+    {
+        if (comando == null)
+            throw new ArgumentNullException(nameof(comando));
+
+        if (string.IsNullOrWhiteSpace(comando.Nombre))
+            throw new ErrorNombreRequerido("nombre del gavetero");
+
+        if (string.IsNullOrWhiteSpace(comando.NombreMueble))
+            throw new ErrorNombreRequerido("nombre del mueble");
+
+        if (comando.Longitud.HasValue && comando.Longitud <= 0)
+            throw new ErrorValorNegativo("longitud", comando.Longitud.Value);
+
+        if (comando.Profundidad.HasValue && comando.Profundidad <= 0)
+            throw new ErrorValorNegativo("profundidad", comando.Profundidad.Value);
+
+        if (comando.Altura.HasValue && comando.Altura <= 0)
+            throw new ErrorValorNegativo("altura", comando.Altura.Value);
+    }    public void ActualizarGavetero(ActualizarGaveteroComando comando)
     {
         try
         {
+            ValidarEntradaActualizacion(comando);
             _gaveteroRepository.Actualizar(comando);
         }
-        catch
+        catch (ErrorIdInvalido)
         {
             throw;
         }
+        catch (ErrorNombreRequerido)
+        {
+            throw;
+        }
+        catch (ErrorValorNegativo)
+        {
+            throw;
+        }
+        catch (Exception ex)
+        {
+            var parametros = new Dictionary<string, object?>
+            {
+                ["id"] = comando.Id,
+                ["nombre"] = comando.Nombre,
+                ["nombreMueble"] = comando.NombreMueble
+            };
+            throw PostgreSqlErrorInterpreter.InterpretarError(ex, "actualizar", "gavetero", parametros);
+        }
     }
+
     public void EliminarGavetero(EliminarGaveteroComando comando)
     {
         try
         {
+            ValidarEntradaEliminacion(comando);
             _gaveteroRepository.Eliminar(comando.Id);
         }
-        catch
+        catch (ErrorIdInvalido)
         {
             throw;
         }
+        catch (Exception ex)
+        {
+            var parametros = new Dictionary<string, object?>
+            {
+                ["id"] = comando.Id
+            };
+            throw PostgreSqlErrorInterpreter.InterpretarError(ex, "eliminar", "gavetero", parametros);
+        }
+    }
+
+    private void ValidarEntradaActualizacion(ActualizarGaveteroComando comando)
+    {
+        if (comando == null)
+            throw new ArgumentNullException(nameof(comando));
+
+        if (comando.Id <= 0)
+            throw new ErrorIdInvalido("ID del gavetero");
+
+        if (string.IsNullOrWhiteSpace(comando.Nombre))
+            throw new ErrorNombreRequerido("nombre del gavetero");
+
+        if (string.IsNullOrWhiteSpace(comando.NombreMueble))
+            throw new ErrorNombreRequerido("nombre del mueble");
+
+        if (comando.Longitud.HasValue && comando.Longitud <= 0)
+            throw new ErrorValorNegativo("longitud", comando.Longitud.Value);
+
+        if (comando.Profundidad.HasValue && comando.Profundidad <= 0)
+            throw new ErrorValorNegativo("profundidad", comando.Profundidad.Value);
+
+        if (comando.Altura.HasValue && comando.Altura <= 0)
+            throw new ErrorValorNegativo("altura", comando.Altura.Value);
+    }
+
+    private void ValidarEntradaEliminacion(EliminarGaveteroComando comando)
+    {
+        if (comando == null)
+            throw new ArgumentNullException(nameof(comando));
+
+        if (comando.Id <= 0)
+            throw new ErrorIdInvalido("ID del gavetero");
     }
     public List<GaveteroDto>? ObtenerTodosGaveteros()
     {

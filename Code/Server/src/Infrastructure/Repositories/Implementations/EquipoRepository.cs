@@ -1,4 +1,6 @@
 using System.Data;
+using Npgsql;
+using Shared.Common;
 
 public class EquipoRepository : IEquipoRepository
 {
@@ -37,15 +39,13 @@ public class EquipoRepository : IEquipoRepository
             ["costoReferencia"]       = comando.CostoReferencia ?? (object)DBNull.Value,
             ["tiempoMaximoPrestamo"]  = comando.TiempoMaximoPrestamo ?? (object)DBNull.Value,
             ["nombreGavetero"]        = comando.NombreGavetero ?? (object)DBNull.Value
-        };
-        try
+        };          try
         {
             _ejecutarConsulta.EjecutarSpNR(sql, parametros);
         }
         catch (Exception ex)
         {
-            var innerError = ex.InnerException?.Message ?? ex.Message;
-            throw new Exception($"Error en BD al crear equipo: {innerError}. SQL: {sql}. Parámetros: nombre={comando.NombreGrupoEquipo}, modelo={comando.Modelo}, marca={comando.Marca}, codigoUcb={comando.CodigoUcb}", ex);
+            throw PostgreSqlErrorInterpreter.InterpretarError(ex, "crear", "equipo", parametros);
         }
     }
 
@@ -78,52 +78,43 @@ public class EquipoRepository : IEquipoRepository
             ["tiempoMaximoPrestamo"]  = comando.TiempoMaximoPrestamo ?? (object)DBNull.Value,
             ["nombreGavetero"]        = comando.NombreGavetero ?? (object)DBNull.Value,
             ["estadoEquipo"]          = comando.EstadoEquipo ?? (object)DBNull.Value
-        };
-        try
+        };        try
         {
             _ejecutarConsulta.EjecutarSpNR(sql, parametros);
-        }
-        catch (Exception ex)
+        }        catch (Exception ex)
         {
-            var innerError = ex.InnerException?.Message ?? ex.Message;
-            throw new Exception($"Error en BD al actualizar equipo: {innerError}. SQL: {sql}. Parámetros: id={comando.Id}, nombre={comando.NombreGrupoEquipo}", ex);
+            throw PostgreSqlErrorInterpreter.InterpretarError(ex, "actualizar", "equipo", parametros);
         }
     }
 
     public void Eliminar(int id)
-    {
-        const string sql = @"
+    {        const string sql = @"
         CALL public.eliminar_equipo(
 	    @id
         )";
+        
+        var parametros = new Dictionary<string, object?>
+        {
+            ["id"] = id
+        };
+        
         try
         {
-            _ejecutarConsulta.EjecutarSpNR(sql, new Dictionary<string, object?>
-            {
-                ["id"] = id
-            });
-        }
-        catch (Exception ex)
+            _ejecutarConsulta.EjecutarSpNR(sql, parametros);
+        }        catch (Exception ex)
         {
-            var innerError = ex.InnerException?.Message ?? ex.Message;
-            throw new Exception($"Error en BD al eliminar equipo: {innerError}. SQL: {sql}. Parámetros: id={id}", ex);
+            var parametrosEliminar = new Dictionary<string, object?> { ["id"] = id };
+            throw PostgreSqlErrorInterpreter.InterpretarError(ex, "eliminar", "equipo", parametrosEliminar);
         }
-    }
+    }    
     public DataTable ObtenerTodos()
     {
         const string sql = @"
             SELECT * from public.obtener_equipos()
         ";
-        try
-        {
-            DataTable dt = _ejecutarConsulta.EjecutarFuncion(sql, new Dictionary<string, object?>());
-            return dt;
-        }
-        catch (Exception ex)
-        {
-            var innerError = ex.InnerException?.Message ?? ex.Message;
-            throw new Exception($"Error en BD al obtener equipos: {innerError}. SQL: {sql}", ex);
-        }
+
+        DataTable dt = _ejecutarConsulta.EjecutarFuncion(sql, new Dictionary<string, object?>());
+        return dt;
     }
     
 }

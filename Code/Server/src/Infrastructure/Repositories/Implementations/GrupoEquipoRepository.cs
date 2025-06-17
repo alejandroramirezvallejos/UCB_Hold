@@ -1,4 +1,6 @@
 using System.Data;
+using Npgsql;
+using Shared.Common;
 
 public class GrupoEquipoRepository : IGrupoEquipoRepository
 {
@@ -28,15 +30,14 @@ public class GrupoEquipoRepository : IGrupoEquipoRepository
             ["descripcion"] = comando.Descripcion ?? (object)DBNull.Value,
             ["nombreCategoria"] = comando.NombreCategoria ?? (object)DBNull.Value,
             ["urlDataSheet"] = comando.UrlDataSheet ?? (object)DBNull.Value,
-            ["urlImagen"] = comando.UrlImagen ?? (object)DBNull.Value
-        };        try
+            ["urlImagen"] = comando.UrlImagen ?? (object)DBNull.Value        };
+        
+        try
         {
             _ejecutarConsulta.EjecutarSpNR(sql, parametros);
-        }
-        catch (Exception ex)
+        }        catch (Exception ex)
         {
-            var innerError = ex.InnerException?.Message ?? ex.Message;
-            throw new Exception($"Error en BD al crear grupo de equipo: {innerError}. SQL: {sql}. Parámetros: nombre={comando.Nombre}, marca={comando.Marca}", ex);
+            throw PostgreSqlErrorInterpreter.InterpretarError(ex, "crear", "grupo de equipo", parametros);
         }
     }
 
@@ -50,8 +51,7 @@ public class GrupoEquipoRepository : IGrupoEquipoRepository
         Dictionary<string, object?> parametros = new Dictionary<string, object?>
         {
             ["id"] = id
-        };
-        try
+        };        try
         {
             DataTable dt = _ejecutarConsulta.EjecutarFuncion(sql, parametros);
             if (dt.Rows.Count == 0)
@@ -59,11 +59,9 @@ public class GrupoEquipoRepository : IGrupoEquipoRepository
                 return null;
             }
             return dt;
-        }
-        catch (Exception ex)
+        }        catch (Exception ex)
         {
-            var innerError = ex.InnerException?.Message ?? ex.Message;
-            throw new Exception($"Error en BD al obtener grupo de equipo por ID: {innerError}. SQL: {sql}. Parámetros: id={id}", ex);
+            throw PostgreSqlErrorInterpreter.InterpretarError(ex, "obtener", "grupo de equipo", parametros);
         }
     }
 
@@ -73,7 +71,7 @@ public class GrupoEquipoRepository : IGrupoEquipoRepository
             SELECT * from public.obtener_grupos_equipos_por_nombre_y_categoria(
 	        @nombre,
 	        @categoria    
-            )";
+            )";        
         try
         {
             DataTable dt = _ejecutarConsulta.EjecutarFuncion(sql, new Dictionary<string, object?>
@@ -83,11 +81,10 @@ public class GrupoEquipoRepository : IGrupoEquipoRepository
             });
             
             return dt;
-        }
-        catch (Exception ex)
+        }        catch (Exception ex)
         {
-            var innerError = ex.InnerException?.Message ?? ex.Message;
-            throw new Exception($"Error en BD al obtener grupos de equipos por nombre y categoría: {innerError}. SQL: {sql}. Parámetros: nombre={nombre}, categoria={categoria}", ex);
+            var parametrosConsulta = new Dictionary<string, object?> { ["nombre"] = nombre, ["categoria"] = categoria };
+            throw PostgreSqlErrorInterpreter.InterpretarError(ex, "obtener", "grupos de equipos", parametrosConsulta);
         }
     }
 
@@ -114,38 +111,34 @@ public class GrupoEquipoRepository : IGrupoEquipoRepository
             ["nombreCategoria"] = comando.NombreCategoria ?? (object)DBNull.Value,
             ["urlDataSheet"] = comando.UrlDataSheet ?? (object)DBNull.Value,
             ["urlImagen"] = comando.UrlImagen ?? (object)DBNull.Value
+        };        try
+        {
+            _ejecutarConsulta.EjecutarSpNR(sql, parametros);
+        }        catch (Exception ex)
+        {
+            throw PostgreSqlErrorInterpreter.InterpretarError(ex, "actualizar", "grupo de equipo", parametros);
+        }
+    }
+
+    public void Eliminar(int id)
+    {        const string sql = @"
+            CALL public.eliminar_grupo_equipo(
+	        @id
+            )";
+        
+        var parametros = new Dictionary<string, object?>
+        {
+            ["id"] = id
         };
-        try
+          try
         {
             _ejecutarConsulta.EjecutarSpNR(sql, parametros);
         }
         catch (Exception ex)
         {
-            var innerError = ex.InnerException?.Message ?? ex.Message;
-            throw new Exception($"Error en BD al actualizar grupo de equipo: {innerError}. SQL: {sql}. Parámetros: id={comando.Id}, nombre={comando.Nombre}", ex);
+            throw PostgreSqlErrorInterpreter.InterpretarError(ex, "eliminar", "grupo de equipo", parametros);
         }
-    }
-
-    public void Eliminar(int id)
-    {
-        const string sql = @"
-            CALL public.eliminar_grupo_equipo(
-	        @id
-            )";
-        try
-        {
-            _ejecutarConsulta.EjecutarSpNR(sql, new Dictionary<string, object?>
-            {
-                ["id"] = id
-            });
-        }
-        catch (Exception ex)
-        {
-            var innerError = ex.InnerException?.Message ?? ex.Message;
-            throw new Exception($"Error en BD al eliminar grupo de equipo: {innerError}. SQL: {sql}. Parámetros: id={id}", ex);
-        }
-    }
-    public DataTable ObtenerTodos()
+    }      public DataTable ObtenerTodos()
     {
         const string sql = @"
             SELECT * from public.obtener_grupos_equipos()
@@ -158,8 +151,7 @@ public class GrupoEquipoRepository : IGrupoEquipoRepository
         }
         catch (Exception ex)
         {
-            var innerError = ex.InnerException?.Message ?? ex.Message;
-            throw new Exception($"Error en BD al obtener grupos de equipos: {innerError}. SQL: {sql}", ex);
+            throw PostgreSqlErrorInterpreter.InterpretarError(ex, "obtener", "grupos de equipos", new Dictionary<string, object?>());
         }
     }
 }

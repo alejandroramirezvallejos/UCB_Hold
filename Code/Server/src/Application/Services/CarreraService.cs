@@ -1,4 +1,5 @@
 using System.Data;
+using Shared.Common;
 
 public class CarreraService : ICarreraService
 {
@@ -6,25 +7,42 @@ public class CarreraService : ICarreraService
     public CarreraService(CarreraRepository carreraRepository)
     {
         _carreraRepository = carreraRepository;
-    }    public void CrearCarrera(CrearCarreraComando comando)
+    }    
+    public void CrearCarrera(CrearCarreraComando comando)
     {
         try
         {
-            if (comando == null)
-                throw new ArgumentNullException(nameof(comando), "Los datos de la carrera son requeridos");
-
-            if (string.IsNullOrWhiteSpace(comando.Nombre))
-                throw new ArgumentException("El nombre de la carrera es requerido", nameof(comando.Nombre));
-
-            if (comando.Nombre.Length > 100)
-                throw new ArgumentException("El nombre de la carrera no puede exceder 100 caracteres", nameof(comando.Nombre));
-
+            ValidarEntradaCreacion(comando);
             _carreraRepository.Crear(comando);
         }
-        catch
+        catch (ErrorNombreRequerido)
         {
             throw;
         }
+        catch (ErrorLongitudInvalida)
+        {
+            throw;
+        }
+        catch (Exception ex)
+        {
+            var parametros = new Dictionary<string, object?>
+            {
+                ["nombre"] = comando.Nombre
+            };
+            throw PostgreSqlErrorInterpreter.InterpretarError(ex, "crear", "carrera", parametros);
+        }
+    }
+
+    private void ValidarEntradaCreacion(CrearCarreraComando comando)
+    {
+        if (comando == null)
+            throw new ArgumentNullException(nameof(comando));
+
+        if (string.IsNullOrWhiteSpace(comando.Nombre))
+            throw new ErrorNombreRequerido("nombre de la carrera");
+
+        if (comando.Nombre.Length > 100)
+            throw new ErrorLongitudInvalida("nombre de la carrera", 100);
     }
     public List<CarreraDto>? ObtenerTodasCarreras()
     {
@@ -42,28 +60,77 @@ public class CarreraService : ICarreraService
         {
             throw;
         }
-    }
-    public void ActualizarCarrera(ActualizarCarreraComando comando)
+    }    public void ActualizarCarrera(ActualizarCarreraComando comando)
     {
         try
         {
+            ValidarEntradaActualizacion(comando);
             _carreraRepository.Actualizar(comando);
         }
-        catch
+        catch (ErrorIdInvalido)
         {
             throw;
         }
+        catch (ErrorNombreRequerido)
+        {
+            throw;
+        }
+        catch (ErrorLongitudInvalida)
+        {
+            throw;
+        }
+        catch (Exception ex)
+        {
+            var parametros = new Dictionary<string, object?>
+            {
+                ["id"] = comando.Id,
+                ["nombre"] = comando.Nombre
+            };
+            throw PostgreSqlErrorInterpreter.InterpretarError(ex, "actualizar", "carrera", parametros);
+        }
     }
-    public void EliminarCarrera(EliminarCarreraComando comando)
+
+    private void ValidarEntradaActualizacion(ActualizarCarreraComando comando)
+    {
+        if (comando == null)
+            throw new ArgumentNullException(nameof(comando));
+
+        if (comando.Id <= 0)
+            throw new ErrorIdInvalido("ID de la carrera");
+
+        if (string.IsNullOrWhiteSpace(comando.Nombre))
+            throw new ErrorNombreRequerido("nombre de la carrera");
+
+        if (comando.Nombre.Length > 100)
+            throw new ErrorLongitudInvalida("nombre de la carrera", 100);
+    }    public void EliminarCarrera(EliminarCarreraComando comando)
     {
         try
         {
+            ValidarEntradaEliminacion(comando);
             _carreraRepository.Eliminar(comando.Id);
         }
-        catch
+        catch (ErrorIdInvalido)
         {
             throw;
         }
+        catch (Exception ex)
+        {
+            var parametros = new Dictionary<string, object?>
+            {
+                ["id"] = comando.Id
+            };
+            throw PostgreSqlErrorInterpreter.InterpretarError(ex, "eliminar", "carrera", parametros);
+        }
+    }
+
+    private void ValidarEntradaEliminacion(EliminarCarreraComando comando)
+    {
+        if (comando == null)
+            throw new ArgumentNullException(nameof(comando));
+
+        if (comando.Id <= 0)
+            throw new ErrorIdInvalido("ID de la carrera");
     }
     private CarreraDto MapearFilaADto(DataRow fila)
     {

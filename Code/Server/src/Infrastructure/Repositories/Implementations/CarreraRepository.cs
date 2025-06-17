@@ -1,4 +1,7 @@
 using System.Data;
+using Npgsql;
+using Shared.Common;
+
 public class CarreraRepository : ICarreraRepository
 {
     private readonly ExecuteQuery _ejecutarConsulta;
@@ -17,16 +20,14 @@ public class CarreraRepository : ICarreraRepository
 
         var parametros = new Dictionary<string, object?>
         {
-            ["nombre"] = comando.Nombre
-        };
-        try
+            ["nombre"] = comando.Nombre        
+        };        try
         {
             _ejecutarConsulta.EjecutarSpNR(sql, parametros);
         }
         catch (Exception ex)
         {
-            var innerError = ex.InnerException?.Message ?? ex.Message;
-            throw new Exception($"Error en BD al crear carrera: {innerError}. SQL: {sql}. Parámetros: nombre={comando.Nombre}", ex);
+            throw PostgreSqlErrorInterpreter.InterpretarError(ex, "crear", "carrera", parametros);
         }
     }
 
@@ -35,8 +36,7 @@ public class CarreraRepository : ICarreraRepository
         const string sql = @"
             CALL public.eliminar_carrera(
             @id
-        )";
-        try
+        )";          try
         {
             _ejecutarConsulta.EjecutarSpNR(sql, new Dictionary<string, object?>
             {
@@ -45,8 +45,8 @@ public class CarreraRepository : ICarreraRepository
         }
         catch (Exception ex)
         {
-            var innerError = ex.InnerException?.Message ?? ex.Message;
-            throw new Exception($"Error en BD al eliminar carrera: {innerError}. SQL: {sql}. Parámetros: id={id}", ex);
+            var parametros = new Dictionary<string, object?> { ["id"] = id };
+            throw PostgreSqlErrorInterpreter.InterpretarError(ex, "eliminar", "carrera", parametros);
         }
     }
 
@@ -61,32 +61,27 @@ public class CarreraRepository : ICarreraRepository
         var parametros = new Dictionary<string, object?>
         {
             ["id"] = comando.Id,
-            ["nombre"] = comando.Nombre ?? (object)DBNull.Value
-        };
-        try
+            ["nombre"] = comando.Nombre ?? (object)DBNull.Value        };        try
         {
             _ejecutarConsulta.EjecutarSpNR(sql, parametros);
         }
         catch (Exception ex)
         {
-            var innerError = ex.InnerException?.Message ?? ex.Message;
-            throw new Exception($"Error en BD al actualizar carrera: {innerError}. SQL: {sql}. Parámetros: id={comando.Id}, nombre={comando.Nombre}", ex);
+            throw PostgreSqlErrorInterpreter.InterpretarError(ex, "actualizar", "carrera", parametros);
         }
     }
     public DataTable ObtenerTodas()
     {
         const string sql = @"
             SELECT * from public.obtener_carreras()
-        ";
-        try
+        ";        try
         {
             DataTable dt = _ejecutarConsulta.EjecutarFuncion(sql, new Dictionary<string, object?>());
             return dt;
         }
         catch (Exception ex)
         {
-            var innerError = ex.InnerException?.Message ?? ex.Message;
-            throw new Exception($"Error en BD al obtener carreras: {innerError}. SQL: {sql}", ex);
+            throw PostgreSqlErrorInterpreter.InterpretarError(ex, "obtener", "carreras", null);
         }
     }
 }

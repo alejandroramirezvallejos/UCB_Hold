@@ -1,4 +1,6 @@
 using System.Data;
+using Npgsql;
+using Shared.Common;
 
 public class MuebleRepository : IMuebleRepository
 {
@@ -29,15 +31,13 @@ public class MuebleRepository : IMuebleRepository
             ["longitud"] = comando.Longitud ?? (object)DBNull.Value,
             ["profundidad"] = comando.Profundidad ?? (object)DBNull.Value,
             ["altura"] = comando.Altura ?? (object)DBNull.Value
-        };
-        try
+        };          try
         {
             _ejecutarConsulta.EjecutarSpNR(sql, parametros);
         }
         catch (Exception ex)
         {
-            var innerError = ex.InnerException?.Message ?? ex.Message;
-            throw new Exception($"Error en BD al crear mueble: {innerError}. SQL: {sql}. Parámetros: nombre={comando.Nombre}, tipo={comando.Tipo}", ex);
+            throw PostgreSqlErrorInterpreter.InterpretarError(ex, "crear", "mueble", parametros);
         }
     }
 
@@ -65,38 +65,35 @@ public class MuebleRepository : IMuebleRepository
             ["longitud"] = comando.Longitud ?? (object)DBNull.Value,
             ["profundidad"] = comando.Profundidad ?? (object)DBNull.Value,
             ["altura"] = comando.Altura ?? (object)DBNull.Value
-        };
-        try
+        };          try
         {
             _ejecutarConsulta.EjecutarSpNR(sql, parametros);
         }
         catch (Exception ex)
         {
-            var innerError = ex.InnerException?.Message ?? ex.Message;
-            throw new Exception($"Error en BD al actualizar mueble: {innerError}. SQL: {sql}. Parámetros: id={comando.Id}, nombre={comando.Nombre}", ex);
+            throw PostgreSqlErrorInterpreter.InterpretarError(ex, "actualizar", "mueble", parametros);
         }
     }
 
     public void Eliminar(int id)
-    {
-        const string sql = @"
+    {        const string sql = @"
         CALL public.eliminar_mueble(
 	    @id
         )";
-        try
+        
+        var parametros = new Dictionary<string, object?>
         {
-            _ejecutarConsulta.EjecutarSpNR(sql, new Dictionary<string, object?>
-            {
-                ["id"] = id
-            });
+            ["id"] = id
+        };
+          try
+        {
+            _ejecutarConsulta.EjecutarSpNR(sql, parametros);
         }
         catch (Exception ex)
         {
-            var innerError = ex.InnerException?.Message ?? ex.Message;
-            throw new Exception($"Error en BD al eliminar mueble: {innerError}. SQL: {sql}. Parámetros: id={id}", ex);
+            throw PostgreSqlErrorInterpreter.InterpretarError(ex, "eliminar", "mueble", parametros);
         }
-    }
-    public DataTable ObtenerTodos()
+    }      public DataTable ObtenerTodos()
     {
         const string sql = @"
         SELECT * from public.obtener_muebles()
@@ -109,8 +106,7 @@ public class MuebleRepository : IMuebleRepository
         }
         catch (Exception ex)
         {
-            var innerError = ex.InnerException?.Message ?? ex.Message;
-            throw new Exception($"Error en BD al obtener muebles: {innerError}. SQL: {sql}", ex);
+            throw PostgreSqlErrorInterpreter.InterpretarError(ex, "obtener", "muebles", new Dictionary<string, object?>());
         }
     }
     

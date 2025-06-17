@@ -1,5 +1,6 @@
 using Microsoft.AspNetCore.Mvc;
-using API.ViewModels;
+using Shared.Common;
+
 namespace API.Controllers;
 
 [ApiController]
@@ -11,19 +12,31 @@ public class EmpresaMantenimientoController : ControllerBase
     public EmpresaMantenimientoController(EmpresaMantenimientoService servicio)
     {
         this.servicio = servicio;
-    }
-
-    [HttpPost]
-    public ActionResult Crear([FromBody] CrearEmpresaMantenimientoComando input)
+    }    [HttpPost]
+    public IActionResult Crear([FromBody] CrearEmpresaMantenimientoComando input)
     {
         try
         {
             servicio.CrearEmpresaMantenimiento(input);
             return Created();
         }
-        catch (Exception ex)
+        catch (ErrorNombreRequerido ex)
         {
-            return BadRequest($"Error al crear empresa de mantenimiento: {ex.Message}");
+            return BadRequest(new { error = "Campo requerido", mensaje = ex.Message });
+        }
+        catch (ErrorLongitudInvalida ex)
+        {
+            return BadRequest(new { error = "Longitud inválida", mensaje = ex.Message });
+        }
+        catch (ErrorRegistroYaExiste ex)
+        {
+            return Conflict(new { error = "Empresa duplicada", mensaje = $"Ya existe una empresa de mantenimiento con el nombre '{ex.Message}'" });
+        }
+        catch (DomainException ex)
+        {
+            return BadRequest(new { error = "Error de validación", mensaje = ex.Message });
+        }
+        catch (Exception) { return StatusCode(500, new { error = "Error interno del servidor", mensaje = "Ocurrió un error inesperado al crear la empresa de mantenimiento" });
         }
     }
 
@@ -37,26 +50,46 @@ public class EmpresaMantenimientoController : ControllerBase
         }
         catch (Exception ex)
         {
-            return BadRequest($"Error al obtener empresas de mantenimiento: {ex.Message}");
+            return BadRequest(new { error = "Error interno del servidor", mensaje = $"Error al obtener empresas de mantenimiento: {ex.Message}" });
         }
-    }
-
-    [HttpPut("{id}")]
-    public ActionResult Actualizar([FromBody] ActualizarEmpresaMantenimientoComando input)
+    }    
+    [HttpPut]
+    public IActionResult Actualizar([FromBody] ActualizarEmpresaMantenimientoComando input)
     {
         try
         {
             servicio.ActualizarEmpresaMantenimiento(input);
-            return Ok("Empresa de mantenimiento actualizada exitosamente");
+            return Ok(new { mensaje = "Empresa de mantenimiento actualizada exitosamente" });
         }
-        catch (Exception ex)
+        catch (ErrorIdInvalido ex)
         {
-            return BadRequest($"Error al actualizar empresa de mantenimiento: {ex.Message}");
+            return BadRequest(new { error = "ID inválido", mensaje = ex.Message });
+        }
+        catch (ErrorNombreRequerido ex)
+        {
+            return BadRequest(new { error = "Campo requerido", mensaje = ex.Message });
+        }
+        catch (ErrorLongitudInvalida ex)
+        {
+            return BadRequest(new { error = "Longitud inválida", mensaje = ex.Message });
+        }
+        catch (ErrorRegistroNoEncontrado ex)
+        {
+            return NotFound(new { error = "Empresa no encontrada", mensaje = $"No se encontró una empresa de mantenimiento con ID {ex.Message}" });
+        }
+        catch (ErrorRegistroYaExiste ex)
+        {
+            return Conflict(new { error = "Empresa duplicada", mensaje = $"Ya existe otra empresa de mantenimiento con el nombre '{ex.Message}'" });
+        }
+        catch (DomainException ex)
+        {
+            return BadRequest(new { error = "Error de validación", mensaje = ex.Message });
+        }
+        catch (Exception) { return StatusCode(500, new { error = "Error interno del servidor", mensaje = "Ocurrió un error inesperado al actualizar la empresa de mantenimiento" });
         }
     }
-
     [HttpDelete("{id}")]
-    public ActionResult Eliminar(int id)
+    public IActionResult Eliminar(int id)
     {
         try
         {
@@ -64,9 +97,23 @@ public class EmpresaMantenimientoController : ControllerBase
             servicio.EliminarEmpresaMantenimiento(comando);
             return NoContent();
         }
-        catch (Exception ex)
+        catch (ErrorIdInvalido ex)
         {
-            return BadRequest($"Error al eliminar empresa de mantenimiento: {ex.Message}");
+            return BadRequest(new { error = "ID inválido", mensaje = ex.Message });
+        }
+        catch (ErrorRegistroNoEncontrado)
+        {
+            return NotFound(new { error = "Empresa no encontrada", mensaje = $"No se encontró una empresa de mantenimiento con ID {id}" });
+        }
+        catch (ErrorRegistroEnUso)
+        {
+            return Conflict(new { error = "Empresa en uso", mensaje = "No se puede eliminar la empresa porque tiene mantenimientos asociados" });
+        }
+        catch (DomainException ex)
+        {
+            return BadRequest(new { error = "Error de validación", mensaje = ex.Message });
+        }
+        catch (Exception) { return StatusCode(500, new { error = "Error interno del servidor", mensaje = "Ocurrió un error inesperado al eliminar la empresa de mantenimiento" });
         }
     }
 }

@@ -1,4 +1,5 @@
 using System.Data;
+using Shared.Common;
 public class EquipoService : IEquipoService
 {
     private readonly EquipoRepository _equipoRepository;
@@ -10,63 +11,120 @@ public class EquipoService : IEquipoService
     {
         try
         {
-            if (comando == null)
-                throw new ArgumentNullException(nameof(comando), "Los datos del equipo son requeridos");
-
-            if (string.IsNullOrWhiteSpace(comando.NombreGrupoEquipo))
-                throw new ArgumentException("El nombre del grupo de equipo es requerido", nameof(comando.NombreGrupoEquipo));
-
-            if (string.IsNullOrWhiteSpace(comando.Modelo))
-                throw new ArgumentException("El modelo es requerido", nameof(comando.Modelo));
-
-            if (string.IsNullOrWhiteSpace(comando.Marca))
-                throw new ArgumentException("La marca es requerida", nameof(comando.Marca));
-
-            if (comando.CostoReferencia.HasValue && comando.CostoReferencia < 0)
-                throw new ArgumentException("El costo de referencia no puede ser negativo", nameof(comando.CostoReferencia));
-
-            if (comando.TiempoMaximoPrestamo.HasValue && comando.TiempoMaximoPrestamo <= 0)
-                throw new ArgumentException("El tiempo máximo de préstamo debe ser mayor a 0", nameof(comando.TiempoMaximoPrestamo));
-
+            ValidarEntradaCreacion(comando);
             _equipoRepository.Crear(comando);
         }
-        catch
+        catch (ErrorNombreRequerido)
         {
             throw;
         }
+        catch (ErrorValorNegativo)
+        {
+            throw;
+        }
+        catch (ErrorIdInvalido)
+        {
+            throw;
+        }
+        catch (Exception ex)
+        {
+            var parametros = new Dictionary<string, object?>
+            {
+                ["nombre"] = comando.NombreGrupoEquipo,
+                ["modelo"] = comando.Modelo,
+                ["marca"] = comando.Marca,
+                ["codigoUcb"] = comando.CodigoUcb
+            };
+            throw PostgreSqlErrorInterpreter.InterpretarError(ex, "crear", "equipo", parametros);
+        }
+    }
+
+    private void ValidarEntradaCreacion(CrearEquipoComando comando)
+    {
+        if (comando == null)
+            throw new ArgumentNullException(nameof(comando));
+
+        if (string.IsNullOrWhiteSpace(comando.NombreGrupoEquipo))
+            throw new ErrorNombreRequerido("nombre del grupo de equipo");
+
+        if (string.IsNullOrWhiteSpace(comando.Modelo))
+            throw new ErrorNombreRequerido("modelo");
+
+        if (string.IsNullOrWhiteSpace(comando.Marca))
+            throw new ErrorNombreRequerido("marca");
+
+        if (comando.CostoReferencia.HasValue && comando.CostoReferencia < 0)
+            throw new ErrorValorNegativo("costo de referencia", comando.CostoReferencia.Value);
+
+        if (comando.TiempoMaximoPrestamo.HasValue && comando.TiempoMaximoPrestamo <= 0)
+            throw new ErrorIdInvalido("tiempo máximo de préstamo");
     }    public void ActualizarEquipo(ActualizarEquipoComando comando)
     {
         try
         {
-            if (comando == null)
-                throw new ArgumentNullException(nameof(comando), "Los datos del equipo son requeridos");
-
-            if (comando.Id <= 0)
-                throw new ArgumentException("El ID del equipo debe ser mayor a 0", nameof(comando.Id));
-
-            if (comando.CostoReferencia.HasValue && comando.CostoReferencia < 0)
-                throw new ArgumentException("El costo de referencia no puede ser negativo", nameof(comando.CostoReferencia));
-
-            if (comando.TiempoMaximoPrestamo.HasValue && comando.TiempoMaximoPrestamo <= 0)
-                throw new ArgumentException("El tiempo máximo de préstamo debe ser mayor a 0", nameof(comando.TiempoMaximoPrestamo));
-
+            ValidarEntradaActualizacion(comando);
             _equipoRepository.Actualizar(comando);
         }
-        catch
+        catch (ErrorIdInvalido)
         {
             throw;
         }
+        catch (ErrorValorNegativo)
+        {
+            throw;
+        }
+        catch (Exception ex)
+        {
+            var parametros = new Dictionary<string, object?>
+            {
+                ["id"] = comando.Id,
+                ["nombre"] = comando.NombreGrupoEquipo
+            };
+            throw PostgreSqlErrorInterpreter.InterpretarError(ex, "actualizar", "equipo", parametros);
+        }
     }
-    public void EliminarEquipo(EliminarEquipoComando comando)
+
+    private void ValidarEntradaActualizacion(ActualizarEquipoComando comando)
+    {
+        if (comando == null)
+            throw new ArgumentNullException(nameof(comando));
+
+        if (comando.Id <= 0)
+            throw new ErrorIdInvalido("ID del equipo");
+
+        if (comando.CostoReferencia.HasValue && comando.CostoReferencia < 0)
+            throw new ErrorValorNegativo("costo de referencia", comando.CostoReferencia.Value);
+
+        if (comando.TiempoMaximoPrestamo.HasValue && comando.TiempoMaximoPrestamo <= 0)
+            throw new ErrorIdInvalido("tiempo máximo de préstamo");
+    }    public void EliminarEquipo(EliminarEquipoComando comando)
     {
         try
         {
+            ValidarEntradaEliminacion(comando);
             _equipoRepository.Eliminar(comando.Id);
         }
-        catch
+        catch (ErrorIdInvalido)
         {
             throw;
         }
+        catch (Exception ex)
+        {
+            var parametros = new Dictionary<string, object?>
+            {
+                ["id"] = comando.Id
+            };
+            throw PostgreSqlErrorInterpreter.InterpretarError(ex, "eliminar", "equipo", parametros);
+        }
+    }
+
+    private void ValidarEntradaEliminacion(EliminarEquipoComando comando)
+    {
+        if (comando == null)
+            throw new ArgumentNullException(nameof(comando));
+
+        if (comando.Id <= 0)
+            throw new ErrorIdInvalido("ID del equipo");
     }
     public List<EquipoDto>? ObtenerTodosEquipos()
     {

@@ -1,29 +1,65 @@
 using System.Data;
+using Shared.Common;
+
 public class AccesorioService : IAccesorioService
 {
     private readonly AccesorioRepository _accesorioRepository;
     public AccesorioService(AccesorioRepository accesorioRepository)
     {
         _accesorioRepository = accesorioRepository;
-    }
+    }    
     public void CrearAccesorio(CrearAccesorioComando comando)
     {
         try
         {
-            if (comando == null)
-                throw new ArgumentNullException(nameof(comando), "Los datos del accesorio son requeridos");
-
-            if (string.IsNullOrWhiteSpace(comando.Nombre))
-                throw new ArgumentException("El nombre del accesorio es requerido", nameof(comando.Nombre));
-
-            if (string.IsNullOrWhiteSpace(comando.Modelo))
-                throw new ArgumentException("El modelo del accesorio es requerido", nameof(comando.Modelo));
+            ValidarEntradaCreacion(comando);
             _accesorioRepository.Crear(comando);
         }
-        catch
+        catch (ErrorNombreRequerido)
         {
-            throw;
+            throw; 
         }
+        catch (ErrorLongitudInvalida)
+        {
+            throw; // Re-lanzar excepciones de validación
+        }
+        catch (ErrorIdInvalido)
+        {
+            throw; // Re-lanzar excepciones de validación
+        }
+        catch (ErrorValorNegativo)
+        {
+            throw; // Re-lanzar excepciones de validación
+        }
+        catch (Exception ex)
+        {
+            // 3. Interpretar errores de PostgreSQL
+            var parametros = new Dictionary<string, object?>
+            {
+                ["nombre"] = comando.Nombre,
+                ["codigoImt"] = comando.CodigoIMT,
+                ["precio"] = comando.Precio
+            };
+            throw PostgreSqlErrorInterpreter.InterpretarError(ex, "crear", "accesorio", parametros);
+        }
+    }
+
+    private void ValidarEntradaCreacion(CrearAccesorioComando comando)
+    {
+        if (comando == null)
+            throw new ArgumentNullException(nameof(comando));
+
+        if (string.IsNullOrWhiteSpace(comando.Nombre))
+            throw new ErrorNombreRequerido("nombre del accesorio");
+
+        if (comando.Nombre.Length > 100)
+            throw new ErrorLongitudInvalida("nombre del accesorio", 100);
+
+        if (comando.CodigoIMT <= 0)
+            throw new ErrorIdInvalido("código IMT");
+
+        if (comando.Precio.HasValue && comando.Precio.Value < 0)
+            throw new ErrorValorNegativo("precio", comando.Precio.Value);
     }
     public List<AccesorioDto>? ObtenerTodosAccesorios()
     {
@@ -39,27 +75,57 @@ public class AccesorioService : IAccesorioService
         {
             throw;
         }
-    }
-    public void ActualizarAccesorio(ActualizarAccesorioComando comando)
+    }    public void ActualizarAccesorio(ActualizarAccesorioComando comando)
     {
         try
         {
+            ValidarEntradaActualizacion(comando);
             _accesorioRepository.Actualizar(comando);
         }
-        catch
+        catch (ErrorNombreRequerido)
         {
             throw;
         }
-    }
-    public void EliminarAccesorio(EliminarAccesorioComando comando)
+        catch (ErrorLongitudInvalida)
+        {
+            throw;
+        }
+        catch (ErrorIdInvalido)
+        {
+            throw;
+        }
+        catch (ErrorValorNegativo)
+        {
+            throw;
+        }
+        catch (Exception ex)
+        {
+            var parametros = new Dictionary<string, object?>
+            {
+                ["id"] = comando.Id,
+                ["nombre"] = comando.Nombre,
+                ["codigoImt"] = comando.CodigoIMT
+            };
+            throw PostgreSqlErrorInterpreter.InterpretarError(ex, "actualizar", "accesorio", parametros);
+        }
+    }    public void EliminarAccesorio(EliminarAccesorioComando comando)
     {
         try
         {
+            ValidarEntradaEliminacion(comando);
             _accesorioRepository.Eliminar(comando.Id);
         }
-        catch
+        catch (ErrorIdInvalido)
         {
             throw;
+        }
+        catch (Exception ex)
+        {
+            var parametros = new Dictionary<string, object?>
+            {
+                ["id"] = comando.Id
+            };
+            throw PostgreSqlErrorInterpreter.InterpretarError(ex, "eliminar", "accesorio", parametros);
         }
     }
     private static AccesorioDto MapearFilaADto(DataRow fila)
@@ -75,5 +141,35 @@ public class AccesorioService : IAccesorioService
             CodigoImtEquipoAsociado = fila["codigo_imt_equipo_asociado"] == DBNull.Value ? null : Convert.ToInt32(fila["codigo_imt_equipo_asociado"]),
             Descripcion = fila["descripcion_accesorio"] == DBNull.Value ? null : fila["descripcion_accesorio"].ToString(),
         };
+    }
+
+    private void ValidarEntradaActualizacion(ActualizarAccesorioComando comando)
+    {
+        if (comando == null)
+            throw new ArgumentNullException(nameof(comando));
+
+        if (comando.Id <= 0)
+            throw new ErrorIdInvalido("ID del accesorio");
+
+        if (string.IsNullOrWhiteSpace(comando.Nombre))
+            throw new ErrorNombreRequerido("nombre del accesorio");
+
+        if (comando.Nombre.Length > 100)
+            throw new ErrorLongitudInvalida("nombre del accesorio", 100);
+
+        if (comando.CodigoIMT <= 0)
+            throw new ErrorIdInvalido("código IMT");
+
+        if (comando.Precio.HasValue && comando.Precio.Value < 0)
+            throw new ErrorValorNegativo("precio", comando.Precio.Value);
+    }
+
+    private void ValidarEntradaEliminacion(EliminarAccesorioComando comando)
+    {
+        if (comando == null)
+            throw new ArgumentNullException(nameof(comando));
+
+        if (comando.Id <= 0)
+            throw new ErrorIdInvalido("ID del accesorio");
     }
 }

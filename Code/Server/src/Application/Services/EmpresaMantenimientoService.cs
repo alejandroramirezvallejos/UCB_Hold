@@ -1,4 +1,5 @@
 using System.Data;
+using Shared.Common;
 public class EmpresaMantenimientoService : IEmpresaMantenimientoService
 {
     private readonly EmpresaMantenimientoRepository _empresaMantenimientoRepository;
@@ -9,27 +10,45 @@ public class EmpresaMantenimientoService : IEmpresaMantenimientoService
     {
         try
         {
-            if (comando == null)
-                throw new ArgumentNullException(nameof(comando), "Los datos de la empresa de mantenimiento son requeridos");
-
-            if (string.IsNullOrWhiteSpace(comando.NombreEmpresa))
-                throw new ArgumentException("El nombre de la empresa es requerido", nameof(comando.NombreEmpresa));
-
-            if (comando.NombreEmpresa.Length > 100)
-                throw new ArgumentException("El nombre de la empresa no puede exceder 100 caracteres", nameof(comando.NombreEmpresa));
-
-            if (!string.IsNullOrWhiteSpace(comando.Telefono) && comando.Telefono.Length > 20)
-                throw new ArgumentException("El teléfono no puede exceder 20 caracteres", nameof(comando.Telefono));
-
-            if (!string.IsNullOrWhiteSpace(comando.Nit) && comando.Nit.Length > 20)
-                throw new ArgumentException("El NIT no puede exceder 20 caracteres", nameof(comando.Nit));
-
+            ValidarEntradaCreacion(comando);
             _empresaMantenimientoRepository.Crear(comando);
         }
-        catch
+        catch (ErrorNombreRequerido)
         {
             throw;
         }
+        catch (ErrorLongitudInvalida)
+        {
+            throw;
+        }
+        catch (Exception ex)
+        {
+            var parametros = new Dictionary<string, object?>
+            {
+                ["nombre"] = comando.NombreEmpresa,
+                ["nit"] = comando.Nit,
+                ["telefono"] = comando.Telefono
+            };
+            throw PostgreSqlErrorInterpreter.InterpretarError(ex, "crear", "empresa de mantenimiento", parametros);
+        }
+    }
+
+    private void ValidarEntradaCreacion(CrearEmpresaMantenimientoComando comando)
+    {
+        if (comando == null)
+            throw new ArgumentNullException(nameof(comando));
+
+        if (string.IsNullOrWhiteSpace(comando.NombreEmpresa))
+            throw new ErrorNombreRequerido("nombre de la empresa");
+
+        if (comando.NombreEmpresa.Length > 100)
+            throw new ErrorLongitudInvalida("nombre de la empresa", 100);
+
+        if (!string.IsNullOrWhiteSpace(comando.Telefono) && comando.Telefono.Length > 20)
+            throw new ErrorLongitudInvalida("teléfono", 20);
+
+        if (!string.IsNullOrWhiteSpace(comando.Nit) && comando.Nit.Length > 20)
+            throw new ErrorLongitudInvalida("NIT", 20);
     }
     public List<EmpresaMantenimientoDto>? ObtenerTodasEmpresasMantenimiento()
     {
@@ -47,28 +66,86 @@ public class EmpresaMantenimientoService : IEmpresaMantenimientoService
         {
             throw;
         }
-    }
-    public void ActualizarEmpresaMantenimiento(ActualizarEmpresaMantenimientoComando comando)
+    }    public void ActualizarEmpresaMantenimiento(ActualizarEmpresaMantenimientoComando comando)
     {
         try
         {
+            ValidarEntradaActualizacion(comando);
             _empresaMantenimientoRepository.Actualizar(comando);
         }
-        catch
+        catch (ErrorIdInvalido)
         {
             throw;
         }
+        catch (ErrorNombreRequerido)
+        {
+            throw;
+        }
+        catch (ErrorLongitudInvalida)
+        {
+            throw;
+        }
+        catch (Exception ex)
+        {
+            var parametros = new Dictionary<string, object?>
+            {
+                ["id"] = comando.Id,
+                ["nombre"] = comando.NombreEmpresa,
+                ["nit"] = comando.Nit
+            };
+            throw PostgreSqlErrorInterpreter.InterpretarError(ex, "actualizar", "empresa de mantenimiento", parametros);
+        }
     }
+
     public void EliminarEmpresaMantenimiento(EliminarEmpresaMantenimientoComando comando)
     {
         try
         {
+            ValidarEntradaEliminacion(comando);
             _empresaMantenimientoRepository.Eliminar(comando.Id);
         }
-        catch
+        catch (ErrorIdInvalido)
         {
             throw;
         }
+        catch (Exception ex)
+        {
+            var parametros = new Dictionary<string, object?>
+            {
+                ["id"] = comando.Id
+            };
+            throw PostgreSqlErrorInterpreter.InterpretarError(ex, "eliminar", "empresa de mantenimiento", parametros);
+        }
+    }
+
+    private void ValidarEntradaActualizacion(ActualizarEmpresaMantenimientoComando comando)
+    {
+        if (comando == null)
+            throw new ArgumentNullException(nameof(comando));
+
+        if (comando.Id <= 0)
+            throw new ErrorIdInvalido("ID de la empresa de mantenimiento");
+
+        if (string.IsNullOrWhiteSpace(comando.NombreEmpresa))
+            throw new ErrorNombreRequerido("nombre de la empresa");
+
+        if (comando.NombreEmpresa.Length > 100)
+            throw new ErrorLongitudInvalida("nombre de la empresa", 100);
+
+        if (!string.IsNullOrWhiteSpace(comando.Telefono) && comando.Telefono.Length > 20)
+            throw new ErrorLongitudInvalida("teléfono", 20);
+
+        if (!string.IsNullOrWhiteSpace(comando.Nit) && comando.Nit.Length > 20)
+            throw new ErrorLongitudInvalida("NIT", 20);
+    }
+
+    private void ValidarEntradaEliminacion(EliminarEmpresaMantenimientoComando comando)
+    {
+        if (comando == null)
+            throw new ArgumentNullException(nameof(comando));
+
+        if (comando.Id <= 0)
+            throw new ErrorIdInvalido("ID de la empresa de mantenimiento");
     }
     private static EmpresaMantenimientoDto MapearFilaADto(DataRow fila)
     {

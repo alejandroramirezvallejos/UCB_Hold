@@ -1,5 +1,6 @@
-using API.ViewModels;
 using Microsoft.AspNetCore.Mvc;
+using Shared.Common;
+
 namespace API.Controllers;
 
 [ApiController]
@@ -12,7 +13,6 @@ public class PrestamoController : ControllerBase
     {
         this.servicio = servicio;
     }
-
     [HttpPost]
     public IActionResult CrearPrestamo([FromBody] CrearPrestamoComando input)
     {
@@ -21,17 +21,39 @@ public class PrestamoController : ControllerBase
             servicio.CrearPrestamo(input);
             return Ok(new { mensaje = "Préstamo creado exitosamente" });
         }
-        catch (ArgumentException ex)
+        catch (ErrorNombreRequerido ex)
         {
-            return BadRequest($"Error de validación: {ex.Message}");
+            return BadRequest(new { error = "Campo requerido", mensaje = ex.Message });
         }
-        catch (InvalidOperationException ex)
+        catch (ErrorIdInvalido ex)
         {
-            return Conflict($"Conflicto en la operación: {ex.Message}");
+            return BadRequest(new { error = "ID inválido", mensaje = ex.Message });
         }
-        catch (Exception ex)
+        catch (ErrorCarnetUsuarioNoEncontrado ex)
         {
-            return StatusCode(500, $"Error interno del servidor: {ex.Message}");
+            return NotFound(new { error = "Usuario no encontrado", mensaje = ex.Message });
+        }
+        catch (ErrorNoEquiposDisponibles ex)
+        {
+            return Conflict(new { 
+                error = "Equipos no disponibles", 
+                mensaje = ex.Message
+            });
+        }
+        catch (ErrorRegistroNoEncontrado ex)
+        {
+            return NotFound(new { error = "Registro no encontrado", mensaje = ex.Message });
+        }
+        catch (ErrorReferenciaInvalida ex)
+        {
+            return BadRequest(new { error = "Referencia inválida", mensaje = ex.Message });
+        }
+        catch (DomainException ex)
+        {
+            return BadRequest(new { error = "Error de validación", mensaje = ex.Message });
+        }        catch (Exception)
+        {
+            return StatusCode(500, new { error = "Error interno del servidor", mensaje = "Ocurrió un error inesperado al crear el préstamo" });
         }
     }
 
@@ -48,13 +70,9 @@ public class PrestamoController : ControllerBase
             }
 
             return Ok(prestamos);
-        }
-        catch (Exception ex)
-        {
-            return StatusCode(500, $"Error interno del servidor: {ex.Message}");
+        }        catch (Exception) { return StatusCode(500, new { error = "Error interno del servidor", mensaje = "Ocurrió un error inesperado al obtener los préstamos" });
         }
     }
-
     [HttpDelete("{id}")]
     public IActionResult EliminarPrestamo(int id)
     {
@@ -62,20 +80,25 @@ public class PrestamoController : ControllerBase
         {
             var comando = new EliminarPrestamoComando(id);
             servicio.EliminarPrestamo(comando);
-
             return Ok(new { mensaje = "Préstamo eliminado exitosamente" });
         }
-        catch (ArgumentException ex)
+        catch (ErrorIdInvalido ex)
         {
-            return BadRequest($"Error de validación: {ex.Message}");
+            return BadRequest(new { error = "ID inválido", mensaje = ex.Message });
+        }        catch (ErrorRegistroNoEncontrado)
+        {
+            return NotFound(new { error = "Préstamo no encontrado", mensaje = $"No se encontró un préstamo con ID {id}" });
         }
-        catch (InvalidOperationException ex)
+        catch (ErrorRegistroEnUso)
         {
-            return NotFound($"Préstamo no encontrado: {ex.Message}");
+            return Conflict(new { error = "Préstamo en uso", mensaje = "No se puede eliminar el préstamo porque ya ha sido procesado" });
         }
-        catch (Exception ex)
+        catch (DomainException ex)
         {
-            return StatusCode(500, $"Error interno del servidor: {ex.Message}");
+            return BadRequest(new { error = "Error de validación", mensaje = ex.Message });
+        }        catch (Exception)
+        {
+            return StatusCode(500, new { error = "Error interno del servidor", mensaje = "Ocurrió un error inesperado al eliminar el préstamo" });
         }
     }
 }

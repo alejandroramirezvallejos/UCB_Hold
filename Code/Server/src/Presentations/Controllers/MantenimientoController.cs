@@ -1,5 +1,6 @@
 using Microsoft.AspNetCore.Mvc;
-using API.ViewModels;
+using Shared.Common;
+
 namespace API.Controllers;
 
 [ApiController]
@@ -11,19 +12,35 @@ public class MantenimientoController : ControllerBase
     public MantenimientoController(MantenimientoService servicio)
     {
         this.servicio = servicio;
-    }
-
-    [HttpPost]
-    public ActionResult Crear([FromBody] CrearMantenimientoComando input)
+    }    [HttpPost]
+    public IActionResult Crear([FromBody] CrearMantenimientoComando input)
     {
         try
         {
             servicio.CrearMantenimiento(input);
             return Created();
-        }
-        catch (Exception ex)
+        }        catch (ErrorNombreRequerido ex)
         {
-            return BadRequest($"Error al crear mantenimiento: {ex.Message}");
+            return BadRequest(new { error = "Campo requerido", mensaje = ex.Message });
+        }
+        catch (ErrorValorNegativo ex)
+        {
+            return BadRequest(new { error = "Valor negativo", mensaje = ex.Message });
+        }
+        catch (ErrorIdInvalido ex)
+        {
+            return BadRequest(new { error = "ID inválido", mensaje = ex.Message });
+        }
+        catch (ErrorReferenciaInvalida ex)
+        {
+            return BadRequest(new { error = "Referencia inválida", mensaje = ex.Message });
+        }
+        catch (DomainException ex)
+        {
+            return BadRequest(new { error = "Error de validación", mensaje = ex.Message });
+        }        catch (Exception)
+        {
+            return StatusCode(500, new { error = "Error interno del servidor", mensaje = "Ocurrió un error inesperado al crear el mantenimiento" });
         }
     }
 
@@ -37,12 +54,11 @@ public class MantenimientoController : ControllerBase
         }
         catch (Exception ex)
         {
-            return BadRequest($"Error al obtener mantenimientos: {ex.Message}");
+            return BadRequest(new { error = "Error interno del servidor", mensaje = $"Error al obtener mantenimientos: {ex.Message}" });
         }
     }
-
     [HttpDelete("{id}")]
-    public ActionResult Eliminar(int id)
+    public IActionResult Eliminar(int id)
     {
         try
         {
@@ -50,9 +66,23 @@ public class MantenimientoController : ControllerBase
             servicio.EliminarMantenimiento(comando);
             return NoContent();
         }
-        catch (Exception ex)
+        catch (ErrorIdInvalido ex)
         {
-            return BadRequest($"Error al eliminar mantenimiento: {ex.Message}");
+            return BadRequest(new { error = "ID inválido", mensaje = ex.Message });
+        }        catch (ErrorRegistroNoEncontrado)
+        {
+            return NotFound(new { error = "Mantenimiento no encontrado", mensaje = $"No se encontró un mantenimiento con ID {id}" });
+        }
+        catch (ErrorRegistroEnUso)
+        {
+            return Conflict(new { error = "Mantenimiento en uso", mensaje = "No se puede eliminar el mantenimiento porque ya fue procesado" });
+        }
+        catch (DomainException ex)
+        {
+            return BadRequest(new { error = "Error de validación", mensaje = ex.Message });
+        }        catch (Exception)
+        {
+            return StatusCode(500, new { error = "Error interno del servidor", mensaje = "Ocurrió un error inesperado al eliminar el mantenimiento" });
         }
     }
 }

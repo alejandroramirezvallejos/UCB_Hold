@@ -1,4 +1,5 @@
 using System.Data;
+using Shared.Common;
 public class UsuarioService : IUsuarioService
 {
     private readonly UsuarioRepository _usuarioRepository;
@@ -10,37 +11,58 @@ public class UsuarioService : IUsuarioService
     {
         try
         {
-            if (comando == null)
-                throw new ArgumentNullException(nameof(comando), "Los datos del usuario son requeridos");
-
-            if (string.IsNullOrWhiteSpace(comando.Carnet))
-                throw new ArgumentException("El carnet es obligatorio", nameof(comando.Carnet));
-
-            if (string.IsNullOrWhiteSpace(comando.Nombre))
-                throw new ArgumentException("El nombre es obligatorio", nameof(comando.Nombre));
-
-            if (string.IsNullOrWhiteSpace(comando.ApellidoPaterno))
-                throw new ArgumentException("El apellido paterno es obligatorio", nameof(comando.ApellidoPaterno));
-
-            if (string.IsNullOrWhiteSpace(comando.ApellidoMaterno))
-                throw new ArgumentException("El apellido materno es obligatorio", nameof(comando.ApellidoMaterno));
-
-            if (string.IsNullOrWhiteSpace(comando.Email) || !IsValidEmail(comando.Email))
-                throw new ArgumentException("El email es obligatorio y debe ser válido", nameof(comando.Email));            if (string.IsNullOrWhiteSpace(comando.Contrasena))
-                throw new ArgumentException("La contraseña es obligatoria", nameof(comando.Contrasena));
-
-            if (string.IsNullOrWhiteSpace(comando.NombreCarrera))
-                throw new ArgumentException("El nombre de la carrera es obligatorio", nameof(comando.NombreCarrera));
-
-            if (string.IsNullOrWhiteSpace(comando.Telefono))
-                throw new ArgumentException("El teléfono es obligatorio", nameof(comando.Telefono));
-
+            ValidarEntradaCreacion(comando);
             _usuarioRepository.Crear(comando);
         }
-        catch
+        catch (ErrorNombreRequerido)
         {
             throw;
         }
+        catch (ErrorCarnetUsuarioNoEncontrado)
+        {
+            throw;
+        }
+        catch (Exception ex)
+        {
+            var parametros = new Dictionary<string, object?>
+            {
+                ["carnet"] = comando.Carnet,
+                ["email"] = comando.Email,
+                ["nombre"] = comando.Nombre,
+                ["carrera"] = comando.NombreCarrera
+            };
+            throw PostgreSqlErrorInterpreter.InterpretarError(ex, "crear", "usuario", parametros);
+        }
+    }
+
+    private void ValidarEntradaCreacion(CrearUsuarioComando comando)
+    {
+        if (comando == null)
+            throw new ArgumentNullException(nameof(comando));
+
+        if (string.IsNullOrWhiteSpace(comando.Carnet))
+            throw new ErrorNombreRequerido("carnet del usuario");
+
+        if (string.IsNullOrWhiteSpace(comando.Nombre))
+            throw new ErrorNombreRequerido("nombre del usuario");
+
+        if (string.IsNullOrWhiteSpace(comando.ApellidoPaterno))
+            throw new ErrorNombreRequerido("apellido paterno");
+
+        if (string.IsNullOrWhiteSpace(comando.ApellidoMaterno))
+            throw new ErrorNombreRequerido("apellido materno");
+
+        if (string.IsNullOrWhiteSpace(comando.Email) || !IsValidEmail(comando.Email))
+            throw new ErrorNombreRequerido("email válido");
+
+        if (string.IsNullOrWhiteSpace(comando.Contrasena))
+            throw new ErrorNombreRequerido("contraseña");
+
+        if (string.IsNullOrWhiteSpace(comando.NombreCarrera))
+            throw new ErrorNombreRequerido("nombre de la carrera");
+
+        if (string.IsNullOrWhiteSpace(comando.Telefono))
+            throw new ErrorNombreRequerido("teléfono");
     }
     public List<UsuarioDto>? ObtenerTodosUsuarios()
     {

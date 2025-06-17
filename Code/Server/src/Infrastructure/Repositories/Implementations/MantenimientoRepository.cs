@@ -1,4 +1,6 @@
 using System.Data;
+using Npgsql;
+using Shared.Common;
 
 public class MantenimientoRepository : IMantenimientoRepository
 {
@@ -30,37 +32,35 @@ public class MantenimientoRepository : IMantenimientoRepository
             ["codigosImt"] = comando.CodigoIMT ?? (object)DBNull.Value,
             ["tiposMantenimiento"] = comando.TipoMantenimiento ?? (object)DBNull.Value,
             ["descripcionesEquipo"] = comando.DescripcionEquipo ?? (object)DBNull.Value
-        };
-        try
+        };        try
         {
             _ejecutarConsulta.EjecutarSpNR(sql, parametros);
         }
         catch (Exception ex)
         {
-            var innerError = ex.InnerException?.Message ?? ex.Message;
-            throw new Exception($"Error en BD al crear mantenimiento: {innerError}. SQL: {sql}. Parámetros: fechaMantenimiento={comando.FechaMantenimiento}, nombreEmpresa={comando.NombreEmpresaMantenimiento}", ex);
+            throw PostgreSqlErrorInterpreter.InterpretarError(ex, "crear", "mantenimiento", parametros);
         }
     }
     public void Eliminar(int id)
-    {
+    {        
         const string sql = @"
         CALL public.eliminar_mantenimiento(
 	    @id
         )";
-        try
+        
+        var parametros = new Dictionary<string, object?>
         {
-            _ejecutarConsulta.EjecutarSpNR(sql, new Dictionary<string, object?>
-            {
-                ["id"] = id
-            });
+            ["id"] = id
+        };
+          try
+        {
+            _ejecutarConsulta.EjecutarSpNR(sql, parametros);
         }
         catch (Exception ex)
         {
-            var innerError = ex.InnerException?.Message ?? ex.Message;
-            throw new Exception($"Error en BD al eliminar mantenimiento: {innerError}. SQL: {sql}. Parámetros: id={id}", ex);
+            throw PostgreSqlErrorInterpreter.InterpretarError(ex, "eliminar", "mantenimiento", parametros);
         }
-    }
-    public DataTable ObtenerTodos()
+    }      public DataTable ObtenerTodos()
     {
         const string sql = @"
         SELECT * FROM public.obtener_mantenimientos()
@@ -73,8 +73,7 @@ public class MantenimientoRepository : IMantenimientoRepository
         }
         catch (Exception ex)
         {
-            var innerError = ex.InnerException?.Message ?? ex.Message;
-            throw new Exception($"Error en BD al obtener mantenimientos: {innerError}. SQL: {sql}", ex);
+            throw PostgreSqlErrorInterpreter.InterpretarError(ex, "obtener", "mantenimientos", new Dictionary<string, object?>());
         }
     }
 }

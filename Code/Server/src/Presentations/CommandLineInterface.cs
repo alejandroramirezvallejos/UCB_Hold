@@ -1,4 +1,5 @@
 using Microsoft.AspNetCore.Mvc;
+using Shared.Common;
 
 public static class CommandLineInterface
 {
@@ -106,9 +107,11 @@ public static class CommandLineInterface
         Console.WriteLine("Iniciando programa...\n");
         Console.ResetColor();
 
-        var builder = WebApplication.CreateBuilder();
-
-        builder.Services.AddControllers()
+        var builder = WebApplication.CreateBuilder();        
+        builder.Services.AddControllers(options =>
+            {
+                options.Filters.Add<ModelValidationFilter>();
+            })
             .AddJsonOptions(options =>
             {
                 options.JsonSerializerOptions.PropertyNamingPolicy = null;
@@ -155,9 +158,11 @@ public static class CommandLineInterface
         builder.Services.AddScoped<MantenimientoRepository>();
         builder.Services.AddScoped<MuebleRepository>();
         builder.Services.AddScoped<PrestamoRepository>();
-        builder.Services.AddScoped<UsuarioRepository>();
-
-        var app = builder.Build();
+        builder.Services.AddScoped<UsuarioRepository>();        var app = builder.Build();
+        
+        // Middleware de manejo de errores (debe ser el primero)
+        app.UseMiddleware<ErrorHandlingMiddleware>();
+        
         app.UseDefaultFiles();
         app.UseStaticFiles();
 

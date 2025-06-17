@@ -1,5 +1,6 @@
 using Microsoft.AspNetCore.Mvc;
-using API.ViewModels;
+using Shared.Common;
+
 namespace API.Controllers;
 
 [ApiController]
@@ -11,19 +12,35 @@ public class ComponenteController : ControllerBase
     public ComponenteController(ComponenteService servicio)
     {
         this.servicio = servicio;
-    }
-    [HttpPost]
-    public ActionResult Crear([FromBody] CrearComponenteComando input)
+    }    [HttpPost]
+    public IActionResult Crear([FromBody] CrearComponenteComando input)
     {
         try
         {
             servicio.CrearComponente(input);
             return Created();
         }
-        catch (Exception ex)
+        catch (ErrorNombreRequerido ex)
         {
-            var fullError = ex.InnerException?.Message ?? ex.Message;
-            return BadRequest($"Error al crear componente: {fullError}");
+            return BadRequest(new { error = "Campo requerido", mensaje = ex.Message });
+        }
+        catch (ErrorLongitudInvalida ex)
+        {
+            return BadRequest(new { error = "Longitud inválida", mensaje = ex.Message });
+        }
+        catch (ErrorComponenteYaExiste ex)
+        {
+            return Conflict(new { error = "Componente duplicado", mensaje = ex.Message });
+        }
+        catch (ErrorReferenciaInvalida ex)
+        {
+            return BadRequest(new { error = "Referencia inválida", mensaje = ex.Message });
+        }
+        catch (DomainException ex)
+        {
+            return BadRequest(new { error = "Error de validación", mensaje = ex.Message });
+        }
+        catch (Exception) { return StatusCode(500, new { error = "Error interno del servidor", mensaje = "Ocurrió un error inesperado al crear el componente" });
         }
     }
 
@@ -37,37 +54,74 @@ public class ComponenteController : ControllerBase
         }
         catch (Exception ex)
         {
-            return BadRequest($"Error al obtener componentes: {ex.Message}");
+            return BadRequest(new { error = "Error interno del servidor", mensaje = $"Error al obtener componentes: {ex.Message}" });
         }
     }
-
-    [HttpPut("{id}")]
-    public ActionResult Actualizar([FromBody] ActualizarComponenteComando input)
+    [HttpPut]
+    public IActionResult Actualizar([FromBody] ActualizarComponenteComando input)
     {
         try
         {
             servicio.ActualizarComponente(input);
-            return Ok("Componente actualizado exitosamente");
+            return Ok(new { mensaje = "Componente actualizado exitosamente" });
         }
-        catch (Exception ex)
+        catch (ErrorIdInvalido ex)
         {
-            return BadRequest($"Error al actualizar componente: {ex.Message}");
+            return BadRequest(new { error = "ID inválido", mensaje = ex.Message });
+        }
+        catch (ErrorNombreRequerido ex)
+        {
+            return BadRequest(new { error = "Campo requerido", mensaje = ex.Message });
+        }
+        catch (ErrorLongitudInvalida ex)
+        {
+            return BadRequest(new { error = "Longitud inválida", mensaje = ex.Message });
+        }
+        catch (ErrorRegistroNoEncontrado ex)
+        {
+            return NotFound(new { error = "Componente no encontrado", mensaje = $"No se encontró un componente con ID {ex.Message}" });
+        }
+        catch (ErrorComponenteYaExiste ex)
+        {
+            return Conflict(new { error = "Componente duplicado", mensaje = ex.Message });
+        }
+        catch (ErrorReferenciaInvalida ex)
+        {
+            return BadRequest(new { error = "Referencia inválida", mensaje = ex.Message });
+        }
+        catch (DomainException ex)
+        {
+            return BadRequest(new { error = "Error de validación", mensaje = ex.Message });
+        }
+        catch (Exception) { return StatusCode(500, new { error = "Error interno del servidor", mensaje = "Ocurrió un error inesperado al actualizar el componente" });
         }
     }
-
     [HttpDelete("{id}")]
-    public ActionResult Eliminar(int id)
+    public IActionResult Eliminar(int id)
     {
         try
         {
-
             var comando = new EliminarComponenteComando(id);
             servicio.EliminarComponente(comando);
             return NoContent();
         }
-        catch (Exception ex)
+        catch (ErrorIdInvalido ex)
         {
-            return BadRequest($"Error al eliminar componente: {ex.Message}");
+            return BadRequest(new { error = "ID inválido", mensaje = ex.Message });
+        }
+        catch (ErrorRegistroNoEncontrado)
+        {
+            return NotFound(new { error = "Componente no encontrado", mensaje = $"No se encontró un componente con ID {id}" });
+        }
+        catch (ErrorRegistroEnUso)
+        {
+            return Conflict(new { error = "Componente en uso", mensaje = "No se puede eliminar el componente porque está siendo utilizado" });
+        }
+        catch (DomainException ex)
+        {
+            return BadRequest(new { error = "Error de validación", mensaje = ex.Message });
+        }
+        catch (Exception) { return StatusCode(500, new { error = "Error interno del servidor", mensaje = "Ocurrió un error inesperado al eliminar el componente" });
         }
     }
 }

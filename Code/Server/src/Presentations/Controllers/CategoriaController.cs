@@ -1,6 +1,6 @@
 using Microsoft.AspNetCore.Mvc;
-using System.Data;
-using API.ViewModels;
+using Shared.Common;
+
 namespace API.Controllers;
 
 [ApiController]
@@ -13,18 +13,31 @@ public class CategoriaController : ControllerBase
     {
         this.servicio = servicio;
     }
-
     [HttpPost]
-    public ActionResult Crear([FromBody] CrearCategoriaComando input)
+    public IActionResult Crear([FromBody] CrearCategoriaComando input)
     {
         try
         {
             servicio.CrearCategoria(input);
             return Created();
         }
-        catch (Exception ex)
+        catch (ErrorNombreRequerido ex)
         {
-            return BadRequest($"Error al crear categoría: {ex.Message}");
+            return BadRequest(new { error = "Campo requerido", mensaje = ex.Message });
+        }
+        catch (ErrorLongitudInvalida ex)
+        {
+            return BadRequest(new { error = "Longitud inválida", mensaje = ex.Message });
+        }
+        catch (ErrorRegistroYaExiste ex)
+        {
+            return Conflict(new { error = "Categoría duplicada", mensaje = $"Ya existe una categoría con el nombre '{ex.Message}'" });
+        }
+        catch (DomainException ex)
+        {
+            return BadRequest(new { error = "Error de validación", mensaje = ex.Message });
+        }
+        catch (Exception) { return StatusCode(500, new { error = "Error interno del servidor", mensaje = "Ocurrió un error inesperado al crear la categoría" });
         }
     }
 
@@ -38,25 +51,46 @@ public class CategoriaController : ControllerBase
         }
         catch (Exception ex)
         {
-            return BadRequest($"Error al obtener categorías: {ex.Message}");
+            return BadRequest(new { error = "Error interno del servidor", mensaje = $"Error al obtener categorías: {ex.Message}" });
         }
-    }
-
-    [HttpPut("{id}")]
-    public ActionResult Actualizar([FromBody] ActualizarCategoriaComando input)
+    }    
+    [HttpPut]
+    public IActionResult Actualizar([FromBody] ActualizarCategoriaComando input)
     {
         try
         {
             servicio.ActualizarCategoria(input);
-            return Ok("Categoría actualizada exitosamente");
+            return Ok(new { mensaje = "Categoría actualizada exitosamente" });
         }
-        catch (Exception ex)
+        catch (ErrorIdInvalido ex)
         {
-            return BadRequest($"Error al actualizar categoría: {ex.Message}");
+            return BadRequest(new { error = "ID inválido", mensaje = ex.Message });
         }
-    }
+        catch (ErrorNombreRequerido ex)
+        {
+            return BadRequest(new { error = "Campo requerido", mensaje = ex.Message });
+        }
+        catch (ErrorLongitudInvalida ex)
+        {
+            return BadRequest(new { error = "Longitud inválida", mensaje = ex.Message });
+        }
+        catch (ErrorRegistroNoEncontrado ex)
+        {
+            return NotFound(new { error = "Categoría no encontrada", mensaje = $"No se encontró una categoría con ID {ex.Message}" });
+        }
+        catch (ErrorRegistroYaExiste ex)
+        {
+            return Conflict(new { error = "Categoría duplicada", mensaje = $"Ya existe otra categoría con el nombre '{ex.Message}'" });
+        }
+        catch (DomainException ex)
+        {
+            return BadRequest(new { error = "Error de validación", mensaje = ex.Message });
+        }
+        catch (Exception) { return StatusCode(500, new { error = "Error interno del servidor", mensaje = "Ocurrió un error inesperado al actualizar la categoría" });
+        }
+    }    
     [HttpDelete("{id}")]
-    public ActionResult Eliminar(int id)
+    public IActionResult Eliminar(int id)
     {
         try
         {
@@ -64,9 +98,23 @@ public class CategoriaController : ControllerBase
             servicio.EliminarCategoria(comando);
             return NoContent();
         }
-        catch (Exception ex)
+        catch (ErrorIdInvalido ex)
         {
-            return BadRequest($"Error al eliminar categoría: {ex.Message}");
+            return BadRequest(new { error = "ID inválido", mensaje = ex.Message });
+        }
+        catch (ErrorRegistroNoEncontrado)
+        {
+            return NotFound(new { error = "Categoría no encontrada", mensaje = $"No se encontró una categoría con ID {id}" });
+        }
+        catch (ErrorRegistroEnUso)
+        {
+            return Conflict(new { error = "Categoría en uso", mensaje = "No se puede eliminar la categoría porque tiene grupos de equipos asociados" });
+        }
+        catch (DomainException ex)
+        {
+            return BadRequest(new { error = "Error de validación", mensaje = ex.Message });
+        }
+        catch (Exception) { return StatusCode(500, new { error = "Error interno del servidor", mensaje = "Ocurrió un error inesperado al eliminar la categoría" });
         }
     }
 }

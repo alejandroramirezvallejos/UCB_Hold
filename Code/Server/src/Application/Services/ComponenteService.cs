@@ -1,4 +1,5 @@
 using System.Data;
+using Shared.Common;
 public class ComponenteService : IComponenteService
 {
     private readonly ComponenteRepository _componenteRepository;
@@ -9,24 +10,56 @@ public class ComponenteService : IComponenteService
     {
         try
         {
-            if (comando == null)
-                throw new ArgumentNullException(nameof(comando), "Los datos del componente son requeridos");
-
-            if (string.IsNullOrWhiteSpace(comando.Nombre))
-                throw new ArgumentException("El nombre del componente es requerido", nameof(comando.Nombre));
-
-            if (comando.Nombre.Length > 100)
-                throw new ArgumentException("El nombre del componente no puede exceder 100 caracteres", nameof(comando.Nombre));
-
-            if (!string.IsNullOrWhiteSpace(comando.Modelo) && comando.Modelo.Length > 50)
-                throw new ArgumentException("El modelo del componente no puede exceder 50 caracteres", nameof(comando.Modelo));
-
+            ValidarEntradaCreacion(comando);
             _componenteRepository.Crear(comando);
         }
-        catch
+        catch (ErrorNombreRequerido)
         {
             throw;
         }
+        catch (ErrorLongitudInvalida)
+        {
+            throw;
+        }
+        catch (ErrorIdInvalido)
+        {
+            throw;
+        }
+        catch (ErrorValorNegativo)
+        {
+            throw;
+        }
+        catch (Exception ex)
+        {
+            var parametros = new Dictionary<string, object?>
+            {
+                ["nombre"] = comando.Nombre,
+                ["modelo"] = comando.Modelo,
+                ["codigoImt"] = comando.CodigoIMT
+            };
+            throw PostgreSqlErrorInterpreter.InterpretarError(ex, "crear", "componente", parametros);
+        }
+    }
+
+    private void ValidarEntradaCreacion(CrearComponenteComando comando)
+    {
+        if (comando == null)
+            throw new ArgumentNullException(nameof(comando));
+
+        if (string.IsNullOrWhiteSpace(comando.Nombre))
+            throw new ErrorNombreRequerido("nombre del componente");
+
+        if (comando.Nombre.Length > 100)
+            throw new ErrorLongitudInvalida("nombre del componente", 100);
+
+        if (!string.IsNullOrWhiteSpace(comando.Modelo) && comando.Modelo.Length > 50)
+            throw new ErrorLongitudInvalida("modelo del componente", 50);
+
+        if (comando.CodigoIMT <= 0)
+            throw new ErrorIdInvalido("código IMT");
+
+        if (comando.PrecioReferencia.HasValue && comando.PrecioReferencia.Value < 0)
+            throw new ErrorValorNegativo("precio de referencia", comando.PrecioReferencia.Value);
     }
     public List<ComponenteDto>? ObtenerTodosComponentes()
     {
@@ -44,28 +77,94 @@ public class ComponenteService : IComponenteService
         {
             throw;
         }
-    }
+    }    
     public void ActualizarComponente(ActualizarComponenteComando comando)
     {
         try
         {
+            ValidarEntradaActualizacion(comando);
             _componenteRepository.Actualizar(comando);
         }
-        catch
+        catch (ErrorIdInvalido)
         {
             throw;
         }
+        catch (ErrorNombreRequerido)
+        {
+            throw;
+        }
+        catch (ErrorLongitudInvalida)
+        {
+            throw;
+        }
+        catch (ErrorValorNegativo)
+        {
+            throw;
+        }
+        catch (Exception ex)
+        {
+            var parametros = new Dictionary<string, object?>
+            {
+                ["id"] = comando.Id,
+                ["nombre"] = comando.Nombre,
+                ["modelo"] = comando.Modelo
+            };
+            throw PostgreSqlErrorInterpreter.InterpretarError(ex, "actualizar", "componente", parametros);
+        }
     }
+
     public void EliminarComponente(EliminarComponenteComando comando)
     {
         try
         {
+            ValidarEntradaEliminacion(comando);
             _componenteRepository.Eliminar(comando.Id);
         }
-        catch
+        catch (ErrorIdInvalido)
         {
             throw;
         }
+        catch (Exception ex)
+        {
+            var parametros = new Dictionary<string, object?>
+            {
+                ["id"] = comando.Id
+            };
+            throw PostgreSqlErrorInterpreter.InterpretarError(ex, "eliminar", "componente", parametros);
+        }
+    }
+
+    private void ValidarEntradaActualizacion(ActualizarComponenteComando comando)
+    {
+        if (comando == null)
+            throw new ArgumentNullException(nameof(comando));
+
+        if (comando.Id <= 0)
+            throw new ErrorIdInvalido("ID del componente");
+
+        if (string.IsNullOrWhiteSpace(comando.Nombre))
+            throw new ErrorNombreRequerido("nombre del componente");
+
+        if (comando.Nombre.Length > 100)
+            throw new ErrorLongitudInvalida("nombre del componente", 100);
+
+        if (!string.IsNullOrWhiteSpace(comando.Modelo) && comando.Modelo.Length > 50)
+            throw new ErrorLongitudInvalida("modelo del componente", 50);
+
+        if (comando.CodigoIMT <= 0)
+            throw new ErrorIdInvalido("código IMT");
+
+        if (comando.PrecioReferencia.HasValue && comando.PrecioReferencia.Value < 0)
+            throw new ErrorValorNegativo("precio de referencia", comando.PrecioReferencia.Value);
+    }
+
+    private void ValidarEntradaEliminacion(EliminarComponenteComando comando)
+    {
+        if (comando == null)
+            throw new ArgumentNullException(nameof(comando));
+
+        if (comando.Id <= 0)
+            throw new ErrorIdInvalido("ID del componente");
     }
     private static ComponenteDto MapearFilaADto(DataRow fila)
     {

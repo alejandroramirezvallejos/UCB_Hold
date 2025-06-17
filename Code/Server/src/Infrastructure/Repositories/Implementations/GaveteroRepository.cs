@@ -1,4 +1,6 @@
 using System.Data;
+using Npgsql;
+using Shared.Common;
 
 public class GaveteroRepository : IGaveteroRepository
 {
@@ -27,15 +29,12 @@ public class GaveteroRepository : IGaveteroRepository
             ["longitud"] = comando.Longitud ?? (object)DBNull.Value,
             ["profundidad"] = comando.Profundidad ?? (object)DBNull.Value,
             ["altura"] = comando.Altura ?? (object)DBNull.Value
-        };
-        try
+        };        try
         {
             _ejecutarConsulta.EjecutarSpNR(sql, parametros);
-        }
-        catch (Exception ex)
+        }        catch (Exception ex)
         {
-            var innerError = ex.InnerException?.Message ?? ex.Message;
-            throw new Exception($"Error en BD al crear gavetero: {innerError}. SQL: {sql}. Parámetros: nombre={comando.Nombre}, tipo={comando.Tipo}", ex);
+            throw PostgreSqlErrorInterpreter.InterpretarError(ex, "crear", "gavetero", parametros);
         }
     }
 
@@ -60,53 +59,45 @@ public class GaveteroRepository : IGaveteroRepository
             ["nombreMueble"] = comando.NombreMueble ?? (object)DBNull.Value,
             ["longitud"] = comando.Longitud ?? (object)DBNull.Value,
             ["profundidad"] = comando.Profundidad ?? (object)DBNull.Value,
-            ["altura"] = comando.Altura ?? (object)DBNull.Value
-        };        try
+            ["altura"] = comando.Altura ?? (object)DBNull.Value        };
+        
+        try
         {
             _ejecutarConsulta.EjecutarSpNR(sql, parametros);
-        }
-        catch (Exception ex)
+        }        catch (Exception ex)
         {
-            var innerError = ex.InnerException?.Message ?? ex.Message;
-            throw new Exception($"Error en BD al actualizar gavetero: {innerError}. SQL: {sql}. Parámetros: id={comando.Id}, nombre={comando.Nombre}", ex);
+            throw PostgreSqlErrorInterpreter.InterpretarError(ex, "actualizar", "gavetero", parametros);
         }
     }
 
     public void Eliminar(int id)
-    {
-        const string sql = @"
+    {        const string sql = @"
         CALL public.eliminar_gavetero(
 	    @id
         )";
+        
+        var parametros = new Dictionary<string, object?>
+        {
+            ["id"] = id
+        };
+        
         try
         {
-            _ejecutarConsulta.EjecutarSpNR(sql, new Dictionary<string, object?>
-            {
-                ["id"] = id
-            });
-        }
-        catch (Exception ex)
+            _ejecutarConsulta.EjecutarSpNR(sql, parametros);
+        }        catch (Exception ex)
         {
-            var innerError = ex.InnerException?.Message ?? ex.Message;
-            throw new Exception($"Error en BD al eliminar gavetero: {innerError}. SQL: {sql}. Parámetros: id={id}", ex);
+            var parametrosEliminar = new Dictionary<string, object?> { ["id"] = id };
+            throw PostgreSqlErrorInterpreter.InterpretarError(ex, "eliminar", "gavetero", parametrosEliminar);
         }
-    }
+    }    
     public DataTable ObtenerTodos()
     {
         const string sql = @"
         SELECT * from public.obtener_gaveteros()
         ";
 
-        try
-        {
-            DataTable dt = _ejecutarConsulta.EjecutarFuncion(sql, new Dictionary<string, object?>());
-            return dt;
-        }
-        catch (Exception ex)
-        {
-            var innerError = ex.InnerException?.Message ?? ex.Message;
-            throw new Exception($"Error en BD al obtener gaveteros: {innerError}. SQL: {sql}", ex);
-        }
+        DataTable dt = _ejecutarConsulta.EjecutarFuncion(sql, new Dictionary<string, object?>());
+        return dt;
     }
 }
 

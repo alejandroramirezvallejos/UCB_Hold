@@ -1,4 +1,5 @@
 using System.Data;
+using Shared.Common;
 
 public class GrupoEquipoService : IGrupoEquipoService
 {
@@ -11,34 +12,85 @@ public class GrupoEquipoService : IGrupoEquipoService
     {
         try
         {
-            if (comando == null)
-                throw new ArgumentNullException(nameof(comando), "Los datos del grupo de equipo son requeridos");
-
-            if (string.IsNullOrWhiteSpace(comando.Nombre))
-                throw new ArgumentException("El nombre es requerido", nameof(comando.Nombre));
-
-            if (string.IsNullOrWhiteSpace(comando.Modelo))
-                throw new ArgumentException("El modelo es requerido", nameof(comando.Modelo));
-
-            if (string.IsNullOrWhiteSpace(comando.Marca))
-                throw new ArgumentException("La marca es requerida", nameof(comando.Marca));
-
-            if (string.IsNullOrWhiteSpace(comando.Descripcion))
-                throw new ArgumentException("La descripción es requerida", nameof(comando.Descripcion));
-
-            if (string.IsNullOrWhiteSpace(comando.NombreCategoria))
-                throw new ArgumentException("El nombre de la categoría es requerido", nameof(comando.NombreCategoria));
-
-            if (string.IsNullOrWhiteSpace(comando.UrlImagen))
-                throw new ArgumentException("La URL de la imagen es requerida", nameof(comando.UrlImagen));
-
+            ValidarEntradaCreacion(comando);
             _grupoEquipoRepository.Crear(comando);
         }
-        catch
+        catch (ErrorNombreRequerido)
         {
             throw;
         }
-    }    public GrupoEquipoDto? ObtenerGrupoEquipoPorId(ObtenerGrupoEquipoPorIdConsulta consulta)
+        catch (Exception ex)
+        {
+            var parametros = new Dictionary<string, object?>
+            {
+                ["nombre"] = comando.Nombre,
+                ["modelo"] = comando.Modelo,
+                ["marca"] = comando.Marca,
+                ["categoria"] = comando.NombreCategoria
+            };
+            throw PostgreSqlErrorInterpreter.InterpretarError(ex, "crear", "grupo de equipo", parametros);
+        }
+    }
+
+    private void ValidarEntradaCreacion(CrearGrupoEquipoComando comando)
+    {
+        if (comando == null)
+            throw new ArgumentNullException(nameof(comando));
+
+        if (string.IsNullOrWhiteSpace(comando.Nombre))
+            throw new ErrorNombreRequerido("nombre del grupo de equipo");
+
+        if (string.IsNullOrWhiteSpace(comando.Modelo))
+            throw new ErrorNombreRequerido("modelo");
+
+        if (string.IsNullOrWhiteSpace(comando.Marca))
+            throw new ErrorNombreRequerido("marca");
+
+        if (string.IsNullOrWhiteSpace(comando.Descripcion))
+            throw new ErrorNombreRequerido("descripción");
+
+        if (string.IsNullOrWhiteSpace(comando.NombreCategoria))
+            throw new ErrorNombreRequerido("nombre de la categoría");
+
+        if (string.IsNullOrWhiteSpace(comando.UrlImagen))
+            throw new ErrorNombreRequerido("URL de la imagen");
+    }
+
+    private void ValidarEntradaActualizacion(ActualizarGrupoEquipoComando comando)
+    {
+        if (comando == null)
+            throw new ArgumentNullException(nameof(comando));
+
+        if (comando.Id <= 0)
+            throw new ErrorIdInvalido("grupo de equipo");
+
+        if (string.IsNullOrWhiteSpace(comando.Nombre))
+            throw new ErrorNombreRequerido("nombre del grupo de equipo");
+
+        if (string.IsNullOrWhiteSpace(comando.Modelo))
+            throw new ErrorNombreRequerido("modelo");
+
+        if (string.IsNullOrWhiteSpace(comando.Marca))
+            throw new ErrorNombreRequerido("marca");
+
+        if (string.IsNullOrWhiteSpace(comando.Descripcion))
+            throw new ErrorNombreRequerido("descripción");
+
+        if (string.IsNullOrWhiteSpace(comando.NombreCategoria))
+            throw new ErrorNombreRequerido("nombre de la categoría");
+
+        if (string.IsNullOrWhiteSpace(comando.UrlImagen))
+            throw new ErrorNombreRequerido("URL de la imagen");
+    }
+
+    private void ValidarEntradaEliminacion(EliminarGrupoEquipoComando comando)
+    {
+        if (comando == null)
+            throw new ArgumentNullException(nameof(comando));
+
+        if (comando.Id <= 0)
+            throw new ErrorIdInvalido("grupo de equipo");
+    }public GrupoEquipoDto? ObtenerGrupoEquipoPorId(ObtenerGrupoEquipoPorIdConsulta consulta)
     {
         try
         {
@@ -98,22 +150,48 @@ public class GrupoEquipoService : IGrupoEquipoService
     {
         try
         {
+            ValidarEntradaActualizacion(comando);
             _grupoEquipoRepository.Actualizar(comando);
         }
-        catch
+        catch (ErrorIdInvalido)
         {
             throw;
+        }
+        catch (ErrorNombreRequerido)
+        {
+            throw;
+        }
+        catch (Exception ex)
+        {
+            var parametros = new Dictionary<string, object?>
+            {
+                ["id"] = comando.Id,
+                ["nombre"] = comando.Nombre,
+                ["modelo"] = comando.Modelo,
+                ["marca"] = comando.Marca,
+                ["categoria"] = comando.NombreCategoria
+            };
+            throw PostgreSqlErrorInterpreter.InterpretarError(ex, "actualizar", "grupo de equipo", parametros);
         }
     }
     public void EliminarGrupoEquipo(EliminarGrupoEquipoComando comando)
     {
         try
         {
+            ValidarEntradaEliminacion(comando);
             _grupoEquipoRepository.Eliminar(comando.Id);
         }
-        catch
+        catch (ErrorIdInvalido)
         {
             throw;
+        }
+        catch (Exception ex)
+        {
+            var parametros = new Dictionary<string, object?>
+            {
+                ["id"] = comando.Id
+            };
+            throw PostgreSqlErrorInterpreter.InterpretarError(ex, "eliminar", "grupo de equipo", parametros);
         }
     }
     private GrupoEquipoDto MapearFilaADto(DataRow fila)

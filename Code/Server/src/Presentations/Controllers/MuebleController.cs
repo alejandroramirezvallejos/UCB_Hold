@@ -1,5 +1,6 @@
 using Microsoft.AspNetCore.Mvc;
-using API.ViewModels;
+using Shared.Common;
+
 namespace API.Controllers;
 
 [ApiController]
@@ -11,19 +12,31 @@ public class MuebleController : ControllerBase
     public MuebleController(MuebleService servicio)
     {
         this.servicio = servicio;
-    }
-
-    [HttpPost]
-    public ActionResult Crear([FromBody] CrearMuebleComando input)
+    }    [HttpPost]
+    public IActionResult Crear([FromBody] CrearMuebleComando input)
     {
         try
         {
             servicio.CrearMueble(input);
             return Created();
-        }
-        catch (Exception ex)
+        }        catch (ErrorNombreRequerido ex)
         {
-            return BadRequest($"Error al crear mueble: {ex.Message}");
+            return BadRequest(new { error = "Campo requerido", mensaje = ex.Message });
+        }
+        catch (ErrorValorNegativo ex)
+        {
+            return BadRequest(new { error = "Valor negativo", mensaje = ex.Message });
+        }
+        catch (ErrorRegistroYaExiste ex)
+        {
+            return Conflict(new { error = "Mueble duplicado", mensaje = ex.Message });
+        }
+        catch (DomainException ex)
+        {
+            return BadRequest(new { error = "Error de validación", mensaje = ex.Message });
+        }        catch (Exception)
+        {
+            return StatusCode(500, new { error = "Error interno del servidor", mensaje = "Ocurrió un error inesperado al crear el mueble" });
         }
     }
 
@@ -37,26 +50,48 @@ public class MuebleController : ControllerBase
         }
         catch (Exception ex)
         {
-            return BadRequest($"Error al obtener muebles: {ex.Message}");
+            return BadRequest(new { error = "Error interno del servidor", mensaje = $"Error al obtener muebles: {ex.Message}" });
         }
     }
 
-    [HttpPut("{id}")]
-    public ActionResult Actualizar([FromBody] ActualizarMuebleComando input)
+    [HttpPut]
+    public IActionResult Actualizar([FromBody] ActualizarMuebleComando input)
     {
         try
         {
             servicio.ActualizarMueble(input);
-            return Ok("Mueble actualizado exitosamente");
+            return Ok(new { mensaje = "Mueble actualizado exitosamente" });
         }
-        catch (Exception ex)
+        catch (ErrorIdInvalido ex)
         {
-            return BadRequest($"Error al actualizar mueble: {ex.Message}");
+            return BadRequest(new { error = "ID inválido", mensaje = ex.Message });
+        }
+        catch (ErrorNombreRequerido ex)
+        {
+            return BadRequest(new { error = "Campo requerido", mensaje = ex.Message });
+        }
+        catch (ErrorValorNegativo ex)
+        {
+            return BadRequest(new { error = "Valor negativo", mensaje = ex.Message });
+        }
+        catch (ErrorRegistroNoEncontrado ex)
+        {
+            return NotFound(new { error = "Mueble no encontrado", mensaje = ex.Message });
+        }
+        catch (ErrorRegistroYaExiste ex)
+        {
+            return Conflict(new { error = "Mueble duplicado", mensaje = ex.Message });
+        }
+        catch (DomainException ex)
+        {
+            return BadRequest(new { error = "Error de validación", mensaje = ex.Message });
+        }        catch (Exception)
+        {
+            return StatusCode(500, new { error = "Error interno del servidor", mensaje = "Ocurrió un error inesperado al actualizar el mueble" });
         }
     }
-
     [HttpDelete("{id}")]
-    public ActionResult Eliminar(int id)
+    public IActionResult Eliminar(int id)
     {
         try
         {
@@ -64,9 +99,23 @@ public class MuebleController : ControllerBase
             servicio.EliminarMueble(comando);
             return NoContent();
         }
-        catch (Exception ex)
+        catch (ErrorIdInvalido ex)
         {
-            return BadRequest($"Error al eliminar mueble: {ex.Message}");
+            return BadRequest(new { error = "ID inválido", mensaje = ex.Message });
+        }        catch (ErrorRegistroNoEncontrado)
+        {
+            return NotFound(new { error = "Mueble no encontrado", mensaje = $"No se encontró un mueble con ID {id}" });
+        }
+        catch (ErrorRegistroEnUso)
+        {
+            return Conflict(new { error = "Mueble en uso", mensaje = "No se puede eliminar el mueble porque tiene gaveteros asociados" });
+        }
+        catch (DomainException ex)
+        {
+            return BadRequest(new { error = "Error de validación", mensaje = ex.Message });
+        }        catch (Exception)
+        {
+            return StatusCode(500, new { error = "Error interno del servidor", mensaje = "Ocurrió un error inesperado al eliminar el mueble" });
         }
     }
 }

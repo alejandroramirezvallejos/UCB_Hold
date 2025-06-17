@@ -1,5 +1,6 @@
 using Microsoft.AspNetCore.Mvc;
-using API.ViewModels;
+using Shared.Common;
+
 namespace API.Controllers;
 
 [ApiController]
@@ -14,16 +15,31 @@ public class GrupoEquipoController : ControllerBase
     }
 
     [HttpPost]
-    public ActionResult Crear([FromBody] CrearGrupoEquipoComando input)
-    {
+    public IActionResult Crear([FromBody] CrearGrupoEquipoComando input)    {
         try
         {
             servicio.CrearGrupoEquipo(input);
             return Created();
         }
-        catch (Exception ex)
+        catch (ErrorNombreRequerido ex)
         {
-            return BadRequest($"Error al crear grupo de equipo: {ex.Message}");
+            return BadRequest(new { error = "Campo requerido", mensaje = ex.Message });
+        }
+        catch (ErrorRegistroYaExiste)
+        {
+            return Conflict(new { error = "Grupo de equipo duplicado", mensaje = $"Ya existe un grupo de equipo con ese nombre y características" });
+        }
+        catch (ErrorReferenciaInvalida ex)
+        {
+            return BadRequest(new { error = "Referencia inválida", mensaje = ex.Message });
+        }
+        catch (DomainException ex)
+        {
+            return BadRequest(new { error = "Error de validación", mensaje = ex.Message });
+        }
+        catch (Exception)
+        {
+            return StatusCode(500, new { error = "Error interno del servidor", mensaje = "Ocurrió un error inesperado al crear el grupo de equipo" });
         }
     }
 
@@ -37,7 +53,7 @@ public class GrupoEquipoController : ControllerBase
         }
         catch (Exception ex)
         {
-            return BadRequest($"Error al obtener grupos de equipo: {ex.Message}");
+            return BadRequest(new { error = "Error interno del servidor", mensaje = $"Error al obtener grupos de equipo: {ex.Message}" });
         }
     }
 
@@ -53,7 +69,7 @@ public class GrupoEquipoController : ControllerBase
         }
         catch (Exception ex)
         {
-            return BadRequest($"Error al obtener grupo de equipo por ID: {ex.Message}");
+            return BadRequest(new { error = "Error interno del servidor", mensaje = $"Error al obtener grupo de equipo por ID: {ex.Message}" });
         }
     }
 
@@ -68,56 +84,74 @@ public class GrupoEquipoController : ControllerBase
         }
         catch (Exception ex)
         {
-            return BadRequest($"Error al buscar grupos de equipo: {ex.Message}");
-        }
+            return BadRequest(new { error = "Error interno del servidor", mensaje = $"Error al buscar grupos de equipo: {ex.Message}" });        }
     }
 
-    [HttpPut("{id}")]
-    public ActionResult Actualizar(int id, [FromBody] GrupoEquipoRequestDto dto)
-    {
+    [HttpPut]
+    public IActionResult Actualizar([FromBody] ActualizarGrupoEquipoComando comando)    {
         try
         {
-            if (id <= 0)
-                return BadRequest("El ID debe ser mayor a 0");
-
-            if (dto == null)
-                return BadRequest("Los datos del grupo de equipo son requeridos");
-
-            var comando = new ActualizarGrupoEquipoComando(
-                id,
-                dto.Nombre,
-                dto.Modelo,
-                dto.Marca,
-                dto.Descripcion,
-                dto.NombreCategoria,
-                dto.UrlDataSheet,
-                dto.UrlImagen
-            );
-
+            if (comando == null)
+                return BadRequest(new { error = "Datos requeridos", mensaje = "Los datos del grupo de equipo son requeridos" });
             servicio.ActualizarGrupoEquipo(comando);
-            return Ok("Grupo de equipo actualizado exitosamente");
+            return Ok(new { mensaje = "Grupo de equipo actualizado exitosamente" });
         }
-        catch (Exception ex)
+        catch (ErrorIdInvalido ex)
         {
-            return BadRequest($"Error al actualizar grupo de equipo: {ex.Message}");
+            return BadRequest(new { error = "ID inválido", mensaje = ex.Message });
+        }
+        catch (ErrorNombreRequerido ex)
+        {
+            return BadRequest(new { error = "Campo requerido", mensaje = ex.Message });
+        }
+        catch (ErrorRegistroNoEncontrado ex)
+        {
+            return NotFound(new { error = "Grupo de equipo no encontrado", mensaje = ex.Message });
+        }
+        catch (ErrorRegistroYaExiste ex)
+        {
+            return Conflict(new { error = "Grupo de equipo duplicado", mensaje = ex.Message });
+        }
+        catch (ErrorReferenciaInvalida ex)
+        {
+            return BadRequest(new { error = "Referencia inválida", mensaje = ex.Message });
+        }
+        catch (DomainException ex)
+        {
+            return BadRequest(new { error = "Error de validación", mensaje = ex.Message });
+        }
+        catch (Exception)
+        {
+            return StatusCode(500, new { error = "Error interno del servidor", mensaje = "Ocurrió un error inesperado al actualizar el grupo de equipo" });
         }
     }
 
     [HttpDelete("{id}")]
-    public ActionResult Eliminar(int id)
+    public IActionResult Eliminar(int id)
     {
         try
         {
-            if (id <= 0)
-                return BadRequest("El ID debe ser mayor a 0");
-
             var comando = new EliminarGrupoEquipoComando(id);
             servicio.EliminarGrupoEquipo(comando);
             return NoContent();
         }
-        catch (Exception ex)
+        catch (ErrorIdInvalido ex)
         {
-            return BadRequest($"Error al eliminar grupo de equipo: {ex.Message}");
+            return BadRequest(new { error = "ID inválido", mensaje = ex.Message });
+        }        catch (ErrorRegistroNoEncontrado)
+        {
+            return NotFound(new { error = "Grupo de equipo no encontrado", mensaje = $"No se encontró un grupo de equipo con ID {id}" });
+        }
+        catch (ErrorRegistroEnUso)
+        {
+            return Conflict(new { error = "Grupo de equipo en uso", mensaje = "No se puede eliminar el grupo de equipo porque tiene equipos asociados o préstamos activos" });
+        }
+        catch (DomainException ex)
+        {
+            return BadRequest(new { error = "Error de validación", mensaje = ex.Message });
+        }        catch (Exception)
+        {
+            return StatusCode(500, new { error = "Error interno del servidor", mensaje = "Ocurrió un error inesperado al eliminar el grupo de equipo" });
         }
     }
 }

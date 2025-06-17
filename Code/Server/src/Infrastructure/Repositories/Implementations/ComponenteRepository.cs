@@ -1,4 +1,6 @@
 using System.Data;
+using Npgsql;
+using Shared.Common;
 public class ComponenteRepository : IComponenteRepository
 {
     private readonly ExecuteQuery _ejecutarConsulta;
@@ -29,15 +31,13 @@ public class ComponenteRepository : IComponenteRepository
             ["descripcion"] = comando.Descripcion ?? (object)DBNull.Value,
             ["precioReferencia"] = comando.PrecioReferencia ?? (object)DBNull.Value,
             ["urlDataSheet"] = comando.UrlDataSheet ?? (object)DBNull.Value
-        };
-        try
+        };          try
         {
             _ejecutarConsulta.EjecutarSpNR(sql, parametros);
         }
         catch (Exception ex)
         {
-            var innerError = ex.InnerException?.Message ?? ex.Message;
-            throw new Exception($"Error en BD al crear componente: {innerError}. SQL: {sql}. Parámetros: nombre={comando.Nombre}, modelo={comando.Modelo}, codigoIMT={comando.CodigoIMT}", ex);
+            throw PostgreSqlErrorInterpreter.InterpretarError(ex, "crear", "componente", parametros);
         }
     }
     public void Actualizar(ActualizarComponenteComando comando)
@@ -63,52 +63,43 @@ public class ComponenteRepository : IComponenteRepository
             ["descripcion"] = comando.Descripcion ?? (object)DBNull.Value,
             ["precioReferencia"] = comando.PrecioReferencia ?? (object)DBNull.Value,
             ["urlDataSheet"] = comando.UrlDataSheet ?? (object)DBNull.Value
-        };
-        try
+        };        try
         {
             _ejecutarConsulta.EjecutarSpNR(sql, parametros);
         }
         catch (Exception ex)
         {
-            var innerError = ex.InnerException?.Message ?? ex.Message;
-            throw new Exception($"Error en BD al actualizar componente: {innerError}. SQL: {sql}. Parámetros: id={comando.Id}, nombre={comando.Nombre}", ex);
+            throw PostgreSqlErrorInterpreter.InterpretarError(ex, "actualizar", "componente", parametros);
         }
     }
 
     public void Eliminar(int id)
-    {
-        const string sql = @"
+    {        const string sql = @"
             CALL public.eliminar_componente(
 	        @id
-            )";        try
+            )";
+        
+        var parametros = new Dictionary<string, object?>
         {
-            _ejecutarConsulta.EjecutarSpNR(sql, new Dictionary<string, object?>
-            {
-                ["id"] = id
-            });
+            ["id"] = id
+        };
+          try
+        {
+            _ejecutarConsulta.EjecutarSpNR(sql, parametros);
         }
         catch (Exception ex)
         {
-            var innerError = ex.InnerException?.Message ?? ex.Message;
-            throw new Exception($"Error en BD al eliminar componente: {innerError}. SQL: {sql}. Parámetros: id={id}", ex);
+            throw PostgreSqlErrorInterpreter.InterpretarError(ex, "eliminar", "componente", parametros);
         }
-    }
+    }    
     public DataTable ObtenerTodos()
     {
         const string sql = @"
             SELECT * from public.obtener_componentes()
         ";
 
-        try
-        {
-            DataTable dt = _ejecutarConsulta.EjecutarFuncion(sql, new Dictionary<string, object?>());
-            return dt;
-        }
-        catch (Exception ex)
-        {
-            var innerError = ex.InnerException?.Message ?? ex.Message;
-            throw new Exception($"Error en BD al obtener componentes: {innerError}. SQL: {sql}", ex);
-        }
+        DataTable dt = _ejecutarConsulta.EjecutarFuncion(sql, new Dictionary<string, object?>());
+        return dt;
     }
     
 }

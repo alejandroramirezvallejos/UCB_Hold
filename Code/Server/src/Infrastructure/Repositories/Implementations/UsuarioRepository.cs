@@ -1,4 +1,6 @@
 using System.Data;
+using Npgsql;
+using Shared.Common;
 
 public class UsuarioRepository : IUsuarioRepository
 {
@@ -37,15 +39,13 @@ public class UsuarioRepository : IUsuarioRepository
             ["telefonoReferencia"] = comando.TelefonoReferencia ?? (object)DBNull.Value,
             ["nombreReferencia"] = comando.NombreReferencia ?? (object)DBNull.Value,
             ["emailReferencia"] = comando.EmailReferencia ?? (object)DBNull.Value
-        };
-        try
+        };          try
         {
             _ejecutarConsulta.EjecutarSpNR(sql, parametros);
         }
         catch (Exception ex)
         {
-            var innerError = ex.InnerException?.Message ?? ex.Message;
-            throw new Exception($"Error en BD al crear usuario: {innerError}. SQL: {sql}. Parámetros: carnet={comando.Carnet}, email={comando.Email}", ex);
+            throw PostgreSqlErrorInterpreter.InterpretarError(ex, "crear", "usuario", parametros);
         }
     }
 
@@ -81,42 +81,39 @@ public class UsuarioRepository : IUsuarioRepository
             ["telefonoReferencia"] = comando.TelefonoReferencia,
             ["nombreReferencia"] = comando.NombreReferencia,
             ["emailReferencia"] = comando.EmailReferencia
-        };
-        try
+        };          try
         {
             _ejecutarConsulta.EjecutarSpNR(sql, parametros);
         }
         catch (Exception ex)
         {
-            var innerError = ex.InnerException?.Message ?? ex.Message;
-            throw new Exception($"Error en BD al actualizar usuario: {innerError}. SQL: {sql}. Parámetros: carnet={comando.Carnet}, email={comando.Email}", ex);
+            throw PostgreSqlErrorInterpreter.InterpretarError(ex, "actualizar", "usuario", parametros);
         }
     }
 
     public void Eliminar(string carnet)
-    {
-        const string sql = @"
+    {        const string sql = @"
         CALL public.eliminar_usuario(
 	    @carnet
         )";
-        try
+        
+        var parametros = new Dictionary<string, object?>
         {
-            _ejecutarConsulta.EjecutarSpNR(sql, new Dictionary<string, object?>
-            {
-                ["carnet"] = carnet
-            });
+            ["carnet"] = carnet
+        };
+          try
+        {
+            _ejecutarConsulta.EjecutarSpNR(sql, parametros);
         }
         catch (Exception ex)
         {
-            var innerError = ex.InnerException?.Message ?? ex.Message;
-            throw new Exception($"Error en BD al eliminar usuario: {innerError}. SQL: {sql}. Parámetros: carnet={carnet}", ex);
+            throw PostgreSqlErrorInterpreter.InterpretarError(ex, "eliminar", "usuario", parametros);
         }
-    }
-
-    public DataTable ObtenerTodos()
+    }      public DataTable ObtenerTodos()
     {
         const string sql = @"
         SELECT * from public.obtener_usuarios()";
+
         try
         {
             var dt = _ejecutarConsulta.EjecutarFuncion(sql, new Dictionary<string, object?>());
@@ -124,11 +121,9 @@ public class UsuarioRepository : IUsuarioRepository
         }
         catch (Exception ex)
         {
-            var innerError = ex.InnerException?.Message ?? ex.Message;
-            throw new Exception($"Error en BD al obtener usuarios: {innerError}. SQL: {sql}", ex);
+            throw PostgreSqlErrorInterpreter.InterpretarError(ex, "obtener", "usuarios", new Dictionary<string, object?>());
         }
     }
-
     public DataTable? ObtenerPorEmailYContrasena(string email, string contrasena)
     {
         const string sql = @"
@@ -136,13 +131,15 @@ public class UsuarioRepository : IUsuarioRepository
             @email,
             @contrasena
         )";
-        try
+        
+        var parametros = new Dictionary<string, object?>
         {
-            var dt = _ejecutarConsulta.EjecutarFuncion(sql, new Dictionary<string, object?>
-            {
-                ["email"] = email,
-                ["contrasena"] = contrasena
-            });
+            ["email"] = email,
+            ["contrasena"] = contrasena
+        };
+          try
+        {
+            var dt = _ejecutarConsulta.EjecutarFuncion(sql, parametros);
 
             if (dt.Rows.Count == 0)
                 return null;
@@ -151,8 +148,7 @@ public class UsuarioRepository : IUsuarioRepository
         }
         catch (Exception ex)
         {
-            var innerError = ex.InnerException?.Message ?? ex.Message;
-            throw new Exception($"Error en BD al obtener usuario por email y contraseña: {innerError}. SQL: {sql}. Parámetros: email={email}", ex);
+            throw PostgreSqlErrorInterpreter.InterpretarError(ex, "obtener", "usuario", parametros);
         }
     }
 }

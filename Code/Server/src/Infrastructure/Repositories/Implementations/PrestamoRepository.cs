@@ -1,4 +1,6 @@
 using System.Data;
+using Npgsql;
+using Shared.Common;
 
 public class PrestamoRepository : IPrestamoRepository
 {
@@ -26,42 +28,39 @@ public class PrestamoRepository : IPrestamoRepository
             ["observacion"] = comando.Observacion ?? (object)DBNull.Value,
             ["carnetUsuario"] = comando.CarnetUsuario ?? (object)DBNull.Value,
             ["contrato"] = comando.Contrato ?? (object)DBNull.Value
-        };
-        try
+        };          try
         {
             _ejecutarConsulta.EjecutarSpNR(sql, parametros);
         }
         catch (Exception ex)
         {
-            var innerError = ex.InnerException?.Message ?? ex.Message;
-            throw new Exception($"Error en BD al crear préstamo: {innerError}. SQL: {sql}. Parámetros: carnetUsuario={comando.CarnetUsuario}, fechaPrestamoEsperada={comando.FechaPrestamoEsperada}", ex);
+            throw PostgreSqlErrorInterpreter.InterpretarError(ex, "crear", "préstamo", parametros);
         }
     }
     public void Eliminar(int id)
-    {
-        const string sql = @"
+    {        const string sql = @"
         CALL public.eliminar_prestamo(
 	    @id
         )";
-        try
+        
+        var parametros = new Dictionary<string, object?>
         {
-            _ejecutarConsulta.EjecutarSpNR(sql, new Dictionary<string, object?>
-            {
-                ["id"] = id
-            });
+            ["id"] = id
+        };
+          try
+        {
+            _ejecutarConsulta.EjecutarSpNR(sql, parametros);
         }
         catch (Exception ex)
         {
-            var innerError = ex.InnerException?.Message ?? ex.Message;
-            throw new Exception($"Error en BD al eliminar préstamo: {innerError}. SQL: {sql}. Parámetros: id={id}", ex);
+            throw PostgreSqlErrorInterpreter.InterpretarError(ex, "eliminar", "préstamo", parametros);
         }
-    }
-
-    public DataTable ObtenerTodos()
+    }      public DataTable ObtenerTodos()
     {
         const string sql = @"
             SELECT * from public.obtener_prestamos()
         ";
+
         try
         {
             DataTable dt = _ejecutarConsulta.EjecutarFuncion(sql, new Dictionary<string, object?>());
@@ -69,8 +68,7 @@ public class PrestamoRepository : IPrestamoRepository
         }
         catch (Exception ex)
         {
-            var innerError = ex.InnerException?.Message ?? ex.Message;
-            throw new Exception($"Error en BD al obtener préstamos: {innerError}. SQL: {sql}", ex);
+            throw PostgreSqlErrorInterpreter.InterpretarError(ex, "obtener", "préstamos", new Dictionary<string, object?>());
         }
     }
 }

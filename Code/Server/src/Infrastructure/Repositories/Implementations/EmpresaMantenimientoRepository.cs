@@ -1,4 +1,6 @@
 using System.Data;
+using Npgsql;
+using Shared.Common;
 
 public class EmpresaMantenimientoRepository : IEmpresaMantenimientoRepository
 {
@@ -27,18 +29,16 @@ public class EmpresaMantenimientoRepository : IEmpresaMantenimientoRepository
             ["apellidoResponsable"] = comando.ApellidoResponsable ?? (object)DBNull.Value,
             ["telefono"] = comando.Telefono ?? (object)DBNull.Value,
             ["direccion"] = comando.Direccion ?? (object)DBNull.Value,
-            ["nit"] = comando.Nit ?? (object)DBNull.Value
-        };        try
+            ["nit"] = comando.Nit ?? (object)DBNull.Value        };
+          try
         {
             _ejecutarConsulta.EjecutarSpNR(sql, parametros);
         }
         catch (Exception ex)
         {
-            var innerError = ex.InnerException?.Message ?? ex.Message;
-            throw new Exception($"Error en BD al crear empresa de mantenimiento: {innerError}. SQL: {sql}. Parámetros: nombre={comando.NombreEmpresa}, nit={comando.Nit}", ex);
+            throw PostgreSqlErrorInterpreter.InterpretarError(ex, "crear", "empresa de mantenimiento", parametros);
         }
     }
-
 
     public void Actualizar(ActualizarEmpresaMantenimientoComando comando)
     {
@@ -62,52 +62,42 @@ public class EmpresaMantenimientoRepository : IEmpresaMantenimientoRepository
             ["telefono"] = comando.Telefono ?? (object)DBNull.Value,
             ["direccion"] = comando.Direccion ?? (object)DBNull.Value,
             ["nit"] = comando.Nit ?? (object)DBNull.Value
-        };
-        try
+        };        try
         {
             _ejecutarConsulta.EjecutarSpNR(sql, parametros);
         }
         catch (Exception ex)
         {
-            var innerError = ex.InnerException?.Message ?? ex.Message;
-            throw new Exception($"Error en BD al actualizar empresa de mantenimiento: {innerError}. SQL: {sql}. Parámetros: id={comando.Id}, nombre={comando.NombreEmpresa}", ex);
+            throw PostgreSqlErrorInterpreter.InterpretarError(ex, "actualizar", "empresa de mantenimiento", parametros);
         }
     }
 
     public void Eliminar(int id)
-    {
-        const string sql = @"
+    {        const string sql = @"
         CALL public.eliminar_empresas_mantenimiento(
 	    @id
         )";
-        try
+        
+        var parametros = new Dictionary<string, object?>
         {
-            _ejecutarConsulta.EjecutarSpNR(sql, new Dictionary<string, object?>
-            {
-                ["id"] = id
-            });
+            ["id"] = id
+        };
+          try
+        {
+            _ejecutarConsulta.EjecutarSpNR(sql, parametros);
         }
         catch (Exception ex)
         {
-            var innerError = ex.InnerException?.Message ?? ex.Message;
-            throw new Exception($"Error en BD al eliminar empresa de mantenimiento: {innerError}. SQL: {sql}. Parámetros: id={id}", ex);
+            throw PostgreSqlErrorInterpreter.InterpretarError(ex, "eliminar", "empresa de mantenimiento", parametros);
         }
-    }
-
+    }    
     public DataTable ObtenerTodos()
     {
         const string sql = @"
         SELECT * from public.obtener_empresas_mantenimiento()
         ";
-        try
-        {
-            DataTable dt = _ejecutarConsulta.EjecutarFuncion(sql, new Dictionary<string, object?>());
-            return dt;
-        }
-        catch (Exception ex)
-        {
-            var innerError = ex.InnerException?.Message ?? ex.Message;
-            throw new Exception($"Error en BD al obtener empresas de mantenimiento: {innerError}. SQL: {sql}", ex);
-        }
+
+        DataTable dt = _ejecutarConsulta.EjecutarFuncion(sql, new Dictionary<string, object?>());
+        return dt;
     }
 }

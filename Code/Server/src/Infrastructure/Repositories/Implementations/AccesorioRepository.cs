@@ -1,4 +1,6 @@
 using System.Data;
+using Npgsql;
+using Shared.Common;
 
 public class AccesorioRepository : IAccesorioRepository
 {
@@ -30,16 +32,14 @@ public class AccesorioRepository : IAccesorioRepository
             ["codigoImt"]   = comando.CodigoIMT,
             ["descripcion"] = comando.Descripcion ?? (object)DBNull.Value,
             ["precio"]      = comando.Precio ?? (object)DBNull.Value,
-            ["urlDataSheet"] = comando.UrlDataSheet ?? (object)DBNull.Value
-        };
-        try
+            ["urlDataSheet"] = comando.UrlDataSheet ?? (object)DBNull.Value        
+        };        try
         {
             _ejecutarConsulta.EjecutarSpNR(sql, parametros);
         }
         catch (Exception ex)
         {
-            var innerError = ex.InnerException?.Message ?? ex.Message;
-            throw new Exception($"Error en BD al crear accesorio: {innerError}. SQL: {sql}. Parámetros: nombre={comando.Nombre}, codigoIMT={comando.CodigoIMT}", ex);
+            throw PostgreSqlErrorInterpreter.InterpretarError(ex, "crear", "accesorio", parametros);
         }
     }
 
@@ -76,15 +76,13 @@ public class AccesorioRepository : IAccesorioRepository
             ["codigoImt"]   = comando.CodigoIMT ?? (object)DBNull.Value,
             ["descripcion"] = comando.Descripcion ?? (object)DBNull.Value,
             ["precio"]      = comando.Precio ?? (object)DBNull.Value,
-            ["urlDataSheet"] = comando.UrlDataSheet ?? (object)DBNull.Value
-        };
-        try
+            ["urlDataSheet"] = comando.UrlDataSheet ?? (object)DBNull.Value        };        try
         {
             _ejecutarConsulta.EjecutarSpNR(sql, parametros);
         }
         catch (Exception ex)
         {
-            throw new Exception("Error al actualizar el accesorio", ex);
+            throw PostgreSqlErrorInterpreter.InterpretarError(ex, "actualizar", "accesorio", parametros);
         }
     }
 
@@ -94,16 +92,18 @@ public class AccesorioRepository : IAccesorioRepository
         CALL public.eliminar_accesorio(
 	    @id
         )";
-        try
+        
+        var parametros = new Dictionary<string, object?>
         {
-            _ejecutarConsulta.EjecutarSpNR(sql, new Dictionary<string, object?>
-            {
-                ["id"] = id
-            });
+            ["id"] = id
+        };
+          try
+        {
+            _ejecutarConsulta.EjecutarSpNR(sql, parametros);
         }
         catch (Exception ex)
         {
-            throw new Exception("Error al eliminar el accesorio", ex);
+            throw PostgreSqlErrorInterpreter.InterpretarError(ex, "eliminar", "accesorio", parametros);
         }
     }
 }
