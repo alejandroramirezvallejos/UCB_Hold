@@ -43,23 +43,7 @@ export class MantenimientoService {
     );
 
   }
-  //NO ESTA EN SWAGGER
-  editarMantenimiento(mantenimiento: any) {
-    const envio = {
-      Id: mantenimiento.Id,
-      FechaMantenimiento: mantenimiento.FechaMantenimiento,
-      FechaFinalDeMantenimiento: mantenimiento.FechaFinalDeMantenimiento,
-      NombreEmpresaMantenimiento: mantenimiento.NombreEmpresaMantenimiento,
-      Costo: mantenimiento.Costo,
-      DescripcionMantenimiento: mantenimiento.DescripcionMantenimiento,
-      CodigoIMT: mantenimiento.CodigoIMT,
-      TipoMantenimiento: mantenimiento.TipoMantenimiento,
-      DescripcionEquipo: mantenimiento.DescripcionEquipo
-    };
-
-    return this.http.put<any>(`${this.apiUrl}/${mantenimiento.Id}`, envio);
-  }
-
+  
 
   eliminarMantenimiento(id: number) {
     return this.http.delete<any>(`${this.apiUrl}/${id}`);

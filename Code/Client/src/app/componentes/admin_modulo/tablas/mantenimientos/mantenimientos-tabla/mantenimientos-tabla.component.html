@@ -86,9 +86,6 @@
               <button class="btn-icon btn-delete" (click)="eliminarMantenimiento(mantenimiento)">
                 <i class="fas fa-trash-alt"></i>
               </button>
-              <button class="btn-icon btn-edit" (click)="editarMantenimiento(mantenimiento)">
-                <i class="fas fa-pencil-alt"></i>
-              </button>
             </td>
           </tr>  
         }
@@ -126,10 +123,3 @@
   ></app-mantenimientos-crear>
 }
 
-@if(botoneditar()){
-  <app-mantenimientos-editar
-  [botoneditar]="botoneditar"
-  [mantenimientoOriginal]="mantenimientoSeleccionado"
-  (actualizar)="cargarMantenimientos()"
-  ></app-mantenimientos-editar>
-}

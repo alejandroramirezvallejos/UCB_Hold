@@ -3,20 +3,18 @@ import { CommonModule } from '@angular/common';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { Mantenimientos } from '../../../../../models/admin/Mantenimientos';
 import { MantenimientosCrearComponent } from '../mantenimientos-crear/mantenimientos-crear.component';
-import { MantenimientosEditarComponent } from '../mantenimientos-editar/mantenimientos-editar.component';
 import { MantenimientoService } from '../../../../../services/APIS/Mantenimiento/mantenimiento.service';
 
 @Component({
   selector: 'app-mantenimientos-tabla',
   standalone: true,
-  imports: [CommonModule, FormsModule, ReactiveFormsModule, MantenimientosCrearComponent, MantenimientosEditarComponent],
+  imports: [CommonModule, FormsModule, ReactiveFormsModule, MantenimientosCrearComponent],
   templateUrl: './mantenimientos-tabla.component.html',
   styleUrl: './mantenimientos-tabla.component.css'
 })
 export class MantenimientosTablaComponent implements OnInit {
 
   botoncrear: WritableSignal<boolean> = signal(false);
-  botoneditar: WritableSignal<boolean> = signal(false);
 
   alertaeliminar: boolean = false;
   mantenimientos: Mantenimientos[] = [];
@@ -102,11 +100,7 @@ export class MantenimientosTablaComponent implements OnInit {
     this.aplicarBusqueda();
   }
 
-  editarMantenimiento(mantenimiento: Mantenimientos) {
-    this.botoncrear.set(false);
-    this.mantenimientoSeleccionado = { ...mantenimiento };
-    this.botoneditar.set(true);
-  }
+
 
   eliminarMantenimiento(mantenimiento: Mantenimientos) {
     this.mantenimientoSeleccionado = mantenimiento;
