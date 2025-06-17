@@ -17,13 +17,17 @@ public class AccesorioService : IAccesorioService
         }
         catch (ErrorNombreRequerido)
         {
+            throw;
+        }
+        catch (ErrorModeloRequerido)
+        {
             throw; 
         }
         catch (ErrorLongitudInvalida)
         {
             throw; // Re-lanzar excepciones de validación
         }
-        catch (ErrorIdInvalido)
+        catch (ErrorCodigoImtRequerido)
         {
             throw; // Re-lanzar excepciones de validación
         }
@@ -48,18 +52,16 @@ public class AccesorioService : IAccesorioService
     {
         if (comando == null)
             throw new ArgumentNullException(nameof(comando));
-
         if (string.IsNullOrWhiteSpace(comando.Nombre))
-            throw new ErrorNombreRequerido("nombre del accesorio");
-
-        if (comando.Nombre.Length > 100)
-            throw new ErrorLongitudInvalida("nombre del accesorio", 100);
-
+            throw new ErrorNombreRequerido();
+        if (string.IsNullOrWhiteSpace(comando.Modelo))
+            throw new ErrorModeloRequerido();
+        if (comando.Nombre.Length > 256)
+            throw new ErrorLongitudInvalida("nombre del accesorio", 256);
         if (comando.CodigoIMT <= 0)
-            throw new ErrorIdInvalido("código IMT");
-
+            throw new ErrorCodigoImtRequerido();
         if (comando.Precio.HasValue && comando.Precio.Value < 0)
-            throw new ErrorValorNegativo("precio", comando.Precio.Value);
+            throw new ErrorValorNegativo("precio");
     }
     public List<AccesorioDto>? ObtenerTodosAccesorios()
     {
@@ -82,7 +84,15 @@ public class AccesorioService : IAccesorioService
             ValidarEntradaActualizacion(comando);
             _accesorioRepository.Actualizar(comando);
         }
+        catch (ErrorIdInvalido)
+        {
+            throw;
+        }
         catch (ErrorNombreRequerido)
+        {
+            throw;
+        }
+        catch (ErrorModeloRequerido)
         {
             throw;
         }
@@ -90,7 +100,7 @@ public class AccesorioService : IAccesorioService
         {
             throw;
         }
-        catch (ErrorIdInvalido)
+        catch (ErrorCodigoImtRequerido)
         {
             throw;
         }
@@ -108,7 +118,7 @@ public class AccesorioService : IAccesorioService
             };
             throw PostgreSqlErrorInterpreter.InterpretarError(ex, "actualizar", "accesorio", parametros);
         }
-    }    public void EliminarAccesorio(EliminarAccesorioComando comando)
+    }public void EliminarAccesorio(EliminarAccesorioComando comando)
     {
         try
         {
@@ -147,29 +157,27 @@ public class AccesorioService : IAccesorioService
     {
         if (comando == null)
             throw new ArgumentNullException(nameof(comando));
-
         if (comando.Id <= 0)
-            throw new ErrorIdInvalido("ID del accesorio");
+            throw new ErrorIdInvalido();
 
         if (string.IsNullOrWhiteSpace(comando.Nombre))
-            throw new ErrorNombreRequerido("nombre del accesorio");
+            throw new ErrorNombreRequerido();
 
         if (comando.Nombre.Length > 100)
             throw new ErrorLongitudInvalida("nombre del accesorio", 100);
 
         if (comando.CodigoIMT <= 0)
-            throw new ErrorIdInvalido("código IMT");
+            throw new ErrorCodigoImtRequerido();
 
         if (comando.Precio.HasValue && comando.Precio.Value < 0)
-            throw new ErrorValorNegativo("precio", comando.Precio.Value);
+            throw new ErrorValorNegativo("precio");
     }
 
     private void ValidarEntradaEliminacion(EliminarAccesorioComando comando)
     {
         if (comando == null)
             throw new ArgumentNullException(nameof(comando));
-
         if (comando.Id <= 0)
-            throw new ErrorIdInvalido("ID del accesorio");
+            throw new ErrorIdInvalido();
     }
 }

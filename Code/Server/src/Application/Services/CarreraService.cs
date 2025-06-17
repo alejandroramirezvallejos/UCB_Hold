@@ -31,18 +31,16 @@ public class CarreraService : ICarreraService
             };
             throw PostgreSqlErrorInterpreter.InterpretarError(ex, "crear", "carrera", parametros);
         }
-    }
-
-    private void ValidarEntradaCreacion(CrearCarreraComando comando)
+    }    private void ValidarEntradaCreacion(CrearCarreraComando comando)
     {
         if (comando == null)
             throw new ArgumentNullException(nameof(comando));
 
         if (string.IsNullOrWhiteSpace(comando.Nombre))
-            throw new ErrorNombreRequerido("nombre de la carrera");
+            throw new ErrorNombreRequerido();
 
-        if (comando.Nombre.Length > 100)
-            throw new ErrorLongitudInvalida("nombre de la carrera", 100);
+        if (comando.Nombre.Length > 256)
+            throw new ErrorLongitudInvalida("nombre de la carrera", 256);
     }
     public List<CarreraDto>? ObtenerTodasCarreras()
     {
@@ -94,15 +92,14 @@ public class CarreraService : ICarreraService
     {
         if (comando == null)
             throw new ArgumentNullException(nameof(comando));
-
         if (comando.Id <= 0)
-            throw new ErrorIdInvalido("ID de la carrera");
+            throw new ErrorIdInvalido();
 
         if (string.IsNullOrWhiteSpace(comando.Nombre))
-            throw new ErrorNombreRequerido("nombre de la carrera");
+            throw new ErrorNombreRequerido();
 
-        if (comando.Nombre.Length > 100)
-            throw new ErrorLongitudInvalida("nombre de la carrera", 100);
+        if (comando.Nombre.Length > 256)
+            throw new ErrorLongitudInvalida("nombre de la carrera", 256);
     }    public void EliminarCarrera(EliminarCarreraComando comando)
     {
         try
@@ -128,9 +125,8 @@ public class CarreraService : ICarreraService
     {
         if (comando == null)
             throw new ArgumentNullException(nameof(comando));
-
         if (comando.Id <= 0)
-            throw new ErrorIdInvalido("ID de la carrera");
+            throw new ErrorIdInvalido();
     }
     private CarreraDto MapearFilaADto(DataRow fila)
     {

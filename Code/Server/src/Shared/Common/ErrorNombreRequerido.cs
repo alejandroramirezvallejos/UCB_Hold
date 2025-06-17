@@ -7,10 +7,5 @@ namespace Shared.Common
         public ErrorNombreRequerido() : base("El nombre es requerido")
         {
         }
-
-        public ErrorNombreRequerido(string campo) 
-            : base($"El {campo} es requerido")
-        {
-        }
     }
 }

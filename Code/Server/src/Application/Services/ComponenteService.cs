@@ -25,6 +25,14 @@ public class ComponenteService : IComponenteService
         {
             throw;
         }
+        catch (ErrorModeloRequerido)
+        {
+            throw;
+        }
+        catch (ErrorCodigoImtRequerido)
+        {
+            throw;
+        }
         catch (ErrorValorNegativo)
         {
             throw;
@@ -47,19 +55,19 @@ public class ComponenteService : IComponenteService
             throw new ArgumentNullException(nameof(comando));
 
         if (string.IsNullOrWhiteSpace(comando.Nombre))
-            throw new ErrorNombreRequerido("nombre del componente");
-
-        if (comando.Nombre.Length > 100)
-            throw new ErrorLongitudInvalida("nombre del componente", 100);
-
-        if (!string.IsNullOrWhiteSpace(comando.Modelo) && comando.Modelo.Length > 50)
-            throw new ErrorLongitudInvalida("modelo del componente", 50);
+            throw new ErrorNombreRequerido();
+        if (comando.Nombre.Length > 255)
+            throw new ErrorLongitudInvalida("nombre", 255);
+        if(string.IsNullOrWhiteSpace(comando.Modelo))
+            throw new ErrorModeloRequerido();
+        if (comando.Modelo.Length > 255)
+            throw new ErrorLongitudInvalida("modelo", 255);
 
         if (comando.CodigoIMT <= 0)
-            throw new ErrorIdInvalido("código IMT");
+            throw new ErrorCodigoImtRequerido();
 
         if (comando.PrecioReferencia.HasValue && comando.PrecioReferencia.Value < 0)
-            throw new ErrorValorNegativo("precio de referencia", comando.PrecioReferencia.Value);
+            throw new ErrorValorNegativo("precio de referencia");
     }
     public List<ComponenteDto>? ObtenerTodosComponentes()
     {
@@ -94,6 +102,13 @@ public class ComponenteService : IComponenteService
             throw;
         }
         catch (ErrorLongitudInvalida)
+        {
+            throw;
+        }catch (ErrorModeloRequerido)
+        {
+            throw;
+        }
+        catch (ErrorCodigoImtRequerido)
         {
             throw;
         }
@@ -132,39 +147,36 @@ public class ComponenteService : IComponenteService
             };
             throw PostgreSqlErrorInterpreter.InterpretarError(ex, "eliminar", "componente", parametros);
         }
-    }
-
-    private void ValidarEntradaActualizacion(ActualizarComponenteComando comando)
+    }    private void ValidarEntradaActualizacion(ActualizarComponenteComando comando)
     {
         if (comando == null)
             throw new ArgumentNullException(nameof(comando));
 
         if (comando.Id <= 0)
-            throw new ErrorIdInvalido("ID del componente");
+            throw new ErrorIdInvalido();
 
         if (string.IsNullOrWhiteSpace(comando.Nombre))
-            throw new ErrorNombreRequerido("nombre del componente");
+            throw new ErrorNombreRequerido();
 
         if (comando.Nombre.Length > 100)
-            throw new ErrorLongitudInvalida("nombre del componente", 100);
-
-        if (!string.IsNullOrWhiteSpace(comando.Modelo) && comando.Modelo.Length > 50)
-            throw new ErrorLongitudInvalida("modelo del componente", 50);
+            throw new ErrorLongitudInvalida("nombre", 100);
+        if (string.IsNullOrWhiteSpace(comando.Modelo))
+            throw new ErrorModeloRequerido();
+        if (comando.Modelo.Length > 50)
+            throw new ErrorLongitudInvalida("modelo", 50);
 
         if (comando.CodigoIMT <= 0)
-            throw new ErrorIdInvalido("código IMT");
+            throw new ErrorCodigoImtRequerido();
 
         if (comando.PrecioReferencia.HasValue && comando.PrecioReferencia.Value < 0)
-            throw new ErrorValorNegativo("precio de referencia", comando.PrecioReferencia.Value);
-    }
-
-    private void ValidarEntradaEliminacion(EliminarComponenteComando comando)
+            throw new ErrorValorNegativo("precio de referencia");
+    }    private void ValidarEntradaEliminacion(EliminarComponenteComando comando)
     {
         if (comando == null)
             throw new ArgumentNullException(nameof(comando));
 
         if (comando.Id <= 0)
-            throw new ErrorIdInvalido("ID del componente");
+            throw new ErrorIdInvalido();
     }
     private static ComponenteDto MapearFilaADto(DataRow fila)
     {

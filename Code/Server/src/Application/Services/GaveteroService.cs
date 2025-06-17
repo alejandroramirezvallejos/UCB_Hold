@@ -32,28 +32,26 @@ public class GaveteroService : IGaveteroService
             };
             throw PostgreSqlErrorInterpreter.InterpretarError(ex, "crear", "gavetero", parametros);
         }
-    }
-
-    private void ValidarEntradaCreacion(CrearGaveteroComando comando)
+    }    private void ValidarEntradaCreacion(CrearGaveteroComando comando)
     {
         if (comando == null)
             throw new ArgumentNullException(nameof(comando));
 
         if (string.IsNullOrWhiteSpace(comando.Nombre))
-            throw new ErrorNombreRequerido("nombre del gavetero");
+            throw new ErrorNombreRequerido();
 
         if (string.IsNullOrWhiteSpace(comando.NombreMueble))
-            throw new ErrorNombreRequerido("nombre del mueble");
+            throw new ErrorNombreRequerido();
 
         if (comando.Longitud.HasValue && comando.Longitud <= 0)
-            throw new ErrorValorNegativo("longitud", comando.Longitud.Value);
+            throw new ErrorValorNegativo("longitud");
 
         if (comando.Profundidad.HasValue && comando.Profundidad <= 0)
-            throw new ErrorValorNegativo("profundidad", comando.Profundidad.Value);
+            throw new ErrorValorNegativo("profundidad");
 
         if (comando.Altura.HasValue && comando.Altura <= 0)
-            throw new ErrorValorNegativo("altura", comando.Altura.Value);
-    }    public void ActualizarGavetero(ActualizarGaveteroComando comando)
+            throw new ErrorValorNegativo("altura");
+    }public void ActualizarGavetero(ActualizarGaveteroComando comando)
     {
         try
         {
@@ -103,30 +101,28 @@ public class GaveteroService : IGaveteroService
             };
             throw PostgreSqlErrorInterpreter.InterpretarError(ex, "eliminar", "gavetero", parametros);
         }
-    }
-
-    private void ValidarEntradaActualizacion(ActualizarGaveteroComando comando)
+    }    private void ValidarEntradaActualizacion(ActualizarGaveteroComando comando)
     {
         if (comando == null)
             throw new ArgumentNullException(nameof(comando));
 
         if (comando.Id <= 0)
-            throw new ErrorIdInvalido("ID del gavetero");
+            throw new ErrorIdInvalido();
 
         if (string.IsNullOrWhiteSpace(comando.Nombre))
-            throw new ErrorNombreRequerido("nombre del gavetero");
+            throw new ErrorNombreRequerido();
 
         if (string.IsNullOrWhiteSpace(comando.NombreMueble))
-            throw new ErrorNombreRequerido("nombre del mueble");
+            throw new ErrorNombreRequerido();
 
         if (comando.Longitud.HasValue && comando.Longitud <= 0)
-            throw new ErrorValorNegativo("longitud", comando.Longitud.Value);
+            throw new ErrorValorNegativo("longitud");
 
         if (comando.Profundidad.HasValue && comando.Profundidad <= 0)
-            throw new ErrorValorNegativo("profundidad", comando.Profundidad.Value);
+            throw new ErrorValorNegativo("profundidad");
 
         if (comando.Altura.HasValue && comando.Altura <= 0)
-            throw new ErrorValorNegativo("altura", comando.Altura.Value);
+            throw new ErrorValorNegativo("altura");
     }
 
     private void ValidarEntradaEliminacion(EliminarGaveteroComando comando)
@@ -135,7 +131,7 @@ public class GaveteroService : IGaveteroService
             throw new ArgumentNullException(nameof(comando));
 
         if (comando.Id <= 0)
-            throw new ErrorIdInvalido("ID del gavetero");
+            throw new ErrorIdInvalido();
     }
     public List<GaveteroDto>? ObtenerTodosGaveteros()
     {

@@ -34,7 +34,7 @@ namespace Shared.Common
             
             if (errorMessage.Contains("23505") || errorMessage.Contains("duplicate key"))
             {
-                return new ErrorRegistroYaExiste(entidad);
+                return new ErrorRegistroYaExiste();
             }
             
             if (errorMessage.Contains("23503"))
@@ -43,15 +43,11 @@ namespace Shared.Common
                 {
                     return new ErrorReferenciaInvalida(entidad);
                 }
-                if (errorMessage.Contains("is still referenced"))
-                {
-                    return new ErrorRegistroEnUso(entidad);
-                }
             }
             
             if (errorMessage.Contains("23502") || errorMessage.Contains("not null"))
             {
-                return new ErrorNombreRequerido("campo requerido");
+                return new ErrorNombreRequerido();
             }
             
             if (errorMessage.Contains("42883") || errorMessage.Contains("does not exist"))
@@ -73,7 +69,7 @@ namespace Shared.Common
                 PostgreSqlErrorCodes.UniqueViolation => InterpretarUniqueViolation(pgEx, entidad, parametros),
                 PostgreSqlErrorCodes.ForeignKeyViolation => InterpretarForeignKeyViolation(pgEx, entidad, parametros),
                 PostgreSqlErrorCodes.CheckViolation => new Exception($"Los datos no cumplen las restricciones: {pgEx.Message}"),
-                PostgreSqlErrorCodes.NotNullViolation => new ErrorNombreRequerido($"campo requerido: {pgEx.Message}"),
+                PostgreSqlErrorCodes.NotNullViolation => new ErrorNombreRequerido(),
                 PostgreSqlErrorCodes.UndefinedFunction => new Exception($"Procedimiento almacenado no encontrado: {pgEx.Message}"),
                 PostgreSqlErrorCodes.RaiseException => InterpretarErrorPersonalizado(pgEx.Message?.ToLower() ?? "", entidad, parametros),
                 _ => new Exception($"Error PostgreSQL ({pgEx.SqlState}): {pgEx.Message}")
@@ -84,27 +80,14 @@ namespace Shared.Common
             var errorDetail = pgEx.Message?.ToLower() ?? "";
             
             // Componentes
-            if (errorMessage.Contains("componentes_nombre_key") || errorDetail.Contains("nombre"))
+            if (errorMessage.Contains("componentes_nombre_key") || errorDetail.Contains("nombre") ||
+                errorMessage.Contains("componentes_codigo_imt_key") || errorDetail.Contains("codigo_imt"))
             {
-                var nombre = parametros?.GetValueOrDefault("nombre")?.ToString() ?? "desconocido";
-                return new ErrorComponenteYaExiste(nombre);
+                return new ErrorComponenteYaExiste();
             }
             
-            if (errorMessage.Contains("componentes_codigo_imt_key") || errorDetail.Contains("codigo_imt"))
-            {
-                var codigoIMT = parametros?.GetValueOrDefault("codigoImt");
-                if (codigoIMT != null && int.TryParse(codigoIMT.ToString(), out int codigo))
-                    return new ErrorComponenteYaExiste(codigo);
-            }
-            
-            // Usuarios
-            if (errorMessage.Contains("usuarios_carnet_key") || errorDetail.Contains("carnet"))
-            {
-                var carnet = parametros?.GetValueOrDefault("carnet")?.ToString() ?? "desconocido";
-                return new ErrorRegistroYaExiste("usuario", "carnet", carnet);
-            }
-            
-            return new ErrorRegistroYaExiste(entidad);
+            // Usuarios y otros registros duplicados
+            return new ErrorRegistroYaExiste();
         }        private static Exception InterpretarForeignKeyViolation(NpgsqlException pgEx, string entidad, Dictionary<string, object?>? parametros)
         {
             var errorMessage = pgEx.Message?.ToLower() ?? "";
@@ -115,47 +98,38 @@ namespace Shared.Common
             {
                 if (errorDetail.Contains("carnet"))
                 {
-                    var carnet = parametros?.GetValueOrDefault("carnetUsuario")?.ToString() ?? 
-                                parametros?.GetValueOrDefault("carnet")?.ToString() ?? "desconocido";
-                    return new ErrorCarnetUsuarioNoEncontrado(carnet);
+                    return new ErrorCarnetUsuarioNoEncontrado();
                 }
                 
                 return new ErrorReferenciaInvalida(entidad);
             }
             
-            // Registro en uso (no se puede eliminar)
-            if (errorDetail.Contains("is still referenced"))
-            {
-                return new ErrorRegistroEnUso(entidad);
-            }
-            
             return new ErrorReferenciaInvalida(entidad);
         }
-
         private static Exception InterpretarErrorPersonalizado(string errorMessage, string entidad, Dictionary<string, object?>? parametros)
         {
             // Errores específicos de procedimientos almacenados
             if (errorMessage.Contains("no existe equipo") || errorMessage.Contains("equipo no encontrado"))
             {
-                return new ErrorRegistroNoEncontrado("equipo");
+                return new ErrorRegistroNoEncontrado();
             }
-            
+
             if (errorMessage.Contains("no hay equipos disponibles") || errorMessage.Contains("no se encontró equipo disponible"))
             {
                 return new ErrorNoEquiposDisponibles();
             }
-            
+
             if (errorMessage.Contains("usuario no encontrado") || errorMessage.Contains("carnet") && errorMessage.Contains("no existe"))
             {
-                var carnet = parametros?.GetValueOrDefault("carnetUsuario")?.ToString() ?? "desconocido";
-                return new ErrorCarnetUsuarioNoEncontrado(carnet);
+                var carnet = parametros?.GetValueOrDefault("carnetUsuario")?.ToString();
+                return new ErrorCarnetUsuarioNoEncontrado();
             }
-            
+
             if (errorMessage.Contains("grupo id") && errorMessage.Contains("no existe"))
             {
-                return new ErrorRegistroNoEncontrado("grupo de equipos");
+                return new ErrorRegistroNoEncontrado();
             }
-            
+
             return new Exception($"Error personalizado: {errorMessage}");
         }
     }

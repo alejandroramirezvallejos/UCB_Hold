@@ -1,12 +1,8 @@
 using Shared.Common;
-
-namespace Shared.Common
+public class ErrorCarnetUsuarioNoEncontrado : DomainException
 {
-    public class ErrorCarnetUsuarioNoEncontrado : DomainException
+    public ErrorCarnetUsuarioNoEncontrado()
+        : base("No se encontró un usuario con el carnet especificado")
     {
-        public ErrorCarnetUsuarioNoEncontrado(string carnet) 
-            : base($"No se encontró un usuario con el carnet '{carnet}'")
-        {
-        }
     }
 }

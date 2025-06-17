@@ -7,8 +7,7 @@ public class MantenimientoService : IMantenimientoService
     public MantenimientoService(MantenimientoRepository mantenimientoRepository)
     {
         _mantenimientoRepository = mantenimientoRepository;
-    }
-    public void CrearMantenimiento(CrearMantenimientoComando comando)
+    }    public void CrearMantenimiento(CrearMantenimientoComando comando)
     {
         try
         {
@@ -24,6 +23,14 @@ public class MantenimientoService : IMantenimientoService
             throw;
         }
         catch (ErrorReferenciaInvalida)
+        {
+            throw;
+        }
+        catch (ErrorFechaInvalida)
+        {
+            throw;
+        }
+        catch (ErrorIdInvalido)
         {
             throw;
         }
@@ -91,34 +98,32 @@ public class MantenimientoService : IMantenimientoService
             TipoMantenimiento = fila["tipo_detalle_mantenimiento"] == DBNull.Value ? null : fila["tipo_detalle_mantenimiento"].ToString(),
             DescripcionEquipo = fila["descripcion_equipo"] == DBNull.Value ? null : fila["descripcion_equipo"].ToString()
         };
-    }
-
-    private void ValidarEntradaCreacion(CrearMantenimientoComando comando)
+    }    private void ValidarEntradaCreacion(CrearMantenimientoComando comando)
     {
         if (comando == null)
             throw new ArgumentNullException(nameof(comando));
 
         if (comando.FechaFinalDeMantenimiento < comando.FechaMantenimiento)
-            throw new ErrorReferenciaInvalida("La fecha final debe ser posterior a la fecha de inicio");
+            throw new ErrorFechaInvalida();
 
         if (string.IsNullOrWhiteSpace(comando.NombreEmpresaMantenimiento))
-            throw new ErrorNombreRequerido("nombre de la empresa de mantenimiento");
+            throw new ErrorNombreRequerido();
 
         if (comando.CodigoIMT == null || comando.CodigoIMT.Length == 0)
-            throw new ErrorReferenciaInvalida("Al menos un código IMT es requerido");
+            throw new ErrorReferenciaInvalida("equipos");
 
         if (comando.TipoMantenimiento == null || comando.TipoMantenimiento.Length == 0)
-            throw new ErrorReferenciaInvalida("Al menos un tipo de mantenimiento es requerido");
+            throw new ErrorReferenciaInvalida("tipos de mantenimiento");
 
         if (comando.CodigoIMT.Length != comando.TipoMantenimiento.Length)
-            throw new ErrorReferenciaInvalida("El número de códigos IMT debe coincidir con el número de tipos de mantenimiento");
+            throw new ErrorReferenciaInvalida("equipos y tipos");
 
         if (comando.DescripcionEquipo != null && comando.DescripcionEquipo.Length > 0 &&
             comando.DescripcionEquipo.Length != comando.CodigoIMT.Length)
-            throw new ErrorReferenciaInvalida("Si se proporcionan descripciones de equipo, debe haber una por cada código IMT");
+            throw new ErrorReferenciaInvalida("descripciones");
 
         if (comando.CodigoIMT.Any(codigo => codigo <= 0))
-            throw new ErrorIdInvalido("código IMT");
+            throw new ErrorIdInvalido();
 
         if (comando.Costo.HasValue && comando.Costo.Value < 0)
             throw new ErrorValorNegativo("costo");
@@ -130,6 +135,6 @@ public class MantenimientoService : IMantenimientoService
             throw new ArgumentNullException(nameof(comando));
 
         if (comando.Id <= 0)
-            throw new ErrorIdInvalido("mantenimiento");
+            throw new ErrorIdInvalido();
     }
 }
