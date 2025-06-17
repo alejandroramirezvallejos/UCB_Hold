@@ -1,4 +1,4 @@
-export class Categorias{
-    Id? : number ;
-    Nombre? : string ;
+export interface Categorias {
+    Id?: number;
+    Nombre?: string;
 }

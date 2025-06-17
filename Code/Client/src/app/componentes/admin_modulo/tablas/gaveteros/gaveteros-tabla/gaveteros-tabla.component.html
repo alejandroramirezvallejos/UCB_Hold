@@ -1,1 +1,125 @@
-<p>gaveteros-tabla works!</p>
+<div class="gaveteros-container">
+  <!-- ESTO ES PARA EL TITULO Y EL BOTON CREAR -->
+  <div class="table-header">
+    <div class="header-title">
+      <h1>Gaveteros</h1>
+      <p class="subtitle">Gestión de gaveteros del laboratorio</p>
+    </div>
+    <button class="botoncrear" (click)="creargarvetero()">
+       Nuevo Gavetero
+    </button>
+  </div>
+
+  <!-- BUSCADOR-->
+  <div class="search-container">
+    <div class="search-input-wrapper">
+      <i class="fas fa-search search-icon"></i>      <input 
+        type="text" 
+        [(ngModel)]="terminoBusqueda" 
+        (keydown.enter)="buscar()"
+        placeholder="Buscar gaveteros..." 
+        class="search-input"
+      />
+      @if (terminoBusqueda) {
+        <button class="clear-search" (click)="limpiarBusqueda()">
+          <i class="fas fa-times"></i>
+        </button>
+      }
+    </div>
+
+  </div>
+
+  <!-- TABLA -->
+  <div class="table-responsive">
+    <table class="data-table">
+      <thead>        <tr>
+          <th (click)="ordenarPor('Nombre')">
+            Nombre 
+            @if (sortColumn === 'Nombre') {
+              <i [class]="sortDirection === 'asc' ? 'fas fa-sort-up' : 'fas fa-sort-down'"></i>
+            }
+          </th>
+          <th (click)="ordenarPor('Tipo')">
+            Tipo 
+            @if (sortColumn === 'Tipo') {
+              <i [class]="sortDirection === 'asc' ? 'fas fa-sort-up' : 'fas fa-sort-down'"></i>
+            }
+          </th>
+          <th (click)="ordenarPor('NombreMueble')">
+            Nombre Mueble 
+            @if (sortColumn === 'NombreMueble') {
+              <i [class]="sortDirection === 'asc' ? 'fas fa-sort-up' : 'fas fa-sort-down'"></i>
+            }
+          </th>
+          <th (click)="ordenarPor('Longitud')">
+            Longitud
+            @if (sortColumn === 'Longitud') {
+              <i [class]="sortDirection === 'asc' ? 'fas fa-sort-up' : 'fas fa-sort-down'"></i>
+            }
+          </th>
+          <th (click)="ordenarPor('Altura')">
+            Altura 
+            @if (sortColumn === 'Altura') {
+              <i [class]="sortDirection === 'asc' ? 'fas fa-sort-up' : 'fas fa-sort-down'"></i>
+            }
+          </th>
+          <th>Acciones</th>
+        </tr>
+      </thead>      <tbody>
+        @for (gavetero of gaveteros; track $index ; let i = $index) {
+            <tr>
+            <td>{{gavetero.Nombre}}</td>
+            <td>{{gavetero.Tipo}}</td>
+            <td>{{gavetero.NombreMueble}}</td>
+            <td>{{gavetero.Longitud}}</td>
+            <td>{{gavetero.Altura}}</td>
+            <td class="actions-column">
+              <button class="btn-icon btn-delete" (click)="eliminarGavetero(gavetero)">
+                <i class="fas fa-trash-alt"></i>
+              </button>
+              <button class="btn-icon btn-edit" (click)="editarGavetero(gavetero)">
+                <i class="fas fa-pencil-alt"></i>
+              </button>
+     
+
+
+            </td>        </tr>  
+        }
+        @if (gaveteros.length === 0) {
+          <tr>
+            <td colspan="6" class="empty-table">
+              <div class="empty-state">
+                <i class="fas fa-search fa-3x"></i>
+                <p>No se encontraron gaveteros</p>
+                <button class="btn btn-outline" (click)="limpiarBusqueda()">Limpiar filtros</button>
+              </div>
+            </td>
+          </tr>
+        }
+      </tbody>
+    </table>  </div>  <!-- ALERTA DE ELIMINACIÓN -->
+  @if(alertaeliminar){
+    <div class="alerta-eliminar">
+      <div class="modal-content">
+        <p>¿Estás seguro de que deseas eliminar este gavetero?</p>
+        <button class="btn btn-confirm" (click)="confirmarEliminacion()">Sí</button>
+        <button class="btn btn-cancel" (click)="cancelarEliminacion()">No</button>
+      </div>
+    </div>
+  }
+</div>
+
+@if(botoncrear()){
+  <app-gaveteros-crear
+  [botoncrear]="botoncrear"
+  (Actualizar)="cargarGaveteros()"
+  ></app-gaveteros-crear>
+}
+
+@if(botoneditar()){
+  <app-gaveteros-editar
+  [botoneditar]="botoneditar"
+  [gavetero]="gaveteroSeleccionado"
+  (actualizar)="cargarGaveteros()"
+  ></app-gaveteros-editar>
+}

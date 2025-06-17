@@ -1,11 +1,11 @@
-export class Componente{
-  Id: number = 0;
-  Nombre: string | null = null;
-  Modelo: string | null = null;
-  Tipo: string | null = null;
-  Descripcion: string | null = null;
-  PrecioReferencia: number | null = null;
-  NombreEquipo: string | null = null;
-  CodigoImtEquipo: number | null = null;
-  UrlDataSheet: string | null = null;
+export interface Componente {
+  Id?: number;
+  Nombre?: string | null;
+  Modelo?: string | null;
+  Tipo?: string | null;
+  Descripcion?: string | null;
+  PrecioReferencia?: number | null;
+  NombreEquipo?: string | null;
+  CodigoImtEquipo?: number | null;
+  UrlDataSheet?: string | null;
 }

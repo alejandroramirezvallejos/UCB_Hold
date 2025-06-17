@@ -13,6 +13,7 @@ export class GrupoequipoService {
 
   constructor(private http: HttpClient) { }
 
+
   crearGrupoEquipo(grupoEquipo: GrupoEquipo){
     const envio = {
       Nombre: grupoEquipo.nombre,
@@ -41,6 +42,7 @@ export class GrupoequipoService {
         url_data_sheet: item.UrlDataSheet || '' ,
         marca: ' '+item.Marca || '',
         link: item.UrlImagen ,
+        nombreCategoria: item.NombreCategoria || ''
 
       })))
     );

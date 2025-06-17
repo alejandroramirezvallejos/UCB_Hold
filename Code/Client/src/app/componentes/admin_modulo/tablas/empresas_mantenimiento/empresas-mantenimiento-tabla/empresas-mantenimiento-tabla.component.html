@@ -1,1 +1,112 @@
-<p>empresas-mantenimiento-tabla works!</p>
+<div class="empresas-mantenimiento-container">
+  <!-- ESTO ES PARA EL TITULO Y EL BOTON CREAR -->
+  <div class="table-header">
+    <div class="header-title">
+      <h1>Empresas de Mantenimiento</h1>
+      <p class="subtitle">Gestión de empresas de mantenimiento para equipos</p>
+    </div>    <button class="botoncrear" (click)="crearempresamantenimiento()">
+       Nueva Empresa
+    </button>
+  </div>
+
+  <!-- BUSCADOR-->
+  <div class="search-container">
+    <div class="search-input-wrapper">
+      <i class="fas fa-search search-icon"></i>      <input 
+        type="text" 
+        [(ngModel)]="terminoBusqueda" 
+        (keydown.enter)="buscar()"
+        placeholder="Buscar empresas..." 
+        class="search-input"
+      />
+      @if (terminoBusqueda) {
+        <button class="clear-search" (click)="limpiarBusqueda()">
+          <i class="fas fa-times"></i>
+        </button>
+      }
+    </div>
+
+  </div>
+
+  <!-- TABLA -->
+  <div class="table-responsive">
+    <table class="data-table">
+      <thead>        <tr>
+          <th (click)="ordenarPor('NombreEmpresa')">
+            Nombre Empresa 
+            @if (sortColumn === 'NombreEmpresa') {
+              <i [class]="sortDirection === 'asc' ? 'fas fa-sort-up' : 'fas fa-sort-down'"></i>
+            }
+          </th>
+          <th (click)="ordenarPor('NombreResponsable')">
+            Responsable 
+            @if (sortColumn === 'NombreResponsable') {
+              <i [class]="sortDirection === 'asc' ? 'fas fa-sort-up' : 'fas fa-sort-down'"></i>
+            }
+          </th>
+          <th (click)="ordenarPor('Telefono')">
+            Teléfono 
+            @if (sortColumn === 'Telefono') {
+              <i [class]="sortDirection === 'asc' ? 'fas fa-sort-up' : 'fas fa-sort-down'"></i>
+            }
+          </th>
+          <th (click)="ordenarPor('Nit')">
+            NIT 
+            @if (sortColumn === 'Nit') {
+              <i [class]="sortDirection === 'asc' ? 'fas fa-sort-up' : 'fas fa-sort-down'"></i>
+            }
+          </th>
+          <th class="actions-column">Acciones</th>
+        </tr>
+      </thead>
+      <tbody>
+        @for (empresa of empresas; track empresa.Id) {
+          <tr>
+            <td>{{ empresa.NombreEmpresa }}</td>
+            <td>{{ empresa.NombreResponsable }} {{ empresa.ApellidoResponsable }}</td>
+            <td>{{ empresa.Telefono }}</td>
+            <td>{{ empresa.Nit }}</td>            <td class="actions-column">
+              <button class="btn-icon btn-delete" (click)="eliminarEmpresaMantenimiento(empresa)">
+                <i class="fas fa-trash-alt"></i>
+              </button>
+              <button class="btn-icon btn-edit" (click)="editarEmpresaMantenimiento(empresa)">
+                <i class="fas fa-pencil-alt"></i>
+              </button>
+            </td>
+          </tr>
+        } @empty {
+          <tr>
+            <td colspan="5" class="empty-table">
+              <div class="empty-state">
+                <i class="fas fa-inbox fa-3x"></i>
+                <p>No se encontraron empresas de mantenimiento</p>
+              </div>
+            </td>
+          </tr>
+        }
+      </tbody>    </table>  </div>  <!-- ALERTA DE ELIMINACIÓN -->
+  @if(alertaeliminar){
+    <div class="alerta-eliminar">
+      <div class="modal-content">
+        <p>¿Estás seguro de que deseas eliminar esta empresa de mantenimiento?</p>
+        <button class="btn btn-confirm" (click)="confirmarEliminacion()">Sí</button>
+        <button class="btn btn-cancel" (click)="cancelarEliminacion()">No</button>
+      </div>
+    </div>
+  }
+</div>
+
+@if (botoncrear()) {
+  <app-empresas-mantenimiento-crear
+  [botoncrear]="botoncrear"
+  (Actualizar)="cargarEmpresas()"
+  ></app-empresas-mantenimiento-crear>
+}
+
+@if (botoneditar()) {
+  <app-empresas-mantenimiento-editar
+  [botoneditar]="botoneditar"
+  [empresaMantenimiento]="empresaSeleccionada"
+  (actualizar)="cargarEmpresas()"
+  ></app-empresas-mantenimiento-editar>
+}

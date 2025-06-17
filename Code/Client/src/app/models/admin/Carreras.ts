@@ -1,4 +1,4 @@
-export class Carrera {
-    Id? : number ; 
-    Nombre? : string ;
+export interface Carrera {
+    Id?: number ; 
+    Nombre?: string ;
 }

@@ -1,11 +1,50 @@
-import { Component } from '@angular/core';
+import { Component, EventEmitter, Input, Output, signal, WritableSignal, OnChanges } from '@angular/core';
+import { FormsModule } from '@angular/forms';
+import { GrupoEquipo } from '../../../../../models/grupo_equipo';
+import { GrupoequipoService } from '../../../../../services/APIS/GrupoEquipo/grupoequipo.service';
 
 @Component({
   selector: 'app-grupos-equipos-editar',
-  imports: [],
+  standalone: true,
+  imports: [FormsModule],
   templateUrl: './grupos-equipos-editar.component.html',
   styleUrl: './grupos-equipos-editar.component.css'
 })
-export class GruposEquiposEditarComponent {
+export class GruposEquiposEditarComponent implements OnChanges {
+  @Input() botoneditar: WritableSignal<boolean> = signal(true);
+  @Output() actualizar: EventEmitter<void> = new EventEmitter<void>();
+  @Input() grupoequipo: GrupoEquipo = {
+    id: 0,
+    nombre: '',
+    modelo: '',
+    marca: '',
+    nombreCategoria: '',
+    descripcion: '',
+    url_data_sheet: '',
+    link: ''
+  };
+  grupoEquipo: GrupoEquipo = { ...this.grupoequipo };
 
+  constructor(private grupoEquipoapi: GrupoequipoService) { }
+
+  ngOnChanges() {
+    this.grupoEquipo = { ...this.grupoequipo };
+  }
+
+  confirmar() {
+    this.grupoEquipoapi.editarGrupoEquipo(this.grupoEquipo).subscribe(
+      response => {
+        this.actualizar.emit();
+        this.cerrar();
+      },
+      error => {
+        alert('Error al editar grupo de equipo: ' + error.message);
+        this.cerrar();
+      }
+    );
+  }
+
+  cerrar() {
+    this.botoneditar.set(false);
+  }
 }
