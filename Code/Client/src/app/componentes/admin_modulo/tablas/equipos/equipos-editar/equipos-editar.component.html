@@ -1,1 +1,195 @@
-<p>equipos-editar works!</p>
+<div class="form-container">
+  <button class="btn-close" (click)="cerrar()">
+    <i class="fas fa-times"></i>
+  </button>
+  <h2>Editar Equipo</h2>
+  <form (ngSubmit)="confirmar()">
+    <div class="form-group">
+      <label for="nombre">Nombre</label>
+      <input 
+        type="text" 
+        id="nombre" 
+        name="nombre" 
+        [(ngModel)]="equipo.Nombre"
+        required 
+        placeholder="Ingresa el nombre del equipo"
+        class="form-input"
+      />
+    </div>
+
+    <div class="form-group">
+      <label for="modelo">Modelo</label>
+      <input 
+        type="text" 
+        id="modelo" 
+        name="modelo" 
+        [(ngModel)]="equipo.Modelo"
+        required 
+        placeholder="Modelo del equipo"
+        class="form-input"
+      />
+    </div>
+
+    <div class="form-group">
+      <label for="marca">Marca</label>
+      <input 
+        type="text" 
+        id="marca" 
+        name="marca" 
+        [(ngModel)]="equipo.Marca"
+        required 
+        placeholder="Marca del equipo"
+        class="form-input"
+      />
+    </div>
+
+    <div class="form-group">
+      <label for="grupo_equipo">Nombre Grupo Equipo</label>
+      <input 
+        type="text" 
+        id="grupo_equipo" 
+        name="grupo_equipo" 
+        [(ngModel)]="equipo.NombreGrupoEquipo"
+        required 
+        placeholder="Nombre del grupo de equipo"
+        class="form-input"
+      />
+    </div>
+
+    <div class="form-group">
+      <label for="codigo_imt">Código IMT</label>
+      <input 
+        type="number" 
+        id="codigo_imt" 
+        name="codigo_imt" 
+        [(ngModel)]="equipo.CodigoImt"
+        required 
+        placeholder="Código IMT del equipo"
+        class="form-input"
+      />
+    </div>
+
+    <div class="form-group">
+      <label for="codigo_ucb">Código UCB</label>
+      <input 
+        type="text" 
+        id="codigo_ucb" 
+        name="codigo_ucb" 
+        [(ngModel)]="equipo.CodigoUcb"
+        required 
+        placeholder="Código UCB del equipo"
+        class="form-input"
+      />
+    </div>
+
+    <div class="form-group">
+      <label for="numero_serial">Número Serial</label>
+      <input 
+        type="text" 
+        id="numero_serial" 
+        name="numero_serial" 
+        [(ngModel)]="equipo.NumeroSerial"
+        required 
+        placeholder="Número serial del equipo"
+        class="form-input"
+      />
+    </div>
+
+    <div class="form-group">
+      <label for="estado_equipo">Estado Equipo</label>
+      <input 
+        type="text" 
+        id="estado_equipo" 
+        name="estado_equipo" 
+        [(ngModel)]="equipo.EstadoEquipo"
+        required 
+        placeholder="Estado del equipo"
+        class="form-input"
+      />
+    </div>
+
+    <div class="form-group">
+      <label for="ubicacion">Ubicación</label>
+      <input 
+        type="text" 
+        id="ubicacion" 
+        name="ubicacion" 
+        [(ngModel)]="equipo.Ubicacion"
+        required 
+        placeholder="Ubicación del equipo"
+        class="form-input"
+      />
+    </div>
+
+    <div class="form-group">
+      <label for="nombre_gavetero">Nombre Gavetero</label>
+      <input 
+        type="text" 
+        id="nombre_gavetero" 
+        name="nombre_gavetero" 
+        [(ngModel)]="equipo.NombreGavetero"
+        required 
+        placeholder="Nombre del gavetero"
+        class="form-input"
+      />
+    </div>
+
+    <div class="form-group">
+      <label for="costo_referencia">Costo Referencia</label>
+      <input 
+        type="number" 
+        id="costo_referencia" 
+        name="costo_referencia" 
+        [(ngModel)]="equipo.CostoReferencia"
+        required
+        step="0.01"
+        placeholder="0.00"
+        class="form-input"
+      />
+    </div>
+
+    <div class="form-group">
+      <label for="descripcion">Descripción</label>
+      <textarea 
+        id="descripcion" 
+        name="descripcion" 
+        [(ngModel)]="equipo.Descripcion"
+        rows="3"
+        placeholder="Describe las características del equipo"
+        class="form-input"
+      ></textarea>
+    </div>
+
+    <div class="form-group">
+      <label for="tiempo_max_prestamo">Tiempo Máximo Préstamo</label>
+      <input 
+        type="number" 
+        id="tiempo_max_prestamo" 
+        name="tiempo_max_prestamo" 
+        [(ngModel)]="equipo.TiempoMaximoPrestamo"
+        required 
+        placeholder="Tiempo en días"
+        class="form-input"
+      />
+    </div>
+
+    <div class="form-group">
+      <label for="procedencia">Procedencia</label>
+      <input 
+        type="text" 
+        id="procedencia" 
+        name="procedencia" 
+        [(ngModel)]="equipo.Procedencia"
+        required 
+        placeholder="Procedencia del equipo"
+        class="form-input"
+      />
+    </div>
+
+    <div class="form-submit">
+      <button type="submit" class="register-button">
+        <span>Confirmar Cambios</span>
+      </button>
+    </div>
+  </form>
+</div>

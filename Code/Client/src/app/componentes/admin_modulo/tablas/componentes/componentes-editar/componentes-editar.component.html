@@ -1,1 +1,103 @@
-<p>componentes-editar works!</p>
+<div class="form-container">
+  <button class="btn-close" (click)="cerrar()">
+    <i class="fas fa-times"></i>
+  </button>
+  <h2>Editar Componente</h2>
+  <form #form="ngForm" (ngSubmit)="confirmar()">
+    <div class="form-group">
+      <label for="nombre">Nombre</label>
+      <input 
+        type="text" 
+        id="nombre" 
+        name="nombre" 
+        [(ngModel)]="componente.Nombre"
+        required 
+        placeholder="Ingresa el nombre del componente"
+        class="form-input"
+      />
+    </div>
+
+    <div class="form-group">
+      <label for="modelo">Modelo</label>
+      <input 
+        type="text" 
+        id="modelo" 
+        name="modelo" 
+        [(ngModel)]="componente.Modelo"
+        required 
+        placeholder="Modelo del componente"
+        class="form-input"
+      />
+    </div>
+
+    <div class="form-group">
+      <label for="tipo">Tipo</label>
+      <input 
+        type="text" 
+        id="tipo" 
+        name="tipo" 
+        [(ngModel)]="componente.Tipo"
+        required 
+        placeholder="Tipo de componente"
+        class="form-input"
+      />
+    </div>
+
+    <div class="form-group">
+      <label for="descripcion">Descripción</label>
+      <textarea 
+        id="descripcion" 
+        name="descripcion" 
+        [(ngModel)]="componente.Descripcion"
+        rows="3"
+        placeholder="Describe las características del componente"
+        class="form-input"
+      ></textarea>
+    </div>
+
+    <div class="form-group">
+      <label for="codigo_imt">Código IMT del Equipo</label>
+      <input 
+        type="number" 
+        id="codigo_imt" 
+        name="codigo_imt" 
+        [(ngModel)]="componente.CodigoImtEquipo"
+        required 
+        placeholder="Código IMT del equipo"
+        class="form-input"
+      />
+    </div>
+
+    <div class="form-group">
+      <label for="precio_referencia">Precio de Referencia</label>
+      <input 
+        type="number" 
+        id="precio_referencia" 
+        name="precio_referencia" 
+        [(ngModel)]="componente.PrecioReferencia"
+        required
+        step="0.01"
+        placeholder="0.00"
+        class="form-input"
+      />
+    </div>
+
+    <div class="form-group">
+      <label for="url_data_sheet">URL Data Sheet</label>
+      <input 
+        type="url" 
+        id="url_data_sheet" 
+        name="url_data_sheet" 
+        [(ngModel)]="componente.UrlDataSheet"
+        placeholder="https://ejemplo.com/datasheet.pdf"
+        class="form-input"
+      />
+    </div>
+
+    <div class="form-submit">
+      <button type="submit" class="register-button" [disabled]="!form.valid">
+        <span>Actualizar Componente</span>
+      </button>
+    </div>
+  </form>
+</div>

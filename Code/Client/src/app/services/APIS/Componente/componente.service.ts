@@ -14,7 +14,6 @@ export class ComponenteService {
   private apiUrl = environment.apiUrl + '/api/Componente';
 
   constructor(private http : HttpClient) { }
-
   crearComponente(componente: Componente) {
     const envio = {
       Nombre : componente.Nombre,
@@ -26,7 +25,7 @@ export class ComponenteService {
       UrlDataSheet: componente.UrlDataSheet
     }
 
-
+    return this.http.post<any>(this.apiUrl, envio);
   }
 
 

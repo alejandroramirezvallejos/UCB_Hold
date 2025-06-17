@@ -1,158 +1,129 @@
 <div class="form-container">
+  <button class="btn-close" (click)="cerrar()">
+    <i class="fas fa-times"></i>
+  </button>
   <h2>Registrar Mantenimiento</h2>
-  <form id="mantenimientoForm" method="POST">
-    <!-- Información principal del mantenimiento -->
+  <form #form="ngForm" (ngSubmit)="registrar()">
     <div class="form-group">
-      <label for="fecha_mantenimiento">Fecha Mantenimiento</label>
-      <input type="date" id="fecha_mantenimiento" name="fecha_mantenimiento" required />
-    </div>
-
-    <div class="form-group">
-      <label for="fecha_final_mantenimiento">Fecha Final Mantenimiento</label>
-      <input type="date" id="fecha_final_mantenimiento" name="fecha_final_mantenimiento" required />
-    </div>
-
-    <div class="form-group">
-      <label for="nombre_empresa">Nombre de la Empresa</label>
-      <input type="text" id="nombre_empresa" name="nombre_empresa" required />
+      <label for="NombreEmpresaMantenimiento">Empresa de Mantenimiento</label>
+      <input 
+        type="text" 
+        id="NombreEmpresaMantenimiento" 
+        name="NombreEmpresaMantenimiento" 
+        [(ngModel)]="mantenimiento.NombreEmpresaMantenimiento"
+        required 
+        placeholder="Nombre de la empresa"
+        class="form-input"
+      />
     </div>
 
     <div class="form-group">
-      <label for="costo">Costo</label>
-      <input type="number" step="0.01" min="0" id="costo" name="costo" required />
+      <label for="FechaMantenimiento">Fecha de Inicio</label>
+      <input 
+        type="date" 
+        id="FechaMantenimiento" 
+        name="FechaMantenimiento" 
+        [(ngModel)]="mantenimiento.FechaMantenimiento"
+        required 
+        class="form-input"
+      />
     </div>
 
     <div class="form-group">
-      <label for="descripcion">Descripción</label>
-      <textarea id="descripcion" name="descripcion" rows="3" required></textarea>
+      <label for="FechaFinalDeMantenimiento">Fecha de Finalización</label>
+      <input 
+        type="date" 
+        id="FechaFinalDeMantenimiento" 
+        name="FechaFinalDeMantenimiento" 
+        [(ngModel)]="mantenimiento.FechaFinalDeMantenimiento"
+        class="form-input"
+      />
     </div>
 
-    <!-- Sección para añadir equipos -->
-    <div class="equipos-section">
-      <h3>Equipos para Mantenimiento</h3>
-
-      <div class="form-group">
-        <label for="cantidad_equipos">¿Cuántos equipos desea ingresar?</label>
-        <input type="number" min="1" id="cantidad_equipos" name="cantidad_equipos" />
-        <button type="button" id="generar_equipos" class="btn-secondary">Generar campos</button>
-      </div>
-
-      <!-- Contenedor para equipos dinámicos -->
-      <div id="equipos_container">
-        <!-- Aquí se generarán dinámicamente los campos para equipos -->
-      </div>
-    </div>
-
-    <div class="form-submit">
-      <button type="submit">Registrar Mantenimiento</button>
-    </div>
-  </form>
-</div>
-
-<!-- Template para los campos de equipo que se generarán dinámicamente -->
-<template id="equipo_template">
-  <div class="equipo-item">
-    <h4>Equipo #<span class="equipo-numero"></span></h4>
     <div class="form-group">
-      <label for="codigo_imt_">Código IMT</label>
-      <input type="text" id="codigo_imt_" name="codigo_imt_" required />
-    </div>
-    <div class="form-group">
-      <label for="tipo_mantenimiento_">Tipo de Mantenimiento</label>
-      <select id="tipo_mantenimiento_" name="tipo_mantenimiento_" required>
+      <label for="TipoMantenimiento">Tipo de Mantenimiento</label>
+      <select 
+        id="TipoMantenimiento" 
+        name="TipoMantenimiento" 
+        [(ngModel)]="mantenimiento.TipoMantenimiento"
+        required 
+        class="form-input"
+      >
         <option value="">Seleccione un tipo</option>
         <option value="Preventivo">Preventivo</option>
         <option value="Correctivo">Correctivo</option>
         <option value="Predictivo">Predictivo</option>
       </select>
     </div>
+
     <div class="form-group">
-      <label for="descripcion_equipo_">Descripción</label>
-      <textarea id="descripcion_equipo_" name="descripcion_equipo_" rows="2" required></textarea>
+      <label for="Costo">Costo</label>
+      <input 
+        type="number" 
+        id="Costo" 
+        name="Costo" 
+        [(ngModel)]="mantenimiento.Costo"
+        required
+        step="0.01"
+        min="0"
+        placeholder="0.00"
+        class="form-input"
+      />
     </div>
-    <hr class="equipo-separator">
-  </div>
-</template>
 
-<style>
-  .equipos-section {
-    margin-top: 20px;
-    padding: 15px;
-    border: 1px solid #ddd;
-    border-radius: 10px;
-    background-color: #f9f9f9;
-  }
+    <div class="form-group">
+      <label for="NombreGrupoEquipo">Grupo de Equipo</label>
+      <input 
+        type="text" 
+        id="NombreGrupoEquipo" 
+        name="NombreGrupoEquipo" 
+        [(ngModel)]="mantenimiento.NombreGrupoEquipo"
+        placeholder="Nombre del grupo de equipo"
+        class="form-input"
+      />
+    </div>
 
-    .equipos-section h3 {
-      margin-bottom: 15px;
-      color: #444;
-    }
+    <div class="form-group">
+      <label for="CodigoImtEquipo">Código IMT</label>
+      <input 
+        type="number" 
+        id="CodigoImtEquipo" 
+        name="CodigoImtEquipo" 
+        [(ngModel)]="mantenimiento.CodigoImtEquipo"
+        placeholder="Código IMT del equipo"
+        class="form-input"
+      />
+    </div>
 
-  .btn-secondary {
-    background-color: #6c757d;
-    color: white;
-    padding: 8px 15px;
-    border: none;
-    border-radius: 5px;
-    cursor: pointer;
-    margin-left: 10px;
-  }
+    <div class="form-group">
+      <label for="Descripcion">Descripción del Mantenimiento</label>
+      <textarea 
+        id="Descripcion" 
+        name="Descripcion" 
+        [(ngModel)]="mantenimiento.Descripcion"
+        rows="3"
+        placeholder="Describe el mantenimiento realizado"
+        class="form-input"
+      ></textarea>
+    </div>
 
-    .btn-secondary:hover {
-      background-color: #5a6268;
-    }
+    <div class="form-group">
+      <label for="DescripcionEquipo">Descripción del Equipo</label>
+      <textarea 
+        id="DescripcionEquipo" 
+        name="DescripcionEquipo" 
+        [(ngModel)]="mantenimiento.DescripcionEquipo"
+        rows="3"
+        placeholder="Describe el equipo mantenido"
+        class="form-input"
+      ></textarea>
+    </div>
 
-  .equipo-item {
-    margin-top: 20px;
-    padding-bottom: 10px;
-  }
-
-    .equipo-item h4 {
-      margin-bottom: 10px;
-      color: #555;
-    }
-
-  .equipo-separator {
-    margin: 20px 0;
-    border: 0;
-    border-top: 1px dashed #ccc;
-  }
-</style>
-
-<script>// Este script debe ser implementado en el componente TypeScript
-  document.addEventListener('DOMContentLoaded', function() {
-    const generarBtn = document.getElementById('generar_equipos');
-    const cantidadInput = document.getElementById('cantidad_equipos');
-    const equiposContainer = document.getElementById('equipos_container');
-    const equipoTemplate = document.getElementById('equipo_template');
-
-    generarBtn.addEventListener('click', function() {
-      const cantidad = parseInt(cantidadInput.value);
-
-      if (cantidad && cantidad > 0) {
-        // Limpiar contenedor antes de generar nuevos campos
-        equiposContainer.innerHTML = '';
-
-        // Generar campos para cada equipo
-        for (let i = 1; i <= cantidad; i++) {
-          const equipoClone = equipoTemplate.content.cloneNode(true);
-
-          // Actualizar número de equipo
-          equipoClone.querySelector('.equipo-numero').textContent = i;
-
-          // Actualizar IDs y names para ser únicos
-          const inputs = equipoClone.querySelectorAll('input, textarea, select');
-          inputs.forEach(input => {
-            const baseId = input.id;
-            input.id = baseId + i;
-            input.name = baseId + i;
-          });
-
-          equiposContainer.appendChild(equipoClone);
-        }
-      } else {
-        alert('Por favor ingrese una cantidad válida mayor a cero');
-      }
-    });
-  });</script>
+    <div class="form-submit">
+      <button type="submit" class="register-button" [disabled]="!form.valid">
+        <span>Registrar Mantenimiento</span>
+      </button>
+    </div>
+  </form>
+</div>
 

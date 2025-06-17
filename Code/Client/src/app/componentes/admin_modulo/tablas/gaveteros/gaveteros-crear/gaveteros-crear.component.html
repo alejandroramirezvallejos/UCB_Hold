@@ -1,38 +1,94 @@
 <div class="form-container">
+  <button class="btn-close" (click)="cerrar()">
+    <i class="fas fa-times"></i>
+  </button>
   <h2>Registrar Gavetero</h2>
-  <form id="gaveteroForm" method="POST">
+  <form #form="ngForm" (ngSubmit)="registrar()">
     <div class="form-group">
       <label for="nombre">Nombre</label>
-      <input type="text" id="nombre" name="nombre" required />
+      <input 
+        type="text" 
+        id="nombre" 
+        name="nombre" 
+        [(ngModel)]="gavetero.Nombre"
+        required 
+        placeholder="Ingresa el nombre del gavetero"
+        class="form-input"
+      />
     </div>
 
     <div class="form-group">
       <label for="tipo">Tipo</label>
-      <input type="text" id="tipo" name="tipo" required />
+      <input 
+        type="text" 
+        id="tipo" 
+        name="tipo" 
+        [(ngModel)]="gavetero.Tipo"
+        required 
+        placeholder="Tipo de gavetero"
+        class="form-input"
+      />
     </div>
 
     <div class="form-group">
-      <label for="nombre_mueble">Nombre del Mueble</label>
-      <input type="text" id="nombre_mueble" name="nombre_mueble" required />
+      <label for="nombre_mueble">Nombre Mueble</label>
+      <input 
+        type="text" 
+        id="nombre_mueble" 
+        name="nombre_mueble" 
+        [(ngModel)]="gavetero.NombreMueble"
+        required 
+        placeholder="Nombre del mueble"
+        class="form-input"
+      />
     </div>
 
     <div class="form-group">
-      <label for="longitud">Longitud (cm)</label>
-      <input type="number" step="0.01" id="longitud" name="longitud" required />
+      <label for="longitud">Longitud</label>
+      <input 
+        type="number" 
+        id="longitud" 
+        name="longitud" 
+        [(ngModel)]="gavetero.Longitud"
+        required
+        step="0.01"
+        placeholder="0.00"
+        class="form-input"
+      />
     </div>
 
     <div class="form-group">
-      <label for="profundidad">Profundidad (cm)</label>
-      <input type="number" step="0.01" id="profundidad" name="profundidad" required />
+      <label for="profundidad">Profundidad</label>
+      <input 
+        type="number" 
+        id="profundidad" 
+        name="profundidad" 
+        [(ngModel)]="gavetero.Profundidad"
+        required
+        step="0.01"
+        placeholder="0.00"
+        class="form-input"
+      />
     </div>
 
     <div class="form-group">
-      <label for="altura">Altura (cm)</label>
-      <input type="number" step="0.01" id="altura" name="altura" required />
+      <label for="altura">Altura</label>
+      <input 
+        type="number" 
+        id="altura" 
+        name="altura" 
+        [(ngModel)]="gavetero.Altura"
+        required
+        step="0.01"
+        placeholder="0.00"
+        class="form-input"
+      />
     </div>
 
     <div class="form-submit">
-      <button type="submit">Registrar</button>
+      <button type="submit" class="register-button" [disabled]="!form.valid">
+        <span>Registrar Gavetero</span>
+      </button>
     </div>
   </form>
 </div>

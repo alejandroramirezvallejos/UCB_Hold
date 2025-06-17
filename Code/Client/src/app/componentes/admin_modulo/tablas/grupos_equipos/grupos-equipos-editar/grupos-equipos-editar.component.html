@@ -1,1 +1,98 @@
-<p>grupos-equipos-editar works!</p>
+<div class="form-container">
+  <button class="btn-close" (click)="cerrar()">
+    <i class="fas fa-times"></i>
+  </button>
+  <h2>Editar Grupo de Equipo</h2>
+  <form (ngSubmit)="confirmar()">
+    <div class="form-group">
+      <label for="nombre">Nombre</label>
+      <input 
+        type="text" 
+        id="nombre" 
+        name="nombre" 
+        [(ngModel)]="grupoEquipo.nombre"
+        required 
+        placeholder="Ingresa el nombre del grupo de equipo"
+        class="form-input"
+      />
+    </div>
+
+    <div class="form-group">
+      <label for="modelo">Modelo</label>
+      <input 
+        type="text" 
+        id="modelo" 
+        name="modelo" 
+        [(ngModel)]="grupoEquipo.modelo"
+        placeholder="Modelo del grupo de equipo"
+        class="form-input"
+      />
+    </div>
+
+    <div class="form-group">
+      <label for="marca">Marca</label>
+      <input 
+        type="text" 
+        id="marca" 
+        name="marca" 
+        [(ngModel)]="grupoEquipo.marca"
+        placeholder="Marca del grupo de equipo"
+        class="form-input"
+      />
+    </div>
+
+    <div class="form-group">
+      <label for="nombreCategoria">Categoría</label>
+      <input 
+        type="text" 
+        id="nombreCategoria" 
+        name="nombreCategoria" 
+        [(ngModel)]="grupoEquipo.nombreCategoria"
+        placeholder="Categoría del grupo de equipo"
+        class="form-input"
+      />
+    </div>
+
+    <div class="form-group">
+      <label for="descripcion">Descripción</label>
+      <textarea 
+        id="descripcion" 
+        name="descripcion" 
+        [(ngModel)]="grupoEquipo.descripcion"
+        rows="3"
+        placeholder="Describe las características del grupo de equipo"
+        class="form-input"
+      ></textarea>
+    </div>
+
+    <div class="form-group">
+      <label for="url_data_sheet">URL Data Sheet</label>
+      <input 
+        type="url" 
+        id="url_data_sheet" 
+        name="url_data_sheet" 
+        [(ngModel)]="grupoEquipo.url_data_sheet"
+        placeholder="https://ejemplo.com/datasheet.pdf"
+        class="form-input"
+      />
+    </div>
+
+    <div class="form-group">
+      <label for="link">URL Imagen</label>
+      <input 
+        type="url" 
+        id="link" 
+        name="link" 
+        [(ngModel)]="grupoEquipo.link"
+        placeholder="https://ejemplo.com/imagen.jpg"
+        class="form-input"
+      />
+    </div>
+
+    <div class="form-submit">
+      <button type="submit" class="register-button">
+        <span>Confirmar Cambios</span>
+      </button>
+    </div>
+  </form>
+</div>

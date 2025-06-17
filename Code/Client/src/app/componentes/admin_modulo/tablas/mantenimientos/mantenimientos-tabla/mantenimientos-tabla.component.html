@@ -1,1 +1,135 @@
-<p>mantenimientos-tabla works!</p>
+<div class="mantenimientos-container">
+  <!-- ESTO ES PARA EL TITULO Y EL BOTON CREAR -->
+  <div class="table-header">
+    <div class="header-title">
+      <h1>Mantenimientos</h1>
+      <p class="subtitle">Gestión de mantenimientos del laboratorio</p>
+    </div>
+    <button class="botoncrear" (click)="crearmantenimiento()">
+       Nuevo Mantenimiento
+    </button>
+  </div>
+
+  <!-- BUSCADOR-->
+  <div class="search-container">
+    <div class="search-input-wrapper">
+      <i class="fas fa-search search-icon"></i>
+      <input 
+        type="text" 
+        [(ngModel)]="terminoBusqueda" 
+        (keydown.enter)="buscar()"
+        placeholder="Buscar mantenimientos..." 
+        class="search-input"
+      />
+      @if (terminoBusqueda) {
+        <button class="clear-search" (click)="limpiarBusqueda()">
+          <i class="fas fa-times"></i>
+        </button>
+      }
+    </div>
+  </div>
+
+  <!-- TABLA -->
+  <div class="table-responsive">
+    <table class="data-table">
+      <thead>
+        <tr>
+          <th (click)="ordenarPor('NombreEmpresaMantenimiento')">
+            Empresa 
+            @if (sortColumn === 'NombreEmpresaMantenimiento') {
+              <i [class]="sortDirection === 'asc' ? 'fas fa-sort-up' : 'fas fa-sort-down'"></i>
+            }
+          </th>
+          <th (click)="ordenarPor('FechaMantenimiento')">
+            Fecha Inicio
+            @if (sortColumn === 'FechaMantenimiento') {
+              <i [class]="sortDirection === 'asc' ? 'fas fa-sort-up' : 'fas fa-sort-down'"></i>
+            }
+          </th>
+          <th (click)="ordenarPor('FechaFinalDeMantenimiento')">
+            Fecha Fin
+            @if (sortColumn === 'FechaFinalDeMantenimiento') {
+              <i [class]="sortDirection === 'asc' ? 'fas fa-sort-up' : 'fas fa-sort-down'"></i>
+            }
+          </th>
+          <th (click)="ordenarPor('TipoMantenimiento')">
+            Tipo
+            @if (sortColumn === 'TipoMantenimiento') {
+              <i [class]="sortDirection === 'asc' ? 'fas fa-sort-up' : 'fas fa-sort-down'"></i>
+            }
+          </th>
+          <th (click)="ordenarPor('Costo')">
+            Costo
+            @if (sortColumn === 'Costo') {
+              <i [class]="sortDirection === 'asc' ? 'fas fa-sort-up' : 'fas fa-sort-down'"></i>
+            }
+          </th>
+          <th (click)="ordenarPor('NombreGrupoEquipo')">
+            Grupo Equipo
+            @if (sortColumn === 'NombreGrupoEquipo') {
+              <i [class]="sortDirection === 'asc' ? 'fas fa-sort-up' : 'fas fa-sort-down'"></i>
+            }
+          </th>
+          <th>Acciones</th>
+        </tr>
+      </thead>
+      <tbody>
+        @for (mantenimiento of mantenimientosFiltrados; track $index ; let i = $index) {
+          <tr>
+            <td>{{mantenimiento.NombreEmpresaMantenimiento}}</td>
+            <td>{{mantenimiento.FechaMantenimiento | date:'dd/MM/yyyy'}}</td>
+            <td>{{mantenimiento.FechaFinalDeMantenimiento | date:'dd/MM/yyyy'}}</td>
+            <td>{{mantenimiento.TipoMantenimiento}}</td>
+            <td class="precio-column">${{mantenimiento.Costo | number:'1.2-2'}}</td>
+            <td>{{mantenimiento.NombreGrupoEquipo}}</td>
+            <td class="actions-column">
+              <button class="btn-icon btn-delete" (click)="eliminarMantenimiento(mantenimiento)">
+                <i class="fas fa-trash-alt"></i>
+              </button>
+              <button class="btn-icon btn-edit" (click)="editarMantenimiento(mantenimiento)">
+                <i class="fas fa-pencil-alt"></i>
+              </button>
+            </td>
+          </tr>  
+        }
+        @if (mantenimientosFiltrados.length === 0) {
+          <tr>
+            <td colspan="7" class="empty-table">
+              <div class="empty-state">
+                <i class="fas fa-search fa-3x"></i>
+                <p>No se encontraron mantenimientos</p>
+                <button class="btn btn-outline" (click)="limpiarBusqueda()">Limpiar filtros</button>
+              </div>
+            </td>
+          </tr>
+        }
+      </tbody>
+    </table>
+  </div>
+
+  <!-- ALERTA DE ELIMINACIÓN -->
+  @if(alertaeliminar){
+    <div class="alerta-eliminar">
+      <div class="modal-content">
+        <p>¿Estás seguro de que deseas eliminar este mantenimiento?</p>
+        <button class="btn btn-confirm" (click)="confirmarEliminacion()">Sí</button>
+        <button class="btn btn-cancel" (click)="cancelarEliminacion()">No</button>
+      </div>
+    </div>
+  }
+</div>
+
+@if(botoncrear()){
+  <app-mantenimientos-crear
+  [botoncrear]="botoncrear"
+  (Actualizar)="cargarMantenimientos()"
+  ></app-mantenimientos-crear>
+}
+
+@if(botoneditar()){
+  <app-mantenimientos-editar
+  [botoneditar]="botoneditar"
+  [mantenimientoOriginal]="mantenimientoSeleccionado"
+  (actualizar)="cargarMantenimientos()"
+  ></app-mantenimientos-editar>
+}

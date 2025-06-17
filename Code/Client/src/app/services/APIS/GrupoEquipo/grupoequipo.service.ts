@@ -13,6 +13,7 @@ export class GrupoequipoService {
 
   constructor(private http: HttpClient) { }
 
+
   crearGrupoEquipo(grupoEquipo: GrupoEquipo){
     const envio = {
       Nombre: grupoEquipo.nombre,

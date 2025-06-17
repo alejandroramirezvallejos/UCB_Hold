@@ -1,1 +1,128 @@
-<p>componentes-tabla works!</p>
+<div class="componentes-container">
+  <!-- ESTO ES PARA EL TITULO Y EL BOTON CREAR -->
+  <div class="table-header">
+    <div class="header-title">
+      <h1>Componentes</h1>
+      <p class="subtitle">Gestión de componentes electrónicos</p>
+    </div>
+    <button class="botoncrear" (click)="crearComponente()">
+       Nuevo Componente
+    </button>
+  </div>
+
+  <!-- BUSCADOR-->
+  <div class="search-container">
+    <div class="search-input-wrapper">
+      <i class="fas fa-search search-icon"></i>
+      <input 
+        type="text" 
+        [(ngModel)]="terminoBusqueda" 
+        (keydown.enter)="buscar()"
+        placeholder="Buscar componentes..." 
+        class="search-input"
+      />
+      @if (terminoBusqueda) {
+        <button class="clear-search" (click)="limpiarBusqueda()">
+          <i class="fas fa-times"></i>
+        </button>
+      }
+    </div>
+  </div>
+
+  <!-- TABLA -->
+  <div class="table-responsive">
+    <table class="data-table">
+      <thead>
+        <tr>
+          <th (click)="ordenarPor('Nombre')">
+            Nombre 
+            @if (sortColumn === 'Nombre') {
+              <i [class]="sortDirection === 'asc' ? 'fas fa-sort-up' : 'fas fa-sort-down'"></i>
+            }
+          </th>
+          <th (click)="ordenarPor('Modelo')">
+            Modelo 
+            @if (sortColumn === 'Modelo') {
+              <i [class]="sortDirection === 'asc' ? 'fas fa-sort-up' : 'fas fa-sort-down'"></i>
+            }
+          </th>
+          <th (click)="ordenarPor('Tipo')">
+            Tipo 
+            @if (sortColumn === 'Tipo') {
+              <i [class]="sortDirection === 'asc' ? 'fas fa-sort-up' : 'fas fa-sort-down'"></i>
+            }
+          </th>
+          <th (click)="ordenarPor('CodigoImtEquipo')">
+            Código IMT del Equipo
+            @if (sortColumn === 'CodigoImtEquipo') {
+              <i [class]="sortDirection === 'asc' ? 'fas fa-sort-up' : 'fas fa-sort-down'"></i>
+            }
+          </th>
+          <th (click)="ordenarPor('PrecioReferencia')">
+            Precio Referencia 
+            @if (sortColumn === 'PrecioReferencia') {
+              <i [class]="sortDirection === 'asc' ? 'fas fa-sort-up' : 'fas fa-sort-down'"></i>
+            }
+          </th>
+          <th>Acciones</th>
+        </tr>
+      </thead>
+      <tbody>
+        @for (componente of componentes; track $index ; let i = $index) {
+          <tr>
+            <td>{{componente.Nombre}}</td>
+            <td>{{componente.Modelo}}</td>
+            <td>{{componente.Tipo}}</td>
+            <td>{{componente.CodigoImtEquipo}}</td>
+            <td class="precio-column">{{componente.PrecioReferencia | currency:'Bs ':'symbol':'1.2-2'}}</td>
+            <td class="actions-column">
+              <button class="btn-icon btn-delete" (click)="eliminarComponente(componente)">
+                <i class="fas fa-trash-alt"></i>
+              </button>
+              <button class="btn-icon btn-edit" (click)="editarComponente(componente)">
+                <i class="fas fa-pencil-alt"></i>
+              </button>
+            </td>
+          </tr>  
+        }
+        @if (componentes.length === 0) {
+          <tr>
+            <td colspan="6" class="empty-table">
+              <div class="empty-state">
+                <i class="fas fa-search fa-3x"></i>
+                <p>No se encontraron componentes</p>
+                <button class="btn btn-outline" (click)="limpiarBusqueda()">Limpiar filtros</button>
+              </div>
+            </td>
+          </tr>
+        }
+      </tbody>
+    </table>
+  </div>
+
+  <!-- ALERTA DE ELIMINACIÓN -->
+  @if(alertaeliminar){
+    <div class="alerta-eliminar">
+      <div class="modal-content">
+        <p>¿Estás seguro de que deseas eliminar este componente?</p>
+        <button class="btn btn-confirm" (click)="confirmarEliminacion()">Sí</button>
+        <button class="btn btn-cancel" (click)="cancelarEliminacion()">No</button>
+      </div>
+    </div>
+  }
+</div>
+
+@if(botoncrear()){
+  <app-componentes-crear
+  [botoncrear]="botoncrear"
+  (Actualizar)="cargarComponentes()"
+  ></app-componentes-crear>
+}
+
+@if(botoneditar()){
+  <app-componentes-editar
+  [botoneditar]="botoneditar"
+  [componente]="componenteSeleccionado"
+  (actualizar)="cargarComponentes()"
+  ></app-componentes-editar>
+}

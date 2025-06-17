@@ -1,14 +1,26 @@
 <div class="form-container">
-  <h2>Registrar Categoria</h2>
-  <form id="categoriaForm" method="POST">
-
+  <button class="btn-close" (click)="cerrar()">
+    <i class="fas fa-times"></i>
+  </button>
+  <h2>Registrar Categoría</h2>
+  <form #form="ngForm" (ngSubmit)="registrar()">
     <div class="form-group">
       <label for="nombre">Nombre</label>
-      <input type="text" id="nombre" name="nombre" required />
+      <input 
+        type="text" 
+        id="nombre" 
+        name="nombre" 
+        [(ngModel)]="nombreCategoria"
+        required 
+        placeholder="Ingresa el nombre de la categoría"
+        class="form-input"
+      />
     </div>
 
     <div class="form-submit">
-      <button type="submit">Registrar</button>
+      <button type="submit" class="register-button" [disabled]="!form.valid">
+        <span>Registrar Categoría</span>
+      </button>
     </div>
   </form>
 </div>

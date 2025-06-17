@@ -1,83 +1,168 @@
 <div class="form-container">
+  <button class="btn-close" (click)="cerrar()">
+    <i class="fas fa-times"></i>
+  </button>
   <h2>Registrar Usuario</h2>
-  <form id="usuarioForm" method="POST">
+  <form #form="ngForm" (ngSubmit)="registrar()">
+    <div class="form-group">
+      <label for="carnet">Carnet</label>
+      <input 
+        type="text" 
+        id="carnet" 
+        name="carnet" 
+        [(ngModel)]="usuario.carnet"
+        required 
+        placeholder="Ingresa el carnet del usuario"
+        class="form-input"
+      />
+    </div>
 
     <div class="form-group">
       <label for="nombre">Nombre</label>
-      <input type="text" id="nombre" name="nombre" required />
+      <input 
+        type="text" 
+        id="nombre" 
+        name="nombre" 
+        [(ngModel)]="usuario.nombre"
+        required 
+        placeholder="Nombre del usuario"
+        class="form-input"
+      />
     </div>
 
     <div class="form-group">
       <label for="apellido_paterno">Apellido Paterno</label>
-      <input type="text" id="apellido_paterno" name="apellido_paterno" required />
+      <input 
+        type="text" 
+        id="apellido_paterno" 
+        name="apellido_paterno" 
+        [(ngModel)]="usuario.apellido_paterno"
+        required 
+        placeholder="Apellido paterno del usuario"
+        class="form-input"
+      />
     </div>
 
     <div class="form-group">
       <label for="apellido_materno">Apellido Materno</label>
-      <input type="text" id="apellido_materno" name="apellido_materno" required />
+      <input 
+        type="text" 
+        id="apellido_materno" 
+        name="apellido_materno" 
+        [(ngModel)]="usuario.apellido_materno"
+        placeholder="Apellido materno del usuario"
+        class="form-input"
+      />
     </div>
 
     <div class="form-group">
-      <label for="carnet">Carnet</label>
-      <input type="text" id="carnet" name="carnet" required />
+      <label for="correo">Correo Institucional</label>
+      <input 
+        type="email" 
+        id="correo" 
+        name="correo" 
+        [(ngModel)]="usuario.correo"
+        required 
+        pattern="^[a-zA-Z0-9._%+-]+@ucb\.edu\.bo$"
+        placeholder="ejemplo@ucb.edu.bo"
+        class="form-input"
+      />
     </div>
 
     <div class="form-group">
-      <label for="telefono">Telefono</label>
-      <input type="tel" id="telefono" name="telefono" required />
+      <label for="contrasena">Contraseña</label>
+      <input 
+        type="password" 
+        id="contrasena" 
+        name="contrasena" 
+        [(ngModel)]="contrasena"
+        required 
+        placeholder="Contraseña del usuario"
+        class="form-input"
+      />
     </div>
 
     <div class="form-group">
-      <label for="correo">Correo institucional</label>
-      <input type="email"
-             id="correo"
-             name="correo"
-             required
-             pattern="^[a-zA-Z0-9._%+-]+@ucb\.edu\.bo$"
-             placeholder="ejemplo@ucb.edu.bo"
-             title="El correo debe pertenecer al dominio @ucb.edu.bo" />
-    </div><!--WARNING: NO VERIFICA QUE ES UCB.EDU.BO ANTES DE ENVIAR, NO SE PORQUE-->
-
-    <div class="form-group">
-      <label for="password">Contraseña</label>
-      <input type="password" id="password" name="password" required />
+      <label for="telefono">Teléfono</label>
+      <input 
+        type="tel" 
+        id="telefono" 
+        name="telefono" 
+        [(ngModel)]="usuario.telefono"
+        required 
+        placeholder="Teléfono del usuario"
+        class="form-input"
+      />
     </div>
 
     <div class="form-group">
       <label for="rol">Rol</label>
-      <select id="rol" name="rol" required>
-        <option value="">Seleccione un rol</option>
+      <select 
+        id="rol" 
+        name="rol" 
+        [(ngModel)]="usuario.rol"
+        required
+        class="form-input"
+      >
+        <option value="">Seleccionar rol</option>
         <option value="administrador">Administrador</option>
         <option value="estudiante">Estudiante</option>
       </select>
     </div>
 
     <div class="form-group">
-      <label for="carrera">Nombre de la Carrera</label>
-      <select id="carrera" name="carrera" required>
-        <option value="">Seleccione una Carrera</option>
-        <option value="administrador">Administrador</option>
-        <option value="estudiante">Estudiante</option>
-      </select>
+      <label for="carrera">Carrera</label>
+      <input 
+        type="text" 
+        id="carrera" 
+        name="carrera" 
+        [(ngModel)]="usuario.carrera"
+        required 
+        placeholder="Nombre de la carrera"
+        class="form-input"
+      />
     </div>
 
     <div class="form-group">
       <label for="nombre_referencia">Nombre de Referencia</label>
-      <input type="text" id="nombre_referencia" name="nombre_referencia" />
+      <input 
+        type="text" 
+        id="nombre_referencia" 
+        name="nombre_referencia" 
+        [(ngModel)]="usuario.nombre_referencia"
+        placeholder="Nombre de referencia"
+        class="form-input"
+      />
     </div>
 
     <div class="form-group">
-      <label for="telefono_referencia">Telefono de Referencia</label>
-      <input type="tel" id="telefono_referencia" name="telefono_referencia" />
+      <label for="telefono_referencia">Teléfono de Referencia</label>
+      <input 
+        type="tel" 
+        id="telefono_referencia" 
+        name="telefono_referencia" 
+        [(ngModel)]="usuario.telefono_referencia"
+        placeholder="Teléfono de referencia"
+        class="form-input"
+      />
     </div>
 
     <div class="form-group">
-      <label for="correo_referencia">Correo de Referencia</label>
-      <input type="text" id="correo_referencia" name="correo_referencia" />
+      <label for="email_referencia">Email de Referencia</label>
+      <input 
+        type="email" 
+        id="email_referencia" 
+        name="email_referencia" 
+        [(ngModel)]="usuario.email_referencia"
+        placeholder="Email de referencia"
+        class="form-input"
+      />
     </div>
 
     <div class="form-submit">
-      <button type="submit">Registrar</button>
+      <button type="submit" class="register-button" [disabled]="!form.valid">
+        <span>Registrar Usuario</span>
+      </button>
     </div>
   </form>
 </div>
