@@ -19,11 +19,11 @@ namespace IMT_Reservas.Tests.ControllerTests
         public void Setup()
         {
             _configMock        = new Mock<IConfiguration>();
+            _configMock.Setup(config => config.GetConnectionString("DefaultConnection")).Returns("fake_connection_string");
             _queryExecMock     = new Mock<ExecuteQuery>(_configMock.Object);
             _muebleRepoMock    = new Mock<MuebleRepository>(_queryExecMock.Object);
             _muebleServiceMock = new Mock<MuebleService>(_muebleRepoMock.Object);
             _mueblesController = new MuebleController(_muebleServiceMock.Object);
-            _configMock.Setup(config => config.GetConnectionString("DefaultConnection")).Returns("fake_connection_string");
         }
 
         [Test]
@@ -71,8 +71,11 @@ namespace IMT_Reservas.Tests.ControllerTests
 
         private static IEnumerable<object[]> FuenteCasos_CrearMueble_BadRequest()
         {
-            yield return new object[] { new CrearMuebleComando("", "Tipo", null, "Ubicacion", null, null, null), new ErrorNombreRequerido("nombre del mueble") };
-            yield return new object[] { new CrearMuebleComando("Nombre", "Tipo", null, "Ubicacion", -10.0, null, null), new ErrorValorNegativo("longitud") };
+            yield return new object[] { new CrearMuebleComando("", "Tipo", null, "Ubicacion", null, null, null), new ErrorNombreRequerido() };
+            yield return new object[] { new CrearMuebleComando("Nombre", "Tipo", -10, "Ubicacion", null, null, null), new ErrorValorNegativo("costo") };
+            yield return new object[] { new CrearMuebleComando("Nombre", "Tipo", null, "Ubicacion", 0, null, null), new ErrorValorNegativo("longitud") };
+            yield return new object[] { new CrearMuebleComando("Nombre", "Tipo", null, "Ubicacion", null, 0, null), new ErrorValorNegativo("profundidad") };
+            yield return new object[] { new CrearMuebleComando("Nombre", "Tipo", null, "Ubicacion", null, null, 0), new ErrorValorNegativo("altura") };
         }
 
         [Test]
@@ -88,7 +91,7 @@ namespace IMT_Reservas.Tests.ControllerTests
         public void CrearMueble_RegistroExistente_RetornaConflict()
         {
             CrearMuebleComando comando = new CrearMuebleComando("Escritorio", "Oficina", null, "Sala 1", null, null, null);
-            _muebleServiceMock.Setup(s => s.CrearMueble(It.IsAny<CrearMuebleComando>())).Throws(new ErrorRegistroYaExiste("Escritorio"));
+            _muebleServiceMock.Setup(s => s.CrearMueble(It.IsAny<CrearMuebleComando>())).Throws(new ErrorRegistroYaExiste());
             IActionResult resultadoAccion = _mueblesController.Crear(comando);
             Assert.That(resultadoAccion, Is.InstanceOf<ConflictObjectResult>());
         }
@@ -115,9 +118,12 @@ namespace IMT_Reservas.Tests.ControllerTests
 
         private static IEnumerable<object[]> FuenteCasos_ActualizarMueble_BadRequest()
         {
-            yield return new object[] { new ActualizarMuebleComando(0, "Inválido", null, null, null, null, null, null), new ErrorIdInvalido("mueble") };
-            yield return new object[] { new ActualizarMuebleComando(1, "", null, null, null, null, null, null), new ErrorNombreRequerido("nombre del mueble") };
-            yield return new object[] { new ActualizarMuebleComando(1, "Nombre", null, null, null, -10.0, null, null), new ErrorValorNegativo("longitud") };
+            yield return new object[] { new ActualizarMuebleComando(0, "Inválido", null, null, null, null, null, null), new ErrorIdInvalido() };
+            yield return new object[] { new ActualizarMuebleComando(1, "", null, null, null, null, null, null), new ErrorNombreRequerido() };
+            yield return new object[] { new ActualizarMuebleComando(1, "Nombre", null, -10, null, null, null, null), new ErrorValorNegativo("costo") };
+            yield return new object[] { new ActualizarMuebleComando(1, "Nombre", null, null, null, 0, null, null), new ErrorValorNegativo("longitud") };
+            yield return new object[] { new ActualizarMuebleComando(1, "Nombre", null, null, null, null, 0, null), new ErrorValorNegativo("profundidad") };
+            yield return new object[] { new ActualizarMuebleComando(1, "Nombre", null, null, null, null, null, 0), new ErrorValorNegativo("altura") };
         }
 
         [Test]
@@ -133,7 +139,7 @@ namespace IMT_Reservas.Tests.ControllerTests
         public void ActualizarMueble_NoEncontrado_RetornaNotFound()
         {
             ActualizarMuebleComando comando = new ActualizarMuebleComando(99, "NoExiste", null, null, null, null, null, null);
-            _muebleServiceMock.Setup(s => s.ActualizarMueble(It.IsAny<ActualizarMuebleComando>())).Throws(new ErrorRegistroNoEncontrado("99"));
+            _muebleServiceMock.Setup(s => s.ActualizarMueble(It.IsAny<ActualizarMuebleComando>())).Throws(new ErrorRegistroNoEncontrado());
             IActionResult resultadoAccion = _mueblesController.Actualizar(comando);
             Assert.That(resultadoAccion, Is.InstanceOf<NotFoundObjectResult>());
         }
@@ -158,11 +164,25 @@ namespace IMT_Reservas.Tests.ControllerTests
             Assert.That(resultadoAccion, Is.InstanceOf<NoContentResult>());
         }
 
+        private static IEnumerable<object[]> FuenteCasos_EliminarMueble_BadRequest()
+        {
+            yield return new object[] { 0, new ErrorIdInvalido() };
+        }
+
+        [Test]
+        [TestCaseSource(nameof(FuenteCasos_EliminarMueble_BadRequest))]
+        public void EliminarMueble_Invalido_RetornaBadRequest(int idMueble, System.Exception excepcionLanzada)
+        {
+            _muebleServiceMock.Setup(s => s.EliminarMueble(It.Is<EliminarMuebleComando>(c => c.Id == idMueble))).Throws(excepcionLanzada);
+            IActionResult resultadoAccion = _mueblesController.Eliminar(idMueble);
+            Assert.That(resultadoAccion, Is.InstanceOf<BadRequestObjectResult>());
+        }
+
         [Test]
         public void EliminarMueble_NoEncontrado_RetornaNotFound()
         {
             int idNoExistente = 99;
-            _muebleServiceMock.Setup(s => s.EliminarMueble(It.Is<EliminarMuebleComando>(c => c.Id == idNoExistente))).Throws(new ErrorRegistroNoEncontrado("99"));
+            _muebleServiceMock.Setup(s => s.EliminarMueble(It.Is<EliminarMuebleComando>(c => c.Id == idNoExistente))).Throws(new ErrorRegistroNoEncontrado());
             IActionResult resultadoAccion = _mueblesController.Eliminar(idNoExistente);
             Assert.That(resultadoAccion, Is.InstanceOf<NotFoundObjectResult>());
         }
@@ -171,7 +191,7 @@ namespace IMT_Reservas.Tests.ControllerTests
         public void EliminarMueble_EnUso_RetornaConflict()
         {
             int idEnUso = 2;
-            _muebleServiceMock.Setup(s => s.EliminarMueble(It.Is<EliminarMuebleComando>(c => c.Id == idEnUso))).Throws(new ErrorRegistroEnUso("El mueble tiene gaveteros asociados"));
+            _muebleServiceMock.Setup(s => s.EliminarMueble(It.Is<EliminarMuebleComando>(c => c.Id == idEnUso))).Throws(new ErrorRegistroEnUso());
             IActionResult resultadoAccion = _mueblesController.Eliminar(idEnUso);
             Assert.That(resultadoAccion, Is.InstanceOf<ConflictObjectResult>());
         }

@@ -19,11 +19,11 @@ namespace IMT_Reservas.Tests.ControllerTests
         public void Setup()
         {
             _configMock           = new Mock<IConfiguration>();
+            _configMock.Setup(config => config.GetConnectionString("DefaultConnection")).Returns("fake_connection_string");
             _queryExecMock        = new Mock<ExecuteQuery>(_configMock.Object);
             _accesorioRepoMock    = new Mock<AccesorioRepository>(_queryExecMock.Object);
             _accesorioServiceMock = new Mock<AccesorioService>(_accesorioRepoMock.Object);
             _accesoriosController = new AccesorioController(_accesorioServiceMock.Object);
-            _configMock.Setup(config => config.GetConnectionString("DefaultConnection")).Returns("fake_connection_string");
 
         }
 
@@ -65,15 +65,18 @@ namespace IMT_Reservas.Tests.ControllerTests
         public void CrearAccesorio_Valido_RetornaCreated()
         {
             CrearAccesorioComando comando = new CrearAccesorioComando("Webcam HD", "C920", "Periférico", 1003, "Webcam Full HD", 75.99, "http://example.com/c920.pdf");
+            _accesorioServiceMock.Setup(s => s.CrearAccesorio(comando));
             IActionResult resultadoAccion = _accesoriosController.Crear(comando);
             Assert.That(resultadoAccion, Is.InstanceOf<CreatedResult>());
         }
 
         private static IEnumerable<object[]> FuenteCasos_CrearAccesorio_BadRequest()
         {
-            yield return new object[] { new CrearAccesorioComando("", "ModeloX", "TipoY", 1004, "desc", 10.0, null), new ErrorNombreRequerido("nombre") };
-            yield return new object[] { new CrearAccesorioComando("NombreLargo...", "ModeloX", "TipoY", 1005, "desc", 10.0, null), new ErrorLongitudInvalida("nombre", 50) }; // Asumiendo longitud max 50 para ejemplo
-            yield return new object[] { new CrearAccesorioComando("ErrorDominio", "ModeloZ", "TipoA", 1006, "desc", 10.0, null), new ErrorIdInvalido("ID Inválido en Dominio") }; // Ejemplo de Error de Dominio
+            yield return new object[] { new CrearAccesorioComando("", "ModeloX", "TipoY", 1004, "desc", 10.0, null), new ErrorNombreRequerido() };
+            yield return new object[] { new CrearAccesorioComando("NombreValido", null, "TipoY", 1004, "desc", 10.0, null), new ErrorModeloRequerido() };
+            yield return new object[] { new CrearAccesorioComando(new string('a', 257), "ModeloX", "TipoY", 1005, "desc", 10.0, null), new ErrorLongitudInvalida("nombre del accesorio", 256) };
+            yield return new object[] { new CrearAccesorioComando("NombreValido", "ModeloX", "TipoY", 0, "desc", 10.0, null), new ErrorCodigoImtRequerido() };
+            yield return new object[] { new CrearAccesorioComando("NombreValido", "ModeloX", "TipoY", 1, "desc", -1.0, null), new ErrorValorNegativo("precio") };
             yield return new object[] { new CrearAccesorioComando("ReferenciaInv", "ModeloR", "TipoB", 1007, "desc", 10.0, null), new ErrorReferenciaInvalida("Referencia Inválida") }; 
         }
 
@@ -90,7 +93,7 @@ namespace IMT_Reservas.Tests.ControllerTests
         public void CrearAccesorio_RegistroExistente_RetornaConflict()
         {
             CrearAccesorioComando comando = new CrearAccesorioComando("Mouse Gamer", "G502", "Periférico", 1001, "desc", 50.0, null);
-            _accesorioServiceMock.Setup(s => s.CrearAccesorio(It.IsAny<CrearAccesorioComando>())).Throws(new ErrorRegistroYaExiste("Existe"));
+            _accesorioServiceMock.Setup(s => s.CrearAccesorio(It.IsAny<CrearAccesorioComando>())).Throws(new ErrorRegistroYaExiste());
             IActionResult resultadoAccion = _accesoriosController.Crear(comando);
             Assert.That(resultadoAccion, Is.InstanceOf<ConflictObjectResult>());
         }
@@ -110,16 +113,18 @@ namespace IMT_Reservas.Tests.ControllerTests
         public void ActualizarAccesorio_Valido_RetornaOk()
         {
             ActualizarAccesorioComando comando = new ActualizarAccesorioComando(1, "Mouse Inalámbrico", "MX Master 3", "Periférico", 1001, "Mouse avanzado", 99.99, "http://example.com/mxmaster3.pdf");
+            _accesorioServiceMock.Setup(s => s.ActualizarAccesorio(comando));
             IActionResult resultadoAccion = _accesoriosController.Actualizar(comando);
             Assert.That(resultadoAccion, Is.InstanceOf<OkObjectResult>());
         }
 
         private static IEnumerable<object[]> FuenteCasos_ActualizarAccesorio_BadRequest()
         {
-            yield return new object[] { new ActualizarAccesorioComando(0, "Inválido", null, null, null, null, null, null), new ErrorIdInvalido("ID") };
-            yield return new object[] { new ActualizarAccesorioComando(1, "", null, null, null, null, null, null), new ErrorNombreRequerido("nombre") };
-            yield return new object[] { new ActualizarAccesorioComando(1, new string('a', 101), null, null, null, null, null, null), new ErrorLongitudInvalida("nombre", 100) }; // Asumiendo longitud max 100
-            yield return new object[] { new ActualizarAccesorioComando(1, "ErrorDominio", null, null, null, null, null, null), new ErrorIdInvalido("ID Inválido en Dominio") }; // Ejemplo Error Dominio
+            yield return new object[] { new ActualizarAccesorioComando(0, "Inválido", null, null, null, null, null, null), new ErrorIdInvalido() };
+            yield return new object[] { new ActualizarAccesorioComando(1, "", null, null, null, null, null, null), new ErrorNombreRequerido() };
+            yield return new object[] { new ActualizarAccesorioComando(1, new string('a', 101), null, null, null, null, null, null), new ErrorLongitudInvalida("nombre del accesorio", 100) };
+            yield return new object[] { new ActualizarAccesorioComando(1, "Nombre Valido", null, null, 0, null, null, null), new ErrorCodigoImtRequerido() };
+            yield return new object[] { new ActualizarAccesorioComando(1, "Nombre Valido", null, null, 1, null, -1, null), new ErrorValorNegativo("precio") };
         }
 
         [Test]
@@ -135,7 +140,7 @@ namespace IMT_Reservas.Tests.ControllerTests
         public void ActualizarAccesorio_NoEncontrado_RetornaNotFound()
         {
             ActualizarAccesorioComando comando = new ActualizarAccesorioComando(99, "NoExiste", null, null, null, null, null, null); 
-            _accesorioServiceMock.Setup(s => s.ActualizarAccesorio(It.IsAny<ActualizarAccesorioComando>())).Throws(new ErrorRegistroNoEncontrado("NoEncontrado"));
+            _accesorioServiceMock.Setup(s => s.ActualizarAccesorio(It.IsAny<ActualizarAccesorioComando>())).Throws(new ErrorRegistroNoEncontrado());
             IActionResult resultadoAccion = _accesoriosController.Actualizar(comando);
             Assert.That(resultadoAccion, Is.InstanceOf<NotFoundObjectResult>());
         }
@@ -144,7 +149,7 @@ namespace IMT_Reservas.Tests.ControllerTests
         public void ActualizarAccesorio_RegistroExistente_RetornaConflict()
         {
             ActualizarAccesorioComando comando = new ActualizarAccesorioComando(1, "Nombre Existente", null, null, 1002, null, null, null);
-            _accesorioServiceMock.Setup(s => s.ActualizarAccesorio(It.IsAny<ActualizarAccesorioComando>())).Throws(new ErrorRegistroYaExiste("Existe"));
+            _accesorioServiceMock.Setup(s => s.ActualizarAccesorio(It.IsAny<ActualizarAccesorioComando>())).Throws(new ErrorRegistroYaExiste());
             IActionResult resultadoAccion = _accesoriosController.Actualizar(comando);
             Assert.That(resultadoAccion, Is.InstanceOf<ConflictObjectResult>());
         }
@@ -164,14 +169,14 @@ namespace IMT_Reservas.Tests.ControllerTests
         public void EliminarAccesorio_Valido_RetornaNoContent()
         {
             int idValido = 1;
+            _accesorioServiceMock.Setup(s => s.EliminarAccesorio(It.Is<EliminarAccesorioComando>(c => c.Id == idValido)));
             IActionResult resultadoAccion = _accesoriosController.Eliminar(idValido);
             Assert.That(resultadoAccion, Is.InstanceOf<NoContentResult>());
         }
 
         private static IEnumerable<object[]> FuenteCasos_EliminarAccesorio_BadRequest()
         {
-            yield return new object[] { 0, new ErrorIdInvalido("ID") };
-            yield return new object[] { 3, new ErrorIdInvalido("ID Inválido en Dominio para Eliminar") }; // Ejemplo Error Dominio
+            yield return new object[] { 0, new ErrorIdInvalido() };
         }
 
         [Test]
@@ -187,7 +192,7 @@ namespace IMT_Reservas.Tests.ControllerTests
         public void EliminarAccesorio_NoEncontrado_RetornaNotFound()
         {
             int idNoExistente = 99;
-            _accesorioServiceMock.Setup(s => s.EliminarAccesorio(It.Is<EliminarAccesorioComando>(c => c.Id == idNoExistente))).Throws(new ErrorRegistroNoEncontrado("NoEncontrado"));
+            _accesorioServiceMock.Setup(s => s.EliminarAccesorio(It.Is<EliminarAccesorioComando>(c => c.Id == idNoExistente))).Throws(new ErrorRegistroNoEncontrado());
             IActionResult resultadoAccion = _accesoriosController.Eliminar(idNoExistente);
             Assert.That(resultadoAccion, Is.InstanceOf<NotFoundObjectResult>());
         }
@@ -196,7 +201,7 @@ namespace IMT_Reservas.Tests.ControllerTests
         public void EliminarAccesorio_EnUso_RetornaConflict()
         {
             int idEnUso = 2;
-            _accesorioServiceMock.Setup(s => s.EliminarAccesorio(It.Is<EliminarAccesorioComando>(c => c.Id == idEnUso))).Throws(new ErrorRegistroEnUso("EnUso"));
+            _accesorioServiceMock.Setup(s => s.EliminarAccesorio(It.Is<EliminarAccesorioComando>(c => c.Id == idEnUso))).Throws(new ErrorRegistroEnUso());
             IActionResult resultadoAccion = _accesoriosController.Eliminar(idEnUso);
             Assert.That(resultadoAccion, Is.InstanceOf<ConflictObjectResult>());
         }

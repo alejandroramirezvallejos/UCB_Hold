@@ -19,11 +19,11 @@ namespace IMT_Reservas.Tests.ControllerTests
         public void Setup()
         {
             _configMock          = new Mock<IConfiguration>();
+            _configMock.Setup(config => config.GetConnectionString("DefaultConnection")).Returns("fake_connection_string");
             _queryExecMock       = new Mock<ExecuteQuery>(_configMock.Object);
             _prestamoRepoMock    = new Mock<PrestamoRepository>(_queryExecMock.Object);
             _prestamoServiceMock = new Mock<PrestamoService>(_prestamoRepoMock.Object);
             _prestamosController = new PrestamoController(_prestamoServiceMock.Object);
-            _configMock.Setup(config => config.GetConnectionString("DefaultConnection")).Returns("fake_connection_string");
         }
 
         [Test]
@@ -73,8 +73,8 @@ namespace IMT_Reservas.Tests.ControllerTests
 
         private static IEnumerable<object[]> FuenteCasos_CrearPrestamo_BadRequest()
         {
-            yield return new object[] { new CrearPrestamoComando(new int[] { 1 }, DateTime.Now.AddDays(1), DateTime.Now.AddDays(2), "Obs", "", null), new ErrorNombreRequerido("carnet del usuario") };
-            yield return new object[] { new CrearPrestamoComando(new int[0], DateTime.Now.AddDays(1), DateTime.Now.AddDays(2), "Obs", "12345", null), new ErrorIdInvalido("grupos de equipos") };
+            yield return new object[] { new CrearPrestamoComando(new int[] { 1 }, DateTime.Now.AddDays(1), DateTime.Now.AddDays(2), "Obs", "", null), new ErrorNombreRequerido() };
+            yield return new object[] { new CrearPrestamoComando(new int[0], DateTime.Now.AddDays(1), DateTime.Now.AddDays(2), "Obs", "12345", null), new ErrorIdInvalido() };
         }
 
         [Test]
@@ -90,7 +90,7 @@ namespace IMT_Reservas.Tests.ControllerTests
         public void CrearPrestamo_UsuarioNoEncontrado_RetornaNotFound()
         {
             CrearPrestamoComando comando = new CrearPrestamoComando(new int[] { 1 }, DateTime.Now.AddDays(1), DateTime.Now.AddDays(2), "Obs", "00000", null);
-            _prestamoServiceMock.Setup(s => s.CrearPrestamo(It.IsAny<CrearPrestamoComando>())).Throws(new ErrorCarnetUsuarioNoEncontrado("00000"));
+            _prestamoServiceMock.Setup(s => s.CrearPrestamo(It.IsAny<CrearPrestamoComando>())).Throws(new ErrorCarnetUsuarioNoEncontrado());
             IActionResult resultadoAccion = _prestamosController.CrearPrestamo(comando);
             Assert.That(resultadoAccion, Is.InstanceOf<NotFoundObjectResult>());
         }
@@ -99,7 +99,7 @@ namespace IMT_Reservas.Tests.ControllerTests
         public void CrearPrestamo_SinEquiposDisponibles_RetornaConflict()
         {
             CrearPrestamoComando comando = new CrearPrestamoComando(new int[] { 1 }, DateTime.Now.AddDays(1), DateTime.Now.AddDays(2), "Obs", "12345", null);
-            _prestamoServiceMock.Setup(s => s.CrearPrestamo(It.IsAny<CrearPrestamoComando>())).Throws(new ErrorNoEquiposDisponibles(1, DateTime.Now.AddDays(1), DateTime.Now.AddDays(2)));
+            _prestamoServiceMock.Setup(s => s.CrearPrestamo(It.IsAny<CrearPrestamoComando>())).Throws(new ErrorNoEquiposDisponibles());
             IActionResult resultadoAccion = _prestamosController.CrearPrestamo(comando);
             Assert.That(resultadoAccion, Is.InstanceOf<ConflictObjectResult>());
         }
@@ -117,7 +117,7 @@ namespace IMT_Reservas.Tests.ControllerTests
         public void EliminarPrestamo_NoEncontrado_RetornaNotFound()
         {
             int idNoExistente = 99;
-            _prestamoServiceMock.Setup(s => s.EliminarPrestamo(It.Is<EliminarPrestamoComando>(c => c.Id == idNoExistente))).Throws(new ErrorRegistroNoEncontrado("99"));
+            _prestamoServiceMock.Setup(s => s.EliminarPrestamo(It.Is<EliminarPrestamoComando>(c => c.Id == idNoExistente))).Throws(new ErrorRegistroNoEncontrado());
             IActionResult resultadoAccion = _prestamosController.EliminarPrestamo(idNoExistente);
             Assert.That(resultadoAccion, Is.InstanceOf<NotFoundObjectResult>());
         }
@@ -126,7 +126,7 @@ namespace IMT_Reservas.Tests.ControllerTests
         public void EliminarPrestamo_EnUso_RetornaConflict()
         {
             int idEnUso = 2;
-            _prestamoServiceMock.Setup(s => s.EliminarPrestamo(It.Is<EliminarPrestamoComando>(c => c.Id == idEnUso))).Throws(new ErrorRegistroEnUso("El préstamo ya fue procesado"));
+            _prestamoServiceMock.Setup(s => s.EliminarPrestamo(It.Is<EliminarPrestamoComando>(c => c.Id == idEnUso))).Throws(new ErrorRegistroEnUso());
             IActionResult resultadoAccion = _prestamosController.EliminarPrestamo(idEnUso);
             Assert.That(resultadoAccion, Is.InstanceOf<ConflictObjectResult>());
         }

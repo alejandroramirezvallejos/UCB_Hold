@@ -19,11 +19,11 @@ namespace IMT_Reservas.Tests.ControllerTests
         public void Setup()
         {
             _configMock         = new Mock<IConfiguration>();
+            _configMock.Setup(config => config.GetConnectionString("DefaultConnection")).Returns("fake_connection_string");
             _queryExecMock      = new Mock<ExecuteQuery>(_configMock.Object);
             _empresaRepoMock    = new Mock<EmpresaMantenimientoRepository>(_queryExecMock.Object);
             _empresaServiceMock = new Mock<EmpresaMantenimientoService>(_empresaRepoMock.Object);
             _empresasController = new EmpresaMantenimientoController(_empresaServiceMock.Object);
-            _configMock.Setup(config => config.GetConnectionString("DefaultConnection")).Returns("fake_connection_string");
         }
 
         [Test]
@@ -71,8 +71,9 @@ namespace IMT_Reservas.Tests.ControllerTests
 
         private static IEnumerable<object[]> FuenteCasos_CrearEmpresa_BadRequest()
         {
-            yield return new object[] { new CrearEmpresaMantenimientoComando("", null, null, null, null, null), new ErrorNombreRequerido("nombre de la empresa") };
-            yield return new object[] { new CrearEmpresaMantenimientoComando(new string('a', 101), null, null, null, null, null), new ErrorLongitudInvalida("nombre de la empresa", 100) };
+            yield return new object[] { new CrearEmpresaMantenimientoComando("", null, null, null, null, null), new ErrorNombreRequerido() };
+            yield return new object[] { new CrearEmpresaMantenimientoComando(new string('a', 256), null, null, null, null, null), new ErrorLongitudInvalida("nombre", 255) };
+            yield return new object[] { new CrearEmpresaMantenimientoComando("Empresa Valida", null, null, new string('a', 21), null, null), new ErrorLongitudInvalida("telefono", 20) };
         }
 
         [Test]
@@ -88,7 +89,7 @@ namespace IMT_Reservas.Tests.ControllerTests
         public void CrearEmpresa_RegistroExistente_RetornaConflict()
         {
             CrearEmpresaMantenimientoComando comando = new CrearEmpresaMantenimientoComando("Tech Services", null, null, null, null, null);
-            _empresaServiceMock.Setup(s => s.CrearEmpresaMantenimiento(It.IsAny<CrearEmpresaMantenimientoComando>())).Throws(new ErrorRegistroYaExiste("Tech Services"));
+            _empresaServiceMock.Setup(s => s.CrearEmpresaMantenimiento(It.IsAny<CrearEmpresaMantenimientoComando>())).Throws(new ErrorRegistroYaExiste());
             IActionResult resultadoAccion = _empresasController.Crear(comando);
             Assert.That(resultadoAccion, Is.InstanceOf<ConflictObjectResult>());
         }
@@ -115,9 +116,11 @@ namespace IMT_Reservas.Tests.ControllerTests
 
         private static IEnumerable<object[]> FuenteCasos_ActualizarEmpresa_BadRequest()
         {
-            yield return new object[] { new ActualizarEmpresaMantenimientoComando(0, "Inválido", null, null, null, null, null), new ErrorIdInvalido("ID") };
-            yield return new object[] { new ActualizarEmpresaMantenimientoComando(1, "", null, null, null, null, null), new ErrorNombreRequerido("nombre de la empresa") };
-            yield return new object[] { new ActualizarEmpresaMantenimientoComando(1, new string('a', 101), null, null, null, null, null), new ErrorLongitudInvalida("nombre de la empresa", 100) };
+            yield return new object[] { new ActualizarEmpresaMantenimientoComando(0, "Inválido", null, null, null, null, null), new ErrorIdInvalido() };
+            yield return new object[] { new ActualizarEmpresaMantenimientoComando(1, "", null, null, null, null, null), new ErrorNombreRequerido() };
+            yield return new object[] { new ActualizarEmpresaMantenimientoComando(1, new string('a', 101), null, null, null, null, null), new ErrorLongitudInvalida("nombre", 100) };
+            yield return new object[] { new ActualizarEmpresaMantenimientoComando(1, "Empresa Valida", null, null, new string('a', 21), null, null), new ErrorLongitudInvalida("telefono", 20) };
+            yield return new object[] { new ActualizarEmpresaMantenimientoComando(1, "Empresa Valida", null, null, null, null, new string('a', 21)), new ErrorLongitudInvalida("nit", 20) };
         }
 
         [Test]
@@ -133,7 +136,7 @@ namespace IMT_Reservas.Tests.ControllerTests
         public void ActualizarEmpresa_NoEncontrada_RetornaNotFound()
         {
             ActualizarEmpresaMantenimientoComando comando = new ActualizarEmpresaMantenimientoComando(99, "NoExiste", null, null, null, null, null);
-            _empresaServiceMock.Setup(s => s.ActualizarEmpresaMantenimiento(It.IsAny<ActualizarEmpresaMantenimientoComando>())).Throws(new ErrorRegistroNoEncontrado("99"));
+            _empresaServiceMock.Setup(s => s.ActualizarEmpresaMantenimiento(It.IsAny<ActualizarEmpresaMantenimientoComando>())).Throws(new ErrorRegistroNoEncontrado());
             IActionResult resultadoAccion = _empresasController.Actualizar(comando);
             Assert.That(resultadoAccion, Is.InstanceOf<NotFoundObjectResult>());
         }
@@ -142,7 +145,7 @@ namespace IMT_Reservas.Tests.ControllerTests
         public void ActualizarEmpresa_RegistroExistente_RetornaConflict()
         {
             ActualizarEmpresaMantenimientoComando comando = new ActualizarEmpresaMantenimientoComando(1, "FixItAll", null, null, null, null, null);
-            _empresaServiceMock.Setup(s => s.ActualizarEmpresaMantenimiento(It.IsAny<ActualizarEmpresaMantenimientoComando>())).Throws(new ErrorRegistroYaExiste("FixItAll"));
+            _empresaServiceMock.Setup(s => s.ActualizarEmpresaMantenimiento(It.IsAny<ActualizarEmpresaMantenimientoComando>())).Throws(new ErrorRegistroYaExiste());
             IActionResult resultadoAccion = _empresasController.Actualizar(comando);
             Assert.That(resultadoAccion, Is.InstanceOf<ConflictObjectResult>());
         }
@@ -169,7 +172,7 @@ namespace IMT_Reservas.Tests.ControllerTests
 
         private static IEnumerable<object[]> FuenteCasos_EliminarEmpresa_BadRequest()
         {
-            yield return new object[] { 0, new ErrorIdInvalido("ID") };
+            yield return new object[] { 0, new ErrorIdInvalido() };
         }
 
         [Test]
@@ -185,7 +188,7 @@ namespace IMT_Reservas.Tests.ControllerTests
         public void EliminarEmpresa_NoEncontrada_RetornaNotFound()
         {
             int idNoExistente = 99;
-            _empresaServiceMock.Setup(s => s.EliminarEmpresaMantenimiento(It.Is<EliminarEmpresaMantenimientoComando>(c => c.Id == idNoExistente))).Throws(new ErrorRegistroNoEncontrado("99"));
+            _empresaServiceMock.Setup(s => s.EliminarEmpresaMantenimiento(It.Is<EliminarEmpresaMantenimientoComando>(c => c.Id == idNoExistente))).Throws(new ErrorRegistroNoEncontrado());
             IActionResult resultadoAccion = _empresasController.Eliminar(idNoExistente);
             Assert.That(resultadoAccion, Is.InstanceOf<NotFoundObjectResult>());
         }
@@ -194,7 +197,7 @@ namespace IMT_Reservas.Tests.ControllerTests
         public void EliminarEmpresa_EnUso_RetornaConflict()
         {
             int idEnUso = 2;
-            _empresaServiceMock.Setup(s => s.EliminarEmpresaMantenimiento(It.Is<EliminarEmpresaMantenimientoComando>(c => c.Id == idEnUso))).Throws(new ErrorRegistroEnUso("La empresa tiene mantenimientos asociados"));
+            _empresaServiceMock.Setup(s => s.EliminarEmpresaMantenimiento(It.Is<EliminarEmpresaMantenimientoComando>(c => c.Id == idEnUso))).Throws(new ErrorRegistroEnUso());
             IActionResult resultadoAccion = _empresasController.Eliminar(idEnUso);
             Assert.That(resultadoAccion, Is.InstanceOf<ConflictObjectResult>());
         }
