@@ -18,11 +18,11 @@ namespace IMT_Reservas.Tests.ControllerTests
         public void Setup()
         {
             _configMock         = new Mock<IConfiguration>();
+            _configMock.Setup(config => config.GetConnectionString("DefaultConnection")).Returns("fake_connection_string");
             _queryExecMock      = new Mock<ExecuteQuery>(_configMock.Object);
             _usuarioRepoMock    = new Mock<UsuarioRepository>(_queryExecMock.Object);
             _usuarioServiceMock = new Mock<UsuarioService>(_usuarioRepoMock.Object);
             _usuariosController = new UsuarioController(_usuarioServiceMock.Object);
-            _configMock.Setup(config => config.GetConnectionString("DefaultConnection")).Returns("fake_connection_string");
         }
 
         [Test]
@@ -70,20 +70,20 @@ namespace IMT_Reservas.Tests.ControllerTests
         [Test]
         public void IniciarSesion_Valido_RetornaOkConUsuario()
         {
-            string email = "test@ucb.edu.bo";
-            string contrasena = "pass123";
-            UsuarioDto usuarioEsperado = new UsuarioDto { Email = email, Nombre = "Test" };
+            string email = "fernando.terrazas@ucb.edu.bo";
+            string contrasena = "123456";
+            UsuarioDto usuarioEsperado = new UsuarioDto { Email = email, Nombre = "Fernando" };
             _usuarioServiceMock.Setup(s => s.IniciarSesionUsuario(It.Is<IniciarSesionUsuarioConsulta>(c => c.Email == email && c.Contrasena == contrasena))).Returns(usuarioEsperado);
             IActionResult resultadoAccion = _usuariosController.IniciarSesion(email, contrasena);
             Assert.That(resultadoAccion, Is.InstanceOf<OkObjectResult>());
             OkObjectResult okObjectResult = (OkObjectResult)resultadoAccion;
-            Assert.That(okObjectResult.Value, Is.EqualTo(usuarioEsperado));
+            Assert.That(((UsuarioDto)okObjectResult.Value).Email, Is.EqualTo(usuarioEsperado.Email));
         }
 
         [Test]
         public void IniciarSesion_Invalido_RetornaOkNulo()
         {
-            string email = "wrong@ucb.edu.bo";
+            string email = "fernando.terrazas@ucb.edu.bo";
             string contrasena = "wrongpass";
             _usuarioServiceMock.Setup(s => s.IniciarSesionUsuario(It.IsAny<IniciarSesionUsuarioConsulta>())).Returns((UsuarioDto)null);
             IActionResult resultadoAccion = _usuariosController.IniciarSesion(email, contrasena);

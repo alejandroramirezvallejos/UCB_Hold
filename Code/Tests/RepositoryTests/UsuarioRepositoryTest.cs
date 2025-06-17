@@ -44,8 +44,8 @@ namespace IMT_Reservas.Tests.RepositoryTests
         {
             DataTable tablaEsperada = new DataTable();
             tablaEsperada.Rows.Add(tablaEsperada.NewRow());
-            string email = "test@ucb.edu.bo";
-            string contrasena = "password";
+            string email = "fernando.terrazas@ucb.edu.bo";
+            string contrasena = "123456";
             _ejecutarConsultaMock.Setup(e => e.EjecutarFuncion(It.Is<string>(s => s.Contains("obtener_usuario_iniciar_sesion")), It.IsAny<Dictionary<string, object?>>()))
                            .Returns(tablaEsperada);
 
@@ -106,4 +106,3 @@ namespace IMT_Reservas.Tests.RepositoryTests
         }
     }
 }
-

@@ -81,7 +81,7 @@ namespace IMT_Reservas.Tests.ServiceTests
         [Test]
         public void IniciarSesionUsuario_CredencialesValidas_RetornaUsuarioDto()
         {
-            IniciarSesionUsuarioConsulta consulta = new IniciarSesionUsuarioConsulta("juan.perez@ucb.edu.bo", "pass123");
+            IniciarSesionUsuarioConsulta consulta = new IniciarSesionUsuarioConsulta("fernando.terrazas@ucb.edu.bo", "123456");
             DataTable dt = new DataTable();
             dt.Columns.Add("carnet");
             dt.Columns.Add("nombre");
@@ -94,7 +94,7 @@ namespace IMT_Reservas.Tests.ServiceTests
             dt.Columns.Add("telefono_referencia");
             dt.Columns.Add("nombre_referencia");
             dt.Columns.Add("email_referencia");
-            dt.Rows.Add("12345", "Juan", "Perez", "Gomez", "Sistemas", "Estudiante", "juan.perez@ucb.edu.bo", "77712345", null, null, null);
+            dt.Rows.Add("12345", "Fernando", "Terrazas", "Gomez", "Sistemas", "Estudiante", "fernando.terrazas@ucb.edu.bo", "77712345", null, null, null);
 
             _usuarioRepositoryMock.Setup(r => r.ObtenerPorEmailYContrasena(consulta.Email, consulta.Contrasena)).Returns(dt);
 
@@ -106,7 +106,7 @@ namespace IMT_Reservas.Tests.ServiceTests
         [Test]
         public void IniciarSesionUsuario_CredencialesInvalidas_RetornaNull()
         {
-            IniciarSesionUsuarioConsulta consulta = new IniciarSesionUsuarioConsulta("wrong@email.com", "wrongpass");
+            IniciarSesionUsuarioConsulta consulta = new IniciarSesionUsuarioConsulta("fernando.terrazas@ucb.edu.bo", "1234");
             _usuarioRepositoryMock.Setup(r => r.ObtenerPorEmailYContrasena(consulta.Email, consulta.Contrasena)).Returns(new DataTable());
 
             UsuarioDto resultado = _usuarioService.IniciarSesionUsuario(consulta);
@@ -114,4 +114,3 @@ namespace IMT_Reservas.Tests.ServiceTests
         }
     }
 }
-
