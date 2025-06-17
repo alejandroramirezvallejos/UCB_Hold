@@ -45,16 +45,14 @@ public class PrestamoService : IPrestamoService
     private void ValidarEntradaCreacion(CrearPrestamoComando comando)
     {
         if (comando == null)
-            throw new ArgumentNullException(nameof(comando));
-
-        if (string.IsNullOrWhiteSpace(comando.CarnetUsuario))
-            throw new ErrorNombreRequerido("carnet del usuario");
+            throw new ArgumentNullException(nameof(comando));        if (string.IsNullOrWhiteSpace(comando.CarnetUsuario))
+            throw new ErrorNombreRequerido();
 
         if (comando.GrupoEquipoId == null || comando.GrupoEquipoId.Length == 0)
-            throw new ErrorIdInvalido("grupos de equipos");
+            throw new ErrorIdInvalido();
 
         if (comando.GrupoEquipoId.Any(id => id <= 0))
-            throw new ErrorIdInvalido("ID de grupo de equipos");
+            throw new ErrorIdInvalido();
 
         if (comando.FechaPrestamoEsperada < DateTime.Now.Date)
             throw new ArgumentException("La fecha de préstamo no puede ser anterior a hoy");
@@ -68,11 +66,10 @@ public class PrestamoService : IPrestamoService
         var errorMessage = ex.Message.ToLower();
         
         // Errores específicos del procedimiento insertar_prestamo
-        
-        // Error: Usuario no encontrado (Foreign Key en carnet)
+          // Error: Usuario no encontrado (Foreign Key en carnet)
         if (errorMessage.Contains("23503") && (errorMessage.Contains("carnet") || errorMessage.Contains("usuarios")))
         {
-            return new ErrorCarnetUsuarioNoEncontrado(comando.CarnetUsuario);
+            return new ErrorCarnetUsuarioNoEncontrado();
         }
         
         // Error: Grupo no existe o está eliminado
@@ -80,10 +77,9 @@ public class PrestamoService : IPrestamoService
         {
             var match = System.Text.RegularExpressions.Regex.Match(errorMessage, @"grupo id (\d+) no existe");
             if (match.Success && int.TryParse(match.Groups[1].Value, out int grupoId))
-            {
-                return new ErrorRegistroNoEncontrado("grupo de equipos", grupoId.ToString());
+            {                return new ErrorRegistroNoEncontrado();
             }
-            return new ErrorRegistroNoEncontrado("grupo de equipos");
+            return new ErrorRegistroNoEncontrado();
         }
         
         // Error: No equipo disponible para grupo
@@ -92,7 +88,7 @@ public class PrestamoService : IPrestamoService
             var match = System.Text.RegularExpressions.Regex.Match(errorMessage, @"grupo id (\d+)");
             if (match.Success && int.TryParse(match.Groups[1].Value, out int grupoId))
             {
-                return new ErrorNoEquiposDisponibles(grupoId, comando.FechaPrestamoEsperada, comando.FechaDevolucionEsperada);
+                return new ErrorNoEquiposDisponibles();
             }
             return new ErrorNoEquiposDisponibles();
         }
@@ -137,10 +133,8 @@ public class PrestamoService : IPrestamoService
     private void ValidarEntradaEliminacion(EliminarPrestamoComando comando)
     {
         if (comando == null)
-            throw new ArgumentNullException(nameof(comando));
-
-        if (comando.Id <= 0)
-            throw new ErrorIdInvalido("préstamo");
+            throw new ArgumentNullException(nameof(comando));        if (comando.Id <= 0)
+            throw new ErrorIdInvalido();
     }
 
     public List<PrestamoDto>? ObtenerTodosPrestamos()

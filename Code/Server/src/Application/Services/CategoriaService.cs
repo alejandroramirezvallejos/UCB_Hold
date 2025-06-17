@@ -30,15 +30,13 @@ public class CategoriaService : ICategoriaService
             };
             throw PostgreSqlErrorInterpreter.InterpretarError(ex, "crear", "categoría", parametros);
         }
-    }
-
-    private void ValidarEntradaCreacion(CrearCategoriaComando comando)
+    }    private void ValidarEntradaCreacion(CrearCategoriaComando comando)
     {
         if (comando == null)
             throw new ArgumentNullException(nameof(comando));
 
         if (string.IsNullOrWhiteSpace(comando.Nombre))
-            throw new ErrorNombreRequerido("nombre de la categoría");
+            throw new ErrorNombreRequerido();
 
         if (comando.Nombre.Length > 50)
             throw new ErrorLongitudInvalida("nombre de la categoría", 50);
@@ -114,12 +112,11 @@ public class CategoriaService : ICategoriaService
     {
         if (comando == null)
             throw new ArgumentNullException(nameof(comando));
-
         if (comando.Id <= 0)
-            throw new ErrorIdInvalido("ID de la categoría");
+            throw new ErrorIdInvalido();
 
         if (string.IsNullOrWhiteSpace(comando.Nombre))
-            throw new ErrorNombreRequerido("nombre de la categoría");
+            throw new ErrorNombreRequerido();
 
         if (comando.Nombre.Length > 50)
             throw new ErrorLongitudInvalida("nombre de la categoría", 50);
@@ -129,11 +126,11 @@ public class CategoriaService : ICategoriaService
     {
         if (comando == null)
             throw new ArgumentNullException(nameof(comando));
-
         if (comando.Id <= 0)
-            throw new ErrorIdInvalido("ID de la categoría");
-        
-        try{
+            throw new ErrorIdInvalido();
+
+        try
+        {
             _categoriaRepository.Eliminar(comando.Id);
         }
         catch

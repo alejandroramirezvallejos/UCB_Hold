@@ -8,10 +8,5 @@ namespace Shared.Common
             : base($"El {campo} no puede ser negativo")
         {
         }
-        
-        public ErrorValorNegativo(string campo, double valor) 
-            : base($"El {campo} '{valor}' no puede ser negativo")
-        {
-        }
     }
 }

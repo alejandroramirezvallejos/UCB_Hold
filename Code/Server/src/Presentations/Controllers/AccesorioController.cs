@@ -89,7 +89,8 @@ public class AccesorioController : ControllerBase
         catch (DomainException ex)
         {
             return BadRequest(new { error = "Error de validación", mensaje = ex.Message });
-        }        catch (Exception)
+        }
+        catch (Exception)
         {
             return StatusCode(500, new { error = "Error interno del servidor", mensaje = "Ocurrió un error inesperado al actualizar el accesorio" });
         }
@@ -109,10 +110,6 @@ public class AccesorioController : ControllerBase
         }        catch (ErrorRegistroNoEncontrado ex)
         {
             return NotFound(new { error = "Accesorio no encontrado", mensaje = ex.Message });
-        }
-        catch (ErrorRegistroEnUso ex)
-        {
-            return Conflict(new { error = "Accesorio en uso", mensaje = ex.Message });
         }
         catch (DomainException ex)
         {

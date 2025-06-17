@@ -31,24 +31,19 @@ public class EmpresaMantenimientoService : IEmpresaMantenimientoService
             };
             throw PostgreSqlErrorInterpreter.InterpretarError(ex, "crear", "empresa de mantenimiento", parametros);
         }
-    }
-
-    private void ValidarEntradaCreacion(CrearEmpresaMantenimientoComando comando)
+    }    private void ValidarEntradaCreacion(CrearEmpresaMantenimientoComando comando)
     {
         if (comando == null)
             throw new ArgumentNullException(nameof(comando));
 
         if (string.IsNullOrWhiteSpace(comando.NombreEmpresa))
-            throw new ErrorNombreRequerido("nombre de la empresa");
+            throw new ErrorNombreRequerido();
 
-        if (comando.NombreEmpresa.Length > 100)
-            throw new ErrorLongitudInvalida("nombre de la empresa", 100);
+        if (comando.NombreEmpresa.Length > 255)
+            throw new ErrorLongitudInvalida("nombre", 255);
 
         if (!string.IsNullOrWhiteSpace(comando.Telefono) && comando.Telefono.Length > 20)
-            throw new ErrorLongitudInvalida("teléfono", 20);
-
-        if (!string.IsNullOrWhiteSpace(comando.Nit) && comando.Nit.Length > 20)
-            throw new ErrorLongitudInvalida("NIT", 20);
+            throw new ErrorLongitudInvalida("telefono", 20);
     }
     public List<EmpresaMantenimientoDto>? ObtenerTodasEmpresasMantenimiento()
     {
@@ -116,27 +111,25 @@ public class EmpresaMantenimientoService : IEmpresaMantenimientoService
             };
             throw PostgreSqlErrorInterpreter.InterpretarError(ex, "eliminar", "empresa de mantenimiento", parametros);
         }
-    }
-
-    private void ValidarEntradaActualizacion(ActualizarEmpresaMantenimientoComando comando)
+    }    private void ValidarEntradaActualizacion(ActualizarEmpresaMantenimientoComando comando)
     {
         if (comando == null)
             throw new ArgumentNullException(nameof(comando));
 
         if (comando.Id <= 0)
-            throw new ErrorIdInvalido("ID de la empresa de mantenimiento");
+            throw new ErrorIdInvalido();
 
         if (string.IsNullOrWhiteSpace(comando.NombreEmpresa))
-            throw new ErrorNombreRequerido("nombre de la empresa");
+            throw new ErrorNombreRequerido();
 
         if (comando.NombreEmpresa.Length > 100)
-            throw new ErrorLongitudInvalida("nombre de la empresa", 100);
+            throw new ErrorLongitudInvalida("nombre", 100);
 
         if (!string.IsNullOrWhiteSpace(comando.Telefono) && comando.Telefono.Length > 20)
-            throw new ErrorLongitudInvalida("teléfono", 20);
+            throw new ErrorLongitudInvalida("telefono", 20);
 
         if (!string.IsNullOrWhiteSpace(comando.Nit) && comando.Nit.Length > 20)
-            throw new ErrorLongitudInvalida("NIT", 20);
+            throw new ErrorLongitudInvalida("nit", 20);
     }
 
     private void ValidarEntradaEliminacion(EliminarEmpresaMantenimientoComando comando)
@@ -145,7 +138,7 @@ public class EmpresaMantenimientoService : IEmpresaMantenimientoService
             throw new ArgumentNullException(nameof(comando));
 
         if (comando.Id <= 0)
-            throw new ErrorIdInvalido("ID de la empresa de mantenimiento");
+            throw new ErrorIdInvalido();
     }
     private static EmpresaMantenimientoDto MapearFilaADto(DataRow fila)
     {

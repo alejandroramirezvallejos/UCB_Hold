@@ -19,6 +19,14 @@ public class GrupoEquipoService : IGrupoEquipoService
         {
             throw;
         }
+        catch (ErrorModeloRequerido)
+        {
+            throw;
+        }
+        catch (ErrorCampoRequerido)
+        {
+            throw;
+        }
         catch (Exception ex)
         {
             var parametros = new Dictionary<string, object?>
@@ -30,57 +38,53 @@ public class GrupoEquipoService : IGrupoEquipoService
             };
             throw PostgreSqlErrorInterpreter.InterpretarError(ex, "crear", "grupo de equipo", parametros);
         }
-    }
-
-    private void ValidarEntradaCreacion(CrearGrupoEquipoComando comando)
+    }private void ValidarEntradaCreacion(CrearGrupoEquipoComando comando)
     {
         if (comando == null)
             throw new ArgumentNullException(nameof(comando));
 
         if (string.IsNullOrWhiteSpace(comando.Nombre))
-            throw new ErrorNombreRequerido("nombre del grupo de equipo");
+            throw new ErrorNombreRequerido();
 
         if (string.IsNullOrWhiteSpace(comando.Modelo))
-            throw new ErrorNombreRequerido("modelo");
+            throw new ErrorModeloRequerido();
 
         if (string.IsNullOrWhiteSpace(comando.Marca))
-            throw new ErrorNombreRequerido("marca");
+            throw new ErrorCampoRequerido("marca");
 
         if (string.IsNullOrWhiteSpace(comando.Descripcion))
-            throw new ErrorNombreRequerido("descripción");
+            throw new ErrorCampoRequerido("descripcion");
 
         if (string.IsNullOrWhiteSpace(comando.NombreCategoria))
-            throw new ErrorNombreRequerido("nombre de la categoría");
+            throw new ErrorCampoRequerido("categoria");
 
         if (string.IsNullOrWhiteSpace(comando.UrlImagen))
-            throw new ErrorNombreRequerido("URL de la imagen");
-    }
-
-    private void ValidarEntradaActualizacion(ActualizarGrupoEquipoComando comando)
+            throw new ErrorCampoRequerido("url de imagen");
+    }    private void ValidarEntradaActualizacion(ActualizarGrupoEquipoComando comando)
     {
         if (comando == null)
             throw new ArgumentNullException(nameof(comando));
 
         if (comando.Id <= 0)
-            throw new ErrorIdInvalido("grupo de equipo");
+            throw new ErrorIdInvalido();
 
         if (string.IsNullOrWhiteSpace(comando.Nombre))
-            throw new ErrorNombreRequerido("nombre del grupo de equipo");
+            throw new ErrorNombreRequerido();
 
         if (string.IsNullOrWhiteSpace(comando.Modelo))
-            throw new ErrorNombreRequerido("modelo");
+            throw new ErrorModeloRequerido();
 
         if (string.IsNullOrWhiteSpace(comando.Marca))
-            throw new ErrorNombreRequerido("marca");
+            throw new ErrorCampoRequerido("marca");
 
         if (string.IsNullOrWhiteSpace(comando.Descripcion))
-            throw new ErrorNombreRequerido("descripción");
+            throw new ErrorCampoRequerido("descripcion");
 
         if (string.IsNullOrWhiteSpace(comando.NombreCategoria))
-            throw new ErrorNombreRequerido("nombre de la categoría");
+            throw new ErrorCampoRequerido("categoria");
 
         if (string.IsNullOrWhiteSpace(comando.UrlImagen))
-            throw new ErrorNombreRequerido("URL de la imagen");
+            throw new ErrorCampoRequerido("url de imagen");
     }
 
     private void ValidarEntradaEliminacion(EliminarGrupoEquipoComando comando)
@@ -89,7 +93,7 @@ public class GrupoEquipoService : IGrupoEquipoService
             throw new ArgumentNullException(nameof(comando));
 
         if (comando.Id <= 0)
-            throw new ErrorIdInvalido("grupo de equipo");
+            throw new ErrorIdInvalido();
     }public GrupoEquipoDto? ObtenerGrupoEquipoPorId(ObtenerGrupoEquipoPorIdConsulta consulta)
     {
         try
@@ -145,8 +149,7 @@ public class GrupoEquipoService : IGrupoEquipoService
         {
             throw;
         }
-    }
-    public void ActualizarGrupoEquipo(ActualizarGrupoEquipoComando comando)
+    }    public void ActualizarGrupoEquipo(ActualizarGrupoEquipoComando comando)
     {
         try
         {
@@ -158,6 +161,14 @@ public class GrupoEquipoService : IGrupoEquipoService
             throw;
         }
         catch (ErrorNombreRequerido)
+        {
+            throw;
+        }
+        catch (ErrorModeloRequerido)
+        {
+            throw;
+        }
+        catch (ErrorCampoRequerido)
         {
             throw;
         }

@@ -42,22 +42,20 @@ public class EquipoService : IEquipoService
     private void ValidarEntradaCreacion(CrearEquipoComando comando)
     {
         if (comando == null)
-            throw new ArgumentNullException(nameof(comando));
-
-        if (string.IsNullOrWhiteSpace(comando.NombreGrupoEquipo))
-            throw new ErrorNombreRequerido("nombre del grupo de equipo");
+            throw new ArgumentNullException(nameof(comando));        if (string.IsNullOrWhiteSpace(comando.NombreGrupoEquipo))
+            throw new ErrorNombreRequerido();
 
         if (string.IsNullOrWhiteSpace(comando.Modelo))
-            throw new ErrorNombreRequerido("modelo");
+            throw new ErrorModeloRequerido();
 
         if (string.IsNullOrWhiteSpace(comando.Marca))
-            throw new ErrorNombreRequerido("marca");
+            throw new ErrorNombreRequerido();
 
         if (comando.CostoReferencia.HasValue && comando.CostoReferencia < 0)
-            throw new ErrorValorNegativo("costo de referencia", comando.CostoReferencia.Value);
+            throw new ErrorValorNegativo("costo de referencia");
 
         if (comando.TiempoMaximoPrestamo.HasValue && comando.TiempoMaximoPrestamo <= 0)
-            throw new ErrorIdInvalido("tiempo máximo de préstamo");
+            throw new ErrorIdInvalido();
     }    public void ActualizarEquipo(ActualizarEquipoComando comando)
     {
         try
@@ -87,16 +85,14 @@ public class EquipoService : IEquipoService
     private void ValidarEntradaActualizacion(ActualizarEquipoComando comando)
     {
         if (comando == null)
-            throw new ArgumentNullException(nameof(comando));
-
-        if (comando.Id <= 0)
-            throw new ErrorIdInvalido("ID del equipo");
+            throw new ArgumentNullException(nameof(comando));        if (comando.Id <= 0)
+            throw new ErrorIdInvalido();
 
         if (comando.CostoReferencia.HasValue && comando.CostoReferencia < 0)
-            throw new ErrorValorNegativo("costo de referencia", comando.CostoReferencia.Value);
+            throw new ErrorValorNegativo("costo de referencia");
 
         if (comando.TiempoMaximoPrestamo.HasValue && comando.TiempoMaximoPrestamo <= 0)
-            throw new ErrorIdInvalido("tiempo máximo de préstamo");
+            throw new ErrorIdInvalido();
     }    public void EliminarEquipo(EliminarEquipoComando comando)
     {
         try
@@ -121,10 +117,8 @@ public class EquipoService : IEquipoService
     private void ValidarEntradaEliminacion(EliminarEquipoComando comando)
     {
         if (comando == null)
-            throw new ArgumentNullException(nameof(comando));
-
-        if (comando.Id <= 0)
-            throw new ErrorIdInvalido("ID del equipo");
+            throw new ArgumentNullException(nameof(comando));        if (comando.Id <= 0)
+            throw new ErrorIdInvalido();
     }
     public List<EquipoDto>? ObtenerTodosEquipos()
     {

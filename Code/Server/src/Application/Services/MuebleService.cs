@@ -116,15 +116,13 @@ public class MuebleService : IMuebleService
             Profundidad = fila["profundidad_mueble"] == DBNull.Value ? null : Convert.ToDouble(fila["profundidad_mueble"]),
             Altura = fila["altura_mueble"] == DBNull.Value ? null : Convert.ToDouble(fila["altura_mueble"])
         };
-    }
-
-    private void ValidarEntradaCreacion(CrearMuebleComando comando)
+    }    private void ValidarEntradaCreacion(CrearMuebleComando comando)
     {
         if (comando == null)
             throw new ArgumentNullException(nameof(comando));
 
         if (string.IsNullOrWhiteSpace(comando.Nombre))
-            throw new ErrorNombreRequerido("nombre del mueble");
+            throw new ErrorNombreRequerido();
 
         if (comando.Costo.HasValue && comando.Costo < 0)
             throw new ErrorValorNegativo("costo");
@@ -145,10 +143,10 @@ public class MuebleService : IMuebleService
             throw new ArgumentNullException(nameof(comando));
 
         if (comando.Id <= 0)
-            throw new ErrorIdInvalido("mueble");
+            throw new ErrorIdInvalido();
 
         if (string.IsNullOrWhiteSpace(comando.Nombre))
-            throw new ErrorNombreRequerido("nombre del mueble");
+            throw new ErrorNombreRequerido();
 
         if (comando.Costo.HasValue && comando.Costo < 0)
             throw new ErrorValorNegativo("costo");
@@ -169,6 +167,6 @@ public class MuebleService : IMuebleService
             throw new ArgumentNullException(nameof(comando));
 
         if (comando.Id <= 0)
-            throw new ErrorIdInvalido("mueble");
+            throw new ErrorIdInvalido();
     }
 }

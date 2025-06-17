@@ -108,11 +108,7 @@ public static class CommandLineInterface
         Console.ResetColor();
 
         var builder = WebApplication.CreateBuilder();        
-        builder.Services.AddControllers(options =>
-            {
-                options.Filters.Add<ModelValidationFilter>();
-            })
-            .AddJsonOptions(options =>
+        builder.Services.AddControllers().AddJsonOptions(options =>
             {
                 options.JsonSerializerOptions.PropertyNamingPolicy = null;
                 options.JsonSerializerOptions.PropertyNameCaseInsensitive = true;
@@ -120,7 +116,8 @@ public static class CommandLineInterface
 
         builder.Services.AddEndpointsApiExplorer();
         builder.Services.AddSwaggerGen();
-        builder.Services.AddAuthorization();        builder.Services.AddCors(options =>
+        builder.Services.AddAuthorization();
+        builder.Services.AddCors(options =>
         {
             options.AddPolicy("AllowAll", policy =>
             {
@@ -158,11 +155,10 @@ public static class CommandLineInterface
         builder.Services.AddScoped<MantenimientoRepository>();
         builder.Services.AddScoped<MuebleRepository>();
         builder.Services.AddScoped<PrestamoRepository>();
-        builder.Services.AddScoped<UsuarioRepository>();        var app = builder.Build();
-        
-        // Middleware de manejo de errores (debe ser el primero)
-        app.UseMiddleware<ErrorHandlingMiddleware>();
-        
+        builder.Services.AddScoped<UsuarioRepository>();
+
+        var app = builder.Build();
+              
         app.UseDefaultFiles();
         app.UseStaticFiles();
 
