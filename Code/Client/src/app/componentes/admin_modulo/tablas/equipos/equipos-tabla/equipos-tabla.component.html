@@ -39,15 +39,15 @@
               <i [class]="sortDirection === 'asc' ? 'fas fa-sort-up' : 'fas fa-sort-down'"></i>
             }
           </th>
-          <th (click)="ordenarPor('Modelo')">
-            Modelo 
-            @if (sortColumn === 'Modelo') {
+          <th (click)="ordenarPor('EstadoEquipo')">
+            EstadoEquipo 
+            @if (sortColumn === 'EstadoEquipo') {
               <i [class]="sortDirection === 'asc' ? 'fas fa-sort-up' : 'fas fa-sort-down'"></i>
             }
           </th>
-          <th (click)="ordenarPor('Marca')">
-            Marca 
-            @if (sortColumn === 'Marca') {
+          <th (click)="ordenarPor('Ubicacion')">
+            Ubicacion 
+            @if (sortColumn === 'Ubicacion') {
               <i [class]="sortDirection === 'asc' ? 'fas fa-sort-up' : 'fas fa-sort-down'"></i>
             }
           </th>
@@ -68,9 +68,9 @@
       </thead>      <tbody>
         @for (equipo of equipos; track $index ; let i = $index) {
             <tr>
-            <td>{{equipo.Nombre}}</td>
-            <td>{{equipo.Modelo}}</td>
-            <td>{{equipo.Marca}}</td>
+            <td>{{equipo.NombreGrupoEquipo}}</td>
+            <td>{{equipo.EstadoEquipo}}</td>
+            <td>{{equipo.Ubicacion}}</td>
             <td>{{equipo.CodigoImt}}</td>
             <td class="precio-column">{{equipo.CostoReferencia | currency:'Bs ':'symbol':'1.2-2'}}</td>
             <td class="actions-column">

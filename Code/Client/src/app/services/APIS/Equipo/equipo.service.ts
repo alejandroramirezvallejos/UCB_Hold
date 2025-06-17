@@ -40,7 +40,7 @@ export class EquipoService {
       map(data => data.map(item => ({
         Id: item.Id,
         NombreGrupoEquipo: item.NombreGrupoEquipo,
-        CodigoImt : item.CodigoIMT,
+        CodigoImt : item.CodigoImt,
         CodigoUcb: item.CodigoUcb,
         NumeroSerial: item.NumeroSerial,
         EstadoEquipo: item.EstadoEquipo,

@@ -42,6 +42,7 @@ export class GrupoequipoService {
         url_data_sheet: item.UrlDataSheet || '' ,
         marca: ' '+item.Marca || '',
         link: item.UrlImagen ,
+        nombreCategoria: item.NombreCategoria || ''
 
       })))
     );
