@@ -50,6 +50,7 @@ export class ComponenteService {
 
   actualizarComponente(componente: Componente) {
     const envio = {
+      Id: componente.Id,
       Nombre: componente.Nombre,
       Modelo: componente.Modelo,
       Tipo: componente.Tipo,
@@ -57,9 +58,9 @@ export class ComponenteService {
       Descripcion: componente.Descripcion,
       PrecioReferencia: componente.PrecioReferencia,
       UrlDataSheet: componente.UrlDataSheet
-    }
+    };
 
-    return this.http.put<any>(this.apiUrl + '/' + componente.Id, envio);
+    return this.http.put<any>(this.apiUrl, envio);
   }
 
   eliminarComponente(id: number) {

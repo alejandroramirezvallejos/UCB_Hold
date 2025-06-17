@@ -42,7 +42,6 @@ export class AccesoriosTablaComponent {
   constructor(private accesoriosapi : AccesoriosService){}; 
 
 
-  // ----
   sortColumn: string = 'nombre';
 
   sortDirection: 'asc' | 'desc' = 'asc';
@@ -100,6 +99,8 @@ buscar(){
     String(accesorio.codigo_imt || '').toLowerCase().includes(this.terminoBusqueda.toLowerCase()) ||
     accesorio.nombreEquipoAsociado?.toLowerCase().includes(this.terminoBusqueda.toLowerCase()) 
   );
+
+
 }
 
 limpiarBusqueda(){

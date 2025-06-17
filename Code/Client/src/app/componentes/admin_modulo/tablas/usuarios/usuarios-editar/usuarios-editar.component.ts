@@ -35,12 +35,11 @@ export class UsuariosEditarComponent {
   confirmar() {
     this.usuarioApi.editarUsuario(this.usuario, this.contrasena).subscribe(
       response => {
-        alert(response);
         this.actualizar.emit();
         this.cerrar();
       },
       error => {
-        alert('Error al editar usuario: ' + error.message);
+        console.error('Error al editar usuario:', error);
         this.cerrar();
       }
     );

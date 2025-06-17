@@ -31,17 +31,17 @@ export class AccesoriosEditarComponent {
 
   confirmar (){
  
-    this.accesorioapi.editarAccesorio(this.accesorio).subscribe(
-      response => {
-        alert( response);
+    this.accesorioapi.editarAccesorio(this.accesorio).subscribe({
+      next : (response) => {
         this.actualizar.emit();
         this.cerrar();
       },
-      error => {
+      error: (error) => {
         alert('Error al editar accesorio: ' + error.message);
-        this.cerrar();
       }
-    );
+    });
+
+    
   }
 
   cerrar(){

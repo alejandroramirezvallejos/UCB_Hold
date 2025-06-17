@@ -66,6 +66,7 @@ export class GrupoequipoService {
 
   editarGrupoEquipo(grupoEquipo: GrupoEquipo) {
     const envio = {
+      Id: grupoEquipo.id,
       Nombre: grupoEquipo.nombre,
       Modelo: grupoEquipo.modelo,
       Marca: grupoEquipo.marca,
@@ -75,7 +76,7 @@ export class GrupoequipoService {
       UrlImagen: grupoEquipo.link
     };
 
-    return this.http.put<any>(`${this.apiUrl}/${grupoEquipo.id}`, envio);
+    return this.http.put<any>(this.apiUrl, envio);
   }
 
 
