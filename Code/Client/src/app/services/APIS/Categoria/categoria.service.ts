@@ -33,10 +33,11 @@ export class CategoriaService {
 
   actualizarCategoria(categoria : Categorias){
     const envio = {
+      Id: categoria.Id,
       Nombre: categoria.Nombre
     }
 
-    return this.http.put<any>(this.apiurl + '/' + categoria.Id, envio);
+    return this.http.put<any>(this.apiurl, envio);
   }
 
   eliminarCategoria(id: number){

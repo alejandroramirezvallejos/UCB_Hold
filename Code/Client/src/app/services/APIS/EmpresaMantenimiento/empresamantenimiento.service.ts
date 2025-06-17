@@ -46,6 +46,7 @@ export class EmpresamantenimientoService {
 
   actualizarEmpresaMantenimiento(empresa: EmpresaMantenimiento) {
     const envio = {
+      Id: empresa.Id,
       NombreEmpresa: empresa.NombreEmpresa,
       NombreResponsable: empresa.NombreResponsable,
       ApellidoResponsable: empresa.ApellidoResponsable,
@@ -54,7 +55,7 @@ export class EmpresamantenimientoService {
       Direccion: empresa.Direccion
     };
 
-    return this.http.put<any>(`${this.apiUrl}/${empresa.Id}`, envio);
+    return this.http.put<any>(this.apiUrl, envio);
   }
 
   eliminarEmpresaMantenimiento(id: number) {

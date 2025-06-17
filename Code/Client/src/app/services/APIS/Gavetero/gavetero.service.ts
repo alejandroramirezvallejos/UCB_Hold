@@ -42,6 +42,7 @@ export class GaveteroService {
 
   editarGavetero(gavetero: Gaveteros) {
     const envio = {
+      Id: gavetero.Id,
       Nombre: gavetero.Nombre,
       Tipo: gavetero.Tipo,
       NombreMueble: gavetero.NombreMueble,
@@ -50,7 +51,7 @@ export class GaveteroService {
       Altura: gavetero.Altura
     };
 
-    return this.http.put<any>(`${this.apiUrl}/${gavetero.Id}`, envio);
+    return this.http.put<any>(this.apiUrl, envio);
   }
 
   eliminarGavetero(id: number) {

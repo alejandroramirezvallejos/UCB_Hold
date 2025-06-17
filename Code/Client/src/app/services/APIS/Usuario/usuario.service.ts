@@ -93,7 +93,16 @@ export class UsuarioServiceAPI {
     );
   }
 
-  editarUsuario(usuario: Usuario , contrasena: string) {
+  editarUsuario(usuario: Usuario , entrada: string) {
+    let contrasena ;
+    if(entrada === '') {
+      contrasena = null;
+    }
+    else{
+      contrasena = entrada;
+    }
+
+
     const envio = {
       Carnet: usuario.carnet,
       Nombre: usuario.nombre,

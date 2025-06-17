@@ -30,10 +30,11 @@ export class CarreraService {
 
   actualizarCarrera(carrera : Carrera){
     const envio = {
+      Id: carrera.Id,
       Nombre: carrera.Nombre
-    }
+    };
 
-    return this.http.put<any>(this.apiUrl + '/' + carrera.Id, envio);
+    return this.http.put<any>(this.apiUrl, envio);
   }
 
   eliminarCarrera(id: number){

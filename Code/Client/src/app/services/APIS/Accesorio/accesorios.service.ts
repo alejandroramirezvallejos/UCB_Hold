@@ -48,6 +48,7 @@ export class AccesoriosService {
 
   editarAccesorio(accesorio: Accesorio) {
     const envio = {
+      Id : accesorio.id,
       Nombre: accesorio.nombre,
       Modelo: accesorio.modelo,
       Tipo: accesorio.tipo,
@@ -57,11 +58,10 @@ export class AccesoriosService {
       UrlDataSheet: accesorio.url_data_sheet
     };
 
+    return this.http.put(`${this.apiurl}`, envio );
 
-   return this.http.put(`${this.apiurl}/${accesorio.id}`, envio, { 
-    responseType: 'text' 
-  });
-  }
+
+}
 
 
 }

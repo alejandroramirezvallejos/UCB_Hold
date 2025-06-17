@@ -47,6 +47,7 @@ export class MuebleService {
 
   actualizarMueble(mueble: Muebles) {
     const enviar = {
+      Id: mueble.Id,
       Nombre: mueble.Nombre,
       Tipo: mueble.Tipo,
       Costo: mueble.Costo,
@@ -56,7 +57,7 @@ export class MuebleService {
       Altura: mueble.Altura
     };
 
-    return this.http.put(`${this.apiUrl}/${mueble.Id}`, enviar);
+    return this.http.put(`${this.apiUrl}`, enviar);
   }
 
 

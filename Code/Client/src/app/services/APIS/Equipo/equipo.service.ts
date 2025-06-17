@@ -59,6 +59,7 @@ export class EquipoService {
 
   editarEquipo(equipo: Equipos) {
     const envio = {
+      Id: equipo.Id,
       NombreGrupoEquipo: equipo.NombreGrupoEquipo,
       Modelo: equipo.Modelo,
       Marca: equipo.Marca,
@@ -74,7 +75,7 @@ export class EquipoService {
       NombreGavetero: equipo.NombreGavetero
     };
 
-    return this.http.put<any>(`${this.apiUrl}/${equipo.Id}`, envio);
+    return this.http.put<any>(this.apiUrl, envio);
   }
 
   eliminarEquipo(id: number) {
