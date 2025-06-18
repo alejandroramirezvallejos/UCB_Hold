@@ -80,7 +80,7 @@ public class AccesorioService : IAccesorioService
             throw new ErrorLongitudInvalida("nombre del accesorio", 256);
         if (comando.CodigoIMT <= 0)
             throw new ErrorCodigoImtRequerido();
-        if (comando.Precio.HasValue && comando.Precio.Value < 0)
+        if (comando.Precio.HasValue && comando.Precio.Value <= 0)
             throw new ErrorValorNegativo("precio");
     }
     public List<AccesorioDto>? ObtenerTodosAccesorios()
