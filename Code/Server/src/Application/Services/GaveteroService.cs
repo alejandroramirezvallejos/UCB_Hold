@@ -1,5 +1,4 @@
 using System.Data;
-using Shared.Common;
 public class GaveteroService : IGaveteroService
 {
     private readonly GaveteroRepository _gaveteroRepository;
@@ -21,16 +20,47 @@ public class GaveteroService : IGaveteroService
         catch (ErrorValorNegativo)
         {
             throw;
-        }
-        catch (Exception ex)
+        }        catch (Exception ex)
         {
-            var parametros = new Dictionary<string, object?>
+            // Manejo específico para insertar_gavetero según el procedimiento almacenado
+            if (ex is ErrorDataBase errorDb)
             {
-                ["nombre"] = comando.Nombre,
-                ["nombreMueble"] = comando.NombreMueble,
-                ["tipo"] = comando.Tipo
-            };
-            throw PostgreSqlErrorInterpreter.InterpretarError(ex, "crear", "gavetero", parametros);
+                var mensaje = errorDb.Message?.ToLower() ?? "";
+                
+                // Error: Mueble no encontrado
+                if (mensaje.Contains("no se encontró el mueble con nombre"))
+                {
+                    throw new ErrorReferenciaInvalida("mueble");
+                }
+                
+                // Error: Gavetero duplicado
+                if (mensaje.Contains("ya existe un gavetero con nombre"))
+                {
+                    throw new ErrorRegistroYaExiste();
+                }
+                
+                // Error: Violación de unicidad
+                if (errorDb.SqlState == "23505" || mensaje.Contains("violación de unicidad al intentar insertar gavetero"))
+                {
+                    throw new ErrorRegistroYaExiste();
+                }
+                
+                // Error genérico del procedimiento
+                if (mensaje.Contains("error al insertar gavetero"))
+                {
+                    throw new Exception($"Error inesperado al insertar gavetero: {errorDb.Message}", errorDb);
+                }
+                
+                // Otros errores de base de datos
+                throw new Exception($"Error inesperado de base de datos al crear gavetero: {errorDb.Message}", errorDb);
+            }
+            
+            if (ex is ErrorRepository errorRepo)
+            {
+                throw new Exception($"Error del repositorio al crear gavetero: {errorRepo.Message}", errorRepo);
+            }
+            
+            throw;
         }
     }    private void ValidarEntradaCreacion(CrearGaveteroComando comando)
     {
@@ -41,7 +71,7 @@ public class GaveteroService : IGaveteroService
             throw new ErrorNombreRequerido();
 
         if (string.IsNullOrWhiteSpace(comando.NombreMueble))
-            throw new ErrorNombreRequerido();
+            throw new ErrorNombreMuebleRequerido();
 
         if (comando.Longitud.HasValue && comando.Longitud <= 0)
             throw new ErrorValorNegativo("longitud");
@@ -69,16 +99,53 @@ public class GaveteroService : IGaveteroService
         catch (ErrorValorNegativo)
         {
             throw;
-        }
-        catch (Exception ex)
+        }        catch (Exception ex)
         {
-            var parametros = new Dictionary<string, object?>
+            // Manejo específico para actualizar_gavetero según el procedimiento almacenado
+            if (ex is ErrorDataBase errorDb)
             {
-                ["id"] = comando.Id,
-                ["nombre"] = comando.Nombre,
-                ["nombreMueble"] = comando.NombreMueble
-            };
-            throw PostgreSqlErrorInterpreter.InterpretarError(ex, "actualizar", "gavetero", parametros);
+                var mensaje = errorDb.Message?.ToLower() ?? "";
+                
+                // Error: Gavetero no encontrado
+                if (mensaje.Contains("no se encontró un gavetero activo con id"))
+                {
+                    throw new ErrorRegistroNoEncontrado();
+                }
+                
+                // Error: Mueble no encontrado
+                if (mensaje.Contains("no se encontró el mueble activo con nombre"))
+                {
+                    throw new ErrorReferenciaInvalida("mueble");
+                }
+                
+                // Error: Nombre de gavetero duplicado
+                if (mensaje.Contains("ya existe otro gavetero activo con el nombre"))
+                {
+                    throw new ErrorRegistroYaExiste();
+                }
+                
+                // Error: Violación de unicidad general
+                if (errorDb.SqlState == "23505" || mensaje.Contains("violación de unicidad"))
+                {
+                    throw new ErrorRegistroYaExiste();
+                }
+                
+                // Error genérico del procedimiento
+                if (mensaje.Contains("error inesperado al actualizar el gavetero"))
+                {
+                    throw new Exception($"Error inesperado al actualizar gavetero: {errorDb.Message}", errorDb);
+                }
+                
+                // Otros errores de base de datos
+                throw new Exception($"Error inesperado de base de datos al actualizar gavetero: {errorDb.Message}", errorDb);
+            }
+            
+            if (ex is ErrorRepository errorRepo)
+            {
+                throw new Exception($"Error del repositorio al actualizar gavetero: {errorRepo.Message}", errorRepo);
+            }
+            
+            throw;
         }
     }
 
@@ -92,14 +159,35 @@ public class GaveteroService : IGaveteroService
         catch (ErrorIdInvalido)
         {
             throw;
-        }
-        catch (Exception ex)
+        }        catch (Exception ex)
         {
-            var parametros = new Dictionary<string, object?>
+            // Manejo específico para eliminar_gavetero según el procedimiento almacenado
+            if (ex is ErrorDataBase errorDb)
             {
-                ["id"] = comando.Id
-            };
-            throw PostgreSqlErrorInterpreter.InterpretarError(ex, "eliminar", "gavetero", parametros);
+                var mensaje = errorDb.Message?.ToLower() ?? "";
+                
+                // Error: Gavetero no encontrado
+                if (mensaje.Contains("no se encontró un gavetero activo con id"))
+                {
+                    throw new ErrorRegistroNoEncontrado();
+                }
+                
+                // Error genérico del procedimiento
+                if (mensaje.Contains("error al eliminar lógicamente el gavetero"))
+                {
+                    throw new Exception($"Error inesperado al eliminar gavetero: {errorDb.Message}", errorDb);
+                }
+                
+                // Otros errores de base de datos
+                throw new Exception($"Error inesperado de base de datos al eliminar gavetero: {errorDb.Message}", errorDb);
+            }
+            
+            if (ex is ErrorRepository errorRepo)
+            {
+                throw new Exception($"Error del repositorio al eliminar gavetero: {errorRepo.Message}", errorRepo);
+            }
+            
+            throw;
         }
     }    private void ValidarEntradaActualizacion(ActualizarGaveteroComando comando)
     {

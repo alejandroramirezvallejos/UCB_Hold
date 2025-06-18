@@ -1,6 +1,5 @@
 using System.Data;
 using Npgsql;
-using Shared.Common;
 
 public class MantenimientoRepository : IMantenimientoRepository
 {
@@ -35,10 +34,13 @@ public class MantenimientoRepository : IMantenimientoRepository
         };        try
         {
             _ejecutarConsulta.EjecutarSpNR(sql, parametros);
+        }        catch (NpgsqlException ex)
+        {
+            throw new ErrorDataBase($"Error de base de datos al crear mantenimiento: {ex.Message}", ex.SqlState, null, ex);
         }
         catch (Exception ex)
         {
-            throw PostgreSqlErrorInterpreter.InterpretarError(ex, "crear", "mantenimiento", parametros);
+            throw new ErrorRepository($"Error del repositorio al crear mantenimiento: {ex.Message}", ex);
         }
     }
     public void Eliminar(int id)
@@ -55,10 +57,13 @@ public class MantenimientoRepository : IMantenimientoRepository
           try
         {
             _ejecutarConsulta.EjecutarSpNR(sql, parametros);
+        }        catch (NpgsqlException ex)
+        {
+            throw new ErrorDataBase($"Error de base de datos al eliminar mantenimiento: {ex.Message}", ex.SqlState, null, ex);
         }
         catch (Exception ex)
         {
-            throw PostgreSqlErrorInterpreter.InterpretarError(ex, "eliminar", "mantenimiento", parametros);
+            throw new ErrorRepository($"Error del repositorio al eliminar mantenimiento: {ex.Message}", ex);
         }
     }      public DataTable ObtenerTodos()
     {
@@ -70,10 +75,13 @@ public class MantenimientoRepository : IMantenimientoRepository
         {
             DataTable dt = _ejecutarConsulta.EjecutarFuncion(sql, new Dictionary<string, object?>());
             return dt;
+        }        catch (NpgsqlException ex)
+        {
+            throw new ErrorDataBase($"Error de base de datos al obtener mantenimientos: {ex.Message}", ex.SqlState, null, ex);
         }
         catch (Exception ex)
         {
-            throw PostgreSqlErrorInterpreter.InterpretarError(ex, "obtener", "mantenimientos", new Dictionary<string, object?>());
+            throw new ErrorRepository($"Error del repositorio al obtener mantenimientos: {ex.Message}", ex);
         }
     }
 }

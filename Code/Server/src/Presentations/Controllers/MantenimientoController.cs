@@ -1,5 +1,4 @@
 using Microsoft.AspNetCore.Mvc;
-using Shared.Common;
 
 namespace API.Controllers;
 
@@ -19,7 +18,8 @@ public class MantenimientoController : ControllerBase
         {
             servicio.CrearMantenimiento(input);
             return Created();
-        }        catch (ErrorNombreRequerido ex)
+        }
+        catch (ErrorNombreRequerido ex)
         {
             return BadRequest(new { error = "Campo requerido", mensaje = ex.Message });
         }
@@ -31,14 +31,27 @@ public class MantenimientoController : ControllerBase
         {
             return BadRequest(new { error = "ID inválido", mensaje = ex.Message });
         }
+        catch (ErrorFechaInvalida ex)
+        {
+            return BadRequest(new { error = "Fecha inválida", mensaje = ex.Message });
+        }
         catch (ErrorReferenciaInvalida ex)
         {
             return BadRequest(new { error = "Referencia inválida", mensaje = ex.Message });
         }
+        catch (ErrorRegistroYaExiste ex)
+        {
+            return Conflict(new { error = "Mantenimiento duplicado", mensaje = ex.Message });
+        }
+        catch (ArgumentException ex)
+        {
+            return BadRequest(new { error = "Argumentos inválidos", mensaje = ex.Message });
+        }
         catch (DomainException ex)
         {
             return BadRequest(new { error = "Error de validación", mensaje = ex.Message });
-        }        catch (Exception)
+        }
+        catch (Exception)
         {
             return StatusCode(500, new { error = "Error interno del servidor", mensaje = "Ocurrió un error inesperado al crear el mantenimiento" });
         }
@@ -56,8 +69,7 @@ public class MantenimientoController : ControllerBase
         {
             return BadRequest(new { error = "Error interno del servidor", mensaje = $"Error al obtener mantenimientos: {ex.Message}" });
         }
-    }
-    [HttpDelete("{id}")]
+    }    [HttpDelete("{id}")]
     public IActionResult Eliminar(int id)
     {
         try
@@ -69,18 +81,16 @@ public class MantenimientoController : ControllerBase
         catch (ErrorIdInvalido ex)
         {
             return BadRequest(new { error = "ID inválido", mensaje = ex.Message });
-        }        catch (ErrorRegistroNoEncontrado)
+        }
+        catch (ErrorRegistroNoEncontrado)
         {
             return NotFound(new { error = "Mantenimiento no encontrado", mensaje = $"No se encontró un mantenimiento con ID {id}" });
-        }
-        catch (ErrorRegistroEnUso)
-        {
-            return Conflict(new { error = "Mantenimiento en uso", mensaje = "No se puede eliminar el mantenimiento porque ya fue procesado" });
         }
         catch (DomainException ex)
         {
             return BadRequest(new { error = "Error de validación", mensaje = ex.Message });
-        }        catch (Exception)
+        }
+        catch (Exception)
         {
             return StatusCode(500, new { error = "Error interno del servidor", mensaje = "Ocurrió un error inesperado al eliminar el mantenimiento" });
         }

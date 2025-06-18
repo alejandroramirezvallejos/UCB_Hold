@@ -1,6 +1,5 @@
 using System.Data;
 using Npgsql;
-using Shared.Common;
 
 public class CarreraRepository : ICarreraRepository
 {
@@ -24,10 +23,13 @@ public class CarreraRepository : ICarreraRepository
         };        try
         {
             _ejecutarConsulta.EjecutarSpNR(sql, parametros);
+        }        catch (NpgsqlException ex)
+        {
+            throw new ErrorDataBase($"Error de base de datos al crear carrera: {ex.Message}", ex.SqlState, null, ex);
         }
         catch (Exception ex)
         {
-            throw PostgreSqlErrorInterpreter.InterpretarError(ex, "crear", "carrera", parametros);
+            throw new ErrorRepository($"Error en repositorio al crear carrera: {ex.Message}", "crear", "carrera", ex);
         }
     }
 
@@ -42,11 +44,13 @@ public class CarreraRepository : ICarreraRepository
             {
                 ["id"] = id
             });
+        }        catch (NpgsqlException ex)
+        {
+            throw new ErrorDataBase($"Error de base de datos al eliminar carrera: {ex.Message}", ex.SqlState, null, ex);
         }
         catch (Exception ex)
         {
-            var parametros = new Dictionary<string, object?> { ["id"] = id };
-            throw PostgreSqlErrorInterpreter.InterpretarError(ex, "eliminar", "carrera", parametros);
+            throw new ErrorRepository($"Error en repositorio al eliminar carrera: {ex.Message}", "eliminar", "carrera", ex);
         }
     }
 
@@ -64,10 +68,13 @@ public class CarreraRepository : ICarreraRepository
             ["nombre"] = comando.Nombre ?? (object)DBNull.Value        };        try
         {
             _ejecutarConsulta.EjecutarSpNR(sql, parametros);
+        }        catch (NpgsqlException ex)
+        {
+            throw new ErrorDataBase($"Error de base de datos al actualizar carrera: {ex.Message}", ex.SqlState, null, ex);
         }
         catch (Exception ex)
         {
-            throw PostgreSqlErrorInterpreter.InterpretarError(ex, "actualizar", "carrera", parametros);
+            throw new ErrorRepository($"Error en repositorio al actualizar carrera: {ex.Message}", "actualizar", "carrera", ex);
         }
     }
     public DataTable ObtenerTodas()
@@ -78,10 +85,13 @@ public class CarreraRepository : ICarreraRepository
         {
             DataTable dt = _ejecutarConsulta.EjecutarFuncion(sql, new Dictionary<string, object?>());
             return dt;
+        }        catch (NpgsqlException ex)
+        {
+            throw new ErrorDataBase($"Error de base de datos al obtener carreras: {ex.Message}", ex.SqlState, null, ex);
         }
         catch (Exception ex)
         {
-            throw PostgreSqlErrorInterpreter.InterpretarError(ex, "obtener", "carreras", null);
+            throw new ErrorRepository($"Error en repositorio al obtener carreras: {ex.Message}", "obtener", "carreras", ex);
         }
     }
 }

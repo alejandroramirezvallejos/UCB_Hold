@@ -1,5 +1,4 @@
 using System.Data;
-using Shared.Common;
 public class EmpresaMantenimientoService : IEmpresaMantenimientoService
 {
     private readonly EmpresaMantenimientoRepository _empresaMantenimientoRepository;
@@ -20,16 +19,35 @@ public class EmpresaMantenimientoService : IEmpresaMantenimientoService
         catch (ErrorLongitudInvalida)
         {
             throw;
-        }
-        catch (Exception ex)
+        }        catch (Exception ex)
         {
-            var parametros = new Dictionary<string, object?>
+            // Manejo específico para insertar_empresa_mantenimiento según el procedimiento almacenado
+            if (ex is ErrorDataBase errorDb)
             {
-                ["nombre"] = comando.NombreEmpresa,
-                ["nit"] = comando.Nit,
-                ["telefono"] = comando.Telefono
-            };
-            throw PostgreSqlErrorInterpreter.InterpretarError(ex, "crear", "empresa de mantenimiento", parametros);
+                var mensaje = errorDb.Message?.ToLower() ?? "";
+                
+                // Error: Empresa de mantenimiento duplicada
+                if (errorDb.SqlState == "23505" || mensaje.Contains("ya existe una empresa de mantenimiento con esos datos"))
+                {
+                    throw new ErrorRegistroYaExiste();
+                }
+                
+                // Error genérico del procedimiento
+                if (mensaje.Contains("error al insertar empresa de mantenimiento"))
+                {
+                    throw new Exception($"Error inesperado al insertar empresa de mantenimiento: {errorDb.Message}", errorDb);
+                }
+                
+                // Otros errores de base de datos
+                throw new Exception($"Error inesperado de base de datos al crear empresa de mantenimiento: {errorDb.Message}", errorDb);
+            }
+            
+            if (ex is ErrorRepository errorRepo)
+            {
+                throw new Exception($"Error del repositorio al crear empresa de mantenimiento: {errorRepo.Message}", errorRepo);
+            }
+            
+            throw;
         }
     }    private void ValidarEntradaCreacion(CrearEmpresaMantenimientoComando comando)
     {
@@ -79,16 +97,41 @@ public class EmpresaMantenimientoService : IEmpresaMantenimientoService
         catch (ErrorLongitudInvalida)
         {
             throw;
-        }
-        catch (Exception ex)
+        }        catch (Exception ex)
         {
-            var parametros = new Dictionary<string, object?>
+            // Manejo específico para actualizar_empresa_mantenimiento según el procedimiento almacenado
+            if (ex is ErrorDataBase errorDb)
             {
-                ["id"] = comando.Id,
-                ["nombre"] = comando.NombreEmpresa,
-                ["nit"] = comando.Nit
-            };
-            throw PostgreSqlErrorInterpreter.InterpretarError(ex, "actualizar", "empresa de mantenimiento", parametros);
+                var mensaje = errorDb.Message?.ToLower() ?? "";
+                
+                // Error: Empresa de mantenimiento no encontrada
+                if (mensaje.Contains("no se encontró una empresa de mantenimiento activa con id"))
+                {
+                    throw new ErrorRegistroNoEncontrado();
+                }
+                
+                // Error: Violación de unicidad
+                if (errorDb.SqlState == "23505" || mensaje.Contains("error de violación de unicidad"))
+                {
+                    throw new ErrorRegistroYaExiste();
+                }
+                
+                // Error genérico del procedimiento
+                if (mensaje.Contains("error inesperado al actualizar la empresa de mantenimiento"))
+                {
+                    throw new Exception($"Error inesperado al actualizar empresa de mantenimiento: {errorDb.Message}", errorDb);
+                }
+                
+                // Otros errores de base de datos
+                throw new Exception($"Error inesperado de base de datos al actualizar empresa de mantenimiento: {errorDb.Message}", errorDb);
+            }
+            
+            if (ex is ErrorRepository errorRepo)
+            {
+                throw new Exception($"Error del repositorio al actualizar empresa de mantenimiento: {errorRepo.Message}", errorRepo);
+            }
+            
+            throw;
         }
     }
 
@@ -102,14 +145,35 @@ public class EmpresaMantenimientoService : IEmpresaMantenimientoService
         catch (ErrorIdInvalido)
         {
             throw;
-        }
-        catch (Exception ex)
+        }        catch (Exception ex)
         {
-            var parametros = new Dictionary<string, object?>
+            // Manejo específico para eliminar_empresas_mantenimiento según el procedimiento almacenado
+            if (ex is ErrorDataBase errorDb)
             {
-                ["id"] = comando.Id
-            };
-            throw PostgreSqlErrorInterpreter.InterpretarError(ex, "eliminar", "empresa de mantenimiento", parametros);
+                var mensaje = errorDb.Message?.ToLower() ?? "";
+                
+                // Error: Empresa de mantenimiento no encontrada
+                if (mensaje.Contains("no se encontró un registro activo en empresas_mantenimiento con id"))
+                {
+                    throw new ErrorRegistroNoEncontrado();
+                }
+                
+                // Error genérico del procedimiento
+                if (mensaje.Contains("error al eliminar lógicamente empresas_mantenimiento"))
+                {
+                    throw new Exception($"Error inesperado al eliminar empresa de mantenimiento: {errorDb.Message}", errorDb);
+                }
+                
+                // Otros errores de base de datos
+                throw new Exception($"Error inesperado de base de datos al eliminar empresa de mantenimiento: {errorDb.Message}", errorDb);
+            }
+            
+            if (ex is ErrorRepository errorRepo)
+            {
+                throw new Exception($"Error del repositorio al eliminar empresa de mantenimiento: {errorRepo.Message}", errorRepo);
+            }
+            
+            throw;
         }
     }    private void ValidarEntradaActualizacion(ActualizarEmpresaMantenimientoComando comando)
     {

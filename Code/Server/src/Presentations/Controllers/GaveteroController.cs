@@ -1,5 +1,4 @@
 using Microsoft.AspNetCore.Mvc;
-using Shared.Common;
 
 namespace API.Controllers;
 
@@ -24,13 +23,16 @@ public class GaveteroController : ControllerBase
         {
             return BadRequest(new { error = "Campo requerido", mensaje = ex.Message });
         }
+        catch(ErrorNombreMuebleRequerido ex)
+        {
+            return BadRequest(new { error = "Campo requerido", mensaje = ex.Message });
+        }
         catch (ErrorIdInvalido ex)
         {
             return BadRequest(new { error = "ID inválido", mensaje = ex.Message });
-        }
-        catch (ErrorValorNegativo ex)
+        }        catch (ErrorValorNegativo ex)
         {
-            return BadRequest(new { error = "Valor negativo", mensaje = ex.Message });
+            return BadRequest(new { error = "Valor inválido", mensaje = ex.Message });
         }
         catch (ErrorRegistroYaExiste ex)
         {
@@ -44,7 +46,9 @@ public class GaveteroController : ControllerBase
         {
             return BadRequest(new { error = "Error de validación", mensaje = ex.Message });
         }
-        catch (Exception) { return StatusCode(500, new { error = "Error interno del servidor", mensaje = "Ocurrió un error inesperado al crear el gavetero" });
+        catch (Exception) 
+        { 
+            return StatusCode(500, new { error = "Error interno del servidor", mensaje = "Ocurrió un error inesperado al crear el gavetero" });
         }
     }
 
@@ -76,14 +80,17 @@ public class GaveteroController : ControllerBase
         catch (ErrorNombreRequerido ex)
         {
             return BadRequest(new { error = "Campo requerido", mensaje = ex.Message });
-        }
-        catch (ErrorValorNegativo ex)
+        }        catch (ErrorValorNegativo ex)
         {
-            return BadRequest(new { error = "Valor negativo", mensaje = ex.Message });
+            return BadRequest(new { error = "Valor inválido", mensaje = ex.Message });
         }
         catch (ErrorRegistroNoEncontrado ex)
         {
-            return NotFound(new { error = "Gavetero no encontrado", mensaje = $"No se encontró un gavetero con ID {ex.Message}" });
+            return NotFound(new { error = "Gavetero no encontrado", mensaje = ex.Message });
+        }
+        catch (ErrorRegistroYaExiste ex)
+        {
+            return Conflict(new { error = "Gavetero duplicado", mensaje = ex.Message });
         }
         catch (ErrorReferenciaInvalida ex)
         {
@@ -93,7 +100,9 @@ public class GaveteroController : ControllerBase
         {
             return BadRequest(new { error = "Error de validación", mensaje = ex.Message });
         }
-        catch (Exception) { return StatusCode(500, new { error = "Error interno del servidor", mensaje = "Ocurrió un error inesperado al actualizar el gavetero" });
+        catch (Exception) 
+        { 
+            return StatusCode(500, new { error = "Error interno del servidor", mensaje = "Ocurrió un error inesperado al actualizar el gavetero" });
         }
     }    [HttpDelete("{id}")]
     public IActionResult Eliminar(int id)
@@ -108,19 +117,17 @@ public class GaveteroController : ControllerBase
         {
             return BadRequest(new { error = "ID inválido", mensaje = ex.Message });
         }
-        catch (ErrorRegistroNoEncontrado)
+        catch (ErrorRegistroNoEncontrado ex)
         {
-            return NotFound(new { error = "Gavetero no encontrado", mensaje = $"No se encontró un gavetero con ID {id}" });
-        }
-        catch (ErrorRegistroEnUso)
-        {
-            return Conflict(new { error = "Gavetero en uso", mensaje = "No se puede eliminar el gavetero porque tiene equipos almacenados" });
+            return NotFound(new { error = "Gavetero no encontrado", mensaje = ex.Message });
         }
         catch (DomainException ex)
         {
             return BadRequest(new { error = "Error de validación", mensaje = ex.Message });
         }
-        catch (Exception) { return StatusCode(500, new { error = "Error interno del servidor", mensaje = "Ocurrió un error inesperado al eliminar el gavetero" });
+        catch (Exception) 
+        { 
+            return StatusCode(500, new { error = "Error interno del servidor", mensaje = "Ocurrió un error inesperado al eliminar el gavetero" });
         }
     }
 }

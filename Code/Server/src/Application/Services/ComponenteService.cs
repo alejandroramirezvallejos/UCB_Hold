@@ -1,5 +1,4 @@
 using System.Data;
-using Shared.Common;
 public class ComponenteService : IComponenteService
 {
     private readonly ComponenteRepository _componenteRepository;
@@ -36,16 +35,41 @@ public class ComponenteService : IComponenteService
         catch (ErrorValorNegativo)
         {
             throw;
-        }
-        catch (Exception ex)
+        }        catch (Exception ex)
         {
-            var parametros = new Dictionary<string, object?>
+            // Manejo específico para insertar_componente según el procedimiento almacenado
+            if (ex is ErrorDataBase errorDb)
             {
-                ["nombre"] = comando.Nombre,
-                ["modelo"] = comando.Modelo,
-                ["codigoImt"] = comando.CodigoIMT
-            };
-            throw PostgreSqlErrorInterpreter.InterpretarError(ex, "crear", "componente", parametros);
+                var mensaje = errorDb.Message?.ToLower() ?? "";
+                
+                // Error: Equipo no encontrado por código IMT
+                if (mensaje.Contains("no se encontró el equipo con código imt"))
+                {
+                    throw new ErrorReferenciaInvalida("equipo");
+                }
+                
+                // Error: Componente duplicado
+                if (errorDb.SqlState == "23505" || mensaje.Contains("ya existe un componente con esos datos"))
+                {
+                    throw new ErrorRegistroYaExiste();
+                }
+                
+                // Error genérico del procedimiento
+                if (mensaje.Contains("error al insertar componente"))
+                {
+                    throw new Exception($"Error inesperado al insertar componente: {errorDb.Message}", errorDb);
+                }
+                
+                // Otros errores de base de datos
+                throw new Exception($"Error inesperado de base de datos al crear componente: {errorDb.Message}", errorDb);
+            }
+            
+            if (ex is ErrorRepository errorRepo)
+            {
+                throw new Exception($"Error del repositorio al crear componente: {errorRepo.Message}", errorRepo);
+            }
+            
+            throw;
         }
     }
 
@@ -115,16 +139,46 @@ public class ComponenteService : IComponenteService
         catch (ErrorValorNegativo)
         {
             throw;
-        }
-        catch (Exception ex)
+        }        catch (Exception ex)
         {
-            var parametros = new Dictionary<string, object?>
+            // Manejo específico para actualizar_componente según el procedimiento almacenado
+            if (ex is ErrorDataBase errorDb)
             {
-                ["id"] = comando.Id,
-                ["nombre"] = comando.Nombre,
-                ["modelo"] = comando.Modelo
-            };
-            throw PostgreSqlErrorInterpreter.InterpretarError(ex, "actualizar", "componente", parametros);
+                var mensaje = errorDb.Message?.ToLower() ?? "";
+                
+                // Error: Componente no encontrado
+                if (mensaje.Contains("no se encontró un componente activo con id"))
+                {
+                    throw new ErrorRegistroNoEncontrado();
+                }
+                  // Error: Equipo no encontrado por código IMT
+                if (mensaje.Contains("no se encontró un equipo activo con código imt"))
+                {
+                    throw new ErrorReferenciaInvalida("equipo");
+                }
+                
+                // Error: Violación de unicidad
+                if (errorDb.SqlState == "23505" || mensaje.Contains("error de violación de unicidad"))
+                {
+                    throw new ErrorRegistroYaExiste();
+                }
+                
+                // Error genérico del procedimiento
+                if (mensaje.Contains("error inesperado al actualizar el componente"))
+                {
+                    throw new Exception($"Error inesperado al actualizar componente: {errorDb.Message}", errorDb);
+                }
+                
+                // Otros errores de base de datos
+                throw new Exception($"Error inesperado de base de datos al actualizar componente: {errorDb.Message}", errorDb);
+            }
+            
+            if (ex is ErrorRepository errorRepo)
+            {
+                throw new Exception($"Error del repositorio al actualizar componente: {errorRepo.Message}", errorRepo);
+            }
+            
+            throw;
         }
     }
 
@@ -138,14 +192,35 @@ public class ComponenteService : IComponenteService
         catch (ErrorIdInvalido)
         {
             throw;
-        }
-        catch (Exception ex)
+        }        catch (Exception ex)
         {
-            var parametros = new Dictionary<string, object?>
+            // Manejo específico para eliminar_componente según el procedimiento almacenado
+            if (ex is ErrorDataBase errorDb)
             {
-                ["id"] = comando.Id
-            };
-            throw PostgreSqlErrorInterpreter.InterpretarError(ex, "eliminar", "componente", parametros);
+                var mensaje = errorDb.Message?.ToLower() ?? "";
+                
+                // Error: Componente no encontrado
+                if (mensaje.Contains("no se encontró un componente activo con id"))
+                {
+                    throw new ErrorRegistroNoEncontrado();
+                }
+                
+                // Error genérico del procedimiento
+                if (mensaje.Contains("error al eliminar lógicamente el componente"))
+                {
+                    throw new Exception($"Error inesperado al eliminar componente: {errorDb.Message}", errorDb);
+                }
+                
+                // Otros errores de base de datos
+                throw new Exception($"Error inesperado de base de datos al eliminar componente: {errorDb.Message}", errorDb);
+            }
+            
+            if (ex is ErrorRepository errorRepo)
+            {
+                throw new Exception($"Error del repositorio al eliminar componente: {errorRepo.Message}", errorRepo);
+            }
+            
+            throw;
         }
     }    private void ValidarEntradaActualizacion(ActualizarComponenteComando comando)
     {

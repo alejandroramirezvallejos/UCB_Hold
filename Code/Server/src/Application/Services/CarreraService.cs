@@ -1,5 +1,4 @@
 using System.Data;
-using Shared.Common;
 
 public class CarreraService : ICarreraService
 {
@@ -22,14 +21,41 @@ public class CarreraService : ICarreraService
         catch (ErrorLongitudInvalida)
         {
             throw;
-        }
-        catch (Exception ex)
+        }        catch (Exception ex)
         {
-            var parametros = new Dictionary<string, object?>
+            // Manejo específico para insertar_carrera según el procedimiento almacenado
+            if (ex is ErrorDataBase errorDb)
             {
-                ["nombre"] = comando.Nombre
-            };
-            throw PostgreSqlErrorInterpreter.InterpretarError(ex, "crear", "carrera", parametros);
+                var mensaje = errorDb.Message?.ToLower() ?? "";
+                
+                // Error: Nombre vacío (aunque ya se valida en la entrada)
+                if (mensaje.Contains("el nombre de la carrera no puede estar vacío"))
+                {
+                    throw new ErrorNombreRequerido();
+                }
+                
+                // Error: Nombre duplicado
+                if (errorDb.SqlState == "23505" || mensaje.Contains("ya existe una carrera con el nombre"))
+                {
+                    throw new ErrorRegistroYaExiste();
+                }
+                
+                // Error genérico del procedimiento
+                if (mensaje.Contains("error al insertar carrera"))
+                {
+                    throw new Exception($"Error inesperado al insertar carrera: {errorDb.Message}", errorDb);
+                }
+                
+                // Otros errores de base de datos
+                throw new Exception($"Error inesperado de base de datos al crear carrera: {errorDb.Message}", errorDb);
+            }
+            
+            if (ex is ErrorRepository errorRepo)
+            {
+                throw new Exception($"Error del repositorio al crear carrera: {errorRepo.Message}", errorRepo);
+            }
+            
+            throw;
         }
     }    private void ValidarEntradaCreacion(CrearCarreraComando comando)
     {
@@ -76,15 +102,47 @@ public class CarreraService : ICarreraService
         catch (ErrorLongitudInvalida)
         {
             throw;
-        }
-        catch (Exception ex)
+        }        catch (Exception ex)
         {
-            var parametros = new Dictionary<string, object?>
+            // Manejo específico para actualizar_carrera según el procedimiento almacenado
+            if (ex is ErrorDataBase errorDb)
             {
-                ["id"] = comando.Id,
-                ["nombre"] = comando.Nombre
-            };
-            throw PostgreSqlErrorInterpreter.InterpretarError(ex, "actualizar", "carrera", parametros);
+                var mensaje = errorDb.Message?.ToLower() ?? "";
+                
+                // Error: Carrera no encontrada
+                if (mensaje.Contains("no se encontró una carrera activa con el id"))
+                {
+                    throw new ErrorRegistroNoEncontrado();
+                }
+                
+                // Error: Nombre vacío (aunque ya se valida en la entrada)
+                if (mensaje.Contains("el nuevo nombre de la carrera no puede estar vacío"))
+                {
+                    throw new ErrorNombreRequerido();
+                }
+                
+                // Error: ID inválido (aunque ya se valida en la entrada)
+                if (mensaje.Contains("el id de la carrera debe ser un número positivo"))
+                {
+                    throw new ErrorIdInvalido();
+                }
+                
+                // Error: Nombre duplicado
+                if (mensaje.Contains("ya existe otra carrera con el nombre"))
+                {
+                    throw new ErrorRegistroYaExiste();
+                }
+                
+                // Otros errores de base de datos
+                throw new Exception($"Error inesperado de base de datos al actualizar carrera: {errorDb.Message}", errorDb);
+            }
+            
+            if (ex is ErrorRepository errorRepo)
+            {
+                throw new Exception($"Error del repositorio al actualizar carrera: {errorRepo.Message}", errorRepo);
+            }
+            
+            throw;
         }
     }
 
@@ -110,14 +168,35 @@ public class CarreraService : ICarreraService
         catch (ErrorIdInvalido)
         {
             throw;
-        }
-        catch (Exception ex)
+        }        catch (Exception ex)
         {
-            var parametros = new Dictionary<string, object?>
+            // Manejo específico para eliminar_carrera según el procedimiento almacenado
+            if (ex is ErrorDataBase errorDb)
             {
-                ["id"] = comando.Id
-            };
-            throw PostgreSqlErrorInterpreter.InterpretarError(ex, "eliminar", "carrera", parametros);
+                var mensaje = errorDb.Message?.ToLower() ?? "";
+                
+                // Error: Carrera no encontrada
+                if (mensaje.Contains("no se encontró una carrera activa con id"))
+                {
+                    throw new ErrorRegistroNoEncontrado();
+                }
+                
+                // Error genérico del procedimiento
+                if (mensaje.Contains("error al eliminar lógicamente la carrera"))
+                {
+                    throw new Exception($"Error inesperado al eliminar carrera: {errorDb.Message}", errorDb);
+                }
+                
+                // Otros errores de base de datos
+                throw new Exception($"Error inesperado de base de datos al eliminar carrera: {errorDb.Message}", errorDb);
+            }
+            
+            if (ex is ErrorRepository errorRepo)
+            {
+                throw new Exception($"Error del repositorio al eliminar carrera: {errorRepo.Message}", errorRepo);
+            }
+            
+            throw;
         }
     }
 

@@ -1,5 +1,4 @@
 using Microsoft.AspNetCore.Mvc;
-using Shared.Common;
 
 namespace API.Controllers;
 
@@ -12,10 +11,9 @@ public class GrupoEquipoController : ControllerBase
     public GrupoEquipoController(GrupoEquipoService servicio)
     {
         this.servicio = servicio;
-    }
-
-    [HttpPost]
-    public IActionResult Crear([FromBody] CrearGrupoEquipoComando input)    {
+    }    [HttpPost]
+    public IActionResult Crear([FromBody] CrearGrupoEquipoComando input)
+    {
         try
         {
             servicio.CrearGrupoEquipo(input);
@@ -25,9 +23,17 @@ public class GrupoEquipoController : ControllerBase
         {
             return BadRequest(new { error = "Campo requerido", mensaje = ex.Message });
         }
-        catch (ErrorRegistroYaExiste)
+        catch (ErrorModeloRequerido ex)
         {
-            return Conflict(new { error = "Grupo de equipo duplicado", mensaje = $"Ya existe un grupo de equipo con ese nombre y características" });
+            return BadRequest(new { error = "Campo requerido", mensaje = ex.Message });
+        }
+        catch (ErrorCampoRequerido ex)
+        {
+            return BadRequest(new { error = "Campo requerido", mensaje = ex.Message });
+        }
+        catch (ErrorRegistroYaExiste ex)
+        {
+            return Conflict(new { error = "Grupo de equipo duplicado", mensaje = ex.Message });
         }
         catch (ErrorReferenciaInvalida ex)
         {

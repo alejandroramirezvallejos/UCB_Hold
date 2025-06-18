@@ -1,5 +1,4 @@
 using System.Data;
-using Shared.Common;
 public class EquipoService : IEquipoService
 {
     private readonly EquipoRepository _equipoRepository;
@@ -25,31 +24,62 @@ public class EquipoService : IEquipoService
         catch (ErrorIdInvalido)
         {
             throw;
-        }
-        catch (Exception ex)
+        }        catch (Exception ex)
         {
-            var parametros = new Dictionary<string, object?>
+            // Manejo específico para insertar_equipo según el procedimiento almacenado
+            if (ex is ErrorDataBase errorDb)
             {
-                ["nombre"] = comando.NombreGrupoEquipo,
-                ["modelo"] = comando.Modelo,
-                ["marca"] = comando.Marca,
-                ["codigoUcb"] = comando.CodigoUcb
-            };
-            throw PostgreSqlErrorInterpreter.InterpretarError(ex, "crear", "equipo", parametros);
+                var mensaje = errorDb.Message?.ToLower() ?? "";
+                
+                // Error: Grupo de equipos no encontrado
+                if (mensaje.Contains("no se encontró el grupo de equipos con nombre"))
+                {
+                    throw new ErrorReferenciaInvalida("grupo de equipos");
+                }
+                
+                // Error: Gavetero no encontrado
+                if (mensaje.Contains("no se encontro el gavetero con nombre"))
+                {
+                    throw new ErrorReferenciaInvalida("gavetero");
+                }
+                
+                // Error: Equipo duplicado (código UCB o número serial)
+                if (errorDb.SqlState == "23505" || mensaje.Contains("ya existe un equipo con ese código ucb o número serial"))
+                {
+                    throw new ErrorRegistroYaExiste();
+                }
+                
+                // Error genérico del procedimiento
+                if (mensaje.Contains("error al insertar equipo"))
+                {
+                    throw new Exception($"Error inesperado al insertar equipo: {errorDb.Message}", errorDb);
+                }
+                
+                // Otros errores de base de datos
+                throw new Exception($"Error inesperado de base de datos al crear equipo: {errorDb.Message}", errorDb);
+            }
+            
+            if (ex is ErrorRepository errorRepo)
+            {
+                throw new Exception($"Error del repositorio al crear equipo: {errorRepo.Message}", errorRepo);
+            }
+            
+            throw;
         }
     }
 
     private void ValidarEntradaCreacion(CrearEquipoComando comando)
     {
         if (comando == null)
-            throw new ArgumentNullException(nameof(comando));        if (string.IsNullOrWhiteSpace(comando.NombreGrupoEquipo))
+            throw new ArgumentNullException(nameof(comando));
+        if (string.IsNullOrWhiteSpace(comando.NombreGrupoEquipo))
             throw new ErrorNombreRequerido();
 
         if (string.IsNullOrWhiteSpace(comando.Modelo))
             throw new ErrorModeloRequerido();
 
         if (string.IsNullOrWhiteSpace(comando.Marca))
-            throw new ErrorNombreRequerido();
+            throw new ErrorMarcaRequerida();
 
         if (comando.CostoReferencia.HasValue && comando.CostoReferencia < 0)
             throw new ErrorValorNegativo("costo de referencia");
@@ -70,15 +100,74 @@ public class EquipoService : IEquipoService
         catch (ErrorValorNegativo)
         {
             throw;
-        }
-        catch (Exception ex)
+        }        catch (Exception ex)
         {
-            var parametros = new Dictionary<string, object?>
+            // Manejo específico para actualizar_equipo según el procedimiento almacenado
+            if (ex is ErrorDataBase errorDb)
             {
-                ["id"] = comando.Id,
-                ["nombre"] = comando.NombreGrupoEquipo
-            };
-            throw PostgreSqlErrorInterpreter.InterpretarError(ex, "actualizar", "equipo", parametros);
+                var mensaje = errorDb.Message?.ToLower() ?? "";
+                
+                // Error: Equipo no encontrado
+                if (mensaje.Contains("no se encontró un equipo activo con id"))
+                {
+                    throw new ErrorRegistroNoEncontrado();
+                }
+                
+                // Error: Grupo de equipos no encontrado
+                if (mensaje.Contains("no se encontró el grupo de equipos con nombre"))
+                {
+                    throw new ErrorReferenciaInvalida("grupo de equipos");
+                }
+                
+                // Error: Gavetero no encontrado
+                if (mensaje.Contains("no se encontró el gavetero con nombre"))
+                {
+                    throw new ErrorReferenciaInvalida("gavetero");
+                }
+                
+                // Error: Estado de equipo inválido
+                if (mensaje.Contains("valor inválido para estado_equipo"))
+                {
+                    throw new ArgumentException("Estado de equipo inválido. Debe ser 'operativo', 'inoperativo', o 'parcialmente_operativo'.");
+                }
+                
+                // Errores de violación de unicidad específicos
+                if (errorDb.SqlState == "23505")
+                {
+                    if (mensaje.Contains("código imt") || mensaje.Contains("unique_codigo_imt"))
+                    {
+                        throw new ErrorRegistroYaExiste();
+                    }
+                    else if (mensaje.Contains("código ucb") || mensaje.Contains("unique_codigo_ucb"))
+                    {
+                        throw new ErrorRegistroYaExiste();
+                    }
+                    else if (mensaje.Contains("número de serie") || mensaje.Contains("unique_numero_serial"))
+                    {
+                        throw new ErrorRegistroYaExiste();
+                    }
+                    else
+                    {
+                        throw new ErrorRegistroYaExiste();
+                    }
+                }
+                
+                // Error genérico del procedimiento
+                if (mensaje.Contains("error inesperado al actualizar el equipo"))
+                {
+                    throw new Exception($"Error inesperado al actualizar equipo: {errorDb.Message}", errorDb);
+                }
+                
+                // Otros errores de base de datos
+                throw new Exception($"Error inesperado de base de datos al actualizar equipo: {errorDb.Message}", errorDb);
+            }
+            
+            if (ex is ErrorRepository errorRepo)
+            {
+                throw new Exception($"Error del repositorio al actualizar equipo: {errorRepo.Message}", errorRepo);
+            }
+            
+            throw;
         }
     }
 
@@ -103,14 +192,35 @@ public class EquipoService : IEquipoService
         catch (ErrorIdInvalido)
         {
             throw;
-        }
-        catch (Exception ex)
+        }        catch (Exception ex)
         {
-            var parametros = new Dictionary<string, object?>
+            // Manejo específico para eliminar_equipo según el procedimiento almacenado
+            if (ex is ErrorDataBase errorDb)
             {
-                ["id"] = comando.Id
-            };
-            throw PostgreSqlErrorInterpreter.InterpretarError(ex, "eliminar", "equipo", parametros);
+                var mensaje = errorDb.Message?.ToLower() ?? "";
+                
+                // Error: Equipo no encontrado
+                if (mensaje.Contains("no se encontró un equipo activo con id"))
+                {
+                    throw new ErrorRegistroNoEncontrado();
+                }
+                
+                // Error genérico del procedimiento
+                if (mensaje.Contains("error al eliminar lógicamente el equipo"))
+                {
+                    throw new Exception($"Error inesperado al eliminar equipo: {errorDb.Message}", errorDb);
+                }
+                
+                // Otros errores de base de datos
+                throw new Exception($"Error inesperado de base de datos al eliminar equipo: {errorDb.Message}", errorDb);
+            }
+            
+            if (ex is ErrorRepository errorRepo)
+            {
+                throw new Exception($"Error del repositorio al eliminar equipo: {errorRepo.Message}", errorRepo);
+            }
+            
+            throw;
         }
     }
 

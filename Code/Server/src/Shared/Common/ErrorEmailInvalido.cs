@@ -1,12 +1,8 @@
-using Shared.Common;
 
-namespace Shared.Common
+public class ErrorEmailInvalido : DomainException
 {
-    public class ErrorEmailInvalido : DomainException
+    public ErrorEmailInvalido() 
+        : base($"El formato del email no es válido")
     {
-        public ErrorEmailInvalido() 
-            : base($"El formato del email no es válido")
-        {
-        }
     }
 }

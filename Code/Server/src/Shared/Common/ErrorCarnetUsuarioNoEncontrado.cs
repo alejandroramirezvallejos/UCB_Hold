@@ -1,4 +1,4 @@
-using Shared.Common;
+
 public class ErrorCarnetUsuarioNoEncontrado : DomainException
 {
     public ErrorCarnetUsuarioNoEncontrado()

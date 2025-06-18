@@ -1,6 +1,5 @@
 using System.Data;
 using Npgsql;
-using Shared.Common;
 
 public class MuebleRepository : IMuebleRepository
 {
@@ -34,10 +33,13 @@ public class MuebleRepository : IMuebleRepository
         };          try
         {
             _ejecutarConsulta.EjecutarSpNR(sql, parametros);
+        }        catch (NpgsqlException ex)
+        {
+            throw new ErrorDataBase($"Error de base de datos al crear mueble: {ex.Message}", ex.SqlState, null, ex);
         }
         catch (Exception ex)
         {
-            throw PostgreSqlErrorInterpreter.InterpretarError(ex, "crear", "mueble", parametros);
+            throw new ErrorRepository($"Error del repositorio al crear mueble: {ex.Message}", ex);
         }
     }
 
@@ -68,10 +70,13 @@ public class MuebleRepository : IMuebleRepository
         };          try
         {
             _ejecutarConsulta.EjecutarSpNR(sql, parametros);
+        }        catch (NpgsqlException ex)
+        {
+            throw new ErrorDataBase($"Error de base de datos al actualizar mueble: {ex.Message}", ex.SqlState, null, ex);
         }
         catch (Exception ex)
         {
-            throw PostgreSqlErrorInterpreter.InterpretarError(ex, "actualizar", "mueble", parametros);
+            throw new ErrorRepository($"Error del repositorio al actualizar mueble: {ex.Message}", ex);
         }
     }
 
@@ -88,10 +93,13 @@ public class MuebleRepository : IMuebleRepository
           try
         {
             _ejecutarConsulta.EjecutarSpNR(sql, parametros);
+        }        catch (NpgsqlException ex)
+        {
+            throw new ErrorDataBase($"Error de base de datos al eliminar mueble: {ex.Message}", ex.SqlState, null, ex);
         }
         catch (Exception ex)
         {
-            throw PostgreSqlErrorInterpreter.InterpretarError(ex, "eliminar", "mueble", parametros);
+            throw new ErrorRepository($"Error del repositorio al eliminar mueble: {ex.Message}", ex);
         }
     }      public DataTable ObtenerTodos()
     {
@@ -103,10 +111,13 @@ public class MuebleRepository : IMuebleRepository
         {
             var dt = _ejecutarConsulta.EjecutarFuncion(sql, new Dictionary<string, object?>());
             return dt;
+        }        catch (NpgsqlException ex)
+        {
+            throw new ErrorDataBase($"Error de base de datos al obtener muebles: {ex.Message}", ex.SqlState, null, ex);
         }
         catch (Exception ex)
         {
-            throw PostgreSqlErrorInterpreter.InterpretarError(ex, "obtener", "muebles", new Dictionary<string, object?>());
+            throw new ErrorRepository($"Error del repositorio al obtener muebles: {ex.Message}", ex);
         }
     }
     

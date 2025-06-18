@@ -1,6 +1,5 @@
 using System.Data;
 using Npgsql;
-using Shared.Common;
 
 public class AccesorioRepository : IAccesorioRepository
 {
@@ -37,9 +36,13 @@ public class AccesorioRepository : IAccesorioRepository
         {
             _ejecutarConsulta.EjecutarSpNR(sql, parametros);
         }
+        catch (NpgsqlException ex)
+        {
+            throw new ErrorDataBase($"Error de base de datos al crear accesorio: {ex.Message}", ex.SqlState, null, ex);
+        }
         catch (Exception ex)
         {
-            throw PostgreSqlErrorInterpreter.InterpretarError(ex, "crear", "accesorio", parametros);
+            throw new ErrorRepository($"Error en repositorio al crear accesorio: {ex.Message}", "crear", "accesorio", ex);
         }
     }
 
@@ -76,13 +79,18 @@ public class AccesorioRepository : IAccesorioRepository
             ["codigoImt"]   = comando.CodigoIMT ?? (object)DBNull.Value,
             ["descripcion"] = comando.Descripcion ?? (object)DBNull.Value,
             ["precio"]      = comando.Precio ?? (object)DBNull.Value,
-            ["urlDataSheet"] = comando.UrlDataSheet ?? (object)DBNull.Value        };        try
+            ["urlDataSheet"] = comando.UrlDataSheet ?? (object)DBNull.Value        };
+        try
         {
             _ejecutarConsulta.EjecutarSpNR(sql, parametros);
         }
+        catch (NpgsqlException ex)
+        {
+            throw new ErrorDataBase($"Error de base de datos al actualizar accesorio: {ex.Message}", ex.SqlState, null, ex);
+        }
         catch (Exception ex)
         {
-            throw PostgreSqlErrorInterpreter.InterpretarError(ex, "actualizar", "accesorio", parametros);
+            throw new ErrorRepository($"Error en repositorio al actualizar accesorio: {ex.Message}", "actualizar", "accesorio", ex);
         }
     }
 
@@ -96,14 +104,17 @@ public class AccesorioRepository : IAccesorioRepository
         var parametros = new Dictionary<string, object?>
         {
             ["id"] = id
-        };
-          try
+        };          try
         {
             _ejecutarConsulta.EjecutarSpNR(sql, parametros);
         }
+        catch (NpgsqlException ex)
+        {
+            throw new ErrorDataBase($"Error de base de datos al eliminar accesorio: {ex.Message}", ex.SqlState, null, ex);
+        }
         catch (Exception ex)
         {
-            throw PostgreSqlErrorInterpreter.InterpretarError(ex, "eliminar", "accesorio", parametros);
+            throw new ErrorRepository($"Error en repositorio al eliminar accesorio: {ex.Message}", "eliminar", "accesorio", ex);
         }
     }
 }

@@ -1,6 +1,5 @@
 using System.Data;
 using Npgsql;
-using Shared.Common;
 
 public class EmpresaMantenimientoRepository : IEmpresaMantenimientoRepository
 {
@@ -33,10 +32,13 @@ public class EmpresaMantenimientoRepository : IEmpresaMantenimientoRepository
           try
         {
             _ejecutarConsulta.EjecutarSpNR(sql, parametros);
+        }        catch (NpgsqlException ex)
+        {
+            throw new ErrorDataBase($"Error de base de datos al crear empresa de mantenimiento: {ex.Message}", ex.SqlState, null, ex);
         }
         catch (Exception ex)
         {
-            throw PostgreSqlErrorInterpreter.InterpretarError(ex, "crear", "empresa de mantenimiento", parametros);
+            throw new ErrorRepository($"Error del repositorio al crear empresa de mantenimiento: {ex.Message}", ex);
         }
     }
 
@@ -65,10 +67,13 @@ public class EmpresaMantenimientoRepository : IEmpresaMantenimientoRepository
         };        try
         {
             _ejecutarConsulta.EjecutarSpNR(sql, parametros);
+        }        catch (NpgsqlException ex)
+        {
+            throw new ErrorDataBase($"Error de base de datos al actualizar empresa de mantenimiento: {ex.Message}", ex.SqlState, null, ex);
         }
         catch (Exception ex)
         {
-            throw PostgreSqlErrorInterpreter.InterpretarError(ex, "actualizar", "empresa de mantenimiento", parametros);
+            throw new ErrorRepository($"Error del repositorio al actualizar empresa de mantenimiento: {ex.Message}", ex);
         }
     }
 
@@ -85,19 +90,32 @@ public class EmpresaMantenimientoRepository : IEmpresaMantenimientoRepository
           try
         {
             _ejecutarConsulta.EjecutarSpNR(sql, parametros);
+        }        catch (NpgsqlException ex)
+        {
+            throw new ErrorDataBase($"Error de base de datos al eliminar empresa de mantenimiento: {ex.Message}", ex.SqlState, null, ex);
         }
         catch (Exception ex)
         {
-            throw PostgreSqlErrorInterpreter.InterpretarError(ex, "eliminar", "empresa de mantenimiento", parametros);
+            throw new ErrorRepository($"Error del repositorio al eliminar empresa de mantenimiento: {ex.Message}", ex);
         }
-    }    
-    public DataTable ObtenerTodos()
+    }      public DataTable ObtenerTodos()
     {
         const string sql = @"
         SELECT * from public.obtener_empresas_mantenimiento()
         ";
 
-        DataTable dt = _ejecutarConsulta.EjecutarFuncion(sql, new Dictionary<string, object?>());
-        return dt;
+        try
+        {
+            DataTable dt = _ejecutarConsulta.EjecutarFuncion(sql, new Dictionary<string, object?>());
+            return dt;
+        }
+        catch (NpgsqlException ex)
+        {
+            throw new ErrorDataBase($"Error de base de datos al obtener empresas de mantenimiento: {ex.Message}", ex.SqlState, null, ex);
+        }
+        catch (Exception ex)
+        {
+            throw new ErrorRepository($"Error del repositorio al obtener empresas de mantenimiento: {ex.Message}", ex);
+        }
     }
 }

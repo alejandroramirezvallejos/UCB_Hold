@@ -1,6 +1,5 @@
 using System.Data;
 using Npgsql;
-using Shared.Common;
 
 public class CategoriaRepository : ICategoriaRepository
 {
@@ -24,10 +23,13 @@ public class CategoriaRepository : ICategoriaRepository
         };        try
         {
             _ejecutarConsulta.EjecutarSpNR(sql, parametros);
+        }        catch (NpgsqlException ex)
+        {
+            throw new ErrorDataBase($"Error de base de datos al crear categoría: {ex.Message}", ex.SqlState, null, ex);
         }
         catch (Exception ex)
         {
-            throw PostgreSqlErrorInterpreter.InterpretarError(ex, "crear", "categoría", parametros);
+            throw new ErrorRepository($"Error en repositorio al crear categoría: {ex.Message}", "crear", "categoría", ex);
         }
     }    
     public DataTable ObtenerTodos()
@@ -55,10 +57,13 @@ public class CategoriaRepository : ICategoriaRepository
         };        try
         {
             _ejecutarConsulta.EjecutarSpNR(sql, parametros);
+        }        catch (NpgsqlException ex)
+        {
+            throw new ErrorDataBase($"Error de base de datos al actualizar categoría: {ex.Message}", ex.SqlState, null, ex);
         }
         catch (Exception ex)
         {
-            throw PostgreSqlErrorInterpreter.InterpretarError(ex, "actualizar", "categoría", parametros);
+            throw new ErrorRepository($"Error en repositorio al actualizar categoría: {ex.Message}", "actualizar", "categoría", ex);
         }
     }
 
@@ -74,10 +79,13 @@ public class CategoriaRepository : ICategoriaRepository
           try
         {
             _ejecutarConsulta.EjecutarSpNR(sql, parametros);
+        }        catch (NpgsqlException ex)
+        {
+            throw new ErrorDataBase($"Error de base de datos al eliminar categoría: {ex.Message}", ex.SqlState, null, ex);
         }
         catch (Exception ex)
         {
-            throw PostgreSqlErrorInterpreter.InterpretarError(ex, "eliminar", "categoría", parametros);
+            throw new ErrorRepository($"Error en repositorio al eliminar categoría: {ex.Message}", "eliminar", "categoría", ex);
         }
     }
 }
