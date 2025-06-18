@@ -1,0 +1,55 @@
+
+
+.container {
+  position: fixed; /* Cambiamos a fixed */
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%); /* Centrado perfecto */
+  z-index: 1000; /* Asegura que esté por encima de todo */
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  background-color: #fff;
+  padding: 30px;
+  width: 350px;
+  border: 2px solid #000000; /* Borde rojo más visible */
+  border-radius: 10px;
+  box-shadow: 0 6px 12px rgba(0, 0, 0, 0.3); /* Sombra más pronunciada */
+  text-align: center;
+}
+
+.cerrar {
+  position: absolute;
+  top: 10px;
+  right: 10px;
+  cursor: pointer;
+  font-size: 20px;
+  color: #7F7F7F;
+  font-weight: bold;
+}
+
+h1 {
+  margin-top: 20px;
+  color: #f44336;
+}
+
+p {
+  font-size: 16px;
+  margin: 15px 0;
+}
+
+.volver-btn {
+  background-color: #FFD814; 
+  border: none;
+  color: #000000;
+    padding: 1rem 2rem;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+  margin-top: 20px;
+}
+
+.volver-btn:hover {
+  background-color: #F7CA00; /* tono más oscuro en hover */
+}

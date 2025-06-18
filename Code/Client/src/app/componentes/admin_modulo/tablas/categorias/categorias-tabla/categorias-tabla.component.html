@@ -1,0 +1,100 @@
+<div class="categorias-container">
+  <!-- ESTO ES PARA EL TITULO Y EL BOTON CREAR -->
+  <div class="table-header">
+    <div class="header-title">
+      <h1>Categorías</h1>
+      <p class="subtitle">Gestión de categorías de equipos</p>
+    </div>
+    <button class="botoncrear" (click)="crearCategoria()">
+       Nueva Categoría
+    </button>
+  </div>
+
+  <!-- BUSCADOR-->
+  <div class="search-container">
+    <div class="search-input-wrapper">
+      <i class="fas fa-search search-icon"></i>
+      <input 
+        type="text" 
+        [(ngModel)]="terminoBusqueda" 
+        (keydown.enter)="buscar()"
+        placeholder="Buscar categorías..." 
+        class="search-input"
+      />
+      @if (terminoBusqueda) {
+        <button class="clear-search" (click)="limpiarBusqueda()">
+          <i class="fas fa-times"></i>
+        </button>
+      }
+    </div>
+  </div>
+
+  <!-- TABLA -->
+  <div class="table-responsive">
+    <table class="data-table">
+      <thead>
+        <tr>
+          <th (click)="ordenarPor('Nombre')">
+            Nombre 
+            @if (sortColumn === 'Nombre') {
+              <i [class]="sortDirection === 'asc' ? 'fas fa-sort-up' : 'fas fa-sort-down'"></i>
+            }
+          </th>
+          <th>Acciones</th>
+        </tr>
+      </thead>
+      <tbody>
+        @for (categoria of categorias; track $index ; let i = $index) {
+          <tr>
+            <td>{{categoria.Nombre}}</td>
+            <td class="actions-column">
+              <button class="btn-icon btn-delete" (click)="eliminarCategoria(categoria)">
+                <i class="fas fa-trash-alt"></i>
+              </button>
+              <button class="btn-icon btn-edit" (click)="editarCategoria(categoria)">
+                <i class="fas fa-pencil-alt"></i>
+              </button>
+            </td>
+          </tr>  
+        }
+        @if (categorias.length === 0) {
+          <tr>
+            <td colspan="2" class="empty-table">
+              <div class="empty-state">
+                <i class="fas fa-search fa-3x"></i>
+                <p>No se encontraron categorías</p>
+                <button class="btn btn-outline" (click)="limpiarBusqueda()">Limpiar filtros</button>
+              </div>
+            </td>
+          </tr>
+        }
+      </tbody>
+    </table>
+  </div>
+
+  <!-- ALERTA DE ELIMINACIÓN -->
+  @if(alertaeliminar){
+    <div class="alerta-eliminar">
+      <div class="modal-content">
+        <p>¿Estás seguro de que deseas eliminar esta categoría?</p>
+        <button class="btn btn-confirm" (click)="confirmarEliminacion()">Sí</button>
+        <button class="btn btn-cancel" (click)="cancelarEliminacion()">No</button>
+      </div>
+    </div>
+  }
+</div>
+
+@if(botoncrear()){
+  <app-categorias-crear
+  [botoncrear]="botoncrear"
+  (Actualizar)="cargarCategorias()"
+  ></app-categorias-crear>
+}
+
+@if(botoneditar()){
+  <app-categorias-editar
+  [botoneditar]="botoneditar"
+  [categoria]="categoriaSeleccionada"
+  (actualizar)="cargarCategorias()"
+  ></app-categorias-editar>
+}

@@ -1,0 +1,125 @@
+<div class="form-container">
+  <button class="btn-close" (click)="cerrar()">
+    <i class="fas fa-times"></i>
+  </button>
+  <h2>Registrar Mueble</h2>
+  <form #form="ngForm" (ngSubmit)="registrar()">
+    <div class="form-group">
+      <label for="Nombre">Nombre</label>
+      <input 
+        type="text" 
+        id="Nombre" 
+        name="Nombre" 
+        [(ngModel)]="mueble.Nombre"
+        required 
+        placeholder="Nombre del mueble"
+        class="form-input"
+      />
+    </div>
+
+    <div class="form-group">
+      <label for="Tipo">Tipo</label>
+      <input 
+        type="text" 
+        id="Tipo" 
+        name="Tipo" 
+        [(ngModel)]="mueble.Tipo"
+        required 
+        placeholder="Tipo de mueble"
+        class="form-input"
+      />
+    </div>
+
+    <div class="form-group">
+      <label for="Ubicacion">Ubicación</label>
+      <input 
+        type="text" 
+        id="Ubicacion" 
+        name="Ubicacion" 
+        [(ngModel)]="mueble.Ubicacion"
+        required 
+        placeholder="Ubicación del mueble"
+        class="form-input"
+      />
+    </div>
+
+    <div class="form-group">
+      <label for="Costo">Costo</label>
+      <input 
+        type="number" 
+        id="Costo" 
+        name="Costo" 
+        [(ngModel)]="mueble.Costo"
+        required
+        step="0.01"
+        min="0"
+        placeholder="0.00"
+        class="form-input"
+      />
+    </div>
+
+    <div class="form-group">
+      <label for="NumeroGaveteros">Número de Gaveteros</label>
+      <input 
+        type="number" 
+        id="NumeroGaveteros" 
+        name="NumeroGaveteros" 
+        [(ngModel)]="mueble.NumeroGaveteros"
+        min="0"
+        placeholder="Cantidad de gaveteros"
+        class="form-input"
+      />
+    </div>
+
+    <div class="form-group">
+      <label for="Longitud">Longitud (cm)</label>
+      <input 
+        type="number" 
+        id="Longitud" 
+        name="Longitud" 
+        [(ngModel)]="mueble.Longitud"
+        required
+        step="0.01"
+        min="0"
+        placeholder="0.00"
+        class="form-input"
+      />
+    </div>
+
+    <div class="form-group">
+      <label for="Profundidad">Profundidad (cm)</label>
+      <input 
+        type="number" 
+        id="Profundidad" 
+        name="Profundidad" 
+        [(ngModel)]="mueble.Profundidad"
+        required
+        step="0.01"
+        min="0"
+        placeholder="0.00"
+        class="form-input"
+      />
+    </div>
+
+    <div class="form-group">
+      <label for="Altura">Altura (cm)</label>
+      <input 
+        type="number" 
+        id="Altura" 
+        name="Altura" 
+        [(ngModel)]="mueble.Altura"
+        required
+        step="0.01"
+        min="0"
+        placeholder="0.00"
+        class="form-input"
+      />
+    </div>
+
+    <div class="form-submit">
+      <button type="submit" class="register-button" [disabled]="!form.valid">
+        <span>Registrar Mueble</span>
+      </button>
+    </div>
+  </form>
+</div>

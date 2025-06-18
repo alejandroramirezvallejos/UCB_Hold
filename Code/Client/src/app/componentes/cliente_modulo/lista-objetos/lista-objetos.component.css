@@ -1,0 +1,204 @@
+html,
+body {
+  height: 100%;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  min-height: 100vh;
+}
+
+.page-wrapper {
+  display: flex;
+  flex-direction: column;
+  min-height: 100vh;
+}
+
+.product-card {
+  max-width: 240px;
+  background-color: #ffffff;
+  border: none;
+  border-radius: 20px;
+  overflow: hidden;
+  transition: box-shadow 0.2s ease, transform 0.2s ease;
+}
+
+.product-card:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.08);
+}
+
+.product-card__link {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  text-decoration: none;
+  color: inherit;
+}
+
+.product-card__image-wrapper {
+  position: relative;
+  width: 100%;
+  padding-top: 100%;
+  background-color: #f9fafb;
+  border-radius: none;
+  overflow: hidden;
+}
+
+.product-card__image {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  transition: transform 0.3s ease, box-shadow 0.3s ease, border-radius 0.3s ease;
+  border-radius: 20px;
+}
+
+.product-card:hover .product-card__image {
+  transform: scale(1.05);
+  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.08);
+  border-bottom-left-radius: 0;
+  border-bottom-right-radius: 0;
+}
+
+.product-card__info {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 1rem;
+}
+
+.product-card__title {
+  font-family: "Manrope";
+  font-weight: 600;
+  font-size: 0.9rem;
+  line-height: 1.2;
+  margin: 0;
+  color: #6b7786;
+  flex: 1;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.product-card__meta {
+  display: flex;
+  align-items: center;
+}
+
+.product-card__imt {
+  font-family: "Manrope";
+  font-weight: 500;
+  font-size: 0.875rem;
+  line-height: 1.2rem;
+  color: #8f9195;
+  background-color: #f8f9fa;
+  padding: 0.25rem 0.75rem;
+  border-radius: 9999px;
+}
+
+.grid-container {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(239px, 1fr));
+  gap: 2.5rem;
+  padding: 0 calc(9rem - 1.6rem);
+  margin: 0;
+  padding-left: 11.4rem;
+  margin-top: 3rem;
+}
+
+@media (max-width: 768px) {
+  .grid-container {
+    width: auto;
+    margin: 0 1rem;
+    grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+    justify-content: center;
+  }
+}
+
+.card-link {
+  display: flex;
+  flex-direction: column;
+  text-decoration: none;
+  color: inherit;
+}
+
+.spinner {
+  width: 30px;
+  height: 30px;
+  border: 3px solid #ddd;
+  border-top-color: #007bff;
+  border-radius: 50%;
+  animation: spin 1s linear infinite;
+}
+
+.item-info {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  padding: 1rem;
+  background: none;
+  color: white;
+  text-align: center;
+  z-index: 2;
+}
+
+.glass-overlay {
+  position: absolute;
+  inset: 0;
+  background: rgba(255, 255, 255, 0.2);
+  border-radius: 20px;
+  z-index: 1;
+  pointer-events: none;
+}
+
+@keyframes spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+.site-footer {
+  background-color: #ffffff;
+  padding: 30px 0;
+  text-align: center;
+  font-size: 0.875rem;
+  color: #8f9195;
+  margin-top: 1rem;
+}
+
+.footer-content p {
+  margin: 0;
+  font-family: "Manrope";
+  font-weight: 500;
+  letter-spacing: 0.02em;
+}
+
+.no-results {
+  display: flex;
+  justify-content: center;
+  padding: 2rem 0;
+  margin-top: 9rem;
+}
+
+.no-results-content {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.no-results-icon {
+  width: 18px;
+  height: 18px;
+}
+
+.no-results-text {
+  font-size: 0.875rem;
+  color: #8f9195;
+  font-family: "Manrope";
+  font-weight: 500;
+  margin: 0;
+}

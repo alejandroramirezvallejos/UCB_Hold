@@ -1,0 +1,26 @@
+<div class="form-container">
+  <button class="btn-close" (click)="cerrar()">
+    <i class="fas fa-times"></i>
+  </button>
+  <h2>Editar Categoría</h2>
+  <form #form="ngForm" (ngSubmit)="confirmar()">
+    <div class="form-group">
+      <label for="nombre">Nombre</label>
+      <input 
+        type="text" 
+        id="nombre" 
+        name="nombre" 
+        [(ngModel)]="categoria.Nombre"
+        required 
+        placeholder="Ingresa el nombre de la categoría"
+        class="form-input"
+      />
+    </div>
+
+    <div class="form-submit">
+      <button type="submit" class="register-button" [disabled]="!form.valid">
+        <span>Actualizar Categoría</span>
+      </button>
+    </div>
+  </form>
+</div>

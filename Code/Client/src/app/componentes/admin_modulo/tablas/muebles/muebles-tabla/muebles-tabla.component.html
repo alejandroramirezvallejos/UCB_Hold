@@ -1,0 +1,130 @@
+<div class="muebles-container">
+  <!-- ESTO ES PARA EL TITULO Y EL BOTON CREAR -->
+  <div class="table-header">
+    <div class="header-title">
+      <h1>Muebles</h1>
+      <p class="subtitle">Gestión de muebles del laboratorio</p>
+    </div>
+    <button class="botoncrear" (click)="crearmueble()">
+       Nuevo Mueble
+    </button>
+  </div>
+
+  <!-- BUSCADOR-->
+  <div class="search-container">
+    <div class="search-input-wrapper">
+      <i class="fas fa-search search-icon"></i>
+      <input 
+        type="text" 
+        [(ngModel)]="terminoBusqueda" 
+        (keydown.enter)="buscar()"
+        placeholder="Buscar muebles..." 
+        class="search-input"
+      />
+      @if (terminoBusqueda) {
+        <button class="clear-search" (click)="limpiarBusqueda()">
+          <i class="fas fa-times"></i>
+        </button>
+      }
+    </div>
+  </div>
+
+  <!-- TABLA -->
+  <div class="table-responsive">
+    <table class="data-table">
+      <thead>
+        <tr>
+          <th (click)="ordenarPor('Nombre')">
+            Nombre 
+            @if (sortColumn === 'Nombre') {
+              <i [class]="sortDirection === 'asc' ? 'fas fa-sort-up' : 'fas fa-sort-down'"></i>
+            }
+          </th>
+          <th (click)="ordenarPor('Tipo')">
+            Tipo
+            @if (sortColumn === 'Tipo') {
+              <i [class]="sortDirection === 'asc' ? 'fas fa-sort-up' : 'fas fa-sort-down'"></i>
+            }
+          </th>
+          <th (click)="ordenarPor('Ubicacion')">
+            Ubicación
+            @if (sortColumn === 'Ubicacion') {
+              <i [class]="sortDirection === 'asc' ? 'fas fa-sort-up' : 'fas fa-sort-down'"></i>
+            }
+          </th>
+          <th (click)="ordenarPor('Costo')">
+            Costo
+            @if (sortColumn === 'Costo') {
+              <i [class]="sortDirection === 'asc' ? 'fas fa-sort-up' : 'fas fa-sort-down'"></i>
+            }
+          </th>
+          <th (click)="ordenarPor('NumeroGaveteros')">
+            Gaveteros
+            @if (sortColumn === 'NumeroGaveteros') {
+              <i [class]="sortDirection === 'asc' ? 'fas fa-sort-up' : 'fas fa-sort-down'"></i>
+            }
+          </th>
+          <th>Dimensiones</th>
+          <th>Acciones</th>
+        </tr>
+      </thead>
+      <tbody>
+        @for (mueble of mueblesFiltrados; track $index ; let i = $index) {
+          <tr>
+            <td>{{mueble.Nombre}}</td>
+            <td>{{mueble.Tipo}}</td>
+            <td>{{mueble.Ubicacion}}</td>
+            <td class="precio-column">${{mueble.Costo | number:'1.2-2'}}</td>
+            <td>{{mueble.NumeroGaveteros || 'N/A'}}</td>
+            <td>{{mueble.Longitud}}x{{mueble.Profundidad}}x{{mueble.Altura}} cm</td>
+            <td class="actions-column">
+              <button class="btn-icon btn-delete" (click)="eliminarMueble(mueble)">
+                <i class="fas fa-trash-alt"></i>
+              </button>
+              <button class="btn-icon btn-edit" (click)="editarMueble(mueble)">
+                <i class="fas fa-pencil-alt"></i>
+              </button>
+            </td>
+          </tr>  
+        }
+        @if (mueblesFiltrados.length === 0) {
+          <tr>
+            <td colspan="7" class="empty-table">
+              <div class="empty-state">
+                <i class="fas fa-search fa-3x"></i>
+                <p>No se encontraron muebles</p>
+                <button class="btn btn-outline" (click)="limpiarBusqueda()">Limpiar filtros</button>
+              </div>
+            </td>
+          </tr>
+        }
+      </tbody>
+    </table>
+  </div>
+
+  <!-- ALERTA DE ELIMINACIÓN -->
+  @if(alertaeliminar){
+    <div class="alerta-eliminar">
+      <div class="modal-content">
+        <p>¿Estás seguro de que deseas eliminar este mueble?</p>
+        <button class="btn btn-confirm" (click)="confirmarEliminacion()">Sí</button>
+        <button class="btn btn-cancel" (click)="cancelarEliminacion()">No</button>
+      </div>
+    </div>
+  }
+</div>
+
+@if(botoncrear()){
+  <app-muebles-crear
+  [botoncrear]="botoncrear"
+  (Actualizar)="cargarMuebles()"
+  ></app-muebles-crear>
+}
+
+@if(botoneditar()){
+  <app-muebles-editar
+  [botoneditar]="botoneditar"
+  [muebleOriginal]="muebleSeleccionado"
+  (actualizar)="cargarMuebles()"
+  ></app-muebles-editar>
+}
