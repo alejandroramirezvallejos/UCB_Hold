@@ -31,7 +31,6 @@ export class EmpresasMantenimientoEditarComponent {
  
     this.empresaMantenimientoapi.actualizarEmpresaMantenimiento(this.empresaMantenimiento).subscribe(
       response => {
-        alert( response);
         this.actualizar.emit();
         this.cerrar();
       },

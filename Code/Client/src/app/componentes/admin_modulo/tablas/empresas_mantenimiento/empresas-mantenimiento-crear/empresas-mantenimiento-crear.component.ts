@@ -32,17 +32,18 @@ export class EmpresasMantenimientoCrearComponent {
   // TODO : implementar
   registrar(){
 
-    this.empresaMantenimientoapi.crearEmpresaMantenimiento(this.empresaMantenimiento).subscribe(
-      response => {
+    this.empresaMantenimientoapi.crearEmpresaMantenimiento(this.empresaMantenimiento).subscribe({
+
+      next: (response) => {
         this.Actualizar.emit(); 
         this.cerrar();
       },
-      error => {
+      error: (error) => {
         alert('Error al crear empresa de mantenimiento: ' + error);
         this.cerrar();
       }
-    );
-   
+    });
+
   }
 
   cerrar(){

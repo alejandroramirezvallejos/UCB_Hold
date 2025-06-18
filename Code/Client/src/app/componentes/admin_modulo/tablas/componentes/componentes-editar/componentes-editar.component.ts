@@ -28,16 +28,16 @@ export class ComponentesEditarComponent {
   constructor(private componenteService: ComponenteService) {}
 
   confirmar() {
-    this.componenteService.actualizarComponente(this.componente).subscribe(
-      response => {
+    this.componenteService.actualizarComponente(this.componente).subscribe({
+      next: (response) => {
         this.actualizar.emit();
         this.cerrar();
       },
-      error => {
-        alert('Error al editar componente: ' + error.message);
+      error: (response) => {
+        alert('Error al editar componente: ' + response.message);
         this.cerrar();
       }
-    );
+    });
   }
 
   cerrar() {

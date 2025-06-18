@@ -14,6 +14,7 @@ export class UsuariosCrearComponent {
 
   @Input() botoncrear: WritableSignal<boolean> = signal(true);
   @Output() Actualizar = new EventEmitter<void>();
+  @Input() carreras: string[] = [];
 
   usuario: Usuario = {
     id: '',

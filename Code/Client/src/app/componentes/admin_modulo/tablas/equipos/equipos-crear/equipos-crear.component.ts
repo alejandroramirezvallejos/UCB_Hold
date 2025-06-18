@@ -40,16 +40,15 @@ export class EquiposCrearComponent {
   // TODO : implementar
   registrar(){
 
-    this.equipoapi.crearEquipo(this.equipo).subscribe(
-      response => {
-        this.Actualizar.emit(); 
+    this.equipoapi.crearEquipo(this.equipo).subscribe({
+      next: (response) => {
+        this.Actualizar.emit();
         this.cerrar();
       },
-      error => {
-        alert('Error al crear equipo: ' + error);
-        this.cerrar();
+      error: (error) => {
+        alert( error.error.error +': ' + error.error.mensaje);
       }
-    );
+       });
    
   }
 

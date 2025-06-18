@@ -5,6 +5,7 @@ import { GrupoEquipo } from '../../../../../models/grupo_equipo';
 import { GruposEquiposCrearComponent } from '../grupos-equipos-crear/grupos-equipos-crear.component';
 import { GruposEquiposEditarComponent } from '../grupos-equipos-editar/grupos-equipos-editar.component';
 import { GrupoequipoService } from '../../../../../services/APIS/GrupoEquipo/grupoequipo.service';
+import { CategoriaService } from '../../../../../services/APIS/Categoria/categoria.service';
 
 @Component({
   selector: 'app-grupos-equipos-tabla',
@@ -22,6 +23,8 @@ export class GruposEquiposTablaComponent implements OnInit {
   gruposEquipos: GrupoEquipo[] = [];
   gruposEquiposFiltrados: GrupoEquipo[] = [];
 
+  categorias: string[] = []; 
+
   grupoEquipoSeleccionado: GrupoEquipo = {
     id: 0,
     nombre: '',
@@ -37,10 +40,22 @@ export class GruposEquiposTablaComponent implements OnInit {
   sortColumn: string = 'nombre';
   sortDirection: 'asc' | 'desc' = 'asc';
 
-  constructor(private grupoequipoapi: GrupoequipoService) { }
+  constructor(private grupoequipoapi: GrupoequipoService , private categoriasAPI : CategoriaService) { }
 
   ngOnInit() {
     this.cargarGruposEquipos();
+    this.obtenerCategorias();
+  }
+
+  obtenerCategorias() {
+    this.categoriasAPI.obtenercategorias().subscribe(
+      (data) => {
+        this.categorias = data.map(categoria => categoria.nombre);
+      },
+      (error) => {
+        console.error('Error al cargar las categorías:', error.error.mensaje);
+      }
+    );
   }
 
   limpiarGrupoEquipoSeleccionado() {

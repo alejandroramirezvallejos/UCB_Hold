@@ -5,6 +5,7 @@ import { Usuario } from '../../../../../models/usuario';
 import { UsuariosCrearComponent } from '../usuarios-crear/usuarios-crear.component';
 import { UsuariosEditarComponent } from '../usuarios-editar/usuarios-editar.component';
 import { UsuarioServiceAPI } from '../../../../../services/APIS/Usuario/usuario.service';
+import { CarreraService } from '../../../../../services/APIS/Carrera/carrera.service';
 
 @Component({
   selector: 'app-usuarios-tabla',
@@ -22,6 +23,7 @@ export class UsuariosTablaComponent implements OnInit {
   valoreliminar: number = 0;
   usuarios: Usuario[] = [];
   usuarioscopia: Usuario[] = [];
+  carreras: string[] = []; 
 
   usuarioSeleccionado: Usuario = {
     id: '',
@@ -41,7 +43,7 @@ export class UsuariosTablaComponent implements OnInit {
 
   terminoBusqueda: string = '';
 
-  constructor(private usuarioapi: UsuarioServiceAPI) {}
+  constructor(private usuarioapi: UsuarioServiceAPI , private carrerasAPI : CarreraService) {}
 
   // ----
   sortColumn: string = 'id';
@@ -49,11 +51,25 @@ export class UsuariosTablaComponent implements OnInit {
 
   ngOnInit() {
     this.cargarUsuarios();
+    this.cargarCarreras();
   }
 
   crearusuario() {
     this.botoncrear.set(true);
   }
+
+  cargarCarreras() {
+    this.carrerasAPI.obtenerCarreras().subscribe(
+      (data: any[]) => {
+        this.carreras = data.map(carrera => carrera.nombre);
+      },
+      (error) => {
+        console.error('Error al cargar las carreras:', error);
+      }
+    );
+  }
+
+
 
   cargarUsuarios() {
     this.usuarioapi.obtenerUsuarios().subscribe(

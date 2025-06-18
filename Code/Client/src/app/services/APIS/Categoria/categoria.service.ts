@@ -24,6 +24,7 @@ export class CategoriaService {
   }
 
   crearCategoria(categoria : Categorias){
+
     const envio ={
       Nombre : categoria.Nombre
     }

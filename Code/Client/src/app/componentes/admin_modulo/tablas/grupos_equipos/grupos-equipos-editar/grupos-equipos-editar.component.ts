@@ -13,6 +13,7 @@ import { GrupoequipoService } from '../../../../../services/APIS/GrupoEquipo/gru
 export class GruposEquiposEditarComponent implements OnChanges {
   @Input() botoneditar: WritableSignal<boolean> = signal(true);
   @Output() actualizar: EventEmitter<void> = new EventEmitter<void>();
+  @Input() categorias: string[] = [];
   @Input() grupoequipo: GrupoEquipo = {
     id: 0,
     nombre: '',
@@ -32,16 +33,16 @@ export class GruposEquiposEditarComponent implements OnChanges {
   }
 
   confirmar() {
-    this.grupoEquipoapi.editarGrupoEquipo(this.grupoEquipo).subscribe(
-      response => {
+    this.grupoEquipoapi.editarGrupoEquipo(this.grupoEquipo).subscribe({
+      next: (response) => {
         this.actualizar.emit();
         this.cerrar();
       },
-      error => {
-        alert('Error al editar grupo de equipo: ' + error.message);
-        this.cerrar();
+      error: (error) => {
+        alert( error.error.error + ': ' + error.error.mensaje);
+
       }
-    );
+    });
   }
 
   cerrar() {

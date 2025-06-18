@@ -27,6 +27,8 @@ export class UsuariosEditarComponent {
     telefono_referencia: '',
     email_referencia: ''
   };
+  @Input() carreras: string[] = [];
+
 
   contrasena: string = '';
 
