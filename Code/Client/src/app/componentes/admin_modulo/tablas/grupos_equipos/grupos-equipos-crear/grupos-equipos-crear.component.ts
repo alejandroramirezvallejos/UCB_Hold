@@ -13,6 +13,7 @@ import { GrupoequipoService } from '../../../../../services/APIS/GrupoEquipo/gru
 export class GruposEquiposCrearComponent {
 
   @Input() botoncrear: WritableSignal<boolean> = signal(true);
+  @Input() categorias: string[] = [];
   @Output() Actualizar = new EventEmitter<void>();
 
   grupoEquipo: GrupoEquipo = {
@@ -29,16 +30,15 @@ export class GruposEquiposCrearComponent {
   constructor(private grupoEquipoapi: GrupoequipoService) { }
 
   registrar() {
-    this.grupoEquipoapi.crearGrupoEquipo(this.grupoEquipo).subscribe(
-      response => {
+    this.grupoEquipoapi.crearGrupoEquipo(this.grupoEquipo).subscribe({
+      next: (response) => {
         this.Actualizar.emit();
         this.cerrar();
       },
-      error => {
-        alert('Error al crear grupo de equipo: ' + error);
-        this.cerrar();
+      error: (error) => {
+        alert('Error al crear grupo de equipo: ' + error.error.mensaje);
       }
-    );
+    });
   }
 
   cerrar() {

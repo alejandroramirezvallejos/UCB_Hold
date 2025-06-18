@@ -29,17 +29,17 @@ export class GaveterosEditarComponent {
 
   confirmar (){
  
-    this.gaveteroapi.editarGavetero(this.gavetero).subscribe(
-      response => {
+    this.gaveteroapi.editarGavetero(this.gavetero).subscribe({
+      next: (response) => {
         alert( response);
         this.actualizar.emit();
         this.cerrar();
       },
-      error => {
-        alert('Error al editar gavetero: ' + error.message);
+      error: (error) => {
+        alert('Error al editar gavetero: ' + error.error.message);
         this.cerrar();
       }
-    );
+    });
   }
 
   cerrar(){

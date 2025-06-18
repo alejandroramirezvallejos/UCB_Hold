@@ -24,6 +24,7 @@
 
     <ItemGroup>
         <ProjectReference Include="..\\Server\\IMT_Reservas.Server.csproj" />
+        <ProjectReference Include="..\\Shared\\IMT_Reservas.Shared.csproj" />
     </ItemGroup>
 
 </Project>

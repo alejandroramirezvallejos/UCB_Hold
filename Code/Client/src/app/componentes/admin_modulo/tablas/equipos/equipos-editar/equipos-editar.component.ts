@@ -37,17 +37,17 @@ export class EquiposEditarComponent {
 
   confirmar (){
  
-    this.equipoapi.editarEquipo(this.equipo).subscribe(
-      response => {
+    this.equipoapi.editarEquipo(this.equipo).subscribe({
+      next: (response) => {
         alert( response);
         this.actualizar.emit();
         this.cerrar();
       },
-      error => {
-        alert('Error al editar equipo: ' + error.message);
+      error: (error) => {
+        alert( error.error.error + ': ' + error.error.message);
         this.cerrar();
       }
-    );
+        });
   }
 
   cerrar(){

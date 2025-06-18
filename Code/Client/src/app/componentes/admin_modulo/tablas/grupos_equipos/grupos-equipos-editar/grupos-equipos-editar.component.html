@@ -43,14 +43,20 @@
 
     <div class="form-group">
       <label for="nombreCategoria">Categoría</label>
-      <input 
+      <select
         type="text" 
         id="nombreCategoria" 
         name="nombreCategoria" 
         [(ngModel)]="grupoEquipo.nombreCategoria"
         placeholder="Categoría del grupo de equipo"
         class="form-input"
-      />
+      
+      >
+        @for (item of categorias; track $index) {
+          <option [value]="item">{{ item }}</option>
+        }
+      </select>
+
     </div>
 
     <div class="form-group">

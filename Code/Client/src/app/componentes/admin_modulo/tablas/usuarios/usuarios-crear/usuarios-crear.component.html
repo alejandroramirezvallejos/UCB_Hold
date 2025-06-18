@@ -112,7 +112,7 @@
 
     <div class="form-group">
       <label for="carrera">Carrera</label>
-      <input 
+      <select 
         type="text" 
         id="carrera" 
         name="carrera" 
@@ -120,7 +120,14 @@
         required 
         placeholder="Nombre de la carrera"
         class="form-input"
-      />
+        >
+        <option value="" disabled>Selecciona una carrera</option>
+
+        @for (item of carreras; track $index) {
+          <option [value]="item">{{ item }}</option>
+        }
+
+      </select>
     </div>
 
     <div class="form-group">
