@@ -23,10 +23,10 @@ import { PrestamosTablaComponent } from '../tablas/prestamos/prestamos-tabla/pre
 })
 //TODO : Agregar los componentes de las tablas
 export class AdministradorComponent {
-  tablas : string[] = ['Accesorios', 'Carreras', 'Usuarios', 'Categorias', 'Componentes', "Empresas de Mantenimiento",
-     'Equipos', 'Gaveteros', 'Grupos de Equipos', 'Mantenimientos', 'Muebles', 'Prestamos', "Equipos que Necesitan Mantenimiento", "Ubicacion de Grupos de Equipos"];
+  tablas : string[] = ['Prestamos', 'Carreras', 'Usuarios', 'Categorias', 'Componentes', "Empresas de Mantenimiento",
+     'Equipos', 'Gaveteros', 'Grupos de Equipos', 'Mantenimientos', 'Muebles', 'Accesorios', "Equipos que Necesitan Mantenimiento", "Ubicacion de Grupos de Equipos"];
   
-  item : string = 'Accesorios';
+  item : string = 'Prestamos';
 
   constructor(public  router: Router) {
   }
