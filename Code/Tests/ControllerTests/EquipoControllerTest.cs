@@ -19,11 +19,11 @@ namespace IMT_Reservas.Tests.ControllerTests
         public void Setup()
         {
             _configMock        = new Mock<IConfiguration>();
+            _configMock.Setup(config => config.GetConnectionString("DefaultConnection")).Returns("fake_connection_string");
             _queryExecMock     = new Mock<ExecuteQuery>(_configMock.Object);
             _equipoRepoMock    = new Mock<EquipoRepository>(_queryExecMock.Object);
             _equipoServiceMock = new Mock<EquipoService>(_equipoRepoMock.Object);
             _equiposController = new EquipoController(_equipoServiceMock.Object);
-            _configMock.Setup(config => config.GetConnectionString("DefaultConnection")).Returns("fake_connection_string");
         }
 
         [Test]
@@ -71,11 +71,11 @@ namespace IMT_Reservas.Tests.ControllerTests
 
         private static IEnumerable<object[]> FuenteCasos_CrearEquipo_BadRequest()
         {
-            yield return new object[] { new CrearEquipoComando("", "Modelo", "Marca", null, null, null, null, null, null, null, null), new ErrorNombreRequerido("nombre del grupo de equipo") };
-            yield return new object[] { new CrearEquipoComando("Laptop", "", "Marca", null, null, null, null, null, null, null, null), new ErrorNombreRequerido("modelo") };
-            yield return new object[] { new CrearEquipoComando("Laptop", "Modelo", "", null, null, null, null, null, null, null, null), new ErrorNombreRequerido("marca") };
-            yield return new object[] { new CrearEquipoComando("Laptop", "Modelo", "Marca", null, null, null, null, null, -100, null, null), new ErrorValorNegativo("costo de referencia", -100) };
-            yield return new object[] { new CrearEquipoComando("Laptop", "Modelo", "Marca", null, null, null, null, null, null, 0, null), new ErrorIdInvalido("tiempo máximo de préstamo") };
+            yield return new object[] { new CrearEquipoComando("", "Modelo", "Marca", null, null, null, null, null, null, null, null), new ErrorNombreRequerido() };
+            yield return new object[] { new CrearEquipoComando("Laptop", "", "Marca", null, null, null, null, null, null, null, null), new ErrorModeloRequerido() };
+            yield return new object[] { new CrearEquipoComando("Laptop", "Modelo", "", null, null, null, null, null, null, null, null), new ErrorNombreRequerido() };
+            yield return new object[] { new CrearEquipoComando("Laptop", "Modelo", "Marca", null, null, null, null, null, -100, null, null), new ErrorValorNegativo("costo de referencia") };
+            yield return new object[] { new CrearEquipoComando("Laptop", "Modelo", "Marca", null, null, null, null, null, null, 0, null), new ErrorIdInvalido() };
         }
 
         [Test]
@@ -91,7 +91,7 @@ namespace IMT_Reservas.Tests.ControllerTests
         public void CrearEquipo_RegistroExistente_RetornaConflict()
         {
             CrearEquipoComando comando = new CrearEquipoComando("Laptop", "ThinkPad T480", "Lenovo", "UCB-123", null, null, null, null, null, null, null);
-            _equipoServiceMock.Setup(s => s.CrearEquipo(It.IsAny<CrearEquipoComando>())).Throws(new ErrorRegistroYaExiste("UCB-123"));
+            _equipoServiceMock.Setup(s => s.CrearEquipo(It.IsAny<CrearEquipoComando>())).Throws(new ErrorRegistroYaExiste());
             IActionResult resultadoAccion = _equiposController.Crear(comando);
             Assert.That(resultadoAccion, Is.InstanceOf<ConflictObjectResult>());
         }
@@ -118,9 +118,9 @@ namespace IMT_Reservas.Tests.ControllerTests
 
         private static IEnumerable<object[]> FuenteCasos_ActualizarEquipo_BadRequest()
         {
-            yield return new object[] { new ActualizarEquipoComando(0, null, null, null, null, null, null, null, null, null, null), new ErrorIdInvalido("ID del equipo") };
-            yield return new object[] { new ActualizarEquipoComando(1, null, null, null, null, null, null, -100, null, null, null), new ErrorValorNegativo("costo de referencia", -100) };
-            yield return new object[] { new ActualizarEquipoComando(1, null, null, null, null, null, null, null, 0, null, null), new ErrorIdInvalido("tiempo máximo de préstamo") };
+            yield return new object[] { new ActualizarEquipoComando(0, null, null, null, null, null, null, null, null, null, null), new ErrorIdInvalido() };
+            yield return new object[] { new ActualizarEquipoComando(1, null, null, null, null, null, null, -100, null, null, null), new ErrorValorNegativo("costo de referencia") };
+            yield return new object[] { new ActualizarEquipoComando(1, null, null, null, null, null, null, null, 0, null, null), new ErrorIdInvalido() };
         }
 
         [Test]
@@ -136,7 +136,7 @@ namespace IMT_Reservas.Tests.ControllerTests
         public void ActualizarEquipo_NoEncontrado_RetornaNotFound()
         {
             ActualizarEquipoComando comando = new ActualizarEquipoComando(99, "NoExiste", null, null, null, null, null, null, null, null, null);
-            _equipoServiceMock.Setup(s => s.ActualizarEquipo(It.IsAny<ActualizarEquipoComando>())).Throws(new ErrorRegistroNoEncontrado("99"));
+            _equipoServiceMock.Setup(s => s.ActualizarEquipo(It.IsAny<ActualizarEquipoComando>())).Throws(new ErrorRegistroNoEncontrado());
             IActionResult resultadoAccion = _equiposController.Actualizar(comando);
             Assert.That(resultadoAccion, Is.InstanceOf<NotFoundObjectResult>());
         }
@@ -163,7 +163,7 @@ namespace IMT_Reservas.Tests.ControllerTests
 
         private static IEnumerable<object[]> FuenteCasos_EliminarEquipo_BadRequest()
         {
-            yield return new object[] { 0, new ErrorIdInvalido("ID del equipo") };
+            yield return new object[] { 0, new ErrorIdInvalido() };
         }
 
         [Test]
@@ -179,7 +179,7 @@ namespace IMT_Reservas.Tests.ControllerTests
         public void EliminarEquipo_NoEncontrado_RetornaNotFound()
         {
             int idNoExistente = 99;
-            _equipoServiceMock.Setup(s => s.EliminarEquipo(It.Is<EliminarEquipoComando>(c => c.Id == idNoExistente))).Throws(new ErrorRegistroNoEncontrado("99"));
+            _equipoServiceMock.Setup(s => s.EliminarEquipo(It.Is<EliminarEquipoComando>(c => c.Id == idNoExistente))).Throws(new ErrorRegistroNoEncontrado());
             IActionResult resultadoAccion = _equiposController.Eliminar(idNoExistente);
             Assert.That(resultadoAccion, Is.InstanceOf<NotFoundObjectResult>());
         }
@@ -188,7 +188,7 @@ namespace IMT_Reservas.Tests.ControllerTests
         public void EliminarEquipo_EnUso_RetornaConflict()
         {
             int idEnUso = 2;
-            _equipoServiceMock.Setup(s => s.EliminarEquipo(It.Is<EliminarEquipoComando>(c => c.Id == idEnUso))).Throws(new ErrorRegistroEnUso("El equipo está en uso"));
+            _equipoServiceMock.Setup(s => s.EliminarEquipo(It.Is<EliminarEquipoComando>(c => c.Id == idEnUso))).Throws(new ErrorRegistroEnUso());
             IActionResult resultadoAccion = _equiposController.Eliminar(idEnUso);
             Assert.That(resultadoAccion, Is.InstanceOf<ConflictObjectResult>());
         }

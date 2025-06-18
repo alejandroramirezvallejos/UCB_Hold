@@ -19,11 +19,11 @@ namespace IMT_Reservas.Tests.ControllerTests
         public void Setup()
         {
             _configMock           = new Mock<IConfiguration>();
+            _configMock.Setup(config => config.GetConnectionString("DefaultConnection")).Returns("fake_connection_string");
             _queryExecMock        = new Mock<ExecuteQuery>(_configMock.Object);
             _categoriaRepoMock    = new Mock<CategoriaRepository>(_queryExecMock.Object);
             _categoriaServiceMock = new Mock<CategoriaService>(_categoriaRepoMock.Object);
             _categoriasController = new CategoriaController(_categoriaServiceMock.Object);
-            _configMock.Setup(config => config.GetConnectionString("DefaultConnection")).Returns("fake_connection_string");
         }
 
         [Test]
@@ -71,8 +71,8 @@ namespace IMT_Reservas.Tests.ControllerTests
 
         private static IEnumerable<object[]> FuenteCasos_CrearCategoria_BadRequest()
         {
-            yield return new object[] { new CrearCategoriaComando(""), new ErrorNombreRequerido("nombre") };
-            yield return new object[] { new CrearCategoriaComando(new string('a', 51)), new ErrorLongitudInvalida("nombre", 50) }; // Asumiendo longitud max 50
+            yield return new object[] { new CrearCategoriaComando(""), new ErrorNombreRequerido() };
+            yield return new object[] { new CrearCategoriaComando(new string('a', 51)), new ErrorLongitudInvalida("nombre de la categoría", 50) };
         }
 
         [Test]
@@ -88,7 +88,7 @@ namespace IMT_Reservas.Tests.ControllerTests
         public void CrearCategoria_RegistroExistente_RetornaConflict()
         {
             CrearCategoriaComando comando = new CrearCategoriaComando("Periféricos");
-            _categoriaServiceMock.Setup(s => s.CrearCategoria(It.IsAny<CrearCategoriaComando>())).Throws(new ErrorRegistroYaExiste("Categoría ya existe"));
+            _categoriaServiceMock.Setup(s => s.CrearCategoria(It.IsAny<CrearCategoriaComando>())).Throws(new ErrorRegistroYaExiste());
             IActionResult resultadoAccion = _categoriasController.Crear(comando);
             Assert.That(resultadoAccion, Is.InstanceOf<ConflictObjectResult>());
         }
@@ -115,9 +115,9 @@ namespace IMT_Reservas.Tests.ControllerTests
 
         private static IEnumerable<object[]> FuenteCasos_ActualizarCategoria_BadRequest()
         {
-            yield return new object[] { new ActualizarCategoriaComando(0, "Inválido"), new ErrorIdInvalido("ID") };
-            yield return new object[] { new ActualizarCategoriaComando(1, ""), new ErrorNombreRequerido("nombre") };
-            yield return new object[] { new ActualizarCategoriaComando(1, new string('a', 101)), new ErrorLongitudInvalida("nombre", 100) };
+            yield return new object[] { new ActualizarCategoriaComando(0, "Inválido"), new ErrorIdInvalido() };
+            yield return new object[] { new ActualizarCategoriaComando(1, ""), new ErrorNombreRequerido() };
+            yield return new object[] { new ActualizarCategoriaComando(1, new string('a', 51)), new ErrorLongitudInvalida("nombre de la categoría", 50) };
         }
 
         [Test]
@@ -133,7 +133,7 @@ namespace IMT_Reservas.Tests.ControllerTests
         public void ActualizarCategoria_NoEncontrada_RetornaNotFound()
         {
             ActualizarCategoriaComando comando = new ActualizarCategoriaComando(99, "NoExiste"); 
-            _categoriaServiceMock.Setup(s => s.ActualizarCategoria(It.IsAny<ActualizarCategoriaComando>())).Throws(new ErrorRegistroNoEncontrado("Categoría no encontrada"));
+            _categoriaServiceMock.Setup(s => s.ActualizarCategoria(It.IsAny<ActualizarCategoriaComando>())).Throws(new ErrorRegistroNoEncontrado());
             IActionResult resultadoAccion = _categoriasController.Actualizar(comando);
             Assert.That(resultadoAccion, Is.InstanceOf<NotFoundObjectResult>());
         }
@@ -142,7 +142,7 @@ namespace IMT_Reservas.Tests.ControllerTests
         public void ActualizarCategoria_RegistroExistente_RetornaConflict()
         {
             ActualizarCategoriaComando comando = new ActualizarCategoriaComando(1, "Nombre Existente");
-            _categoriaServiceMock.Setup(s => s.ActualizarCategoria(It.IsAny<ActualizarCategoriaComando>())).Throws(new ErrorRegistroYaExiste("Nombre de categoría ya existe"));
+            _categoriaServiceMock.Setup(s => s.ActualizarCategoria(It.IsAny<ActualizarCategoriaComando>())).Throws(new ErrorRegistroYaExiste());
             IActionResult resultadoAccion = _categoriasController.Actualizar(comando);
             Assert.That(resultadoAccion, Is.InstanceOf<ConflictObjectResult>());
         }
@@ -169,7 +169,7 @@ namespace IMT_Reservas.Tests.ControllerTests
 
         private static IEnumerable<object[]> FuenteCasos_EliminarCategoria_BadRequest()
         {
-            yield return new object[] { 0, new ErrorIdInvalido("ID") };
+            yield return new object[] { 0, new ErrorIdInvalido() };
         }
 
         [Test]
@@ -185,15 +185,15 @@ namespace IMT_Reservas.Tests.ControllerTests
         public void EliminarCategoria_NoEncontrada_RetornaNotFound()
         {
             int idNoExistente = 99;
-            _categoriaServiceMock.Setup(s => s.EliminarCategoria(It.Is<EliminarCategoriaComando>(c => c.Id == idNoExistente))).Throws(new ErrorRegistroNoEncontrado("Categoría no encontrada"));
+            _categoriaServiceMock.Setup(s => s.EliminarCategoria(It.Is<EliminarCategoriaComando>(c => c.Id == idNoExistente))).Throws(new ErrorRegistroNoEncontrado());
             IActionResult resultadoAccion = _categoriasController.Eliminar(idNoExistente);
             Assert.That(resultadoAccion, Is.InstanceOf<NotFoundObjectResult>());
         }
 
         [Test]
-        public void EliminarCategoria_EnUso_RetornaConflict() {
+        public void EliminarCategoria_EnUso_RetornaConflict() { 
             int idEnUso = 2;
-            _categoriaServiceMock.Setup(s => s.EliminarCategoria(It.Is<EliminarCategoriaComando>(c => c.Id == idEnUso))).Throws(new ErrorRegistroEnUso("Categoría en uso, no se puede eliminar"));
+            _categoriaServiceMock.Setup(s => s.EliminarCategoria(It.Is<EliminarCategoriaComando>(c => c.Id == idEnUso))).Throws(new ErrorRegistroEnUso());
             IActionResult resultadoAccion = _categoriasController.Eliminar(idEnUso);
             Assert.That(resultadoAccion, Is.InstanceOf<ConflictObjectResult>());
         }

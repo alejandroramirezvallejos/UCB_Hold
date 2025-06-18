@@ -19,11 +19,11 @@ namespace IMT_Reservas.Tests.ControllerTests
         public void Setup()
         {
             _configMock             = new Mock<IConfiguration>();
+            _configMock.Setup(config => config.GetConnectionString("DefaultConnection")).Returns("fake_connection_string");
             _queryExecMock          = new Mock<ExecuteQuery>(_configMock.Object);
             _grupoEquipoRepoMock    = new Mock<GrupoEquipoRepository>(_queryExecMock.Object);
             _grupoEquipoServiceMock = new Mock<GrupoEquipoService>(_grupoEquipoRepoMock.Object);
             _grupoEquiposController = new GrupoEquipoController(_grupoEquipoServiceMock.Object);
-            _configMock.Setup(config => config.GetConnectionString("DefaultConnection")).Returns("fake_connection_string");
         }
 
         [Test]
@@ -71,8 +71,12 @@ namespace IMT_Reservas.Tests.ControllerTests
 
         private static IEnumerable<object[]> FuenteCasos_CrearGrupoEquipo_BadRequest()
         {
-            yield return new object[] { new CrearGrupoEquipoComando("", "Modelo", "Marca", "Desc", "Cat", null, "img"), new ErrorNombreRequerido("nombre del grupo de equipo") };
-            yield return new object[] { new CrearGrupoEquipoComando("Nombre", "", "Marca", "Desc", "Cat", null, "img"), new ErrorNombreRequerido("modelo") };
+            yield return new object[] { new CrearGrupoEquipoComando("", "Modelo", "Marca", "Desc", "Cat", null, "img"), new ErrorNombreRequerido() };
+            yield return new object[] { new CrearGrupoEquipoComando("Nombre", "", "Marca", "Desc", "Cat", null, "img"), new ErrorModeloRequerido() };
+            yield return new object[] { new CrearGrupoEquipoComando("Nombre", "Modelo", "", "Desc", "Cat", null, "img"), new ErrorCampoRequerido("marca") };
+            yield return new object[] { new CrearGrupoEquipoComando("Nombre", "Modelo", "Marca", "", "Cat", null, "img"), new ErrorCampoRequerido("descripcion") };
+            yield return new object[] { new CrearGrupoEquipoComando("Nombre", "Modelo", "Marca", "Desc", "", null, "img"), new ErrorCampoRequerido("categoria") };
+            yield return new object[] { new CrearGrupoEquipoComando("Nombre", "Modelo", "Marca", "Desc", "Cat", null, ""), new ErrorCampoRequerido("url de imagen") };
         }
 
         [Test]
@@ -88,7 +92,7 @@ namespace IMT_Reservas.Tests.ControllerTests
         public void CrearGrupoEquipo_RegistroExistente_RetornaConflict()
         {
             CrearGrupoEquipoComando comando = new CrearGrupoEquipoComando("Proyector Epson", "E-100", "Epson", "desc", "Proyectores", null, "img");
-            _grupoEquipoServiceMock.Setup(s => s.CrearGrupoEquipo(It.IsAny<CrearGrupoEquipoComando>())).Throws(new ErrorRegistroYaExiste("Proyector Epson"));
+            _grupoEquipoServiceMock.Setup(s => s.CrearGrupoEquipo(It.IsAny<CrearGrupoEquipoComando>())).Throws(new ErrorRegistroYaExiste());
             IActionResult resultadoAccion = _grupoEquiposController.Crear(comando);
             Assert.That(resultadoAccion, Is.InstanceOf<ConflictObjectResult>());
         }
@@ -115,8 +119,13 @@ namespace IMT_Reservas.Tests.ControllerTests
 
         private static IEnumerable<object[]> FuenteCasos_ActualizarGrupoEquipo_BadRequest()
         {
-            yield return new object[] { new ActualizarGrupoEquipoComando(0, "Inválido", null, null, null, null, null, null), new ErrorIdInvalido("ID") };
-            yield return new object[] { new ActualizarGrupoEquipoComando(1, "", null, null, null, null, null, null), new ErrorNombreRequerido("nombre del grupo de equipo") };
+            yield return new object[] { new ActualizarGrupoEquipoComando(0, "Inválido", null, null, null, null, null, null), new ErrorIdInvalido() };
+            yield return new object[] { new ActualizarGrupoEquipoComando(1, "", null, null, null, null, null, null), new ErrorNombreRequerido() };
+            yield return new object[] { new ActualizarGrupoEquipoComando(1, "Nombre", "", null, null, null, null, null), new ErrorModeloRequerido() };
+            yield return new object[] { new ActualizarGrupoEquipoComando(1, "Nombre", "Modelo", "", null, null, null, null), new ErrorCampoRequerido("marca") };
+            yield return new object[] { new ActualizarGrupoEquipoComando(1, "Nombre", "Modelo", "Marca", "", null, null, null), new ErrorCampoRequerido("descripcion") };
+            yield return new object[] { new ActualizarGrupoEquipoComando(1, "Nombre", "Modelo", "Marca", "Desc", "", null, null), new ErrorCampoRequerido("categoria") };
+            yield return new object[] { new ActualizarGrupoEquipoComando(1, "Nombre", "Modelo", "Marca", "Desc", "Cat", null, ""), new ErrorCampoRequerido("url de imagen") };
         }
 
         [Test]
@@ -132,7 +141,7 @@ namespace IMT_Reservas.Tests.ControllerTests
         public void ActualizarGrupoEquipo_NoEncontrado_RetornaNotFound()
         {
             ActualizarGrupoEquipoComando comando = new ActualizarGrupoEquipoComando(99, "NoExiste", null, null, null, null, null, null);
-            _grupoEquipoServiceMock.Setup(s => s.ActualizarGrupoEquipo(It.IsAny<ActualizarGrupoEquipoComando>())).Throws(new ErrorRegistroNoEncontrado("99"));
+            _grupoEquipoServiceMock.Setup(s => s.ActualizarGrupoEquipo(It.IsAny<ActualizarGrupoEquipoComando>())).Throws(new ErrorRegistroNoEncontrado());
             IActionResult resultadoAccion = _grupoEquiposController.Actualizar(comando);
             Assert.That(resultadoAccion, Is.InstanceOf<NotFoundObjectResult>());
         }
@@ -150,7 +159,7 @@ namespace IMT_Reservas.Tests.ControllerTests
         public void EliminarGrupoEquipo_NoEncontrado_RetornaNotFound()
         {
             int idNoExistente = 99;
-            _grupoEquipoServiceMock.Setup(s => s.EliminarGrupoEquipo(It.Is<EliminarGrupoEquipoComando>(c => c.Id == idNoExistente))).Throws(new ErrorRegistroNoEncontrado("99"));
+            _grupoEquipoServiceMock.Setup(s => s.EliminarGrupoEquipo(It.Is<EliminarGrupoEquipoComando>(c => c.Id == idNoExistente))).Throws(new ErrorRegistroNoEncontrado());
             IActionResult resultadoAccion = _grupoEquiposController.Eliminar(idNoExistente);
             Assert.That(resultadoAccion, Is.InstanceOf<NotFoundObjectResult>());
         }
@@ -159,7 +168,7 @@ namespace IMT_Reservas.Tests.ControllerTests
         public void EliminarGrupoEquipo_EnUso_RetornaConflict()
         {
             int idEnUso = 2;
-            _grupoEquipoServiceMock.Setup(s => s.EliminarGrupoEquipo(It.Is<EliminarGrupoEquipoComando>(c => c.Id == idEnUso))).Throws(new ErrorRegistroEnUso("El grupo de equipo tiene equipos asociados"));
+            _grupoEquipoServiceMock.Setup(s => s.EliminarGrupoEquipo(It.Is<EliminarGrupoEquipoComando>(c => c.Id == idEnUso))).Throws(new ErrorRegistroEnUso());
             IActionResult resultadoAccion = _grupoEquiposController.Eliminar(idEnUso);
             Assert.That(resultadoAccion, Is.InstanceOf<ConflictObjectResult>());
         }

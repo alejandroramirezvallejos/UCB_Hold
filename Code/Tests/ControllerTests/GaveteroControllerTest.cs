@@ -19,11 +19,11 @@ namespace IMT_Reservas.Tests.ControllerTests
         public void Setup()
         {
             _configMock          = new Mock<IConfiguration>();
+            _configMock.Setup(config => config.GetConnectionString("DefaultConnection")).Returns("fake_connection_string");
             _queryExecMock       = new Mock<ExecuteQuery>(_configMock.Object);
             _gaveteroRepoMock    = new Mock<GaveteroRepository>(_queryExecMock.Object);
             _gaveteroServiceMock = new Mock<GaveteroService>(_gaveteroRepoMock.Object);
             _gaveterosController = new GaveteroController(_gaveteroServiceMock.Object);
-            _configMock.Setup(config => config.GetConnectionString("DefaultConnection")).Returns("fake_connection_string");
         }
 
         [Test]
@@ -71,11 +71,11 @@ namespace IMT_Reservas.Tests.ControllerTests
 
         private static IEnumerable<object[]> FuenteCasos_CrearGavetero_BadRequest()
         {
-            yield return new object[] { new CrearGaveteroComando("", "Tipo", "Mueble", null, null, null), new ErrorNombreRequerido("nombre del gavetero") };
-            yield return new object[] { new CrearGaveteroComando("Nombre", "Tipo", "", null, null, null), new ErrorNombreRequerido("nombre del mueble") };
-            yield return new object[] { new CrearGaveteroComando("Nombre", "Tipo", "Mueble", -10, null, null), new ErrorValorNegativo("longitud", -10) };
-            yield return new object[] { new CrearGaveteroComando("Nombre", "Tipo", "Mueble", null, -10, null), new ErrorValorNegativo("profundidad", -10) };
-            yield return new object[] { new CrearGaveteroComando("Nombre", "Tipo", "Mueble", null, null, -10), new ErrorValorNegativo("altura", -10) };
+            yield return new object[] { new CrearGaveteroComando("", "Tipo", "Mueble", null, null, null), new ErrorNombreRequerido() };
+            yield return new object[] { new CrearGaveteroComando("Nombre", "Tipo", "", null, null, null), new ErrorNombreRequerido() };
+            yield return new object[] { new CrearGaveteroComando("Nombre", "Tipo", "Mueble", -10, null, null), new ErrorValorNegativo("longitud") };
+            yield return new object[] { new CrearGaveteroComando("Nombre", "Tipo", "Mueble", null, -10, null), new ErrorValorNegativo("profundidad") };
+            yield return new object[] { new CrearGaveteroComando("Nombre", "Tipo", "Mueble", null, null, -10), new ErrorValorNegativo("altura") };
         }
 
         [Test]
@@ -91,7 +91,7 @@ namespace IMT_Reservas.Tests.ControllerTests
         public void CrearGavetero_RegistroExistente_RetornaConflict()
         {
             CrearGaveteroComando comando = new CrearGaveteroComando("Gavetero A1", "Tipo", "Mueble", null, null, null);
-            _gaveteroServiceMock.Setup(s => s.CrearGavetero(It.IsAny<CrearGaveteroComando>())).Throws(new ErrorRegistroYaExiste("Gavetero A1"));
+            _gaveteroServiceMock.Setup(s => s.CrearGavetero(It.IsAny<CrearGaveteroComando>())).Throws(new ErrorRegistroYaExiste());
             IActionResult resultadoAccion = _gaveterosController.Crear(comando);
             Assert.That(resultadoAccion, Is.InstanceOf<ConflictObjectResult>());
         }
@@ -118,10 +118,10 @@ namespace IMT_Reservas.Tests.ControllerTests
 
         private static IEnumerable<object[]> FuenteCasos_ActualizarGavetero_BadRequest()
         {
-            yield return new object[] { new ActualizarGaveteroComando(0, "Inválido", null, null, null, null, null), new ErrorIdInvalido("ID del gavetero") };
-            yield return new object[] { new ActualizarGaveteroComando(1, "", null, "Mueble", null, null, null), new ErrorNombreRequerido("nombre del gavetero") };
-            yield return new object[] { new ActualizarGaveteroComando(1, "Nombre", null, "", null, null, null), new ErrorNombreRequerido("nombre del mueble") };
-            yield return new object[] { new ActualizarGaveteroComando(1, "Nombre", null, "Mueble", -10, null, null), new ErrorValorNegativo("longitud", -10) };
+            yield return new object[] { new ActualizarGaveteroComando(0, "Inválido", null, null, null, null, null), new ErrorIdInvalido() };
+            yield return new object[] { new ActualizarGaveteroComando(1, "", null, "Mueble", null, null, null), new ErrorNombreRequerido() };
+            yield return new object[] { new ActualizarGaveteroComando(1, "Nombre", null, "", null, null, null), new ErrorNombreRequerido() };
+            yield return new object[] { new ActualizarGaveteroComando(1, "Nombre", null, "Mueble", -10, null, null), new ErrorValorNegativo("longitud") };
         }
 
         [Test]
@@ -137,7 +137,7 @@ namespace IMT_Reservas.Tests.ControllerTests
         public void ActualizarGavetero_NoEncontrado_RetornaNotFound()
         {
             ActualizarGaveteroComando comando = new ActualizarGaveteroComando(99, "NoExiste", null, "Mueble", null, null, null);
-            _gaveteroServiceMock.Setup(s => s.ActualizarGavetero(It.IsAny<ActualizarGaveteroComando>())).Throws(new ErrorRegistroNoEncontrado("99"));
+            _gaveteroServiceMock.Setup(s => s.ActualizarGavetero(It.IsAny<ActualizarGaveteroComando>())).Throws(new ErrorRegistroNoEncontrado());
             IActionResult resultadoAccion = _gaveterosController.Actualizar(comando);
             Assert.That(resultadoAccion, Is.InstanceOf<NotFoundObjectResult>());
         }
@@ -164,7 +164,7 @@ namespace IMT_Reservas.Tests.ControllerTests
 
         private static IEnumerable<object[]> FuenteCasos_EliminarGavetero_BadRequest()
         {
-            yield return new object[] { 0, new ErrorIdInvalido("ID del gavetero") };
+            yield return new object[] { 0, new ErrorIdInvalido() };
         }
 
         [Test]
@@ -180,7 +180,7 @@ namespace IMT_Reservas.Tests.ControllerTests
         public void EliminarGavetero_NoEncontrado_RetornaNotFound()
         {
             int idNoExistente = 99;
-            _gaveteroServiceMock.Setup(s => s.EliminarGavetero(It.Is<EliminarGaveteroComando>(c => c.Id == idNoExistente))).Throws(new ErrorRegistroNoEncontrado("99"));
+            _gaveteroServiceMock.Setup(s => s.EliminarGavetero(It.Is<EliminarGaveteroComando>(c => c.Id == idNoExistente))).Throws(new ErrorRegistroNoEncontrado());
             IActionResult resultadoAccion = _gaveterosController.Eliminar(idNoExistente);
             Assert.That(resultadoAccion, Is.InstanceOf<NotFoundObjectResult>());
         }
@@ -189,7 +189,7 @@ namespace IMT_Reservas.Tests.ControllerTests
         public void EliminarGavetero_EnUso_RetornaConflict()
         {
             int idEnUso = 2;
-            _gaveteroServiceMock.Setup(s => s.EliminarGavetero(It.Is<EliminarGaveteroComando>(c => c.Id == idEnUso))).Throws(new ErrorRegistroEnUso("El gavetero tiene equipos almacenados"));
+            _gaveteroServiceMock.Setup(s => s.EliminarGavetero(It.Is<EliminarGaveteroComando>(c => c.Id == idEnUso))).Throws(new ErrorRegistroEnUso());
             IActionResult resultadoAccion = _gaveterosController.Eliminar(idEnUso);
             Assert.That(resultadoAccion, Is.InstanceOf<ConflictObjectResult>());
         }

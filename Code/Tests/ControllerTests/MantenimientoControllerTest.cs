@@ -19,11 +19,11 @@ namespace IMT_Reservas.Tests.ControllerTests
         public void Setup()
         {
             _configMock               = new Mock<IConfiguration>();
+            _configMock.Setup(config => config.GetConnectionString("DefaultConnection")).Returns("fake_connection_string");
             _queryExecMock            = new Mock<ExecuteQuery>(_configMock.Object);
             _mantenimientoRepoMock    = new Mock<MantenimientoRepository>(_queryExecMock.Object);
             _mantenimientoServiceMock = new Mock<MantenimientoService>(_mantenimientoRepoMock.Object);
             _mantenimientosController = new MantenimientoController(_mantenimientoServiceMock.Object);
-            _configMock.Setup(config => config.GetConnectionString("DefaultConnection")).Returns("fake_connection_string");
         }
 
         [Test]
@@ -69,10 +69,20 @@ namespace IMT_Reservas.Tests.ControllerTests
             Assert.That(resultadoAccion, Is.InstanceOf<CreatedResult>());
         }
 
-        private static IEnumerable<object[]> FuenteCasos_CrearMantenimiento_BadRequest()
+        private static IEnumerable<object[]>
+        FuenteCasos_CrearMantenimiento_BadRequest()
         {
-            yield return new object[] { new CrearMantenimientoComando(DateOnly.FromDateTime(DateTime.Now), DateOnly.FromDateTime(DateTime.Now.AddDays(1)), "", 100.50, "Desc", new int[] { 1 }, new string[] { "Tipo" }, new string[] { "Equipo" }), new ErrorNombreRequerido("nombre de la empresa de mantenimiento") };
-            yield return new object[] { new CrearMantenimientoComando(DateOnly.FromDateTime(DateTime.Now), DateOnly.FromDateTime(DateTime.Now.AddDays(-1)), "Empresa", 100.50, "Desc", new int[] { 1 }, new string[] { "Tipo" }, new string[] { "Equipo" }), new ErrorReferenciaInvalida("La fecha final debe ser posterior a la fecha de inicio") };
+            var today = DateOnly.FromDateTime(DateTime.Now);
+            yield return new object[] { new CrearMantenimientoComando(today, today.AddDays(1), "", 100.50, "Desc", new int[] { 1 }, new string[] { "Tipo" }, new string[] { "Equipo" }), new ErrorNombreRequerido() };
+            yield return new object[] { new CrearMantenimientoComando(today, today.AddDays(-1), "Empresa", 100.50, "Desc", new int[] { 1 }, new string[] { "Tipo" }, new string[] { "Equipo" }), new ErrorFechaInvalida() };
+            yield return new object[] { new CrearMantenimientoComando(today, today.AddDays(1), "Empresa", 100.50, "Desc", null, new string[] { "Tipo" }, new string[] { "Equipo" }), new ErrorReferenciaInvalida("equipos") };
+            yield return new object[] { new CrearMantenimientoComando(today, today.AddDays(1), "Empresa", 100.50, "Desc", new int[] { }, new string[] { "Tipo" }, new string[] { "Equipo" }), new ErrorReferenciaInvalida("equipos") };
+            yield return new object[] { new CrearMantenimientoComando(today, today.AddDays(1), "Empresa", 100.50, "Desc", new int[] { 1 }, null, new string[] { "Equipo" }), new ErrorReferenciaInvalida("tipos de mantenimiento") };
+            yield return new object[] { new CrearMantenimientoComando(today, today.AddDays(1), "Empresa", 100.50, "Desc", new int[] { 1 }, new string[] { }, new string[] { "Equipo" }), new ErrorReferenciaInvalida("tipos de mantenimiento") };
+            yield return new object[] { new CrearMantenimientoComando(today, today.AddDays(1), "Empresa", 100.50, "Desc", new int[] { 1, 2 }, new string[] { "Tipo" }, new string[] { "Equipo" }), new ErrorReferenciaInvalida("equipos y tipos") };
+            yield return new object[] { new CrearMantenimientoComando(today, today.AddDays(1), "Empresa", 100.50, "Desc", new int[] { 1 }, new string[] { "Tipo" }, new string[] { "Desc1", "Desc2" }), new ErrorReferenciaInvalida("descripciones") };
+            yield return new object[] { new CrearMantenimientoComando(today, today.AddDays(1), "Empresa", 100.50, "Desc", new int[] { 0 }, new string[] { "Tipo" }, new string[] { "Equipo" }), new ErrorIdInvalido() };
+            yield return new object[] { new CrearMantenimientoComando(today, today.AddDays(1), "Empresa", -100, "Desc", new int[] { 1 }, new string[] { "Tipo" }, new string[] { "Equipo" }), new ErrorValorNegativo("costo") };
         }
 
         [Test]
@@ -108,7 +118,7 @@ namespace IMT_Reservas.Tests.ControllerTests
         public void EliminarMantenimiento_NoEncontrado_RetornaNotFound()
         {
             int idNoExistente = 99;
-            _mantenimientoServiceMock.Setup(s => s.EliminarMantenimiento(It.Is<EliminarMantenimientoComando>(c => c.Id == idNoExistente))).Throws(new ErrorRegistroNoEncontrado("99"));
+            _mantenimientoServiceMock.Setup(s => s.EliminarMantenimiento(It.Is<EliminarMantenimientoComando>(c => c.Id == idNoExistente))).Throws(new ErrorRegistroNoEncontrado());
             IActionResult resultadoAccion = _mantenimientosController.Eliminar(idNoExistente);
             Assert.That(resultadoAccion, Is.InstanceOf<NotFoundObjectResult>());
         }
@@ -117,7 +127,7 @@ namespace IMT_Reservas.Tests.ControllerTests
         public void EliminarMantenimiento_EnUso_RetornaConflict()
         {
             int idEnUso = 2;
-            _mantenimientoServiceMock.Setup(s => s.EliminarMantenimiento(It.Is<EliminarMantenimientoComando>(c => c.Id == idEnUso))).Throws(new ErrorRegistroEnUso("El mantenimiento ya fue procesado"));
+            _mantenimientoServiceMock.Setup(s => s.EliminarMantenimiento(It.Is<EliminarMantenimientoComando>(c => c.Id == idEnUso))).Throws(new ErrorRegistroEnUso());
             IActionResult resultadoAccion = _mantenimientosController.Eliminar(idEnUso);
             Assert.That(resultadoAccion, Is.InstanceOf<ConflictObjectResult>());
         }
@@ -131,6 +141,19 @@ namespace IMT_Reservas.Tests.ControllerTests
             Assert.That(resultadoAccion, Is.InstanceOf<ObjectResult>());
             ObjectResult objectResult = (ObjectResult)resultadoAccion;
             Assert.That(objectResult.StatusCode, Is.EqualTo(500));
+        }
+        private static IEnumerable<object[]> FuenteCasos_EliminarMantenimiento_BadRequest()
+        {
+            yield return new object[] { 0, new ErrorIdInvalido() };
+        }
+
+        [Test]
+        [TestCaseSource(nameof(FuenteCasos_EliminarMantenimiento_BadRequest))]
+        public void EliminarMantenimiento_Invalido_RetornaBadRequest(int idMantenimiento, System.Exception excepcionLanzada)
+        {
+            _mantenimientoServiceMock.Setup(s => s.EliminarMantenimiento(It.Is<EliminarMantenimientoComando>(c => c.Id == idMantenimiento))).Throws(excepcionLanzada);
+            IActionResult resultadoAccion = _mantenimientosController.Eliminar(idMantenimiento);
+            Assert.That(resultadoAccion, Is.InstanceOf<BadRequestObjectResult>());
         }
     }
 }

@@ -19,11 +19,11 @@ namespace IMT_Reservas.Tests.ControllerTests
         public void Setup()
         {
             _configMock         = new Mock<IConfiguration>();
+            _configMock.Setup(config => config.GetConnectionString("DefaultConnection")).Returns("fake_connection_string");
             _queryExecMock      = new Mock<ExecuteQuery>(_configMock.Object);
             _carreraRepoMock    = new Mock<CarreraRepository>(_queryExecMock.Object);
             _carreraServiceMock = new Mock<CarreraService>(_carreraRepoMock.Object);
             _carrerasController = new CarreraController(_carreraServiceMock.Object);
-            _configMock.Setup(config => config.GetConnectionString("DefaultConnection")).Returns("fake_connection_string");
         }
 
         [Test]
@@ -64,15 +64,15 @@ namespace IMT_Reservas.Tests.ControllerTests
         public void CrearCarrera_Valido_RetornaCreated()
         {
             CrearCarreraComando comando = new CrearCarreraComando("Nueva Carrera");
+            _carreraServiceMock.Setup(s => s.CrearCarrera(comando));
             IActionResult resultadoAccion = _carrerasController.Crear(comando);
             Assert.That(resultadoAccion, Is.InstanceOf<CreatedResult>());
         }
 
         private static IEnumerable<object[]> FuenteCasos_CrearCarrera_BadRequest()
         {
-            yield return new object[] { new CrearCarreraComando(""), new ErrorNombreRequerido("nombre") };
-            yield return new object[] { new CrearCarreraComando(new string('a', 101)), new ErrorLongitudInvalida("nombre", 100) };
-            yield return new object[] { new CrearCarreraComando("ErrorDominio"), new ErrorIdInvalido("ID Inválido") };
+            yield return new object[] { new CrearCarreraComando(""), new ErrorNombreRequerido() };
+            yield return new object[] { new CrearCarreraComando(new string('a', 257)), new ErrorLongitudInvalida("nombre de la carrera", 256) };
         }
 
         [Test]
@@ -88,7 +88,7 @@ namespace IMT_Reservas.Tests.ControllerTests
         public void CrearCarrera_NombreExistente_RetornaConflict()
         {
             CrearCarreraComando comando = new CrearCarreraComando("Carrera Existente");
-            _carreraServiceMock.Setup(s => s.CrearCarrera(It.IsAny<CrearCarreraComando>())).Throws(new ErrorRegistroYaExiste("Existe"));
+            _carreraServiceMock.Setup(s => s.CrearCarrera(It.IsAny<CrearCarreraComando>())).Throws(new ErrorRegistroYaExiste());
             IActionResult resultadoAccion = _carrerasController.Crear(comando);
             Assert.That(resultadoAccion, Is.InstanceOf<ConflictObjectResult>());
         }
@@ -108,16 +108,16 @@ namespace IMT_Reservas.Tests.ControllerTests
         public void ActualizarCarrera_Valido_RetornaOk()
         {
             ActualizarCarreraComando comando = new ActualizarCarreraComando(1, "Carrera Actualizada");
+            _carreraServiceMock.Setup(s => s.ActualizarCarrera(comando));
             IActionResult resultadoAccion = _carrerasController.Actualizar(comando);
             Assert.That(resultadoAccion, Is.InstanceOf<OkObjectResult>());
         }
 
         private static IEnumerable<object[]> FuenteCasos_ActualizarCarrera_BadRequest()
         {
-            yield return new object[] { new ActualizarCarreraComando(0, "Inválido"), new ErrorIdInvalido("ID") };
-            yield return new object[] { new ActualizarCarreraComando(1, ""), new ErrorNombreRequerido("nombre") };
-            yield return new object[] { new ActualizarCarreraComando(1, new string('a', 101)), new ErrorLongitudInvalida("nombre", 100) };
-            yield return new object[] { new ActualizarCarreraComando(1, "ErrorDominio"), new ErrorRegistroEnUso("EnUso") };
+            yield return new object[] { new ActualizarCarreraComando(0, "Inválido"), new ErrorIdInvalido() };
+            yield return new object[] { new ActualizarCarreraComando(1, ""), new ErrorNombreRequerido() };
+            yield return new object[] { new ActualizarCarreraComando(1, new string('a', 257)), new ErrorLongitudInvalida("nombre de la carrera", 256) };
         }
 
         [Test]
@@ -133,7 +133,7 @@ namespace IMT_Reservas.Tests.ControllerTests
         public void ActualizarCarrera_NoEncontrada_RetornaNotFound()
         {
             ActualizarCarreraComando comando = new ActualizarCarreraComando(99, "NoExiste"); 
-            _carreraServiceMock.Setup(s => s.ActualizarCarrera(It.IsAny<ActualizarCarreraComando>())).Throws(new ErrorRegistroNoEncontrado("NoEncontrada"));
+            _carreraServiceMock.Setup(s => s.ActualizarCarrera(It.IsAny<ActualizarCarreraComando>())).Throws(new ErrorRegistroNoEncontrado());
             IActionResult resultadoAccion = _carrerasController.Actualizar(comando);
             Assert.That(resultadoAccion, Is.InstanceOf<NotFoundObjectResult>());
         }
@@ -142,7 +142,7 @@ namespace IMT_Reservas.Tests.ControllerTests
         public void ActualizarCarrera_NombreExistente_RetornaConflict()
         {
             ActualizarCarreraComando comando = new ActualizarCarreraComando(1, "Nombre Existente");
-            _carreraServiceMock.Setup(s => s.ActualizarCarrera(It.IsAny<ActualizarCarreraComando>())).Throws(new ErrorRegistroYaExiste("Existe"));
+            _carreraServiceMock.Setup(s => s.ActualizarCarrera(It.IsAny<ActualizarCarreraComando>())).Throws(new ErrorRegistroYaExiste());
             IActionResult resultadoAccion = _carrerasController.Actualizar(comando);
             Assert.That(resultadoAccion, Is.InstanceOf<ConflictObjectResult>());
         }
@@ -162,14 +162,14 @@ namespace IMT_Reservas.Tests.ControllerTests
         public void EliminarCarrera_Valido_RetornaNoContent()
         {
             int idValido = 1;
+            _carreraServiceMock.Setup(s => s.EliminarCarrera(It.Is<EliminarCarreraComando>(c => c.Id == idValido)));
             IActionResult resultadoAccion = _carrerasController.Eliminar(idValido);
             Assert.That(resultadoAccion, Is.InstanceOf<NoContentResult>());
         }
 
         private static IEnumerable<object[]> FuenteCasos_EliminarCarrera_BadRequest()
         {
-            yield return new object[] { 0, new ErrorIdInvalido("ID") };
-            yield return new object[] { 3, new ErrorNombreRequerido("NombreReq") };
+            yield return new object[] { 0, new ErrorIdInvalido() };
         }
 
         [Test]
@@ -185,7 +185,7 @@ namespace IMT_Reservas.Tests.ControllerTests
         public void EliminarCarrera_NoEncontrada_RetornaNotFound()
         {
             int idNoExistente = 99;
-            _carreraServiceMock.Setup(s => s.EliminarCarrera(It.Is<EliminarCarreraComando>(c => c.Id == idNoExistente))).Throws(new ErrorRegistroNoEncontrado("NoEncontrada"));
+            _carreraServiceMock.Setup(s => s.EliminarCarrera(It.Is<EliminarCarreraComando>(c => c.Id == idNoExistente))).Throws(new ErrorRegistroNoEncontrado());
             IActionResult resultadoAccion = _carrerasController.Eliminar(idNoExistente);
             Assert.That(resultadoAccion, Is.InstanceOf<NotFoundObjectResult>());
         }
@@ -194,7 +194,7 @@ namespace IMT_Reservas.Tests.ControllerTests
         public void EliminarCarrera_EnUso_RetornaConflict()
         {
             int idEnUso = 2;
-            _carreraServiceMock.Setup(s => s.EliminarCarrera(It.Is<EliminarCarreraComando>(c => c.Id == idEnUso))).Throws(new ErrorRegistroEnUso("EnUso"));
+            _carreraServiceMock.Setup(s => s.EliminarCarrera(It.Is<EliminarCarreraComando>(c => c.Id == idEnUso))).Throws(new ErrorRegistroEnUso());
             IActionResult resultadoAccion = _carrerasController.Eliminar(idEnUso);
             Assert.That(resultadoAccion, Is.InstanceOf<ConflictObjectResult>());
         }

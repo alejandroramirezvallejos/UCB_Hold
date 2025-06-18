@@ -9,21 +9,21 @@ namespace IMT_Reservas.Tests.ControllerTests
     [TestFixture]
     public class ComponenteControllerTest
     {
-        private Mock<ComponenteService> _componenteServiceMock;
+        private Mock<ComponenteService>    _componenteServiceMock;
         private Mock<ComponenteRepository> _componenteRepoMock;
-        private Mock<ExecuteQuery> _queryExecMock;
-        private Mock<IConfiguration> _configMock;
-        private ComponenteController _componentesController;
+        private Mock<ExecuteQuery>         _queryExecMock;
+        private Mock<IConfiguration>       _configMock;
+        private ComponenteController       _componentesController;
 
         [SetUp]
         public void Setup()
         {
             _configMock            = new Mock<IConfiguration>();
+            _configMock.Setup(config => config.GetConnectionString("DefaultConnection")).Returns("fake_connection_string");
             _queryExecMock         = new Mock<ExecuteQuery>(_configMock.Object);
             _componenteRepoMock    = new Mock<ComponenteRepository>(_queryExecMock.Object);
             _componenteServiceMock = new Mock<ComponenteService>(_componenteRepoMock.Object);
             _componentesController = new ComponenteController(_componenteServiceMock.Object);
-            _configMock.Setup(config => config.GetConnectionString("DefaultConnection")).Returns("fake_connection_string");
         }
 
         [Test]
@@ -71,9 +71,12 @@ namespace IMT_Reservas.Tests.ControllerTests
 
         private static IEnumerable<object[]> FuenteCasos_CrearComponente_BadRequest()
         {
-            yield return new object[] { new CrearComponenteComando("", "SN1", "Tipo", 1, "desc", 10, null), new ErrorNombreRequerido("nombre") };
-            yield return new object[] { new CrearComponenteComando(new string('a', 101), "SN2", "Tipo", 1, "desc", 10, null), new ErrorLongitudInvalida("nombre", 100) };
-            yield return new object[] { new CrearComponenteComando("CPU", "", "Tipo", 1, "desc", 10, null), new ErrorNombreRequerido("modelo") };
+            yield return new object[] { new CrearComponenteComando("", "SN1", "Tipo", 1, "desc", 10, null), new ErrorNombreRequerido() };
+            yield return new object[] { new CrearComponenteComando(new string('a', 256), "SN2", "Tipo", 1, "desc", 10, null), new ErrorLongitudInvalida("nombre", 255) };
+            yield return new object[] { new CrearComponenteComando("CPU", "", "Tipo", 1, "desc", 10, null), new ErrorModeloRequerido() };
+            yield return new object[] { new CrearComponenteComando("CPU", new string('a', 256), "Tipo", 1, "desc", 10, null), new ErrorLongitudInvalida("modelo", 255) };
+            yield return new object[] { new CrearComponenteComando("CPU", "SN3", "Tipo", 0, "desc", 10, null), new ErrorCodigoImtRequerido() };
+            yield return new object[] { new CrearComponenteComando("CPU", "SN4", "Tipo", 1, "desc", -10, null), new ErrorValorNegativo("precio de referencia") };
         }
 
         [Test]
@@ -89,7 +92,7 @@ namespace IMT_Reservas.Tests.ControllerTests
         public void CrearComponente_RegistroExistente_RetornaConflict()
         {
             CrearComponenteComando comando = new CrearComponenteComando("RAM 8GB", "SR123", "Memoria", 2, "desc", 70, null);
-            _componenteServiceMock.Setup(s => s.CrearComponente(It.IsAny<CrearComponenteComando>())).Throws(new ErrorRegistroYaExiste("Componente con esta serie ya existe"));
+            _componenteServiceMock.Setup(s => s.CrearComponente(It.IsAny<CrearComponenteComando>())).Throws(new ErrorRegistroYaExiste());
             IActionResult resultadoAccion = _componentesController.Crear(comando);
             Assert.That(resultadoAccion, Is.InstanceOf<ConflictObjectResult>());
         }
@@ -116,9 +119,13 @@ namespace IMT_Reservas.Tests.ControllerTests
 
         private static IEnumerable<object[]> FuenteCasos_ActualizarComponente_BadRequest()
         {
-            yield return new object[] { new ActualizarComponenteComando(0, "Inválido", null, null, 0, null, 0, null), new ErrorIdInvalido("ID") };
-            yield return new object[] { new ActualizarComponenteComando(1, "", "SN1", "Tipo", 1, "desc", 10, null), new ErrorNombreRequerido("nombre") };
+            yield return new object[] { new ActualizarComponenteComando(0, "Inválido", "modelo", "tipo", 1, null, 0, null), new ErrorIdInvalido() };
+            yield return new object[] { new ActualizarComponenteComando(1, "", "SN1", "Tipo", 1, "desc", 10, null), new ErrorNombreRequerido() };
             yield return new object[] { new ActualizarComponenteComando(1, new string('a', 101), "SN2", "Tipo", 1, "desc", 10, null), new ErrorLongitudInvalida("nombre", 100) };
+            yield return new object[] { new ActualizarComponenteComando(1, "CPU", "", "Tipo", 1, "desc", 10, null), new ErrorModeloRequerido() };
+            yield return new object[] { new ActualizarComponenteComando(1, "CPU", new string('a', 51), "Tipo", 1, "desc", 10, null), new ErrorLongitudInvalida("modelo", 50) };
+            yield return new object[] { new ActualizarComponenteComando(1, "CPU", "SN3", "Tipo", 0, "desc", 10, null), new ErrorCodigoImtRequerido() };
+            yield return new object[] { new ActualizarComponenteComando(1, "CPU", "SN4", "Tipo", 1, "desc", -10, null), new ErrorValorNegativo("precio de referencia") };
         }
 
         [Test]
@@ -133,8 +140,8 @@ namespace IMT_Reservas.Tests.ControllerTests
         [Test]
         public void ActualizarComponente_NoEncontrado_RetornaNotFound()
         {
-            ActualizarComponenteComando comando = new ActualizarComponenteComando(99, "NoExiste", "NE001", null, 0, null, 0, null); 
-            _componenteServiceMock.Setup(s => s.ActualizarComponente(It.IsAny<ActualizarComponenteComando>())).Throws(new ErrorRegistroNoEncontrado("Componente no encontrado"));
+            ActualizarComponenteComando comando = new ActualizarComponenteComando(99, "NoExiste", "NE001", null, 1, null, 0, null); 
+            _componenteServiceMock.Setup(s => s.ActualizarComponente(It.IsAny<ActualizarComponenteComando>())).Throws(new ErrorRegistroNoEncontrado());
             IActionResult resultadoAccion = _componentesController.Actualizar(comando);
             Assert.That(resultadoAccion, Is.InstanceOf<NotFoundObjectResult>());
         }
@@ -143,7 +150,7 @@ namespace IMT_Reservas.Tests.ControllerTests
         public void ActualizarComponente_RegistroExistente_RetornaConflict()
         {
             ActualizarComponenteComando comando = new ActualizarComponenteComando(1, "RAM 8GB", "RM456", "Memoria", 2, "desc", 70, null);
-            _componenteServiceMock.Setup(s => s.ActualizarComponente(It.IsAny<ActualizarComponenteComando>())).Throws(new ErrorRegistroYaExiste("Componente con esta serie ya existe"));
+            _componenteServiceMock.Setup(s => s.ActualizarComponente(It.IsAny<ActualizarComponenteComando>())).Throws(new ErrorRegistroYaExiste());
             IActionResult resultadoAccion = _componentesController.Actualizar(comando);
             Assert.That(resultadoAccion, Is.InstanceOf<ConflictObjectResult>());
         }
@@ -170,7 +177,7 @@ namespace IMT_Reservas.Tests.ControllerTests
 
         private static IEnumerable<object[]> FuenteCasos_EliminarComponente_BadRequest()
         {
-            yield return new object[] { 0, new ErrorIdInvalido("ID") };
+            yield return new object[] { 0, new ErrorIdInvalido() };
         }
 
         [Test]
@@ -186,7 +193,7 @@ namespace IMT_Reservas.Tests.ControllerTests
         public void EliminarComponente_NoEncontrado_RetornaNotFound()
         {
             int idNoExistente = 99;
-            _componenteServiceMock.Setup(s => s.EliminarComponente(It.Is<EliminarComponenteComando>(c => c.Id == idNoExistente))).Throws(new ErrorRegistroNoEncontrado("Componente no encontrado"));
+            _componenteServiceMock.Setup(s => s.EliminarComponente(It.Is<EliminarComponenteComando>(c => c.Id == idNoExistente))).Throws(new ErrorRegistroNoEncontrado());
             IActionResult resultadoAccion = _componentesController.Eliminar(idNoExistente);
             Assert.That(resultadoAccion, Is.InstanceOf<NotFoundObjectResult>());
         }
@@ -195,7 +202,7 @@ namespace IMT_Reservas.Tests.ControllerTests
         public void EliminarComponente_EnUso_RetornaConflict() 
         {
             int idEnUso = 2;
-            _componenteServiceMock.Setup(s => s.EliminarComponente(It.Is<EliminarComponenteComando>(c => c.Id == idEnUso))).Throws(new ErrorRegistroEnUso("Componente en uso, no se puede eliminar"));
+            _componenteServiceMock.Setup(s => s.EliminarComponente(It.Is<EliminarComponenteComando>(c => c.Id == idEnUso))).Throws(new ErrorRegistroEnUso());
             IActionResult resultadoAccion = _componentesController.Eliminar(idEnUso);
             Assert.That(resultadoAccion, Is.InstanceOf<ConflictObjectResult>());
         }
