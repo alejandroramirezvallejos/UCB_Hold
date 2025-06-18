@@ -38,6 +38,15 @@ export class PrestamosTablaComponent implements OnInit {
   };
 
   terminoBusqueda: string = '';
+  
+  // Propiedades para el filtro
+  showEstados: boolean = false;
+  estadoSeleccionado: string = '';
+  estadosDisponibles: string[] = ['pendiente', 'rechazado', 'aprobado', 'activo', 'finalizado', 'cancelado'];
+
+  hover = {
+    filter: false
+  };
 
   constructor(private prestamosapi: PrestamosAPIService) {}
 
@@ -82,26 +91,13 @@ export class PrestamosTablaComponent implements OnInit {
       }
     );
   }
-
   buscar() {
-    if (this.terminoBusqueda.trim() === '') {
-      this.limpiarBusqueda();
-      return;
-    }
-
-    this.prestamos = this.prestamoscopia.filter(prestamo =>
-      prestamo.NombreUsuario?.toLowerCase().includes(this.terminoBusqueda.toLowerCase()) ||
-      prestamo.ApellidoPaternoUsuario?.toLowerCase().includes(this.terminoBusqueda.toLowerCase()) ||
-      prestamo.CarnetUsuario?.toLowerCase().includes(this.terminoBusqueda.toLowerCase()) ||
-      prestamo.NombreGrupoEquipo?.toLowerCase().includes(this.terminoBusqueda.toLowerCase()) ||
-      prestamo.CodigoImt?.toLowerCase().includes(this.terminoBusqueda.toLowerCase()) ||
-      prestamo.EstadoPrestamo?.toLowerCase().includes(this.terminoBusqueda.toLowerCase())
-    );
+    this.aplicarFiltros();
   }
 
   limpiarBusqueda() {
     this.terminoBusqueda = '';
-    this.prestamos = [...this.prestamoscopia];
+    this.aplicarFiltros();
   }
 
 
@@ -160,4 +156,59 @@ export class PrestamosTablaComponent implements OnInit {
 
     this.aplicarOrdenamiento(); // Aplicar el ordenamiento
   }
+  aceptarprestamo(indice : number) {
+    const prestamo = this.prestamos[indice];
+    alert(`Aceptar préstamo de ${prestamo.NombreUsuario} - Funcionalidad pendiente de implementar en el backend`);
+    // Una vez implementado:
+    // this.prestamosapi.aceptarPrestamo(prestamo.Id).subscribe(...)
+  }
+
+  rechazarprestamo(indice : number) {
+    const prestamo = this.prestamos[indice];
+    alert(`Rechazar préstamo de ${prestamo.NombreUsuario} - Funcionalidad pendiente de implementar en el backend`);    // Una vez implementado:
+    // this.prestamosapi.rechazarPrestamo(prestamo.Id).subscribe(...)
+  }
+
+  // Métodos para el filtro de estados
+  toggleEstados() {
+    this.showEstados = !this.showEstados;
+  }
+
+  selectEstado(estado: string) {
+    this.estadoSeleccionado = estado;
+    this.showEstados = false;
+    this.aplicarFiltros();
+  }
+
+  aplicarFiltros() {
+    // Comenzar con la copia completa
+    let prestamosFiltrados = [...this.prestamoscopia];
+
+    // Aplicar filtro de búsqueda si existe
+    if (this.terminoBusqueda.trim() !== '') {
+      prestamosFiltrados = prestamosFiltrados.filter(prestamo =>
+        prestamo.NombreUsuario?.toLowerCase().includes(this.terminoBusqueda.toLowerCase()) ||
+        prestamo.ApellidoPaternoUsuario?.toLowerCase().includes(this.terminoBusqueda.toLowerCase()) ||
+        prestamo.CarnetUsuario?.toLowerCase().includes(this.terminoBusqueda.toLowerCase()) ||
+        prestamo.NombreGrupoEquipo?.toLowerCase().includes(this.terminoBusqueda.toLowerCase()) ||
+        prestamo.CodigoImt?.toLowerCase().includes(this.terminoBusqueda.toLowerCase()) ||
+        prestamo.EstadoPrestamo?.toLowerCase().includes(this.terminoBusqueda.toLowerCase())
+      );
+    }
+
+    // Aplicar filtro de estado si existe
+    if (this.estadoSeleccionado !== '') {
+      prestamosFiltrados = prestamosFiltrados.filter(prestamo =>
+        prestamo.EstadoPrestamo?.toLowerCase() === this.estadoSeleccionado.toLowerCase()
+      );
+    }
+
+    this.prestamos = prestamosFiltrados;
+  }
+
+  limpiarFiltros() {
+    this.terminoBusqueda = '';
+    this.estadoSeleccionado = '';
+    this.prestamos = [...this.prestamoscopia];
+    this.showEstados = false;  }
 }

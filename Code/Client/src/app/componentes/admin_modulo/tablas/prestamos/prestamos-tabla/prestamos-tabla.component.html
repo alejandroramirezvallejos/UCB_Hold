@@ -4,29 +4,85 @@
     <div class="header-title">
       <h1>Préstamos</h1>
       <p class="subtitle">Gestión de préstamos de equipos de mecatrónica</p>
-    </div>
-    <button class="botoncrear" (click)="crearprestamo()">
+    </div>    <button class="botoncrear" (click)="crearprestamo()">
        Nuevo Préstamo
     </button>
   </div>
-
   <!-- BUSCADOR-->
   <div class="search-container">
-    <div class="search-input-wrapper">
-      <i class="fas fa-search search-icon"></i>
-      <input 
-        type="text" 
-        [(ngModel)]="terminoBusqueda" 
-        (keydown.enter)="buscar()"
-        placeholder="Buscar préstamos..." 
-        class="search-input"
-      />
-      @if (terminoBusqueda) {
-        <button class="clear-search" (click)="limpiarBusqueda()">
-          <i class="fas fa-times"></i>
+    
+    <div class="search-and-filter-row">
+      <div class="search-input-wrapper">
+        <i class="fas fa-search search-icon"></i>
+        <input 
+          type="text" 
+          [(ngModel)]="terminoBusqueda" 
+          (keydown.enter)="buscar()"
+          placeholder="Buscar préstamos..." 
+          class="search-input"
+        />
+        @if (terminoBusqueda) {
+          <button class="clear-search" (click)="limpiarBusqueda()">
+            <i class="fas fa-times"></i>
+          </button>
+        }
+      </div>
+        <!-- Filtro de estados -->
+      <div class="filter-container">
+        <button 
+          class="btn-filter" 
+          (click)="toggleEstados()"
+          (mouseenter)="hover.filter = true"
+          (mouseleave)="hover.filter = false"
+        >
+          <i class="fas fa-filter"></i>
+          @if (estadoSeleccionado) {
+            <span>{{ estadoSeleccionado }}</span>
+          } @else {
+            <span>Filtrar</span>
+          }
+          <i [class]="showEstados ? 'fas fa-chevron-up' : 'fas fa-chevron-down'"></i>
         </button>
-      }
-    </div>
+        
+        <!-- Panel flotante que aparece al frente -->
+        @if (showEstados) {
+          <div class="estados-panel-flotante">
+            <div class="estados-grid-flotante">
+              <div class="estado-item-flotante" (click)="selectEstado('')" [class.active]="estadoSeleccionado === ''">
+                <i class="fas fa-list"></i>
+                Todos los estados
+              </div>              @for (estado of estadosDisponibles; track estado) {
+                <div class="estado-item-flotante" (click)="selectEstado(estado)" [class.active]="estadoSeleccionado === estado">
+                  @switch (estado.toLowerCase()) {
+                    @case ('pendiente') {
+                      <i class="fas fa-clock text-warning"></i>
+                    }
+                    @case ('aprobado') {
+                      <i class="fas fa-check-circle text-success"></i>
+                    }
+                    @case ('rechazado') {
+                      <i class="fas fa-times-circle text-danger"></i>
+                    }
+                    @case ('activo') {
+                      <i class="fas fa-play-circle text-primary"></i>
+                    }
+                    @case ('finalizado') {
+                      <i class="fas fa-check-double text-secondary"></i>
+                    }
+                    @case ('cancelado') {
+                      <i class="fas fa-ban text-danger"></i>
+                    }
+                    @default {
+                      <i class="fas fa-question-circle"></i>
+                    }
+                  }
+                  {{ estado | titlecase }}
+                </div>
+              }
+            </div>
+          </div>
+        }
+      </div>    </div>
   </div>
 
   <!-- TABLA -->
@@ -108,9 +164,24 @@
               </span>
             </td>
             <td class="actions-column">
-              <button class="btn-icon btn-delete" (click)="eliminarPrestamo(prestamo)">
+            @if(prestamo.EstadoPrestamo == 'rechazado' || prestamo.EstadoPrestamo == 'aprobado' || prestamo.EstadoPrestamo == 'finalizado' || prestamo.EstadoPrestamo == 'cancelado'){
+            <button class="btn-icon btn-delete" (click)="eliminarPrestamo(prestamo)">
                 <i class="fas fa-trash-alt"></i>
-              </button>
+            </button>
+            }            @else if (prestamo.EstadoPrestamo=='pendiente') {
+                <button class="btn-action btn-accept" (click)="aceptarprestamo(i)">
+                  <i class="fas fa-check"></i>
+                  Aceptar
+                </button>
+                <button class="btn-action btn-reject" (click)="rechazarprestamo(i)">
+                  <i class="fas fa-times"></i>
+                  Rechazar
+                </button>
+            }
+            @else if (prestamo.EstadoPrestamo=='activo') {
+
+            }
+
 
             </td>
           </tr>  
@@ -121,7 +192,7 @@
               <div class="empty-state">
                 <i class="fas fa-search fa-3x"></i>
                 <p>No se encontraron préstamos</p>
-                <button class="btn btn-outline" (click)="limpiarBusqueda()">Limpiar filtros</button>
+                <button class="btn btn-outline" (click)="limpiarFiltros()">Limpiar filtros</button>
               </div>
             </td>
           </tr>
