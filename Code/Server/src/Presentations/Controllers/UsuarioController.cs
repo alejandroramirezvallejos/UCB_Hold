@@ -18,8 +18,31 @@ public class UsuarioController : ControllerBase
         {
             servicio.CrearUsuario(input);
             return Ok(new { mensaje = "Usuario creado exitosamente" });
+        }        catch (ErrorNombreRequerido ex)
+        {
+            return BadRequest(new { error = "Campo requerido", mensaje = ex.Message });
         }
-        catch (ErrorNombreRequerido ex)
+        catch (ErrorCarnetRequerido ex)
+        {
+            return BadRequest(new { error = "Campo requerido", mensaje = ex.Message });
+        }
+        catch (ErrorApellidoPaternoRequerido ex)
+        {
+            return BadRequest(new { error = "Campo requerido", mensaje = ex.Message });
+        }
+        catch (ErrorApellidoMaternoRequerido ex)
+        {
+            return BadRequest(new { error = "Campo requerido", mensaje = ex.Message });
+        }
+        catch (ErrorContrasenaRequerida ex)
+        {
+            return BadRequest(new { error = "Campo requerido", mensaje = ex.Message });
+        }
+        catch (ErrorCarreraRequerida ex)
+        {
+            return BadRequest(new { error = "Campo requerido", mensaje = ex.Message });
+        }
+        catch (ErrorTelefonoRequerido ex)
         {
             return BadRequest(new { error = "Campo requerido", mensaje = ex.Message });
         }
@@ -42,14 +65,13 @@ public class UsuarioController : ControllerBase
         catch (ErrorRegistroYaExiste ex)
         {
             return Conflict(new { error = "Usuario duplicado", mensaje = ex.Message });
-        }
-        catch (ErrorReferenciaInvalida ex)
+        }        catch (ErrorReferenciaInvalida ex)
         {
             return BadRequest(new { error = "Referencia inválida", mensaje = ex.Message });
         }
-        catch (DomainException ex)
+        catch (ArgumentNullException ex)
         {
-            return BadRequest(new { error = "Error de validación", mensaje = ex.Message });
+            return BadRequest(new { error = "Argumento requerido", mensaje = ex.Message });
         }
         catch (Exception)
         {
@@ -71,19 +93,42 @@ public class UsuarioController : ControllerBase
         }
         catch (Exception) { return StatusCode(500, new { error = "Error interno del servidor", mensaje = "Ocurrió un error inesperado al obtener los usuarios" });
         }
-    }    [HttpPut("{carnet}")]
+    }    [HttpPut]
     public IActionResult ActualizarUsuario([FromBody] ActualizarUsuarioComando input)
     {
         try
         {
             servicio.ActualizarUsuario(input);
             return Ok(new { mensaje = "Usuario actualizado exitosamente" });
-        }
-        catch (ErrorCarnetInvalido ex)
+        }        catch (ErrorCarnetInvalido ex)
         {
             return BadRequest(new { error = "Carnet inválido", mensaje = ex.Message });
         }
         catch (ErrorNombreRequerido ex)
+        {
+            return BadRequest(new { error = "Campo requerido", mensaje = ex.Message });
+        }
+        catch (ErrorCarnetRequerido ex)
+        {
+            return BadRequest(new { error = "Campo requerido", mensaje = ex.Message });
+        }
+        catch (ErrorApellidoPaternoRequerido ex)
+        {
+            return BadRequest(new { error = "Campo requerido", mensaje = ex.Message });
+        }
+        catch (ErrorApellidoMaternoRequerido ex)
+        {
+            return BadRequest(new { error = "Campo requerido", mensaje = ex.Message });
+        }
+        catch (ErrorContrasenaRequerida ex)
+        {
+            return BadRequest(new { error = "Campo requerido", mensaje = ex.Message });
+        }
+        catch (ErrorCarreraRequerida ex)
+        {
+            return BadRequest(new { error = "Campo requerido", mensaje = ex.Message });
+        }
+        catch (ErrorTelefonoRequerido ex)
         {
             return BadRequest(new { error = "Campo requerido", mensaje = ex.Message });
         }
@@ -106,14 +151,13 @@ public class UsuarioController : ControllerBase
         catch (ErrorRegistroYaExiste ex)
         {
             return Conflict(new { error = "Usuario duplicado", mensaje = ex.Message });
-        }
-        catch (ErrorReferenciaInvalida ex)
+        }        catch (ErrorReferenciaInvalida ex)
         {
             return BadRequest(new { error = "Referencia inválida", mensaje = ex.Message });
         }
-        catch (DomainException ex)
+        catch (ArgumentNullException ex)
         {
-            return BadRequest(new { error = "Error de validación", mensaje = ex.Message });
+            return BadRequest(new { error = "Argumento requerido", mensaje = ex.Message });
         }
         catch (Exception)
         {
@@ -135,14 +179,13 @@ public class UsuarioController : ControllerBase
         catch (ErrorLongitudInvalida ex)
         {
             return BadRequest(new { error = "Longitud inválida", mensaje = ex.Message });
-        }
-        catch (ErrorRegistroNoEncontrado)
+        }        catch (ErrorRegistroNoEncontrado)
         {
             return NotFound(new { error = "Usuario no encontrado", mensaje = $"No se encontró un usuario con carnet '{carnet}'" });
         }
-        catch (DomainException ex)
+        catch (ArgumentNullException ex)
         {
-            return BadRequest(new { error = "Error de validación", mensaje = ex.Message });
+            return BadRequest(new { error = "Argumento requerido", mensaje = ex.Message });
         }
         catch (Exception)
         {

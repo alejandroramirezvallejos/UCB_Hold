@@ -34,22 +34,20 @@ public class AccesorioController : ControllerBase
         catch (ErrorCodigoImtRequerido ex)
         {
             return BadRequest(new { error = "Campo requerido", mensaje = ex.Message });
-        }
-        catch (ErrorValorNegativo ex)
+        }        catch (ErrorValorNegativo ex)
         {
             return BadRequest(new { error = "Valor inválido", mensaje = ex.Message });
         }
         catch (ErrorRegistroYaExiste ex)
         {
             return Conflict(new { error = "Registro duplicado", mensaje = ex.Message });
-        }
-        catch (ErrorReferenciaInvalida ex)
+        }        catch (ErrorReferenciaInvalida ex)
         {
             return BadRequest(new { error = "Referencia inválida", mensaje = ex.Message });
         }
-        catch (DomainException ex)
+        catch (ArgumentNullException ex)
         {
-            return BadRequest(new { error = "Error de validación", mensaje = ex.Message });
+            return BadRequest(new { error = "Argumento requerido", mensaje = ex.Message });
         }
         catch (Exception)
         {
@@ -107,14 +105,13 @@ public class AccesorioController : ControllerBase
         catch (ErrorRegistroYaExiste ex)
         {
             return Conflict(new { error = "Registro duplicado", mensaje = ex.Message });
-        }
-        catch (ErrorReferenciaInvalida ex)
+        }        catch (ErrorReferenciaInvalida ex)
         {
             return BadRequest(new { error = "Referencia inválida", mensaje = ex.Message });
         }
-        catch (DomainException ex)
+        catch (ArgumentNullException ex)
         {
-            return BadRequest(new { error = "Error de validación", mensaje = ex.Message });
+            return BadRequest(new { error = "Argumento requerido", mensaje = ex.Message });
         }
         catch (Exception)
         {
@@ -137,9 +134,9 @@ public class AccesorioController : ControllerBase
         {
             return NotFound(new { error = "Accesorio no encontrado", mensaje = ex.Message });
         }
-        catch (DomainException ex)
+        catch (ArgumentNullException ex)
         {
-            return BadRequest(new { error = "Error de validación", mensaje = ex.Message });
+            return BadRequest(new { error = "Argumento requerido", mensaje = ex.Message });
         }
         catch (Exception)
         {

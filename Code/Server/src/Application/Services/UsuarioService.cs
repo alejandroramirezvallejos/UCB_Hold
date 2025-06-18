@@ -74,7 +74,7 @@ public class UsuarioService : IUsuarioService
             throw new ArgumentNullException(nameof(comando));
 
         if (string.IsNullOrWhiteSpace(comando.Carnet))
-            throw new ErrorCarnetInvalido();
+            throw new ErrorCarnetRequerido();
 
         if (comando.Carnet.Length > 15)
             throw new ErrorLongitudInvalida("carnet", 15);
@@ -86,13 +86,13 @@ public class UsuarioService : IUsuarioService
             throw new ErrorLongitudInvalida("nombre", 100);
 
         if (string.IsNullOrWhiteSpace(comando.ApellidoPaterno))
-            throw new ErrorCampoRequerido("apellido paterno");
+            throw new ErrorApellidoPaternoRequerido();
 
         if (comando.ApellidoPaterno.Length > 100)
             throw new ErrorLongitudInvalida("apellido paterno", 100);
 
         if (string.IsNullOrWhiteSpace(comando.ApellidoMaterno))
-            throw new ErrorCampoRequerido("apellido materno");
+            throw new ErrorApellidoMaternoRequerido();
 
         if (comando.ApellidoMaterno.Length > 100)
             throw new ErrorLongitudInvalida("apellido materno", 100);
@@ -104,16 +104,16 @@ public class UsuarioService : IUsuarioService
             throw new ErrorLongitudInvalida("email", 150);
 
         if (string.IsNullOrWhiteSpace(comando.Contrasena))
-            throw new ErrorCampoRequerido("contraseña");
+            throw new ErrorContrasenaRequerida();
 
         if (comando.Contrasena.Length < 6)
             throw new ErrorLongitudInvalida("contraseña", 6, 100);
 
         if (string.IsNullOrWhiteSpace(comando.NombreCarrera))
-            throw new ErrorCampoRequerido("carrera");
+            throw new ErrorCarreraRequerida();
 
         if (string.IsNullOrWhiteSpace(comando.Telefono))
-            throw new ErrorCampoRequerido("telefono");
+            throw new ErrorTelefonoRequerido();
 
         if (comando.Telefono.Length > 20)
             throw new ErrorLongitudInvalida("telefono", 20);
@@ -317,7 +317,7 @@ public class UsuarioService : IUsuarioService
             throw new ArgumentNullException(nameof(comando));
 
         if (string.IsNullOrWhiteSpace(comando.Carnet))
-            throw new ErrorCarnetInvalido();
+            throw new ErrorCarnetRequerido();
 
         if (comando.Carnet.Length > 15)
             throw new ErrorLongitudInvalida("carnet", 15);
@@ -329,13 +329,13 @@ public class UsuarioService : IUsuarioService
             throw new ErrorLongitudInvalida("nombre", 100);
 
         if (string.IsNullOrWhiteSpace(comando.ApellidoPaterno))
-            throw new ErrorCampoRequerido("apellido paterno");
+            throw new ErrorApellidoPaternoRequerido();
 
         if (comando.ApellidoPaterno.Length > 100)
             throw new ErrorLongitudInvalida("apellido paterno", 100);
 
         if (string.IsNullOrWhiteSpace(comando.ApellidoMaterno))
-            throw new ErrorCampoRequerido("apellido materno");
+            throw new ErrorApellidoMaternoRequerido();
 
         if (comando.ApellidoMaterno.Length > 100)
             throw new ErrorLongitudInvalida("apellido materno", 100);
@@ -346,7 +346,19 @@ public class UsuarioService : IUsuarioService
         if (comando.Email.Length > 150)
             throw new ErrorLongitudInvalida("email", 150);
 
-        if (!string.IsNullOrWhiteSpace(comando.Telefono) && comando.Telefono.Length > 20)
+        if (string.IsNullOrWhiteSpace(comando.Contrasena))
+            throw new ErrorContrasenaRequerida();
+
+        if (comando.Contrasena.Length < 6)
+            throw new ErrorLongitudInvalida("contraseña", 6, 100);
+
+        if (string.IsNullOrWhiteSpace(comando.NombreCarrera))
+            throw new ErrorCarreraRequerida();
+
+        if (string.IsNullOrWhiteSpace(comando.Telefono))
+            throw new ErrorTelefonoRequerido();
+
+        if (comando.Telefono.Length > 20)
             throw new ErrorLongitudInvalida("telefono", 20);
     }
 

@@ -156,7 +156,7 @@ public class CarreraService : ICarreraService
         if (string.IsNullOrWhiteSpace(comando.Nombre))
             throw new ErrorNombreRequerido();
 
-        if (comando.Nombre.Length > 256)
+        if (comando.Nombre.Length > 255)
             throw new ErrorLongitudInvalida("nombre de la carrera", 256);
     }    public void EliminarCarrera(EliminarCarreraComando comando)
     {

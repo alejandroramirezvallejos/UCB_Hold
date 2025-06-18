@@ -22,17 +22,16 @@ public class EmpresaMantenimientoController : ControllerBase
         catch (ErrorNombreRequerido ex)
         {
             return BadRequest(new { error = "Campo requerido", mensaje = ex.Message });
-        }
-        catch (ErrorLongitudInvalida ex)
+        }        catch (ErrorLongitudInvalida ex)
         {
             return BadRequest(new { error = "Longitud inválida", mensaje = ex.Message });
         }        catch (ErrorRegistroYaExiste ex)
         {
             return Conflict(new { error = "Empresa duplicada", mensaje = ex.Message });
         }
-        catch (DomainException ex)
+        catch (ArgumentNullException ex)
         {
-            return BadRequest(new { error = "Error de validación", mensaje = ex.Message });
+            return BadRequest(new { error = "Argumento inválido", mensaje = ex.Message });
         }
         catch (Exception) 
         { 
@@ -75,14 +74,13 @@ public class EmpresaMantenimientoController : ControllerBase
         }        catch (ErrorRegistroNoEncontrado ex)
         {
             return NotFound(new { error = "Empresa no encontrada", mensaje = ex.Message });
-        }
-        catch (ErrorRegistroYaExiste ex)
+        }        catch (ErrorRegistroYaExiste ex)
         {
             return Conflict(new { error = "Empresa duplicada", mensaje = ex.Message });
         }
-        catch (DomainException ex)
+        catch (ArgumentNullException ex)
         {
-            return BadRequest(new { error = "Error de validación", mensaje = ex.Message });
+            return BadRequest(new { error = "Argumento inválido", mensaje = ex.Message });
         }
         catch (Exception) 
         { 
@@ -100,14 +98,13 @@ public class EmpresaMantenimientoController : ControllerBase
         catch (ErrorIdInvalido ex)
         {
             return BadRequest(new { error = "ID inválido", mensaje = ex.Message });
-        }
-        catch (ErrorRegistroNoEncontrado ex)
+        }        catch (ErrorRegistroNoEncontrado ex)
         {
             return NotFound(new { error = "Empresa no encontrada", mensaje = ex.Message });
         }
-        catch (DomainException ex)
+        catch (ArgumentNullException ex)
         {
-            return BadRequest(new { error = "Error de validación", mensaje = ex.Message });
+            return BadRequest(new { error = "Argumento inválido", mensaje = ex.Message });
         }
         catch (Exception) 
         { 

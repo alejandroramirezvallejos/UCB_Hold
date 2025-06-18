@@ -1,14 +1,14 @@
 public record CrearUsuarioComando
 (
-    string  Carnet,
-    string  Nombre,
-    string  ApellidoPaterno,
-    string  ApellidoMaterno,
-    string  Email,
-    string  Contrasena,
-    string  NombreCarrera,
-    string  Telefono,
-    string? TelefonoReferencia,
-    string? NombreReferencia,
-    string? EmailReferencia
+    string?  Carnet,//Se valida si no es nulo
+    string?  Nombre,//Se valida si no es nulo
+    string?  ApellidoPaterno,//Se valida si no es nulo
+    string?  ApellidoMaterno,//Se valida si no es nulo
+    string?  Email,//Se valida si no es nulo
+    string?  Contrasena,//Se valida si no es nulo
+    string?  NombreCarrera,//Se valida si no es nulo
+    string?  Telefono,//Se valida si no es nulo
+    string?  TelefonoReferencia,
+    string?  NombreReferencia,
+    string?  EmailReferencia
 );

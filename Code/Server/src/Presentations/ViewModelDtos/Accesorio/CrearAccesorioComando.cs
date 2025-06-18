@@ -1,9 +1,9 @@
 public record CrearAccesorioComando
 (
-    string Nombre,
-    string Modelo,
+    string? Nombre,//Se valida si no es nulo
+    string? Modelo,//Se valida si no es nulo
     string? Tipo,
-    int     CodigoIMT,
+    int?     CodigoIMT,//Se valida si no es nulo
     string? Descripcion,
     double? Precio,
     string? UrlDataSheet

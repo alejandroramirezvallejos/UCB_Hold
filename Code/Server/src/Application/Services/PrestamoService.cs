@@ -43,21 +43,27 @@ public class PrestamoService : IPrestamoService
     private void ValidarEntradaCreacion(CrearPrestamoComando comando)
     {
         if (comando == null)
-            throw new ArgumentNullException(nameof(comando));        if (string.IsNullOrWhiteSpace(comando.CarnetUsuario))
+            throw new ArgumentNullException(nameof(comando));
+        if (string.IsNullOrWhiteSpace(comando.CarnetUsuario))
             throw new ErrorNombreRequerido();
 
         if (comando.GrupoEquipoId == null || comando.GrupoEquipoId.Length == 0)
-            throw new ErrorIdInvalido();
+            throw new ErrorGrupoEquipoIdInvalido();
 
         if (comando.GrupoEquipoId.Any(id => id <= 0))
-            throw new ErrorIdInvalido();
+            throw new ErrorGrupoEquipoIdInvalido();
 
-        if (comando.FechaPrestamoEsperada < DateTime.Now.Date)
-            throw new ArgumentException("La fecha de préstamo no puede ser anterior a hoy");
+        if (comando.FechaPrestamoEsperada == null)
+            throw new ErrorFechaPrestamoEsperadaRequerida();
 
-        if (comando.FechaDevolucionEsperada <= comando.FechaPrestamoEsperada)
-            throw new ArgumentException("La fecha de devolución debe ser posterior a la fecha de préstamo");
-    }    private void InterpretarErrorCreacionPrestamo(Exception ex, CrearPrestamoComando comando)
+        if (comando.FechaDevolucionEsperada == null)
+            throw new ErrorFechaDevolucionEsperadaRequerida();
+
+        if (comando.FechaDevolucionEsperada < comando.FechaPrestamoEsperada)
+            throw new ErrorFechaPrestamoYFechaDevolucionInvalidas();
+    }
+
+    private void InterpretarErrorCreacionPrestamo(Exception ex, CrearPrestamoComando comando)
     {
         var errorMessage = ex.Message?.ToLower() ?? "";
         

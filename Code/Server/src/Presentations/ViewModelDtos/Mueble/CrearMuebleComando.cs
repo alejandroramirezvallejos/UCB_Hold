@@ -1,7 +1,7 @@
 //TODO: Implementar
 public record CrearMuebleComando
 (
-    string  Nombre,
+    string?  Nombre,//Se valida si no es nulo
     string? Tipo,
     double? Costo,
     string? Ubicacion,

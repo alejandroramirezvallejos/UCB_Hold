@@ -1,4 +1,4 @@
 //TODO: Implementar
 public record CrearCarreraComando(
-    string Nombre
+    string? Nombre//Se valida si no es nulo
 ) ;

@@ -30,10 +30,33 @@ public class MantenimientoController : ControllerBase
         catch (ErrorIdInvalido ex)
         {
             return BadRequest(new { error = "ID inválido", mensaje = ex.Message });
-        }
-        catch (ErrorFechaInvalida ex)
+        }        catch (ErrorFechaInvalida ex)
         {
             return BadRequest(new { error = "Fecha inválida", mensaje = ex.Message });
+        }
+        catch (ErrorFechaMantenimientoInicioRequerida ex)
+        {
+            return BadRequest(new { error = "Campo requerido", mensaje = ex.Message });
+        }
+        catch (ErrorFechaMantenimientoFinalRequerida ex)
+        {
+            return BadRequest(new { error = "Campo requerido", mensaje = ex.Message });
+        }
+        catch (ErrorCodigoImtRequerido ex)
+        {
+            return BadRequest(new { error = "Campo requerido", mensaje = ex.Message });
+        }
+        catch (ErrorTipoMantenimientoRequerido ex)
+        {
+            return BadRequest(new { error = "Campo requerido", mensaje = ex.Message });
+        }
+        catch (ErrorCodigoImtYTiposLongitudDiferente ex)
+        {
+            return BadRequest(new { error = "Datos inconsistentes", mensaje = ex.Message });
+        }
+        catch (ErrorCodigosImtInvalido ex)
+        {
+            return BadRequest(new { error = "Código inválido", mensaje = ex.Message });
         }
         catch (ErrorReferenciaInvalida ex)
         {
@@ -42,16 +65,14 @@ public class MantenimientoController : ControllerBase
         catch (ErrorRegistroYaExiste ex)
         {
             return Conflict(new { error = "Mantenimiento duplicado", mensaje = ex.Message });
+        }        catch (ArgumentNullException ex)
+        {
+            return BadRequest(new { error = "Argumento requerido", mensaje = ex.Message });
         }
         catch (ArgumentException ex)
         {
             return BadRequest(new { error = "Argumentos inválidos", mensaje = ex.Message });
-        }
-        catch (DomainException ex)
-        {
-            return BadRequest(new { error = "Error de validación", mensaje = ex.Message });
-        }
-        catch (Exception)
+        }        catch (Exception)
         {
             return StatusCode(500, new { error = "Error interno del servidor", mensaje = "Ocurrió un error inesperado al crear el mantenimiento" });
         }
@@ -81,14 +102,13 @@ public class MantenimientoController : ControllerBase
         catch (ErrorIdInvalido ex)
         {
             return BadRequest(new { error = "ID inválido", mensaje = ex.Message });
-        }
-        catch (ErrorRegistroNoEncontrado)
+        }        catch (ErrorRegistroNoEncontrado)
         {
             return NotFound(new { error = "Mantenimiento no encontrado", mensaje = $"No se encontró un mantenimiento con ID {id}" });
         }
-        catch (DomainException ex)
+        catch (ArgumentNullException ex)
         {
-            return BadRequest(new { error = "Error de validación", mensaje = ex.Message });
+            return BadRequest(new { error = "Argumento requerido", mensaje = ex.Message });
         }
         catch (Exception)
         {

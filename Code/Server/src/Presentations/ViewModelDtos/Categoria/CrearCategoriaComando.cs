@@ -1,4 +1,4 @@
 public record CrearCategoriaComando
 (
-    string Nombre
+    string? Nombre//Se valida si no es nulo
 );
