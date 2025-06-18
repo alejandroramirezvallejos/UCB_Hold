@@ -112,17 +112,23 @@
 
     <div class="form-group">
       <label for="carrera">Carrera</label>
-      <input 
-        type="text" 
+      <select 
         id="carrera" 
         name="carrera" 
         [(ngModel)]="usuario.carrera"
         required 
-        placeholder="Nombre de la carrera"
+        placeholder="usuario.carrera"
         class="form-input"
-      />
-    </div>
+      >
+       <option value="" disabled>Selecciona una carrera</option>
+       
+        @for (item of carreras; track $index) {
+          <option [value]="item">{{ item }}</option>
+        }
 
+      </select>
+    </div>
+    
     <div class="form-group">
       <label for="nombre_referencia">Nombre de Referencia</label>
       <input 

@@ -158,28 +158,27 @@ public class MantenimientoService : IMantenimientoService
     {
         if (comando == null)
             throw new ArgumentNullException(nameof(comando));
-
+        if( comando.FechaMantenimiento == null)
+            throw new ErrorFechaMantenimientoInicioRequerida();
+        if (comando.FechaFinalDeMantenimiento == null)
+            throw new ErrorFechaMantenimientoFinalRequerida();
         if (comando.FechaFinalDeMantenimiento < comando.FechaMantenimiento)
-            throw new ErrorFechaInvalida();
+                throw new ErrorFechaInvalida();
 
         if (string.IsNullOrWhiteSpace(comando.NombreEmpresaMantenimiento))
             throw new ErrorNombreRequerido();
 
         if (comando.CodigoIMT == null || comando.CodigoIMT.Length == 0)
-            throw new ErrorReferenciaInvalida("equipos");
+            throw new ErrorCodigoImtRequerido();
 
         if (comando.TipoMantenimiento == null || comando.TipoMantenimiento.Length == 0)
-            throw new ErrorReferenciaInvalida("tipos de mantenimiento");
+            throw new ErrorTipoMantenimientoRequerido();
 
         if (comando.CodigoIMT.Length != comando.TipoMantenimiento.Length)
-            throw new ErrorReferenciaInvalida("equipos y tipos");
-
-        if (comando.DescripcionEquipo != null && comando.DescripcionEquipo.Length > 0 &&
-            comando.DescripcionEquipo.Length != comando.CodigoIMT.Length)
-            throw new ErrorReferenciaInvalida("descripciones");
+            throw new ErrorCodigoImtYTiposLongitudDiferente();
 
         if (comando.CodigoIMT.Any(codigo => codigo <= 0))
-            throw new ErrorIdInvalido();
+            throw new ErrorCodigosImtInvalido();
 
         if (comando.Costo.HasValue && comando.Costo.Value < 0)
             throw new ErrorValorNegativo("costo");

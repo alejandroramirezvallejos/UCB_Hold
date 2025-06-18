@@ -60,7 +60,7 @@ export class CategoriasTablaComponent implements OnInit {
         this.categoriascopia = [...this.categorias];
       },
       (error) => {
-        console.error('Error al cargar las categorías:', error);
+        console.error('Error al cargar las categorías:', error.message);
       }
     );
   }
@@ -94,14 +94,14 @@ export class CategoriasTablaComponent implements OnInit {
 
   confirmarEliminacion() {
     if (this.categoriaSeleccionada.Id) {
-      this.categoriaService.eliminarCategoria(this.categoriaSeleccionada.Id).subscribe(
-        (response) => {
+      this.categoriaService.eliminarCategoria(this.categoriaSeleccionada.Id).subscribe({
+        next: (response) => {
           this.cargarCategorias();
         },
-        (error) => {
-          alert('Error al eliminar la categoría: ' + error);
+        error: (error) => {
+          alert('Error al eliminar la categoría: ' + error.message);
         }
-      );
+      });
     }
     this.limpiarCategoriaSeleccionada();
     this.alertaeliminar = false;

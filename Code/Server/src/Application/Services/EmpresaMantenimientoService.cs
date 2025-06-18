@@ -187,13 +187,7 @@ public class EmpresaMantenimientoService : IEmpresaMantenimientoService
             throw new ErrorNombreRequerido();
 
         if (comando.NombreEmpresa.Length > 100)
-            throw new ErrorLongitudInvalida("nombre", 100);
-
-        if (!string.IsNullOrWhiteSpace(comando.Telefono) && comando.Telefono.Length > 20)
-            throw new ErrorLongitudInvalida("telefono", 20);
-
-        if (!string.IsNullOrWhiteSpace(comando.Nit) && comando.Nit.Length > 20)
-            throw new ErrorLongitudInvalida("nit", 20);
+            throw new ErrorLongitudInvalida("nombre de la empresa", 100);
     }
 
     private void ValidarEntradaEliminacion(EliminarEmpresaMantenimientoComando comando)
@@ -215,21 +209,5 @@ public class EmpresaMantenimientoService : IEmpresaMantenimientoService
             Telefono = fila["telefono_empresa"] == DBNull.Value ? null : fila["telefono_empresa"].ToString(),
             Direccion = fila["direccion_empresa"] == DBNull.Value ? null : fila["direccion_empresa"].ToString(),
             Nit = fila["nit_empresa"] == DBNull.Value ? null : fila["nit_empresa"].ToString()        };
-    }
-
-    private static bool IsValidEmail(string email)
-    {
-        if (string.IsNullOrWhiteSpace(email))
-            return false;
-
-        try
-        {
-            var addr = new System.Net.Mail.MailAddress(email);
-            return addr.Address == email;
-        }
-        catch
-        {
-            return false;
-        }
     }
 }

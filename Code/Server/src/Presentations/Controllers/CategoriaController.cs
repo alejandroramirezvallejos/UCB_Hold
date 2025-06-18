@@ -23,18 +23,18 @@ public class CategoriaController : ControllerBase
         catch (ErrorNombreRequerido ex)
         {
             return BadRequest(new { error = "Campo requerido", mensaje = ex.Message });
-        }
-        catch (ErrorLongitudInvalida ex)
+        }        catch (ErrorLongitudInvalida ex)
         {
             return BadRequest(new { error = "Longitud inválida", mensaje = ex.Message });
         }        catch (ErrorRegistroYaExiste ex)
         {
             return Conflict(new { error = "Categoría duplicada", mensaje = ex.Message });
         }
-        catch (DomainException ex)
+        catch (ArgumentNullException ex)
         {
-            return BadRequest(new { error = "Error de validación", mensaje = ex.Message });
-        }        catch (Exception) 
+            return BadRequest(new { error = "Argumento requerido", mensaje = ex.Message });
+        }
+        catch (Exception) 
         { 
             return StatusCode(500, new { error = "Error interno del servidor", mensaje = "Ocurrió un error inesperado al crear la categoría" });
         }
@@ -75,15 +75,15 @@ public class CategoriaController : ControllerBase
         }        catch (ErrorRegistroNoEncontrado ex)
         {
             return NotFound(new { error = "Categoría no encontrada", mensaje = ex.Message });
-        }
-        catch (ErrorRegistroYaExiste ex)
+        }        catch (ErrorRegistroYaExiste ex)
         {
             return Conflict(new { error = "Categoría duplicada", mensaje = ex.Message });
         }
-        catch (DomainException ex)
+        catch (ArgumentNullException ex)
         {
-            return BadRequest(new { error = "Error de validación", mensaje = ex.Message });
-        }        catch (Exception) 
+            return BadRequest(new { error = "Argumento requerido", mensaje = ex.Message });
+        }
+        catch (Exception) 
         { 
             return StatusCode(500, new { error = "Error interno del servidor", mensaje = "Ocurrió un error inesperado al actualizar la categoría" });
         }
@@ -99,14 +99,13 @@ public class CategoriaController : ControllerBase
         catch (ErrorIdInvalido ex)
         {
             return BadRequest(new { error = "ID inválido", mensaje = ex.Message });
-        }
-        catch (ErrorRegistroNoEncontrado ex)
+        }        catch (ErrorRegistroNoEncontrado ex)
         {
             return NotFound(new { error = "Categoría no encontrada", mensaje = ex.Message });
         }
-        catch (DomainException ex)
+        catch (ArgumentNullException ex)
         {
-            return BadRequest(new { error = "Error de validación", mensaje = ex.Message });
+            return BadRequest(new { error = "Argumento requerido", mensaje = ex.Message });
         }
         catch (Exception) 
         { 

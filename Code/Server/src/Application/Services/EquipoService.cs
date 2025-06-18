@@ -85,7 +85,7 @@ public class EquipoService : IEquipoService
             throw new ErrorValorNegativo("costo de referencia");
 
         if (comando.TiempoMaximoPrestamo.HasValue && comando.TiempoMaximoPrestamo <= 0)
-            throw new ErrorIdInvalido();
+            throw new ErrorValorNegativo("Tiempo máximo de préstamo");
     }    public void ActualizarEquipo(ActualizarEquipoComando comando)
     {
         try
@@ -174,15 +174,20 @@ public class EquipoService : IEquipoService
     private void ValidarEntradaActualizacion(ActualizarEquipoComando comando)
     {
         if (comando == null)
-            throw new ArgumentNullException(nameof(comando));        if (comando.Id <= 0)
+            throw new ArgumentNullException(nameof(comando));
+        if (comando.Id <= 0)
             throw new ErrorIdInvalido();
+        if (string.IsNullOrWhiteSpace(comando.NombreGrupoEquipo))
+            throw new ErrorNombreRequerido();
 
         if (comando.CostoReferencia.HasValue && comando.CostoReferencia < 0)
             throw new ErrorValorNegativo("costo de referencia");
 
         if (comando.TiempoMaximoPrestamo.HasValue && comando.TiempoMaximoPrestamo <= 0)
-            throw new ErrorIdInvalido();
-    }    public void EliminarEquipo(EliminarEquipoComando comando)
+            throw new ErrorValorNegativo("Tiempo máximo de préstamo");
+    }
+
+    public void EliminarEquipo(EliminarEquipoComando comando)
     {
         try
         {

@@ -1,8 +1,8 @@
 public record CrearEquipoComando
 (
-    string  NombreGrupoEquipo,
-    string  Modelo,
-    string  Marca,
+    string?  NombreGrupoEquipo,//Se valida si no es nulo
+    string?  Modelo,//Se valida si no es nulo
+    string?  Marca,//Se valida si no es nulo
     string? CodigoUcb,
     string? Descripcion,
     string? NumeroSerial,

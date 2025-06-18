@@ -18,14 +18,29 @@ public class PrestamoController : ControllerBase
         {
             servicio.CrearPrestamo(input);
             return Ok(new { mensaje = "Préstamo creado exitosamente" });
-        }
-        catch (ErrorNombreRequerido ex)
+        }        catch (ErrorNombreRequerido ex)
         {
             return BadRequest(new { error = "Campo requerido", mensaje = ex.Message });
         }
         catch (ErrorIdInvalido ex)
         {
             return BadRequest(new { error = "ID inválido", mensaje = ex.Message });
+        }
+        catch (ErrorGrupoEquipoIdInvalido ex)
+        {
+            return BadRequest(new { error = "ID de grupo de equipo inválido", mensaje = ex.Message });
+        }
+        catch (ErrorFechaPrestamoEsperadaRequerida ex)
+        {
+            return BadRequest(new { error = "Campo requerido", mensaje = ex.Message });
+        }
+        catch (ErrorFechaDevolucionEsperadaRequerida ex)
+        {
+            return BadRequest(new { error = "Campo requerido", mensaje = ex.Message });
+        }
+        catch (ErrorFechaPrestamoYFechaDevolucionInvalidas ex)
+        {
+            return BadRequest(new { error = "Fechas inválidas", mensaje = ex.Message });
         }
         catch (ErrorCarnetUsuarioNoEncontrado ex)
         {
@@ -49,16 +64,14 @@ public class PrestamoController : ControllerBase
         catch (ErrorReferenciaInvalida ex)
         {
             return BadRequest(new { error = "Referencia inválida", mensaje = ex.Message });
+        }        catch (ArgumentNullException ex)
+        {
+            return BadRequest(new { error = "Argumento requerido", mensaje = ex.Message });
         }
         catch (ArgumentException ex)
         {
             return BadRequest(new { error = "Argumentos inválidos", mensaje = ex.Message });
-        }
-        catch (DomainException ex)
-        {
-            return BadRequest(new { error = "Error de validación", mensaje = ex.Message });
-        }
-        catch (Exception)
+        }        catch (Exception)
         {
             return StatusCode(500, new { error = "Error interno del servidor", mensaje = "Ocurrió un error inesperado al crear el préstamo" });
         }
@@ -91,14 +104,13 @@ public class PrestamoController : ControllerBase
         catch (ErrorIdInvalido ex)
         {
             return BadRequest(new { error = "ID inválido", mensaje = ex.Message });
-        }
-        catch (ErrorRegistroNoEncontrado)
+        }        catch (ErrorRegistroNoEncontrado)
         {
             return NotFound(new { error = "Préstamo no encontrado", mensaje = $"No se encontró un préstamo con ID {id}" });
         }
-        catch (DomainException ex)
+        catch (ArgumentNullException ex)
         {
-            return BadRequest(new { error = "Error de validación", mensaje = ex.Message });
+            return BadRequest(new { error = "Argumento requerido", mensaje = ex.Message });
         }
         catch (Exception)
         {

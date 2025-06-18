@@ -37,14 +37,13 @@ public class GaveteroController : ControllerBase
         catch (ErrorRegistroYaExiste ex)
         {
             return Conflict(new { error = "Gavetero duplicado", mensaje = ex.Message });
-        }
-        catch (ErrorReferenciaInvalida ex)
+        }        catch (ErrorReferenciaInvalida ex)
         {
             return BadRequest(new { error = "Referencia inválida", mensaje = ex.Message });
         }
-        catch (DomainException ex)
+        catch (ArgumentNullException ex)
         {
-            return BadRequest(new { error = "Error de validación", mensaje = ex.Message });
+            return BadRequest(new { error = "Argumento inválido", mensaje = ex.Message });
         }
         catch (Exception) 
         { 
@@ -76,11 +75,14 @@ public class GaveteroController : ControllerBase
         catch (ErrorIdInvalido ex)
         {
             return BadRequest(new { error = "ID inválido", mensaje = ex.Message });
-        }
-        catch (ErrorNombreRequerido ex)
+        }        catch (ErrorNombreRequerido ex)
         {
             return BadRequest(new { error = "Campo requerido", mensaje = ex.Message });
-        }        catch (ErrorValorNegativo ex)
+        }        catch (ErrorNombreMuebleRequerido ex)
+        {
+            return BadRequest(new { error = "Campo requerido", mensaje = ex.Message });
+        }
+        catch (ErrorValorNegativo ex)
         {
             return BadRequest(new { error = "Valor inválido", mensaje = ex.Message });
         }
@@ -91,14 +93,13 @@ public class GaveteroController : ControllerBase
         catch (ErrorRegistroYaExiste ex)
         {
             return Conflict(new { error = "Gavetero duplicado", mensaje = ex.Message });
-        }
-        catch (ErrorReferenciaInvalida ex)
+        }        catch (ErrorReferenciaInvalida ex)
         {
             return BadRequest(new { error = "Referencia inválida", mensaje = ex.Message });
         }
-        catch (DomainException ex)
+        catch (ArgumentNullException ex)
         {
-            return BadRequest(new { error = "Error de validación", mensaje = ex.Message });
+            return BadRequest(new { error = "Argumento inválido", mensaje = ex.Message });
         }
         catch (Exception) 
         { 
@@ -116,14 +117,13 @@ public class GaveteroController : ControllerBase
         catch (ErrorIdInvalido ex)
         {
             return BadRequest(new { error = "ID inválido", mensaje = ex.Message });
-        }
-        catch (ErrorRegistroNoEncontrado ex)
+        }        catch (ErrorRegistroNoEncontrado ex)
         {
             return NotFound(new { error = "Gavetero no encontrado", mensaje = ex.Message });
         }
-        catch (DomainException ex)
+        catch (ArgumentNullException ex)
         {
-            return BadRequest(new { error = "Error de validación", mensaje = ex.Message });
+            return BadRequest(new { error = "Argumento inválido", mensaje = ex.Message });
         }
         catch (Exception) 
         { 

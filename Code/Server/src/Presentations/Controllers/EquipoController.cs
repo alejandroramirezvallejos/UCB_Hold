@@ -42,14 +42,17 @@ public class EquipoController : ControllerBase
         catch (ErrorRegistroYaExiste ex)
         {
             return Conflict(new { error = "Equipo duplicado", mensaje = ex.Message });
-        }
-        catch (ErrorReferenciaInvalida ex)
+        }        catch (ErrorReferenciaInvalida ex)
         {
             return BadRequest(new { error = "Referencia inválida", mensaje = ex.Message });
         }
-        catch (DomainException ex)
+        catch (ArgumentNullException ex)
         {
-            return BadRequest(new { error = "Error de validación", mensaje = ex.Message });
+            return BadRequest(new { error = "Argumento requerido", mensaje = ex.Message });
+        }
+        catch (ArgumentException ex)
+        {
+            return BadRequest(new { error = "Argumento inválido", mensaje = ex.Message });
         }
         catch (Exception)
         {
@@ -69,7 +72,7 @@ public class EquipoController : ControllerBase
         {
             return BadRequest(new { error = "Error interno del servidor", mensaje = $"Error al obtener equipos: {ex.Message}" });
         }
-    }    [HttpPut("{id}")]
+    }    [HttpPut]
     public IActionResult Actualizar([FromBody] ActualizarEquipoComando input)
     {
         try
@@ -80,6 +83,14 @@ public class EquipoController : ControllerBase
         catch (ErrorIdInvalido ex)
         {
             return BadRequest(new { error = "ID inválido", mensaje = ex.Message });
+        }
+        catch (ErrorNombreRequerido ex)
+        {
+            return BadRequest(new { error = "Campo requerido", mensaje = ex.Message });
+        }
+        catch (ErrorModeloRequerido ex)
+        {
+            return BadRequest(new { error = "Campo requerido", mensaje = ex.Message });
         }
         catch (ErrorValorNegativo ex)
         {
@@ -92,24 +103,23 @@ public class EquipoController : ControllerBase
         catch (ErrorRegistroYaExiste ex)
         {
             return Conflict(new { error = "Equipo duplicado", mensaje = ex.Message });
-        }
-        catch (ErrorReferenciaInvalida ex)
+        }        catch (ErrorReferenciaInvalida ex)
         {
             return BadRequest(new { error = "Referencia inválida", mensaje = ex.Message });
+        }
+        catch (ArgumentNullException ex)
+        {
+            return BadRequest(new { error = "Argumento requerido", mensaje = ex.Message });
         }
         catch (ArgumentException ex)
         {
             return BadRequest(new { error = "Argumento inválido", mensaje = ex.Message });
         }
-        catch (DomainException ex)
-        {
-            return BadRequest(new { error = "Error de validación", mensaje = ex.Message });
-        }
         catch (Exception) 
         { 
             return StatusCode(500, new { error = "Error interno del servidor", mensaje = "Ocurrió un error inesperado al actualizar el equipo" });
         }
-    }    [HttpDelete("{id}")]
+    }[HttpDelete("{id}")]
     public IActionResult Eliminar(int id)
     {
         try
@@ -121,14 +131,13 @@ public class EquipoController : ControllerBase
         catch (ErrorIdInvalido ex)
         {
             return BadRequest(new { error = "ID inválido", mensaje = ex.Message });
-        }        
-        catch (ErrorRegistroNoEncontrado ex)
+        }          catch (ErrorRegistroNoEncontrado ex)
         {
             return NotFound(new { error = "Equipo no encontrado", mensaje = ex.Message });
         }
-        catch (DomainException ex)
+        catch (ArgumentNullException ex)
         {
-            return BadRequest(new { error = "Error de validación", mensaje = ex.Message });
+            return BadRequest(new { error = "Argumento requerido", mensaje = ex.Message });
         }
         catch (Exception) 
         { 

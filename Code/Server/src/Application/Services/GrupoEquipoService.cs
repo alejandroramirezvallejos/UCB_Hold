@@ -94,9 +94,6 @@ public class GrupoEquipoService : IGrupoEquipoService
         if (comando == null)
             throw new ArgumentNullException(nameof(comando));
 
-        if (comando.Id <= 0)
-            throw new ErrorIdInvalido();
-
         if (string.IsNullOrWhiteSpace(comando.Nombre))
             throw new ErrorNombreRequerido();
 
@@ -104,16 +101,16 @@ public class GrupoEquipoService : IGrupoEquipoService
             throw new ErrorModeloRequerido();
 
         if (string.IsNullOrWhiteSpace(comando.Marca))
-            throw new ErrorCampoRequerido("marca");
+            throw new ErrorMarcaRequerida();
 
         if (string.IsNullOrWhiteSpace(comando.Descripcion))
-            throw new ErrorCampoRequerido("descripcion");
+            throw new ErrorDescripcionRequerida();
 
         if (string.IsNullOrWhiteSpace(comando.NombreCategoria))
-            throw new ErrorCampoRequerido("categoria");
+            throw new ErrorCategoriaRequerida();
 
         if (string.IsNullOrWhiteSpace(comando.UrlImagen))
-            throw new ErrorCampoRequerido("url de imagen");
+            throw new ErrorUrlImagenRequerida();
     }
 
     private void ValidarEntradaEliminacion(EliminarGrupoEquipoComando comando)

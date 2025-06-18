@@ -34,16 +34,16 @@ export class MueblesEditarComponent implements OnChanges {
   }
 
   confirmar() {
-    this.muebleapi.actualizarMueble(this.mueble).subscribe(
-      response => {
+    this.muebleapi.actualizarMueble(this.mueble).subscribe({
+      next: (response) => {
         this.actualizar.emit();
         this.cerrar();
       },
-      error => {
-        alert('Error al editar mueble: ' + error.message);
-        this.cerrar();
+      error: (error) => {
+        alert('Error al editar mueble: ' + error.error.mensaje);
+
       }
-    );
+    });
   }
 
   cerrar() {

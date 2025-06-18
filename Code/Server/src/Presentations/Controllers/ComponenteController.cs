@@ -31,6 +31,10 @@ public class ComponenteController : ControllerBase
         {
             return BadRequest(new { error = "Longitud inválida", mensaje = ex.Message });
         }
+        catch (ErrorIdInvalido ex)
+        {
+            return BadRequest(new { error = "ID inválido", mensaje = ex.Message });
+        }
         catch (ErrorCodigoImtRequerido ex)
         {
             return BadRequest(new { error = "Campo requerido", mensaje = ex.Message });
@@ -42,14 +46,13 @@ public class ComponenteController : ControllerBase
         catch (ErrorRegistroYaExiste ex)
         {
             return Conflict(new { error = "Componente duplicado", mensaje = ex.Message });
-        }
-        catch (ErrorReferenciaInvalida ex)
+        }        catch (ErrorReferenciaInvalida ex)
         {
             return BadRequest(new { error = "Referencia inválida", mensaje = ex.Message });
         }
-        catch (DomainException ex)
+        catch (ArgumentNullException ex)
         {
-            return BadRequest(new { error = "Error de validación", mensaje = ex.Message });
+            return BadRequest(new { error = "Argumento requerido", mensaje = ex.Message });
         }
         catch (Exception) 
         { 
@@ -76,8 +79,7 @@ public class ComponenteController : ControllerBase
         {
             servicio.ActualizarComponente(input);
             return Ok(new { mensaje = "Componente actualizado exitosamente" });
-        }
-        catch (ErrorIdInvalido ex)
+        }        catch (ErrorIdInvalido ex)
         {
             return BadRequest(new { error = "ID inválido", mensaje = ex.Message });
         }
@@ -101,6 +103,10 @@ public class ComponenteController : ControllerBase
         {
             return BadRequest(new { error = "Valor inválido", mensaje = ex.Message });
         }
+        catch(ErrorCodigoImtInvalido ex)
+        {
+            return BadRequest(new { error = "Código IMT inválido", mensaje = ex.Message });
+        }
         catch (ErrorRegistroNoEncontrado ex)
         {
             return NotFound(new { error = "Componente no encontrado", mensaje = ex.Message });
@@ -108,14 +114,13 @@ public class ComponenteController : ControllerBase
         catch (ErrorRegistroYaExiste ex)
         {
             return Conflict(new { error = "Componente duplicado", mensaje = ex.Message });
-        }
-        catch (ErrorReferenciaInvalida ex)
+        }        catch (ErrorReferenciaInvalida ex)
         {
             return BadRequest(new { error = "Referencia inválida", mensaje = ex.Message });
         }
-        catch (DomainException ex)
+        catch (ArgumentNullException ex)
         {
-            return BadRequest(new { error = "Error de validación", mensaje = ex.Message });
+            return BadRequest(new { error = "Argumento requerido", mensaje = ex.Message });
         }
         catch (Exception) 
         { 
@@ -129,18 +134,16 @@ public class ComponenteController : ControllerBase
             var comando = new EliminarComponenteComando(id);
             servicio.EliminarComponente(comando);
             return NoContent();
-        }
-        catch (ErrorIdInvalido ex)
+        }        catch (ErrorIdInvalido ex)
         {
             return BadRequest(new { error = "ID inválido", mensaje = ex.Message });
-        }
-        catch (ErrorRegistroNoEncontrado ex)
+        }        catch (ErrorRegistroNoEncontrado ex)
         {
             return NotFound(new { error = "Componente no encontrado", mensaje = ex.Message });
         }
-        catch (DomainException ex)
+        catch (ArgumentNullException ex)
         {
-            return BadRequest(new { error = "Error de validación", mensaje = ex.Message });
+            return BadRequest(new { error = "Argumento requerido", mensaje = ex.Message });
         }
         catch (Exception) 
         { 

@@ -204,7 +204,7 @@ public class MuebleService : IMuebleService
     {
         if (comando == null)
             throw new ArgumentNullException(nameof(comando));
-
+            
         if (comando.Id <= 0)
             throw new ErrorIdInvalido();
 
@@ -222,6 +222,7 @@ public class MuebleService : IMuebleService
 
         if (comando.Altura.HasValue && comando.Altura <= 0)
             throw new ErrorValorNegativo("altura");
+        
     }
 
     private void ValidarEntradaEliminacion(EliminarMuebleComando comando)

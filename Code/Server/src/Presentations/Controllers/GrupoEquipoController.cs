@@ -22,8 +22,23 @@ public class GrupoEquipoController : ControllerBase
         catch (ErrorNombreRequerido ex)
         {
             return BadRequest(new { error = "Campo requerido", mensaje = ex.Message });
+        }        catch (ErrorModeloRequerido ex)
+        {
+            return BadRequest(new { error = "Campo requerido", mensaje = ex.Message });
         }
-        catch (ErrorModeloRequerido ex)
+        catch (ErrorMarcaRequerida ex)
+        {
+            return BadRequest(new { error = "Campo requerido", mensaje = ex.Message });
+        }
+        catch (ErrorDescripcionRequerida ex)
+        {
+            return BadRequest(new { error = "Campo requerido", mensaje = ex.Message });
+        }
+        catch (ErrorCategoriaRequerida ex)
+        {
+            return BadRequest(new { error = "Campo requerido", mensaje = ex.Message });
+        }
+        catch (ErrorUrlImagenRequerida ex)
         {
             return BadRequest(new { error = "Campo requerido", mensaje = ex.Message });
         }
@@ -34,14 +49,13 @@ public class GrupoEquipoController : ControllerBase
         catch (ErrorRegistroYaExiste ex)
         {
             return Conflict(new { error = "Grupo de equipo duplicado", mensaje = ex.Message });
-        }
-        catch (ErrorReferenciaInvalida ex)
+        }        catch (ErrorReferenciaInvalida ex)
         {
             return BadRequest(new { error = "Referencia inválida", mensaje = ex.Message });
         }
-        catch (DomainException ex)
+        catch (ArgumentNullException ex)
         {
-            return BadRequest(new { error = "Error de validación", mensaje = ex.Message });
+            return BadRequest(new { error = "Argumento inválido", mensaje = ex.Message });
         }
         catch (Exception)
         {
@@ -105,8 +119,27 @@ public class GrupoEquipoController : ControllerBase
         catch (ErrorIdInvalido ex)
         {
             return BadRequest(new { error = "ID inválido", mensaje = ex.Message });
+        }        catch (ErrorNombreRequerido ex)
+        {
+            return BadRequest(new { error = "Campo requerido", mensaje = ex.Message });
         }
-        catch (ErrorNombreRequerido ex)
+        catch (ErrorModeloRequerido ex)
+        {
+            return BadRequest(new { error = "Campo requerido", mensaje = ex.Message });
+        }
+        catch (ErrorMarcaRequerida ex)
+        {
+            return BadRequest(new { error = "Campo requerido", mensaje = ex.Message });
+        }
+        catch (ErrorDescripcionRequerida ex)
+        {
+            return BadRequest(new { error = "Campo requerido", mensaje = ex.Message });
+        }
+        catch (ErrorCategoriaRequerida ex)
+        {
+            return BadRequest(new { error = "Campo requerido", mensaje = ex.Message });
+        }
+        catch (ErrorUrlImagenRequerida ex)
         {
             return BadRequest(new { error = "Campo requerido", mensaje = ex.Message });
         }
@@ -117,14 +150,17 @@ public class GrupoEquipoController : ControllerBase
         catch (ErrorRegistroYaExiste ex)
         {
             return Conflict(new { error = "Grupo de equipo duplicado", mensaje = ex.Message });
-        }
-        catch (ErrorReferenciaInvalida ex)
+        }        catch (ErrorReferenciaInvalida ex)
         {
             return BadRequest(new { error = "Referencia inválida", mensaje = ex.Message });
         }
-        catch (DomainException ex)
+        catch (ArgumentNullException ex)
         {
-            return BadRequest(new { error = "Error de validación", mensaje = ex.Message });
+            return BadRequest(new { error = "Argumento inválido", mensaje = ex.Message });
+        }
+        catch (ArgumentException ex)
+        {
+            return BadRequest(new { error = "Argumento inválido", mensaje = ex.Message });
         }
         catch (Exception)
         {
@@ -147,14 +183,13 @@ public class GrupoEquipoController : ControllerBase
         }        catch (ErrorRegistroNoEncontrado)
         {
             return NotFound(new { error = "Grupo de equipo no encontrado", mensaje = $"No se encontró un grupo de equipo con ID {id}" });
-        }
-        catch (ErrorRegistroEnUso)
+        }        catch (ErrorRegistroEnUso)
         {
             return Conflict(new { error = "Grupo de equipo en uso", mensaje = "No se puede eliminar el grupo de equipo porque tiene equipos asociados o préstamos activos" });
         }
-        catch (DomainException ex)
+        catch (ArgumentNullException ex)
         {
-            return BadRequest(new { error = "Error de validación", mensaje = ex.Message });
+            return BadRequest(new { error = "Argumento inválido", mensaje = ex.Message });
         }        catch (Exception)
         {
             return StatusCode(500, new { error = "Error interno del servidor", mensaje = "Ocurrió un error inesperado al eliminar el grupo de equipo" });

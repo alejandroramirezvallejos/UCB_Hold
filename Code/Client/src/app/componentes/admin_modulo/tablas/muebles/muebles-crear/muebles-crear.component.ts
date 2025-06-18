@@ -30,16 +30,15 @@ export class MueblesCrearComponent {
   constructor(private muebleapi: MuebleService) { }
 
   registrar() {
-    this.muebleapi.crearMueble(this.mueble).subscribe(
-      response => {
+    this.muebleapi.crearMueble(this.mueble).subscribe({
+      next: (response) => {
         this.Actualizar.emit();
         this.cerrar();
       },
-      error => {
-        alert('Error al crear mueble: ' + error);
-        this.cerrar();
+      error: (error) => {
+        alert('Error al crear mueble: ' + error.error.mensaje);
       }
-    );
+    });
   }
 
   cerrar() {

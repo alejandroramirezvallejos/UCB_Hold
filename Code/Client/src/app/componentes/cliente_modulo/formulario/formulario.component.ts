@@ -10,7 +10,7 @@ import html2canvas from 'html2canvas';
 import { MostrarerrorComponent } from '../../mostrarerror/mostrarerror.component';
 import { Router } from '@angular/router';
 import { UsuarioService } from '../../../services/usuario/usuario.service';
-import { PrestamosAPIService } from '../../../services/APIS/Prestamo/prestamos-api.service';
+import { PrestamosAPIService } from '../../../services/APIS/prestamo/prestamos-api.service';
 
 
 

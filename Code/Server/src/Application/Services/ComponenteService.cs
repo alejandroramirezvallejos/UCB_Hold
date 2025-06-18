@@ -232,7 +232,6 @@ public class ComponenteService : IComponenteService
 
         if (string.IsNullOrWhiteSpace(comando.Nombre))
             throw new ErrorNombreRequerido();
-
         if (comando.Nombre.Length > 100)
             throw new ErrorLongitudInvalida("nombre", 100);
         if (string.IsNullOrWhiteSpace(comando.Modelo))

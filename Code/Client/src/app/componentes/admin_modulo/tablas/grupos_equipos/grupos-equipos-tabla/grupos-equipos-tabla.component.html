@@ -112,7 +112,9 @@
 @if(botoncrear()){
   <app-grupos-equipos-crear
   [botoncrear]="botoncrear"
+  [categorias]="categorias"
   (Actualizar)="cargarGruposEquipos()"
+  
   ></app-grupos-equipos-crear>
 }
 
@@ -120,6 +122,7 @@
   <app-grupos-equipos-editar
   [botoneditar]="botoneditar"
   [grupoequipo]="grupoEquipoSeleccionado"
+  [categorias]="categorias"
   (actualizar)="cargarGruposEquipos()"
   ></app-grupos-equipos-editar>
 }

@@ -193,7 +193,6 @@ public class GaveteroService : IGaveteroService
     {
         if (comando == null)
             throw new ArgumentNullException(nameof(comando));
-
         if (comando.Id <= 0)
             throw new ErrorIdInvalido();
 
@@ -201,7 +200,7 @@ public class GaveteroService : IGaveteroService
             throw new ErrorNombreRequerido();
 
         if (string.IsNullOrWhiteSpace(comando.NombreMueble))
-            throw new ErrorNombreRequerido();
+            throw new ErrorNombreMuebleRequerido();
 
         if (comando.Longitud.HasValue && comando.Longitud <= 0)
             throw new ErrorValorNegativo("longitud");
