@@ -1,5 +1,4 @@
 ﻿using Moq;
-using Shared.Common;
 using System.Data;
 
 namespace IMT_Reservas.Tests.ServiceTests

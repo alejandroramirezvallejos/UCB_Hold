@@ -1,6 +1,5 @@
 using API.Controllers;
 using Moq;
-using Shared.Common;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Configuration;
 

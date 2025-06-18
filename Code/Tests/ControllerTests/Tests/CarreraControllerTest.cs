@@ -1,10 +1,9 @@
 using Moq;
 using API.Controllers;
-using Shared.Common;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Configuration;
 
-namespace IMT_Reservas.Tests.ControllerTests
+namespace IMT_Reservas.Tests.ControllerTests.Tests
 {
     [TestFixture]
     public class CarreraControllerTest : ICarreraControllerTest
@@ -77,7 +76,7 @@ namespace IMT_Reservas.Tests.ControllerTests
 
         [Test]
         [TestCaseSource(nameof(FuenteCasos_CrearCarrera_BadRequest))]
-        public void CrearCarrera_Invalido_RetornaBadRequest(CrearCarreraComando comando, System.Exception excepcionLanzada)
+        public void CrearCarrera_Invalido_RetornaBadRequest(CrearCarreraComando comando, Exception excepcionLanzada)
         {
             _carreraServiceMock.Setup(s => s.CrearCarrera(comando)).Throws(excepcionLanzada);
             IActionResult resultadoAccion = _carrerasController.Crear(comando);
@@ -97,11 +96,12 @@ namespace IMT_Reservas.Tests.ControllerTests
         public void CrearCarrera_ServicioError_RetornaError500()
         {
             CrearCarreraComando comando = new CrearCarreraComando("Error General");
-            _carreraServiceMock.Setup(s => s.CrearCarrera(It.IsAny<CrearCarreraComando>())).Throws(new System.Exception("Error General Servidor"));
+            _carreraServiceMock.Setup(s => s.CrearCarrera(It.IsAny<CrearCarreraComando>())).Throws(new Exception("Error General Servidor"));
             IActionResult resultadoAccion = _carrerasController.Crear(comando);
             Assert.That(resultadoAccion, Is.InstanceOf<ObjectResult>());
             ObjectResult objectResult = resultadoAccion as ObjectResult;
-            Assert.That(objectResult.StatusCode, Is.EqualTo(500));
+            Assert.That(objectResult, Is.Not.Null);
+            Assert.That(objectResult!.StatusCode, Is.EqualTo(500));
         }
         
         [Test]
@@ -122,7 +122,7 @@ namespace IMT_Reservas.Tests.ControllerTests
 
         [Test]
         [TestCaseSource(nameof(FuenteCasos_ActualizarCarrera_BadRequest))]
-        public void ActualizarCarrera_Invalido_RetornaBadRequest(ActualizarCarreraComando comando, System.Exception excepcionLanzada)
+        public void ActualizarCarrera_Invalido_RetornaBadRequest(ActualizarCarreraComando comando, Exception excepcionLanzada)
         {
             _carreraServiceMock.Setup(s => s.ActualizarCarrera(comando)).Throws(excepcionLanzada);
             IActionResult resultadoAccion = _carrerasController.Actualizar(comando);
@@ -151,11 +151,12 @@ namespace IMT_Reservas.Tests.ControllerTests
         public void ActualizarCarrera_ServicioError_RetornaError500()
         {
             ActualizarCarreraComando comando = new ActualizarCarreraComando(1, "Error General");
-            _carreraServiceMock.Setup(s => s.ActualizarCarrera(It.IsAny<ActualizarCarreraComando>())).Throws(new System.Exception("Error General Servidor"));
+            _carreraServiceMock.Setup(s => s.ActualizarCarrera(It.IsAny<ActualizarCarreraComando>())).Throws(new Exception("Error General Servidor"));
             IActionResult resultadoAccion = _carrerasController.Actualizar(comando);
             Assert.That(resultadoAccion, Is.InstanceOf<ObjectResult>());
             ObjectResult objectResult = resultadoAccion as ObjectResult;
-            Assert.That(objectResult.StatusCode, Is.EqualTo(500));
+            Assert.That(objectResult, Is.Not.Null);
+            Assert.That(objectResult!.StatusCode, Is.EqualTo(500));
         }
 
         [Test]
@@ -174,7 +175,7 @@ namespace IMT_Reservas.Tests.ControllerTests
 
         [Test]
         [TestCaseSource(nameof(FuenteCasos_EliminarCarrera_BadRequest))]
-        public void EliminarCarrera_Invalido_RetornaBadRequest(int idCarrera, System.Exception excepcionLanzada)
+        public void EliminarCarrera_Invalido_RetornaBadRequest(int idCarrera, Exception excepcionLanzada)
         {
             _carreraServiceMock.Setup(s => s.EliminarCarrera(It.Is<EliminarCarreraComando>(c => c.Id == idCarrera))).Throws(excepcionLanzada);
             IActionResult resultadoAccion = _carrerasController.Eliminar(idCarrera);
@@ -203,11 +204,14 @@ namespace IMT_Reservas.Tests.ControllerTests
         public void EliminarCarrera_ServicioError_RetornaError500()
         {
             int idErrorGeneral = 4;
-            _carreraServiceMock.Setup(s => s.EliminarCarrera(It.Is<EliminarCarreraComando>(c => c.Id == idErrorGeneral))).Throws(new System.Exception("Error General Servidor"));
+            _carreraServiceMock.Setup(s => s.EliminarCarrera(It.Is<EliminarCarreraComando>(c => c.Id == idErrorGeneral))).Throws(new Exception("Error General Servidor"));
             IActionResult resultadoAccion = _carrerasController.Eliminar(idErrorGeneral);
             Assert.That(resultadoAccion, Is.InstanceOf<ObjectResult>());
             ObjectResult objectResult = resultadoAccion as ObjectResult;
-            Assert.That(objectResult.StatusCode, Is.EqualTo(500));
+            Assert.That(objectResult, Is.Not.Null);
+            Assert.That(objectResult!.StatusCode, Is.EqualTo(500));
         }
     }
 }
+
+
