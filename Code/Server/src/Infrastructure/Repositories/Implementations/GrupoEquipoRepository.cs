@@ -1,6 +1,5 @@
 using System.Data;
 using Npgsql;
-using Shared.Common;
 
 public class GrupoEquipoRepository : IGrupoEquipoRepository
 {
@@ -35,9 +34,13 @@ public class GrupoEquipoRepository : IGrupoEquipoRepository
         try
         {
             _ejecutarConsulta.EjecutarSpNR(sql, parametros);
-        }        catch (Exception ex)
+        }        catch (NpgsqlException ex)
         {
-            throw PostgreSqlErrorInterpreter.InterpretarError(ex, "crear", "grupo de equipo", parametros);
+            throw new ErrorDataBase($"Error de base de datos al crear grupo de equipo: {ex.Message}", ex.SqlState, null, ex);
+        }
+        catch (Exception ex)
+        {
+            throw new ErrorRepository($"Error del repositorio al crear grupo de equipo: {ex.Message}", ex);
         }
     }
 
@@ -59,9 +62,13 @@ public class GrupoEquipoRepository : IGrupoEquipoRepository
                 return null;
             }
             return dt;
-        }        catch (Exception ex)
+        }        catch (NpgsqlException ex)
         {
-            throw PostgreSqlErrorInterpreter.InterpretarError(ex, "obtener", "grupo de equipo", parametros);
+            throw new ErrorDataBase($"Error de base de datos al obtener grupo de equipo: {ex.Message}", ex.SqlState, null, ex);
+        }
+        catch (Exception ex)
+        {
+            throw new ErrorRepository($"Error del repositorio al obtener grupo de equipo: {ex.Message}", ex);
         }
     }
 
@@ -81,10 +88,13 @@ public class GrupoEquipoRepository : IGrupoEquipoRepository
             });
             
             return dt;
-        }        catch (Exception ex)
+        }        catch (NpgsqlException ex)
         {
-            var parametrosConsulta = new Dictionary<string, object?> { ["nombre"] = nombre, ["categoria"] = categoria };
-            throw PostgreSqlErrorInterpreter.InterpretarError(ex, "obtener", "grupos de equipos", parametrosConsulta);
+            throw new ErrorDataBase($"Error de base de datos al obtener grupos de equipos: {ex.Message}", ex.SqlState, null, ex);
+        }
+        catch (Exception ex)
+        {
+            throw new ErrorRepository($"Error del repositorio al obtener grupos de equipos: {ex.Message}", ex);
         }
     }
 
@@ -114,9 +124,13 @@ public class GrupoEquipoRepository : IGrupoEquipoRepository
         };        try
         {
             _ejecutarConsulta.EjecutarSpNR(sql, parametros);
-        }        catch (Exception ex)
+        }        catch (NpgsqlException ex)
         {
-            throw PostgreSqlErrorInterpreter.InterpretarError(ex, "actualizar", "grupo de equipo", parametros);
+            throw new ErrorDataBase($"Error de base de datos al actualizar grupo de equipo: {ex.Message}", ex.SqlState, null, ex);
+        }
+        catch (Exception ex)
+        {
+            throw new ErrorRepository($"Error del repositorio al actualizar grupo de equipo: {ex.Message}", ex);
         }
     }
 
@@ -133,10 +147,13 @@ public class GrupoEquipoRepository : IGrupoEquipoRepository
           try
         {
             _ejecutarConsulta.EjecutarSpNR(sql, parametros);
+        }        catch (NpgsqlException ex)
+        {
+            throw new ErrorDataBase($"Error de base de datos al eliminar grupo de equipo: {ex.Message}", ex.SqlState, null, ex);
         }
         catch (Exception ex)
         {
-            throw PostgreSqlErrorInterpreter.InterpretarError(ex, "eliminar", "grupo de equipo", parametros);
+            throw new ErrorRepository($"Error del repositorio al eliminar grupo de equipo: {ex.Message}", ex);
         }
     }      public DataTable ObtenerTodos()
     {
@@ -148,10 +165,13 @@ public class GrupoEquipoRepository : IGrupoEquipoRepository
         {
             DataTable dt = _ejecutarConsulta.EjecutarFuncion(sql, new Dictionary<string, object?>());
             return dt;
+        }        catch (NpgsqlException ex)
+        {
+            throw new ErrorDataBase($"Error de base de datos al obtener grupos de equipos: {ex.Message}", ex.SqlState, null, ex);
         }
         catch (Exception ex)
         {
-            throw PostgreSqlErrorInterpreter.InterpretarError(ex, "obtener", "grupos de equipos", new Dictionary<string, object?>());
+            throw new ErrorRepository($"Error del repositorio al obtener grupos de equipos: {ex.Message}", ex);
         }
     }
 }

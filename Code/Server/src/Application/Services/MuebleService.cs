@@ -1,5 +1,4 @@
 using System.Data;
-using Shared.Common;
 public class MuebleService : IMuebleService
 {
     private readonly MuebleRepository _muebleRepository;
@@ -22,16 +21,35 @@ public class MuebleService : IMuebleService
         catch (ErrorValorNegativo)
         {
             throw;
-        }
-        catch (Exception ex)
+        }        catch (Exception ex)
         {
-            var parametros = new Dictionary<string, object?>
+            // Manejo específico para insertar_mueble según el procedimiento almacenado
+            if (ex is ErrorDataBase errorDb)
             {
-                ["nombre"] = comando.Nombre,
-                ["tipo"] = comando.Tipo,
-                ["ubicacion"] = comando.Ubicacion
-            };
-            throw PostgreSqlErrorInterpreter.InterpretarError(ex, "crear", "mueble", parametros);
+                var mensaje = errorDb.Message?.ToLower() ?? "";
+                
+                // Error: Nombre de mueble duplicado
+                if (errorDb.SqlState == "23505" || mensaje.Contains("ya existe un mueble con el mismo nombre"))
+                {
+                    throw new ErrorRegistroYaExiste();
+                }
+                
+                // Error genérico del procedimiento
+                if (mensaje.Contains("error al insertar mueble"))
+                {
+                    throw new Exception($"Error inesperado al insertar mueble: {errorDb.Message}", errorDb);
+                }
+                
+                // Otros errores de base de datos
+                throw new Exception($"Error inesperado de base de datos al crear mueble: {errorDb.Message}", errorDb);
+            }
+            
+            if (ex is ErrorRepository errorRepo)
+            {
+                throw new Exception($"Error del repositorio al crear mueble: {errorRepo.Message}", errorRepo);
+            }
+            
+            throw;
         }
     }
     public void ActualizarMueble(ActualizarMuebleComando comando)
@@ -52,17 +70,41 @@ public class MuebleService : IMuebleService
         catch (ErrorValorNegativo)
         {
             throw;
-        }
-        catch (Exception ex)
+        }        catch (Exception ex)
         {
-            var parametros = new Dictionary<string, object?>
+            // Manejo específico para actualizar_mueble según el procedimiento almacenado
+            if (ex is ErrorDataBase errorDb)
             {
-                ["id"] = comando.Id,
-                ["nombre"] = comando.Nombre,
-                ["tipo"] = comando.Tipo,
-                ["ubicacion"] = comando.Ubicacion
-            };
-            throw PostgreSqlErrorInterpreter.InterpretarError(ex, "actualizar", "mueble", parametros);
+                var mensaje = errorDb.Message?.ToLower() ?? "";
+                
+                // Error: Mueble no encontrado
+                if (mensaje.Contains("no se encontró un mueble activo con id"))
+                {
+                    throw new ErrorRegistroNoEncontrado();
+                }
+                
+                // Error: Nombre de mueble duplicado
+                if (errorDb.SqlState == "23505" || mensaje.Contains("ya existe un mueble con el nombre"))
+                {
+                    throw new ErrorRegistroYaExiste();
+                }
+                
+                // Error genérico del procedimiento
+                if (mensaje.Contains("error inesperado al actualizar mueble"))
+                {
+                    throw new Exception($"Error inesperado al actualizar mueble: {errorDb.Message}", errorDb);
+                }
+                
+                // Otros errores de base de datos
+                throw new Exception($"Error inesperado de base de datos al actualizar mueble: {errorDb.Message}", errorDb);
+            }
+            
+            if (ex is ErrorRepository errorRepo)
+            {
+                throw new Exception($"Error del repositorio al actualizar mueble: {errorRepo.Message}", errorRepo);
+            }
+            
+            throw;
         }
     }
     public void EliminarMueble(EliminarMuebleComando comando)
@@ -75,14 +117,35 @@ public class MuebleService : IMuebleService
         catch (ErrorIdInvalido)
         {
             throw;
-        }
-        catch (Exception ex)
+        }        catch (Exception ex)
         {
-            var parametros = new Dictionary<string, object?>
+            // Manejo específico para eliminar_mueble según el procedimiento almacenado
+            if (ex is ErrorDataBase errorDb)
             {
-                ["id"] = comando.Id
-            };
-            throw PostgreSqlErrorInterpreter.InterpretarError(ex, "eliminar", "mueble", parametros);
+                var mensaje = errorDb.Message?.ToLower() ?? "";
+                
+                // Error: Mueble no encontrado
+                if (mensaje.Contains("no se encontró un mueble activo con id"))
+                {
+                    throw new ErrorRegistroNoEncontrado();
+                }
+                
+                // Error genérico del procedimiento
+                if (mensaje.Contains("error al eliminar lógicamente el mueble"))
+                {
+                    throw new Exception($"Error inesperado al eliminar mueble: {errorDb.Message}", errorDb);
+                }
+                
+                // Otros errores de base de datos
+                throw new Exception($"Error inesperado de base de datos al eliminar mueble: {errorDb.Message}", errorDb);
+            }
+            
+            if (ex is ErrorRepository errorRepo)
+            {
+                throw new Exception($"Error del repositorio al eliminar mueble: {errorRepo.Message}", errorRepo);
+            }
+            
+            throw;
         }
     }
     public List<MuebleDto>? ObtenerTodosMuebles()

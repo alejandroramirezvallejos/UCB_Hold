@@ -1,5 +1,4 @@
 using Microsoft.AspNetCore.Mvc;
-using Shared.Common;
 
 namespace API.Controllers;
 
@@ -89,8 +88,7 @@ public class MuebleController : ControllerBase
         {
             return StatusCode(500, new { error = "Error interno del servidor", mensaje = "Ocurrió un error inesperado al actualizar el mueble" });
         }
-    }
-    [HttpDelete("{id}")]
+    }    [HttpDelete("{id}")]
     public IActionResult Eliminar(int id)
     {
         try
@@ -102,18 +100,16 @@ public class MuebleController : ControllerBase
         catch (ErrorIdInvalido ex)
         {
             return BadRequest(new { error = "ID inválido", mensaje = ex.Message });
-        }        catch (ErrorRegistroNoEncontrado)
+        }
+        catch (ErrorRegistroNoEncontrado)
         {
             return NotFound(new { error = "Mueble no encontrado", mensaje = $"No se encontró un mueble con ID {id}" });
-        }
-        catch (ErrorRegistroEnUso)
-        {
-            return Conflict(new { error = "Mueble en uso", mensaje = "No se puede eliminar el mueble porque tiene gaveteros asociados" });
         }
         catch (DomainException ex)
         {
             return BadRequest(new { error = "Error de validación", mensaje = ex.Message });
-        }        catch (Exception)
+        }
+        catch (Exception)
         {
             return StatusCode(500, new { error = "Error interno del servidor", mensaje = "Ocurrió un error inesperado al eliminar el mueble" });
         }

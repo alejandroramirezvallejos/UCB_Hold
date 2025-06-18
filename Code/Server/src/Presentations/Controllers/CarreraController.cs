@@ -1,5 +1,4 @@
 using Microsoft.AspNetCore.Mvc;
-using Shared.Common;
 
 namespace API.Controllers;
 
@@ -92,8 +91,7 @@ public class CarreraController : ControllerBase
         {
             return StatusCode(500, new { error = "Error interno del servidor", mensaje = "Ocurrió un error inesperado al actualizar la carrera" });
         }
-    }    
-    [HttpDelete("{id}")]
+    }      [HttpDelete("{id}")]
     public IActionResult Eliminar(int id)
     {
         try
@@ -106,13 +104,9 @@ public class CarreraController : ControllerBase
         {
             return BadRequest(new { error = "ID inválido", mensaje = ex.Message });
         }
-        catch (ErrorRegistroNoEncontrado)
+        catch (ErrorRegistroNoEncontrado ex)
         {
-            return NotFound(new { error = "Carrera no encontrada", mensaje = $"No se encontró una carrera con ID {id}" });
-        }
-        catch (ErrorRegistroEnUso)
-        {
-            return Conflict(new { error = "Carrera en uso", mensaje = "No se puede eliminar la carrera porque hay usuarios asociados a ella" });
+            return NotFound(new { error = "Carrera no encontrada", mensaje = ex.Message });
         }
         catch (DomainException ex)
         {

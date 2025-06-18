@@ -1,5 +1,4 @@
 using Microsoft.AspNetCore.Mvc;
-using Shared.Common;
 
 public static class CommandLineInterface
 {
@@ -111,7 +110,7 @@ public static class CommandLineInterface
         builder.Services.AddControllers().AddJsonOptions(options =>
             {
                 options.JsonSerializerOptions.PropertyNamingPolicy = null;
-                options.JsonSerializerOptions.PropertyNameCaseInsensitive = true;
+                options.JsonSerializerOptions.PropertyNameCaseInsensitive = true;//para ayudar a josue
             });
 
         builder.Services.AddEndpointsApiExplorer();

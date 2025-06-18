@@ -1,5 +1,4 @@
 using System.Data;
-using Shared.Common;
 public class MantenimientoService : IMantenimientoService
 {
     private readonly MantenimientoRepository _mantenimientoRepository;
@@ -33,17 +32,53 @@ public class MantenimientoService : IMantenimientoService
         catch (ErrorIdInvalido)
         {
             throw;
-        }
-        catch (Exception ex)
+        }        catch (Exception ex)
         {
-            var parametros = new Dictionary<string, object?>
+            // Manejo específico para insertar_mantenimiento según el procedimiento almacenado
+            if (ex is ErrorDataBase errorDb)
             {
-                ["empresa"] = comando.NombreEmpresaMantenimiento,
-                ["fecha_inicio"] = comando.FechaMantenimiento,
-                ["fecha_fin"] = comando.FechaFinalDeMantenimiento,
-                ["codigo_imt_count"] = comando.CodigoIMT?.Length
-            };
-            throw PostgreSqlErrorInterpreter.InterpretarError(ex, "crear", "mantenimiento", parametros);
+                var mensaje = errorDb.Message?.ToLower() ?? "";
+                
+                // Error: Empresa de mantenimiento no encontrada
+                if (mensaje.Contains("no se encontró la empresa con nombre"))
+                {
+                    throw new ErrorReferenciaInvalida("empresa de mantenimiento");
+                }
+                
+                // Error: Arreglos con longitudes diferentes
+                if (mensaje.Contains("los arreglos de equipos deben tener la misma longitud"))
+                {
+                    throw new ArgumentException("Los arreglos de equipos, tipos de mantenimiento y descripciones deben tener la misma longitud.");
+                }
+                
+                // Error: Equipo no encontrado por código IMT
+                if (mensaje.Contains("equipo no encontrado con código imt"))
+                {
+                    throw new ErrorReferenciaInvalida("equipo");
+                }
+                
+                // Error: Violación de unicidad
+                if (errorDb.SqlState == "23505" || mensaje.Contains("violación de unicidad al insertar mantenimiento"))
+                {
+                    throw new ErrorRegistroYaExiste();
+                }
+                
+                // Error genérico del procedimiento
+                if (mensaje.Contains("error al insertar mantenimiento"))
+                {
+                    throw new Exception($"Error inesperado al insertar mantenimiento: {errorDb.Message}", errorDb);
+                }
+                
+                // Otros errores de base de datos
+                throw new Exception($"Error inesperado de base de datos al crear mantenimiento: {errorDb.Message}", errorDb);
+            }
+            
+            if (ex is ErrorRepository errorRepo)
+            {
+                throw new Exception($"Error del repositorio al crear mantenimiento: {errorRepo.Message}", errorRepo);
+            }
+            
+            throw;
         }
     }
     public void EliminarMantenimiento(EliminarMantenimientoComando comando)
@@ -56,14 +91,35 @@ public class MantenimientoService : IMantenimientoService
         catch (ErrorIdInvalido)
         {
             throw;
-        }
-        catch (Exception ex)
+        }        catch (Exception ex)
         {
-            var parametros = new Dictionary<string, object?>
+            // Manejo específico para eliminar_mantenimiento según el procedimiento almacenado
+            if (ex is ErrorDataBase errorDb)
             {
-                ["id"] = comando.Id
-            };
-            throw PostgreSqlErrorInterpreter.InterpretarError(ex, "eliminar", "mantenimiento", parametros);
+                var mensaje = errorDb.Message?.ToLower() ?? "";
+                
+                // Error: Mantenimiento no encontrado
+                if (mensaje.Contains("no se encontró un mantenimiento activo con id"))
+                {
+                    throw new ErrorRegistroNoEncontrado();
+                }
+                
+                // Error genérico del procedimiento
+                if (mensaje.Contains("error al eliminar lógicamente el mantenimiento"))
+                {
+                    throw new Exception($"Error inesperado al eliminar mantenimiento: {errorDb.Message}", errorDb);
+                }
+                
+                // Otros errores de base de datos
+                throw new Exception($"Error inesperado de base de datos al eliminar mantenimiento: {errorDb.Message}", errorDb);
+            }
+            
+            if (ex is ErrorRepository errorRepo)
+            {
+                throw new Exception($"Error del repositorio al eliminar mantenimiento: {errorRepo.Message}", errorRepo);
+            }
+            
+            throw;
         }
     }
     public List<MantenimientoDto>? ObtenerTodosMantenimientos()

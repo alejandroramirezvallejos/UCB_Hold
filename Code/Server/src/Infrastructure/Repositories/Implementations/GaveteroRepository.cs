@@ -1,6 +1,5 @@
 using System.Data;
 using Npgsql;
-using Shared.Common;
 
 public class GaveteroRepository : IGaveteroRepository
 {
@@ -32,9 +31,13 @@ public class GaveteroRepository : IGaveteroRepository
         };        try
         {
             _ejecutarConsulta.EjecutarSpNR(sql, parametros);
-        }        catch (Exception ex)
+        }        catch (NpgsqlException ex)
         {
-            throw PostgreSqlErrorInterpreter.InterpretarError(ex, "crear", "gavetero", parametros);
+            throw new ErrorDataBase($"Error de base de datos al crear gavetero: {ex.Message}", ex.SqlState, null, ex);
+        }
+        catch (Exception ex)
+        {
+            throw new ErrorRepository($"Error del repositorio al crear gavetero: {ex.Message}", ex);
         }
     }
 
@@ -64,9 +67,13 @@ public class GaveteroRepository : IGaveteroRepository
         try
         {
             _ejecutarConsulta.EjecutarSpNR(sql, parametros);
-        }        catch (Exception ex)
+        }        catch (NpgsqlException ex)
         {
-            throw PostgreSqlErrorInterpreter.InterpretarError(ex, "actualizar", "gavetero", parametros);
+            throw new ErrorDataBase($"Error de base de datos al actualizar gavetero: {ex.Message}", ex.SqlState, null, ex);
+        }
+        catch (Exception ex)
+        {
+            throw new ErrorRepository($"Error del repositorio al actualizar gavetero: {ex.Message}", ex);
         }
     }
 
@@ -84,20 +91,33 @@ public class GaveteroRepository : IGaveteroRepository
         try
         {
             _ejecutarConsulta.EjecutarSpNR(sql, parametros);
-        }        catch (Exception ex)
+        }        catch (NpgsqlException ex)
         {
-            var parametrosEliminar = new Dictionary<string, object?> { ["id"] = id };
-            throw PostgreSqlErrorInterpreter.InterpretarError(ex, "eliminar", "gavetero", parametrosEliminar);
+            throw new ErrorDataBase($"Error de base de datos al eliminar gavetero: {ex.Message}", ex.SqlState, null, ex);
         }
-    }    
-    public DataTable ObtenerTodos()
+        catch (Exception ex)
+        {
+            throw new ErrorRepository($"Error del repositorio al eliminar gavetero: {ex.Message}", ex);
+        }
+    }      public DataTable ObtenerTodos()
     {
         const string sql = @"
         SELECT * from public.obtener_gaveteros()
         ";
 
-        DataTable dt = _ejecutarConsulta.EjecutarFuncion(sql, new Dictionary<string, object?>());
-        return dt;
+        try
+        {
+            DataTable dt = _ejecutarConsulta.EjecutarFuncion(sql, new Dictionary<string, object?>());
+            return dt;
+        }
+        catch (NpgsqlException ex)
+        {
+            throw new ErrorDataBase($"Error de base de datos al obtener gaveteros: {ex.Message}", ex.SqlState, null, ex);
+        }
+        catch (Exception ex)
+        {
+            throw new ErrorRepository($"Error del repositorio al obtener gaveteros: {ex.Message}", ex);
+        }
     }
 }
 

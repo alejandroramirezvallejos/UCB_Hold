@@ -1,5 +1,4 @@
 using Microsoft.AspNetCore.Mvc;
-using Shared.Common;
 
 namespace API.Controllers;
 
@@ -12,8 +11,7 @@ public class AccesorioController : ControllerBase
     public AccesorioController(AccesorioService servicio)
     {
         this.servicio = servicio;
-    }
-    [HttpPost]
+    }    [HttpPost]
     public IActionResult Crear([FromBody] CrearAccesorioComando input)
     {
         try
@@ -25,9 +23,21 @@ public class AccesorioController : ControllerBase
         {
             return BadRequest(new { error = "Campo requerido", mensaje = ex.Message });
         }
+        catch (ErrorModeloRequerido ex)
+        {
+            return BadRequest(new { error = "Campo requerido", mensaje = ex.Message });
+        }
         catch (ErrorLongitudInvalida ex)
         {
             return BadRequest(new { error = "Longitud inválida", mensaje = ex.Message });
+        }
+        catch (ErrorCodigoImtRequerido ex)
+        {
+            return BadRequest(new { error = "Campo requerido", mensaje = ex.Message });
+        }
+        catch (ErrorValorNegativo ex)
+        {
+            return BadRequest(new { error = "Valor inválido", mensaje = ex.Message });
         }
         catch (ErrorRegistroYaExiste ex)
         {
@@ -58,8 +68,7 @@ public class AccesorioController : ControllerBase
         {
             return BadRequest(new { error = "Error interno del servidor", mensaje = $"Error al obtener accesorios: {ex.Message}" });
         }
-    }
-    [HttpPut]
+    }    [HttpPut]
     public IActionResult Actualizar([FromBody] ActualizarAccesorioComando input)
     {
         try
@@ -70,13 +79,26 @@ public class AccesorioController : ControllerBase
         catch (ErrorIdInvalido ex)
         {
             return BadRequest(new { error = "ID inválido", mensaje = ex.Message });
-        }        catch (ErrorNombreRequerido ex)
+        }
+        catch (ErrorNombreRequerido ex)
+        {
+            return BadRequest(new { error = "Campo requerido", mensaje = ex.Message });
+        }
+        catch (ErrorModeloRequerido ex)
         {
             return BadRequest(new { error = "Campo requerido", mensaje = ex.Message });
         }
         catch (ErrorLongitudInvalida ex)
         {
             return BadRequest(new { error = "Longitud inválida", mensaje = ex.Message });
+        }
+        catch (ErrorCodigoImtRequerido ex)
+        {
+            return BadRequest(new { error = "Campo requerido", mensaje = ex.Message });
+        }
+        catch (ErrorValorNegativo ex)
+        {
+            return BadRequest(new { error = "Valor inválido", mensaje = ex.Message });
         }
         catch (ErrorRegistroNoEncontrado ex)
         {
@@ -85,6 +107,10 @@ public class AccesorioController : ControllerBase
         catch (ErrorRegistroYaExiste ex)
         {
             return Conflict(new { error = "Registro duplicado", mensaje = ex.Message });
+        }
+        catch (ErrorReferenciaInvalida ex)
+        {
+            return BadRequest(new { error = "Referencia inválida", mensaje = ex.Message });
         }
         catch (DomainException ex)
         {

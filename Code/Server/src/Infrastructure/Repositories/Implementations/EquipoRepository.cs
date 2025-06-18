@@ -1,6 +1,5 @@
 using System.Data;
 using Npgsql;
-using Shared.Common;
 
 public class EquipoRepository : IEquipoRepository
 {
@@ -42,10 +41,13 @@ public class EquipoRepository : IEquipoRepository
         };          try
         {
             _ejecutarConsulta.EjecutarSpNR(sql, parametros);
+        }        catch (NpgsqlException ex)
+        {
+            throw new ErrorDataBase($"Error de base de datos al crear equipo: {ex.Message}", ex.SqlState, null, ex);
         }
         catch (Exception ex)
         {
-            throw PostgreSqlErrorInterpreter.InterpretarError(ex, "crear", "equipo", parametros);
+            throw new ErrorRepository($"Error del repositorio al crear equipo: {ex.Message}", ex);
         }
     }
 
@@ -81,9 +83,13 @@ public class EquipoRepository : IEquipoRepository
         };        try
         {
             _ejecutarConsulta.EjecutarSpNR(sql, parametros);
-        }        catch (Exception ex)
+        }        catch (NpgsqlException ex)
         {
-            throw PostgreSqlErrorInterpreter.InterpretarError(ex, "actualizar", "equipo", parametros);
+            throw new ErrorDataBase($"Error de base de datos al actualizar equipo: {ex.Message}", ex.SqlState, null, ex);
+        }
+        catch (Exception ex)
+        {
+            throw new ErrorRepository($"Error del repositorio al actualizar equipo: {ex.Message}", ex);
         }
     }
 
@@ -101,20 +107,33 @@ public class EquipoRepository : IEquipoRepository
         try
         {
             _ejecutarConsulta.EjecutarSpNR(sql, parametros);
-        }        catch (Exception ex)
+        }        catch (NpgsqlException ex)
         {
-            var parametrosEliminar = new Dictionary<string, object?> { ["id"] = id };
-            throw PostgreSqlErrorInterpreter.InterpretarError(ex, "eliminar", "equipo", parametrosEliminar);
+            throw new ErrorDataBase($"Error de base de datos al eliminar equipo: {ex.Message}", ex.SqlState, null, ex);
         }
-    }    
-    public DataTable ObtenerTodos()
+        catch (Exception ex)
+        {
+            throw new ErrorRepository($"Error del repositorio al eliminar equipo: {ex.Message}", ex);
+        }
+    }      public DataTable ObtenerTodos()
     {
         const string sql = @"
             SELECT * from public.obtener_equipos()
         ";
 
-        DataTable dt = _ejecutarConsulta.EjecutarFuncion(sql, new Dictionary<string, object?>());
-        return dt;
+        try
+        {
+            DataTable dt = _ejecutarConsulta.EjecutarFuncion(sql, new Dictionary<string, object?>());
+            return dt;
+        }
+        catch (NpgsqlException ex)
+        {
+            throw new ErrorDataBase($"Error de base de datos al obtener equipos: {ex.Message}", ex.SqlState, null, ex);
+        }
+        catch (Exception ex)
+        {
+            throw new ErrorRepository($"Error del repositorio al obtener equipos: {ex.Message}", ex);
+        }
     }
     
 }

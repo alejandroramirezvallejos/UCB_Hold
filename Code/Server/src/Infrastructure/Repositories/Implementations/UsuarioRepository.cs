@@ -1,6 +1,5 @@
 using System.Data;
 using Npgsql;
-using Shared.Common;
 
 public class UsuarioRepository : IUsuarioRepository
 {
@@ -42,10 +41,13 @@ public class UsuarioRepository : IUsuarioRepository
         };          try
         {
             _ejecutarConsulta.EjecutarSpNR(sql, parametros);
+        }        catch (NpgsqlException ex)
+        {
+            throw new ErrorDataBase($"Error de base de datos al crear usuario: {ex.Message}", ex.SqlState, null, ex);
         }
         catch (Exception ex)
         {
-            throw PostgreSqlErrorInterpreter.InterpretarError(ex, "crear", "usuario", parametros);
+            throw new ErrorRepository($"Error en repositorio al crear usuario: {ex.Message}", "crear", "usuario", ex);
         }
     }
 
@@ -84,10 +86,13 @@ public class UsuarioRepository : IUsuarioRepository
         };          try
         {
             _ejecutarConsulta.EjecutarSpNR(sql, parametros);
+        }        catch (NpgsqlException ex)
+        {
+            throw new ErrorDataBase($"Error de base de datos al actualizar usuario: {ex.Message}", ex.SqlState, null, ex);
         }
         catch (Exception ex)
         {
-            throw PostgreSqlErrorInterpreter.InterpretarError(ex, "actualizar", "usuario", parametros);
+            throw new ErrorRepository($"Error en repositorio al actualizar usuario: {ex.Message}", "actualizar", "usuario", ex);
         }
     }
 
@@ -104,10 +109,13 @@ public class UsuarioRepository : IUsuarioRepository
           try
         {
             _ejecutarConsulta.EjecutarSpNR(sql, parametros);
+        }        catch (NpgsqlException ex)
+        {
+            throw new ErrorDataBase($"Error de base de datos al eliminar usuario: {ex.Message}", ex.SqlState, null, ex);
         }
         catch (Exception ex)
         {
-            throw PostgreSqlErrorInterpreter.InterpretarError(ex, "eliminar", "usuario", parametros);
+            throw new ErrorRepository($"Error en repositorio al eliminar usuario: {ex.Message}", "eliminar", "usuario", ex);
         }
     }      public DataTable ObtenerTodos()
     {
@@ -118,10 +126,13 @@ public class UsuarioRepository : IUsuarioRepository
         {
             var dt = _ejecutarConsulta.EjecutarFuncion(sql, new Dictionary<string, object?>());
             return dt;
+        }        catch (NpgsqlException ex)
+        {
+            throw new ErrorDataBase($"Error de base de datos al obtener usuarios: {ex.Message}", ex.SqlState, null, ex);
         }
         catch (Exception ex)
         {
-            throw PostgreSqlErrorInterpreter.InterpretarError(ex, "obtener", "usuarios", new Dictionary<string, object?>());
+            throw new ErrorRepository($"Error del repositorio al obtener usuarios: {ex.Message}", ex);
         }
     }
     public DataTable? ObtenerPorEmailYContrasena(string email, string contrasena)
@@ -145,10 +156,13 @@ public class UsuarioRepository : IUsuarioRepository
                 return null;
 
             return dt;
+        }        catch (NpgsqlException ex)
+        {
+            throw new ErrorDataBase($"Error de base de datos al obtener usuario: {ex.Message}", ex.SqlState, null, ex);
         }
         catch (Exception ex)
         {
-            throw PostgreSqlErrorInterpreter.InterpretarError(ex, "obtener", "usuario", parametros);
+            throw new ErrorRepository($"Error del repositorio al obtener usuario: {ex.Message}", ex);
         }
     }
 }

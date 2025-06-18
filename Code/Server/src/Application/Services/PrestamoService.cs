@@ -1,6 +1,5 @@
 using System.Data;
-using System.Linq;
-using Shared.Common;
+
 
 public class PrestamoService : IPrestamoService
 {
@@ -36,9 +35,8 @@ public class PrestamoService : IPrestamoService
             throw; // Re-lanzar excepciones específicas
         }
         catch (Exception ex)
-        {
-            // 3. Interpretar errores específicos del procedimiento insertar_prestamo
-            throw InterpretarErrorCreacionPrestamo(ex, comando);
+        {            // 3. Interpretar errores específicos del procedimiento insertar_prestamo
+            InterpretarErrorCreacionPrestamo(ex, comando);
         }
     }
 
@@ -59,54 +57,89 @@ public class PrestamoService : IPrestamoService
 
         if (comando.FechaDevolucionEsperada <= comando.FechaPrestamoEsperada)
             throw new ArgumentException("La fecha de devolución debe ser posterior a la fecha de préstamo");
-    }
-
-    private Exception InterpretarErrorCreacionPrestamo(Exception ex, CrearPrestamoComando comando)
+    }    private void InterpretarErrorCreacionPrestamo(Exception ex, CrearPrestamoComando comando)
     {
-        var errorMessage = ex.Message.ToLower();
+        var errorMessage = ex.Message?.ToLower() ?? "";
         
         // Errores específicos del procedimiento insertar_prestamo
-          // Error: Usuario no encontrado (Foreign Key en carnet)
-        if (errorMessage.Contains("23503") && (errorMessage.Contains("carnet") || errorMessage.Contains("usuarios")))
+        
+        // 1. Errores de préstamo general
+        if (errorMessage.Contains("error al crear préstamo general: conflicto de llave única"))
         {
-            return new ErrorCarnetUsuarioNoEncontrado();
+            throw new ErrorRegistroYaExiste();
+        }
+        else if (errorMessage.Contains("error inesperado") && errorMessage.Contains("al crear el préstamo general"))
+        {
+            throw new Exception($"Error inesperado al crear el préstamo general: {ex.Message}", ex);
+        }
+        else if (errorMessage.Contains("fallo crítico: no se pudo obtener el id del préstamo general creado"))
+        {
+            throw new Exception("Fallo crítico: No se pudo crear el préstamo", ex);
         }
         
-        // Error: Grupo no existe o está eliminado
-        if (errorMessage.Contains("grupo id") && errorMessage.Contains("no existe"))
+        // 2. Errores de grupos
+        else if (errorMessage.Contains("grupo id") && errorMessage.Contains("no existe o está eliminado"))
         {
-            var match = System.Text.RegularExpressions.Regex.Match(errorMessage, @"grupo id (\d+) no existe");
-            if (match.Success && int.TryParse(match.Groups[1].Value, out int grupoId))
-            {                return new ErrorRegistroNoEncontrado();
-            }
-            return new ErrorRegistroNoEncontrado();
+            throw new ErrorRegistroNoEncontrado();
         }
         
-        // Error: No equipo disponible para grupo
-        if (errorMessage.Contains("no se encontró equipo disponible") || errorMessage.Contains("para el grupo id"))
+        // 3. Errores de disponibilidad de equipos
+        else if (errorMessage.Contains("no se encontró equipo disponible") && errorMessage.Contains("para el grupo id"))
         {
-            var match = System.Text.RegularExpressions.Regex.Match(errorMessage, @"grupo id (\d+)");
-            if (match.Success && int.TryParse(match.Groups[1].Value, out int grupoId))
+            throw new ErrorNoEquiposDisponibles();
+        }
+        
+        // 4. Errores de detalles de préstamo
+        else if (errorMessage.Contains("conflicto de llave única al crear detalle"))
+        {
+            throw new ErrorRegistroYaExiste();
+        }
+        else if (errorMessage.Contains("violación de restricción check al crear detalle"))
+        {
+            throw new Exception($"Error de validación al crear detalle del préstamo: {ex.Message}", ex);
+        }
+        else if (errorMessage.Contains("violación de llave foránea al crear detalle"))
+        {
+            throw new ErrorReferenciaInvalida("equipo o préstamo");
+        }
+        else if (errorMessage.Contains("error inesperado") && errorMessage.Contains("al crear detalle"))
+        {
+            throw new Exception($"Error inesperado al crear detalle del préstamo: {ex.Message}", ex);
+        }
+        
+        // 5. Errores por códigos SQLSTATE específicos
+        else if (ex is ErrorDataBase errorDb)
+        {
+            // Violación de llave foránea (carnet de usuario no existe)
+            if (errorDb.SqlState == "23503")
             {
-                return new ErrorNoEquiposDisponibles();
+                if (errorMessage.Contains("carnet") || errorMessage.Contains("usuarios"))
+                {
+                    throw new ErrorCarnetUsuarioNoEncontrado();
+                }
+                throw new ErrorReferenciaInvalida("referencia de base de datos");
             }
-            return new ErrorNoEquiposDisponibles();
+            
+            // Violación de unicidad
+            if (errorDb.SqlState == "23505")
+            {
+                throw new ErrorRegistroYaExiste();
+            }
+            
+            throw new Exception($"Error inesperado de base de datos al crear préstamo: {errorDb.Message}", errorDb);
         }
         
-        // Error: Fallo crítico al crear préstamo
-        if (errorMessage.Contains("fallo crítico") || errorMessage.Contains("no se pudo obtener el id"))
+        // 6. Errores de repositorio
+        else if (ex is ErrorRepository errorRepo)
         {
-            return new Exception("Fallo crítico: No se pudo crear el préstamo");
+            throw new Exception($"Error del repositorio al crear préstamo: {errorRepo.Message}", errorRepo);
         }
         
-        // Usar intérprete genérico como fallback
-        var parametros = new Dictionary<string, object?>
+        // 7. Error genérico
+        else
         {
-            ["carnetUsuario"] = comando.CarnetUsuario,
-            ["fechaInicio"] = comando.FechaPrestamoEsperada,
-            ["fechaFin"] = comando.FechaDevolucionEsperada
-        };        
-        return PostgreSqlErrorInterpreter.InterpretarError(ex, "crear", "préstamo", parametros);
+            throw new Exception($"Error inesperado al crear préstamo: {ex.Message}", ex);
+        }
     }
 
     public void EliminarPrestamo(EliminarPrestamoComando comando)
@@ -119,14 +152,35 @@ public class PrestamoService : IPrestamoService
         catch (ErrorIdInvalido)
         {
             throw;
-        }
-        catch (Exception ex)
+        }        catch (Exception ex)
         {
-            var parametros = new Dictionary<string, object?>
+            // Manejo específico para eliminar_prestamo según el procedimiento almacenado
+            if (ex is ErrorDataBase errorDb)
             {
-                ["id"] = comando.Id
-            };
-            throw PostgreSqlErrorInterpreter.InterpretarError(ex, "eliminar", "préstamo", parametros);
+                var mensaje = errorDb.Message?.ToLower() ?? "";
+                
+                // Error: Préstamo no encontrado
+                if (mensaje.Contains("no se encontró un préstamo activo con id"))
+                {
+                    throw new ErrorRegistroNoEncontrado();
+                }
+                
+                // Error genérico del procedimiento
+                if (mensaje.Contains("error al eliminar lógicamente el préstamo"))
+                {
+                    throw new Exception($"Error inesperado al eliminar préstamo: {errorDb.Message}", errorDb);
+                }
+                
+                // Otros errores de base de datos
+                throw new Exception($"Error inesperado de base de datos al eliminar préstamo: {errorDb.Message}", errorDb);
+            }
+            
+            if (ex is ErrorRepository errorRepo)
+            {
+                throw new Exception($"Error del repositorio al eliminar préstamo: {errorRepo.Message}", errorRepo);
+            }
+            
+            throw;
         }
     }
 

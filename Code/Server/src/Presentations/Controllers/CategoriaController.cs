@@ -1,5 +1,4 @@
 using Microsoft.AspNetCore.Mvc;
-using Shared.Common;
 
 namespace API.Controllers;
 
@@ -28,16 +27,16 @@ public class CategoriaController : ControllerBase
         catch (ErrorLongitudInvalida ex)
         {
             return BadRequest(new { error = "Longitud inválida", mensaje = ex.Message });
-        }
-        catch (ErrorRegistroYaExiste ex)
+        }        catch (ErrorRegistroYaExiste ex)
         {
-            return Conflict(new { error = "Categoría duplicada", mensaje = $"Ya existe una categoría con el nombre '{ex.Message}'" });
+            return Conflict(new { error = "Categoría duplicada", mensaje = ex.Message });
         }
         catch (DomainException ex)
         {
             return BadRequest(new { error = "Error de validación", mensaje = ex.Message });
-        }
-        catch (Exception) { return StatusCode(500, new { error = "Error interno del servidor", mensaje = "Ocurrió un error inesperado al crear la categoría" });
+        }        catch (Exception) 
+        { 
+            return StatusCode(500, new { error = "Error interno del servidor", mensaje = "Ocurrió un error inesperado al crear la categoría" });
         }
     }
 
@@ -73,23 +72,22 @@ public class CategoriaController : ControllerBase
         catch (ErrorLongitudInvalida ex)
         {
             return BadRequest(new { error = "Longitud inválida", mensaje = ex.Message });
-        }
-        catch (ErrorRegistroNoEncontrado ex)
+        }        catch (ErrorRegistroNoEncontrado ex)
         {
-            return NotFound(new { error = "Categoría no encontrada", mensaje = $"No se encontró una categoría con ID {ex.Message}" });
+            return NotFound(new { error = "Categoría no encontrada", mensaje = ex.Message });
         }
         catch (ErrorRegistroYaExiste ex)
         {
-            return Conflict(new { error = "Categoría duplicada", mensaje = $"Ya existe otra categoría con el nombre '{ex.Message}'" });
+            return Conflict(new { error = "Categoría duplicada", mensaje = ex.Message });
         }
         catch (DomainException ex)
         {
             return BadRequest(new { error = "Error de validación", mensaje = ex.Message });
+        }        catch (Exception) 
+        { 
+            return StatusCode(500, new { error = "Error interno del servidor", mensaje = "Ocurrió un error inesperado al actualizar la categoría" });
         }
-        catch (Exception) { return StatusCode(500, new { error = "Error interno del servidor", mensaje = "Ocurrió un error inesperado al actualizar la categoría" });
-        }
-    }    
-    [HttpDelete("{id}")]
+    }      [HttpDelete("{id}")]
     public IActionResult Eliminar(int id)
     {
         try
@@ -102,19 +100,17 @@ public class CategoriaController : ControllerBase
         {
             return BadRequest(new { error = "ID inválido", mensaje = ex.Message });
         }
-        catch (ErrorRegistroNoEncontrado)
+        catch (ErrorRegistroNoEncontrado ex)
         {
-            return NotFound(new { error = "Categoría no encontrada", mensaje = $"No se encontró una categoría con ID {id}" });
-        }
-        catch (ErrorRegistroEnUso)
-        {
-            return Conflict(new { error = "Categoría en uso", mensaje = "No se puede eliminar la categoría porque tiene grupos de equipos asociados" });
+            return NotFound(new { error = "Categoría no encontrada", mensaje = ex.Message });
         }
         catch (DomainException ex)
         {
             return BadRequest(new { error = "Error de validación", mensaje = ex.Message });
         }
-        catch (Exception) { return StatusCode(500, new { error = "Error interno del servidor", mensaje = "Ocurrió un error inesperado al eliminar la categoría" });
+        catch (Exception) 
+        { 
+            return StatusCode(500, new { error = "Error interno del servidor", mensaje = "Ocurrió un error inesperado al eliminar la categoría" });
         }
     }
 }

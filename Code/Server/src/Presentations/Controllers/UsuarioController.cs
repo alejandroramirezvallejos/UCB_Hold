@@ -1,5 +1,4 @@
 using Microsoft.AspNetCore.Mvc;
-using Shared.Common;
 
 namespace API.Controllers;
 
@@ -21,6 +20,18 @@ public class UsuarioController : ControllerBase
             return Ok(new { mensaje = "Usuario creado exitosamente" });
         }
         catch (ErrorNombreRequerido ex)
+        {
+            return BadRequest(new { error = "Campo requerido", mensaje = ex.Message });
+        }
+        catch (ErrorCarnetInvalido ex)
+        {
+            return BadRequest(new { error = "Carnet inválido", mensaje = ex.Message });
+        }
+        catch (ErrorEmailInvalido ex)
+        {
+            return BadRequest(new { error = "Email inválido", mensaje = ex.Message });
+        }
+        catch (ErrorCampoRequerido ex)
         {
             return BadRequest(new { error = "Campo requerido", mensaje = ex.Message });
         }
@@ -60,8 +71,7 @@ public class UsuarioController : ControllerBase
         }
         catch (Exception) { return StatusCode(500, new { error = "Error interno del servidor", mensaje = "Ocurrió un error inesperado al obtener los usuarios" });
         }
-    }
-    [HttpPut("{carnet}")]
+    }    [HttpPut("{carnet}")]
     public IActionResult ActualizarUsuario([FromBody] ActualizarUsuarioComando input)
     {
         try
@@ -69,7 +79,19 @@ public class UsuarioController : ControllerBase
             servicio.ActualizarUsuario(input);
             return Ok(new { mensaje = "Usuario actualizado exitosamente" });
         }
+        catch (ErrorCarnetInvalido ex)
+        {
+            return BadRequest(new { error = "Carnet inválido", mensaje = ex.Message });
+        }
         catch (ErrorNombreRequerido ex)
+        {
+            return BadRequest(new { error = "Campo requerido", mensaje = ex.Message });
+        }
+        catch (ErrorEmailInvalido ex)
+        {
+            return BadRequest(new { error = "Email inválido", mensaje = ex.Message });
+        }
+        catch (ErrorCampoRequerido ex)
         {
             return BadRequest(new { error = "Campo requerido", mensaje = ex.Message });
         }
@@ -80,6 +102,10 @@ public class UsuarioController : ControllerBase
         catch (ErrorRegistroNoEncontrado ex)
         {
             return NotFound(new { error = "Usuario no encontrado", mensaje = ex.Message });
+        }
+        catch (ErrorRegistroYaExiste ex)
+        {
+            return Conflict(new { error = "Usuario duplicado", mensaje = ex.Message });
         }
         catch (ErrorReferenciaInvalida ex)
         {
@@ -93,9 +119,7 @@ public class UsuarioController : ControllerBase
         {
             return StatusCode(500, new { error = "Error interno del servidor", mensaje = "Ocurrió un error inesperado al actualizar el usuario" });
         }
-    }
-
-    [HttpDelete("{carnet}")]
+    }    [HttpDelete("{carnet}")]
     public IActionResult EliminarUsuario(string carnet)
     {
         try
@@ -104,17 +128,17 @@ public class UsuarioController : ControllerBase
             servicio.EliminarUsuario(comando);
             return Ok(new { mensaje = "Usuario eliminado exitosamente" });
         }
-        catch (ErrorNombreRequerido ex)
+        catch (ErrorCarnetInvalido ex)
         {
-            return BadRequest(new { error = "Campo requerido", mensaje = ex.Message });
+            return BadRequest(new { error = "Carnet inválido", mensaje = ex.Message });
+        }
+        catch (ErrorLongitudInvalida ex)
+        {
+            return BadRequest(new { error = "Longitud inválida", mensaje = ex.Message });
         }
         catch (ErrorRegistroNoEncontrado)
         {
             return NotFound(new { error = "Usuario no encontrado", mensaje = $"No se encontró un usuario con carnet '{carnet}'" });
-        }
-        catch (ErrorRegistroEnUso)
-        {
-            return Conflict(new { error = "Usuario en uso", mensaje = "No se puede eliminar el usuario porque tiene préstamos asociados" });
         }
         catch (DomainException ex)
         {

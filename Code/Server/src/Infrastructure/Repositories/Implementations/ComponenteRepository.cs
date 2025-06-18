@@ -1,6 +1,5 @@
 using System.Data;
 using Npgsql;
-using Shared.Common;
 public class ComponenteRepository : IComponenteRepository
 {
     private readonly ExecuteQuery _ejecutarConsulta;
@@ -31,13 +30,17 @@ public class ComponenteRepository : IComponenteRepository
             ["descripcion"] = comando.Descripcion ?? (object)DBNull.Value,
             ["precioReferencia"] = comando.PrecioReferencia ?? (object)DBNull.Value,
             ["urlDataSheet"] = comando.UrlDataSheet ?? (object)DBNull.Value
-        };          try
+        };        try
         {
             _ejecutarConsulta.EjecutarSpNR(sql, parametros);
         }
+        catch (NpgsqlException ex)
+        {
+            throw new ErrorDataBase($"Error de base de datos al crear componente: {ex.Message}", ex.SqlState, null, ex);
+        }
         catch (Exception ex)
         {
-            throw PostgreSqlErrorInterpreter.InterpretarError(ex, "crear", "componente", parametros);
+            throw new ErrorRepository($"Error en repositorio al crear componente: {ex.Message}", "crear", "componente", ex);
         }
     }
     public void Actualizar(ActualizarComponenteComando comando)
@@ -66,10 +69,13 @@ public class ComponenteRepository : IComponenteRepository
         };        try
         {
             _ejecutarConsulta.EjecutarSpNR(sql, parametros);
+        }        catch (NpgsqlException ex)
+        {
+            throw new ErrorDataBase($"Error de base de datos al actualizar componente: {ex.Message}", ex.SqlState, null, ex);
         }
         catch (Exception ex)
         {
-            throw PostgreSqlErrorInterpreter.InterpretarError(ex, "actualizar", "componente", parametros);
+            throw new ErrorRepository($"Error en repositorio al actualizar componente: {ex.Message}", "actualizar", "componente", ex);
         }
     }
 
@@ -86,10 +92,13 @@ public class ComponenteRepository : IComponenteRepository
           try
         {
             _ejecutarConsulta.EjecutarSpNR(sql, parametros);
+        }        catch (NpgsqlException ex)
+        {
+            throw new ErrorDataBase($"Error de base de datos al eliminar componente: {ex.Message}", ex.SqlState, null, ex);
         }
         catch (Exception ex)
         {
-            throw PostgreSqlErrorInterpreter.InterpretarError(ex, "eliminar", "componente", parametros);
+            throw new ErrorRepository($"Error en repositorio al eliminar componente: {ex.Message}", "eliminar", "componente", ex);
         }
     }    
     public DataTable ObtenerTodos()

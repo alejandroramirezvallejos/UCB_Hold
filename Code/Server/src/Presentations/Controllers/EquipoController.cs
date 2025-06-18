@@ -1,5 +1,4 @@
 using Microsoft.AspNetCore.Mvc;
-using Shared.Common;
 
 namespace API.Controllers;
 
@@ -20,17 +19,29 @@ public class EquipoController : ControllerBase
             servicio.CrearEquipo(input);
             return Created();
         }
+        catch (ErrorNombreRequerido ex)
+        {
+            return BadRequest(new { error = "Campo requerido", mensaje = ex.Message });
+        }
+        catch (ErrorModeloRequerido ex)
+        {
+            return BadRequest(new { error = "Campo requerido", mensaje = ex.Message });
+        }
+        catch (ErrorMarcaRequerida ex)
+        {
+            return BadRequest(new { error = "Campo requerido", mensaje = ex.Message });
+        }
         catch (ErrorIdInvalido ex)
         {
             return BadRequest(new { error = "ID inválido", mensaje = ex.Message });
         }
         catch (ErrorValorNegativo ex)
         {
-            return BadRequest(new { error = "Valor negativo", mensaje = ex.Message });
+            return BadRequest(new { error = "Valor inválido", mensaje = ex.Message });
         }
         catch (ErrorRegistroYaExiste ex)
         {
-            return Conflict(new { error = "Equipo duplicado", mensaje = $"Ya existe un equipo con código IMT '{ex.Message}'" });
+            return Conflict(new { error = "Equipo duplicado", mensaje = ex.Message });
         }
         catch (ErrorReferenciaInvalida ex)
         {
@@ -40,7 +51,9 @@ public class EquipoController : ControllerBase
         {
             return BadRequest(new { error = "Error de validación", mensaje = ex.Message });
         }
-        catch (Exception) { return StatusCode(500, new { error = "Error interno del servidor", mensaje = "Ocurrió un error inesperado al crear el equipo" });
+        catch (Exception)
+        {
+            return StatusCode(500, new { error = "Error interno del servidor", mensaje = "Ocurrió un error inesperado al crear el equipo" });
         }
     }
 
@@ -70,24 +83,33 @@ public class EquipoController : ControllerBase
         }
         catch (ErrorValorNegativo ex)
         {
-            return BadRequest(new { error = "Valor negativo", mensaje = ex.Message });
+            return BadRequest(new { error = "Valor inválido", mensaje = ex.Message });
         }
         catch (ErrorRegistroNoEncontrado ex)
         {
-            return NotFound(new { error = "Equipo no encontrado", mensaje = $"No se encontró un equipo con código IMT {ex.Message}" });
+            return NotFound(new { error = "Equipo no encontrado", mensaje = ex.Message });
+        }
+        catch (ErrorRegistroYaExiste ex)
+        {
+            return Conflict(new { error = "Equipo duplicado", mensaje = ex.Message });
         }
         catch (ErrorReferenciaInvalida ex)
         {
             return BadRequest(new { error = "Referencia inválida", mensaje = ex.Message });
         }
+        catch (ArgumentException ex)
+        {
+            return BadRequest(new { error = "Argumento inválido", mensaje = ex.Message });
+        }
         catch (DomainException ex)
         {
             return BadRequest(new { error = "Error de validación", mensaje = ex.Message });
         }
-        catch (Exception) { return StatusCode(500, new { error = "Error interno del servidor", mensaje = "Ocurrió un error inesperado al actualizar el equipo" });
+        catch (Exception) 
+        { 
+            return StatusCode(500, new { error = "Error interno del servidor", mensaje = "Ocurrió un error inesperado al actualizar el equipo" });
         }
-    }
-    [HttpDelete("{id}")]
+    }    [HttpDelete("{id}")]
     public IActionResult Eliminar(int id)
     {
         try
@@ -100,19 +122,17 @@ public class EquipoController : ControllerBase
         {
             return BadRequest(new { error = "ID inválido", mensaje = ex.Message });
         }        
-        catch (ErrorRegistroNoEncontrado)
+        catch (ErrorRegistroNoEncontrado ex)
         {
-            return NotFound(new { error = "Equipo no encontrado", mensaje = $"No se encontró un equipo con código IMT {id}" });
-        }
-        catch (ErrorRegistroEnUso)
-        {
-            return Conflict(new { error = "Equipo en uso", mensaje = "No se puede eliminar el equipo porque está siendo utilizado en préstamos" });
+            return NotFound(new { error = "Equipo no encontrado", mensaje = ex.Message });
         }
         catch (DomainException ex)
         {
             return BadRequest(new { error = "Error de validación", mensaje = ex.Message });
         }
-        catch (Exception) { return StatusCode(500, new { error = "Error interno del servidor", mensaje = "Ocurrió un error inesperado al eliminar el equipo" });
+        catch (Exception) 
+        { 
+            return StatusCode(500, new { error = "Error interno del servidor", mensaje = "Ocurrió un error inesperado al eliminar el equipo" });
         }
     }
 }

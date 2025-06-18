@@ -1,5 +1,4 @@
 using Microsoft.AspNetCore.Mvc;
-using Shared.Common;
 
 namespace API.Controllers;
 
@@ -27,16 +26,17 @@ public class EmpresaMantenimientoController : ControllerBase
         catch (ErrorLongitudInvalida ex)
         {
             return BadRequest(new { error = "Longitud inválida", mensaje = ex.Message });
-        }
-        catch (ErrorRegistroYaExiste ex)
+        }        catch (ErrorRegistroYaExiste ex)
         {
-            return Conflict(new { error = "Empresa duplicada", mensaje = $"Ya existe una empresa de mantenimiento con el nombre '{ex.Message}'" });
+            return Conflict(new { error = "Empresa duplicada", mensaje = ex.Message });
         }
         catch (DomainException ex)
         {
             return BadRequest(new { error = "Error de validación", mensaje = ex.Message });
         }
-        catch (Exception) { return StatusCode(500, new { error = "Error interno del servidor", mensaje = "Ocurrió un error inesperado al crear la empresa de mantenimiento" });
+        catch (Exception) 
+        { 
+            return StatusCode(500, new { error = "Error interno del servidor", mensaje = "Ocurrió un error inesperado al crear la empresa de mantenimiento" });
         }
     }
 
@@ -72,23 +72,23 @@ public class EmpresaMantenimientoController : ControllerBase
         catch (ErrorLongitudInvalida ex)
         {
             return BadRequest(new { error = "Longitud inválida", mensaje = ex.Message });
-        }
-        catch (ErrorRegistroNoEncontrado ex)
+        }        catch (ErrorRegistroNoEncontrado ex)
         {
-            return NotFound(new { error = "Empresa no encontrada", mensaje = $"No se encontró una empresa de mantenimiento con ID {ex.Message}" });
+            return NotFound(new { error = "Empresa no encontrada", mensaje = ex.Message });
         }
         catch (ErrorRegistroYaExiste ex)
         {
-            return Conflict(new { error = "Empresa duplicada", mensaje = $"Ya existe otra empresa de mantenimiento con el nombre '{ex.Message}'" });
+            return Conflict(new { error = "Empresa duplicada", mensaje = ex.Message });
         }
         catch (DomainException ex)
         {
             return BadRequest(new { error = "Error de validación", mensaje = ex.Message });
         }
-        catch (Exception) { return StatusCode(500, new { error = "Error interno del servidor", mensaje = "Ocurrió un error inesperado al actualizar la empresa de mantenimiento" });
+        catch (Exception) 
+        { 
+            return StatusCode(500, new { error = "Error interno del servidor", mensaje = "Ocurrió un error inesperado al actualizar la empresa de mantenimiento" });
         }
-    }
-    [HttpDelete("{id}")]
+    }    [HttpDelete("{id}")]
     public IActionResult Eliminar(int id)
     {
         try
@@ -101,19 +101,17 @@ public class EmpresaMantenimientoController : ControllerBase
         {
             return BadRequest(new { error = "ID inválido", mensaje = ex.Message });
         }
-        catch (ErrorRegistroNoEncontrado)
+        catch (ErrorRegistroNoEncontrado ex)
         {
-            return NotFound(new { error = "Empresa no encontrada", mensaje = $"No se encontró una empresa de mantenimiento con ID {id}" });
-        }
-        catch (ErrorRegistroEnUso)
-        {
-            return Conflict(new { error = "Empresa en uso", mensaje = "No se puede eliminar la empresa porque tiene mantenimientos asociados" });
+            return NotFound(new { error = "Empresa no encontrada", mensaje = ex.Message });
         }
         catch (DomainException ex)
         {
             return BadRequest(new { error = "Error de validación", mensaje = ex.Message });
         }
-        catch (Exception) { return StatusCode(500, new { error = "Error interno del servidor", mensaje = "Ocurrió un error inesperado al eliminar la empresa de mantenimiento" });
+        catch (Exception) 
+        { 
+            return StatusCode(500, new { error = "Error interno del servidor", mensaje = "Ocurrió un error inesperado al eliminar la empresa de mantenimiento" });
         }
     }
 }

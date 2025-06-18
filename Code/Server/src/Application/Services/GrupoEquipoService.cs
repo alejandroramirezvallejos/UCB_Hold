@@ -1,5 +1,4 @@
 using System.Data;
-using Shared.Common;
 
 public class GrupoEquipoService : IGrupoEquipoService
 {
@@ -26,17 +25,47 @@ public class GrupoEquipoService : IGrupoEquipoService
         catch (ErrorCampoRequerido)
         {
             throw;
-        }
-        catch (Exception ex)
+        }        catch (Exception ex)
         {
-            var parametros = new Dictionary<string, object?>
+            // Manejo específico para insertar_grupo_equipo según el procedimiento almacenado
+            if (ex is ErrorDataBase errorDb)
             {
-                ["nombre"] = comando.Nombre,
-                ["modelo"] = comando.Modelo,
-                ["marca"] = comando.Marca,
-                ["categoria"] = comando.NombreCategoria
-            };
-            throw PostgreSqlErrorInterpreter.InterpretarError(ex, "crear", "grupo de equipo", parametros);
+                var mensaje = errorDb.Message?.ToLower() ?? "";
+                
+                // Error: Categoría no encontrada
+                if (mensaje.Contains("no se encontró la categoría con nombre"))
+                {
+                    throw new ErrorReferenciaInvalida("categoría");
+                }
+                
+                // Error: Grupo de equipos duplicado (combinación nombre+modelo+marca)
+                if (mensaje.Contains("ya existe un grupo de equipos con nombre"))
+                {
+                    throw new ErrorRegistroYaExiste();
+                }
+                
+                // Error: Violación de unicidad
+                if (errorDb.SqlState == "23505" || mensaje.Contains("violación de unicidad al intentar insertar grupo de equipos"))
+                {
+                    throw new ErrorRegistroYaExiste();
+                }
+                
+                // Error genérico del procedimiento
+                if (mensaje.Contains("error al insertar grupo de equipos"))
+                {
+                    throw new Exception($"Error inesperado al insertar grupo de equipos: {errorDb.Message}", errorDb);
+                }
+                
+                // Otros errores de base de datos
+                throw new Exception($"Error inesperado de base de datos al crear grupo de equipos: {errorDb.Message}", errorDb);
+            }
+            
+            if (ex is ErrorRepository errorRepo)
+            {
+                throw new Exception($"Error del repositorio al crear grupo de equipos: {errorRepo.Message}", errorRepo);
+            }
+            
+            throw;
         }
     }private void ValidarEntradaCreacion(CrearGrupoEquipoComando comando)
     {
@@ -50,16 +79,16 @@ public class GrupoEquipoService : IGrupoEquipoService
             throw new ErrorModeloRequerido();
 
         if (string.IsNullOrWhiteSpace(comando.Marca))
-            throw new ErrorCampoRequerido("marca");
+            throw new ErrorMarcaRequerida();
 
         if (string.IsNullOrWhiteSpace(comando.Descripcion))
-            throw new ErrorCampoRequerido("descripcion");
+            throw new ErrorDescripcionRequerida();
 
         if (string.IsNullOrWhiteSpace(comando.NombreCategoria))
-            throw new ErrorCampoRequerido("categoria");
+            throw new ErrorCategoriaRequerida();
 
         if (string.IsNullOrWhiteSpace(comando.UrlImagen))
-            throw new ErrorCampoRequerido("url de imagen");
+            throw new ErrorUrlImagenRequerida();
     }    private void ValidarEntradaActualizacion(ActualizarGrupoEquipoComando comando)
     {
         if (comando == null)
@@ -171,18 +200,53 @@ public class GrupoEquipoService : IGrupoEquipoService
         catch (ErrorCampoRequerido)
         {
             throw;
-        }
-        catch (Exception ex)
+        }        catch (Exception ex)
         {
-            var parametros = new Dictionary<string, object?>
+            // Manejo específico para actualizar_grupo_equipo según el procedimiento almacenado
+            if (ex is ErrorDataBase errorDb)
             {
-                ["id"] = comando.Id,
-                ["nombre"] = comando.Nombre,
-                ["modelo"] = comando.Modelo,
-                ["marca"] = comando.Marca,
-                ["categoria"] = comando.NombreCategoria
-            };
-            throw PostgreSqlErrorInterpreter.InterpretarError(ex, "actualizar", "grupo de equipo", parametros);
+                var mensaje = errorDb.Message?.ToLower() ?? "";
+                
+                // Error: Grupo de equipos no encontrado
+                if (mensaje.Contains("no se encontró un grupo de equipos activo con id"))
+                {
+                    throw new ErrorRegistroNoEncontrado();
+                }
+                
+                // Error: Categoría no encontrada
+                if (mensaje.Contains("no se encontró la categoría activa con nombre"))
+                {
+                    throw new ErrorReferenciaInvalida("categoría");
+                }
+                
+                // Error: Combinación duplicada (nombre+modelo+marca)
+                if (mensaje.Contains("ya existe otro grupo de equipos activo con la combinación"))
+                {
+                    throw new ErrorRegistroYaExiste();
+                }
+                
+                // Error: Violación de unicidad específica
+                if (errorDb.SqlState == "23505" || mensaje.Contains("la combinación nombre") || mensaje.Contains("ya está en uso"))
+                {
+                    throw new ErrorRegistroYaExiste();
+                }
+                
+                // Error genérico del procedimiento
+                if (mensaje.Contains("error inesperado al actualizar el grupo de equipos"))
+                {
+                    throw new Exception($"Error inesperado al actualizar grupo de equipos: {errorDb.Message}", errorDb);
+                }
+                
+                // Otros errores de base de datos
+                throw new Exception($"Error inesperado de base de datos al actualizar grupo de equipos: {errorDb.Message}", errorDb);
+            }
+            
+            if (ex is ErrorRepository errorRepo)
+            {
+                throw new Exception($"Error del repositorio al actualizar grupo de equipos: {errorRepo.Message}", errorRepo);
+            }
+            
+            throw;
         }
     }
     public void EliminarGrupoEquipo(EliminarGrupoEquipoComando comando)
@@ -195,14 +259,35 @@ public class GrupoEquipoService : IGrupoEquipoService
         catch (ErrorIdInvalido)
         {
             throw;
-        }
-        catch (Exception ex)
+        }        catch (Exception ex)
         {
-            var parametros = new Dictionary<string, object?>
+            // Manejo específico para eliminar_grupo_equipo según el procedimiento almacenado
+            if (ex is ErrorDataBase errorDb)
             {
-                ["id"] = comando.Id
-            };
-            throw PostgreSqlErrorInterpreter.InterpretarError(ex, "eliminar", "grupo de equipo", parametros);
+                var mensaje = errorDb.Message?.ToLower() ?? "";
+                
+                // Error: Grupo de equipos no encontrado
+                if (mensaje.Contains("no se encontró un grupo de equipos activo con id"))
+                {
+                    throw new ErrorRegistroNoEncontrado();
+                }
+                
+                // Error genérico del procedimiento
+                if (mensaje.Contains("error al eliminar lógicamente el grupo de equipos"))
+                {
+                    throw new Exception($"Error inesperado al eliminar grupo de equipos: {errorDb.Message}", errorDb);
+                }
+                
+                // Otros errores de base de datos
+                throw new Exception($"Error inesperado de base de datos al eliminar grupo de equipos: {errorDb.Message}", errorDb);
+            }
+            
+            if (ex is ErrorRepository errorRepo)
+            {
+                throw new Exception($"Error del repositorio al eliminar grupo de equipos: {errorRepo.Message}", errorRepo);
+            }
+            
+            throw;
         }
     }
     private GrupoEquipoDto MapearFilaADto(DataRow fila)

@@ -1,5 +1,4 @@
 using System.Data;
-using Shared.Common;
 
 public class AccesorioService : IAccesorioService
 {
@@ -34,17 +33,38 @@ public class AccesorioService : IAccesorioService
         catch (ErrorValorNegativo)
         {
             throw; // Re-lanzar excepciones de validación
-        }
-        catch (Exception ex)
+        }        catch (Exception ex)
         {
-            // 3. Interpretar errores de PostgreSQL
-            var parametros = new Dictionary<string, object?>
+            // Manejo específico para insertar_accesorios
+            if (ex is ErrorDataBase errorDb)
             {
-                ["nombre"] = comando.Nombre,
-                ["codigoImt"] = comando.CodigoIMT,
-                ["precio"] = comando.Precio
-            };
-            throw PostgreSqlErrorInterpreter.InterpretarError(ex, "crear", "accesorio", parametros);
+                var mensaje = errorDb.Message?.ToLower() ?? "";
+                
+                // Errores específicos del procedimiento insertar_accesorios
+                if (mensaje.Contains("no se encontró el equipo con código imt"))
+                {
+                    throw new ErrorReferenciaInvalida("El código IMT del equipo no existe o está inactivo");
+                }
+                
+                if (errorDb.SqlState == "23505" || mensaje.Contains("ya existe un accesorio con esos datos"))
+                {
+                    throw new ErrorRegistroYaExiste();
+                }
+                
+                if (mensaje.Contains("error al insertar accesorio"))
+                {
+                    throw new Exception($"Error al crear accesorio: {errorDb.Message}", errorDb);
+                }
+                
+                throw new Exception($"Error de base de datos al crear accesorio: {errorDb.Message}", errorDb);
+            }
+            
+            if (ex is ErrorRepository errorRepo)
+            {
+                throw new Exception($"Error del repositorio al crear accesorio: {errorRepo.Message}", errorRepo);
+            }
+            
+            throw;
         }
     }
 
@@ -107,16 +127,43 @@ public class AccesorioService : IAccesorioService
         catch (ErrorValorNegativo)
         {
             throw;
-        }
-        catch (Exception ex)
+        }        catch (Exception ex)
         {
-            var parametros = new Dictionary<string, object?>
+            // Manejo específico para actualizar_accesorio
+            if (ex is ErrorDataBase errorDb)
             {
-                ["id"] = comando.Id,
-                ["nombre"] = comando.Nombre,
-                ["codigoImt"] = comando.CodigoIMT
-            };
-            throw PostgreSqlErrorInterpreter.InterpretarError(ex, "actualizar", "accesorio", parametros);
+                var mensaje = errorDb.Message?.ToLower() ?? "";
+                
+                // Errores específicos del procedimiento actualizar_accesorio
+                if (mensaje.Contains("no se encontró un accesorio activo con id"))
+                {
+                    throw new ErrorRegistroNoEncontrado();
+                }
+                
+                if (mensaje.Contains("no se encontró un equipo activo con código imt"))
+                {
+                    throw new ErrorReferenciaInvalida("El código IMT del equipo no existe o está inactivo");
+                }
+                
+                if (errorDb.SqlState == "23505" || mensaje.Contains("error de violación de unicidad"))
+                {
+                    throw new ErrorRegistroYaExiste();
+                }
+                
+                if (mensaje.Contains("error inesperado al actualizar el accesorio"))
+                {
+                    throw new Exception($"Error inesperado al actualizar el accesorio: {errorDb.Message}", errorDb);
+                }
+                
+                throw new Exception($"Error de base de datos al actualizar accesorio: {errorDb.Message}", errorDb);
+            }
+            
+            if (ex is ErrorRepository errorRepo)
+            {
+                throw new Exception($"Error del repositorio al actualizar accesorio: {errorRepo.Message}", errorRepo);
+            }
+            
+            throw;
         }
     }public void EliminarAccesorio(EliminarAccesorioComando comando)
     {
@@ -128,14 +175,33 @@ public class AccesorioService : IAccesorioService
         catch (ErrorIdInvalido)
         {
             throw;
-        }
-        catch (Exception ex)
+        }        catch (Exception ex)
         {
-            var parametros = new Dictionary<string, object?>
+            // Manejo específico para eliminar_accesorio
+            if (ex is ErrorDataBase errorDb)
             {
-                ["id"] = comando.Id
-            };
-            throw PostgreSqlErrorInterpreter.InterpretarError(ex, "eliminar", "accesorio", parametros);
+                var mensaje = errorDb.Message?.ToLower() ?? "";
+                
+                // Errores específicos del procedimiento eliminar_accesorio
+                if (mensaje.Contains("no se encontró un accesorio activo con id"))
+                {
+                    throw new ErrorRegistroNoEncontrado();
+                }
+                
+                if (mensaje.Contains("error al eliminar lógicamente el accesorio"))
+                {
+                    throw new Exception($"Error al eliminar accesorio: {errorDb.Message}", errorDb);
+                }
+                
+                throw new Exception($"Error de base de datos al eliminar accesorio: {errorDb.Message}", errorDb);
+            }
+            
+            if (ex is ErrorRepository errorRepo)
+            {
+                throw new Exception($"Error del repositorio al eliminar accesorio: {errorRepo.Message}", errorRepo);
+            }
+            
+            throw;
         }
     }
     private static AccesorioDto MapearFilaADto(DataRow fila)

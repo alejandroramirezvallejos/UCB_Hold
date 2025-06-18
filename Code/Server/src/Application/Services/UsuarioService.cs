@@ -1,5 +1,4 @@
 using System.Data;
-using Shared.Common;
 public class UsuarioService : IUsuarioService
 {
     private readonly UsuarioRepository _usuarioRepository;
@@ -33,17 +32,41 @@ public class UsuarioService : IUsuarioService
         catch (ErrorLongitudInvalida)
         {
             throw;
-        }
-        catch (Exception ex)
+        }        catch (Exception ex)
         {
-            var parametros = new Dictionary<string, object?>
+            // Manejo específico para insertar_usuario según el procedimiento almacenado
+            if (ex is ErrorDataBase errorDb)
             {
-                ["carnet"] = comando.Carnet,
-                ["email"] = comando.Email,
-                ["nombre"] = comando.Nombre,
-                ["carrera"] = comando.NombreCarrera
-            };
-            throw PostgreSqlErrorInterpreter.InterpretarError(ex, "crear", "usuario", parametros);
+                var mensaje = errorDb.Message?.ToLower() ?? "";
+                
+                // Error: Carrera no encontrada
+                if (mensaje.Contains("no se encontró la carrera con nombre"))
+                {
+                    throw new ErrorReferenciaInvalida("carrera");
+                }
+                
+                // Error: Carnet o email duplicado
+                if (errorDb.SqlState == "23505" || mensaje.Contains("el carnet o email ya está registrado"))
+                {
+                    throw new ErrorRegistroYaExiste();
+                }
+                
+                // Error genérico del procedimiento
+                if (mensaje.Contains("hubo un error inesperado durante el proceso de inserción"))
+                {
+                    throw new Exception($"Error inesperado al insertar usuario: {errorDb.Message}", errorDb);
+                }
+                
+                // Otros errores de base de datos
+                throw new Exception($"Error inesperado de base de datos al crear usuario: {errorDb.Message}", errorDb);
+            }
+            
+            if (ex is ErrorRepository errorRepo)
+            {
+                throw new Exception($"Error del repositorio al crear usuario: {errorRepo.Message}", errorRepo);
+            }
+            
+            throw;
         }
     }    private void ValidarEntradaCreacion(CrearUsuarioComando comando)
     {
@@ -137,16 +160,64 @@ public class UsuarioService : IUsuarioService
         catch (ErrorLongitudInvalida)
         {
             throw;
-        }
-        catch (Exception ex)
+        }        catch (Exception ex)
         {
-            var parametros = new Dictionary<string, object?>
+            // Manejo específico para actualizar_usuario según el procedimiento almacenado
+            if (ex is ErrorDataBase errorDb)
             {
-                ["carnet"] = comando.Carnet,
-                ["email"] = comando.Email,
-                ["nombre"] = comando.Nombre
-            };
-            throw PostgreSqlErrorInterpreter.InterpretarError(ex, "actualizar", "usuario", parametros);
+                var mensaje = errorDb.Message?.ToLower() ?? "";
+                
+                // Error: Usuario no encontrado
+                if (mensaje.Contains("no existe usuario activo con carnet"))
+                {
+                    throw new ErrorRegistroNoEncontrado();
+                }
+                
+                // Error: Carrera no encontrada
+                if (mensaje.Contains("carrera no encontrada o eliminada"))
+                {
+                    throw new ErrorReferenciaInvalida("carrera");
+                }
+                  // Error: Rol inválido
+                if (mensaje.Contains("rol inválido") && mensaje.Contains("debe ser administrador o estudiante"))
+                {
+                    throw new ErrorCampoRequerido("rol");
+                }
+                
+                // Errores de unicidad
+                if (errorDb.SqlState == "23505" || mensaje.Contains("ya está en uso"))
+                {
+                    if (mensaje.Contains("carnet") && mensaje.Contains("ya está en uso"))
+                    {
+                        throw new ErrorRegistroYaExiste();
+                    }
+                    if (mensaje.Contains("email") && mensaje.Contains("ya está en uso"))
+                    {
+                        throw new ErrorRegistroYaExiste();
+                    }
+                    if (mensaje.Contains("violación de unicidad"))
+                    {
+                        throw new ErrorRegistroYaExiste();
+                    }
+                    throw new ErrorRegistroYaExiste();
+                }
+                
+                // Error genérico del procedimiento
+                if (mensaje.Contains("error inesperado al actualizar usuario"))
+                {
+                    throw new Exception($"Error inesperado al actualizar usuario: {errorDb.Message}", errorDb);
+                }
+                
+                // Otros errores de base de datos
+                throw new Exception($"Error inesperado de base de datos al actualizar usuario: {errorDb.Message}", errorDb);
+            }
+            
+            if (ex is ErrorRepository errorRepo)
+            {
+                throw new Exception($"Error del repositorio al actualizar usuario: {errorRepo.Message}", errorRepo);
+            }
+            
+            throw;
         }
     }
 
@@ -160,14 +231,35 @@ public class UsuarioService : IUsuarioService
         catch (ErrorCarnetInvalido)
         {
             throw;
-        }
-        catch (Exception ex)
+        }        catch (Exception ex)
         {
-            var parametros = new Dictionary<string, object?>
+            // Manejo específico para eliminar_usuario según el procedimiento almacenado
+            if (ex is ErrorDataBase errorDb)
             {
-                ["carnet"] = comando.Carnet
-            };
-            throw PostgreSqlErrorInterpreter.InterpretarError(ex, "eliminar", "usuario", parametros);
+                var mensaje = errorDb.Message?.ToLower() ?? "";
+                
+                // Error: Usuario no encontrado
+                if (mensaje.Contains("no se encontró un usuario activo con carnet"))
+                {
+                    throw new ErrorRegistroNoEncontrado();
+                }
+                
+                // Error genérico del procedimiento
+                if (mensaje.Contains("error al eliminar lógicamente el usuario"))
+                {
+                    throw new Exception($"Error inesperado al eliminar usuario: {errorDb.Message}", errorDb);
+                }
+                
+                // Otros errores de base de datos
+                throw new Exception($"Error inesperado de base de datos al eliminar usuario: {errorDb.Message}", errorDb);
+            }
+            
+            if (ex is ErrorRepository errorRepo)
+            {
+                throw new Exception($"Error del repositorio al eliminar usuario: {errorRepo.Message}", errorRepo);
+            }
+            
+            throw;
         }
     }
     public UsuarioDto? IniciarSesionUsuario(IniciarSesionUsuarioConsulta consulta)
