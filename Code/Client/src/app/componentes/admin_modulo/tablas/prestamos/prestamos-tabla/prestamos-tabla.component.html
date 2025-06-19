@@ -17,7 +17,7 @@
         <input 
           type="text" 
           [(ngModel)]="terminoBusqueda" 
-          (keydown.enter)="buscar()"
+          (keydown.enter)="aplicarFiltros()"
           placeholder="Buscar préstamos..." 
           class="search-input"
         />
@@ -31,7 +31,7 @@
       <div class="filter-container">
         <button 
           class="btn-filter" 
-          (click)="toggleEstados()"
+          (click)="mostrarEstados()"
           (mouseenter)="hover.filter = true"
           (mouseleave)="hover.filter = false"
         >
@@ -48,11 +48,11 @@
         @if (showEstados) {
           <div class="estados-panel-flotante">
             <div class="estados-grid-flotante">
-              <div class="estado-item-flotante" (click)="selectEstado('')" [class.active]="estadoSeleccionado === ''">
+              <div class="estado-item-flotante" (click)="seleccionarEstado('')" [class.active]="estadoSeleccionado === ''">
                 <i class="fas fa-list"></i>
                 Todos los estados
               </div>              @for (estado of estadosDisponibles; track estado) {
-                <div class="estado-item-flotante" (click)="selectEstado(estado)" [class.active]="estadoSeleccionado === estado">
+                <div class="estado-item-flotante" (click)="seleccionarEstado(estado)" [class.active]="estadoSeleccionado === estado">
                   @switch (estado.toLowerCase()) {
                     @case ('pendiente') {
                       <i class="fas fa-clock text-warning"></i>
@@ -169,7 +169,7 @@
                 <i class="fas fa-trash-alt"></i>
             </button>
             }            @else if (prestamo.EstadoPrestamo=='pendiente') {
-                <button class="btn-action btn-accept" (click)="aceptarprestamo(i)">
+                <button class="btn-action btn-accept" (click)="aprobarprestamo(i)">
                   <i class="fas fa-check"></i>
                   Aceptar
                 </button>

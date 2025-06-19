@@ -48,7 +48,7 @@ export class PrestamosTablaComponent implements OnInit {
     filter: false
   };
 
-  constructor(private prestamosapi: PrestamosAPIService) {}
+  constructor(private prestamosapi: PrestamosAPIService ) {}
 
   sortColumn: string = 'NombreUsuario';
   sortDirection: 'asc' | 'desc' = 'asc';
@@ -91,9 +91,7 @@ export class PrestamosTablaComponent implements OnInit {
       }
     );
   }
-  buscar() {
-    this.aplicarFiltros();
-  }
+
 
   limpiarBusqueda() {
     this.terminoBusqueda = '';
@@ -125,7 +123,7 @@ export class PrestamosTablaComponent implements OnInit {
     this.limpiarPrestamoSeleccionado();
   }
 
-  // Aplicar ordenamiento
+
   aplicarOrdenamiento() {
     this.prestamos.sort((a, b) => {
       // Type assertion para acceso dinámico
@@ -156,25 +154,13 @@ export class PrestamosTablaComponent implements OnInit {
 
     this.aplicarOrdenamiento(); // Aplicar el ordenamiento
   }
-  aceptarprestamo(indice : number) {
-    const prestamo = this.prestamos[indice];
-    alert(`Aceptar préstamo de ${prestamo.NombreUsuario} - Funcionalidad pendiente de implementar en el backend`);
-    // Una vez implementado:
-    // this.prestamosapi.aceptarPrestamo(prestamo.Id).subscribe(...)
-  }
 
-  rechazarprestamo(indice : number) {
-    const prestamo = this.prestamos[indice];
-    alert(`Rechazar préstamo de ${prestamo.NombreUsuario} - Funcionalidad pendiente de implementar en el backend`);    // Una vez implementado:
-    // this.prestamosapi.rechazarPrestamo(prestamo.Id).subscribe(...)
-  }
 
-  // Métodos para el filtro de estados
-  toggleEstados() {
+  mostrarEstados() {
     this.showEstados = !this.showEstados;
   }
 
-  selectEstado(estado: string) {
+  seleccionarEstado(estado: string) {
     this.estadoSeleccionado = estado;
     this.showEstados = false;
     this.aplicarFiltros();
@@ -211,4 +197,20 @@ export class PrestamosTablaComponent implements OnInit {
     this.estadoSeleccionado = '';
     this.prestamos = [...this.prestamoscopia];
     this.showEstados = false;  }
+
+    
+
+  aprobarprestamo(indice : number) {
+    const prestamo = this.prestamos[indice];
+    alert(`Aceptar préstamo de ${prestamo.NombreUsuario} - Funcionalidad pendiente de implementar en el backend`);
+    // Una vez implementado:
+    // this.prestamosapi.aceptarPrestamo(prestamo.Id).subscribe(...)
+  }
+
+  rechazarprestamo(indice : number) {
+    const prestamo = this.prestamos[indice];
+    alert(`Rechazar préstamo de ${prestamo.NombreUsuario} - Funcionalidad pendiente de implementar en el backend`);    // Una vez implementado:
+    // this.prestamosapi.rechazarPrestamo(prestamo.Id).subscribe(...)
+  }
+
 }

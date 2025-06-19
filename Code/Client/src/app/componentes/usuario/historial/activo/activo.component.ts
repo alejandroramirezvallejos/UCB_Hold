@@ -29,8 +29,7 @@ export class ActivoComponent {
       }
   ];
 
-
-constructor(usuario : UsuarioService){}; 
+  constructor(usuario : UsuarioService){}; 
 
 
 }
