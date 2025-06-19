@@ -40,7 +40,7 @@ export class MueblesEditarComponent implements OnChanges {
         this.cerrar();
       },
       error: (error) => {
-        alert('Error al editar mueble: ' + error.error.mensaje);
+        alert(error.error.error + ': ' + error.error.mensaje);
 
       }
     });

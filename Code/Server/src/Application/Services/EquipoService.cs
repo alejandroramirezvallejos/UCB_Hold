@@ -34,13 +34,13 @@ public class EquipoService : IEquipoService
                 // Error: Grupo de equipos no encontrado
                 if (mensaje.Contains("no se encontró el grupo de equipos con nombre"))
                 {
-                    throw new ErrorReferenciaInvalida("grupo de equipos");
+                    throw new ErrorReferenciaInvalida("nombre grupo de equipos");
                 }
                 
                 // Error: Gavetero no encontrado
                 if (mensaje.Contains("no se encontro el gavetero con nombre"))
                 {
-                    throw new ErrorReferenciaInvalida("gavetero");
+                    throw new ErrorReferenciaInvalida("nombre gavetero");
                 }
                 
                 // Error: Equipo duplicado (código UCB o número serial)

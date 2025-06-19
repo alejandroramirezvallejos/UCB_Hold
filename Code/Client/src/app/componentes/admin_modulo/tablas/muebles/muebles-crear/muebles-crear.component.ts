@@ -36,7 +36,7 @@ export class MueblesCrearComponent {
         this.cerrar();
       },
       error: (error) => {
-        alert('Error al crear mueble: ' + error.error.mensaje);
+        alert(error.error.error + ': ' + error.error.mensaje);
       }
     });
   }

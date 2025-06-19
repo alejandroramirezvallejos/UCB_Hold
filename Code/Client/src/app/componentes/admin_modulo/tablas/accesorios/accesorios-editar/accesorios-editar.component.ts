@@ -37,7 +37,7 @@ export class AccesoriosEditarComponent {
         this.cerrar();
       },
       error: (error) => {
-        alert('Error al editar accesorio: ' + error.message);
+        alert(error.error.error + ': ' + error.error.mensaje);
       }
     });
 

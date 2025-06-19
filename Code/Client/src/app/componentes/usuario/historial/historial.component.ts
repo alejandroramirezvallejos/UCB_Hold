@@ -15,7 +15,7 @@ import { RechazadoComponent } from './rechazado/rechazado.component';
   styleUrl: './historial.component.css'
 })
 export class HistorialComponent {
-  contenido : string[] = ["Activo","Pendiente","Aprobado","Rechazado","Finalizado", "Cancelado"];
+  contenido : string[] = ["Activo","Aprobado","Pendiente","Rechazado","Finalizado", "Cancelado"];
   item : string = "Activo";
 
   constructor(private usuario : UsuarioService) {  }

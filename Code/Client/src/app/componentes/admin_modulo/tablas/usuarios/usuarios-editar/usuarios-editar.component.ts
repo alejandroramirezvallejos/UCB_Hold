@@ -41,7 +41,7 @@ export class UsuariosEditarComponent {
         this.cerrar();
       },
       error => {
-        console.error('Error al editar usuario:', error);
+        alert(error.error.error + ': ' + error.error.mensaje);
         this.cerrar();
       }
     );

@@ -46,7 +46,7 @@ export class EquiposCrearComponent {
         this.cerrar();
       },
       error: (error) => {
-        alert( error.error.error +': ' + error.error.mensaje);
+        alert(error.error.error + ': ' + error.error.mensaje);
       }
        });
    

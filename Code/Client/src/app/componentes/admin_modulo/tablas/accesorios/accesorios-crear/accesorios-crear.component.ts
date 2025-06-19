@@ -40,7 +40,7 @@ export class AccesoriosCrearComponent {
         this.cerrar();
       },
       error => {
-        alert('Error al crear accesorio: ' + error);
+        alert(error.error.error + ': ' + error.error.mensaje);
         this.cerrar();
       }
     );

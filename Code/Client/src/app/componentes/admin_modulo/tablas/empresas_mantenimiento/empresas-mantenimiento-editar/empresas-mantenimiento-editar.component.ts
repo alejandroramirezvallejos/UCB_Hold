@@ -35,7 +35,7 @@ export class EmpresasMantenimientoEditarComponent {
         this.cerrar();
       },
       error => {
-        alert('Error al editar empresa de mantenimiento: ' + error.message);
+        alert(error.error.error + ': ' + error.error.mensaje);
         this.cerrar();
       }
     );

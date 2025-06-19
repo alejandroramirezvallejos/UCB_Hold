@@ -36,7 +36,7 @@ export class GruposEquiposCrearComponent {
         this.cerrar();
       },
       error: (error) => {
-        alert('Error al crear grupo de equipo: ' + error.error.mensaje);
+        alert(error.error.error + ': ' + error.error.mensaje);
       }
     });
   }

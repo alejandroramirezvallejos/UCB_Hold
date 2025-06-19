@@ -3,6 +3,7 @@ import { Injectable } from '@angular/core';
 import { environment } from '../../../../environments/environment';
 import { map } from 'rxjs';
 import { Carrito } from '../../../models/carrito';
+import { Prestamos } from '../../../models/admin/Prestamos';
 
 @Injectable({
   providedIn: 'root'
@@ -63,6 +64,17 @@ export class PrestamosAPIService {
     return this.http.delete(`${this.url}/${id}`);
     }
 
+
+    cambiarEstadoPrestamo(Id : number, estado: string) {
+    const APIurl = `${this.url}/estadoPrestamo`;
+    const envio ={
+      Id : Id,
+      EstadoPrestamo : estado
+    }
+
+    return this.http.put(APIurl,envio)
+
+    }
 
 
 }

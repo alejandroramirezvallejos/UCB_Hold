@@ -33,8 +33,8 @@ export class ComponentesEditarComponent {
         this.actualizar.emit();
         this.cerrar();
       },
-      error: (response) => {
-        alert('Error al editar componente: ' + response.message);
+      error: (error) => {
+        alert(error.error.error + ': ' + error.error.mensaje);
         this.cerrar();
       }
     });
