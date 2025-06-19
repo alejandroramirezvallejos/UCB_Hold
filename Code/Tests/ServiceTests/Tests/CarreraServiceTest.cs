@@ -1,5 +1,6 @@
 using Moq;
 using System.Data;
+using IMT_Reservas.Server.Shared.Common;
 
 namespace IMT_Reservas.Tests.ServiceTests
 {
