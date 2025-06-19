@@ -6,7 +6,8 @@ public class EmpresaMantenimientoService : IEmpresaMantenimientoService
     public EmpresaMantenimientoService(EmpresaMantenimientoRepository empresaMantenimientoRepository)
     {
         _empresaMantenimientoRepository = empresaMantenimientoRepository;
-    }    public void CrearEmpresaMantenimiento(CrearEmpresaMantenimientoComando comando)
+    }
+    public virtual void CrearEmpresaMantenimiento(CrearEmpresaMantenimientoComando comando)
     {
         try
         {
@@ -64,7 +65,7 @@ public class EmpresaMantenimientoService : IEmpresaMantenimientoService
         if (!string.IsNullOrWhiteSpace(comando.Telefono) && comando.Telefono.Length > 20)
             throw new ErrorLongitudInvalida("telefono", 20);
     }
-    public List<EmpresaMantenimientoDto>? ObtenerTodasEmpresasMantenimiento()
+    public virtual List<EmpresaMantenimientoDto>? ObtenerTodasEmpresasMantenimiento()
     {
         try
         {
@@ -80,7 +81,7 @@ public class EmpresaMantenimientoService : IEmpresaMantenimientoService
         {
             throw;
         }
-    }    public void ActualizarEmpresaMantenimiento(ActualizarEmpresaMantenimientoComando comando)
+    }    public virtual void ActualizarEmpresaMantenimiento(ActualizarEmpresaMantenimientoComando comando)
     {
         try
         {
@@ -136,7 +137,7 @@ public class EmpresaMantenimientoService : IEmpresaMantenimientoService
         }
     }
 
-    public void EliminarEmpresaMantenimiento(EliminarEmpresaMantenimientoComando comando)
+    public virtual void EliminarEmpresaMantenimiento(EliminarEmpresaMantenimientoComando comando)
     {
         try
         {

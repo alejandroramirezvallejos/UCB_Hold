@@ -8,7 +8,7 @@ public class CarreraService : ICarreraService
     {
         _carreraRepository = carreraRepository;
     }    
-    public void CrearCarrera(CrearCarreraComando comando)
+    public virtual void CrearCarrera(CrearCarreraComando comando)
     {
         try
         {
@@ -69,7 +69,7 @@ public class CarreraService : ICarreraService
         if (comando.Nombre.Length > 256)
             throw new ErrorLongitudInvalida("nombre de la carrera", 256);
     }
-    public List<CarreraDto>? ObtenerTodasCarreras()
+    public virtual List<CarreraDto>? ObtenerTodasCarreras()
     {
         try
         {
@@ -85,7 +85,7 @@ public class CarreraService : ICarreraService
         {
             throw;
         }
-    }    public void ActualizarCarrera(ActualizarCarreraComando comando)
+    }    public virtual void ActualizarCarrera(ActualizarCarreraComando comando)
     {
         try
         {
@@ -156,7 +156,7 @@ public class CarreraService : ICarreraService
 
         if (!string.IsNullOrWhiteSpace(comando.Nombre) && comando.Nombre.Length > 255)
             throw new ErrorLongitudInvalida("nombre de la carrera", 255);
-    }    public void EliminarCarrera(EliminarCarreraComando comando)
+    }    public virtual void EliminarCarrera(EliminarCarreraComando comando)
     {
         try
         {

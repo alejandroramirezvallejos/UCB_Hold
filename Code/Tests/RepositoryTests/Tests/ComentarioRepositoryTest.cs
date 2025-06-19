@@ -6,6 +6,9 @@ using MongoDB.Driver;
 using MongoDB.Bson;
 using System.Collections.Generic;
 using System;
+using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.Options;
+using MongoDB.Bson.Serialization;
 
 namespace IMT_Reservas.Tests.RepositoryTests
 {
@@ -20,7 +23,10 @@ namespace IMT_Reservas.Tests.RepositoryTests
         [SetUp]
         public void Setup()
         {
-            _contextoMock = new Mock<MongoDbContexto>();
+            var mockOptions = new Mock<IOptions<MongoDbConfiguracion>>();
+            mockOptions.Setup(o => o.Value).Returns(new MongoDbConfiguracion { ConnectionString = "mongodb://localhost:27017", DatabaseName = "TestDb" });
+
+            _contextoMock = new Mock<MongoDbContexto>(mockOptions.Object);
             _databaseMock = new Mock<IMongoDatabase>();
             _collectionMock = new Mock<IMongoCollection<BsonDocument>>();
 
@@ -46,11 +52,21 @@ namespace IMT_Reservas.Tests.RepositoryTests
             var comando = new EliminarComentarioComando("68531f233cba0b4adf2ea2cc");
             var mockUpdateResult = new Mock<UpdateResult>();
             mockUpdateResult.SetupGet(r => r.MatchedCount).Returns(1);
-            _collectionMock.Setup(c => c.UpdateOne(It.IsAny<FilterDefinition<BsonDocument>>(), It.IsAny<UpdateDefinition<BsonDocument>>(), It.IsAny<UpdateOptions>(), default)).Returns(mockUpdateResult.Object);
+
+            var serializer = BsonSerializer.SerializerRegistry.GetSerializer<BsonDocument>();
+            var expectedUpdate = Builders<BsonDocument>.Update.Set("EstadoEliminado", true);
+            var renderedExpected = expectedUpdate.Render(serializer, BsonSerializer.SerializerRegistry);
+
+            _collectionMock.Setup(c => c.UpdateOne(
+                It.IsAny<FilterDefinition<BsonDocument>>(),
+                It.Is<UpdateDefinition<BsonDocument>>(u => u.Render(serializer, BsonSerializer.SerializerRegistry).Equals(renderedExpected)),
+                It.IsAny<UpdateOptions>(),
+                default))
+            .Returns(mockUpdateResult.Object).Verifiable();
 
             _comentarioRepository.Eliminar(comando);
 
-            _collectionMock.Verify(c => c.UpdateOne(It.IsAny<FilterDefinition<BsonDocument>>(), It.Is<UpdateDefinition<BsonDocument>>(u => u.ToString().Contains("\"$set\": {\"EstadoEliminado\": true}}")), It.IsAny<UpdateOptions>(), default), Times.Once);
+            _collectionMock.Verify();
         }
         
         [Test]
@@ -70,11 +86,21 @@ namespace IMT_Reservas.Tests.RepositoryTests
             var comando = new AgregarLikeComentarioComando("68531f233cba0b4adf2ea2cc");
             var mockUpdateResult = new Mock<UpdateResult>();
             mockUpdateResult.SetupGet(r => r.MatchedCount).Returns(1);
-            _collectionMock.Setup(c => c.UpdateOne(It.IsAny<FilterDefinition<BsonDocument>>(), It.IsAny<UpdateDefinition<BsonDocument>>(), It.IsAny<UpdateOptions>(), default)).Returns(mockUpdateResult.Object);
+
+            var serializer = BsonSerializer.SerializerRegistry.GetSerializer<BsonDocument>();
+            var expectedUpdate = Builders<BsonDocument>.Update.Inc("Likes", 1);
+            var renderedExpected = expectedUpdate.Render(serializer, BsonSerializer.SerializerRegistry);
+
+            _collectionMock.Setup(c => c.UpdateOne(
+                It.IsAny<FilterDefinition<BsonDocument>>(),
+                It.Is<UpdateDefinition<BsonDocument>>(u => u.Render(serializer, BsonSerializer.SerializerRegistry).Equals(renderedExpected)),
+                It.IsAny<UpdateOptions>(),
+                default))
+            .Returns(mockUpdateResult.Object).Verifiable();
 
             _comentarioRepository.AgregarLike(comando);
 
-            _collectionMock.Verify(c => c.UpdateOne(It.IsAny<FilterDefinition<BsonDocument>>(), It.Is<UpdateDefinition<BsonDocument>>(u => u.ToString().Contains("\"$inc\": {\"Likes\": 1}}")), It.IsAny<UpdateOptions>(), default), Times.Once);
+            _collectionMock.Verify();
         }
         
         [Test]
@@ -106,10 +132,12 @@ namespace IMT_Reservas.Tests.RepositoryTests
                 }
             };
             
-            var findFluentMock = new Mock<IFindFluent<BsonDocument, BsonDocument>>();
-            findFluentMock.Setup(f => f.Sort(It.IsAny<SortDefinition<BsonDocument>>())).Returns(findFluentMock.Object);
-            findFluentMock.Setup(f => f.ToList(default)).Returns(documentos);
-            _collectionMock.Setup(c => c.Find(It.IsAny<FilterDefinition<BsonDocument>>(), null)).Returns(findFluentMock.Object);
+            var cursorMock = new Mock<IAsyncCursor<BsonDocument>>();
+            cursorMock.Setup(_ => _.Current).Returns(documentos);
+            cursorMock.SetupSequence(_ => _.MoveNext(It.IsAny<CancellationToken>())).Returns(true).Returns(false);
+
+            _collectionMock.Setup(c => c.FindSync(It.IsAny<FilterDefinition<BsonDocument>>(), It.IsAny<FindOptions<BsonDocument, BsonDocument>>(), default))
+                .Returns(cursorMock.Object);
 
             var resultado = _comentarioRepository.ObtenerPorGrupoEquipo(idGrupoEquipo);
 
@@ -117,6 +145,23 @@ namespace IMT_Reservas.Tests.RepositoryTests
             Assert.That(resultado.Rows.Count, Is.EqualTo(1));
             Assert.That(resultado.Rows[0]["id_comentario"].ToString(), Is.EqualTo("68531f233cba0b4adf2ea2cd"));
         }
+
+        [Test]
+        public void Repositorio_CuandoHayExcepcion_LanzaErrorRepository()
+        {
+            var objectId = "68531f233cba0b4adf2ea2cc";
+            var filterDefinition = It.IsAny<FilterDefinition<BsonDocument>>();
+            var updateDefinition = It.IsAny<UpdateDefinition<BsonDocument>>();
+            var exception = new Exception("test exception");
+
+            _collectionMock.Setup(c => c.InsertOne(It.IsAny<BsonDocument>(), null, default)).Throws(exception);
+            _collectionMock.Setup(c => c.UpdateOne(filterDefinition, updateDefinition, It.IsAny<UpdateOptions>(), default)).Throws(exception);
+            _collectionMock.Setup(c => c.FindSync(filterDefinition, It.IsAny<FindOptions<BsonDocument, BsonDocument>>(), default)).Throws(exception);
+
+            Assert.Throws<ErrorRepository>(() => _comentarioRepository.Crear(new CrearComentarioComando("1", 1, "test")));
+            Assert.Throws<ErrorRepository>(() => _comentarioRepository.Eliminar(new EliminarComentarioComando(objectId)));
+            Assert.Throws<ErrorRepository>(() => _comentarioRepository.AgregarLike(new AgregarLikeComentarioComando(objectId)));
+            Assert.Throws<ErrorRepository>(() => _comentarioRepository.ObtenerPorGrupoEquipo(1));
+        }
     }
 }
-

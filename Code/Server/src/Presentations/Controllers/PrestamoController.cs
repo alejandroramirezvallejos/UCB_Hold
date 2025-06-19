@@ -119,6 +119,10 @@ public class PrestamoController : ControllerBase
         {
             return NotFound(new { error = "Préstamo no encontrado", mensaje = $"No se encontró un préstamo con ID {id}" });
         }
+        catch (ErrorRegistroEnUso ex)
+        {
+            return Conflict(new { error = "Registro en uso", mensaje = ex.Message });
+        }
         catch (ArgumentNullException ex)
         {
             return BadRequest(new { error = "Argumento requerido", mensaje = ex.Message });

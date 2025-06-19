@@ -7,7 +7,7 @@ public class MantenimientoService : IMantenimientoService
     public MantenimientoService(MantenimientoRepository mantenimientoRepository)
     {
         _mantenimientoRepository = mantenimientoRepository;
-    }    public void CrearMantenimiento(CrearMantenimientoComando comando)
+    }    public virtual void CrearMantenimiento(CrearMantenimientoComando comando)
     {
         try
         {
@@ -82,7 +82,7 @@ public class MantenimientoService : IMantenimientoService
             throw;
         }
     }
-    public void EliminarMantenimiento(EliminarMantenimientoComando comando)
+    public virtual void EliminarMantenimiento(EliminarMantenimientoComando comando)
     {
         try
         {
@@ -123,7 +123,7 @@ public class MantenimientoService : IMantenimientoService
             throw;
         }
     }
-    public List<MantenimientoDto>? ObtenerTodosMantenimientos()
+    public virtual List<MantenimientoDto>? ObtenerTodosMantenimientos()
     {
         try
         {

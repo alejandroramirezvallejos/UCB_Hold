@@ -8,7 +8,7 @@ public class GrupoEquipoService : IGrupoEquipoService
     public GrupoEquipoService(GrupoEquipoRepository grupoEquipoRepository)
     {
         _grupoEquipoRepository = grupoEquipoRepository;
-    }    public void CrearGrupoEquipo(CrearGrupoEquipoComando comando)
+    }    public virtual void CrearGrupoEquipo(CrearGrupoEquipoComando comando)
     {
         try
         {
@@ -119,7 +119,7 @@ public class GrupoEquipoService : IGrupoEquipoService
 
         if (comando.Id <= 0)
             throw new ErrorIdInvalido();
-    }public GrupoEquipoDto? ObtenerGrupoEquipoPorId(ObtenerGrupoEquipoPorIdConsulta consulta)
+    }public virtual GrupoEquipoDto? ObtenerGrupoEquipoPorId(ObtenerGrupoEquipoPorIdConsulta consulta)
     {
         try
         {
@@ -141,7 +141,7 @@ public class GrupoEquipoService : IGrupoEquipoService
             throw;
         }
     }
-    public List<GrupoEquipoDto>? ObtenerTodosGruposEquipos()
+    public virtual List<GrupoEquipoDto>? ObtenerTodosGruposEquipos()
     {
         try
         {
@@ -158,7 +158,7 @@ public class GrupoEquipoService : IGrupoEquipoService
             throw;
         }
     }
-    public List<GrupoEquipoDto>? ObtenerGrupoEquipoPorNombreYCategoria(ObtenerGrupoEquipoPorNombreYCategoriaConsulta consulta)
+    public virtual List<GrupoEquipoDto>? ObtenerGrupoEquipoPorNombreYCategoria(ObtenerGrupoEquipoPorNombreYCategoriaConsulta consulta)
     {
         try
         {
@@ -174,7 +174,7 @@ public class GrupoEquipoService : IGrupoEquipoService
         {
             throw;
         }
-    }    public void ActualizarGrupoEquipo(ActualizarGrupoEquipoComando comando)
+    }    public virtual void ActualizarGrupoEquipo(ActualizarGrupoEquipoComando comando)
     {
         try
         {
@@ -245,7 +245,7 @@ public class GrupoEquipoService : IGrupoEquipoService
             throw;
         }
     }
-    public void EliminarGrupoEquipo(EliminarGrupoEquipoComando comando)
+    public virtual void EliminarGrupoEquipo(EliminarGrupoEquipoComando comando)
     {
         try
         {

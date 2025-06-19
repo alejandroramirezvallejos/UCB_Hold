@@ -12,7 +12,7 @@ namespace IMT_Reservas.Server.Application.Services
             _notificacionRepository = notificacionRepository;
         }
 
-        public void CrearNotificacion(CrearNotificacionComando comando)
+        public virtual void CrearNotificacion(CrearNotificacionComando comando)
         {
             try
             {
@@ -24,7 +24,7 @@ namespace IMT_Reservas.Server.Application.Services
             }
         }
 
-        public void EliminarNotificacion(EliminarNotificacionComando comando)
+        public virtual void EliminarNotificacion(EliminarNotificacionComando comando)
         {
             try
             {
@@ -36,7 +36,7 @@ namespace IMT_Reservas.Server.Application.Services
             }
         }
 
-        public List<NotificacionDto> ObtenerNotificacionesPorUsuario(ObtenerNotificacionPorCarnetUsuarioConsulta consulta)
+        public virtual List<NotificacionDto> ObtenerNotificacionesPorUsuario(ObtenerNotificacionPorCarnetUsuarioConsulta consulta)
         {
             var tabla = _notificacionRepository.ObtenerPorUsuario(consulta);
             var notificaciones = new List<NotificacionDto>();
@@ -56,7 +56,7 @@ namespace IMT_Reservas.Server.Application.Services
             return notificaciones;
         }
 
-        public void MarcarNotificacionComoLeida(MarcarComoLeidoComando comando)
+        public virtual void MarcarNotificacionComoLeida(MarcarComoLeidoComando comando)
         {
             try
             {

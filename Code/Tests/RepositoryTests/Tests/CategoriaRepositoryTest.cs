@@ -1,18 +1,19 @@
 ﻿using Moq;
 using System.Data;
+using Microsoft.Extensions.Configuration;
 
 namespace IMT_Reservas.Tests.RepositoryTests
 {
     [TestFixture]
     public class CategoriaRepositoryTest : ICategoriaRepositoryTest
     {
-        private Mock<ExecuteQuery>   _ejecutarConsultaMock;
+        private Mock<IExecuteQuery>   _ejecutarConsultaMock;
         private ICategoriaRepository _categoriaRepositorio;
 
         [SetUp]
         public void Setup()
         {
-            _ejecutarConsultaMock = new Mock<ExecuteQuery>();
+            _ejecutarConsultaMock = new Mock<IExecuteQuery>();
             _categoriaRepositorio = new CategoriaRepository(_ejecutarConsultaMock.Object);
         }
 
@@ -69,9 +70,9 @@ namespace IMT_Reservas.Tests.RepositoryTests
             _ejecutarConsultaMock.Setup(e => e.EjecutarSpNR(It.IsAny<string>(), It.IsAny<Dictionary<string, object?>>()))
                            .Throws(new Exception("test exception"));
 
-            Assert.Throws<Exception>(() => _categoriaRepositorio.Crear(new CrearCategoriaComando("Adaptadores")));
-            Assert.Throws<Exception>(() => _categoriaRepositorio.Actualizar(new ActualizarCategoriaComando(4, "Prueba Actualizada")));
-            Assert.Throws<Exception>(() => _categoriaRepositorio.Eliminar(10));
+            Assert.Throws<ErrorRepository>(() => _categoriaRepositorio.Crear(new CrearCategoriaComando("Adaptadores")));
+            Assert.Throws<ErrorRepository>(() => _categoriaRepositorio.Actualizar(new ActualizarCategoriaComando(4, "Prueba Actualizada")));
+            Assert.Throws<ErrorRepository>(() => _categoriaRepositorio.Eliminar(10));
         }
     }
 }

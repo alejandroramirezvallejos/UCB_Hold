@@ -3,8 +3,8 @@ using Npgsql;
 
 public class PrestamoRepository : IPrestamoRepository
 {
-    private readonly ExecuteQuery _ejecutarConsulta;
-    public PrestamoRepository(ExecuteQuery ejecutarConsulta)
+    private readonly IExecuteQuery _ejecutarConsulta;
+    public PrestamoRepository(IExecuteQuery ejecutarConsulta)
     {
         _ejecutarConsulta = ejecutarConsulta;
     }

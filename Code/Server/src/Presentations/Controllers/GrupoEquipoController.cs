@@ -144,6 +144,10 @@ public class GrupoEquipoController : ControllerBase
         {
             return BadRequest(new { error = "Campo requerido", mensaje = ex.Message });
         }
+        catch (ErrorCampoRequerido ex)
+        {
+            return BadRequest(new { error = "Campo requerido", mensaje = ex.Message });
+        }
         catch (ErrorRegistroNoEncontrado ex)
         {
             return NotFound(new { error = "Grupo de equipo no encontrado", mensaje = ex.Message });

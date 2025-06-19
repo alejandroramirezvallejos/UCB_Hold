@@ -6,13 +6,13 @@ namespace IMT_Reservas.Tests.RepositoryTests
     [TestFixture]
     public class AccesorioRepositoryTest : IAccesorioRepositoryTest
     {
-        private Mock<ExecuteQuery>   _ejecutarConsultaMock;
+        private Mock<IExecuteQuery>   _ejecutarConsultaMock;
         private IAccesorioRepository _accesorioRepositorio;
 
         [SetUp]
         public void Setup()
         {
-            _ejecutarConsultaMock = new Mock<ExecuteQuery>();
+            _ejecutarConsultaMock = new Mock<IExecuteQuery>();
             _accesorioRepositorio = new AccesorioRepository(_ejecutarConsultaMock.Object);
         }
 
@@ -69,9 +69,9 @@ namespace IMT_Reservas.Tests.RepositoryTests
             _ejecutarConsultaMock.Setup(e => e.EjecutarSpNR(It.IsAny<string>(), It.IsAny<Dictionary<string, object?>>()))
                            .Throws(new Exception("test exception"));
 
-            Assert.Throws<Exception>(() => _accesorioRepositorio.Crear(new CrearAccesorioComando("cable usb", "dasd", "Electrónico", 123, "desc", 15.99, null)));
-            Assert.Throws<Exception>(() => _accesorioRepositorio.Actualizar(new ActualizarAccesorioComando(2, "cable usb-c", "dasd-2", "Electrónico", 123, "desc", 19.99, null)));
-            Assert.Throws<Exception>(() => _accesorioRepositorio.Eliminar(3));
+            Assert.Throws<ErrorRepository>(() => _accesorioRepositorio.Crear(new CrearAccesorioComando("cable usb", "dasd", "Electrónico", 123, "desc", 15.99, null)));
+            Assert.Throws<ErrorRepository>(() => _accesorioRepositorio.Actualizar(new ActualizarAccesorioComando(2, "cable usb-c", "dasd-2", "Electrónico", 123, "desc", 19.99, null)));
+            Assert.Throws<ErrorRepository>(() => _accesorioRepositorio.Eliminar(3));
         }
     }
 }

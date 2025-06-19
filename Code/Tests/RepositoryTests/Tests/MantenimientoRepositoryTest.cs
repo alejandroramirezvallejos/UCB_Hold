@@ -6,13 +6,13 @@ namespace IMT_Reservas.Tests.RepositoryTests
     [TestFixture]
     public class MantenimientoRepositoryTest : IMantenimientoRepositoryTest
     {
-        private Mock<ExecuteQuery>       _ejecutarConsultaMock;
+        private Mock<IExecuteQuery>       _ejecutarConsultaMock;
         private IMantenimientoRepository _mantenimientoRepositorio;
 
         [SetUp]
         public void Setup()
         {
-            _ejecutarConsultaMock     = new Mock<ExecuteQuery>();
+            _ejecutarConsultaMock     = new Mock<IExecuteQuery>();
             _mantenimientoRepositorio = new MantenimientoRepository(_ejecutarConsultaMock.Object);
         }
 
@@ -57,8 +57,8 @@ namespace IMT_Reservas.Tests.RepositoryTests
             _ejecutarConsultaMock.Setup(e => e.EjecutarSpNR(It.IsAny<string>(), It.IsAny<Dictionary<string, object?>>()))
                            .Throws(new Exception("test exception"));
 
-            Assert.Throws<Exception>(() => _mantenimientoRepositorio.Crear(new CrearMantenimientoComando(DateOnly.FromDateTime(DateTime.Now), DateOnly.FromDateTime(DateTime.Now.AddDays(1)), "Test", 100, "desc", new int[] {1}, new string[] {"tipo"}, new string[] {"desc"})));
-            Assert.Throws<Exception>(() => _mantenimientoRepositorio.Eliminar(1));
+            Assert.Throws<ErrorRepository>(() => _mantenimientoRepositorio.Crear(new CrearMantenimientoComando(DateOnly.FromDateTime(DateTime.Now), DateOnly.FromDateTime(DateTime.Now.AddDays(1)), "Test", 100, "desc", new int[] {1}, new string[] {"tipo"}, new string[] {"desc"})));
+            Assert.Throws<ErrorRepository>(() => _mantenimientoRepositorio.Eliminar(1));
         }
     }
 }

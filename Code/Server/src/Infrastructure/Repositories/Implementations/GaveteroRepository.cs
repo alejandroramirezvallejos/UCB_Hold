@@ -3,8 +3,8 @@ using Npgsql;
 
 public class GaveteroRepository : IGaveteroRepository
 {
-    private readonly ExecuteQuery _ejecutarConsulta;
-    public GaveteroRepository(ExecuteQuery ejecutarConsulta)
+    private readonly IExecuteQuery _ejecutarConsulta;
+    public GaveteroRepository(IExecuteQuery ejecutarConsulta)
     {
         _ejecutarConsulta = ejecutarConsulta;
     }
@@ -120,4 +120,3 @@ public class GaveteroRepository : IGaveteroRepository
         }
     }
 }
-

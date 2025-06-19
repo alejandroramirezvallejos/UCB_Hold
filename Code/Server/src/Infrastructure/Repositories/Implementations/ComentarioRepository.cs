@@ -116,9 +116,17 @@ public class ComentarioRepository : IComentarioRepository
     {
         try
         {
-            var documentos = _coleccion.Find(filtro)
-                .Sort(new BsonDocument("FechaCreacion", -1))
-                .ToList();
+            var findOptions = new FindOptions<BsonDocument>
+            {
+                Sort = Builders<BsonDocument>.Sort.Descending("FechaCreacion")
+            };
+            var cursor = _coleccion.FindSync(filtro, findOptions);
+
+            var documentos = new List<BsonDocument>();
+            while (cursor.MoveNext())
+            {
+                documentos.AddRange(cursor.Current);
+            }
 
             return ConvertirATablaDeDatos(documentos);
         }

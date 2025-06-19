@@ -3,9 +3,9 @@ using Npgsql;
 
 public class AccesorioRepository : IAccesorioRepository
 {
-    private readonly ExecuteQuery _ejecutarConsulta;
+    private readonly IExecuteQuery _ejecutarConsulta;
 
-    public AccesorioRepository(ExecuteQuery ejecutarConsulta)
+    public AccesorioRepository(IExecuteQuery ejecutarConsulta)
     {
         _ejecutarConsulta = ejecutarConsulta;
     }

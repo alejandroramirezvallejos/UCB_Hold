@@ -1,18 +1,19 @@
 ﻿using Moq;
 using System.Data;
+using Microsoft.Extensions.Configuration;
 
 namespace IMT_Reservas.Tests.RepositoryTests
 {
     [TestFixture]
     public class EmpresaMantenimientoRepositoryTest : IEmpresaMantenimientoRepositoryTest
     {
-        private Mock<ExecuteQuery>              _ejecutarConsultaMock;
+        private Mock<IExecuteQuery>              _ejecutarConsultaMock;
         private IEmpresaMantenimientoRepository _empresaMantenimientoRepositorio;
 
         [SetUp]
         public void Setup()
         {
-            _ejecutarConsultaMock            = new Mock<ExecuteQuery>();
+            _ejecutarConsultaMock            = new Mock<IExecuteQuery>();
             _empresaMantenimientoRepositorio = new EmpresaMantenimientoRepository(_ejecutarConsultaMock.Object);
         }
 
@@ -69,9 +70,9 @@ namespace IMT_Reservas.Tests.RepositoryTests
             _ejecutarConsultaMock.Setup(e => e.EjecutarSpNR(It.IsAny<string>(), It.IsAny<Dictionary<string, object?>>()))
                            .Throws(new Exception("test exception"));
 
-            Assert.Throws<Exception>(() => _empresaMantenimientoRepositorio.Crear(new CrearEmpresaMantenimientoComando("Mantenimiento Global", "Carlos", "Ruiz", "55555555", "Av. Principal 456", "987654321")));
-            Assert.Throws<Exception>(() => _empresaMantenimientoRepositorio.Actualizar(new ActualizarEmpresaMantenimientoComando(1, "JJJ Actualizado", "string", "string", "string", "string", "string")));
-            Assert.Throws<Exception>(() => _empresaMantenimientoRepositorio.Eliminar(6));
+            Assert.Throws<ErrorRepository>(() => _empresaMantenimientoRepositorio.Crear(new CrearEmpresaMantenimientoComando("Mantenimiento Global", "Carlos", "Ruiz", "55555555", "Av. Principal 456", "987654321")));
+            Assert.Throws<ErrorRepository>(() => _empresaMantenimientoRepositorio.Actualizar(new ActualizarEmpresaMantenimientoComando(1, "JJJ Actualizado", "string", "string", "string", "string", "string")));
+            Assert.Throws<ErrorRepository>(() => _empresaMantenimientoRepositorio.Eliminar(6));
         }
     }
 }

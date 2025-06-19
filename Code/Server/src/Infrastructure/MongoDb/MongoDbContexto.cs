@@ -16,11 +16,11 @@ namespace IMT_Reservas.Server.Infrastructure.MongoDb
             _gestionArchivos         = new GridFSBucket(_baseDeDatos);
         }
 
-        public IMongoDatabase BaseDeDatos     => _baseDeDatos;
+        public virtual IMongoDatabase BaseDeDatos     => _baseDeDatos;
 
-        public GridFSBucket   GestionArchivos => _gestionArchivos;
+        public virtual IGridFSBucket   GestionArchivos => _gestionArchivos;
         
-        public IMongoCollection<T> ObtenerColeccion<T>(string nombreColeccion)
+        public virtual IMongoCollection<T> ObtenerColeccion<T>(string nombreColeccion)
         {
             return _baseDeDatos.GetCollection<T>(nombreColeccion);
         }

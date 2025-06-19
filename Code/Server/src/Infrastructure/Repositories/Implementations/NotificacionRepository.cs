@@ -32,26 +32,30 @@ namespace IMT_Reservas.Server.Infrastructure.Repositories.Implementations
             }
             catch (Exception ex)
             {
-                throw new Exception($"Error al crear la notificación: {ex.Message}", ex);
+                throw new ErrorRepository($"Error al crear la notificación: {ex.Message}", ex);
             }
         }
 
         public void Eliminar(EliminarNotificacionComando comando)
         {
-            var filtro = new BsonDocument 
-            {
-                { "_id", new ObjectId(comando.Id) },
-                { "CarnetUsuario", comando.CarnetUsuario }
-            };
-            var actualizacion = Builders<BsonDocument>.Update.Set("EstadoEliminado", true);
-
             try
             {
+                var filtro = new BsonDocument 
+                {
+                    { "_id", new ObjectId(comando.Id) },
+                    { "CarnetUsuario", comando.CarnetUsuario }
+                };
+                var actualizacion = Builders<BsonDocument>.Update.Set("EstadoEliminado", true);
+
                 _coleccion.UpdateOne(filtro, actualizacion);
+            }
+            catch (FormatException ex)
+            {
+                throw new ErrorDataBase($"ID de notificación inválido: {ex.Message}", null, null, ex);
             }
             catch (Exception ex)
             {
-                throw new Exception($"Error al eliminar la notificación: {ex.Message}", ex);
+                throw new ErrorRepository($"Error al eliminar la notificación: {ex.Message}", ex);
             }
         }
 
@@ -68,16 +72,20 @@ namespace IMT_Reservas.Server.Infrastructure.Repositories.Implementations
 
         public void MarcarComoLeida(MarcarComoLeidoComando comando)
         {
-            var filtro = new BsonDocument { { "_id", new ObjectId(comando.Id) } };
-            var actualizacion = Builders<BsonDocument>.Update.Set("Leida", true);
-
             try
             {
+                var filtro = new BsonDocument { { "_id", new ObjectId(comando.Id) } };
+                var actualizacion = Builders<BsonDocument>.Update.Set("Leida", true);
+
                 _coleccion.UpdateOne(filtro, actualizacion);
+            }
+            catch (FormatException ex)
+            {
+                throw new ErrorDataBase($"ID de notificación inválido: {ex.Message}", null, null, ex);
             }
             catch (Exception ex)
             {
-                throw new Exception($"Error al marcar la notificación como leída: {ex.Message}", ex);
+                throw new ErrorRepository($"Error al marcar la notificación como leída: {ex.Message}", ex);
             }
         }
 
@@ -85,15 +93,18 @@ namespace IMT_Reservas.Server.Infrastructure.Repositories.Implementations
         {
             try
             {
-                var documentos = _coleccion.Find(filtro)
-                    .Sort(new BsonDocument("FechaEnvio", -1))
-                    .ToList();
+                var cursor = _coleccion.FindSync(filtro, new FindOptions<BsonDocument> { Sort = Builders<BsonDocument>.Sort.Descending("FechaEnvio") });
+                var documentos = new List<BsonDocument>();
+                while (cursor.MoveNext())
+                {
+                    documentos.AddRange(cursor.Current);
+                }
 
                 return ConvertirATablaDeDatos(documentos);
             }
             catch (Exception ex)
             {
-                throw new Exception($"Error al consultar notificaciones: {ex.Message}", ex);
+                throw new ErrorRepository($"Error al consultar notificaciones: {ex.Message}", ex);
             }
         }
 

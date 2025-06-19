@@ -23,6 +23,14 @@ public class ComentarioController : ControllerBase
             _servicio.CrearComentario(input);
             return Created("", new { mensaje = "Comentario creado exitosamente" });
         }
+        catch (ErrorCarnetInvalido ex)
+        {
+            return BadRequest(new { error = "Carnet inválido", mensaje = ex.Message });
+        }
+        catch (ErrorLongitudInvalida ex)
+        {
+            return BadRequest(new { error = "Longitud inválida", mensaje = ex.Message });
+        }
         catch (ErrorCampoRequerido ex)
         {
             return BadRequest(new { error = "Campo requerido", mensaje = ex.Message });

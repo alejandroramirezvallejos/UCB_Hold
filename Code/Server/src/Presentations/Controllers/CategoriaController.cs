@@ -103,6 +103,9 @@ public class CategoriaController : ControllerBase
         }        catch (ErrorRegistroNoEncontrado ex)
         {
             return NotFound(new { error = "Categoría no encontrada", mensaje = ex.Message });
+        }        catch (ErrorRegistroEnUso ex)
+        {
+            return Conflict(new { error = "Registro en uso", mensaje = ex.Message });
         }
         catch (ArgumentNullException ex)
         {

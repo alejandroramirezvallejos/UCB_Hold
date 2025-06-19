@@ -125,6 +125,10 @@ public class GaveteroController : ControllerBase
         {
             return NotFound(new { error = "Gavetero no encontrado", mensaje = ex.Message });
         }
+        catch (ErrorRegistroEnUso ex)
+        {
+            return Conflict(new { error = "Registro en uso", mensaje = ex.Message });
+        }
         catch (ArgumentNullException ex)
         {
             return BadRequest(new { error = "Argumento inválido", mensaje = ex.Message });

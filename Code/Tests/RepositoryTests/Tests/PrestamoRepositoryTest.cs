@@ -6,13 +6,13 @@ namespace IMT_Reservas.Tests.RepositoryTests
     [TestFixture]
     public class PrestamoRepositoryTest : IPrestamoRepositoryTest
     {
-        private Mock<ExecuteQuery>  _ejecutarConsultaMock;
+        private Mock<IExecuteQuery>  _ejecutarConsultaMock;
         private IPrestamoRepository _prestamoRepositorio;
 
         [SetUp]
         public void Setup()
         {
-            _ejecutarConsultaMock = new Mock<ExecuteQuery>();
+            _ejecutarConsultaMock = new Mock<IExecuteQuery>();
             _prestamoRepositorio  = new PrestamoRepository(_ejecutarConsultaMock.Object);
         }
 
@@ -57,8 +57,8 @@ namespace IMT_Reservas.Tests.RepositoryTests
             _ejecutarConsultaMock.Setup(e => e.EjecutarSpNR(It.IsAny<string>(), It.IsAny<Dictionary<string, object?>>()))
                            .Throws(new Exception("test exception"));
 
-            Assert.Throws<Exception>(() => _prestamoRepositorio.Crear(new CrearPrestamoComando(new int[] { 1 }, DateTime.Now, DateTime.Now, "Test", "12890061", null)));
-            Assert.Throws<Exception>(() => _prestamoRepositorio.Eliminar(19));
+            Assert.Throws<ErrorRepository>(() => _prestamoRepositorio.Crear(new CrearPrestamoComando(new int[] { 1 }, DateTime.Now, DateTime.Now, "Test", "12890061", null)));
+            Assert.Throws<ErrorRepository>(() => _prestamoRepositorio.Eliminar(19));
         }
     }
 }

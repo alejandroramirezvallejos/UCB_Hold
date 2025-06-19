@@ -7,7 +7,7 @@ public class GaveteroService : IGaveteroService
     public GaveteroService(GaveteroRepository gaveteroRepository)
     {
         _gaveteroRepository = gaveteroRepository;
-    }    public void CrearGavetero(CrearGaveteroComando comando)
+    }    public virtual void CrearGavetero(CrearGaveteroComando comando)
     {
         try
         {
@@ -82,7 +82,7 @@ public class GaveteroService : IGaveteroService
 
         if (comando.Altura.HasValue && comando.Altura <= 0)
             throw new ErrorValorNegativo("altura");
-    }public void ActualizarGavetero(ActualizarGaveteroComando comando)
+    }public virtual void ActualizarGavetero(ActualizarGaveteroComando comando)
     {
         try
         {
@@ -150,7 +150,7 @@ public class GaveteroService : IGaveteroService
         }
     }
 
-    public void EliminarGavetero(EliminarGaveteroComando comando)
+    public virtual void EliminarGavetero(EliminarGaveteroComando comando)
     {
         try
         {
@@ -221,7 +221,7 @@ public class GaveteroService : IGaveteroService
         if (comando.Id <= 0)
             throw new ErrorIdInvalido();
     }
-    public List<GaveteroDto>? ObtenerTodosGaveteros()
+    public virtual List<GaveteroDto>? ObtenerTodosGaveteros()
     {
         try
         {

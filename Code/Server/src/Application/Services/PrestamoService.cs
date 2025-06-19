@@ -9,7 +9,7 @@ public class PrestamoService : IPrestamoService
     public PrestamoService(PrestamoRepository prestamoRepository)
     {
         _prestamoRepository = prestamoRepository;
-    }    public void CrearPrestamo(CrearPrestamoComando comando)
+    }    public virtual void CrearPrestamo(CrearPrestamoComando comando)
     {
         try
         {
@@ -149,7 +149,7 @@ public class PrestamoService : IPrestamoService
         }
     }
 
-    public void EliminarPrestamo(EliminarPrestamoComando comando)
+    public virtual void EliminarPrestamo(EliminarPrestamoComando comando)
     {
         try
         {
@@ -200,7 +200,7 @@ public class PrestamoService : IPrestamoService
             throw new ErrorIdInvalido();
     }
 
-    public List<PrestamoDto>? ObtenerTodosPrestamos()
+    public virtual List<PrestamoDto>? ObtenerTodosPrestamos()
     {
         try
         {
@@ -217,7 +217,7 @@ public class PrestamoService : IPrestamoService
             throw;
         }
     }
-    public List<PrestamoDto>? ObtenerPrestamosPorCarnetYEstadoPrestamo(string? carnetUsuario, string? estadoPrestamo)
+    public virtual List<PrestamoDto>? ObtenerPrestamosPorCarnetYEstadoPrestamo(string? carnetUsuario, string? estadoPrestamo)
     {
         try
         {
@@ -262,7 +262,7 @@ public class PrestamoService : IPrestamoService
         };
     }
 
-    public void ActualizarEstadoPrestamo(ActualizarEstadoPrestamoComando comando)
+    public virtual void ActualizarEstadoPrestamo(ActualizarEstadoPrestamoComando comando)
     {
         try
         {

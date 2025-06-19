@@ -2,9 +2,9 @@ using System.Data;
 using Npgsql;
 public class ComponenteRepository : IComponenteRepository
 {
-    private readonly ExecuteQuery _ejecutarConsulta;
+    private readonly IExecuteQuery _ejecutarConsulta;
 
-    public ComponenteRepository(ExecuteQuery ejecutarConsulta)
+    public ComponenteRepository(IExecuteQuery ejecutarConsulta)
     {
         _ejecutarConsulta = ejecutarConsulta;
     }

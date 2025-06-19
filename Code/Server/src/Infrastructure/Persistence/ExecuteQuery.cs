@@ -13,7 +13,7 @@ public class ExecuteQuery : IExecuteQuery
                                 "La cadena de conexión 'DefaultConnection' no está configurada.");
     }
 
-    public DataTable EjecutarSp(string nombreSp, Dictionary<string, object?> parametros)
+    public virtual DataTable EjecutarSp(string nombreSp, Dictionary<string, object?> parametros)
     {
         NpgsqlConnection conn = new NpgsqlConnection(_connectionString);
         conn.Open();
@@ -31,7 +31,7 @@ public class ExecuteQuery : IExecuteQuery
         reader.Close();
         conn.Close();
         return dt;
-    }    public void EjecutarSpNR(string nombreSp, Dictionary<string, object?> parametros)
+    }    public virtual void EjecutarSpNR(string nombreSp, Dictionary<string, object?> parametros)
     {
         try
         {
@@ -57,7 +57,7 @@ public class ExecuteQuery : IExecuteQuery
         }
     }
 
-    public DataTable EjecutarFuncion(string consultaSql, Dictionary<string, object?> parametros)
+    public virtual DataTable EjecutarFuncion(string consultaSql, Dictionary<string, object?> parametros)
     {
         NpgsqlConnection conn = new NpgsqlConnection(_connectionString);
         conn.Open();
@@ -77,7 +77,7 @@ public class ExecuteQuery : IExecuteQuery
         return dt;
     }
 
-    public List<Dictionary<string, object?>> EjecutarFuncionDic(string consultaSql, Dictionary<string, object?> parametros)
+    public virtual List<Dictionary<string, object?>> EjecutarFuncionDic(string consultaSql, Dictionary<string, object?> parametros)
     {
         DataTable dt = EjecutarFuncion(consultaSql, parametros);
         List<Dictionary<string, object?>> lista = new List<Dictionary<string, object?>>();

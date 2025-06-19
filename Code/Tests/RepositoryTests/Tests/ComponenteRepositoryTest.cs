@@ -1,18 +1,19 @@
 ﻿using Moq;
 using System.Data;
+using Microsoft.Extensions.Configuration;
 
 namespace IMT_Reservas.Tests.RepositoryTests
 {
     [TestFixture]
     public class ComponenteRepositoryTest : IComponenteRepositoryTest
     {
-        private Mock<ExecuteQuery>    _ejecutarConsultaMock;
+        private Mock<IExecuteQuery>    _ejecutarConsultaMock;
         private IComponenteRepository _componenteRepositorio;
 
         [SetUp]
         public void Setup()
         {
-            _ejecutarConsultaMock  = new Mock<ExecuteQuery>();
+            _ejecutarConsultaMock  = new Mock<IExecuteQuery>();
             _componenteRepositorio = new ComponenteRepository(_ejecutarConsultaMock.Object);
         }
 
@@ -69,9 +70,9 @@ namespace IMT_Reservas.Tests.RepositoryTests
             _ejecutarConsultaMock.Setup(e => e.EjecutarSpNR(It.IsAny<string>(), It.IsAny<Dictionary<string, object?>>()))
                            .Throws(new Exception("test exception"));
 
-            Assert.Throws<Exception>(() => _componenteRepositorio.Crear(new CrearComponenteComando("Test", "Test", "Test", 1, "Test", 1, "Test")));
-            Assert.Throws<Exception>(() => _componenteRepositorio.Actualizar(new ActualizarComponenteComando(1, "Test", "Test", "Test", 1, "Test", 1, "Test")));
-            Assert.Throws<Exception>(() => _componenteRepositorio.Eliminar(1));
+            Assert.Throws<ErrorRepository>(() => _componenteRepositorio.Crear(new CrearComponenteComando("Test", "Test", "Test", 1, "Test", 1, "Test")));
+            Assert.Throws<ErrorRepository>(() => _componenteRepositorio.Actualizar(new ActualizarComponenteComando(1, "Test", "Test", "Test", 1, "Test", 1, "Test")));
+            Assert.Throws<ErrorRepository>(() => _componenteRepositorio.Eliminar(1));
         }
     }
 }

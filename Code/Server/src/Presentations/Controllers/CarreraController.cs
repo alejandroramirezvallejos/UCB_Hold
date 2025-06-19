@@ -105,6 +105,10 @@ public class CarreraController : ControllerBase
         {
             return NotFound(new { error = "Carrera no encontrada", mensaje = ex.Message });
         }
+        catch (ErrorRegistroEnUso ex)
+        {
+            return Conflict(new { error = "Registro en uso", mensaje = ex.Message });
+        }
         catch (ArgumentNullException ex)
         {
             return BadRequest(new { error = "Argumento requerido", mensaje = ex.Message });

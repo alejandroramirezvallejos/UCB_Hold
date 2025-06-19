@@ -102,6 +102,9 @@ public class EmpresaMantenimientoController : ControllerBase
         }        catch (ErrorRegistroNoEncontrado ex)
         {
             return NotFound(new { error = "Empresa no encontrada", mensaje = ex.Message });
+        }        catch (ErrorRegistroEnUso ex)
+        {
+            return Conflict(new { error = "Registro en uso", mensaje = ex.Message });
         }
         catch (ArgumentNullException ex)
         {

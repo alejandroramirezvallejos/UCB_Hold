@@ -7,7 +7,7 @@ public class CategoriaService : ICategoriaService
     {
         _categoriaRepository = categoriaRepository;
     }    
-    public void CrearCategoria(CrearCategoriaComando comando)
+    public virtual void CrearCategoria(CrearCategoriaComando comando)
     {
         try
         {
@@ -68,7 +68,7 @@ public class CategoriaService : ICategoriaService
         if (comando.Nombre.Length > 50)
             throw new ErrorLongitudInvalida("nombre de la categoría", 50);
     }
-    public List<CategoriaDto>? ObtenerTodasCategorias()
+    public virtual List<CategoriaDto>? ObtenerTodasCategorias()
     {
         try
         {
@@ -84,7 +84,7 @@ public class CategoriaService : ICategoriaService
         {
             throw;
         }
-    }    public void ActualizarCategoria(ActualizarCategoriaComando comando)
+    }    public virtual void ActualizarCategoria(ActualizarCategoriaComando comando)
     {
         try
         {
@@ -146,7 +146,7 @@ public class CategoriaService : ICategoriaService
         }
     }
 
-    public void EliminarCategoria(EliminarCategoriaComando comando)
+    public virtual void EliminarCategoria(EliminarCategoriaComando comando)
     {
         try
         {

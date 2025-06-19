@@ -6,13 +6,13 @@ namespace IMT_Reservas.Tests.RepositoryTests
     [TestFixture]
     public class UsuarioRepositoryTest : IUsuarioRepositoryTest
     {
-        private Mock<ExecuteQuery> _ejecutarConsultaMock;
+        private Mock<IExecuteQuery> _ejecutarConsultaMock;
         private IUsuarioRepository _usuarioRepositorio;
 
         [SetUp]
         public void Setup()
         {
-            _ejecutarConsultaMock = new Mock<ExecuteQuery>();
+            _ejecutarConsultaMock = new Mock<IExecuteQuery>();
             _usuarioRepositorio   = new UsuarioRepository(_ejecutarConsultaMock.Object);
         }
 
@@ -98,11 +98,11 @@ namespace IMT_Reservas.Tests.RepositoryTests
             _ejecutarConsultaMock.Setup(e => e.EjecutarFuncion(It.IsAny<string>(), It.IsAny<Dictionary<string, object?>>()))
                            .Throws(new Exception("test exception"));
 
-            Assert.Throws<Exception>(() => _usuarioRepositorio.Crear(new CrearUsuarioComando("1", "n", "p", "m", null, "e@e.com", "c", "ca", null, null, null, null)));
-            Assert.Throws<Exception>(() => _usuarioRepositorio.Actualizar(new ActualizarUsuarioComando("1", null, null, null, null, null, null, null, null, null, null, null)));
-            Assert.Throws<Exception>(() => _usuarioRepositorio.Eliminar("1"));
-            Assert.Throws<Exception>(() => _usuarioRepositorio.ObtenerTodos());
-            Assert.Throws<Exception>(() => _usuarioRepositorio.ObtenerPorEmailYContrasena("e", "c"));
+            Assert.Throws<ErrorRepository>(() => _usuarioRepositorio.Crear(new CrearUsuarioComando("1", "n", "p", "m", null, "e@e.com", "c", "ca", null, null, null, null)));
+            Assert.Throws<ErrorRepository>(() => _usuarioRepositorio.Actualizar(new ActualizarUsuarioComando("1", null, null, null, null, null, null, null, null, null, null, null)));
+            Assert.Throws<ErrorRepository>(() => _usuarioRepositorio.Eliminar("1"));
+            Assert.Throws<ErrorRepository>(() => _usuarioRepositorio.ObtenerTodos());
+            Assert.Throws<ErrorRepository>(() => _usuarioRepositorio.ObtenerPorEmailYContrasena("e", "c"));
         }
     }
 }

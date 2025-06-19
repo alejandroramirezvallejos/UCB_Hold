@@ -6,7 +6,7 @@ public class ComponenteService : IComponenteService
     public ComponenteService(ComponenteRepository componenteRepository)
     {
         _componenteRepository = componenteRepository;
-    }    public void CrearComponente(CrearComponenteComando comando)
+    }    public virtual void CrearComponente(CrearComponenteComando comando)
     {
         try
         {
@@ -94,7 +94,7 @@ public class ComponenteService : IComponenteService
         if (comando.PrecioReferencia.HasValue && comando.PrecioReferencia.Value < 0)
             throw new ErrorValorNegativo("precio de referencia");
     }
-    public List<ComponenteDto>? ObtenerTodosComponentes()
+    public virtual List<ComponenteDto>? ObtenerTodosComponentes()
     {
         try
         {
@@ -111,7 +111,7 @@ public class ComponenteService : IComponenteService
             throw;
         }
     }    
-    public void ActualizarComponente(ActualizarComponenteComando comando)
+    public virtual void ActualizarComponente(ActualizarComponenteComando comando)
     {
         try
         {
@@ -183,7 +183,7 @@ public class ComponenteService : IComponenteService
         }
     }
 
-    public void EliminarComponente(EliminarComponenteComando comando)
+    public virtual void EliminarComponente(EliminarComponenteComando comando)
     {
         try
         {

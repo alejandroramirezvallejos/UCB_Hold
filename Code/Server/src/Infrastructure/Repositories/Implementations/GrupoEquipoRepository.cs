@@ -3,9 +3,9 @@ using Npgsql;
 
 public class GrupoEquipoRepository : IGrupoEquipoRepository
 {
-    private readonly ExecuteQuery _ejecutarConsulta;
+    private readonly IExecuteQuery _ejecutarConsulta;
 
-    public GrupoEquipoRepository(ExecuteQuery ejecutarConsulta)
+    public GrupoEquipoRepository(IExecuteQuery ejecutarConsulta)
     {
         _ejecutarConsulta = ejecutarConsulta;
     }

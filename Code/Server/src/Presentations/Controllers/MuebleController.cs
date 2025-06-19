@@ -103,6 +103,10 @@ public class MuebleController : ControllerBase
         {
             return NotFound(new { error = "Mueble no encontrado", mensaje = $"No se encontró un mueble con ID {id}" });
         }
+        catch (ErrorRegistroEnUso ex)
+        {
+            return Conflict(new { error = "Registro en uso", mensaje = ex.Message });
+        }
         catch (ArgumentNullException ex)
         {
             return BadRequest(new { error = "Argumento requerido", mensaje = ex.Message });

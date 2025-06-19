@@ -19,7 +19,7 @@ namespace IMT_Reservas.Tests.ControllerTests.Tests
         public void Setup()
         {
             _configMock         = new Mock<IConfiguration>();
-            _configMock.Setup(config => config.GetConnectionString("DefaultConnection")).Returns("fake_connection_string");
+            _configMock.Setup(config => config.GetSection("ConnectionStrings")["DefaultConnection"]).Returns("fake_connection_string");
             _queryExecMock      = new Mock<ExecuteQuery>(_configMock.Object);
             _carreraRepoMock    = new Mock<CarreraRepository>(_queryExecMock.Object);
             _carreraServiceMock = new Mock<CarreraService>(_carreraRepoMock.Object);

@@ -3,8 +3,8 @@ using Npgsql;
 
 public class MuebleRepository : IMuebleRepository
 {
-    private readonly ExecuteQuery _ejecutarConsulta;
-    public MuebleRepository(ExecuteQuery ejecutarConsulta)
+    private readonly IExecuteQuery _ejecutarConsulta;
+    public MuebleRepository(IExecuteQuery ejecutarConsulta)
     {
         _ejecutarConsulta = ejecutarConsulta;
     }

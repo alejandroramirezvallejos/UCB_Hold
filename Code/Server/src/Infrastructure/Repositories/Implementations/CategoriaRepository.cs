@@ -3,9 +3,9 @@ using Npgsql;
 
 public class CategoriaRepository : ICategoriaRepository
 {
-    private readonly ExecuteQuery _ejecutarConsulta;
+    private readonly IExecuteQuery _ejecutarConsulta;
 
-    public CategoriaRepository(ExecuteQuery ejecutarConsulta)
+    public CategoriaRepository(IExecuteQuery ejecutarConsulta)
     {
         _ejecutarConsulta = ejecutarConsulta;
     }

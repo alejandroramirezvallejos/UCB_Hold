@@ -3,9 +3,9 @@ using Npgsql;
 
 public class CarreraRepository : ICarreraRepository
 {
-    private readonly ExecuteQuery _ejecutarConsulta;
+    private readonly IExecuteQuery _ejecutarConsulta;
 
-    public CarreraRepository(ExecuteQuery ejecutarConsulta)
+    public CarreraRepository(IExecuteQuery ejecutarConsulta)
     {
         _ejecutarConsulta = ejecutarConsulta;
     }

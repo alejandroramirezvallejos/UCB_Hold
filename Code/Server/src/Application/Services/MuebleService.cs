@@ -8,7 +8,7 @@ public class MuebleService : IMuebleService
     {
         _muebleRepository = muebleRepository;
     }
-    public void CrearMueble(CrearMuebleComando comando)
+    public virtual void CrearMueble(CrearMuebleComando comando)
     {
         try
         {
@@ -53,7 +53,7 @@ public class MuebleService : IMuebleService
             throw;
         }
     }
-    public void ActualizarMueble(ActualizarMuebleComando comando)
+    public virtual void ActualizarMueble(ActualizarMuebleComando comando)
     {
         try
         {
@@ -108,7 +108,7 @@ public class MuebleService : IMuebleService
             throw;
         }
     }
-    public void EliminarMueble(EliminarMuebleComando comando)
+    public virtual void EliminarMueble(EliminarMuebleComando comando)
     {
         try
         {
@@ -149,7 +149,7 @@ public class MuebleService : IMuebleService
             throw;
         }
     }
-    public List<MuebleDto>? ObtenerTodosMuebles()
+    public virtual List<MuebleDto>? ObtenerTodosMuebles()
     {
         try
         {

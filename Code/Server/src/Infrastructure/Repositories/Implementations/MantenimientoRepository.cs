@@ -3,8 +3,8 @@ using Npgsql;
 
 public class MantenimientoRepository : IMantenimientoRepository
 {
-    private readonly ExecuteQuery _ejecutarConsulta;
-    public MantenimientoRepository(ExecuteQuery ejecutarConsulta)
+    private readonly IExecuteQuery _ejecutarConsulta;
+    public MantenimientoRepository(IExecuteQuery ejecutarConsulta)
     {
         _ejecutarConsulta = ejecutarConsulta;
     }

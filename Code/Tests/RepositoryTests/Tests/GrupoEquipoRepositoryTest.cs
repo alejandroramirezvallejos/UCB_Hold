@@ -6,13 +6,13 @@ namespace IMT_Reservas.Tests.RepositoryTests
     [TestFixture]
     public class GrupoEquipoRepositoryTest : IGrupoEquipoRepositoryTest
     {
-        private Mock<ExecuteQuery>     _ejecutarConsultaMock;
+        private Mock<IExecuteQuery>     _ejecutarConsultaMock;
         private IGrupoEquipoRepository _grupoEquipoRepositorio;
 
         [SetUp]
         public void Setup()
         {
-            _ejecutarConsultaMock   = new Mock<ExecuteQuery>();
+            _ejecutarConsultaMock   = new Mock<IExecuteQuery>();
             _grupoEquipoRepositorio = new GrupoEquipoRepository(_ejecutarConsultaMock.Object);
         }
 
@@ -95,9 +95,9 @@ namespace IMT_Reservas.Tests.RepositoryTests
             _ejecutarConsultaMock.Setup(e => e.EjecutarSpNR(It.IsAny<string>(), It.IsAny<Dictionary<string, object?>>()))
                            .Throws(new Exception("test exception"));
 
-            Assert.Throws<Exception>(() => _grupoEquipoRepositorio.Crear(new CrearGrupoEquipoComando("Estación de Soldadura", "WES51", "Weller", "Estación de soldadura analógica", "Herramientas", "http://example.com/ds.pdf", "http://example.com/img.png")));
-            Assert.Throws<Exception>(() => _grupoEquipoRepositorio.Actualizar(new ActualizarGrupoEquipoComando(5, "prueba actualizada", "prueba v2", "prueba", "desc act", "Herramientas", "https://prueba.com/ds-v2.pdf", "img_act")));
-            Assert.Throws<Exception>(() => _grupoEquipoRepositorio.Eliminar(16));
+            Assert.Throws<ErrorRepository>(() => _grupoEquipoRepositorio.Crear(new CrearGrupoEquipoComando("Estación de Soldadura", "WES51", "Weller", "Estación de soldadura analógica", "Herramientas", "http://example.com/ds.pdf", "http://example.com/img.png")));
+            Assert.Throws<ErrorRepository>(() => _grupoEquipoRepositorio.Actualizar(new ActualizarGrupoEquipoComando(5, "prueba actualizada", "prueba v2", "prueba", "desc act", "Herramientas", "https://prueba.com/ds-v2.pdf", "img_act")));
+            Assert.Throws<ErrorRepository>(() => _grupoEquipoRepositorio.Eliminar(16));
         }
     }
 }

@@ -1,4 +1,5 @@
 using System.Data;
+using IMT_Reservas.Server.Application.Interfaces;
 using IMT_Reservas.Server.Shared.Common;
 
 public class AccesorioService : IAccesorioService
@@ -8,7 +9,7 @@ public class AccesorioService : IAccesorioService
     {
         _accesorioRepository = accesorioRepository;
     }    
-    public void CrearAccesorio(CrearAccesorioComando comando)
+    public virtual void CrearAccesorio(CrearAccesorioComando comando)
     {
         try
         {
@@ -25,23 +26,21 @@ public class AccesorioService : IAccesorioService
         }
         catch (ErrorLongitudInvalida)
         {
-            throw; // Re-lanzar excepciones de validación
+            throw; 
         }
         catch (ErrorCodigoImtRequerido)
         {
-            throw; // Re-lanzar excepciones de validación
+            throw; 
         }
         catch (ErrorValorNegativo)
         {
-            throw; // Re-lanzar excepciones de validación
+            throw; 
         }        catch (Exception ex)
         {
-            // Manejo específico para insertar_accesorios
             if (ex is ErrorDataBase errorDb)
             {
                 var mensaje = errorDb.Message?.ToLower() ?? "";
                 
-                // Errores específicos del procedimiento insertar_accesorios
                 if (mensaje.Contains("no se encontró el equipo con código imt"))
                 {
                     throw new ErrorReferenciaInvalida("El código IMT del equipo no existe o está inactivo");
@@ -84,7 +83,7 @@ public class AccesorioService : IAccesorioService
         if (comando.Precio.HasValue && comando.Precio.Value <= 0)
             throw new ErrorValorNegativo("precio");
     }
-    public List<AccesorioDto>? ObtenerTodosAccesorios()
+    public virtual List<AccesorioDto>? ObtenerTodosAccesorios()
     {
         try
         {
@@ -98,7 +97,7 @@ public class AccesorioService : IAccesorioService
         {
             throw;
         }
-    }    public void ActualizarAccesorio(ActualizarAccesorioComando comando)
+    }    public virtual void ActualizarAccesorio(ActualizarAccesorioComando comando)
     {
         try
         {
@@ -118,10 +117,6 @@ public class AccesorioService : IAccesorioService
             throw;
         }
         catch (ErrorLongitudInvalida)
-        {
-            throw;
-        }
-        catch (ErrorCodigoImtRequerido)
         {
             throw;
         }
@@ -166,7 +161,7 @@ public class AccesorioService : IAccesorioService
             
             throw;
         }
-    }public void EliminarAccesorio(EliminarAccesorioComando comando)
+    }public virtual void EliminarAccesorio(EliminarAccesorioComando comando)
     {
         try
         {

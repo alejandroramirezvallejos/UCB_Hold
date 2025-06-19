@@ -1,18 +1,19 @@
 ﻿using Moq;
 using System.Data;
+using Microsoft.Extensions.Configuration;
 
 namespace IMT_Reservas.Tests.RepositoryTests
 {
     [TestFixture]
     public class EquipoRepositoryTest : IEquipoRepositoryTest
     {
-        private Mock<ExecuteQuery> _ejecutarConsultaMock;
+        private Mock<IExecuteQuery> _ejecutarConsultaMock;
         private IEquipoRepository  _equipoRepositorio;
 
         [SetUp]
         public void Setup()
         {
-            _ejecutarConsultaMock = new Mock<ExecuteQuery>();
+            _ejecutarConsultaMock = new Mock<IExecuteQuery>();
             _equipoRepositorio    = new EquipoRepository(_ejecutarConsultaMock.Object);
         }
 
@@ -69,9 +70,9 @@ namespace IMT_Reservas.Tests.RepositoryTests
             _ejecutarConsultaMock.Setup(e => e.EjecutarSpNR(It.IsAny<string>(), It.IsAny<Dictionary<string, object?>>()))
                            .Throws(new Exception("test exception"));
 
-            Assert.Throws<Exception>(() => _equipoRepositorio.Crear(new CrearEquipoComando("Osciloscopio", "Tektronix", "TBS1052B", "UCB-OSC-01", "Osciloscopio digital de 2 canales", "SN-OSC-54321", "Laboratorio de Electrónica", "Compra", 450.00, 10, "GAV-03")));
-            Assert.Throws<Exception>(() => _equipoRepositorio.Actualizar(new ActualizarEquipoComando(7, "Prueba Actualizada", null, null, "UCB-PRUEBA-01", "desc act", "SN-PRUEBA-UPD", "Almacén", "Donación", 450.00, 2, "GAV-01", "operativo")));
-            Assert.Throws<Exception>(() => _equipoRepositorio.Eliminar(5));
+            Assert.Throws<ErrorRepository>(() => _equipoRepositorio.Crear(new CrearEquipoComando("Osciloscopio", "Tektronix", "TBS1052B", "UCB-OSC-01", "Osciloscopio digital de 2 canales", "SN-OSC-54321", "Laboratorio de Electrónica", "Compra", 450.00, 10, "GAV-03")));
+            Assert.Throws<ErrorRepository>(() => _equipoRepositorio.Actualizar(new ActualizarEquipoComando(7, "Prueba Actualizada", null, null, "UCB-PRUEBA-01", "desc act", "SN-PRUEBA-UPD", "Almacén", "Donación", 450.00, 2, "GAV-01", "operativo")));
+            Assert.Throws<ErrorRepository>(() => _equipoRepositorio.Eliminar(5));
         }
     }
 }

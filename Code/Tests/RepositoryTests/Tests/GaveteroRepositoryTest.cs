@@ -1,18 +1,19 @@
 ﻿using Moq;
 using System.Data;
+using Microsoft.Extensions.Configuration;
 
 namespace IMT_Reservas.Tests.RepositoryTests
 {
     [TestFixture]
     public class GaveteroRepositoryTest : IGaveteroRepositoryTest
     {
-        private Mock<ExecuteQuery>  _ejecutarConsultaMock;
+        private Mock<IExecuteQuery>  _ejecutarConsultaMock;
         private IGaveteroRepository _gaveteroRepositorio;
 
         [SetUp]
         public void Setup()
         {
-            _ejecutarConsultaMock = new Mock<ExecuteQuery>();
+            _ejecutarConsultaMock = new Mock<IExecuteQuery>();
             _gaveteroRepositorio  = new GaveteroRepository(_ejecutarConsultaMock.Object);
         }
 
@@ -69,10 +70,9 @@ namespace IMT_Reservas.Tests.RepositoryTests
             _ejecutarConsultaMock.Setup(e => e.EjecutarSpNR(It.IsAny<string>(), It.IsAny<Dictionary<string, object?>>()))
                            .Throws(new Exception("test exception"));
 
-            Assert.Throws<Exception>(() => _gaveteroRepositorio.Crear(new CrearGaveteroComando("Test", null, null, null, null, null)));
-            Assert.Throws<Exception>(() => _gaveteroRepositorio.Actualizar(new ActualizarGaveteroComando(1, "Test", null, null, null, null, null)));
-            Assert.Throws<Exception>(() => _gaveteroRepositorio.Eliminar(1));
+            Assert.Throws<ErrorRepository>(() => _gaveteroRepositorio.Crear(new CrearGaveteroComando("Test", null, null, null, null, null)));
+            Assert.Throws<ErrorRepository>(() => _gaveteroRepositorio.Actualizar(new ActualizarGaveteroComando(1, "Test", null, null, null, null, null)));
+            Assert.Throws<ErrorRepository>(() => _gaveteroRepositorio.Eliminar(1));
         }
     }
 }
-

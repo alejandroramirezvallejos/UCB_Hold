@@ -107,6 +107,10 @@ public class MantenimientoController : ControllerBase
         {
             return NotFound(new { error = "Mantenimiento no encontrado", mensaje = $"No se encontró un mantenimiento con ID {id}" });
         }
+        catch (ErrorRegistroEnUso ex)
+        {
+            return Conflict(new { error = "Registro en uso", mensaje = ex.Message });
+        }
         catch (ArgumentNullException ex)
         {
             return BadRequest(new { error = "Argumento requerido", mensaje = ex.Message });

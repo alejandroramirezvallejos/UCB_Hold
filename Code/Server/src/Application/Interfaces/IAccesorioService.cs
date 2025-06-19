@@ -1,7 +1,13 @@
-public interface IAccesorioService
+using IMT_Reservas.Server.Shared.Common;
+
+namespace IMT_Reservas.Server.Application.Interfaces
 {
-    void CrearAccesorio(CrearAccesorioComando comando);
-    List<AccesorioDto>? ObtenerTodosAccesorios();
-    void ActualizarAccesorio(ActualizarAccesorioComando comando);
-    void EliminarAccesorio(EliminarAccesorioComando comando);
+    public interface IAccesorioService
+    {
+        List<AccesorioDto> ObtenerTodosAccesorios();
+        void CrearAccesorio(CrearAccesorioComando comando);
+        void ActualizarAccesorio(ActualizarAccesorioComando comando);
+        void EliminarAccesorio(EliminarAccesorioComando comando);
+    }
 }
+

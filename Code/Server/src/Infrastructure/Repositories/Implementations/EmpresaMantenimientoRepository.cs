@@ -3,9 +3,9 @@ using Npgsql;
 
 public class EmpresaMantenimientoRepository : IEmpresaMantenimientoRepository
 {
-    private readonly ExecuteQuery _ejecutarConsulta;
+    private readonly IExecuteQuery _ejecutarConsulta;
 
-    public EmpresaMantenimientoRepository(ExecuteQuery ejecutarConsulta)
+    public EmpresaMantenimientoRepository(IExecuteQuery ejecutarConsulta)
     {
         _ejecutarConsulta = ejecutarConsulta;
     }

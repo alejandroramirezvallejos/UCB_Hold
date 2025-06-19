@@ -6,13 +6,13 @@ namespace IMT_Reservas.Tests.RepositoryTests
     [TestFixture]
     public class CarreraRepositoryTest : ICarreraRepositoryTest
     {
-        private Mock<ExecuteQuery> _ejecutarConsultaMock;
+        private Mock<IExecuteQuery> _ejecutarConsultaMock;
         private ICarreraRepository _carreraRepositorio;
 
         [SetUp]
         public void Setup()
         {
-            _ejecutarConsultaMock = new Mock<ExecuteQuery>();
+            _ejecutarConsultaMock = new Mock<IExecuteQuery>();
             _carreraRepositorio   = new CarreraRepository(_ejecutarConsultaMock.Object);
         }
 
@@ -69,9 +69,9 @@ namespace IMT_Reservas.Tests.RepositoryTests
             _ejecutarConsultaMock.Setup(e => e.EjecutarSpNR(It.IsAny<string>(), It.IsAny<Dictionary<string, object?>>()))
                            .Throws(new Exception("test exception"));
 
-            Assert.Throws<Exception>(() => _carreraRepositorio.Crear(new CrearCarreraComando("Psicopedagogía")));
-            Assert.Throws<Exception>(() => _carreraRepositorio.Actualizar(new ActualizarCarreraComando(5, "Ingeniería Civil")));
-            Assert.Throws<Exception>(() => _carreraRepositorio.Eliminar(25));
+            Assert.Throws<ErrorRepository>(() => _carreraRepositorio.Crear(new CrearCarreraComando("Psicopedagogía")));
+            Assert.Throws<ErrorRepository>(() => _carreraRepositorio.Actualizar(new ActualizarCarreraComando(5, "Ingeniería Civil")));
+            Assert.Throws<ErrorRepository>(() => _carreraRepositorio.Eliminar(25));
         }
     }
 }

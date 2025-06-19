@@ -6,13 +6,13 @@ namespace IMT_Reservas.Tests.RepositoryTests
     [TestFixture]
     public class MuebleRepositoryTest : IMuebleRepositoryTest
     {
-        private Mock<ExecuteQuery> _ejecutarConsultaMock;
+        private Mock<IExecuteQuery> _ejecutarConsultaMock;
         private IMuebleRepository  _muebleRepositorio;
 
         [SetUp]
         public void Setup()
         {
-            _ejecutarConsultaMock = new Mock<ExecuteQuery>();
+            _ejecutarConsultaMock = new Mock<IExecuteQuery>();
             _muebleRepositorio    = new MuebleRepository(_ejecutarConsultaMock.Object);
         }
 
@@ -69,9 +69,9 @@ namespace IMT_Reservas.Tests.RepositoryTests
             _ejecutarConsultaMock.Setup(e => e.EjecutarSpNR(It.IsAny<string>(), It.IsAny<Dictionary<string, object?>>()))
                            .Throws(new Exception("test exception"));
 
-            Assert.Throws<Exception>(() => _muebleRepositorio.Crear(new CrearMuebleComando("Test", "Test", 100, "Test", 1, 1, 1)));
-            Assert.Throws<Exception>(() => _muebleRepositorio.Actualizar(new ActualizarMuebleComando(1, "Test", "Test", 100, "Test", 1, 1, 1)));
-            Assert.Throws<Exception>(() => _muebleRepositorio.Eliminar(1));
+            Assert.Throws<ErrorRepository>(() => _muebleRepositorio.Crear(new CrearMuebleComando("Test", "Test", 100, "Test", 1, 1, 1)));
+            Assert.Throws<ErrorRepository>(() => _muebleRepositorio.Actualizar(new ActualizarMuebleComando(1, "Test", "Test", 100, "Test", 1, 1, 1)));
+            Assert.Throws<ErrorRepository>(() => _muebleRepositorio.Eliminar(1));
         }
     }
 }

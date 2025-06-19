@@ -7,7 +7,8 @@ public class UsuarioService : IUsuarioService
     public UsuarioService(UsuarioRepository usuarioRepository)
     {
         _usuarioRepository = usuarioRepository;
-    }    public void CrearUsuario(CrearUsuarioComando comando)
+    }
+    public virtual void CrearUsuario(CrearUsuarioComando comando)
     {
         try
         {
@@ -119,7 +120,7 @@ public class UsuarioService : IUsuarioService
         if (comando.Telefono.Length > 20)
             throw new ErrorLongitudInvalida("telefono", 20);
     }
-    public List<UsuarioDto>? ObtenerTodosUsuarios()
+    public virtual List<UsuarioDto>? ObtenerTodosUsuarios()
     {
         try
         {
@@ -135,7 +136,7 @@ public class UsuarioService : IUsuarioService
         {
             throw;
         }
-    }    public void ActualizarUsuario(ActualizarUsuarioComando comando)
+    }    public virtual void ActualizarUsuario(ActualizarUsuarioComando comando)
     {
         try
         {
@@ -222,7 +223,7 @@ public class UsuarioService : IUsuarioService
         }
     }
 
-    public void EliminarUsuario(EliminarUsuarioComando comando)
+    public virtual void EliminarUsuario(EliminarUsuarioComando comando)
     {
         try
         {
@@ -263,7 +264,7 @@ public class UsuarioService : IUsuarioService
             throw;
         }
     }
-    public UsuarioDto? IniciarSesionUsuario(IniciarSesionUsuarioConsulta consulta)
+    public virtual UsuarioDto? IniciarSesionUsuario(IniciarSesionUsuarioConsulta consulta)
     {
         try
         {
