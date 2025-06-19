@@ -44,7 +44,7 @@ namespace IMT_Reservas.Tests.ControllerTests
         [Test]
         public void CrearUsuario_Valido_RetornaOk()
         {
-            CrearUsuarioComando comando = new CrearUsuarioComando("3", "Juan", "Moreno", "Silva", "estudiante2@ucb.edu.bo", "password3", "Sistemas", "72742435", "61300599", "Lucia Herrera", "referencia7529@gmail.com");
+            CrearUsuarioComando comando = new CrearUsuarioComando("3", "Juan", "Moreno", "Silva", null, "estudiante2@ucb.edu.bo", "password3", "Sistemas", "72742435", "61300599", "Lucia Herrera", "referencia7529@gmail.com");
             _usuarioServiceMock.Setup(s => s.CrearUsuario(comando));
             IActionResult resultadoAccion = _usuariosController.CrearUsuario(comando);
             Assert.That(resultadoAccion, Is.InstanceOf<OkObjectResult>());

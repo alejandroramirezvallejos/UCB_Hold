@@ -42,7 +42,7 @@ namespace IMT_Reservas.Tests.RepositoryTests
         [Test]
         public void Actualizar_LlamaExecuteSpNR_ConParametrosCorrectos()
         {
-            ActualizarEquipoComando comando = new ActualizarEquipoComando(7, "Prueba Actualizada", "UCB-PRUEBA-01", "desc act", "SN-PRUEBA-UPD", "Almacén", "Donación", 450.00, 2, "GAV-01", "operativo");
+            ActualizarEquipoComando comando = new ActualizarEquipoComando(7, "Prueba Actualizada", null, null, "UCB-PRUEBA-01", "desc act", "SN-PRUEBA-UPD", "Almacén", "Donación", 450.00, 2, "GAV-01", "operativo");
             _equipoRepositorio.Actualizar(comando);
 
             _ejecutarConsultaMock.Verify(e => e.EjecutarSpNR(
@@ -70,7 +70,7 @@ namespace IMT_Reservas.Tests.RepositoryTests
                            .Throws(new Exception("test exception"));
 
             Assert.Throws<Exception>(() => _equipoRepositorio.Crear(new CrearEquipoComando("Osciloscopio", "Tektronix", "TBS1052B", "UCB-OSC-01", "Osciloscopio digital de 2 canales", "SN-OSC-54321", "Laboratorio de Electrónica", "Compra", 450.00, 10, "GAV-03")));
-            Assert.Throws<Exception>(() => _equipoRepositorio.Actualizar(new ActualizarEquipoComando(7, "Prueba Actualizada", "UCB-PRUEBA-01", "desc act", "SN-PRUEBA-UPD", "Almacén", "Donación", 450.00, 2, "GAV-01", "operativo")));
+            Assert.Throws<Exception>(() => _equipoRepositorio.Actualizar(new ActualizarEquipoComando(7, "Prueba Actualizada", null, null, "UCB-PRUEBA-01", "desc act", "SN-PRUEBA-UPD", "Almacén", "Donación", 450.00, 2, "GAV-01", "operativo")));
             Assert.Throws<Exception>(() => _equipoRepositorio.Eliminar(5));
         }
     }

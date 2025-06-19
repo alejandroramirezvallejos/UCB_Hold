@@ -67,7 +67,7 @@ namespace IMT_Reservas.Tests.ServiceTests
         [Test]
         public void ActualizarEquipo_ComandoValido_LlamaRepositorioActualizar()
         {
-            ActualizarEquipoComando comando = new ActualizarEquipoComando(7, "Prueba Actualizada", "UCB-PRUEBA-01", "desc act", "SN-PRUEBA-UPD", "Almacén", "Donación", 450.00, 2, "GAV-01", "operativo");
+            ActualizarEquipoComando comando = new ActualizarEquipoComando(7, "Prueba Actualizada", null, null, "UCB-PRUEBA-01", "desc act", "SN-PRUEBA-UPD", "Almacén", "Donación", 450.00, 2, "GAV-01", "operativo");
             _equipoService.ActualizarEquipo(comando);
             _equipoRepositoryMock.Verify(r => r.Actualizar(comando), Times.Once);
         }

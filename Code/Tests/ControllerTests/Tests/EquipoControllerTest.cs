@@ -110,7 +110,7 @@ namespace IMT_Reservas.Tests.ControllerTests
         [Test]
         public void ActualizarEquipo_Valido_RetornaOk()
         {
-            ActualizarEquipoComando comando = new ActualizarEquipoComando(7, "Prueba Actualizada", "UCB-PRUEBA-01", "desc act", "SN-PRUEBA-UPD", "Almacén", "Donación", 450.00, 2, "GAV-01", "operativo");
+            ActualizarEquipoComando comando = new ActualizarEquipoComando(7, "Prueba Actualizada", null, null, "UCB-PRUEBA-01", "desc act", "SN-PRUEBA-UPD", "Almacén", "Donación", 450.00, 2, "GAV-01", "operativo");
             _equipoServiceMock.Setup(s => s.ActualizarEquipo(comando));
             IActionResult resultadoAccion = _equiposController.Actualizar(comando);
             Assert.That(resultadoAccion, Is.InstanceOf<OkObjectResult>());
@@ -118,9 +118,9 @@ namespace IMT_Reservas.Tests.ControllerTests
 
         private static IEnumerable<object[]> FuenteCasos_ActualizarEquipo_BadRequest()
         {
-            yield return new object[] { new ActualizarEquipoComando(0, null, null, null, null, null, null, null, null, null, null), new ErrorIdInvalido() };
-            yield return new object[] { new ActualizarEquipoComando(1, null, null, null, null, null, null, -100, null, null, null), new ErrorValorNegativo("costo de referencia") };
-            yield return new object[] { new ActualizarEquipoComando(1, null, null, null, null, null, null, null, 0, null, null), new ErrorIdInvalido() };
+            yield return new object[] { new ActualizarEquipoComando(0, null, null, null, null, null, null, null, null, null, null, null, null), new ErrorIdInvalido() };
+            yield return new object[] { new ActualizarEquipoComando(1, null, null, null, null, null, null, null, null, -100, null, null, null), new ErrorValorNegativo("costo de referencia") };
+            yield return new object[] { new ActualizarEquipoComando(1, null, null, null, null, null, null, null, null, null, 0, null, null), new ErrorIdInvalido() };
         }
 
         [Test]
@@ -135,7 +135,7 @@ namespace IMT_Reservas.Tests.ControllerTests
         [Test]
         public void ActualizarEquipo_NoEncontrado_RetornaNotFound()
         {
-            ActualizarEquipoComando comando = new ActualizarEquipoComando(99, "NoExiste", null, null, null, null, null, null, null, null, null);
+            ActualizarEquipoComando comando = new ActualizarEquipoComando(99, "NoExiste", null, null, null, null, null, null, null, null, null, null, null);
             _equipoServiceMock.Setup(s => s.ActualizarEquipo(It.IsAny<ActualizarEquipoComando>())).Throws(new ErrorRegistroNoEncontrado());
             IActionResult resultadoAccion = _equiposController.Actualizar(comando);
             Assert.That(resultadoAccion, Is.InstanceOf<NotFoundObjectResult>());
@@ -144,7 +144,7 @@ namespace IMT_Reservas.Tests.ControllerTests
         [Test]
         public void ActualizarEquipo_ServicioError_RetornaError500()
         {
-            ActualizarEquipoComando comando = new ActualizarEquipoComando(1, "Error General", null, null, null, null, null, null, null, null, null);
+            ActualizarEquipoComando comando = new ActualizarEquipoComando(1, "Error General", null, null, null, null, null, null, null, null, null, null, null);
             _equipoServiceMock.Setup(s => s.ActualizarEquipo(It.IsAny<ActualizarEquipoComando>())).Throws(new System.Exception("Error General Servidor"));
             IActionResult resultadoAccion = _equiposController.Actualizar(comando);
             Assert.That(resultadoAccion, Is.InstanceOf<ObjectResult>());

@@ -19,7 +19,7 @@ namespace IMT_Reservas.Tests.RepositoryTests
         [Test]
         public void Crear_LlamaExecuteSpNR_ConParametrosCorrectos()
         {
-            CrearUsuarioComando comando = new CrearUsuarioComando("1", "Andrea", "Vargas", "Rojas", "estudiante0@ucb.edu.bo", "password1", "Sistemas", "77327303", "68834902", "Antonio Cruz", "referencia1047@gmail.com");
+            CrearUsuarioComando comando = new CrearUsuarioComando("1", "Andrea", "Vargas", "Rojas", null, "estudiante0@ucb.edu.bo", "password1", "Sistemas", "77327303", "68834902", "Antonio Cruz", "referencia1047@gmail.com");
             _usuarioRepositorio.Crear(comando);
 
             _ejecutarConsultaMock.Verify(e => e.EjecutarSpNR(
@@ -98,7 +98,7 @@ namespace IMT_Reservas.Tests.RepositoryTests
             _ejecutarConsultaMock.Setup(e => e.EjecutarFuncion(It.IsAny<string>(), It.IsAny<Dictionary<string, object?>>()))
                            .Throws(new Exception("test exception"));
 
-            Assert.Throws<Exception>(() => _usuarioRepositorio.Crear(new CrearUsuarioComando("1", "n", "p", "m", "e@e.com", "c", "ca", null, null, null, null)));
+            Assert.Throws<Exception>(() => _usuarioRepositorio.Crear(new CrearUsuarioComando("1", "n", "p", "m", null, "e@e.com", "c", "ca", null, null, null, null)));
             Assert.Throws<Exception>(() => _usuarioRepositorio.Actualizar(new ActualizarUsuarioComando("1", null, null, null, null, null, null, null, null, null, null, null)));
             Assert.Throws<Exception>(() => _usuarioRepositorio.Eliminar("1"));
             Assert.Throws<Exception>(() => _usuarioRepositorio.ObtenerTodos());
