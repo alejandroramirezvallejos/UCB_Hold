@@ -201,16 +201,29 @@ export class PrestamosTablaComponent implements OnInit {
     
 
   aprobarprestamo(indice : number) {
-    const prestamo = this.prestamos[indice];
-    alert(`Aceptar préstamo de ${prestamo.NombreUsuario} - Funcionalidad pendiente de implementar en el backend`);
-    // Una vez implementado:
-    // this.prestamosapi.aceptarPrestamo(prestamo.Id).subscribe(...)
+    
+    this.prestamosapi.cambiarEstadoPrestamo(this.prestamos[indice].Id, 'aprobado').subscribe({
+      next: (response) => {
+        this.cargarPrestamos(); 
+      },
+      error: (error) => {
+        alert(error.error.error + ':' + error.error.mensaje);
+      }
+    });
+
   }
 
   rechazarprestamo(indice : number) {
-    const prestamo = this.prestamos[indice];
-    alert(`Rechazar préstamo de ${prestamo.NombreUsuario} - Funcionalidad pendiente de implementar en el backend`);    // Una vez implementado:
-    // this.prestamosapi.rechazarPrestamo(prestamo.Id).subscribe(...)
+    
+    this.prestamosapi.cambiarEstadoPrestamo(this.prestamos[indice].Id, 'rechazado').subscribe({
+      next: (response) => {
+        this.cargarPrestamos(); 
+      },
+      error: (error) => {
+        alert(error.error.error + ':' + error.error.mensaje);
+      }
+    });
+
   }
 
 }
