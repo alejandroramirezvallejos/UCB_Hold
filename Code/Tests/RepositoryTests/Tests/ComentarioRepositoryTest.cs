@@ -124,11 +124,12 @@ namespace IMT_Reservas.Tests.RepositoryTests
                 {
                     { "_id", new ObjectId("68531f233cba0b4adf2ea2cd") },
                     { "CarnetUsuario", "7" },
-                    { "IdGrupoEquipo", "8" },
+                    { "IdGrupoEquipo", idGrupoEquipo },
                     { "Contenido", "El servidor está bien configurado, pero recomendaría actualizar el sis…" },
                     { "Likes", 3 },
                     { "FechaCreacion", DateTime.Parse("2025-06-12T09:15:00.000Z") },
-                    { "EstadoEliminado", false }
+                    { "EstadoEliminado", false },
+                    { "usuario_info", new BsonDocument { { "Nombre", "Test" }, { "ApellidoPaterno", "User" } } }
                 }
             };
             
@@ -136,7 +137,10 @@ namespace IMT_Reservas.Tests.RepositoryTests
             cursorMock.Setup(_ => _.Current).Returns(documentos);
             cursorMock.SetupSequence(_ => _.MoveNext(It.IsAny<CancellationToken>())).Returns(true).Returns(false);
 
-            _collectionMock.Setup(c => c.FindSync(It.IsAny<FilterDefinition<BsonDocument>>(), It.IsAny<FindOptions<BsonDocument, BsonDocument>>(), default))
+            _collectionMock.Setup(c => c.DocumentSerializer).Returns(BsonSerializer.SerializerRegistry.GetSerializer<BsonDocument>());
+            _collectionMock.Setup(c => c.Settings).Returns(new MongoCollectionSettings());
+
+            _collectionMock.Setup(c => c.Aggregate(It.IsAny<PipelineDefinition<BsonDocument, BsonDocument>>(), It.IsAny<AggregateOptions>(), default))
                 .Returns(cursorMock.Object);
 
             var resultado = _comentarioRepository.ObtenerPorGrupoEquipo(idGrupoEquipo);
@@ -144,6 +148,7 @@ namespace IMT_Reservas.Tests.RepositoryTests
             Assert.That(resultado, Is.InstanceOf<DataTable>());
             Assert.That(resultado.Rows.Count, Is.EqualTo(1));
             Assert.That(resultado.Rows[0]["id_comentario"].ToString(), Is.EqualTo("68531f233cba0b4adf2ea2cd"));
+            Assert.That(resultado.Rows[0]["nombre_usuario"].ToString(), Is.EqualTo("Test"));
         }
 
         [Test]
@@ -156,7 +161,10 @@ namespace IMT_Reservas.Tests.RepositoryTests
 
             _collectionMock.Setup(c => c.InsertOne(It.IsAny<BsonDocument>(), null, default)).Throws(exception);
             _collectionMock.Setup(c => c.UpdateOne(filterDefinition, updateDefinition, It.IsAny<UpdateOptions>(), default)).Throws(exception);
-            _collectionMock.Setup(c => c.FindSync(filterDefinition, It.IsAny<FindOptions<BsonDocument, BsonDocument>>(), default)).Throws(exception);
+            
+            _collectionMock.Setup(c => c.DocumentSerializer).Returns(BsonSerializer.SerializerRegistry.GetSerializer<BsonDocument>());
+            _collectionMock.Setup(c => c.Settings).Returns(new MongoCollectionSettings());
+            _collectionMock.Setup(c => c.Aggregate(It.IsAny<PipelineDefinition<BsonDocument, BsonDocument>>(), It.IsAny<AggregateOptions>(), default)).Throws(exception);
 
             Assert.Throws<ErrorRepository>(() => _comentarioRepository.Crear(new CrearComentarioComando("1", 1, "test")));
             Assert.Throws<ErrorRepository>(() => _comentarioRepository.Eliminar(new EliminarComentarioComando(objectId)));

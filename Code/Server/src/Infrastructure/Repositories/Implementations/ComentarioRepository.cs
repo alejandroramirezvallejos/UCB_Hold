@@ -18,7 +18,7 @@ public class ComentarioRepository : IComentarioRepository
         var documento = new BsonDocument
         {
             { "CarnetUsuario", comando.CarnetUsuario },
-            { "IdGrupoEquipo", comando.IdGrupoEquipo.ToString() },
+            { "IdGrupoEquipo", comando.IdGrupoEquipo },
             { "Contenido", comando.Contenido },
             { "Likes", 0 },
             { "FechaCreacion", DateTime.UtcNow },
@@ -37,11 +37,11 @@ public class ComentarioRepository : IComentarioRepository
     
     public void Eliminar(EliminarComentarioComando comando)
     {
-        var filtro = new BsonDocument
-        {
-            { "_id", new ObjectId(comando.Id) },
-            { "EstadoEliminado", false }
-        };
+        var builder = Builders<BsonDocument>.Filter;
+        var filtro = builder.And(
+            builder.Eq("_id", new ObjectId(comando.Id)),
+            builder.Eq("EstadoEliminado", false)
+        );
 
         try
         {
@@ -71,11 +71,11 @@ public class ComentarioRepository : IComentarioRepository
 
     public void AgregarLike(AgregarLikeComentarioComando comando)
     {
-        var filtro = new BsonDocument
-        {
-            { "_id", new ObjectId(comando.Id) },
-            { "EstadoEliminado", false }
-        };
+        var builder = Builders<BsonDocument>.Filter;
+        var filtro = builder.And(
+            builder.Eq("_id", new ObjectId(comando.Id)),
+            builder.Eq("EstadoEliminado", false)
+        );
 
         try
         {
@@ -105,7 +105,7 @@ public class ComentarioRepository : IComentarioRepository
     {
         var builder = Builders<BsonDocument>.Filter;
         var filtro = builder.And(
-            builder.Eq("IdGrupoEquipo", idGrupoEquipo.ToString()),
+            builder.Eq("IdGrupoEquipo", idGrupoEquipo),
             builder.Eq("EstadoEliminado", false)
         );
 
@@ -116,17 +116,23 @@ public class ComentarioRepository : IComentarioRepository
     {
         try
         {
-            var findOptions = new FindOptions<BsonDocument>
+            var pipeline = new BsonDocument[]
             {
-                Sort = Builders<BsonDocument>.Sort.Descending("FechaCreacion")
+                new BsonDocument("$match", filtro.Render(_coleccion.DocumentSerializer, _coleccion.Settings.SerializerRegistry)),
+                new BsonDocument("$sort", new BsonDocument("FechaCreacion", -1)),
+                new BsonDocument("$lookup", new BsonDocument
+                {
+                    { "from", "Usuarios" },
+                    { "localField", "CarnetUsuario" },
+                    { "foreignField", "Carnet" },
+                    { "as", "usuario_info" }
+                }),
+                new BsonDocument("$unwind", new BsonDocument { { "path", "$usuario_info" }, { "preserveNullAndEmptyArrays", true } })
             };
-            var cursor = _coleccion.FindSync(filtro, findOptions);
 
-            var documentos = new List<BsonDocument>();
-            while (cursor.MoveNext())
-            {
-                documentos.AddRange(cursor.Current);
-            }
+            var cursor = _coleccion.Aggregate<BsonDocument>(pipeline);
+
+            var documentos = cursor.ToList();
 
             return ConvertirATablaDeDatos(documentos);
         }
@@ -155,9 +161,20 @@ public class ComentarioRepository : IComentarioRepository
             
             fila["id_comentario"] = doc["_id"].ToString();
             fila["carnet_usuario"] = doc["CarnetUsuario"].AsString;
-            fila["nombre_usuario"] = DBNull.Value;
-            fila["apellido_paterno_usuario"] = DBNull.Value;
-            fila["id_grupo_equipo"] = doc["IdGrupoEquipo"].AsString;
+
+            if (doc.Contains("usuario_info") && doc["usuario_info"] != BsonNull.Value)
+            {
+                var usuarioInfo = doc["usuario_info"].AsBsonDocument;
+                fila["nombre_usuario"] = usuarioInfo.GetValue("Nombre", BsonNull.Value).AsString;
+                fila["apellido_paterno_usuario"] = usuarioInfo.GetValue("ApellidoPaterno", BsonNull.Value).AsString;
+            }
+            else
+            {
+                fila["nombre_usuario"] = DBNull.Value;
+                fila["apellido_paterno_usuario"] = DBNull.Value;
+            }
+
+            fila["id_grupo_equipo"] = doc["IdGrupoEquipo"].AsInt32.ToString();
             fila["contenido_comentario"] = doc["Contenido"].AsString;
             fila["likes_comentario"] = doc["Likes"].AsInt32;
             fila["fecha_creacion_comentario"] = doc["FechaCreacion"].ToUniversalTime();
