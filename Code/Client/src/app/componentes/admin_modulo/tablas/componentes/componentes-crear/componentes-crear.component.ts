@@ -36,7 +36,7 @@ export class ComponentesCrearComponent {
         this.cerrar();
       },
       error => {
-        alert('Error al crear componente: ' + error);
+        alert(error.error.error + ': ' + error.error.mensaje);
         this.cerrar();
       }
     );

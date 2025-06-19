@@ -36,7 +36,7 @@ export class GaveterosEditarComponent {
         this.cerrar();
       },
       error: (error) => {
-        alert('Error al editar gavetero: ' + error.error.message);
+        alert(error.error.error + ': ' + error.error.mensaje);
         this.cerrar();
       }
     });

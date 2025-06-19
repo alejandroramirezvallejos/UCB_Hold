@@ -39,7 +39,7 @@ export class EmpresasMantenimientoCrearComponent {
         this.cerrar();
       },
       error: (error) => {
-        alert('Error al crear empresa de mantenimiento: ' + error);
+        alert(error.error.error + ': ' + error.error.mensaje);
         this.cerrar();
       }
     });

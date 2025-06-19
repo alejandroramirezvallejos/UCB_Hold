@@ -44,7 +44,7 @@ export class UsuariosCrearComponent {
         this.cerrar();
       },
       error => {
-        alert('Error al crear usuario: ' + error);
+        alert(error.error.error + ': ' + error.error.mensaje);
         this.cerrar();
       }
     );

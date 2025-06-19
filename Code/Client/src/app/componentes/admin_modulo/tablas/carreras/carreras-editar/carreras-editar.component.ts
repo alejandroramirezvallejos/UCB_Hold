@@ -32,7 +32,7 @@ export class CarrerasEditarComponent {
         this.cerrar();
       },
       error => {
-        alert('Error al editar carrera: ' + error.message);
+        alert(error.error.error + ': ' + error.error.mensaje);
         this.cerrar();
       }
     );

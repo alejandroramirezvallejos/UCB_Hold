@@ -30,7 +30,7 @@ export class CarrerasCrearComponent {
         this.cerrar();
       },
       error => {
-        alert('Error al crear carrera: ' + error);
+        alert(error.error.error + ': ' + error.error.mensaje);
         this.cerrar();
       }
     );

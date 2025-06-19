@@ -32,7 +32,7 @@ export class CategoriasEditarComponent {
         this.cerrar();
       },
       error => {
-        alert('Error al editar categoría: ' + error.message);
+        alert(error.error.error + ': ' + error.error.mensaje);
         this.cerrar();
       }
     );

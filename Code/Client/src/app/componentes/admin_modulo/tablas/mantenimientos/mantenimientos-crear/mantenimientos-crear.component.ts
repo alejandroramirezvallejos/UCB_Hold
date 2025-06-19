@@ -49,7 +49,7 @@ export class MantenimientosCrearComponent {
         this.cerrar();
       },
       error => {
-        alert('Error al crear mantenimiento: ' + error);
+        alert(error.error.error + ': ' + error.error.mensaje);
         this.cerrar();
       }
     );

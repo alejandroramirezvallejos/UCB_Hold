@@ -35,7 +35,7 @@ export class CategoriasCrearComponent {
         this.cerrar();
       },
       error => {
-        alert('Error al crear categoría: ' + error);
+        alert(error.error.error + ': ' + error.error.mensaje);
         this.cerrar();
       }
     );
