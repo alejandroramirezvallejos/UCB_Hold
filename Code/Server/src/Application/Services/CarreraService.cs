@@ -153,11 +153,8 @@ public class CarreraService : ICarreraService
         if (comando.Id <= 0)
             throw new ErrorIdInvalido();
 
-        if (string.IsNullOrWhiteSpace(comando.Nombre))
-            throw new ErrorNombreRequerido();
-
-        if (comando.Nombre.Length > 255)
-            throw new ErrorLongitudInvalida("nombre de la carrera", 256);
+        if (!string.IsNullOrWhiteSpace(comando.Nombre) && comando.Nombre.Length > 255)
+            throw new ErrorLongitudInvalida("nombre de la carrera", 255);
     }    public void EliminarCarrera(EliminarCarreraComando comando)
     {
         try

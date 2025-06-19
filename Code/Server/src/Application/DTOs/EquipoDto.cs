@@ -2,7 +2,9 @@ public class EquipoDto
 {
     public int Id              { get; set; }
     public string? NombreGrupoEquipo { get; set; } = null;
-    public int? CodigoImt                { get; set; } = null;
+    public string? Modelo            { get; set; } = null;
+    public string? Marca             { get; set; } = null;
+    public int? CodigoImt { get; set; } = null;
     public string? CodigoUcb             { get; set; } = null;
     public string? NumeroSerial          { get; set; } = null;
     public string? EstadoEquipo          { get; set; } = null;

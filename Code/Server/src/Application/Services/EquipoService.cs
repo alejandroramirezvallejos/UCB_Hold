@@ -177,8 +177,6 @@ public class EquipoService : IEquipoService
             throw new ArgumentNullException(nameof(comando));
         if (comando.Id <= 0)
             throw new ErrorIdInvalido();
-        if (string.IsNullOrWhiteSpace(comando.NombreGrupoEquipo))
-            throw new ErrorNombreRequerido();
 
         if (comando.CostoReferencia.HasValue && comando.CostoReferencia < 0)
             throw new ErrorValorNegativo("costo de referencia");
@@ -258,6 +256,8 @@ public class EquipoService : IEquipoService
         {
             Id = Convert.ToInt32(fila["id_equipo"]),
             NombreGrupoEquipo = fila["nombre_grupo_equipo"] == DBNull.Value ? null : fila["nombre_grupo_equipo"].ToString(),
+            Modelo = fila["modelo_equipo"] == DBNull.Value ? null : fila["modelo_equipo"].ToString(),
+            Marca = fila["marca_equipo"] == DBNull.Value ? null : fila["marca_equipo"].ToString(),
             CodigoImt = fila["codigo_imt_equipo"] == DBNull.Value ? null : Convert.ToInt32(fila["codigo_imt_equipo"]),
             CodigoUcb = fila["codigo_ucb_equipo"] == DBNull.Value ? null : fila["codigo_ucb_equipo"].ToString(),
             Descripcion = fila["descripcion_equipo"] == DBNull.Value ? null : fila["descripcion_equipo"].ToString(),

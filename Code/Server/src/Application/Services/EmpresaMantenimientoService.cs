@@ -183,11 +183,8 @@ public class EmpresaMantenimientoService : IEmpresaMantenimientoService
         if (comando.Id <= 0)
             throw new ErrorIdInvalido();
 
-        if (string.IsNullOrWhiteSpace(comando.NombreEmpresa))
-            throw new ErrorNombreRequerido();
-
-        if (comando.NombreEmpresa.Length > 100)
-            throw new ErrorLongitudInvalida("nombre de la empresa", 100);
+        if (!string.IsNullOrWhiteSpace(comando.NombreEmpresa) && comando.NombreEmpresa.Length > 255)
+            throw new ErrorLongitudInvalida("nombre de la empresa", 255);
     }
 
     private void ValidarEntradaEliminacion(EliminarEmpresaMantenimientoComando comando)

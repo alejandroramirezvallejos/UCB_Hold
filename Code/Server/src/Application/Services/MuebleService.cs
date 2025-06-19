@@ -208,8 +208,8 @@ public class MuebleService : IMuebleService
         if (comando.Id <= 0)
             throw new ErrorIdInvalido();
 
-        if (string.IsNullOrWhiteSpace(comando.Nombre))
-            throw new ErrorNombreRequerido();
+        if (!string.IsNullOrWhiteSpace(comando.Nombre) && comando.Nombre.Length > 255)
+            throw new ErrorLongitudInvalida("nombre mueble", 255);
 
         if (comando.Costo.HasValue && comando.Costo < 0)
             throw new ErrorValorNegativo("costo");

@@ -230,17 +230,11 @@ public class ComponenteService : IComponenteService
         if (comando.Id <= 0)
             throw new ErrorIdInvalido();
 
-        if (string.IsNullOrWhiteSpace(comando.Nombre))
-            throw new ErrorNombreRequerido();
-        if (comando.Nombre.Length > 100)
-            throw new ErrorLongitudInvalida("nombre", 100);
-        if (string.IsNullOrWhiteSpace(comando.Modelo))
-            throw new ErrorModeloRequerido();
-        if (comando.Modelo.Length > 50)
-            throw new ErrorLongitudInvalida("modelo", 50);
+        if (!string.IsNullOrWhiteSpace(comando.Nombre) && comando.Nombre.Length > 255)
+            throw new ErrorLongitudInvalida("nombre", 255);
 
-        if (comando.CodigoIMT <= 0)
-            throw new ErrorCodigoImtRequerido();
+        if (!string.IsNullOrWhiteSpace(comando.Modelo) && comando.Modelo.Length > 255)
+            throw new ErrorLongitudInvalida("modelo", 255);
 
         if (comando.PrecioReferencia.HasValue && comando.PrecioReferencia.Value < 0)
             throw new ErrorValorNegativo("precio de referencia");
@@ -263,7 +257,8 @@ public class ComponenteService : IComponenteService
             Descripcion = fila["descripcion_componente"] == DBNull.Value ? null : fila["descripcion_componente"].ToString(),
             PrecioReferencia = fila["precio_referencia_componente"] == DBNull.Value ? null : Convert.ToDouble(fila["precio_referencia_componente"]),
             NombreEquipo = fila["nombre_equipo"] == DBNull.Value ? null : fila["nombre_equipo"].ToString(),
-            CodigoImtEquipo = fila["codigo_imt_equipo"] == DBNull.Value ? null : Convert.ToInt32(fila["codigo_imt_equipo"])
+            CodigoImtEquipo = fila["codigo_imt_equipo"] == DBNull.Value ? null : Convert.ToInt32(fila["codigo_imt_equipo"]),
+            UrlDataSheet = fila["url_data_sheet_equipo"] == DBNull.Value ? null : fila["url_data_sheet_equipo"].ToString(),
         };
     }
 }

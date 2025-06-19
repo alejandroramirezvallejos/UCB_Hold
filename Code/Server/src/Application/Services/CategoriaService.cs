@@ -194,11 +194,8 @@ public class CategoriaService : ICategoriaService
         if (comando.Id <= 0)
             throw new ErrorIdInvalido();
 
-        if (string.IsNullOrWhiteSpace(comando.Nombre))
-            throw new ErrorNombreRequerido();
-
-        if (comando.Nombre.Length > 50)
-            throw new ErrorLongitudInvalida("nombre de la categoría", 50);
+        if (!string.IsNullOrWhiteSpace(comando.Nombre) && comando.Nombre.Length > 255)
+            throw new ErrorLongitudInvalida("nombre de la categoría", 255);
     }    private void ValidarEntradaEliminacion(EliminarCategoriaComando comando)
     {
         if (comando == null)

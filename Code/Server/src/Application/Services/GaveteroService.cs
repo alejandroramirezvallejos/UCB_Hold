@@ -196,11 +196,11 @@ public class GaveteroService : IGaveteroService
         if (comando.Id <= 0)
             throw new ErrorIdInvalido();
 
-        if (string.IsNullOrWhiteSpace(comando.Nombre))
-            throw new ErrorNombreRequerido();
+        if (!string.IsNullOrWhiteSpace(comando.Nombre) && comando.Nombre.Length > 255)
+            throw new ErrorLongitudInvalida("nombre gavetero", 255);
 
-        if (string.IsNullOrWhiteSpace(comando.NombreMueble))
-            throw new ErrorNombreMuebleRequerido();
+        if (!string.IsNullOrWhiteSpace(comando.NombreMueble) && comando.NombreMueble.Length > 255)
+            throw new ErrorLongitudInvalida("nombre mueble", 255);
 
         if (comando.Longitud.HasValue && comando.Longitud <= 0)
             throw new ErrorValorNegativo("longitud");

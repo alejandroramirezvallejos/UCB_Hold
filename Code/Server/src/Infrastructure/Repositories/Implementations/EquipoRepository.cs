@@ -57,6 +57,8 @@ public class EquipoRepository : IEquipoRepository
         CALL public.actualizar_equipo(
 	    @id,
 	    @nombre,
+        @modelo,
+        @marca,
 	    @codigoUcb,
 	    @descripcion,
 	    @numeroSerial,
@@ -71,6 +73,8 @@ public class EquipoRepository : IEquipoRepository
         {
             ["id"]                    = comando.Id,
             ["nombre"]                = comando.NombreGrupoEquipo ?? (object)DBNull.Value,
+            ["modelo"]                = comando.Modelo ?? (object)DBNull.Value,
+            ["marca"]                 = comando.Marca ?? (object)DBNull.Value,
             ["codigoUcb"]             = comando.CodigoUcb ?? (object)DBNull.Value,
             ["descripcion"]           = comando.Descripcion ?? (object)DBNull.Value,
             ["numeroSerial"]          = comando.NumeroSerial ?? (object)DBNull.Value,

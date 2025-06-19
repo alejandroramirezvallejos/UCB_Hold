@@ -96,6 +96,9 @@ public class GaveteroController : ControllerBase
         }        catch (ErrorReferenciaInvalida ex)
         {
             return BadRequest(new { error = "Referencia inválida", mensaje = ex.Message });
+        }catch(ErrorLongitudInvalida ex)
+        {
+            return BadRequest(new { error = "Longitud inválida", mensaje = ex.Message });
         }
         catch (ArgumentNullException ex)
         {
