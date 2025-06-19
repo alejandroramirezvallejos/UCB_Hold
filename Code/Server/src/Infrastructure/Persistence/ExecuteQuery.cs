@@ -48,13 +48,12 @@ public class ExecuteQuery : IExecuteQuery
             cmd.ExecuteNonQuery();
             conn.Close();
         }
-        catch (Exception ex)
+        catch (NpgsqlException ex)
         {
-            
             var parametrosStr = parametros != null 
                 ? string.Join(", ", parametros.Select(p => $"{p.Key}={p.Value}"))
                 : "null";
-            throw new Exception($"Error ejecutando comando: {nombreSp}\nParámetros: {parametrosStr}\nError original: {ex.Message}", ex);
+            throw new NpgsqlException($"Error ejecutando comando: {nombreSp}\nParámetros: {parametrosStr}\nError original: {ex.Message}", ex);
         }
     }
 

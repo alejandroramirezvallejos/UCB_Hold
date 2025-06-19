@@ -11,8 +11,8 @@ namespace IMT_Reservas.Server.Infrastructure.MongoDb
 
         public MongoDbContexto(IOptions<MongoDbConfiguracion> configuracion)
         {
-            MongoClient clienteMongo = new MongoClient(configuracion.Value.Conexion);
-            _baseDeDatos             = clienteMongo.GetDatabase(configuracion.Value.BaseDeDatos);
+            MongoClient clienteMongo = new MongoClient(configuracion.Value.ConnectionString);
+            _baseDeDatos             = clienteMongo.GetDatabase(configuracion.Value.DatabaseName);
             _gestionArchivos         = new GridFSBucket(_baseDeDatos);
         }
 
