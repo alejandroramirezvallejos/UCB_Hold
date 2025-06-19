@@ -1,4 +1,5 @@
 using Microsoft.AspNetCore.Mvc;
+using IMT_Reservas.Server.Shared.Common;
 
 namespace API.Controllers;
 
@@ -196,4 +197,3 @@ public class GrupoEquipoController : ControllerBase
         }
     }
 }
-

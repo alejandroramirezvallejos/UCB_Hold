@@ -1,9 +1,9 @@
-
-public class ErrorIdInvalido : DomainException
+namespace IMT_Reservas.Server.Shared.Common
 {
-    public ErrorIdInvalido() 
-        : base("El ID es requerido y debe ser mayor a 0")
+    public class ErrorIdInvalido : Exception
     {
+        public ErrorIdInvalido(string message = "El ID es requerido y debe ser mayor a 0") : base(message)
+        {
+        }
     }
 }
-

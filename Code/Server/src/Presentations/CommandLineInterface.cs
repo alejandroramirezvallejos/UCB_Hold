@@ -1,3 +1,7 @@
+using IMT_Reservas.Server.Application.Interfaces;
+using IMT_Reservas.Server.Application.Services;
+using IMT_Reservas.Server.Infrastructure.MongoDb;
+using IMT_Reservas.Server.Infrastructure.Repositories.Implementations;
 using Microsoft.AspNetCore.Mvc;
 
 public static class CommandLineInterface
@@ -48,7 +52,7 @@ public static class CommandLineInterface
 
             case "program":
                 if (args.Length > 1 && args[1] == "--run")
-                    EjecutarPrograma();
+                    EjecutarPrograma(args);
                 else
                     MostrarAyuda();
                 break;
@@ -93,7 +97,7 @@ public static class CommandLineInterface
             Console.ResetColor();
         }
     }
-    private static void EjecutarPrograma()
+    private static void EjecutarPrograma(string[] args)
     {
         if (_webHost != null)
         {
@@ -106,7 +110,14 @@ public static class CommandLineInterface
         Console.WriteLine("Iniciando programa...\n");
         Console.ResetColor();
 
-        var builder = WebApplication.CreateBuilder();        
+        var builder = WebApplication.CreateBuilder(args);
+
+        builder.Services.AddMongoDb(builder.Configuration)
+            .AddScoped<IComentarioService, ComentarioService>()
+            .AddScoped<INotificacionService, NotificacionService>()
+            .AddScoped<IComentarioRepository, ComentarioRepository>()
+            .AddScoped<INotificacionRepository, NotificacionRepository>();
+
         builder.Services.AddControllers().AddJsonOptions(options =>
             {
                 options.JsonSerializerOptions.PropertyNamingPolicy = null;

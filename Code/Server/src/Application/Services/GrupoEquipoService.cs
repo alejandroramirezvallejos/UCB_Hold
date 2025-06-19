@@ -1,4 +1,5 @@
 using System.Data;
+using IMT_Reservas.Server.Shared.Common;
 
 public class GrupoEquipoService : IGrupoEquipoService
 {
@@ -93,24 +94,22 @@ public class GrupoEquipoService : IGrupoEquipoService
     {
         if (comando == null)
             throw new ArgumentNullException(nameof(comando));
+        if( comando.Id <= 0)
+            throw new ErrorIdInvalido();
+        if (!string.IsNullOrWhiteSpace(comando.Nombre) && comando.Nombre.Length > 255)
+            throw new ErrorLongitudInvalida("nombre grupo equipo", 255);
 
-        if (string.IsNullOrWhiteSpace(comando.Nombre))
-            throw new ErrorNombreRequerido();
+        if (!string.IsNullOrWhiteSpace(comando.Modelo) && comando.Modelo.Length > 255)
+            throw new ErrorLongitudInvalida("modelo grupo equipo", 255);
 
-        if (string.IsNullOrWhiteSpace(comando.Modelo))
-            throw new ErrorModeloRequerido();
+        if (!string.IsNullOrWhiteSpace(comando.Marca) && comando.Marca.Length > 255)
+            throw new ErrorLongitudInvalida("marca grupo equipo", 255);
 
-        if (string.IsNullOrWhiteSpace(comando.Marca))
-            throw new ErrorMarcaRequerida();
+        if (!string.IsNullOrWhiteSpace(comando.Descripcion) && comando.Descripcion.Length > 255)
+            throw new ErrorLongitudInvalida("descripcion grupo equipo", 255);
 
-        if (string.IsNullOrWhiteSpace(comando.Descripcion))
-            throw new ErrorDescripcionRequerida();
-
-        if (string.IsNullOrWhiteSpace(comando.NombreCategoria))
-            throw new ErrorCategoriaRequerida();
-
-        if (string.IsNullOrWhiteSpace(comando.UrlImagen))
-            throw new ErrorUrlImagenRequerida();
+        if (!string.IsNullOrWhiteSpace(comando.NombreCategoria) && comando.NombreCategoria.Length > 255)
+            throw new ErrorLongitudInvalida("nombre categoria grupo equipo", 255);
     }
 
     private void ValidarEntradaEliminacion(EliminarGrupoEquipoComando comando)

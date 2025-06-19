@@ -1,4 +1,5 @@
 using System.Data;
+using IMT_Reservas.Server.Shared.Common;
 public class UsuarioService : IUsuarioService
 {
     private readonly UsuarioRepository _usuarioRepository;
@@ -316,49 +317,27 @@ public class UsuarioService : IUsuarioService
         if (comando == null)
             throw new ArgumentNullException(nameof(comando));
 
-        if (string.IsNullOrWhiteSpace(comando.Carnet))
-            throw new ErrorCarnetRequerido();
-
-        if (comando.Carnet.Length > 15)
+        if (!string.IsNullOrWhiteSpace(comando.Carnet) && comando.Carnet.Length > 15)
             throw new ErrorLongitudInvalida("carnet", 15);
 
-        if (string.IsNullOrWhiteSpace(comando.Nombre))
-            throw new ErrorNombreRequerido();
+        if (!string.IsNullOrWhiteSpace(comando.Nombre) && comando.Nombre.Length > 255)
+            throw new ErrorLongitudInvalida("nombre usuario", 255);
 
-        if (comando.Nombre.Length > 100)
-            throw new ErrorLongitudInvalida("nombre", 100);
+        if (!string.IsNullOrWhiteSpace(comando.ApellidoPaterno) && comando.ApellidoPaterno.Length > 255)
+            throw new ErrorLongitudInvalida("apellido paterno", 255);
 
-        if (string.IsNullOrWhiteSpace(comando.ApellidoPaterno))
-            throw new ErrorApellidoPaternoRequerido();
+        if (!string.IsNullOrWhiteSpace(comando.ApellidoMaterno) && comando.ApellidoMaterno.Length > 255)
+            throw new ErrorLongitudInvalida("apellido materno", 255);
 
-        if (comando.ApellidoPaterno.Length > 100)
-            throw new ErrorLongitudInvalida("apellido paterno", 100);
-
-        if (string.IsNullOrWhiteSpace(comando.ApellidoMaterno))
-            throw new ErrorApellidoMaternoRequerido();
-
-        if (comando.ApellidoMaterno.Length > 100)
-            throw new ErrorLongitudInvalida("apellido materno", 100);
-
-        if (string.IsNullOrWhiteSpace(comando.Email) || !IsValidEmail(comando.Email))
+        if (!string.IsNullOrWhiteSpace(comando.Email) && comando.Email.Length > 150)
+            throw new ErrorLongitudInvalida("email", 150);
+        if (!string.IsNullOrWhiteSpace(comando.Email) && !IsValidEmail(comando.Email))
             throw new ErrorEmailInvalido();
 
-        if (comando.Email.Length > 150)
-            throw new ErrorLongitudInvalida("email", 150);
-
-        if (string.IsNullOrWhiteSpace(comando.Contrasena))
-            throw new ErrorContrasenaRequerida();
-
-        if (comando.Contrasena.Length < 6)
+        if (!string.IsNullOrWhiteSpace(comando.Contrasena) && comando.Contrasena.Length < 6)
             throw new ErrorLongitudInvalida("contraseña", 6, 100);
 
-        if (string.IsNullOrWhiteSpace(comando.NombreCarrera))
-            throw new ErrorCarreraRequerida();
-
-        if (string.IsNullOrWhiteSpace(comando.Telefono))
-            throw new ErrorTelefonoRequerido();
-
-        if (comando.Telefono.Length > 20)
+        if (!string.IsNullOrWhiteSpace(comando.Telefono) && comando.Telefono.Length > 20)
             throw new ErrorLongitudInvalida("telefono", 20);
     }
 

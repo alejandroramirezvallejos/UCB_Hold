@@ -2,6 +2,7 @@ using API.Controllers;
 using Moq;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Configuration;
+using IMT_Reservas.Server.Shared.Common;
 
 namespace IMT_Reservas.Tests.ControllerTests
 {
