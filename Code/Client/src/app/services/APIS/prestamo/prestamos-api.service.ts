@@ -64,12 +64,17 @@ export class PrestamosAPIService {
     return this.http.delete(`${this.url}/${id}`);
     }
 
-    aprobarPrestamo(prestamo: Prestamos) {
-      const enviar = {
-        Id: prestamo.Id
-        
-      };
+
+    cambiarEstadoPrestamo(Id : number, estado: string) {
+    const APIurl = `${this.url}/estadoPrestamo`;
+    const envio ={
+      Id : Id,
+      EstadoPrestamo : estado
+    }
+
+    return this.http.put(APIurl,envio)
 
     }
+
 
 }

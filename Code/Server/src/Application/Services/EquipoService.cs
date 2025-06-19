@@ -1,4 +1,5 @@
 using System.Data;
+using IMT_Reservas.Server.Shared.Common;
 public class EquipoService : IEquipoService
 {
     private readonly EquipoRepository _equipoRepository;

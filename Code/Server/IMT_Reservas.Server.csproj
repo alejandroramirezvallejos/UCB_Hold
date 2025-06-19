@@ -24,5 +24,9 @@
       <ReferenceOutputAssembly>false</ReferenceOutputAssembly>
     </ProjectReference>
   </ItemGroup>
+  
+  <ItemGroup>
+    <Folder Include="src\Presentations\ViewModelDtos\Comentario\" />
+  </ItemGroup>
 
 </Project>
