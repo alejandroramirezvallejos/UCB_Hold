@@ -3,26 +3,20 @@ using Moq;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Configuration;
 using IMT_Reservas.Server.Shared.Common;
+using IMT_Reservas.Server.Application.Interfaces;
 
 namespace IMT_Reservas.Tests.ControllerTests
 {
     [TestFixture]
     public class ComponenteControllerTest : IComponenteControllerTest
     {
-        private Mock<ComponenteService>    _componenteServiceMock;
-        private Mock<ComponenteRepository> _componenteRepoMock;
-        private Mock<ExecuteQuery>         _queryExecMock;
-        private Mock<IConfiguration>       _configMock;
+        private Mock<IComponenteService>    _componenteServiceMock;
         private ComponenteController       _componentesController;
 
         [SetUp]
         public void Setup()
         {
-            _configMock            = new Mock<IConfiguration>();
-            _configMock.Setup(config => config.GetSection("ConnectionStrings")["DefaultConnection"]).Returns("fake_connection_string");
-            _queryExecMock         = new Mock<ExecuteQuery>(_configMock.Object);
-            _componenteRepoMock    = new Mock<ComponenteRepository>(_queryExecMock.Object);
-            _componenteServiceMock = new Mock<ComponenteService>(_componenteRepoMock.Object);
+            _componenteServiceMock = new Mock<IComponenteService>();
             _componentesController = new ComponenteController(_componenteServiceMock.Object);
         }
 

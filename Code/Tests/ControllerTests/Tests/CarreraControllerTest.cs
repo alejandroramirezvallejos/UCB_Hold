@@ -1,28 +1,21 @@
 using Moq;
 using API.Controllers;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.Extensions.Configuration;
 using IMT_Reservas.Server.Shared.Common;
+using IMT_Reservas.Server.Application.Interfaces;
 
 namespace IMT_Reservas.Tests.ControllerTests.Tests
 {
     [TestFixture]
     public class CarreraControllerTest : ICarreraControllerTest
     {
-        private Mock<CarreraService>    _carreraServiceMock;
-        private Mock<CarreraRepository> _carreraRepoMock;
-        private Mock<ExecuteQuery>      _queryExecMock;
-        private Mock<IConfiguration>    _configMock;
+        private Mock<ICarreraService>    _carreraServiceMock;
         private CarreraController       _carrerasController;
 
         [SetUp]
         public void Setup()
         {
-            _configMock         = new Mock<IConfiguration>();
-            _configMock.Setup(config => config.GetSection("ConnectionStrings")["DefaultConnection"]).Returns("fake_connection_string");
-            _queryExecMock      = new Mock<ExecuteQuery>(_configMock.Object);
-            _carreraRepoMock    = new Mock<CarreraRepository>(_queryExecMock.Object);
-            _carreraServiceMock = new Mock<CarreraService>(_carreraRepoMock.Object);
+            _carreraServiceMock = new Mock<ICarreraService>();
             _carrerasController = new CarreraController(_carreraServiceMock.Object);
         }
 

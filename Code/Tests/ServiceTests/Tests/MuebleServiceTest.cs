@@ -6,13 +6,13 @@ namespace IMT_Reservas.Tests.ServiceTests
     [TestFixture]
     public class MuebleServiceTest : IMuebleServiceTest
     {
-        private Mock<MuebleRepository> _muebleRepositoryMock;
+        private Mock<IMuebleRepository> _muebleRepositoryMock;
         private MuebleService          _muebleService;
 
         [SetUp]
         public void Setup()
         {
-            _muebleRepositoryMock = new Mock<MuebleRepository>();
+            _muebleRepositoryMock = new Mock<IMuebleRepository>();
             _muebleService        = new MuebleService(_muebleRepositoryMock.Object);
         }
 
@@ -43,18 +43,17 @@ namespace IMT_Reservas.Tests.ServiceTests
         {
             DataTable mueblesDataTable = new DataTable();
             mueblesDataTable.Columns.Add("id_mueble", typeof(int));
-            mueblesDataTable.Columns.Add("nombre", typeof(string));
-            mueblesDataTable.Columns.Add("tipo", typeof(string));
-            mueblesDataTable.Columns.Add("ubicacion", typeof(string));
-            mueblesDataTable.Columns.Add("numero_gaveteros", typeof(int));
-            mueblesDataTable.Columns.Add("estado_eliminado", typeof(bool));
-            mueblesDataTable.Columns.Add("longitud", typeof(double));
-            mueblesDataTable.Columns.Add("profundidad", typeof(double));
-            mueblesDataTable.Columns.Add("altura", typeof(double));
-            mueblesDataTable.Columns.Add("costo", typeof(double));
+            mueblesDataTable.Columns.Add("nombre_mueble", typeof(string));
+            mueblesDataTable.Columns.Add("tipo_mueble", typeof(string));
+            mueblesDataTable.Columns.Add("ubicacion_mueble", typeof(string));
+            mueblesDataTable.Columns.Add("numero_gaveteros_mueble", typeof(int));
+            mueblesDataTable.Columns.Add("longitud_mueble", typeof(double));
+            mueblesDataTable.Columns.Add("profundidad_mueble", typeof(double));
+            mueblesDataTable.Columns.Add("altura_mueble", typeof(double));
+            mueblesDataTable.Columns.Add("costo_mueble", typeof(double));
 
-            mueblesDataTable.Rows.Add(4, "ferprueba", "prueba", "x", 0, false, 1.4, 4.1, 0.5, 100);
-            mueblesDataTable.Rows.Add(3, "FERRR", "nd", null, 1, false, null, null, null, null);
+            mueblesDataTable.Rows.Add(4, "ferprueba", "prueba", "x", 0, 1.4, 4.1, 0.5, 100);
+            mueblesDataTable.Rows.Add(3, "FERRR", "nd", null, 1, null, null, null, null);
 
             _muebleRepositoryMock.Setup(r => r.ObtenerTodos()).Returns(mueblesDataTable);
 

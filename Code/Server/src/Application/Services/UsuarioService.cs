@@ -2,9 +2,9 @@ using System.Data;
 using IMT_Reservas.Server.Shared.Common;
 public class UsuarioService : IUsuarioService
 {
-    private readonly UsuarioRepository _usuarioRepository;
+    private readonly IUsuarioRepository _usuarioRepository;
 
-    public UsuarioService(UsuarioRepository usuarioRepository)
+    public UsuarioService(IUsuarioRepository usuarioRepository)
     {
         _usuarioRepository = usuarioRepository;
     }

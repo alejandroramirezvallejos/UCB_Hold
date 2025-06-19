@@ -1,3 +1,4 @@
+using IMT_Reservas.Server.Application.Interfaces;
 using Microsoft.AspNetCore.Mvc;
 using IMT_Reservas.Server.Shared.Common;
 
@@ -7,18 +8,18 @@ namespace API.Controllers;
 [Route("api/[controller]")]
 public class PrestamoController : ControllerBase
 {
-    private readonly PrestamoService servicio;
+    private readonly IPrestamoService _servicio;
 
-    public PrestamoController(PrestamoService servicio)
+    public PrestamoController(IPrestamoService servicio)
     {
-        this.servicio = servicio;
+        _servicio = servicio;
     }
     [HttpPost]
     public IActionResult CrearPrestamo([FromBody] CrearPrestamoComando input)
     {
         try
         {
-            servicio.CrearPrestamo(input);
+            _servicio.CrearPrestamo(input);
             return Ok(new { mensaje = "Préstamo creado exitosamente" });
         }
         catch (ErrorNombreRequerido ex)
@@ -77,9 +78,9 @@ public class PrestamoController : ControllerBase
         {
             return BadRequest(new { error = "Argumentos inválidos", mensaje = ex.Message });
         }
-        catch (Exception)
+        catch (Exception ex)
         {
-            return StatusCode(500, new { error = "Error interno del servidor", mensaje = "Ocurrió un error inesperado al crear el préstamo" });
+            return StatusCode(500, new { error = "Error interno del servidor", mensaje = ex.Message });
         }
     }
 
@@ -88,7 +89,7 @@ public class PrestamoController : ControllerBase
     {
         try
         {
-            var prestamos = servicio.ObtenerTodosPrestamos();
+            var prestamos = _servicio.ObtenerTodosPrestamos();
 
             if (prestamos == null || !prestamos.Any())
             {
@@ -108,7 +109,7 @@ public class PrestamoController : ControllerBase
         try
         {
             var comando = new EliminarPrestamoComando(id);
-            servicio.EliminarPrestamo(comando);
+            _servicio.EliminarPrestamo(comando);
             return Ok(new { mensaje = "Préstamo eliminado exitosamente" });
         }
         catch (ErrorIdInvalido ex)
@@ -130,69 +131,6 @@ public class PrestamoController : ControllerBase
         catch (Exception)
         {
             return StatusCode(500, new { error = "Error interno del servidor", mensaje = "Ocurrió un error inesperado al eliminar el préstamo" });
-        }
-    }
-
-    [HttpGet("historial")]
-    public IActionResult ObtenerPrestamosPorCarnetYEstadoPrestamo([FromQuery] string carnetUsuario, [FromQuery] string estadoPrestamo)
-    {
-        try
-        {
-            var prestamos = servicio.ObtenerPrestamosPorCarnetYEstadoPrestamo(carnetUsuario, estadoPrestamo);
-
-            if (prestamos == null || !prestamos.Any())
-            {
-                return Ok(new List<PrestamoDto>());
-            }
-
-            return Ok(prestamos);
-        }
-        catch (ErrorCarnetRequerido ex)
-        {
-            return BadRequest(new { error = "Campo requerido", mensaje = ex.Message });
-        }
-        catch (ErrorEstadoPrestamoRequerido ex)
-        {
-            return BadRequest(new { error = "Campo requerido", mensaje = ex.Message });
-        }
-        catch (ErrorEstadoPrestamoInvalido ex)
-        {
-            return BadRequest(new { error = "Estado inválido", mensaje = ex.Message });
-        }        catch (Exception)
-        {
-            return StatusCode(500, new { error = "Error interno del servidor", mensaje = "Ocurrió un error inesperado al buscar los préstamos" });
-        }
-    }    [HttpPut("estadoPrestamo")]
-    public IActionResult ActualizarEstadoPrestamo([FromBody] ActualizarEstadoPrestamoComando input)
-    {
-        try
-        {
-            servicio.ActualizarEstadoPrestamo(input);
-            return Ok(new { mensaje = "Estado del préstamo actualizado exitosamente" });
-        }
-        catch (ErrorIdInvalido ex)
-        {
-            return BadRequest(new { error = "ID inválido", mensaje = ex.Message });
-        }
-        catch (ErrorEstadoPrestamoRequerido ex)
-        {
-            return BadRequest(new { error = "Campo requerido", mensaje = ex.Message });
-        }
-        catch (ErrorEstadoPrestamoInvalido ex)
-        {
-            return BadRequest(new { error = "Estado inválido", mensaje = ex.Message });
-        }
-        catch (ErrorRegistroNoEncontrado ex)
-        {
-            return NotFound(new { error = "Préstamo no encontrado", mensaje = ex.Message });
-        }
-        catch (ArgumentNullException ex)
-        {
-            return BadRequest(new { error = "Argumento requerido", mensaje = ex.Message });
-        }
-        catch (Exception)
-        {
-            return StatusCode(500, new { error = "Error interno del servidor", mensaje = "Ocurrió un error inesperado al actualizar el estado del préstamo" });
         }
     }
 }

@@ -2,7 +2,7 @@
 import { CommonModule } from '@angular/common';
 import { Component, Input } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
-import { GrupoequipoService } from '../../../services/APIS/GrupoEquipo/grupoequipo.service'; 
+import { GrupoequipoService } from '../../../services/APIS/GrupoEquipo/grupoequipo.service';
 import { GrupoEquipo } from '../../../models/grupo_equipo';
 import { CarritoService } from '../../../services/carrito/carrito.service';
 
@@ -41,8 +41,19 @@ export class ObjetoComponent {
       return;
     }
     this.servicio.getproducto(routeId).subscribe({
-      next: (data) => this.producto = data, // Ya no accedes con [0]
-      error: (error) => console.error('Error en componente:', error)
+      next: (data) => this.producto = data,
+      error: (error) => {
+        console.error('Error completo del backend:', error);
+        this.producto = {
+          id: 0,
+          nombre: 'Error de carga',
+          descripcion: 'No se pudo cargar la información del producto. Intente más tarde.',
+          modelo: '',
+          marca: '',
+          url_data_sheet: '',
+          link: ''
+        };
+      }
     });
   }
 
@@ -66,4 +77,3 @@ export class ObjetoComponent {
 
 
 }
-

@@ -6,13 +6,13 @@ namespace IMT_Reservas.Tests.ServiceTests
     [TestFixture]
     public class EmpresaMantenimientoServiceTest : IEmpresaMantenimientoServiceTest
     {
-        private Mock<EmpresaMantenimientoRepository> _empresaMantenimientoRepositoryMock;
+        private Mock<IEmpresaMantenimientoRepository> _empresaMantenimientoRepositoryMock;
         private EmpresaMantenimientoService          _empresaMantenimientoService;
 
         [SetUp]
         public void Setup()
         {
-            _empresaMantenimientoRepositoryMock = new Mock<EmpresaMantenimientoRepository>();
+            _empresaMantenimientoRepositoryMock = new Mock<IEmpresaMantenimientoRepository>();
             _empresaMantenimientoService        = new EmpresaMantenimientoService(_empresaMantenimientoRepositoryMock.Object);
         }
 

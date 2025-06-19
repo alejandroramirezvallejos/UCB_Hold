@@ -3,26 +3,20 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Configuration;
 using Moq;
 using IMT_Reservas.Server.Shared.Common;
+using IMT_Reservas.Server.Application.Interfaces;
 
 namespace IMT_Reservas.Tests.ControllerTests
 {
     [TestFixture]
     public class UsuarioControllerTest : IUsuarioControllerTest
     {
-        private Mock<UsuarioService>    _usuarioServiceMock;
-        private Mock<UsuarioRepository> _usuarioRepoMock;
-        private Mock<ExecuteQuery>      _queryExecMock;
-        private Mock<IConfiguration>    _configMock;
+        private Mock<IUsuarioService>    _usuarioServiceMock;
         private UsuarioController       _usuariosController;
 
         [SetUp]
         public void Setup()
         {
-            _configMock         = new Mock<IConfiguration>();
-            _configMock.Setup(config => config.GetSection("ConnectionStrings")["DefaultConnection"]).Returns("fake_connection_string");
-            _queryExecMock      = new Mock<ExecuteQuery>(_configMock.Object);
-            _usuarioRepoMock    = new Mock<UsuarioRepository>(_queryExecMock.Object);
-            _usuarioServiceMock = new Mock<UsuarioService>(_usuarioRepoMock.Object);
+            _usuarioServiceMock = new Mock<IUsuarioService>();
             _usuariosController = new UsuarioController(_usuarioServiceMock.Object);
         }
 
@@ -55,7 +49,7 @@ namespace IMT_Reservas.Tests.ControllerTests
         {
             ActualizarUsuarioComando comando = new ActualizarUsuarioComando("1", "Andrea Maria", null, null, null, null, null, null, null, null, null, null);
             _usuarioServiceMock.Setup(s => s.ActualizarUsuario(comando));
-            IActionResult resultadoAccion = _usuariosController.ActualizarUsuario(comando);
+            IActionResult resultadoAccion = _usuariosController.ActualizarUsuario(comando.Carnet, comando);
             Assert.That(resultadoAccion, Is.InstanceOf<OkObjectResult>());
         }
 

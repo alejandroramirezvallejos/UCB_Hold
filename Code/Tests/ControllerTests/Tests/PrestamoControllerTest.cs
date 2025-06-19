@@ -1,4 +1,5 @@
 using API.Controllers;
+using IMT_Reservas.Server.Application.Interfaces;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Configuration;
 using Moq;
@@ -9,20 +10,13 @@ namespace IMT_Reservas.Tests.ControllerTests
     [TestFixture]
     public class PrestamoControllerTests : IPrestamoControllerTest
     {
-        private Mock<PrestamoService>    _prestamoServiceMock;
-        private Mock<PrestamoRepository> _prestamoRepoMock;
-        private Mock<ExecuteQuery>       _queryExecMock;
-        private Mock<IConfiguration>     _configMock;
+        private Mock<IPrestamoService>    _prestamoServiceMock;
         private PrestamoController       _prestamosController;
 
         [SetUp]
         public void Setup()
         {
-            _configMock          = new Mock<IConfiguration>();
-            _configMock.Setup(config => config.GetSection("ConnectionStrings")["DefaultConnection"]).Returns("fake_connection_string");
-            _queryExecMock       = new Mock<ExecuteQuery>(_configMock.Object);
-            _prestamoRepoMock    = new Mock<PrestamoRepository>(_queryExecMock.Object);
-            _prestamoServiceMock = new Mock<PrestamoService>(_prestamoRepoMock.Object);
+            _prestamoServiceMock = new Mock<IPrestamoService>();
             _prestamosController = new PrestamoController(_prestamoServiceMock.Object);
         }
 

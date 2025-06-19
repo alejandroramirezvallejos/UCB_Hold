@@ -2,9 +2,9 @@ using System.Data;
 using IMT_Reservas.Server.Shared.Common;
 public class MuebleService : IMuebleService
 {
-    private readonly MuebleRepository _muebleRepository;
+    private readonly IMuebleRepository _muebleRepository;
 
-    public MuebleService(MuebleRepository muebleRepository)
+    public MuebleService(IMuebleRepository muebleRepository)
     {
         _muebleRepository = muebleRepository;
     }

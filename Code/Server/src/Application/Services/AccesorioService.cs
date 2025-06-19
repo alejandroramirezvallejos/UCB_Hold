@@ -4,8 +4,8 @@ using IMT_Reservas.Server.Shared.Common;
 
 public class AccesorioService : IAccesorioService
 {
-    private readonly AccesorioRepository _accesorioRepository;
-    public AccesorioService(AccesorioRepository accesorioRepository)
+    private readonly IAccesorioRepository _accesorioRepository;
+    public AccesorioService(IAccesorioRepository accesorioRepository)
     {
         _accesorioRepository = accesorioRepository;
     }    
@@ -28,7 +28,7 @@ public class AccesorioService : IAccesorioService
         {
             throw; 
         }
-        catch (ErrorCodigoImtRequerido)
+        catch (ErrorIdInvalido)
         {
             throw; 
         }
@@ -79,7 +79,7 @@ public class AccesorioService : IAccesorioService
         if (comando.Nombre.Length > 256)
             throw new ErrorLongitudInvalida("nombre del accesorio", 256);
         if (comando.CodigoIMT <= 0)
-            throw new ErrorCodigoImtRequerido();
+            throw new ErrorIdInvalido();
         if (comando.Precio.HasValue && comando.Precio.Value <= 0)
             throw new ErrorValorNegativo("precio");
     }
@@ -227,7 +227,7 @@ public class AccesorioService : IAccesorioService
             throw new ErrorLongitudInvalida("nombre del accesorio", 255);
 
         if (comando.CodigoIMT <= 0)
-            throw new ErrorCodigoImtRequerido();
+            throw new ErrorIdInvalido();
 
         if (comando.Precio.HasValue && comando.Precio.Value < 0)
             throw new ErrorValorNegativo("precio");

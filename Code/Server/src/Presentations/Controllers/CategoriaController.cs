@@ -1,3 +1,4 @@
+using IMT_Reservas.Server.Application.Interfaces;
 using Microsoft.AspNetCore.Mvc;
 using IMT_Reservas.Server.Shared.Common;
 
@@ -7,9 +8,9 @@ namespace API.Controllers;
 [Route("api/[controller]")]
 public class CategoriaController : ControllerBase
 {
-    private readonly CategoriaService servicio;
+    private readonly ICategoriaService servicio;
 
-    public CategoriaController(CategoriaService servicio)
+    public CategoriaController(ICategoriaService servicio)
     {
         this.servicio = servicio;
     }

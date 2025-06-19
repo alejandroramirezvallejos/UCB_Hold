@@ -3,9 +3,9 @@ using IMT_Reservas.Server.Shared.Common;
 
 public class GrupoEquipoService : IGrupoEquipoService
 {
-    private readonly GrupoEquipoRepository _grupoEquipoRepository;
+    private readonly IGrupoEquipoRepository _grupoEquipoRepository;
 
-    public GrupoEquipoService(GrupoEquipoRepository grupoEquipoRepository)
+    public GrupoEquipoService(IGrupoEquipoRepository grupoEquipoRepository)
     {
         _grupoEquipoRepository = grupoEquipoRepository;
     }    public virtual void CrearGrupoEquipo(CrearGrupoEquipoComando comando)

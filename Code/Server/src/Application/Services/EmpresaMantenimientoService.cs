@@ -2,8 +2,8 @@ using System.Data;
 using IMT_Reservas.Server.Shared.Common;
 public class EmpresaMantenimientoService : IEmpresaMantenimientoService
 {
-    private readonly EmpresaMantenimientoRepository _empresaMantenimientoRepository;
-    public EmpresaMantenimientoService(EmpresaMantenimientoRepository empresaMantenimientoRepository)
+    private readonly IEmpresaMantenimientoRepository _empresaMantenimientoRepository;
+    public EmpresaMantenimientoService(IEmpresaMantenimientoRepository empresaMantenimientoRepository)
     {
         _empresaMantenimientoRepository = empresaMantenimientoRepository;
     }

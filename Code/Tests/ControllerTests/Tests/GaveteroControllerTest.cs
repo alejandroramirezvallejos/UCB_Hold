@@ -3,26 +3,20 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Configuration;
 using Moq;
 using IMT_Reservas.Server.Shared.Common;
+using IMT_Reservas.Server.Application.Interfaces;
 
 namespace IMT_Reservas.Tests.ControllerTests
 {
     [TestFixture]
     public class GaveteroControllerTest : IGaveteroControllerTest
     {
-        private Mock<GaveteroService>    _gaveteroServiceMock;
-        private Mock<GaveteroRepository> _gaveteroRepoMock;
-        private Mock<ExecuteQuery>       _queryExecMock;
-        private Mock<IConfiguration>     _configMock;
+        private Mock<IGaveteroService>    _gaveteroServiceMock;
         private GaveteroController       _gaveterosController;
 
         [SetUp]
         public void Setup()
         {
-            _configMock          = new Mock<IConfiguration>();
-            _configMock.Setup(config => config.GetSection("ConnectionStrings")["DefaultConnection"]).Returns("fake_connection_string");
-            _queryExecMock       = new Mock<ExecuteQuery>(_configMock.Object);
-            _gaveteroRepoMock    = new Mock<GaveteroRepository>(_queryExecMock.Object);
-            _gaveteroServiceMock = new Mock<GaveteroService>(_gaveteroRepoMock.Object);
+            _gaveteroServiceMock = new Mock<IGaveteroService>();
             _gaveterosController = new GaveteroController(_gaveteroServiceMock.Object);
         }
 

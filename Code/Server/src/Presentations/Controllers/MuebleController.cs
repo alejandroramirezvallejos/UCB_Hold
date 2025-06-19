@@ -1,3 +1,4 @@
+using IMT_Reservas.Server.Application.Interfaces;
 using Microsoft.AspNetCore.Mvc;
 using IMT_Reservas.Server.Shared.Common;
 
@@ -7,9 +8,9 @@ namespace API.Controllers;
 [Route("api/[controller]")]
 public class MuebleController : ControllerBase
 {
-    private readonly MuebleService servicio;
+    private readonly IMuebleService servicio;
 
-    public MuebleController(MuebleService servicio)
+    public MuebleController(IMuebleService servicio)
     {
         this.servicio = servicio;
     }    [HttpPost]

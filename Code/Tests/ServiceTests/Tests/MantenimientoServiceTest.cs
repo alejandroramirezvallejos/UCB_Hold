@@ -6,20 +6,20 @@ namespace IMT_Reservas.Tests.ServiceTests
     [TestFixture]
     public class MantenimientoServiceTest : IMantenimientoServiceTest
     {
-        private Mock<MantenimientoRepository> _mantenimientoRepositoryMock;
+        private Mock<IMantenimientoRepository> _mantenimientoRepositoryMock;
         private MantenimientoService          _mantenimientoService;
 
         [SetUp]
         public void Setup()
         {
-            _mantenimientoRepositoryMock = new Mock<MantenimientoRepository>();
+            _mantenimientoRepositoryMock = new Mock<IMantenimientoRepository>();
             _mantenimientoService        = new MantenimientoService(_mantenimientoRepositoryMock.Object);
         }
 
         [Test]
         public void CrearMantenimiento_ComandoValido_LlamaRepositorioCrear()
         {
-            CrearMantenimientoComando comando = new CrearMantenimientoComando(DateOnly.FromDateTime(DateTime.Now), DateOnly.FromDateTime(DateTime.Now.AddDays(1)), "Empresa A", 100.50, "Descripción", new int[] { 1 }, new string[] { "Preventivo" }, new string[] { "Equipo 1" });
+            CrearMantenimientoComando comando = new CrearMantenimientoComando(DateOnly.FromDateTime(DateTime.Now), DateOnly.FromDateTime(DateTime.Now.AddDays(1)), "Empresa A", 100.50, "Descripción", new int[] { 1 }, new string[] { "Preventivo" }, new string[] { "desc" });
             _mantenimientoService.CrearMantenimiento(comando);
             _mantenimientoRepositoryMock.Verify(r => r.Crear(comando), Times.Once);
         }
@@ -27,7 +27,7 @@ namespace IMT_Reservas.Tests.ServiceTests
         [Test]
         public void CrearMantenimiento_FechaFinAnteriorAInicio_LanzaErrorFechaInvalida()
         {
-            CrearMantenimientoComando comando = new CrearMantenimientoComando(DateOnly.FromDateTime(DateTime.Now), DateOnly.FromDateTime(DateTime.Now.AddDays(-1)), "Empresa A", 100.50, "Descripción", new int[] { 1 }, new string[] { "Preventivo" }, new string[] { "Equipo 1" });
+            CrearMantenimientoComando comando = new CrearMantenimientoComando(DateOnly.FromDateTime(DateTime.Now), DateOnly.FromDateTime(DateTime.Now.AddDays(-1)), "Empresa A", 100.50, "Descripción", new int[] { 1 }, new string[] { "Preventivo" }, new string[] { "desc" });
             Assert.Throws<ErrorFechaInvalida>(() => _mantenimientoService.CrearMantenimiento(comando));
         }
 
@@ -36,17 +36,19 @@ namespace IMT_Reservas.Tests.ServiceTests
         {
             DataTable mantenimientosDataTable = new DataTable();
             mantenimientosDataTable.Columns.Add("id_mantenimiento", typeof(int));
-            mantenimientosDataTable.Columns.Add("descripcion", typeof(string));
-            mantenimientosDataTable.Columns.Add("costo", typeof(double));
             mantenimientosDataTable.Columns.Add("fecha_mantenimiento", typeof(DateTime));
-            mantenimientosDataTable.Columns.Add("id_empresa", typeof(int));
-            mantenimientosDataTable.Columns.Add("estado_eliminado", typeof(bool));
             mantenimientosDataTable.Columns.Add("fecha_final_mantenimiento", typeof(DateTime));
             mantenimientosDataTable.Columns.Add("nombre_empresa_mantenimiento", typeof(string));
+            mantenimientosDataTable.Columns.Add("costo_mantenimiento", typeof(double));
+            mantenimientosDataTable.Columns.Add("descripcion_mantenimiento", typeof(string));
+            mantenimientosDataTable.Columns.Add("codigo_imt_equipo", typeof(int));
+            mantenimientosDataTable.Columns.Add("nombre_grupo_equipo", typeof(string));
+            mantenimientosDataTable.Columns.Add("tipo_detalle_mantenimiento", typeof(string));
+            mantenimientosDataTable.Columns.Add("descripcion_equipo", typeof(string));
 
-            mantenimientosDataTable.Rows.Add(1, DBNull.Value, DBNull.Value, new DateTime(2025, 4, 4), 1, false, new DateTime(2025, 1, 1), "Empresa Ficticia 1");
-            mantenimientosDataTable.Rows.Add(2, DBNull.Value, DBNull.Value, new DateTime(2026, 1, 1), 1, false, new DateTime(2026, 2, 2), "Empresa Ficticia 1");
-            mantenimientosDataTable.Rows.Add(7, "asdadasd", 100.0, new DateTime(2027, 1, 1), 1, false, new DateTime(2027, 5, 5), "Empresa Ficticia 1");
+            mantenimientosDataTable.Rows.Add(1, new DateTime(2025, 4, 4), new DateTime(2025, 1, 1), "Empresa Ficticia 1", DBNull.Value, DBNull.Value, 1, "Equipo 1", "Preventivo", "Desc 1");
+            mantenimientosDataTable.Rows.Add(2, new DateTime(2026, 1, 1), new DateTime(2026, 2, 2), "Empresa Ficticia 1", DBNull.Value, DBNull.Value, 2, "Equipo 2", "Correctivo", "Desc 2");
+            mantenimientosDataTable.Rows.Add(7, new DateTime(2027, 1, 1), new DateTime(2027, 5, 5), "Empresa Ficticia 1", 100.0, "asdadasd", 3, "Equipo 3", "Preventivo", "Desc 3");
 
             _mantenimientoRepositoryMock.Setup(r => r.ObtenerTodos()).Returns(mantenimientosDataTable);
 

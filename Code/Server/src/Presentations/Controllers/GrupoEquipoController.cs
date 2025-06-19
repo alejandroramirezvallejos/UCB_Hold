@@ -1,3 +1,4 @@
+using IMT_Reservas.Server.Application.Interfaces;
 using Microsoft.AspNetCore.Mvc;
 using IMT_Reservas.Server.Shared.Common;
 
@@ -7,17 +8,17 @@ namespace API.Controllers;
 [Route("api/[controller]")]
 public class GrupoEquipoController : ControllerBase
 {
-    private readonly GrupoEquipoService servicio;
+    private readonly IGrupoEquipoService _servicio;
 
-    public GrupoEquipoController(GrupoEquipoService servicio)
+    public GrupoEquipoController(IGrupoEquipoService servicio)
     {
-        this.servicio = servicio;
+        _servicio = servicio;
     }    [HttpPost]
     public IActionResult Crear([FromBody] CrearGrupoEquipoComando input)
     {
         try
         {
-            servicio.CrearGrupoEquipo(input);
+            _servicio.CrearGrupoEquipo(input);
             return Created();
         }
         catch (ErrorNombreRequerido ex)
@@ -69,7 +70,7 @@ public class GrupoEquipoController : ControllerBase
     {
         try
         {
-            var resultado = servicio.ObtenerTodosGruposEquipos();
+            var resultado = _servicio.ObtenerTodosGruposEquipos();
             return Ok(resultado);
         }
         catch (Exception ex)
@@ -84,7 +85,7 @@ public class GrupoEquipoController : ControllerBase
         try
         {
             var consulta = new ObtenerGrupoEquipoPorIdConsulta(id);
-            var resultado = servicio.ObtenerGrupoEquipoPorId(consulta);
+            var resultado = _servicio.ObtenerGrupoEquipoPorId(consulta);
 
             return Ok(resultado);
         }
@@ -100,7 +101,7 @@ public class GrupoEquipoController : ControllerBase
         try
         {
             var consulta = new ObtenerGrupoEquipoPorNombreYCategoriaConsulta(nombre, categoria);
-            var resultado = servicio.ObtenerGrupoEquipoPorNombreYCategoria(consulta);
+            var resultado = _servicio.ObtenerGrupoEquipoPorNombreYCategoria(consulta);
             return Ok(resultado);
         }
         catch (Exception ex)
@@ -114,7 +115,7 @@ public class GrupoEquipoController : ControllerBase
         {
             if (comando == null)
                 return BadRequest(new { error = "Datos requeridos", mensaje = "Los datos del grupo de equipo son requeridos" });
-            servicio.ActualizarGrupoEquipo(comando);
+            _servicio.ActualizarGrupoEquipo(comando);
             return Ok(new { mensaje = "Grupo de equipo actualizado exitosamente" });
         }
         catch (ErrorIdInvalido ex)
@@ -179,7 +180,7 @@ public class GrupoEquipoController : ControllerBase
         try
         {
             var comando = new EliminarGrupoEquipoComando(id);
-            servicio.EliminarGrupoEquipo(comando);
+            _servicio.EliminarGrupoEquipo(comando);
             return NoContent();
         }
         catch (ErrorIdInvalido ex)

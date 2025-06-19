@@ -7,13 +7,13 @@ namespace IMT_Reservas.Tests.ServiceTests
     [TestFixture]
     public class AccesorioServiceTest : IAccesorioServiceTest
     {
-        private Mock<AccesorioRepository> _accesorioRepositoryMock;
+        private Mock<IAccesorioRepository> _accesorioRepositoryMock;
         private AccesorioService          _accesorioService;
 
         [SetUp]
         public void Setup()
         {
-            _accesorioRepositoryMock = new Mock<AccesorioRepository>();
+            _accesorioRepositoryMock = new Mock<IAccesorioRepository>();
             _accesorioService        = new AccesorioService(_accesorioRepositoryMock.Object);
         }
 
@@ -35,7 +35,7 @@ namespace IMT_Reservas.Tests.ServiceTests
         [Test]
         public void CrearAccesorio_NombreExcedeLimite_LanzaErrorLongitudInvalida()
         {
-            CrearAccesorioComando comando = new CrearAccesorioComando(new string('a', 101), "G502", "Periférico", 1001, "desc", 50.0, null);
+            CrearAccesorioComando comando = new CrearAccesorioComando(new string('a', 257), "G502", "Periférico", 1001, "desc", 50.0, null);
             Assert.Throws<ErrorLongitudInvalida>(() => _accesorioService.CrearAccesorio(comando));
         }
 
@@ -59,15 +59,19 @@ namespace IMT_Reservas.Tests.ServiceTests
             DataTable accesoriosDataTable = new DataTable();
             accesoriosDataTable.Columns.AddRange(new[]
             {
-                new DataColumn("id_accesorio", typeof(int)), new DataColumn("nombre_accesorio", typeof(string)),
-                new DataColumn("modelo_accesorio", typeof(string)), new DataColumn("tipo_accesorio", typeof(string)),
-                new DataColumn("precio_referencia", typeof(double)), new DataColumn("descripcion", typeof(string)),
-                new DataColumn("datasheet", typeof(string)), new DataColumn("codigo_imt", typeof(int)),
-                new DataColumn("id_categoria", typeof(int))
+                new DataColumn("id_accesorio", typeof(int)), 
+                new DataColumn("nombre_accesorio", typeof(string)),
+                new DataColumn("modelo_accesorio", typeof(string)), 
+                new DataColumn("tipo_accesorio", typeof(string)),
+                new DataColumn("precio_accesorio", typeof(double)),
+                new DataColumn("nombre_equipo_asociado", typeof(string)),
+                new DataColumn("codigo_imt_equipo_asociado", typeof(int)),
+                new DataColumn("descripcion_accesorio", typeof(string)),
+                new DataColumn("url_data_sheet_accesorio", typeof(string))
             });
 
-            accesoriosDataTable.Rows.Add(2, "cable usb", "dasd", "Electrónico", 15.99, "C-123", "https://datasheet.example.com/c123.pdf", 5, 7);
-            accesoriosDataTable.Rows.Add(3, "string", "string", "string", 777, "string", null, 7, 8);
+            accesoriosDataTable.Rows.Add(2, "cable usb", "dasd", "Electrónico", 15.99, "Equipo A", 123, "C-123", "https://datasheet.example.com/c123.pdf");
+            accesoriosDataTable.Rows.Add(3, "string", "string", "string", 777, "Equipo B", 456, "string", null);
 
             _accesorioRepositoryMock.Setup(r => r.ObtenerTodos()).Returns(accesoriosDataTable);
 

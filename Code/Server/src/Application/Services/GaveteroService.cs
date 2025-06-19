@@ -2,9 +2,9 @@ using System.Data;
 using IMT_Reservas.Server.Shared.Common;
 public class GaveteroService : IGaveteroService
 {
-    private readonly GaveteroRepository _gaveteroRepository;
+    private readonly IGaveteroRepository _gaveteroRepository;
 
-    public GaveteroService(GaveteroRepository gaveteroRepository)
+    public GaveteroService(IGaveteroRepository gaveteroRepository)
     {
         _gaveteroRepository = gaveteroRepository;
     }    public virtual void CrearGavetero(CrearGaveteroComando comando)

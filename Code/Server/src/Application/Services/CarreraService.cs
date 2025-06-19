@@ -3,8 +3,8 @@ using IMT_Reservas.Server.Shared.Common;
 
 public class CarreraService : ICarreraService
 {
-    private readonly CarreraRepository _carreraRepository;
-    public CarreraService(CarreraRepository carreraRepository)
+    private readonly ICarreraRepository _carreraRepository;
+    public CarreraService(ICarreraRepository carreraRepository)
     {
         _carreraRepository = carreraRepository;
     }    
@@ -154,7 +154,10 @@ public class CarreraService : ICarreraService
         if (comando.Id <= 0)
             throw new ErrorIdInvalido();
 
-        if (!string.IsNullOrWhiteSpace(comando.Nombre) && comando.Nombre.Length > 255)
+        if (string.IsNullOrWhiteSpace(comando.Nombre))
+            throw new ErrorNombreRequerido();
+
+        if (comando.Nombre.Length > 255)
             throw new ErrorLongitudInvalida("nombre de la carrera", 255);
     }    public virtual void EliminarCarrera(EliminarCarreraComando comando)
     {

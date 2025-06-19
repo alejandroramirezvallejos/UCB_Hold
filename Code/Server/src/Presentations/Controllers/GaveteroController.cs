@@ -1,3 +1,4 @@
+using IMT_Reservas.Server.Application.Interfaces;
 using Microsoft.AspNetCore.Mvc;
 using IMT_Reservas.Server.Shared.Common;
 
@@ -7,9 +8,9 @@ namespace API.Controllers;
 [Route("api/[controller]")]
 public class GaveteroController : ControllerBase
 {
-    private readonly GaveteroService servicio;
+    private readonly IGaveteroService servicio;
 
-    public GaveteroController(GaveteroService servicio)
+    public GaveteroController(IGaveteroService servicio)
     {
         this.servicio = servicio;
     }    [HttpPost]

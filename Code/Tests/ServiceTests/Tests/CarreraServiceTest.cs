@@ -7,13 +7,13 @@ namespace IMT_Reservas.Tests.ServiceTests
     [TestFixture]
     public class CarreraServiceTest : ICarreraServiceTest
     {
-        private Mock<CarreraRepository> _carreraRepositoryMock;
+        private Mock<ICarreraRepository> _carreraRepositoryMock;
         private CarreraService          _carreraService;
 
         [SetUp]
         public void Setup()
         {
-            _carreraRepositoryMock = new Mock<CarreraRepository>();
+            _carreraRepositoryMock = new Mock<ICarreraRepository>();
             _carreraService        = new CarreraService(_carreraRepositoryMock.Object);
         }
 
@@ -35,7 +35,7 @@ namespace IMT_Reservas.Tests.ServiceTests
         [Test]
         public void CrearCarrera_NombreExcedeLimite_LanzaErrorLongitudInvalida()
         {
-            CrearCarreraComando comando = new CrearCarreraComando(new string('a', 101));
+            CrearCarreraComando comando = new CrearCarreraComando(new string('a', 257));
             Assert.Throws<ErrorLongitudInvalida>(() => _carreraService.CrearCarrera(comando));
         }
 
@@ -86,7 +86,7 @@ namespace IMT_Reservas.Tests.ServiceTests
         [Test]
         public void ActualizarCarrera_NombreExcedeLimite_LanzaErrorLongitudInvalida()
         {
-            ActualizarCarreraComando comando = new ActualizarCarreraComando(1, new string('a', 101));
+            ActualizarCarreraComando comando = new ActualizarCarreraComando(1, new string('a', 256));
             Assert.Throws<ErrorLongitudInvalida>(() => _carreraService.ActualizarCarrera(comando));
         }
 

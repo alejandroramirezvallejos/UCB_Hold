@@ -4,9 +4,9 @@ using IMT_Reservas.Server.Shared.Common;
 
 public class PrestamoService : IPrestamoService
 {
-    private readonly PrestamoRepository _prestamoRepository;
+    private readonly IPrestamoRepository _prestamoRepository;
 
-    public PrestamoService(PrestamoRepository prestamoRepository)
+    public PrestamoService(IPrestamoRepository prestamoRepository)
     {
         _prestamoRepository = prestamoRepository;
     }    public virtual void CrearPrestamo(CrearPrestamoComando comando)
@@ -26,6 +26,14 @@ public class PrestamoService : IPrestamoService
         catch (ErrorIdInvalido)
         {
             throw; // Re-lanzar excepciones de validación  
+        }
+        catch (ErrorGrupoEquipoIdInvalido)
+        {
+            throw;
+        }
+        catch (ErrorFechaPrestamoYFechaDevolucionInvalidas)
+        {
+            throw;
         }
         catch (ErrorCarnetUsuarioNoEncontrado)
         {
@@ -217,29 +225,6 @@ public class PrestamoService : IPrestamoService
             throw;
         }
     }
-    public virtual List<PrestamoDto>? ObtenerPrestamosPorCarnetYEstadoPrestamo(string? carnetUsuario, string? estadoPrestamo)
-    {
-        try
-        {
-            if (string.IsNullOrWhiteSpace(carnetUsuario))
-                throw new ErrorCarnetRequerido();
-            if (string.IsNullOrWhiteSpace(estadoPrestamo))
-                throw new ErrorEstadoPrestamoRequerido();
-            if (!new[] { "pendiente", "rechazado", "aprobado", "activo", "finalizado", "cancelado" }.Contains(estadoPrestamo))
-                throw new ErrorEstadoPrestamoInvalido();
-            DataTable resultado = _prestamoRepository.ObtenerPorCarnetYEstadoPrestamo(carnetUsuario, estadoPrestamo);
-            var lista = new List<PrestamoDto>(resultado.Rows.Count);
-            foreach (DataRow fila in resultado.Rows)
-            {
-                lista.Add(MapearFilaADto(fila));
-            }
-            return lista;
-        }
-        catch
-        {
-            throw;
-        }
-    }
 
     private static PrestamoDto MapearFilaADto(DataRow fila)
     {
@@ -260,103 +245,5 @@ public class PrestamoService : IPrestamoService
             Observacion = fila["observacion"] == DBNull.Value ? null : fila["observacion"].ToString(),
             EstadoPrestamo = fila["estado_prestamo"] == DBNull.Value ? null : fila["estado_prestamo"].ToString(),
         };
-    }
-
-    public virtual void ActualizarEstadoPrestamo(ActualizarEstadoPrestamoComando comando)
-    {
-        try
-        {
-            ValidarEntradaActualizacionEstado(comando);
-            _prestamoRepository.ActualizarEstado(comando);
-        }
-        catch (ErrorIdInvalido)
-        {
-            throw;
-        }
-        catch (ErrorEstadoPrestamoInvalido)
-        {
-            throw;
-        }
-        catch (Exception ex)
-        {
-            InterpretarErrorActualizacionEstado(ex, comando);
-        }
-    }
-
-    private void ValidarEntradaActualizacionEstado(ActualizarEstadoPrestamoComando comando)
-    {
-        if (comando == null)
-            throw new ArgumentNullException(nameof(comando));
-
-        if (comando.Id == null || comando.Id <= 0)
-            throw new ErrorIdInvalido();
-
-        if (string.IsNullOrWhiteSpace(comando.EstadoPrestamo))
-            throw new ErrorEstadoPrestamoRequerido();
-
-        var estadosValidos = new[] { "pendiente", "rechazado", "aprobado", "activo", "finalizado", "cancelado" };
-        if (!estadosValidos.Contains(comando.EstadoPrestamo.ToLower()))
-            throw new ErrorEstadoPrestamoInvalido();
-    }
-
-    private void InterpretarErrorActualizacionEstado(Exception ex, ActualizarEstadoPrestamoComando comando)
-    {
-        var errorMessage = ex.Message?.ToLower() ?? "";
-
-        // Errores específicos del procedimiento actualizar_estado_prestamo
-        
-        // 1. Estado inválido (ERRCODE 22023)
-        if (errorMessage.Contains("estado inválido") || errorMessage.Contains("solo se permiten"))
-        {
-            throw new ErrorEstadoPrestamoInvalido();
-        }
-        
-        // 2. Préstamo no encontrado (ERRCODE P0002)
-        else if (errorMessage.Contains("no existe préstamo con id") || 
-                 errorMessage.Contains("el estado ya era el mismo"))
-        {
-            throw new ErrorRegistroNoEncontrado();
-        }
-        
-        // 3. Errores por códigos SQLSTATE específicos
-        else if (ex is ErrorDataBase errorDb)
-        {
-            // ERRCODE 22023 - invalid_parameter_value
-            if (errorDb.SqlState == "22023")
-            {
-                throw new ErrorEstadoPrestamoInvalido();
-            }
-            
-            // ERRCODE P0002 - no_data_found-like
-            if (errorDb.SqlState == "P0002")
-            {
-                throw new ErrorRegistroNoEncontrado();
-            }
-            
-            throw new Exception($"Error inesperado de base de datos al actualizar estado del préstamo: {errorDb.Message}", errorDb);
-        }
-        
-        // 4. Errores de repositorio
-        else if (ex is ErrorRepository errorRepo)
-        {
-            // Verificar si el error del repositorio contiene mensajes específicos
-            if (errorMessage.Contains("estado inválido") || errorMessage.Contains("solo se permiten"))
-            {
-                throw new ErrorEstadoPrestamoInvalido();
-            }
-            
-            if (errorMessage.Contains("no existe préstamo con id"))
-            {
-                throw new ErrorRegistroNoEncontrado();
-            }
-            
-            throw new Exception($"Error del repositorio al actualizar estado del préstamo: {errorRepo.Message}", errorRepo);
-        }
-        
-        // 5. Error genérico
-        else
-        {
-            throw new Exception($"Error inesperado al actualizar estado del préstamo: {ex.Message}", ex);
-        }
     }
 }

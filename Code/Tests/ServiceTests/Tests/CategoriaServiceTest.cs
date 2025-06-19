@@ -7,13 +7,13 @@ namespace IMT_Reservas.Tests.ServiceTests
     [TestFixture]
     public class CategoriaServiceTest : ICategoriaServiceTest
     {
-        private Mock<CategoriaRepository> _categoriaRepositoryMock;
+        private Mock<ICategoriaRepository> _categoriaRepositoryMock;
         private CategoriaService          _categoriaService;
 
         [SetUp]
         public void Setup()
         {
-            _categoriaRepositoryMock = new Mock<CategoriaRepository>();
+            _categoriaRepositoryMock = new Mock<ICategoriaRepository>();
             _categoriaService        = new CategoriaService(_categoriaRepositoryMock.Object);
         }
 

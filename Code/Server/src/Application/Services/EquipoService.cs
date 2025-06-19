@@ -2,9 +2,9 @@ using System.Data;
 using IMT_Reservas.Server.Shared.Common;
 public class EquipoService : IEquipoService
 {
-    private readonly EquipoRepository _equipoRepository;
+    private readonly IEquipoRepository _equipoRepository;
 
-    public EquipoService(EquipoRepository equipoRepository)
+    public EquipoService(IEquipoRepository equipoRepository)
     {
         _equipoRepository = equipoRepository;
     }    public virtual void CrearEquipo(CrearEquipoComando comando)

@@ -1,3 +1,4 @@
+using IMT_Reservas.Server.Application.Interfaces;
 using Microsoft.AspNetCore.Mvc;
 using IMT_Reservas.Server.Shared.Common;
 
@@ -7,9 +8,9 @@ namespace API.Controllers;
 [Route("api/[controller]")]
 public class MantenimientoController : ControllerBase
 {
-    private readonly MantenimientoService servicio;
+    private readonly IMantenimientoService servicio;
 
-    public MantenimientoController(MantenimientoService servicio)
+    public MantenimientoController(IMantenimientoService servicio)
     {
         this.servicio = servicio;
     }    [HttpPost]

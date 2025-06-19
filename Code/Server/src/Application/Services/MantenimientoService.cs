@@ -2,9 +2,9 @@ using System.Data;
 using IMT_Reservas.Server.Shared.Common;
 public class MantenimientoService : IMantenimientoService
 {
-    private readonly MantenimientoRepository _mantenimientoRepository;
+    private readonly IMantenimientoRepository _mantenimientoRepository;
 
-    public MantenimientoService(MantenimientoRepository mantenimientoRepository)
+    public MantenimientoService(IMantenimientoRepository mantenimientoRepository)
     {
         _mantenimientoRepository = mantenimientoRepository;
     }    public virtual void CrearMantenimiento(CrearMantenimientoComando comando)

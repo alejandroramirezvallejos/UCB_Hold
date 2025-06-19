@@ -1,28 +1,21 @@
 using API.Controllers;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.Extensions.Configuration;
 using Moq;
 using IMT_Reservas.Server.Shared.Common;
+using IMT_Reservas.Server.Application.Interfaces;
 
 namespace IMT_Reservas.Tests.ControllerTests
 {
     [TestFixture]
     public class MuebleControllerTest : IMuebleControllerTest
     {
-        private Mock<MuebleService>    _muebleServiceMock;
-        private Mock<MuebleRepository> _muebleRepoMock;
-        private Mock<ExecuteQuery>     _queryExecMock;
-        private Mock<IConfiguration>   _configMock;
+        private Mock<IMuebleService>    _muebleServiceMock;
         private MuebleController       _mueblesController;
 
         [SetUp]
         public void Setup()
         {
-            _configMock        = new Mock<IConfiguration>();
-            _configMock.Setup(config => config.GetSection("ConnectionStrings")["DefaultConnection"]).Returns("fake_connection_string");
-            _queryExecMock     = new Mock<ExecuteQuery>(_configMock.Object);
-            _muebleRepoMock    = new Mock<MuebleRepository>(_queryExecMock.Object);
-            _muebleServiceMock = new Mock<MuebleService>(_muebleRepoMock.Object);
+            _muebleServiceMock = new Mock<IMuebleService>();
             _mueblesController = new MuebleController(_muebleServiceMock.Object);
         }
 

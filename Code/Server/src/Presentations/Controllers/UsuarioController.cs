@@ -1,3 +1,4 @@
+using IMT_Reservas.Server.Application.Interfaces;
 using Microsoft.AspNetCore.Mvc;
 using IMT_Reservas.Server.Shared.Common;
 
@@ -7,19 +8,22 @@ namespace API.Controllers;
 [Route("api/[controller]")]
 public class UsuarioController : ControllerBase
 {
-    private readonly UsuarioService servicio;
+    private readonly IUsuarioService _servicio;
 
-    public UsuarioController(UsuarioService servicio)
+    public UsuarioController(IUsuarioService servicio)
     {
-        this.servicio = servicio;
-    }    [HttpPost]
-    public IActionResult CrearUsuario([FromBody] CrearUsuarioComando input)
+        _servicio = servicio;
+    }
+
+    [HttpPost]
+    public IActionResult CrearUsuario([FromBody] CrearUsuarioComando comando)
     {
         try
         {
-            servicio.CrearUsuario(input);
-            return Ok(new { mensaje = "Usuario creado exitosamente" });
-        }        catch (ErrorNombreRequerido ex)
+            _servicio.CrearUsuario(comando);
+            return Ok(new { message = "Usuario creado exitosamente" });
+        }
+        catch (ErrorNombreRequerido ex)
         {
             return BadRequest(new { error = "Campo requerido", mensaje = ex.Message });
         }
@@ -66,7 +70,8 @@ public class UsuarioController : ControllerBase
         catch (ErrorRegistroYaExiste ex)
         {
             return Conflict(new { error = "Usuario duplicado", mensaje = ex.Message });
-        }        catch (ErrorReferenciaInvalida ex)
+        }
+        catch (ErrorReferenciaInvalida ex)
         {
             return BadRequest(new { error = "Referencia inválida", mensaje = ex.Message });
         }
@@ -85,23 +90,30 @@ public class UsuarioController : ControllerBase
     {
         try
         {
-            var usuarios = servicio.ObtenerTodosUsuarios();
+            var usuarios = _servicio.ObtenerTodosUsuarios();
 
             if (usuarios == null || !usuarios.Any())
             {
                 return Ok(new List<UsuarioDto>());
-            }            return Ok(usuarios);
+            }
+            return Ok(usuarios);
         }
-        catch (Exception) { return StatusCode(500, new { error = "Error interno del servidor", mensaje = "Ocurrió un error inesperado al obtener los usuarios" });
+        catch (Exception ex) { return StatusCode(500, new { error = "Error interno del servidor", mensaje = "Ocurrió un error inesperado al obtener los usuarios" });
         }
-    }    [HttpPut]
-    public IActionResult ActualizarUsuario([FromBody] ActualizarUsuarioComando input)
+    }
+    [HttpPut("{carnet}")]
+    public IActionResult ActualizarUsuario(string carnet, [FromBody] ActualizarUsuarioComando comando)
     {
         try
         {
-            servicio.ActualizarUsuario(input);
-            return Ok(new { mensaje = "Usuario actualizado exitosamente" });
-        }        catch (ErrorCarnetInvalido ex)
+            if (carnet != comando.Carnet)
+            {
+                return BadRequest(new { error = "Parámetro inconsistente", mensaje = "El carnet en la URL no coincide con el del cuerpo de la solicitud." });
+            }
+            _servicio.ActualizarUsuario(comando);
+            return Ok(new { message = "Usuario actualizado exitosamente" });
+        }
+        catch (ErrorCarnetInvalido ex)
         {
             return BadRequest(new { error = "Carnet inválido", mensaje = ex.Message });
         }
@@ -152,7 +164,8 @@ public class UsuarioController : ControllerBase
         catch (ErrorRegistroYaExiste ex)
         {
             return Conflict(new { error = "Usuario duplicado", mensaje = ex.Message });
-        }        catch (ErrorReferenciaInvalida ex)
+        }
+        catch (ErrorReferenciaInvalida ex)
         {
             return BadRequest(new { error = "Referencia inválida", mensaje = ex.Message });
         }
@@ -164,14 +177,15 @@ public class UsuarioController : ControllerBase
         {
             return StatusCode(500, new { error = "Error interno del servidor", mensaje = "Ocurrió un error inesperado al actualizar el usuario" });
         }
-    }    [HttpDelete("{carnet}")]
+    }
+    [HttpDelete("{carnet}")]
     public IActionResult EliminarUsuario(string carnet)
     {
         try
         {
             var comando = new EliminarUsuarioComando(carnet);
-            servicio.EliminarUsuario(comando);
-            return Ok(new { mensaje = "Usuario eliminado exitosamente" });
+            _servicio.EliminarUsuario(comando);
+            return Ok(new { message = "Usuario eliminado exitosamente" });
         }
         catch (ErrorCarnetInvalido ex)
         {
@@ -180,7 +194,8 @@ public class UsuarioController : ControllerBase
         catch (ErrorLongitudInvalida ex)
         {
             return BadRequest(new { error = "Longitud inválida", mensaje = ex.Message });
-        }        catch (ErrorRegistroNoEncontrado)
+        }
+        catch (ErrorRegistroNoEncontrado)
         {
             return NotFound(new { error = "Usuario no encontrado", mensaje = $"No se encontró un usuario con carnet '{carnet}'" });
         }
@@ -203,26 +218,28 @@ public class UsuarioController : ControllerBase
     {
         try
         {
-            var usuarios = servicio.ObtenerTodosUsuarios();
+            var usuarios = _servicio.ObtenerTodosUsuarios();
             var usuario = usuarios?.FirstOrDefault(u => u.Carnet == carnet);
             if (usuario == null)
             {
                 return NotFound("Usuario no encontrado");
             }
 
-            return Ok(usuario);        }
-        catch (Exception) { return StatusCode(500, new { error = "Error interno del servidor", mensaje = "Ocurrió un error inesperado al obtener el usuario" });
+            return Ok(usuario);
+        }
+        catch (Exception ex) { return StatusCode(500, new { error = "Error interno del servidor", mensaje = "Ocurrió un error inesperado al obtener el usuario" });
         }
     }
     [HttpGet("iniciarSesion")]
-    public IActionResult IniciarSesion([FromQuery] string email,[FromQuery] string contrasena)
+    public IActionResult IniciarSesion([FromQuery] string email, [FromQuery] string contrasena)
     {
         try
         {
             var consulta = new IniciarSesionUsuarioConsulta(email, contrasena);
-            var usuario = servicio.IniciarSesionUsuario(consulta);
-            return Ok(usuario);        }
-        catch (Exception) { return StatusCode(500, new { error = "Error interno del servidor", mensaje = "Ocurrió un error inesperado al iniciar sesión" });
+            var usuario = _servicio.IniciarSesionUsuario(consulta);
+            return Ok(usuario);
+        }
+        catch (Exception ex) { return StatusCode(500, new { error = "Error interno del servidor", mensaje = "Ocurrió un error inesperado al iniciar sesión" });
         }
     }
 }

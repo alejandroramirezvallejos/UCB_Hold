@@ -6,13 +6,13 @@ namespace IMT_Reservas.Tests.ServiceTests
     [TestFixture]
     public class EquipoServiceTest : IEquipoServiceTest
     {
-        private Mock<EquipoRepository> _equipoRepositoryMock;
+        private Mock<IEquipoRepository> _equipoRepositoryMock;
         private EquipoService          _equipoService;
 
         [SetUp]
         public void Setup()
         {
-            _equipoRepositoryMock = new Mock<EquipoRepository>();
+            _equipoRepositoryMock = new Mock<IEquipoRepository>();
             _equipoService        = new EquipoService(_equipoRepositoryMock.Object);
         }
 
@@ -35,24 +35,27 @@ namespace IMT_Reservas.Tests.ServiceTests
         public void ObtenerTodosEquipos_CuandoHayDatos_RetornaListaDeDtos()
         {
             DataTable equiposDataTable = new DataTable();
-            equiposDataTable.Columns.Add("id_equipo", typeof(int));
-            equiposDataTable.Columns.Add("id_grupo_equipo", typeof(int));
-            equiposDataTable.Columns.Add("codigo_imt", typeof(int));
-            equiposDataTable.Columns.Add("descripcion", typeof(string));
-            equiposDataTable.Columns.Add("estado_equipo", typeof(string));
-            equiposDataTable.Columns.Add("numero_serial", typeof(string));
-            equiposDataTable.Columns.Add("ubicacion", typeof(string));
-            equiposDataTable.Columns.Add("costo_referencia", typeof(double));
-            equiposDataTable.Columns.Add("tiempo_max_prestamo", typeof(int));
-            equiposDataTable.Columns.Add("procedencia", typeof(string));
-            equiposDataTable.Columns.Add("id_gavetero", typeof(int));
-            equiposDataTable.Columns.Add("estado_eliminado", typeof(bool));
-            equiposDataTable.Columns.Add("fecha_ingreso_equipo", typeof(DateTime));
-            equiposDataTable.Columns.Add("codigo_ucb", typeof(string));
+            equiposDataTable.Columns.AddRange(new[]
+            {
+                new DataColumn("id_equipo", typeof(int)),
+                new DataColumn("nombre_grupo_equipo", typeof(string)),
+                new DataColumn("modelo_equipo", typeof(string)),
+                new DataColumn("marca_equipo", typeof(string)),
+                new DataColumn("codigo_imt_equipo", typeof(int)),
+                new DataColumn("codigo_ucb_equipo", typeof(string)),
+                new DataColumn("descripcion_equipo", typeof(string)),
+                new DataColumn("numero_serial_equipo", typeof(string)),
+                new DataColumn("ubicacion_equipo", typeof(string)),
+                new DataColumn("procedencia_equipo", typeof(string)),
+                new DataColumn("tiempo_max_prestamo_equipo", typeof(int)),
+                new DataColumn("nombre_gavetero_equipo", typeof(string)),
+                new DataColumn("estado_equipo_equipo", typeof(string)),
+                new DataColumn("costo_referencia_equipo", typeof(double))
+            });
 
-            equiposDataTable.Rows.Add(2, 1, 33, "Impresora", "operativo", null, "Pared derecha lab", null, null, null, null, false, DateTime.Now, "JJJJJJ");
-            equiposDataTable.Rows.Add(4, 3, 35, "Fuente de alimentación DC", "operativo", null, "Pared de frente lab", null, null, null, null, false, DateTime.Now, null);
-            equiposDataTable.Rows.Add(7, 5, 3, "Prueba", "inoperativo", null, "No existe", 400, 1, null, 1, false, DateTime.Now, null);
+            equiposDataTable.Rows.Add(2, "Impresoras", "LaserJet Pro", "HP", 33, "JJJJJJ", "Impresora", null, "Pared derecha lab", null, null, null, "operativo", null);
+            equiposDataTable.Rows.Add(4, "Fuentes", "DC Power Supply", "Rigol", 35, null, "Fuente de alimentación DC", null, "Pared de frente lab", null, null, null, "operativo", null);
+            equiposDataTable.Rows.Add(7, "Pruebas", "Tester", "Fluke", 3, null, "Prueba", null, "No existe", null, 1, "GAV-01", "inoperativo", 400);
 
 
             _equipoRepositoryMock.Setup(r => r.ObtenerTodos()).Returns(equiposDataTable);

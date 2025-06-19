@@ -6,13 +6,13 @@ namespace IMT_Reservas.Tests.ServiceTests
     [TestFixture]
     public class GrupoEquipoServiceTest : IGrupoEquipoServiceTest
     {
-        private Mock<GrupoEquipoRepository> _grupoEquipoRepositoryMock;
+        private Mock<IGrupoEquipoRepository> _grupoEquipoRepositoryMock;
         private GrupoEquipoService          _grupoEquipoService;
 
         [SetUp]
         public void Setup()
         {
-            _grupoEquipoRepositoryMock = new Mock<GrupoEquipoRepository>();
+            _grupoEquipoRepositoryMock = new Mock<IGrupoEquipoRepository>();
             _grupoEquipoService        = new GrupoEquipoService(_grupoEquipoRepositoryMock.Object);
         }
 

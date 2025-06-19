@@ -6,13 +6,13 @@ namespace IMT_Reservas.Tests.ServiceTests
     [TestFixture]
     public class UsuarioServiceTest : IUsuarioServiceTest
     {
-        private Mock<UsuarioRepository> _usuarioRepositoryMock;
+        private Mock<IUsuarioRepository> _usuarioRepositoryMock;
         private UsuarioService          _usuarioService;
 
         [SetUp]
         public void Setup()
         {
-            _usuarioRepositoryMock = new Mock<UsuarioRepository>();
+            _usuarioRepositoryMock = new Mock<IUsuarioRepository>();
             _usuarioService        = new UsuarioService(_usuarioRepositoryMock.Object);
         }
 
@@ -28,14 +28,14 @@ namespace IMT_Reservas.Tests.ServiceTests
         public void CrearUsuario_CarnetVacio_LanzaErrorNombreRequerido()
         {
             CrearUsuarioComando comando = new CrearUsuarioComando("", "Juan", "Perez", "Gomez", null, "juan.perez@ucb.edu.bo", "pass123", "Sistemas", "77712345", null, null, null);
-            Assert.Throws<ErrorNombreRequerido>(() => _usuarioService.CrearUsuario(comando));
+            Assert.Throws<ErrorCarnetRequerido>(() => _usuarioService.CrearUsuario(comando));
         }
 
         [Test]
         public void CrearUsuario_EmailInvalido_LanzaErrorNombreRequerido()
         {
             CrearUsuarioComando comando = new CrearUsuarioComando("12345", "Juan", "Perez", "Gomez", null, "email-invalido", "pass123", "Sistemas", "77712345", null, null, null);
-            Assert.Throws<ErrorNombreRequerido>(() => _usuarioService.CrearUsuario(comando));
+            Assert.Throws<ErrorEmailInvalido>(() => _usuarioService.CrearUsuario(comando));
         }
 
         [Test]

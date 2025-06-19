@@ -1,3 +1,4 @@
+using IMT_Reservas.Server.Application.Interfaces;
 using Microsoft.AspNetCore.Mvc;
 using IMT_Reservas.Server.Shared.Common;
 
@@ -7,18 +8,34 @@ namespace API.Controllers;
 [Route("api/[controller]")]
 public class CarreraController : ControllerBase
 {
-    private readonly CarreraService servicio;
-    public CarreraController(CarreraService servicio)
+    private readonly ICarreraService _servicio;
+
+    public CarreraController(ICarreraService servicio)
     {
-        this.servicio = servicio;
+        _servicio = servicio;
     }
+
+    [HttpGet]
+    public ActionResult<List<CarreraDto>> ObtenerTodos()
+    {
+        try
+        {
+            var resultado = _servicio.ObtenerTodasCarreras();
+            return Ok(resultado);
+        }
+        catch (Exception ex)
+        {
+            return BadRequest(new { error = "Error interno del servidor", mensaje = $"Error al obtener carreras: {ex.Message}" });
+        }
+    }
+
     [HttpPost]
     public IActionResult Crear([FromBody] CrearCarreraComando input)
     {
         try
         {
-            servicio.CrearCarrera(input);
-            return Created();
+            _servicio.CrearCarrera(input);
+            return Created($"api/carrera/{input.Nombre}", input);
         }
         catch (ErrorNombreRequerido ex)
         {
@@ -40,26 +57,12 @@ public class CarreraController : ControllerBase
         }
     }
 
-    [HttpGet]
-    public ActionResult<List<CarreraDto>> ObtenerTodos()
-    {
-        try
-        {
-            var resultado = servicio.ObtenerTodasCarreras();
-            return Ok(resultado);
-        }
-        catch (Exception ex)
-        {
-            return BadRequest(new { error = "Error interno del servidor", mensaje = $"Error al obtener carreras: {ex.Message}" });
-        }
-    }
-
     [HttpPut]
     public IActionResult Actualizar([FromBody] ActualizarCarreraComando input)
     {
         try
         {
-            servicio.ActualizarCarrera(input);
+            _servicio.ActualizarCarrera(input);
             return Ok(new { mensaje = "Carrera actualizada exitosamente" });
         }
         catch (ErrorIdInvalido ex)
@@ -95,7 +98,7 @@ public class CarreraController : ControllerBase
         try
         {
             var comando = new EliminarCarreraComando(id);
-            servicio.EliminarCarrera(comando);
+            _servicio.EliminarCarrera(comando);
             return NoContent();
         }
         catch (ErrorIdInvalido ex)

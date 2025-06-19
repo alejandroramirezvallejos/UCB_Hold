@@ -1,3 +1,4 @@
+using IMT_Reservas.Server.Application.Interfaces;
 using Microsoft.AspNetCore.Mvc;
 using IMT_Reservas.Server.Shared.Common;
 
@@ -7,9 +8,9 @@ namespace API.Controllers;
 [Route("api/[controller]")]
 public class AccesorioController : ControllerBase
 {
-    private readonly AccesorioService servicio;
+    private readonly IAccesorioService servicio;
 
-    public AccesorioController(AccesorioService servicio)
+    public AccesorioController(IAccesorioService servicio)
     {
         this.servicio = servicio;
     }    [HttpPost]

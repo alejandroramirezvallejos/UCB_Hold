@@ -7,13 +7,13 @@ namespace IMT_Reservas.Tests.ServiceTests
     [TestFixture]
     public class ComponenteServiceTest : IComponenteServiceTest
     {
-        private Mock<ComponenteRepository> _componenteRepositoryMock;
+        private Mock<IComponenteRepository> _componenteRepositoryMock;
         private ComponenteService          _componenteService;
 
         [SetUp]
         public void Setup()
         {
-            _componenteRepositoryMock = new Mock<ComponenteRepository>();
+            _componenteRepositoryMock = new Mock<IComponenteRepository>();
             _componenteService        = new ComponenteService(_componenteRepositoryMock.Object);
         }
 
@@ -35,14 +35,14 @@ namespace IMT_Reservas.Tests.ServiceTests
         [Test]
         public void CrearComponente_NombreExcedeLimite_LanzaErrorLongitudInvalida()
         {
-            CrearComponenteComando comando = new CrearComponenteComando(new string('a', 101), "i7-9700K", "Procesador", 12345, "desc", 350.0, null);
+            CrearComponenteComando comando = new CrearComponenteComando(new string('a', 256), "i7-9700K", "Procesador", 12345, "desc", 350.0, null);
             Assert.Throws<ErrorLongitudInvalida>(() => _componenteService.CrearComponente(comando));
         }
 
         [Test]
         public void CrearComponente_ModeloExcedeLimite_LanzaErrorLongitudInvalida()
         {
-            CrearComponenteComando comando = new CrearComponenteComando("CPU i7", new string('a', 51), "Procesador", 12345, "desc", 350.0, null);
+            CrearComponenteComando comando = new CrearComponenteComando("CPU i7", new string('a', 256), "Procesador", 12345, "desc", 350.0, null);
             Assert.Throws<ErrorLongitudInvalida>(() => _componenteService.CrearComponente(comando));
         }
 
@@ -50,7 +50,7 @@ namespace IMT_Reservas.Tests.ServiceTests
         public void CrearComponente_CodigoImtInvalido_LanzaErrorIdInvalido()
         {
             CrearComponenteComando comando = new CrearComponenteComando("CPU i7", "i7-9700K", "Procesador", 0, "desc", 350.0, null);
-            Assert.Throws<ErrorIdInvalido>(() => _componenteService.CrearComponente(comando));
+            Assert.Throws<ErrorCodigoImtRequerido>(() => _componenteService.CrearComponente(comando));
         }
 
         [Test]
@@ -69,10 +69,11 @@ namespace IMT_Reservas.Tests.ServiceTests
                 new DataColumn("id_componente"), new DataColumn("nombre_componente"),
                 new DataColumn("modelo_componente"), new DataColumn("tipo_componente"),
                 new DataColumn("descripcion_componente"), new DataColumn("precio_referencia_componente"),
-                new DataColumn("nombre_equipo"), new DataColumn("codigo_imt_equipo")
+                new DataColumn("nombre_equipo"), new DataColumn("codigo_imt_equipo"),
+                new DataColumn("url_data_sheet_equipo")
             });
             
-            componentesDataTable.Rows.Add(1, "CPU i7", "i7-9700K", "Procesador", "CPU de 8 núcleos", 350.00, "PC-GAMER-01", 54321);
+            componentesDataTable.Rows.Add(1, "CPU i7", "i7-9700K", "Procesador", "CPU de 8 núcleos", 350.00, "PC-GAMER-01", 54321, "http://example.com/datasheet.pdf");
             _componenteRepositoryMock.Setup(repository => repository.ObtenerTodos()).Returns(componentesDataTable);
 
             List<ComponenteDto> resultado = _componenteService.ObtenerTodosComponentes();
@@ -84,7 +85,8 @@ namespace IMT_Reservas.Tests.ServiceTests
                 componente.Descripcion == "CPU de 8 núcleos" &&
                 componente.PrecioReferencia == 350.00 &&
                 componente.NombreEquipo == "PC-GAMER-01" &&
-                componente.CodigoImtEquipo == 54321
+                componente.CodigoImtEquipo == 54321 &&
+                componente.UrlDataSheet == "http://example.com/datasheet.pdf"
             ));
         }
 

@@ -6,13 +6,13 @@ namespace IMT_Reservas.Tests.ServiceTests
     [TestFixture]
     public class GaveteroServiceTest : IGaveteroServiceTest
     {
-        private Mock<GaveteroRepository> _gaveteroRepositoryMock;
+        private Mock<IGaveteroRepository> _gaveteroRepositoryMock;
         private GaveteroService          _gaveteroService;
 
         [SetUp]
         public void Setup()
         {
-            _gaveteroRepositoryMock = new Mock<GaveteroRepository>();
+            _gaveteroRepositoryMock = new Mock<IGaveteroRepository>();
             _gaveteroService        = new GaveteroService(_gaveteroRepositoryMock.Object);
         }
 

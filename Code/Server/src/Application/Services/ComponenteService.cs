@@ -2,8 +2,8 @@ using System.Data;
 using IMT_Reservas.Server.Shared.Common;
 public class ComponenteService : IComponenteService
 {
-    private readonly ComponenteRepository _componenteRepository;
-    public ComponenteService(ComponenteRepository componenteRepository)
+    private readonly IComponenteRepository _componenteRepository;
+    public ComponenteService(IComponenteRepository componenteRepository)
     {
         _componenteRepository = componenteRepository;
     }    public virtual void CrearComponente(CrearComponenteComando comando)

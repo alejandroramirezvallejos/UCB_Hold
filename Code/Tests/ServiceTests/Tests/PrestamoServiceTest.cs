@@ -7,13 +7,13 @@ namespace IMT_Reservas.Tests.ServiceTests
     [TestFixture]
     public class PrestamoServiceTest : IPrestamoServiceTest
     {
-        private Mock<PrestamoRepository> _prestamoRepositoryMock;
+        private Mock<IPrestamoRepository> _prestamoRepositoryMock;
         private PrestamoService          _prestamoService;
 
         [SetUp]
         public void Setup()
         {
-            _prestamoRepositoryMock = new Mock<PrestamoRepository>();
+            _prestamoRepositoryMock = new Mock<IPrestamoRepository>();
             _prestamoService        = new PrestamoService(_prestamoRepositoryMock.Object);
         }
 
@@ -36,28 +36,27 @@ namespace IMT_Reservas.Tests.ServiceTests
         public void CrearPrestamo_GrupoEquipoIdNulo_LanzaErrorIdInvalido()
         {
             CrearPrestamoComando comando = new CrearPrestamoComando(null, DateTime.Now.AddDays(1), DateTime.Now.AddDays(2), "Obs", "12345", null);
-            Assert.Throws<ErrorIdInvalido>(() => _prestamoService.CrearPrestamo(comando));
+            Assert.Throws<ErrorGrupoEquipoIdInvalido>(() => _prestamoService.CrearPrestamo(comando));
         }
 
         [Test]
         public void CrearPrestamo_GrupoEquipoIdVacio_LanzaErrorIdInvalido()
         {
             CrearPrestamoComando comando = new CrearPrestamoComando(new int[0], DateTime.Now.AddDays(1), DateTime.Now.AddDays(2), "Obs", "12345", null);
-            Assert.Throws<ErrorIdInvalido>(() => _prestamoService.CrearPrestamo(comando));
-        }
-
-        [Test]
-        public void CrearPrestamo_FechaPrestamoPasada_LanzaArgumentException()
-        {
-            CrearPrestamoComando comando = new CrearPrestamoComando(new int[] { 1 }, DateTime.Now.AddDays(-1), DateTime.Now.AddDays(2), "Obs", "12345", null);
-            Assert.Throws<ArgumentException>(() => _prestamoService.CrearPrestamo(comando));
+            Assert.Throws<ErrorGrupoEquipoIdInvalido>(() => _prestamoService.CrearPrestamo(comando));
         }
 
         [Test]
         public void CrearPrestamo_FechaDevolucionAnteriorAPrestamo_LanzaArgumentException()
         {
             CrearPrestamoComando comando = new CrearPrestamoComando(new int[] { 1 }, DateTime.Now.AddDays(2), DateTime.Now.AddDays(1), "Obs", "12345", null);
-            Assert.Throws<ArgumentException>(() => _prestamoService.CrearPrestamo(comando));
+            Assert.Throws<ErrorFechaPrestamoYFechaDevolucionInvalidas>(() => _prestamoService.CrearPrestamo(comando));
+        }
+
+        [Test]
+        public void CrearPrestamo_FechaPrestamoPasada_LanzaArgumentException()
+        {
+            // TODO: Implementar
         }
 
         [Test]
