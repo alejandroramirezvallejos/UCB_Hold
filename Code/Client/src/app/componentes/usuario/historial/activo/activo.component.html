@@ -1,13 +1,63 @@
-@for (item of datos; track $index) {
-      <div class="item" >
-        <div class="item-header">{{ item.nombre }}</div>
-        <div class="item-body">
-          <span><strong>Solicitud:</strong> {{ item.fecha_solicitud }}</span>
-          <span><strong>Préstamo:</strong> {{ item.fecha_prestamo }}</span>
-          <span><strong>Esperada:</strong> {{ item.fecha_devolucion_esperada }}</span>
-          <span><strong>Observación:</strong> {{ item.observacion }}</span>
-          <span><strong>Devolución:</strong> {{ item.fecha_devolucion }}</span>
-          <span><strong>Estado:</strong> {{ item.estado }}</span>
+<div class="prestamos-container">
+  <div class="header-section">
+    <h1 class="title">Préstamos Activos</h1>
+    <p class="subtitle">Equipos actualmente en préstamo</p>
+  </div>
+
+  <div class="prestamos-list">
+    @for (item of datos; track $index) {
+      <div class="prestamo-item">        <!-- Header del préstamo -->
+        <div class="item-header">
+          <div class="usuario-info">
+            <h3 class="usuario-nombre">💻 {{ item.NombreGrupoEquipo }}</h3>
+            <span class="usuario-carnet">{{ item.NombreUsuario }} {{ item.ApellidoPaternoUsuario }} - {{ item.CarnetUsuario }}</span>
+          </div>
+          <div class="equipo-info">
+            <span class="codigo-imt">📋 {{ item.CodigoImt || 'N/A' }}</span>
+          </div>
         </div>
+
+        <!-- Información de fechas -->
+        <div class="fechas-info">
+          <div class="fecha-item">
+            <span class="fecha-label">📅 Solicitud:</span>
+            <span class="fecha-valor">{{ item.FechaSolicitud ? (item.FechaSolicitud | date:'dd/MM/yyyy') : 'N/A' }}</span>
+          </div>
+
+          <div class="fecha-item">
+            <span class="fecha-label">✅ Préstamo:</span>
+            <span class="fecha-valor">{{ item.FechaPrestamo ? (item.FechaPrestamo | date:'dd/MM/yyyy') : 'Pendiente' }}</span>
+          </div>
+
+          <div class="fecha-item">
+            <span class="fecha-label">⏰ Devolución Esperada:</span>
+            <span class="fecha-valor">{{ item.FechaDevolucionEsperada ? (item.FechaDevolucionEsperada | date:'dd/MM/yyyy') : 'N/A' }}</span>
+          </div>
+        </div>
+
+        <!-- Observaciones si existen -->
+        @if (item.Observacion) {
+          <div class="observacion-section">
+            <span class="observacion-label">💬 Observación:</span>
+            <p class="observacion-texto">{{ item.Observacion }}</p>
+          </div>
+        }
+
+        <!-- Footer con contacto -->
+        @if (item.TelefonoUsuario) {
+          <div class="contacto-info">
+            <span class="telefono">📞 {{ item.TelefonoUsuario }}</span>
+          </div>
+        }
       </div>
     }
+
+    @if (datos.length === 0) {
+      <div class="empty-state">
+        <div class="empty-icon">📥</div>
+        <h3>No hay préstamos activos</h3>
+        <p>Actualmente no tienes equipos en préstamo</p>
+      </div>
+    }
+  </div>
+</div>

@@ -77,4 +77,30 @@ export class PrestamosAPIService {
     }
 
 
+  obtenerPrestamosPorUsuario(carnet: string , estadoPrestamo: string) {
+    const APIurl = `${this.url}/historial?carnetUsuario=${carnet}&estadoPrestamo=${estadoPrestamo}`;
+    return this.http.get<any[]>(APIurl).pipe(
+      map(data => data.map(item => ({
+        Id: item.Id,
+        CarnetUsuario: item.CarnetUsuario,
+        NombreUsuario: item.NombreUsuario,
+        ApellidoPaternoUsuario: item.ApellidoPaternoUsuario,
+        TelefonoUsuario: item.TelefonoUsuario,
+        NombreGrupoEquipo: item.NombreGrupoEquipo,
+        CodigoImt: item.CodigoImt,
+        FechaSolicitud: item.FechaSolicitud? new Date(item.FechaSolicitud) : null,
+        FechaPrestamoEsperada: item.FechaPrestamoEsperada? new Date(item.FechaPrestamoEsperada) : null,
+        FechaPrestamo: item.FechaPrestamo? new Date(item.FechaPrestamo) : null,
+        FechaDevolucionEsperada: item.FechaDevolucionEsperada? new Date(item.FechaDevolucionEsperada) : null,
+        FechaDevolucion: item.FechaDevolucion? new Date(item.FechaDevolucion) : null,
+        Observacion: item.Observacion,
+        EstadoPrestamo: item.EstadoPrestamo
+      })))
+    );
+
+  }
+
+
+
+
 }
