@@ -1,5 +1,3 @@
 public record EliminarNotificacionComando(
-    string Id,
-    string CarnetUsuario
+    string Id
 );
-

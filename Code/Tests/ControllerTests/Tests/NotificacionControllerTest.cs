@@ -54,11 +54,9 @@ namespace IMT_Reservas.Tests.ControllerTests
         public void EliminarNotificacion_Valido_RetornaNoContent()
         {
             var idNotificacion = "68535f7ddd47665ee70310b7";
-            var carnetUsuario = "12890061";
-            var comando = new EliminarNotificacionComando(idNotificacion, carnetUsuario);
-            _notificacionServiceMock.Setup(s => s.EliminarNotificacion(comando));
+            _notificacionServiceMock.Setup(s => s.EliminarNotificacion(It.Is<EliminarNotificacionComando>(c => c.Id == idNotificacion)));
             
-            var resultado = _notificacionController.EliminarNotificacion(idNotificacion, carnetUsuario);
+            var resultado = _notificacionController.EliminarNotificacion(idNotificacion);
             
             Assert.That(resultado, Is.InstanceOf<NoContentResult>());
         }
@@ -102,4 +100,3 @@ namespace IMT_Reservas.Tests.ControllerTests
         }
     }
 }
-

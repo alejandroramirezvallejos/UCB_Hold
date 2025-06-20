@@ -10,7 +10,7 @@ public class ComentarioRepository : IComentarioRepository
 
     public ComentarioRepository(MongoDbContexto contexto)
     {
-        _coleccion = contexto.BaseDeDatos.GetCollection<BsonDocument>("Comentarios");
+        _coleccion = contexto.BaseDeDatos.GetCollection<BsonDocument>("comentarios");
     }
 
     public void Crear(CrearComentarioComando comando)
@@ -37,14 +37,28 @@ public class ComentarioRepository : IComentarioRepository
     
     public void Eliminar(EliminarComentarioComando comando)
     {
-        var builder = Builders<BsonDocument>.Filter;
-        var filtro = builder.And(
-            builder.Eq("_id", new ObjectId(comando.Id)),
-            builder.Eq("EstadoEliminado", false)
-        );
-
         try
         {
+            if (string.IsNullOrWhiteSpace(comando.Id) || comando.Id.Length != 24)
+                throw new ErrorDataBase("ID de comentario inválido: debe tener 24 caracteres", null, null, null);
+
+            ObjectId objectId;
+            if (!ObjectId.TryParse(comando.Id, out objectId))
+                throw new ErrorDataBase("ID de comentario inválido: formato incorrecto", null, null, null);
+
+            var builder = Builders<BsonDocument>.Filter;
+            var filtro = builder.And(
+                builder.Eq("_id", objectId),
+                builder.Eq("EstadoEliminado", false)
+            );
+
+            // Primero verificamos si el comentario existe
+            var existe = _coleccion.CountDocuments(filtro) > 0;
+            if (!existe)
+            {
+                throw new ErrorDataBase("No se encontró el comentario", null, null, null);
+            }
+
             var resultado = _coleccion.UpdateOne(
                 filtro,
                 Builders<BsonDocument>.Update.Set("EstadoEliminado", true)
@@ -71,21 +85,37 @@ public class ComentarioRepository : IComentarioRepository
 
     public void AgregarLike(AgregarLikeComentarioComando comando)
     {
-        var builder = Builders<BsonDocument>.Filter;
-        var filtro = builder.And(
-            builder.Eq("_id", new ObjectId(comando.Id)),
-            builder.Eq("EstadoEliminado", false)
-        );
-
         try
         {
+            if (string.IsNullOrWhiteSpace(comando.Id) || comando.Id.Length != 24)
+                throw new ErrorDataBase("ID de comentario inválido: debe tener 24 caracteres", null, null, null);
+
+            ObjectId objectId;
+            if (!ObjectId.TryParse(comando.Id, out objectId))
+                throw new ErrorDataBase("ID de comentario inválido: formato incorrecto", null, null, null);
+
+            var builder = Builders<BsonDocument>.Filter;
+            var filtro = builder.And(
+                builder.Eq("_id", objectId),
+                builder.Eq("EstadoEliminado", false)
+            );
+
+            // Primero verificamos si el comentario existe
+            var existe = _coleccion.CountDocuments(filtro) > 0;
+            if (!existe)
+            {
+                throw new ErrorDataBase("No se encontró el comentario", null, null, null);
+            }
+
             var resultado = _coleccion.UpdateOne(
                 filtro,
                 Builders<BsonDocument>.Update.Inc("Likes", 1)
             );
 
             if (resultado.MatchedCount == 0)
+            {
                 throw new ErrorDataBase("No se encontró el comentario", null, null, null);
+            }
         }
         catch (FormatException ex)
         {
@@ -97,19 +127,27 @@ public class ComentarioRepository : IComentarioRepository
         }
         catch (Exception ex)
         {
-            throw new ErrorRepository($"Error al agregar like: {ex.Message}", ex);
+            throw new ErrorRepository($"Error al agregar like al comentario: {ex.Message}", ex);
         }
     }
 
     public DataTable ObtenerPorGrupoEquipo(int idGrupoEquipo)
     {
-        var builder = Builders<BsonDocument>.Filter;
-        var filtro = builder.And(
-            builder.Eq("IdGrupoEquipo", idGrupoEquipo),
-            builder.Eq("EstadoEliminado", false)
-        );
+        try
+        {
+            var builder = Builders<BsonDocument>.Filter;
+            var filtro = builder.And(
+                builder.Eq("IdGrupoEquipo", idGrupoEquipo),
+                builder.Eq("EstadoEliminado", false)
+            );
 
-        return ObtenerComentarios(filtro);
+
+            return ObtenerComentarios(filtro);
+        }
+        catch (Exception ex)
+        {
+            throw new ErrorRepository($"Error al consultar comentarios: {ex.Message}", ex);
+        }
     }
 
     private DataTable ObtenerComentarios(FilterDefinition<BsonDocument> filtro)
@@ -122,7 +160,7 @@ public class ComentarioRepository : IComentarioRepository
                 new BsonDocument("$sort", new BsonDocument("FechaCreacion", -1)),
                 new BsonDocument("$lookup", new BsonDocument
                 {
-                    { "from", "Usuarios" },
+                    { "from", "usuarios" },
                     { "localField", "CarnetUsuario" },
                     { "foreignField", "Carnet" },
                     { "as", "usuario_info" }
@@ -150,7 +188,7 @@ public class ComentarioRepository : IComentarioRepository
         tabla.Columns.Add("carnet_usuario", typeof(string));
         tabla.Columns.Add("nombre_usuario", typeof(string));
         tabla.Columns.Add("apellido_paterno_usuario", typeof(string));
-        tabla.Columns.Add("id_grupo_equipo", typeof(string));
+        tabla.Columns.Add("id_grupo_equipo", typeof(int));
         tabla.Columns.Add("contenido_comentario", typeof(string));
         tabla.Columns.Add("likes_comentario", typeof(int));
         tabla.Columns.Add("fecha_creacion_comentario", typeof(DateTime));
@@ -174,7 +212,7 @@ public class ComentarioRepository : IComentarioRepository
                 fila["apellido_paterno_usuario"] = DBNull.Value;
             }
 
-            fila["id_grupo_equipo"] = doc["IdGrupoEquipo"].AsInt32.ToString();
+            fila["id_grupo_equipo"] = doc["IdGrupoEquipo"].AsInt32;
             fila["contenido_comentario"] = doc["Contenido"].AsString;
             fila["likes_comentario"] = doc["Likes"].AsInt32;
             fila["fecha_creacion_comentario"] = doc["FechaCreacion"].ToUniversalTime();

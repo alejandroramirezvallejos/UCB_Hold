@@ -14,26 +14,12 @@ namespace IMT_Reservas.Server.Application.Services
 
         public virtual void CrearNotificacion(CrearNotificacionComando comando)
         {
-            try
-            {
-                _notificacionRepository.Crear(comando);
-            }
-            catch (System.Exception ex)
-            {
-                throw new System.Exception("Error al crear la notificación", ex);
-            }
+            _notificacionRepository.Crear(comando);
         }
 
         public virtual void EliminarNotificacion(EliminarNotificacionComando comando)
         {
-            try
-            {
-                _notificacionRepository.Eliminar(comando);
-            }
-            catch (System.Exception ex)
-            {
-                throw new System.Exception("Error al eliminar la notificación", ex);
-            }
+            _notificacionRepository.Eliminar(comando);
         }
 
         public virtual List<NotificacionDto> ObtenerNotificacionesPorUsuario(ObtenerNotificacionPorCarnetUsuarioConsulta consulta)
@@ -58,14 +44,7 @@ namespace IMT_Reservas.Server.Application.Services
 
         public virtual void MarcarNotificacionComoLeida(MarcarComoLeidoComando comando)
         {
-            try
-            {
-                _notificacionRepository.MarcarComoLeida(comando);
-            }
-            catch (System.Exception ex)
-            {
-                throw new System.Exception("Error al marcar la notificación como leída", ex);
-            }
+            _notificacionRepository.MarcarComoLeida(comando);
         }
     }
 }

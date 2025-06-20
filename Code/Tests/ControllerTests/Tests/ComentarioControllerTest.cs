@@ -69,7 +69,7 @@ namespace IMT_Reservas.Tests.ControllerTests
             var idGrupoEquipo = 8;
             var comentariosEsperados = new List<ComentarioDto>
             {
-                new ComentarioDto { Id = "68531f233cba0b4adf2ea2cd", CarnetUsuario = "7", IdGrupoEquipo = "8", Contenido = "El servidor está bien configurado, pero recomendaría actualizar el sis…", Likes = 3, FechaCreacion = DateTime.Parse("2025-06-12T09:15:00.000Z") }
+                new ComentarioDto { Id = "68531f233cba0b4adf2ea2cd", CarnetUsuario = "7", IdGrupoEquipo = 8, Contenido = "El servidor está bien configurado, pero recomendaría actualizar el sis…", Likes = 3, FechaCreacion = DateTime.Parse("2025-06-12T09:15:00.000Z") }
             };
             _comentarioServiceMock.Setup(s => s.ObtenerComentariosPorGrupoEquipo(It.Is<ObtenerComentariosPorGrupoEquipoConsulta>(c => c.IdGrupoEquipo == idGrupoEquipo))).Returns(comentariosEsperados);
             
@@ -171,4 +171,3 @@ namespace IMT_Reservas.Tests.ControllerTests
         }
     }
 }
-

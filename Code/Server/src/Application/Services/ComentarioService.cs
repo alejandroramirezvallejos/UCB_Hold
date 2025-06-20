@@ -113,6 +113,11 @@ namespace IMT_Reservas.Server.Application.Services
                 if (ex is ErrorDataBase errorDb)
                 {
                     var mensaje = errorDb.Message?.ToLower() ?? "";
+
+                    if (mensaje.Contains("id de comentario inválido"))
+                    {
+                        throw new ErrorIdInvalido(errorDb.Message);
+                    }
                     
                     if (mensaje.Contains("no se encontró el comentario"))
                     {
@@ -188,7 +193,7 @@ namespace IMT_Reservas.Server.Application.Services
                 CarnetUsuario = fila["carnet_usuario"] == DBNull.Value ? null : fila["carnet_usuario"].ToString(),
                 NombreUsuario = fila["nombre_usuario"] == DBNull.Value ? null : fila["nombre_usuario"].ToString(),
                 ApellidoPaternoUsuario = fila["apellido_paterno_usuario"] == DBNull.Value ? null : fila["apellido_paterno_usuario"].ToString(),
-                IdGrupoEquipo = fila["id_grupo_equipo"] == DBNull.Value ? null : fila["id_grupo_equipo"].ToString(),
+                IdGrupoEquipo = fila["id_grupo_equipo"] == DBNull.Value ? 0 : Convert.ToInt32(fila["id_grupo_equipo"]),
                 Contenido = fila["contenido_comentario"] == DBNull.Value ? null : fila["contenido_comentario"].ToString(),
                 Likes = fila["likes_comentario"] == DBNull.Value ? 0 : Convert.ToInt32(fila["likes_comentario"]),
                 FechaCreacion = fila["fecha_creacion_comentario"] == DBNull.Value ? null : Convert.ToDateTime(fila["fecha_creacion_comentario"])

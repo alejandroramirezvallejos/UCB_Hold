@@ -29,7 +29,7 @@ namespace IMT_Reservas.Tests.RepositoryTests
             _databaseMock = new Mock<IMongoDatabase>();
             _collectionMock = new Mock<IMongoCollection<BsonDocument>>();
 
-            _databaseMock.Setup(db => db.GetCollection<BsonDocument>("Notificaciones", null)).Returns(_collectionMock.Object);
+            _databaseMock.Setup(db => db.GetCollection<BsonDocument>("notificaciones", null)).Returns(_collectionMock.Object);
             _contextoMock.Setup(c => c.BaseDeDatos).Returns(_databaseMock.Object);
 
             _notificacionRepository = new NotificacionRepository(_contextoMock.Object);
@@ -48,7 +48,7 @@ namespace IMT_Reservas.Tests.RepositoryTests
         [Test]
         public void Eliminar_LlamaAUpdateOne()
         {
-            var comando = new EliminarNotificacionComando("68535f7ddd47665ee70310b7", "12890061");
+            var comando = new EliminarNotificacionComando("68535f7ddd47665ee70310b7");
             var serializer = BsonSerializer.SerializerRegistry.GetSerializer<BsonDocument>();
             var expectedUpdate = Builders<BsonDocument>.Update.Set("EstadoEliminado", true);
             var renderedExpected = expectedUpdate.Render(serializer, BsonSerializer.SerializerRegistry);
@@ -137,7 +137,7 @@ namespace IMT_Reservas.Tests.RepositoryTests
             _collectionMock.Setup(c => c.FindSync(It.IsAny<FilterDefinition<BsonDocument>>(), It.IsAny<FindOptions<BsonDocument, BsonDocument>>(), default)).Throws(exception);
 
             Assert.Throws<ErrorRepository>(() => _notificacionRepository.Crear(new CrearNotificacionComando("u", "t", "c")));
-            Assert.Throws<ErrorRepository>(() => _notificacionRepository.Eliminar(new EliminarNotificacionComando(validObjectId, "u")));
+            Assert.Throws<ErrorRepository>(() => _notificacionRepository.Eliminar(new EliminarNotificacionComando(validObjectId)));
             Assert.Throws<ErrorRepository>(() => _notificacionRepository.MarcarComoLeida(new MarcarComoLeidoComando(validObjectId)));
             Assert.Throws<ErrorRepository>(() => _notificacionRepository.ObtenerPorUsuario(new ObtenerNotificacionPorCarnetUsuarioConsulta("u")));
         }
@@ -146,7 +146,7 @@ namespace IMT_Reservas.Tests.RepositoryTests
         public void Repositorio_IdInvalido_LanzaErrorDataBase()
         {
             var invalidId = "id";
-            Assert.Throws<ErrorDataBase>(() => _notificacionRepository.Eliminar(new EliminarNotificacionComando(invalidId, "u")));
+            Assert.Throws<ErrorDataBase>(() => _notificacionRepository.Eliminar(new EliminarNotificacionComando(invalidId)));
             Assert.Throws<ErrorDataBase>(() => _notificacionRepository.MarcarComoLeida(new MarcarComoLeidoComando(invalidId)));
         }
     }

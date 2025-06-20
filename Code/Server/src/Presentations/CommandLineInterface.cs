@@ -157,7 +157,7 @@ public static class CommandLineInterface
             }
 
             Console.WriteLine();
-            Console.WriteLine("Resumen de pruebas por archivo:");
+            Console.WriteLine("Resumen de pruebas ejecutadas");
 
             foreach (var result in results.OrderBy(r => r.Key))
             {

@@ -56,7 +56,7 @@ namespace IMT_Reservas.Tests.ServiceTests
         [Test]
         public void EliminarNotificacion_ComandoValido_LlamaRepositorioEliminar()
         {
-            var comando = new EliminarNotificacionComando("68535f7ddd47665ee70310b7", "12890061");
+            var comando = new EliminarNotificacionComando("68535f7ddd47665ee70310b7");
             _notificacionService.EliminarNotificacion(comando);
             _notificacionRepositoryMock.Verify(r => r.Eliminar(comando), Times.Once);
         }
@@ -70,4 +70,3 @@ namespace IMT_Reservas.Tests.ServiceTests
         }
     }
 }
-

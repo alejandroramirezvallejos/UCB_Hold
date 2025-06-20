@@ -44,11 +44,11 @@ namespace API.Controllers
         }
 
         [HttpDelete("{id}")]
-        public IActionResult EliminarNotificacion(string id, [FromQuery] string carnetUsuario)
+        public IActionResult EliminarNotificacion(string id)
         {
             try
             {
-                var comando = new EliminarNotificacionComando(id, carnetUsuario);
+                var comando = new EliminarNotificacionComando(id);
                 _notificacionService.EliminarNotificacion(comando);
                 return NoContent();
             }

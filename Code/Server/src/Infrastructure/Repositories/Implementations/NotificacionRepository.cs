@@ -11,7 +11,7 @@ namespace IMT_Reservas.Server.Infrastructure.Repositories.Implementations
 
         public NotificacionRepository(MongoDbContexto contexto)
         {
-            _coleccion = contexto.BaseDeDatos.GetCollection<BsonDocument>("Notificaciones");
+            _coleccion = contexto.BaseDeDatos.GetCollection<BsonDocument>("notificaciones");
         }
 
         public void Crear(CrearNotificacionComando comando)
@@ -42,8 +42,7 @@ namespace IMT_Reservas.Server.Infrastructure.Repositories.Implementations
             {
                 var filtro = new BsonDocument 
                 {
-                    { "_id", new ObjectId(comando.Id) },
-                    { "CarnetUsuario", comando.CarnetUsuario }
+                    { "_id", new ObjectId(comando.Id) }
                 };
                 var actualizacion = Builders<BsonDocument>.Update.Set("EstadoEliminado", true);
 
@@ -93,12 +92,8 @@ namespace IMT_Reservas.Server.Infrastructure.Repositories.Implementations
         {
             try
             {
-                var cursor = _coleccion.FindSync(filtro, new FindOptions<BsonDocument> { Sort = Builders<BsonDocument>.Sort.Descending("FechaEnvio") });
-                var documentos = new List<BsonDocument>();
-                while (cursor.MoveNext())
-                {
-                    documentos.AddRange(cursor.Current);
-                }
+                var sort = Builders<BsonDocument>.Sort.Descending("FechaEnvio");
+                var documentos = _coleccion.Find(filtro).Sort(sort).ToList();
 
                 return ConvertirATablaDeDatos(documentos);
             }
@@ -126,7 +121,7 @@ namespace IMT_Reservas.Server.Infrastructure.Repositories.Implementations
                 fila["titulo"] = doc["Titulo"].AsString;
                 fila["contenido"] = doc["Contenido"].AsString;
                 fila["fecha_envio"] = doc["FechaEnvio"].ToUniversalTime();
-                fila["leida"] = doc["Leida"].AsBoolean;
+                fila["leida"] = doc.GetValue("Leida", false).AsBoolean;
                 tabla.Rows.Add(fila);
             }
             return tabla;

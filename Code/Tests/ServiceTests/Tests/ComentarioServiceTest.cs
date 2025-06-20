@@ -66,12 +66,12 @@ namespace IMT_Reservas.Tests.ServiceTests
             comentariosDataTable.Columns.Add("carnet_usuario", typeof(string));
             comentariosDataTable.Columns.Add("nombre_usuario", typeof(string));
             comentariosDataTable.Columns.Add("apellido_paterno_usuario", typeof(string));
-            comentariosDataTable.Columns.Add("id_grupo_equipo", typeof(string));
+            comentariosDataTable.Columns.Add("id_grupo_equipo", typeof(int));
             comentariosDataTable.Columns.Add("contenido_comentario", typeof(string));
             comentariosDataTable.Columns.Add("likes_comentario", typeof(int));
             comentariosDataTable.Columns.Add("fecha_creacion_comentario", typeof(DateTime));
             
-            comentariosDataTable.Rows.Add("68531f233cba0b4adf2ea2cd", "7", "Test", "User", "8", "El servidor está bien configurado, pero recomendaría actualizar el sis…", 3, DateTime.Parse("2025-06-12T09:15:00.000Z"));
+            comentariosDataTable.Rows.Add("68531f233cba0b4adf2ea2cd", "7", "Test", "User", 8, "El servidor está bien configurado, pero recomendaría actualizar el sis…", 3, DateTime.Parse("2025-06-12T09:15:00.000Z"));
 
             _comentarioRepositoryMock.Setup(r => r.ObtenerPorGrupoEquipo(consulta.IdGrupoEquipo)).Returns(comentariosDataTable);
 
@@ -113,4 +113,3 @@ namespace IMT_Reservas.Tests.ServiceTests
         }
     }
 }
-
