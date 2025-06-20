@@ -98,6 +98,7 @@ export class FormularioComponent implements OnInit {
       this.mandarprestamo.crearPrestamo(this.carrito.obtenercarrito(),this.usuario.usuario.carnet!,null).subscribe({
         next: (response) => {
           console.log('Préstamo creado exitosamente:', response);
+          alert('Préstamo creado exitosamente');
           this.carrito.vaciarcarrito();
           this.generarPDF(); 
           this.router.navigate(["/home"]);
@@ -105,7 +106,7 @@ export class FormularioComponent implements OnInit {
         error: (error) => {
           console.error('Error al crear préstamo:', error);
           this.error.set(1);
-          this.mensajeerror = "Error al enviar el préstamo. Por favor, inténtelo más tarde.";
+          this.mensajeerror = error.error.error+ " - " + error.error.mensaje;
         }
       })
     }
