@@ -157,15 +157,7 @@ public class ComentarioRepository : IComentarioRepository
             var pipeline = new BsonDocument[]
             {
                 new BsonDocument("$match", filtro.Render(_coleccion.DocumentSerializer, _coleccion.Settings.SerializerRegistry)),
-                new BsonDocument("$sort", new BsonDocument("FechaCreacion", -1)),
-                new BsonDocument("$lookup", new BsonDocument
-                {
-                    { "from", "usuarios" },
-                    { "localField", "CarnetUsuario" },
-                    { "foreignField", "Carnet" },
-                    { "as", "usuario_info" }
-                }),
-                new BsonDocument("$unwind", new BsonDocument { { "path", "$usuario_info" }, { "preserveNullAndEmptyArrays", true } })
+                new BsonDocument("$sort", new BsonDocument("FechaCreacion", -1))
             };
 
             var cursor = _coleccion.Aggregate<BsonDocument>(pipeline);
@@ -186,8 +178,6 @@ public class ComentarioRepository : IComentarioRepository
         
         tabla.Columns.Add("id_comentario", typeof(string));
         tabla.Columns.Add("carnet_usuario", typeof(string));
-        tabla.Columns.Add("nombre_usuario", typeof(string));
-        tabla.Columns.Add("apellido_paterno_usuario", typeof(string));
         tabla.Columns.Add("id_grupo_equipo", typeof(int));
         tabla.Columns.Add("contenido_comentario", typeof(string));
         tabla.Columns.Add("likes_comentario", typeof(int));
@@ -200,17 +190,6 @@ public class ComentarioRepository : IComentarioRepository
             fila["id_comentario"] = doc["_id"].ToString();
             fila["carnet_usuario"] = doc["CarnetUsuario"].AsString;
 
-            if (doc.Contains("usuario_info") && doc["usuario_info"] != BsonNull.Value)
-            {
-                var usuarioInfo = doc["usuario_info"].AsBsonDocument;
-                fila["nombre_usuario"] = usuarioInfo.GetValue("Nombre", BsonNull.Value).AsString;
-                fila["apellido_paterno_usuario"] = usuarioInfo.GetValue("ApellidoPaterno", BsonNull.Value).AsString;
-            }
-            else
-            {
-                fila["nombre_usuario"] = DBNull.Value;
-                fila["apellido_paterno_usuario"] = DBNull.Value;
-            }
 
             fila["id_grupo_equipo"] = doc["IdGrupoEquipo"].AsInt32;
             fila["contenido_comentario"] = doc["Contenido"].AsString;

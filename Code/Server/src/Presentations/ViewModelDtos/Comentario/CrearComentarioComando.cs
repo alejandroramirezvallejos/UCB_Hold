@@ -1,6 +1,5 @@
 public record CrearComentarioComando(
     string CarnetUsuario,     
-    int    IdGrupoEquipo,       
+    int    IdGrupoEquipo,
     string Contenido         
 );
-
