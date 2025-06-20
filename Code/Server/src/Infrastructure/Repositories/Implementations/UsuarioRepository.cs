@@ -3,8 +3,8 @@ using Npgsql;
 
 public class UsuarioRepository : IUsuarioRepository
 {
-    private readonly IExecuteQuery _ejecutarConsulta;
-    public UsuarioRepository(IExecuteQuery ejecutarConsulta)
+    private readonly ExecuteQuery _ejecutarConsulta;
+    public UsuarioRepository(ExecuteQuery ejecutarConsulta)
     {
         _ejecutarConsulta = ejecutarConsulta;
     }
@@ -74,18 +74,19 @@ public class UsuarioRepository : IUsuarioRepository
         Dictionary<string, object?> parametros = new Dictionary<string, object?>
         {
             ["carnet"] = comando.Carnet,
-            ["nombre"] = comando.Nombre,
-            ["apellidoPaterno"] = comando.ApellidoPaterno,
-            ["apellidoMaterno"] = comando.ApellidoMaterno,
-            ["email"] = comando.Email,
-            ["contrasena"] = comando.Contrasena,
-            ["rol"] = comando.Rol,
-            ["carrera"] = comando.NombreCarrera,
-            ["telefono"] = comando.Telefono,
-            ["telefonoReferencia"] = comando.TelefonoReferencia,
-            ["nombreReferencia"] = comando.NombreReferencia,
-            ["emailReferencia"] = comando.EmailReferencia
-        };          try
+            ["nombre"] = comando.Nombre ?? (object)DBNull.Value,
+            ["apellidoPaterno"] = comando.ApellidoPaterno ?? (object)DBNull.Value,
+            ["apellidoMaterno"] = comando.ApellidoMaterno ?? (object)DBNull.Value,
+            ["email"] = comando.Email ?? (object)DBNull.Value,
+            ["contrasena"] = comando.Contrasena ?? (object)DBNull.Value,
+            ["rol"] = comando.Rol ?? (object)DBNull.Value,
+            ["carrera"] = comando.NombreCarrera ?? (object)DBNull.Value,
+            ["telefono"] = comando.Telefono ?? (object)DBNull.Value,
+            ["telefonoReferencia"] = comando.TelefonoReferencia ?? (object)DBNull.Value,
+            ["nombreReferencia"] = comando.NombreReferencia ?? (object)DBNull.Value,
+            ["emailReferencia"] = comando.EmailReferencia ?? (object)DBNull.Value
+        };
+        try
         {
             _ejecutarConsulta.EjecutarSpNR(sql, parametros);
         }        catch (NpgsqlException ex)
