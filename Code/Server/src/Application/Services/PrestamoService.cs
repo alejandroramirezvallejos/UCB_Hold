@@ -1,14 +1,18 @@
 using System.Data;
 using IMT_Reservas.Server.Shared.Common;
+using IMT_Reservas.Server.Infrastructure.MongoDb;
+using MongoDB.Bson;
 
 
 public class PrestamoService : IPrestamoService
 {
     private readonly IPrestamoRepository _prestamoRepository;
+    private readonly MongoDbContexto _mongoDbContexto;
 
-    public PrestamoService(IPrestamoRepository prestamoRepository)
+    public PrestamoService(IPrestamoRepository prestamoRepository, MongoDbContexto mongoDbContexto)
     {
         _prestamoRepository = prestamoRepository;
+        _mongoDbContexto = mongoDbContexto;
     }    public virtual void CrearPrestamo(CrearPrestamoComando comando)
     {
         try
@@ -245,5 +249,25 @@ public class PrestamoService : IPrestamoService
             Observacion = fila["observacion"] == DBNull.Value ? null : fila["observacion"].ToString(),
             EstadoPrestamo = fila["estado_prestamo"] == DBNull.Value ? null : fila["estado_prestamo"].ToString(),
         };
+    }
+
+    public async Task AceptarPrestamo(AceptarPrestamoComando comando)
+    {
+        if (comando.Contrato == null || comando.Contrato.Length == 0)
+            throw new ArgumentException("El archivo del contrato es requerido.");
+
+        // 1. Subir el archivo a GridFS
+        var fileId = await _mongoDbContexto.GestionArchivos.UploadFromStreamAsync(comando.Contrato.FileName, comando.Contrato.OpenReadStream());
+
+        // 2. Crear el documento en la colección 'contratos'
+        var contrato = new Contrato
+        {
+            PrestamoId = comando.PrestamoId,
+            FileId = fileId.ToString()
+        };
+        await _mongoDbContexto.Contratos.InsertOneAsync(contrato);
+
+        // 3. Actualizar el estado en la base de datos SQL
+        _prestamoRepository.AceptarPrestamo(comando.PrestamoId);
     }
 }

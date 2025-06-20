@@ -4,6 +4,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Configuration;
 using Moq;
 using IMT_Reservas.Server.Shared.Common;
+using Microsoft.AspNetCore.Http;
 
 namespace IMT_Reservas.Tests.ControllerTests
 {
@@ -123,6 +124,53 @@ namespace IMT_Reservas.Tests.ControllerTests
             _prestamoServiceMock.Setup(s => s.EliminarPrestamo(It.Is<EliminarPrestamoComando>(c => c.Id == idEnUso))).Throws(new ErrorRegistroEnUso());
             IActionResult resultadoAccion = _prestamosController.EliminarPrestamo(idEnUso);
             Assert.That(resultadoAccion, Is.InstanceOf<ConflictObjectResult>());
+        }
+
+        [Test]
+        public async Task AceptarPrestamo_Valido_RetornaOk()
+        {
+            // Arrange
+            var mockFile = new Mock<IFormFile>();
+            var comando = new AceptarPrestamoComando { PrestamoId = 1, Contrato = mockFile.Object };
+            _prestamoServiceMock.Setup(s => s.AceptarPrestamo(comando)).Returns(Task.CompletedTask);
+
+            // Act
+            var resultadoAccion = await _prestamosController.AceptarPrestamo(comando);
+
+            // Assert
+            Assert.That(resultadoAccion, Is.InstanceOf<OkObjectResult>());
+        }
+
+        [Test]
+        public async Task AceptarPrestamo_ArgumentoInvalido_RetornaBadRequest()
+        {
+            // Arrange
+            var mockFile = new Mock<IFormFile>();
+            var comando = new AceptarPrestamoComando { PrestamoId = 1, Contrato = mockFile.Object };
+            _prestamoServiceMock.Setup(s => s.AceptarPrestamo(comando)).ThrowsAsync(new ArgumentException("Argumento inválido"));
+
+            // Act
+            var resultadoAccion = await _prestamosController.AceptarPrestamo(comando);
+
+            // Assert
+            Assert.That(resultadoAccion, Is.InstanceOf<BadRequestObjectResult>());
+        }
+
+        [Test]
+        public async Task AceptarPrestamo_ErrorServidor_RetornaError500()
+        {
+            // Arrange
+            var mockFile = new Mock<IFormFile>();
+            var comando = new AceptarPrestamoComando { PrestamoId = 1, Contrato = mockFile.Object };
+            _prestamoServiceMock.Setup(s => s.AceptarPrestamo(comando)).ThrowsAsync(new Exception("Error de servidor"));
+
+            // Act
+            var resultadoAccion = await _prestamosController.AceptarPrestamo(comando);
+
+            // Assert
+            Assert.That(resultadoAccion, Is.InstanceOf<ObjectResult>());
+            var objectResult = (ObjectResult)resultadoAccion;
+            Assert.That(objectResult.StatusCode, Is.EqualTo(500));
         }
     }
 }

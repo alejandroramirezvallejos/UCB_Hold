@@ -133,4 +133,22 @@ public class PrestamoController : ControllerBase
             return StatusCode(500, new { error = "Error interno del servidor", mensaje = "Ocurrió un error inesperado al eliminar el préstamo" });
         }
     }
+
+    [HttpPost("aceptar")]
+    public async Task<IActionResult> AceptarPrestamo([FromForm] AceptarPrestamoComando comando)
+    {
+        try
+        {
+            await _servicio.AceptarPrestamo(comando);
+            return Ok(new { mensaje = "Préstamo aceptado exitosamente" });
+        }
+        catch (ArgumentException ex)
+        {
+            return BadRequest(new { error = "Argumentos inválidos", mensaje = ex.Message });
+        }
+        catch (Exception ex)
+        {
+            return StatusCode(500, new { error = "Error interno del servidor", mensaje = ex.Message });
+        }
+    }
 }

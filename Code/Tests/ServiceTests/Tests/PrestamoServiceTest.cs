@@ -1,6 +1,12 @@
 ﻿using Moq;
 using System.Data;
 using IMT_Reservas.Server.Shared.Common;
+using IMT_Reservas.Server.Infrastructure.MongoDb;
+using Microsoft.AspNetCore.Http;
+using MongoDB.Bson;
+using MongoDB.Driver;
+using MongoDB.Driver.GridFS;
+using System.IO;
 
 namespace IMT_Reservas.Tests.ServiceTests
 {
@@ -8,13 +14,15 @@ namespace IMT_Reservas.Tests.ServiceTests
     public class PrestamoServiceTest : IPrestamoServiceTest
     {
         private Mock<IPrestamoRepository> _prestamoRepositoryMock;
+        private Mock<MongoDbContexto> _mongoDbContextMock;
         private PrestamoService          _prestamoService;
 
         [SetUp]
         public void Setup()
         {
             _prestamoRepositoryMock = new Mock<IPrestamoRepository>();
-            _prestamoService        = new PrestamoService(_prestamoRepositoryMock.Object);
+            _mongoDbContextMock = new Mock<MongoDbContexto>();
+            _prestamoService        = new PrestamoService(_prestamoRepositoryMock.Object, _mongoDbContextMock.Object);
         }
 
         [Test]
@@ -105,6 +113,49 @@ namespace IMT_Reservas.Tests.ServiceTests
         {
             EliminarPrestamoComando comando = new EliminarPrestamoComando(0);
             Assert.Throws<ErrorIdInvalido>(() => _prestamoService.EliminarPrestamo(comando));
+        }
+
+        [Test]
+        public async Task AceptarPrestamo_ComandoValido_SubeArchivoYActualizaEstado()
+        {
+            // Arrange
+            var mockFile = new Mock<IFormFile>();
+            var ms = new MemoryStream();
+            var writer = new StreamWriter(ms);
+            writer.Write("dummy file content");
+            writer.Flush();
+            ms.Position = 0;
+            mockFile.Setup(f => f.Length).Returns(ms.Length);
+            mockFile.Setup(f => f.FileName).Returns("contrato.pdf");
+            mockFile.Setup(f => f.OpenReadStream()).Returns(ms);
+
+            var mockGridFSBucket = new Mock<IGridFSBucket>();
+            var mockContratosCollection = new Mock<IMongoCollection<Contrato>>();
+            var fileId = ObjectId.GenerateNewId();
+            var comando = new AceptarPrestamoComando { PrestamoId = 1, Contrato = mockFile.Object };
+
+            _mongoDbContextMock.Setup(m => m.GestionArchivos).Returns(mockGridFSBucket.Object);
+            _mongoDbContextMock.Setup(m => m.Contratos).Returns(mockContratosCollection.Object);
+
+            mockGridFSBucket.Setup(g => g.UploadFromStreamAsync(It.IsAny<string>(), It.IsAny<Stream>(), null, default)).ReturnsAsync(fileId);
+
+            // Act
+            await _prestamoService.AceptarPrestamo(comando);
+
+            // Assert
+            _prestamoRepositoryMock.Verify(r => r.AceptarPrestamo(comando.PrestamoId), Times.Once);
+            mockGridFSBucket.Verify(g => g.UploadFromStreamAsync(It.IsAny<string>(), It.IsAny<Stream>(), null, default), Times.Once);
+            mockContratosCollection.Verify(c => c.InsertOneAsync(It.Is<Contrato>(doc => doc.PrestamoId == comando.PrestamoId && doc.FileId == fileId.ToString()), null, default), Times.Once);
+        }
+
+        [Test]
+        public void AceptarPrestamo_ContratoNulo_LanzaArgumentException()
+        {
+            // Arrange
+            var comando = new AceptarPrestamoComando { PrestamoId = 1, Contrato = null };
+
+            // Act & Assert
+            Assert.ThrowsAsync<ArgumentException>(async () => await _prestamoService.AceptarPrestamo(comando));
         }
     }
 }
