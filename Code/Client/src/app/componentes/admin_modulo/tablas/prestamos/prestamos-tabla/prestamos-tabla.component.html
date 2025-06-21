@@ -4,31 +4,8 @@
     <div class="header-title">
       <h1>Préstamos</h1>
       <p class="subtitle">Gestión de préstamos de equipos de mecatrónica</p>
-    </div>    <button class="botoncrear" (click)="crearprestamo()">
-       Nuevo Préstamo
-    </button>
-  </div>
-  <!-- BUSCADOR-->
-  <div class="search-container">
-    
-    <div class="search-and-filter-row">
-      <div class="search-input-wrapper">
-        <i class="fas fa-search search-icon"></i>
-        <input 
-          type="text" 
-          [(ngModel)]="terminoBusqueda" 
-          (keydown.enter)="aplicarFiltros()"
-          placeholder="Buscar préstamos..." 
-          class="search-input"
-        />
-        @if (terminoBusqueda) {
-          <button class="clear-search" (click)="limpiarBusqueda()">
-            <i class="fas fa-times"></i>
-          </button>
-        }
-      </div>
-        <!-- Filtro de estados -->
-      <div class="filter-container">
+    </div>   
+    <div class="filter-container">
         <button 
           class="btn-filter" 
           (click)="mostrarEstados()"
@@ -82,7 +59,32 @@
             </div>
           </div>
         }
-      </div>    </div>
+      </div> 
+
+
+  </div>
+  <!-- BUSCADOR-->
+  <div class="search-container">
+    
+    <div class="search-and-filter-row">
+      <div class="search-input-wrapper">
+        <i class="fas fa-search search-icon"></i>
+        <input 
+          type="text" 
+          [(ngModel)]="terminoBusqueda" 
+          (keydown.enter)="aplicarFiltros()"
+          placeholder="Buscar préstamos..." 
+          class="search-input"
+        />
+        @if (terminoBusqueda) {
+          <button class="clear-search" (click)="limpiarBusqueda()">
+            <i class="fas fa-times"></i>
+          </button>
+        }
+      </div>
+        <!-- Filtro de estados -->
+        
+    </div>
   </div>
 
   <!-- TABLA -->
@@ -109,13 +111,13 @@
                 }
             </th>
           <th (click)="ordenarPor('NombreGrupoEquipo')">
-            Grupo Equipo
+             Equipos
             @if (sortColumn === 'NombreGrupoEquipo') {
               <i [class]="sortDirection === 'asc' ? 'fas fa-sort-up' : 'fas fa-sort-down'"></i>
             }
           </th>
           <th (click)="ordenarPor('CodigoImt')">
-            Código IMT
+            Códigos IMT
             @if (sortColumn === 'CodigoImt') {
               <i [class]="sortDirection === 'asc' ? 'fas fa-sort-up' : 'fas fa-sort-down'"></i>
             }
@@ -150,25 +152,25 @@
       <tbody>
         @for (prestamo of prestamos; track $index ; let i = $index) {
           <tr>
-            <td>{{prestamo.NombreUsuario}} {{prestamo.ApellidoPaternoUsuario}}</td>
-            <td>{{prestamo.CarnetUsuario}}</td>
-            <td>{{prestamo.TelefonoUsuario}}</td>
-            <td>{{prestamo.NombreGrupoEquipo}}</td>
-            <td>{{prestamo.CodigoImt}}</td>
-            <td>{{prestamo.FechaSolicitud | date:'dd/MM/yyyy'}}</td>
-            <td>{{prestamo.FechaPrestamoEsperada | date:'dd/MM/yyyy'}}</td>
-            <td>{{prestamo.FechaDevolucionEsperada | date:'dd/MM/yyyy'}}</td>
+            <td>{{prestamo.datosgrupo.NombreUsuario}} {{prestamo.datosgrupo.ApellidoPaternoUsuario}}</td>
+            <td>{{prestamo.datosgrupo.CarnetUsuario}}</td>
+            <td>{{prestamo.datosgrupo.TelefonoUsuario}}</td>
+            <td>{{prestamo.datosgrupo.NombreGrupoEquipo}}</td>
+            <td>{{prestamo.datosgrupo.CodigoImt}}</td>
+            <td>{{prestamo.datosgrupo.FechaSolicitud | date:'dd/MM/yyyy'}}</td>
+            <td>{{prestamo.datosgrupo.FechaPrestamoEsperada | date:'dd/MM/yyyy'}}</td>
+            <td>{{prestamo.datosgrupo.FechaDevolucionEsperada | date:'dd/MM/yyyy'}}</td>
             <td>
-              <span [class]="'estado-' + (prestamo.EstadoPrestamo?.toLowerCase() || '')">
-                {{prestamo.EstadoPrestamo}}
+              <span [class]="'estado-' + (prestamo.datosgrupo.EstadoPrestamo?.toLowerCase() || '')">
+                {{prestamo.datosgrupo.EstadoPrestamo}}
               </span>
             </td>
             <td class="actions-column">
-            @if(prestamo.EstadoPrestamo == 'rechazado' || prestamo.EstadoPrestamo == 'aprobado' || prestamo.EstadoPrestamo == 'finalizado' || prestamo.EstadoPrestamo == 'cancelado'){
-            <button class="btn-icon btn-delete" (click)="eliminarPrestamo(prestamo)">
+            @if(prestamo.datosgrupo.EstadoPrestamo == 'rechazado' || prestamo.datosgrupo.EstadoPrestamo == 'aprobado' || prestamo.datosgrupo.EstadoPrestamo == 'finalizado' || prestamo.datosgrupo.EstadoPrestamo == 'cancelado'){
+            <button class="btn-icon btn-delete" (click)="eliminarPrestamo(prestamo.datosgrupo)">
                 <i class="fas fa-trash-alt"></i>
             </button>
-            }            @else if (prestamo.EstadoPrestamo=='pendiente') {
+            }            @else if (prestamo.datosgrupo.EstadoPrestamo=='pendiente') {
                 <button class="btn-action btn-accept" (click)="aprobarprestamo(i)">
                   <i class="fas fa-check"></i>
                   Aceptar
@@ -178,7 +180,7 @@
                   Rechazar
                 </button>
             }
-            @else if (prestamo.EstadoPrestamo=='activo') {
+            @else if (prestamo.datosgrupo.EstadoPrestamo=='activo') {
 
             }
 
@@ -212,11 +214,4 @@
     </div>
   }
 </div>
-
-@if(botoncrear()){
-  <app-prestamos-crear
-  [botoncrear]="botoncrear"
-  (Actualizar)="cargarPrestamos()"
-  ></app-prestamos-crear>
-}
 

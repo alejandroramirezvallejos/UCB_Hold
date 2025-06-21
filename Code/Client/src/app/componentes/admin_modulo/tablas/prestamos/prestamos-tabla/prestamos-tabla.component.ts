@@ -2,13 +2,14 @@ import { Component, OnInit, signal, WritableSignal } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule, ReactiveFormsModule, FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { Prestamos } from '../../../../../models/admin/Prestamos';
-import { PrestamosCrearComponent } from '../prestamos-crear/prestamos-crear.component';
+
 import { PrestamosAPIService } from '../../../../../services/APIS/prestamo/prestamos-api.service';
+import { PrestamoAgrupados } from '../../../../../models/PrestamoAgrupados';
 
 @Component({
   selector: 'app-prestamos-tabla',
   standalone: true,
-  imports: [CommonModule, FormsModule, ReactiveFormsModule, PrestamosCrearComponent],
+  imports: [CommonModule, FormsModule, ReactiveFormsModule],
   templateUrl: './prestamos-tabla.component.html',
   styleUrls: ['./prestamos-tabla.component.css']
 })
@@ -17,8 +18,8 @@ export class PrestamosTablaComponent implements OnInit {
   botoncrear: WritableSignal<boolean> = signal(false);
 
   alertaeliminar: boolean = false;
-  prestamos: Prestamos[] = [];
-  prestamoscopia: Prestamos[] = [];
+  prestamos: PrestamoAgrupados[] = [];
+  prestamoscopia: PrestamoAgrupados[] = [];
 
   prestamoSeleccionado: Prestamos = {
     Id: 0,
@@ -83,14 +84,34 @@ export class PrestamosTablaComponent implements OnInit {
   cargarPrestamos() {
     this.prestamosapi.obtenerPrestamos().subscribe(
       (data: Prestamos[]) => {
-        this.prestamos = data;
-        this.prestamoscopia = [...this.prestamos];
+        this.agruparPrestamos(data);
       },
       (error) => {
         console.error('Error al cargar los préstamos:', error);
       }
     );
   }
+
+ agruparPrestamos(datos: Prestamos[]) {
+    this.prestamos = []; 
+    
+    if (datos.length === 0) return;
+
+    let prestamosarray: Prestamos[] = [];
+    
+    for (let i = 0; i < datos.length; i++) {
+        prestamosarray.push(datos[i]); 
+        
+        if (i === datos.length - 1 || datos[i].Id !== datos[i + 1]?.Id) {
+            this.prestamos.push(new PrestamoAgrupados(prestamosarray));
+            prestamosarray = []; 
+        }
+    }
+    this.prestamoscopia = [...this.prestamos]; 
+
+
+}
+
 
 
   limpiarBusqueda() {
@@ -99,7 +120,7 @@ export class PrestamosTablaComponent implements OnInit {
   }
 
 
-
+// --------------------- ELIMINACION -----------------------
   eliminarPrestamo(prestamo: Prestamos) {
     this.prestamoSeleccionado = prestamo;
     this.alertaeliminar = true;
@@ -123,12 +144,13 @@ export class PrestamosTablaComponent implements OnInit {
     this.limpiarPrestamoSeleccionado();
   }
 
+//-----------------------------------------------------
 
   aplicarOrdenamiento() {
     this.prestamos.sort((a, b) => {
       // Type assertion para acceso dinámico
-      const valorA = (a as any)[this.sortColumn];
-      const valorB = (b as any)[this.sortColumn];
+      const valorA = (a.datosgrupo as any)[this.sortColumn];
+      const valorB = (b.datosgrupo as any)[this.sortColumn];
 
       // Convertir a minúsculas si son strings
       let compA = typeof valorA === 'string' ? valorA.toLowerCase() : valorA;
@@ -173,19 +195,19 @@ export class PrestamosTablaComponent implements OnInit {
     // Aplicar filtro de búsqueda si existe
     if (this.terminoBusqueda.trim() !== '') {
       prestamosFiltrados = prestamosFiltrados.filter(prestamo =>
-        prestamo.NombreUsuario?.toLowerCase().includes(this.terminoBusqueda.toLowerCase()) ||
-        prestamo.ApellidoPaternoUsuario?.toLowerCase().includes(this.terminoBusqueda.toLowerCase()) ||
-        prestamo.CarnetUsuario?.toLowerCase().includes(this.terminoBusqueda.toLowerCase()) ||
-        prestamo.NombreGrupoEquipo?.toLowerCase().includes(this.terminoBusqueda.toLowerCase()) ||
-        prestamo.CodigoImt?.toLowerCase().includes(this.terminoBusqueda.toLowerCase()) ||
-        prestamo.EstadoPrestamo?.toLowerCase().includes(this.terminoBusqueda.toLowerCase())
+        prestamo.datosgrupo.NombreUsuario?.toLowerCase().includes(this.terminoBusqueda.toLowerCase()) ||
+        prestamo.datosgrupo.ApellidoPaternoUsuario?.toLowerCase().includes(this.terminoBusqueda.toLowerCase()) ||
+        prestamo.datosgrupo.CarnetUsuario?.toLowerCase().includes(this.terminoBusqueda.toLowerCase()) ||
+        prestamo.datosgrupo.NombreGrupoEquipo?.toLowerCase().includes(this.terminoBusqueda.toLowerCase()) ||
+        prestamo.datosgrupo.CodigoImt?.toLowerCase().includes(this.terminoBusqueda.toLowerCase()) ||
+        prestamo.datosgrupo.EstadoPrestamo?.toLowerCase().includes(this.terminoBusqueda.toLowerCase())
       );
     }
 
     // Aplicar filtro de estado si existe
     if (this.estadoSeleccionado !== '') {
       prestamosFiltrados = prestamosFiltrados.filter(prestamo =>
-        prestamo.EstadoPrestamo?.toLowerCase() === this.estadoSeleccionado.toLowerCase()
+        prestamo.datosgrupo.EstadoPrestamo?.toLowerCase() === this.estadoSeleccionado.toLowerCase()
       );
     }
 
@@ -201,8 +223,7 @@ export class PrestamosTablaComponent implements OnInit {
     
 
   aprobarprestamo(indice : number) {
-    
-    this.prestamosapi.cambiarEstadoPrestamo(this.prestamos[indice].Id, 'aprobado').subscribe({
+    this.prestamosapi.cambiarEstadoPrestamo(this.prestamos[indice].datosgrupo.Id, 'aprobado').subscribe({
       next: (response) => {
         this.cargarPrestamos(); 
       },
@@ -215,7 +236,7 @@ export class PrestamosTablaComponent implements OnInit {
 
   rechazarprestamo(indice : number) {
     
-    this.prestamosapi.cambiarEstadoPrestamo(this.prestamos[indice].Id, 'rechazado').subscribe({
+    this.prestamosapi.cambiarEstadoPrestamo(this.prestamos[indice].datosgrupo.Id, 'rechazado').subscribe({
       next: (response) => {
         this.cargarPrestamos(); 
       },
