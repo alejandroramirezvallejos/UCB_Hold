@@ -40,6 +40,14 @@
               <i [class]="sortDirection === 'asc' ? 'fas fa-sort-up' : 'fas fa-sort-down'"></i>
             }
           </th>
+          <th (click)="ordenarPor('codigoIMT')">
+            codigosIMT
+            @if (sortColumn === 'codigosIMT') {
+              <i [class]="sortDirection === 'asc' ? 'fas fa-sort-up' : 'fas fa-sort-down'"></i>
+            }
+            
+
+          </th>
           <th (click)="ordenarPor('FechaMantenimiento')">
             Fecha Inicio
             @if (sortColumn === 'FechaMantenimiento') {
@@ -52,38 +60,32 @@
               <i [class]="sortDirection === 'asc' ? 'fas fa-sort-up' : 'fas fa-sort-down'"></i>
             }
           </th>
-          <th (click)="ordenarPor('TipoMantenimiento')">
-            Tipo
-            @if (sortColumn === 'TipoMantenimiento') {
-              <i [class]="sortDirection === 'asc' ? 'fas fa-sort-up' : 'fas fa-sort-down'"></i>
-            }
-          </th>
           <th (click)="ordenarPor('Costo')">
             Costo
             @if (sortColumn === 'Costo') {
               <i [class]="sortDirection === 'asc' ? 'fas fa-sort-up' : 'fas fa-sort-down'"></i>
             }
           </th>
-          <th (click)="ordenarPor('NombreGrupoEquipo')">
-            Grupo Equipo
-            @if (sortColumn === 'NombreGrupoEquipo') {
-              <i [class]="sortDirection === 'asc' ? 'fas fa-sort-up' : 'fas fa-sort-down'"></i>
-            }
+          <th >
+            Tipo Y nombre  equipos
+           
           </th>
+
+
           <th>Acciones</th>
         </tr>
       </thead>
       <tbody>
         @for (mantenimiento of mantenimientosFiltrados; track $index ; let i = $index) {
           <tr>
-            <td>{{mantenimiento.NombreEmpresaMantenimiento}}</td>
-            <td>{{mantenimiento.FechaMantenimiento | date:'dd/MM/yyyy'}}</td>
-            <td>{{mantenimiento.FechaFinalDeMantenimiento | date:'dd/MM/yyyy'}}</td>
-            <td>{{mantenimiento.TipoMantenimiento}}</td>
-            <td class="precio-column">${{mantenimiento.Costo | number:'1.2-2'}}</td>
-            <td>{{mantenimiento.NombreGrupoEquipo}}</td>
+            <td>{{mantenimiento.datosgrupo.NombreEmpresaMantenimiento}}</td>
+            <td>{{mantenimiento.datosgrupo.CodigoImtEquipo}}</td>
+            <td>{{mantenimiento.datosgrupo.FechaMantenimiento | date:'dd/MM/yyyy'}}</td>
+            <td>{{mantenimiento.datosgrupo.FechaFinalDeMantenimiento | date:'dd/MM/yyyy'}}</td>
+            <td class="precio-column">${{mantenimiento.datosgrupo.Costo | number:'1.2-2'}}</td>
+            <td (click)="mostrarmantenimientosindividuales(mantenimiento)">.......</td>
             <td class="actions-column">
-              <button class="btn-icon btn-delete" (click)="eliminarMantenimiento(mantenimiento)">
+              <button class="btn-icon btn-delete" (click)="eliminarMantenimiento(mantenimiento.matenimientos[i])">
                 <i class="fas fa-trash-alt"></i>
               </button>
             </td>
@@ -123,3 +125,9 @@
   ></app-mantenimientos-crear>
 }
 
+@if(mostrardetalles()){
+  <app-detalles-mantenimiento
+  [mantenimientos]="mantenimientoGruposeleccionado"
+  [mostrardetalles]="mostrardetalles"
+  ></app-detalles-mantenimiento>
+}
