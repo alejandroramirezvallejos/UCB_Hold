@@ -49,7 +49,7 @@ namespace IMT_Reservas.Tests.ControllerTests
         {
             ActualizarUsuarioComando comando = new ActualizarUsuarioComando("1", "Andrea Maria", null, null, null, null, null, null, null, null, null, null);
             _usuarioServiceMock.Setup(s => s.ActualizarUsuario(comando));
-            IActionResult resultadoAccion = _usuariosController.ActualizarUsuario(comando.Carnet, comando);
+            IActionResult resultadoAccion = _usuariosController.ActualizarUsuario(comando);
             Assert.That(resultadoAccion, Is.InstanceOf<OkObjectResult>());
         }
 

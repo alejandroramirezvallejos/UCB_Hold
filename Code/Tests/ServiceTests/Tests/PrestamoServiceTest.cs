@@ -15,6 +15,7 @@ namespace IMT_Reservas.Tests.ServiceTests
     {
         private Mock<IPrestamoRepository> _prestamoRepositoryMock;
         private Mock<MongoDbContexto> _mongoDbContextMock;
+        private Mock<IGridFSBucket> _gridFsMock;
         private PrestamoService          _prestamoService;
 
         [SetUp]
@@ -22,42 +23,89 @@ namespace IMT_Reservas.Tests.ServiceTests
         {
             _prestamoRepositoryMock = new Mock<IPrestamoRepository>();
             _mongoDbContextMock = new Mock<MongoDbContexto>();
+            _gridFsMock = new Mock<IGridFSBucket>();
+            _mongoDbContextMock.Setup(c => c.GestionArchivos).Returns(_gridFsMock.Object);
             _prestamoService        = new PrestamoService(_prestamoRepositoryMock.Object, _mongoDbContextMock.Object);
         }
 
         [Test]
         public void CrearPrestamo_ComandoValido_LlamaRepositorioCrear()
         {
-            CrearPrestamoComando comando = new CrearPrestamoComando(new int[] { 1 }, DateTime.Now.AddDays(1), DateTime.Now.AddDays(2), "Obs", "12890061", null);
+            // Arrange
+            var mockFile = new Mock<IFormFile>();
+            var fileContent = "Hello World from a Fake File";
+            var fileName = "test.html"; // Cambiado a .html para pasar la validación
+            var ms = new MemoryStream();
+            var writer = new StreamWriter(ms);
+            writer.Write(fileContent);
+            writer.Flush();
+            ms.Position = 0;
+            mockFile.Setup(_ => _.OpenReadStream()).Returns(ms);
+            mockFile.Setup(_ => _.FileName).Returns(fileName);
+            mockFile.Setup(_ => _.Length).Returns(ms.Length);
+
+            var comando = new CrearPrestamoComando(new int[] { 1 }, DateTime.Now.AddDays(1), DateTime.Now.AddDays(2), "Obs", "12890061", mockFile.Object);
+            var prestamoId = 123;
+            var fileId = ObjectId.GenerateNewId();
+            var contratoId = ObjectId.GenerateNewId().ToString();
+
+            _prestamoRepositoryMock.Setup(r => r.Crear(comando)).Returns(prestamoId);
+            _gridFsMock.Setup(fs => fs.UploadFromStreamAsync(It.IsAny<string>(), It.IsAny<Stream>(), It.IsAny<GridFSUploadOptions>(), It.IsAny<CancellationToken>()))
+                .ReturnsAsync(fileId);
+            
+            var mockContratosCollection = new Mock<IMongoCollection<Contrato>>();
+            mockContratosCollection.Setup(c => c.InsertOneAsync(It.IsAny<Contrato>(), null, default))
+                .Callback<Contrato, InsertOneOptions, CancellationToken>((doc, options, token) => doc.Id = contratoId)
+                .Returns(Task.CompletedTask);
+
+            _mongoDbContextMock.Setup(m => m.Contratos).Returns(mockContratosCollection.Object);
+
+            // Act
             _prestamoService.CrearPrestamo(comando);
+
+            // Assert
             _prestamoRepositoryMock.Verify(r => r.Crear(comando), Times.Once);
+            _gridFsMock.Verify(fs => fs.UploadFromStreamAsync(fileName, It.IsAny<Stream>(), null, default), Times.Once);
+            mockContratosCollection.Verify(c => c.InsertOneAsync(It.Is<Contrato>(doc => doc.PrestamoId == prestamoId && doc.FileId == fileId.ToString()), null, default), Times.Once);
+            _prestamoRepositoryMock.Verify(r => r.ActualizarIdContrato(prestamoId, contratoId), Times.Once);
+        }
+
+        [Test]
+        public void CrearPrestamo_ContratoNulo_LanzaArgumentException()
+        {
+            var comando = new CrearPrestamoComando(new int[] { 1 }, DateTime.Now.AddDays(1), DateTime.Now.AddDays(2), "Obs", "12890061", null);
+            Assert.Throws<ArgumentException>(() => _prestamoService.CrearPrestamo(comando));
         }
 
         [Test]
         public void CrearPrestamo_CarnetUsuarioVacio_LanzaErrorNombreRequerido()
         {
-            CrearPrestamoComando comando = new CrearPrestamoComando(new int[] { 1 }, DateTime.Now.AddDays(1), DateTime.Now.AddDays(2), "Obs", "", null);
+            var mockFile = new Mock<IFormFile>();
+            var comando = new CrearPrestamoComando(new int[] { 1 }, DateTime.Now.AddDays(1), DateTime.Now.AddDays(2), "Obs", "", mockFile.Object);
             Assert.Throws<ErrorNombreRequerido>(() => _prestamoService.CrearPrestamo(comando));
         }
 
         [Test]
         public void CrearPrestamo_GrupoEquipoIdNulo_LanzaErrorIdInvalido()
         {
-            CrearPrestamoComando comando = new CrearPrestamoComando(null, DateTime.Now.AddDays(1), DateTime.Now.AddDays(2), "Obs", "12345", null);
+            var mockFile = new Mock<IFormFile>();
+            var comando = new CrearPrestamoComando(null, DateTime.Now.AddDays(1), DateTime.Now.AddDays(2), "Obs", "12345", mockFile.Object);
             Assert.Throws<ErrorGrupoEquipoIdInvalido>(() => _prestamoService.CrearPrestamo(comando));
         }
 
         [Test]
         public void CrearPrestamo_GrupoEquipoIdVacio_LanzaErrorIdInvalido()
         {
-            CrearPrestamoComando comando = new CrearPrestamoComando(new int[0], DateTime.Now.AddDays(1), DateTime.Now.AddDays(2), "Obs", "12345", null);
+            var mockFile = new Mock<IFormFile>();
+            var comando = new CrearPrestamoComando(new int[0], DateTime.Now.AddDays(1), DateTime.Now.AddDays(2), "Obs", "12345", mockFile.Object);
             Assert.Throws<ErrorGrupoEquipoIdInvalido>(() => _prestamoService.CrearPrestamo(comando));
         }
 
         [Test]
         public void CrearPrestamo_FechaDevolucionAnteriorAPrestamo_LanzaArgumentException()
         {
-            CrearPrestamoComando comando = new CrearPrestamoComando(new int[] { 1 }, DateTime.Now.AddDays(2), DateTime.Now.AddDays(1), "Obs", "12345", null);
+            var mockFile = new Mock<IFormFile>();
+            var comando = new CrearPrestamoComando(new int[] { 1 }, DateTime.Now.AddDays(2), DateTime.Now.AddDays(1), "Obs", "12345", mockFile.Object);
             Assert.Throws<ErrorFechaPrestamoYFechaDevolucionInvalidas>(() => _prestamoService.CrearPrestamo(comando));
         }
 
@@ -85,10 +133,11 @@ namespace IMT_Reservas.Tests.ServiceTests
             prestamosDataTable.Columns.Add("fecha_devolucion", typeof(DateTime));
             prestamosDataTable.Columns.Add("observacion", typeof(string));
             prestamosDataTable.Columns.Add("estado_prestamo", typeof(string));
+            prestamosDataTable.Columns.Add("id_contrato", typeof(string));
             
-            prestamosDataTable.Rows.Add(5, "12890061", "Juan", "Perez", "777", "Laptop", "L01", new DateTime(2025, 4, 28), new DateTime(2025, 5, 9), new DateTime(2025, 5, 9), new DateTime(2025, 6, 14), DBNull.Value, "Para mi proyecto de grado", "pendiente");
-            prestamosDataTable.Rows.Add(6, "12890061", "Ana", "Gomez", "888", "Proyector", "P02", new DateTime(2025, 4, 28), new DateTime(2026, 7, 3), new DateTime(2026, 7, 3), new DateTime(2026, 4, 3), DBNull.Value, "Para mi proyecto", "pendiente");
-            prestamosDataTable.Rows.Add(8, "12890061", "Luis", "Castro", "999", "Tablet", "T03", new DateTime(2025, 4, 29), new DateTime(2029, 5, 4), new DateTime(2029, 5, 4), new DateTime(2029, 7, 6), DBNull.Value, "", "pendiente");
+            prestamosDataTable.Rows.Add(5, "12890061", "Juan", "Perez", "777", "Laptop", "L01", new DateTime(2025, 4, 28), new DateTime(2025, 5, 9), new DateTime(2025, 5, 9), new DateTime(2025, 6, 14), DBNull.Value, "Para mi proyecto de grado", "pendiente", "contract1");
+            prestamosDataTable.Rows.Add(6, "12890061", "Ana", "Gomez", "888", "Proyector", "P02", new DateTime(2025, 4, 28), new DateTime(2026, 7, 3), new DateTime(2026, 7, 3), new DateTime(2026, 4, 3), DBNull.Value, "Para mi proyecto", "pendiente", "contract2");
+            prestamosDataTable.Rows.Add(8, "12890061", "Luis", "Castro", "999", "Tablet", "T03", new DateTime(2025, 4, 29), new DateTime(2029, 5, 4), new DateTime(2029, 5, 4), new DateTime(2029, 7, 6), DBNull.Value, "", "pendiente", "contract3");
 
 
             _prestamoRepositoryMock.Setup(r => r.ObtenerTodos()).Returns(prestamosDataTable);
@@ -116,36 +165,45 @@ namespace IMT_Reservas.Tests.ServiceTests
         }
 
         [Test]
-        public async Task AceptarPrestamo_ComandoValido_SubeArchivoYActualizaEstado()
+        public void AceptarPrestamo_ComandoValido_SubeArchivoYActualizaEstado()
         {
             // Arrange
+            var mockContratosCollection = new Mock<IMongoCollection<Contrato>>();
             var mockFile = new Mock<IFormFile>();
+            var fileContent = "Nuevo contrato";
+            var fileName = "contrato_nuevo.html"; // Cambiado a .html
             var ms = new MemoryStream();
             var writer = new StreamWriter(ms);
-            writer.Write("dummy file content");
+            writer.Write(fileContent);
             writer.Flush();
             ms.Position = 0;
-            mockFile.Setup(f => f.Length).Returns(ms.Length);
-            mockFile.Setup(f => f.FileName).Returns("contrato.pdf");
-            mockFile.Setup(f => f.OpenReadStream()).Returns(ms);
+            mockFile.Setup(_ => _.OpenReadStream()).Returns(ms);
+            mockFile.Setup(_ => _.FileName).Returns(fileName);
+            mockFile.Setup(_ => _.Length).Returns(ms.Length);
 
-            var mockGridFSBucket = new Mock<IGridFSBucket>();
-            var mockContratosCollection = new Mock<IMongoCollection<Contrato>>();
-            var fileId = ObjectId.GenerateNewId();
             var comando = new AceptarPrestamoComando { PrestamoId = 1, Contrato = mockFile.Object };
-
-            _mongoDbContextMock.Setup(m => m.GestionArchivos).Returns(mockGridFSBucket.Object);
+            var contratoExistente = new Contrato { Id = "abc", PrestamoId = 1, FileId = "oldFileId" };
             _mongoDbContextMock.Setup(m => m.Contratos).Returns(mockContratosCollection.Object);
 
-            mockGridFSBucket.Setup(g => g.UploadFromStreamAsync(It.IsAny<string>(), It.IsAny<Stream>(), null, default)).ReturnsAsync(fileId);
+            // Mock para FindSync (en vez de Find)
+            var mockCursor = new Mock<IAsyncCursor<Contrato>>();
+            mockCursor.SetupSequence(x => x.MoveNext(It.IsAny<CancellationToken>()))
+                .Returns(true)
+                .Returns(false);
+            mockCursor.Setup(x => x.Current).Returns(new List<Contrato> { contratoExistente });
+            mockContratosCollection.Setup(c => c.FindSync(
+                It.IsAny<FilterDefinition<Contrato>>(),
+                It.IsAny<FindOptions<Contrato, Contrato>>(),
+                It.IsAny<CancellationToken>())).Returns(mockCursor.Object);
+
+            _gridFsMock.Setup(fs => fs.UploadFromStreamAsync(It.IsAny<string>(), It.IsAny<Stream>(), null, default)).ReturnsAsync(ObjectId.GenerateNewId());
 
             // Act
-            await _prestamoService.AceptarPrestamo(comando);
+            _prestamoService.AceptarPrestamo(comando);
 
             // Assert
-            _prestamoRepositoryMock.Verify(r => r.AceptarPrestamo(comando.PrestamoId), Times.Once);
-            mockGridFSBucket.Verify(g => g.UploadFromStreamAsync(It.IsAny<string>(), It.IsAny<Stream>(), null, default), Times.Once);
-            mockContratosCollection.Verify(c => c.InsertOneAsync(It.Is<Contrato>(doc => doc.PrestamoId == comando.PrestamoId && doc.FileId == fileId.ToString()), null, default), Times.Once);
+            mockContratosCollection.Verify(c => c.UpdateOne(It.IsAny<FilterDefinition<Contrato>>(), It.IsAny<UpdateDefinition<Contrato>>(), null, default), Times.Once);
+            _prestamoRepositoryMock.Verify(r => r.ActualizarEstado(It.Is<ActualizarEstadoPrestamoComando>(cmd => cmd.Id == comando.PrestamoId && cmd.EstadoPrestamo == "activo")), Times.Once);
         }
 
         [Test]
@@ -155,7 +213,7 @@ namespace IMT_Reservas.Tests.ServiceTests
             var comando = new AceptarPrestamoComando { PrestamoId = 1, Contrato = null };
 
             // Act & Assert
-            Assert.ThrowsAsync<ArgumentException>(async () => await _prestamoService.AceptarPrestamo(comando));
+            Assert.Throws<ArgumentException>(() => _prestamoService.AceptarPrestamo(comando));
         }
     }
 }

@@ -1,5 +1,6 @@
 using System.Data;
 using Npgsql;
+using NpgsqlTypes;
 
 public class PrestamoRepository : IPrestamoRepository
 {
@@ -8,30 +9,48 @@ public class PrestamoRepository : IPrestamoRepository
     {
         _ejecutarConsulta = ejecutarConsulta;
     }
-    public void Crear(CrearPrestamoComando comando)
+    public int Crear(CrearPrestamoComando comando)
     {
+        // Usar directamente un INSERT INTO para crear el préstamo
         const string sql = @"
-            CALL public.insertar_prestamo(
-            @GrupoEquipoId,
-            @fechaPrestamoEsperada,
-            @fechaDevolucionEsperada,
-            @observacion,
-            @carnetUsuario,
-            @contrato)";
+            INSERT INTO public.prestamos (
+                fecha_solicitud,
+                fecha_prestamo_esperada,
+                fecha_devolucion_esperada,
+                observacion,
+                estado_prestamo,
+                carnet,
+                estado_eliminado
+            ) VALUES (
+                @fechaSolicitud,
+                @fechaPrestamoEsperada,
+                @fechaDevolucionEsperada,
+                @observacion,
+                @estadoPrestamo::estado_prestamo,
+                @carnetUsuario,
+                @estadoEliminado
+            ) RETURNING id_prestamo;";
 
         var parametros = new Dictionary<string, object?>
         {
-            ["GrupoEquipoId"] = comando.GrupoEquipoId,
-            ["fechaPrestamoEsperada"] = comando.FechaPrestamoEsperada,
-            ["fechaDevolucionEsperada"] = comando.FechaDevolucionEsperada,
+            ["fechaSolicitud"] = DateTime.Now,
+            ["fechaPrestamoEsperada"] = comando.FechaPrestamoEsperada.HasValue ? (object)comando.FechaPrestamoEsperada.Value : DBNull.Value,
+            ["fechaDevolucionEsperada"] = comando.FechaDevolucionEsperada.HasValue ? (object)comando.FechaDevolucionEsperada.Value : DBNull.Value,
             ["observacion"] = comando.Observacion ?? (object)DBNull.Value,
+            ["estadoPrestamo"] = "pendiente",
             ["carnetUsuario"] = comando.CarnetUsuario ?? (object)DBNull.Value,
-            ["contrato"] = comando.Contrato ?? (object)DBNull.Value
-        }; try
+            ["estadoEliminado"] = false
+        };
+        try
         {
-            _ejecutarConsulta.EjecutarSpNR(sql, parametros);
+            var dt = _ejecutarConsulta.EjecutarFuncion(sql, parametros);
+            if (dt != null && dt.Rows.Count > 0 && dt.Rows[0][0] != DBNull.Value)
+            {
+                return Convert.ToInt32(dt.Rows[0][0]);
+            }
+            throw new Exception("Fallo crítico: No se pudo crear el préstamo y obtener el ID.");
         }
-        catch (NpgsqlException ex)
+        catch (Npgsql.NpgsqlException ex)
         {
             throw new ErrorDataBase($"Error de base de datos al crear préstamo: {ex.Message}", ex.SqlState, null, ex);
         }
@@ -162,6 +181,30 @@ public class PrestamoRepository : IPrestamoRepository
         catch (Exception ex)
         {
             throw new ErrorRepository($"Error del repositorio al actualizar estado del préstamo: {ex.Message}", ex);
+        }
+    }
+
+    public void ActualizarIdContrato(int prestamoId, string idContrato)
+    {
+        const string sql = @"UPDATE public.prestamos SET id_contrato = @idContrato WHERE id_prestamo = @idPrestamo";
+
+        var parametros = new Dictionary<string, object?>
+        {
+            ["idPrestamo"] = prestamoId,
+            ["idContrato"] = idContrato
+        };
+
+        try
+        {
+            _ejecutarConsulta.EjecutarSpNR(sql, parametros);
+        }
+        catch (NpgsqlException ex)
+        {
+            throw new ErrorDataBase($"Error de base de datos al actualizar el id del contrato: {ex.Message}", ex.SqlState, null, ex);
+        }
+        catch (Exception ex)
+        {
+            throw new ErrorRepository($"Error del repositorio al actualizar el id del contrato: {ex.Message}", ex);
         }
     }
 }

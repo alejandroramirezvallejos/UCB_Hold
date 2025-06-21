@@ -15,7 +15,7 @@ public class PrestamoController : ControllerBase
         _servicio = servicio;
     }
     [HttpPost]
-    public IActionResult CrearPrestamo([FromBody] CrearPrestamoComando input)
+    public IActionResult CrearPrestamo([FromForm] CrearPrestamoComando input)
     {
         try
         {
@@ -135,11 +135,11 @@ public class PrestamoController : ControllerBase
     }
 
     [HttpPost("aceptar")]
-    public async Task<IActionResult> AceptarPrestamo([FromForm] AceptarPrestamoComando comando)
+    public IActionResult AceptarPrestamo([FromForm] AceptarPrestamoComando comando)
     {
         try
         {
-            await _servicio.AceptarPrestamo(comando);
+            _servicio.AceptarPrestamo(comando);
             return Ok(new { mensaje = "Préstamo aceptado exitosamente" });
         }
         catch (ArgumentException ex)
@@ -149,6 +149,25 @@ public class PrestamoController : ControllerBase
         catch (Exception ex)
         {
             return StatusCode(500, new { error = "Error interno del servidor", mensaje = ex.Message });
+        }
+    }
+
+    [HttpGet("{id}")]
+    public IActionResult ObtenerPrestamoPorId(int id)
+    {
+        try
+        {
+            var prestamos = _servicio.ObtenerTodosPrestamos();
+            var prestamo = prestamos?.FirstOrDefault(p => p.Id == id);
+            if (prestamo == null)
+            {
+                return NotFound(new { error = "Préstamo no encontrado", mensaje = $"No se encontró un préstamo con ID {id}" });
+            }
+            return Ok(prestamo);
+        }
+        catch (Exception)
+        {
+            return StatusCode(500, new { error = "Error interno del servidor", mensaje = "Ocurrió un error inesperado al obtener el préstamo" });
         }
     }
 }

@@ -15,6 +15,8 @@ namespace IMT_Reservas.Server.Infrastructure.MongoDb
         [BsonElement("fileId")]
         [BsonRepresentation(BsonType.ObjectId)]
         public string FileId { get; set; }
+
+        [BsonElement("EstadoEliminado")]
+        public bool EstadoEliminado { get; set; } = false;
     }
 }
-

@@ -12,6 +12,8 @@ namespace IMT_Reservas.Tests.ControllerTests
         void EliminarPrestamo_Valido_RetornaOk();
         void EliminarPrestamo_NoEncontrado_RetornaNotFound();
         void EliminarPrestamo_EnUso_RetornaConflict();
+        void AceptarPrestamo_Valido_RetornaOk();
+        void AceptarPrestamo_ArgumentoInvalido_RetornaBadRequest();
+        void AceptarPrestamo_ErrorServidor_RetornaError500();
     }
 }
-
