@@ -7,7 +7,9 @@ public class EquipoService : IEquipoService
     public EquipoService(IEquipoRepository equipoRepository)
     {
         _equipoRepository = equipoRepository;
-    }    public virtual void CrearEquipo(CrearEquipoComando comando)
+    }
+
+    public void CrearEquipo(CrearEquipoComando comando)
     {
         try
         {
@@ -87,7 +89,7 @@ public class EquipoService : IEquipoService
 
         if (comando.TiempoMaximoPrestamo.HasValue && comando.TiempoMaximoPrestamo <= 0)
             throw new ErrorValorNegativo("Tiempo máximo de préstamo");
-    }    public virtual void ActualizarEquipo(ActualizarEquipoComando comando)
+    }    public void ActualizarEquipo(ActualizarEquipoComando comando)
     {
         try
         {
@@ -186,7 +188,7 @@ public class EquipoService : IEquipoService
             throw new ErrorValorNegativo("Tiempo máximo de préstamo");
     }
 
-    public virtual void EliminarEquipo(EliminarEquipoComando comando)
+    public void EliminarEquipo(EliminarEquipoComando comando)
     {
         try
         {
@@ -234,7 +236,7 @@ public class EquipoService : IEquipoService
             throw new ArgumentNullException(nameof(comando));        if (comando.Id <= 0)
             throw new ErrorIdInvalido();
     }
-    public virtual List<EquipoDto>? ObtenerTodosEquipos()
+    public List<EquipoDto>? ObtenerTodosEquipos()
     {
         try
         {

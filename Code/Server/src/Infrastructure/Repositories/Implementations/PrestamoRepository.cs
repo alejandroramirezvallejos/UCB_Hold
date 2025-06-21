@@ -83,7 +83,8 @@ public class PrestamoRepository : IPrestamoRepository
         {
             throw new ErrorRepository($"Error del repositorio al obtener préstamos: {ex.Message}", ex);
         }
-    }    public DataTable ObtenerPorCarnetYEstadoPrestamo(string carnetUsuario, string estadoPrestamo)
+    }
+    public DataTable ObtenerPorCarnetYEstadoPrestamo(string carnetUsuario, string estadoPrestamo)
     {
         const string sql = @"
         SELECT * from public.obtener_prestamos_por_carnet_y_estado_prestamo(

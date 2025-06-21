@@ -118,7 +118,7 @@ export class UsuarioServiceAPI {
       EmailReferencia: usuario.email_referencia
     };
 
-    return this.http.put<Usuario>(`${this.apiUrl}/${usuario.id}`, envio);
+    return this.http.put<Usuario>(`${this.apiUrl}`, envio);
   }
 
   eliminarUsuario(id: string) {

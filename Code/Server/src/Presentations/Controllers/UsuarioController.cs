@@ -13,9 +13,7 @@ public class UsuarioController : ControllerBase
     public UsuarioController(IUsuarioService servicio)
     {
         _servicio = servicio;
-    }
-
-    [HttpPost]
+    }    [HttpPost]
     public IActionResult CrearUsuario([FromBody] CrearUsuarioComando comando)
     {
         try
@@ -78,8 +76,7 @@ public class UsuarioController : ControllerBase
         catch (ArgumentNullException ex)
         {
             return BadRequest(new { error = "Argumento requerido", mensaje = ex.Message });
-        }
-        catch (Exception)
+        }        catch (Exception)
         {
             return StatusCode(500, new { error = "Error interno del servidor", mensaje = "Ocurrió un error inesperado al crear el usuario" });
         }
@@ -100,8 +97,7 @@ public class UsuarioController : ControllerBase
         }
         catch (Exception ex) { return StatusCode(500, new { error = "Error interno del servidor", mensaje = "Ocurrió un error inesperado al obtener los usuarios" });
         }
-    }
-    [HttpPut]
+    }    [HttpPut]
     public IActionResult ActualizarUsuario([FromBody] ActualizarUsuarioComando comando)
     {
         try
@@ -168,9 +164,9 @@ public class UsuarioController : ControllerBase
         catch (ArgumentNullException ex)
         {
             return BadRequest(new { error = "Argumento requerido", mensaje = ex.Message });
-        }
-        catch (Exception)
+        }        catch (Exception ex)
         {
+            Console.WriteLine($"Error al actualizar usuario: {ex.Message}");
             return StatusCode(500, new { error = "Error interno del servidor", mensaje = "Ocurrió un error inesperado al actualizar el usuario" });
         }
     }

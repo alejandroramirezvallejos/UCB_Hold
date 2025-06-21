@@ -19,7 +19,7 @@ public class AccesorioController : ControllerBase
         try
         {
             servicio.CrearAccesorio(input);
-            return Created("", "Accesorio creado exitosamente");
+            return Created("", new { message = "Accesorio creado exitosamente" });
         }
         catch (ErrorIdInvalido ex)
         {

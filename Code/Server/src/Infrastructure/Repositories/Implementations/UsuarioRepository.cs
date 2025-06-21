@@ -3,8 +3,8 @@ using Npgsql;
 
 public class UsuarioRepository : IUsuarioRepository
 {
-    private readonly ExecuteQuery _ejecutarConsulta;
-    public UsuarioRepository(ExecuteQuery ejecutarConsulta)
+    private readonly IExecuteQuery _ejecutarConsulta;
+    public UsuarioRepository(IExecuteQuery ejecutarConsulta)
     {
         _ejecutarConsulta = ejecutarConsulta;
     }
@@ -69,22 +69,20 @@ public class UsuarioRepository : IUsuarioRepository
 	    @telefonoReferencia,
 	    @nombreReferencia,
 	    @emailReferencia
-        );";
-
-        Dictionary<string, object?> parametros = new Dictionary<string, object?>
+        );";        Dictionary<string, object?> parametros = new Dictionary<string, object?>
         {
             ["carnet"] = comando.Carnet,
-            ["nombre"] = comando.Nombre ?? (object)DBNull.Value,
-            ["apellidoPaterno"] = comando.ApellidoPaterno ?? (object)DBNull.Value,
-            ["apellidoMaterno"] = comando.ApellidoMaterno ?? (object)DBNull.Value,
-            ["email"] = comando.Email ?? (object)DBNull.Value,
-            ["contrasena"] = comando.Contrasena ?? (object)DBNull.Value,
-            ["rol"] = comando.Rol ?? (object)DBNull.Value,
-            ["carrera"] = comando.NombreCarrera ?? (object)DBNull.Value,
-            ["telefono"] = comando.Telefono ?? (object)DBNull.Value,
-            ["telefonoReferencia"] = comando.TelefonoReferencia ?? (object)DBNull.Value,
-            ["nombreReferencia"] = comando.NombreReferencia ?? (object)DBNull.Value,
-            ["emailReferencia"] = comando.EmailReferencia ?? (object)DBNull.Value
+            ["nombre"] = string.IsNullOrEmpty(comando.Nombre) ? (object)DBNull.Value : comando.Nombre,
+            ["apellidoPaterno"] = string.IsNullOrEmpty(comando.ApellidoPaterno) ? (object)DBNull.Value : comando.ApellidoPaterno,
+            ["apellidoMaterno"] = string.IsNullOrEmpty(comando.ApellidoMaterno) ? (object)DBNull.Value : comando.ApellidoMaterno,
+            ["email"] = string.IsNullOrEmpty(comando.Email) ? (object)DBNull.Value : comando.Email,
+            ["contrasena"] = string.IsNullOrEmpty(comando.Contrasena) ? (object)DBNull.Value : comando.Contrasena,
+            ["rol"] = string.IsNullOrEmpty(comando.Rol) ? (object)DBNull.Value : comando.Rol,
+            ["carrera"] = string.IsNullOrEmpty(comando.NombreCarrera) ? (object)DBNull.Value : comando.NombreCarrera,
+            ["telefono"] = string.IsNullOrEmpty(comando.Telefono) ? (object)DBNull.Value : comando.Telefono,
+            ["telefonoReferencia"] = string.IsNullOrEmpty(comando.TelefonoReferencia) ? (object)DBNull.Value : comando.TelefonoReferencia,
+            ["nombreReferencia"] = string.IsNullOrEmpty(comando.NombreReferencia) ? (object)DBNull.Value : comando.NombreReferencia,
+            ["emailReferencia"] = string.IsNullOrEmpty(comando.EmailReferencia) ? (object)DBNull.Value : comando.EmailReferencia
         };
         try
         {

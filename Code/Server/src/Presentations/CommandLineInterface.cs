@@ -239,6 +239,8 @@ public static class CommandLineInterface
         builder.Services.AddScoped<IMuebleService, MuebleService>();
         builder.Services.AddScoped<IPrestamoService, PrestamoService>();
         builder.Services.AddScoped<IUsuarioService, UsuarioService>();
+        builder.Services.AddScoped<IComentarioService, ComentarioService>();
+        builder.Services.AddScoped<INotificacionService, NotificacionService>();
 
         // Registrar repositorios
         builder.Services.AddScoped<IAccesorioRepository, AccesorioRepository>();
@@ -253,6 +255,8 @@ public static class CommandLineInterface
         builder.Services.AddScoped<IMuebleRepository, MuebleRepository>();
         builder.Services.AddScoped<IPrestamoRepository, PrestamoRepository>();
         builder.Services.AddScoped<IUsuarioRepository, UsuarioRepository>();
+        builder.Services.AddScoped<IComentarioRepository, ComentarioRepository>();
+        builder.Services.AddScoped<INotificacionRepository, NotificacionRepository>();
 
         var app = builder.Build();
               

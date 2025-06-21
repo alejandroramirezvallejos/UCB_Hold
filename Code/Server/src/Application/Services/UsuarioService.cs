@@ -1,5 +1,4 @@
 using System.Data;
-using IMT_Reservas.Server.Shared.Common;
 public class UsuarioService : IUsuarioService
 {
     private readonly IUsuarioRepository _usuarioRepository;
@@ -7,8 +6,7 @@ public class UsuarioService : IUsuarioService
     public UsuarioService(IUsuarioRepository usuarioRepository)
     {
         _usuarioRepository = usuarioRepository;
-    }
-    public virtual void CrearUsuario(CrearUsuarioComando comando)
+    }    public void CrearUsuario(CrearUsuarioComando comando)
     {
         try
         {
@@ -31,10 +29,39 @@ public class UsuarioService : IUsuarioService
         {
             throw;
         }
+        catch (ErrorCarnetRequerido)
+        {
+            throw;
+        }
+        catch (ErrorApellidoPaternoRequerido)
+        {
+            throw;
+        }
+        catch (ErrorApellidoMaternoRequerido)
+        {
+            throw;
+        }
+        catch (ErrorContrasenaRequerida)
+        {
+            throw;
+        }
+        catch (ErrorCarreraRequerida)
+        {
+            throw;
+        }
+        catch (ErrorTelefonoRequerido)
+        {
+            throw;
+        }
+        catch (ErrorRolInvalido)
+        {
+            throw;
+        }
         catch (ErrorLongitudInvalida)
         {
             throw;
-        }        catch (Exception ex)
+        }
+        catch (Exception ex)
         {
             // Manejo específico para insertar_usuario según el procedimiento almacenado
             if (ex is ErrorDataBase errorDb)
@@ -119,8 +146,10 @@ public class UsuarioService : IUsuarioService
 
         if (comando.Telefono.Length > 20)
             throw new ErrorLongitudInvalida("telefono", 20);
+        if(comando.Rol != "administrador" && comando.Rol != "estudiante")
+            throw new ErrorRolInvalido();
     }
-    public virtual List<UsuarioDto>? ObtenerTodosUsuarios()
+    public List<UsuarioDto>? ObtenerTodosUsuarios()
     {
         try
         {
@@ -136,7 +165,7 @@ public class UsuarioService : IUsuarioService
         {
             throw;
         }
-    }    public virtual void ActualizarUsuario(ActualizarUsuarioComando comando)
+    }    public void ActualizarUsuario(ActualizarUsuarioComando comando)
     {
         try
         {
@@ -159,10 +188,16 @@ public class UsuarioService : IUsuarioService
         {
             throw;
         }
+        
         catch (ErrorLongitudInvalida)
         {
             throw;
-        }        catch (Exception ex)
+        }
+        catch (ErrorRolInvalido)
+        {
+            throw;
+        }
+        catch (Exception ex)
         {
             // Manejo específico para actualizar_usuario según el procedimiento almacenado
             if (ex is ErrorDataBase errorDb)
@@ -223,7 +258,7 @@ public class UsuarioService : IUsuarioService
         }
     }
 
-    public virtual void EliminarUsuario(EliminarUsuarioComando comando)
+    public void EliminarUsuario(EliminarUsuarioComando comando)
     {
         try
         {
@@ -264,7 +299,7 @@ public class UsuarioService : IUsuarioService
             throw;
         }
     }
-    public virtual UsuarioDto? IniciarSesionUsuario(IniciarSesionUsuarioConsulta consulta)
+    public UsuarioDto? IniciarSesionUsuario(IniciarSesionUsuarioConsulta consulta)
     {
         try
         {
@@ -340,6 +375,8 @@ public class UsuarioService : IUsuarioService
 
         if (!string.IsNullOrWhiteSpace(comando.Telefono) && comando.Telefono.Length > 20)
             throw new ErrorLongitudInvalida("telefono", 20);
+        if(comando.Rol != "administrador" && comando.Rol != "estudiante")
+            throw new ErrorRolInvalido();
     }
 
     private void ValidarEntradaEliminacion(EliminarUsuarioComando comando)

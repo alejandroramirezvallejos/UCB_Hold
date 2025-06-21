@@ -5,14 +5,14 @@
   <h2>Editar Equipo</h2>
   <form (ngSubmit)="confirmar()">
     <div class="form-group">
-      <label for="nombre">Nombre</label>
+      <label for="grupo_equipo">Nombre Grupo Equipo</label>
       <input 
         type="text" 
-        id="nombre" 
-        name="nombre" 
-        [(ngModel)]="equipo.Nombre"
+        id="grupo_equipo" 
+        name="grupo_equipo" 
+        [(ngModel)]="equipo.NombreGrupoEquipo"
         required 
-        placeholder="Ingresa el nombre del equipo"
+        placeholder="Nombre del grupo de equipo"
         class="form-input"
       />
     </div>
@@ -39,19 +39,6 @@
         [(ngModel)]="equipo.Marca"
         required 
         placeholder="Marca del equipo"
-        class="form-input"
-      />
-    </div>
-
-    <div class="form-group">
-      <label for="grupo_equipo">Nombre Grupo Equipo</label>
-      <input 
-        type="text" 
-        id="grupo_equipo" 
-        name="grupo_equipo" 
-        [(ngModel)]="equipo.NombreGrupoEquipo"
-        required 
-        placeholder="Nombre del grupo de equipo"
         class="form-input"
       />
     </div>

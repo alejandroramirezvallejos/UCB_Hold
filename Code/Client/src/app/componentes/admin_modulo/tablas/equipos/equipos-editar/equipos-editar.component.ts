@@ -14,7 +14,6 @@ export class EquiposEditarComponent {
   @Output() actualizar: EventEmitter<void> = new EventEmitter<void>();
   @Input() equipo : Equipos ={
     Id: 0,
-    Nombre: '',
     Modelo: '',
     Marca: '',
     NombreGrupoEquipo: '',
@@ -31,9 +30,6 @@ export class EquiposEditarComponent {
   };
 
   constructor(private equipoapi: EquipoService) {}; 
-
-  
-
 
   confirmar (){
  

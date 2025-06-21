@@ -25,10 +25,9 @@ export class EquiposTablaComponent {
 
   equipoSeleccionado:  Equipos= {
     Id: 0,
-    Nombre: '',
+    NombreGrupoEquipo: '',
     Modelo: '',
     Marca: '',
-    NombreGrupoEquipo: '',
     CodigoImt: 0,
     CodigoUcb: '',
     NumeroSerial: '',
@@ -61,10 +60,9 @@ export class EquiposTablaComponent {
   limpiarEquipoSeleccionado() {
     this.equipoSeleccionado = {
       Id: 0,
-      Nombre: '',
+      NombreGrupoEquipo: '',
       Modelo: '',
       Marca: '',
-      NombreGrupoEquipo: '',
       CodigoImt: 0,
       CodigoUcb: '',
       NumeroSerial: '',

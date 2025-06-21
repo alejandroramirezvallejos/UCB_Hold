@@ -225,6 +225,88 @@ public class PrestamoService : IPrestamoService
             throw;
         }
     }
+    public virtual void ActualizarEstadoPrestamo(ActualizarEstadoPrestamoComando comando)
+    {
+        try
+        {
+            ValidarEntradaActualizacionEstado(comando);
+            _prestamoRepository.ActualizarEstado(comando);
+        }
+        catch (ErrorIdInvalido)
+        {
+            throw;
+        }
+        catch (ErrorEstadoPrestamoInvalido)
+        {
+            throw;
+        }
+        catch (ErrorEstadoPrestamoRequerido)
+        {
+            throw;
+        }
+        catch (Exception ex)
+        {
+            // Manejo específico para actualizar_estado_prestamo según el procedimiento almacenado
+            if (ex is ErrorDataBase errorDb)
+            {
+                var mensaje = errorDb.Message?.ToLower() ?? "";
+
+                // Error: Préstamo no encontrado
+                if (mensaje.Contains("no existe préstamo"))
+                {
+                    throw new ErrorRegistroNoEncontrado();
+                }
+
+                // Error genérico del procedimiento
+                if (mensaje.Contains("error al actualizar el estado del préstamo"))
+                {
+                    throw new Exception($"Error inesperado al actualizar estado del préstamo: {errorDb.Message}", errorDb);
+                }
+
+                // Otros errores de base de datos
+                throw new Exception($"Error inesperado de base de datos al actualizar estado del préstamo: {errorDb.Message}", errorDb);
+            }
+
+            if (ex is ErrorRepository errorRepo)
+            {
+                throw new Exception($"Error del repositorio al actualizar estado del préstamo: {errorRepo.Message}", errorRepo);
+            }
+
+            throw;
+        }
+    }
+    private void ValidarEntradaActualizacionEstado(ActualizarEstadoPrestamoComando comando)
+    {
+        if (comando == null)
+            throw new ArgumentNullException(nameof(comando));
+        if (comando.Id <= 0)
+            throw new ErrorIdInvalido();
+        if (string.IsNullOrWhiteSpace(comando.EstadoPrestamo))
+            throw new ErrorEstadoPrestamoRequerido();
+        if (comando.EstadoPrestamo != "pendiente" && comando.EstadoPrestamo != "rechazado" &&
+            comando.EstadoPrestamo != "finalizado" && comando.EstadoPrestamo != "cancelado" &&
+            comando.EstadoPrestamo != "aprobado" && comando.EstadoPrestamo != "activo")
+        {
+            throw new ErrorEstadoPrestamoInvalido();
+        }
+    }
+    public virtual List<PrestamoDto>? ObtenerPrestamosPorCarnetYEstadoPrestamo(string carnetUsuario, string estadoPrestamo)
+    {
+        try
+        {
+            DataTable resultado = _prestamoRepository.ObtenerPorCarnetYEstadoPrestamo(carnetUsuario, estadoPrestamo);
+            var lista = new List<PrestamoDto>(resultado.Rows.Count);
+            foreach (DataRow fila in resultado.Rows)
+            {
+                lista.Add(MapearFilaADto(fila));
+            }
+            return lista;
+        }
+        catch
+        {
+            throw;
+        }
+    }
 
     private static PrestamoDto MapearFilaADto(DataRow fila)
     {

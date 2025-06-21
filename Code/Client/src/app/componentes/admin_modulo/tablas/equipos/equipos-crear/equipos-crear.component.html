@@ -4,15 +4,16 @@
   </button>
   <h2>Registrar Equipo</h2>
   <form #form="ngForm" (ngSubmit)="registrar()">
+    
     <div class="form-group">
-      <label for="nombre">Nombre</label>
+      <label for="grupo_equipo">Nombre Grupo Equipo</label>
       <input 
         type="text" 
-        id="nombre" 
-        name="nombre" 
-        [(ngModel)]="equipo.Nombre"
+        id="grupo_equipo" 
+        name="grupo_equipo" 
+        [(ngModel)]="equipo.NombreGrupoEquipo"
         required 
-        placeholder="Ingresa el nombre del equipo"
+        placeholder="Nombre del grupo de equipo"
         class="form-input"
       />
     </div>
@@ -42,20 +43,6 @@
         class="form-input"
       />
     </div>
-
-    <div class="form-group">
-      <label for="grupo_equipo">Nombre Grupo Equipo</label>
-      <input 
-        type="text" 
-        id="grupo_equipo" 
-        name="grupo_equipo" 
-        [(ngModel)]="equipo.NombreGrupoEquipo"
-        required 
-        placeholder="Nombre del grupo de equipo"
-        class="form-input"
-      />
-    </div>
-
 
     <div class="form-group">
       <label for="codigo_ucb">Código UCB</label>

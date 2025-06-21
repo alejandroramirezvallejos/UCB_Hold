@@ -1,9 +1,9 @@
 public record ActualizarEquipoComando
 (
     int     Id,
-    string?  NombreGrupoEquipo,//
-    string? Modelo,//
-    string? Marca,//
+    string? NombreGrupoEquipo,
+    string? Modelo,
+    string? Marca,
     string? CodigoUcb,
     string? Descripcion,
     string? NumeroSerial,

@@ -102,6 +102,44 @@ public class PrestamoController : ControllerBase
         {
             return StatusCode(500, new { error = "Error interno del servidor", mensaje = "Ocurrió un error inesperado al obtener los préstamos" });
         }
+    }    [HttpGet("historial")]
+    public IActionResult ObtenerPrestamosPorCarnetYEstado([FromQuery] string carnetUsuario, [FromQuery] string estadoPrestamo)
+    {
+        try
+        {
+            var prestamos = _servicio.ObtenerPrestamosPorCarnetYEstadoPrestamo(carnetUsuario, estadoPrestamo);
+
+            if (prestamos == null || !prestamos.Any())
+            {
+                return Ok(new List<PrestamoDto>());
+            }
+
+            return Ok(prestamos);
+        }
+        catch (ErrorIdInvalido ex)
+        {
+            return BadRequest(new {error = "ID inválido", mensaje = ex.Message });
+        }
+        catch (ErrorCarnetUsuarioNoEncontrado ex)
+        {
+            return NotFound(new { error = "Usuario no encontrado", mensaje = ex.Message });
+        }
+        catch (ErrorEstadoPrestamoInvalido ex)
+        {
+            return BadRequest(new { error = "Estado de préstamo inválido", mensaje = ex.Message });
+        }
+        catch (ErrorEstadoPrestamoRequerido ex)
+        {
+            return BadRequest(new { error = "Estado de préstamo requerido", mensaje = ex.Message });
+        }
+        catch (ArgumentNullException ex)
+        {
+            return BadRequest(new { error = "Argumento requerido", mensaje = ex.Message });
+        }
+        catch (Exception)
+        {
+            return StatusCode(500, new { error = "Error interno del servidor", mensaje = "Ocurrió un error inesperado al obtener los préstamos" });
+        }
     }
     [HttpDelete("{id}")]
     public IActionResult EliminarPrestamo(int id)
@@ -131,6 +169,39 @@ public class PrestamoController : ControllerBase
         catch (Exception)
         {
             return StatusCode(500, new { error = "Error interno del servidor", mensaje = "Ocurrió un error inesperado al eliminar el préstamo" });
+        }
+    }
+    [HttpPut("estadoPrestamo")]
+    public IActionResult ActualizarEstadoPrestamo([FromBody] ActualizarEstadoPrestamoComando input)
+    {
+        try
+        {
+            _servicio.ActualizarEstadoPrestamo(input);
+            return Ok(new { mensaje = "Estado del préstamo actualizado exitosamente" });
+        }
+        catch (ErrorIdInvalido ex)
+        {
+            return BadRequest(new { error = "ID inválido", mensaje = ex.Message });
+        }
+        catch (ErrorRegistroNoEncontrado ex)
+        {
+            return NotFound(new { error = "Préstamo no encontrado", mensaje = ex.Message });
+        }
+        catch (ArgumentNullException ex)
+        {
+            return BadRequest(new { error = "Argumento requerido", mensaje = ex.Message });
+        }
+        catch (ErrorEstadoPrestamoRequerido ex)
+        {
+            return BadRequest(new { error = "Estado de préstamo requerido", mensaje = ex.Message });
+        }
+        catch (ErrorEstadoPrestamoInvalido ex)
+        {
+            return BadRequest(new { error = "Estado de préstamo inválido", mensaje = ex.Message });
+        }
+        catch (Exception ex)
+        {
+            return StatusCode(500, new { error = "Error interno del servidor", mensaje = ex.Message });
         }
     }
 }

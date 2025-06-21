@@ -18,7 +18,6 @@ export class EquiposCrearComponent {
 
   equipo : Equipos = {
     Id: 0,
-    Nombre: '',
     Modelo: '',
     Marca: '',
     NombreGrupoEquipo: '',
