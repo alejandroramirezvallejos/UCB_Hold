@@ -1,31 +1,49 @@
 using System.Data;
 using IMT_Reservas.Server.Shared.Common;
+using IMT_Reservas.Server.Infrastructure.MongoDb;
+using MongoDB.Driver;
+using MongoDB.Driver.GridFS;
 
 
 public class PrestamoService : IPrestamoService
 {
     private readonly IPrestamoRepository _prestamoRepository;
+    private readonly MongoDbContexto _mongoDbContext;
+    private readonly IGridFSBucket _gridFsBucket;
 
-    public PrestamoService(IPrestamoRepository prestamoRepository)
+    public PrestamoService(IPrestamoRepository prestamoRepository, MongoDbContexto mongoDbContext, IGridFSBucket gridFsBucket)
     {
         _prestamoRepository = prestamoRepository;
+        _mongoDbContext = mongoDbContext;
+        _gridFsBucket = gridFsBucket;
     }    public virtual void CrearPrestamo(CrearPrestamoComando comando)
     {
+        ValidarEntradaCreacion(comando);
+        if (comando.Contrato == null)
+            throw new ArgumentException("El contrato no puede ser nulo");
         try
         {
-            // 1. Validaciones de entrada
-            ValidarEntradaCreacion(comando);
-            
-            // 2. Intentar crear en repository
-            _prestamoRepository.Crear(comando);
+            var prestamoId = _prestamoRepository.Crear(comando);
+            if (comando.Contrato != null)
+            {
+                // Subir archivo a GridFS
+                var fileName = comando.Contrato.FileName;
+                using var stream = comando.Contrato.OpenReadStream();
+                var fileId = _gridFsBucket.UploadFromStreamAsync(fileName, stream, null, default).GetAwaiter().GetResult();
+                // Insertar contrato en MongoDB
+                var contrato = new Contrato { PrestamoId = prestamoId, FileId = fileId.ToString() };
+                _mongoDbContext.Contratos.InsertOneAsync(contrato, null, default).GetAwaiter().GetResult();
+                // Actualizar el id del contrato en el préstamo
+                _prestamoRepository.ActualizarIdContrato(prestamoId, contrato.FileId);
+            }
         }
         catch (ErrorNombreRequerido)
         {
-            throw; // Re-lanzar excepciones de validación
+            throw;
         }
         catch (ErrorIdInvalido)
         {
-            throw; // Re-lanzar excepciones de validación  
+            throw;
         }
         catch (ErrorGrupoEquipoIdInvalido)
         {
@@ -37,14 +55,14 @@ public class PrestamoService : IPrestamoService
         }
         catch (ErrorCarnetUsuarioNoEncontrado)
         {
-            throw; // Re-lanzar excepciones específicas
+            throw;
         }
         catch (ErrorNoEquiposDisponibles)
         {
-            throw; // Re-lanzar excepciones específicas
+            throw;
         }
         catch (Exception ex)
-        {            // 3. Interpretar errores específicos del procedimiento insertar_prestamo
+        {
             InterpretarErrorCreacionPrestamo(ex, comando);
         }
     }
@@ -331,7 +349,16 @@ public class PrestamoService : IPrestamoService
 
     public void AceptarPrestamo(AceptarPrestamoComando comando)
     {
-        throw new NotImplementedException();
-        //HABLAR CON RAMIREZ Y QUITARLO
+        if (comando.Contrato == null)
+            throw new ArgumentException("El contrato no puede ser nulo");
+        // Simular lógica de subir archivo y actualizar estado
+        var fileName = comando.Contrato.FileName;
+        using var stream = comando.Contrato.OpenReadStream();
+        var fileId = _gridFsBucket.UploadFromStreamAsync(fileName, stream, null, default).GetAwaiter().GetResult();
+        var contrato = new Contrato { PrestamoId = comando.PrestamoId, FileId = fileId.ToString() };
+        _mongoDbContext.Contratos.UpdateOne(
+            Builders<Contrato>.Filter.Eq(x => x.PrestamoId, comando.PrestamoId),
+            Builders<Contrato>.Update.Set(x => x.FileId, contrato.FileId));
+        _prestamoRepository.ActualizarEstado(new ActualizarEstadoPrestamoComando(comando.PrestamoId, "activo"));
     }
 }

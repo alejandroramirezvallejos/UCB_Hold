@@ -19,7 +19,7 @@ namespace IMT_Reservas.Tests.ServiceTests
         [Test]
         public void CrearUsuario_ComandoValido_LlamaRepositorioCrear()
         {
-            CrearUsuarioComando comando = new CrearUsuarioComando("1", "Andrea", "Vargas", "Rojas", null, "estudiante0@ucb.edu.bo", "password1", "Sistemas", "77327303", "68834902", "Antonio Cruz", "referencia1047@gmail.com");
+            CrearUsuarioComando comando = new CrearUsuarioComando("1", "Andrea", "Vargas", "Rojas", "estudiante", "estudiante0@ucb.edu.bo", "password1", "Sistemas", "77327303", "68834902", "Antonio Cruz", "referencia1047@gmail.com");
             _usuarioService.CrearUsuario(comando);
             _usuarioRepositoryMock.Verify(r => r.Crear(comando), Times.Once);
         }
@@ -67,7 +67,7 @@ namespace IMT_Reservas.Tests.ServiceTests
         [Test]
         public void ActualizarUsuario_ComandoValido_LlamaRepositorioActualizar()
         {
-            ActualizarUsuarioComando comando = new ActualizarUsuarioComando("1", "Andrea Maria", null, null, null, null, null, null, null, null, null, null);
+            ActualizarUsuarioComando comando = new ActualizarUsuarioComando("1", "Andrea Maria", null, null, null, null, "estudiante", null, null, null, null, null);
             _usuarioService.ActualizarUsuario(comando);
             _usuarioRepositoryMock.Verify(r => r.Actualizar(comando), Times.Once);
         }

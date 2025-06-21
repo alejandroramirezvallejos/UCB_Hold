@@ -25,7 +25,7 @@ namespace IMT_Reservas.Tests.ServiceTests
             _mongoDbContextMock = new Mock<MongoDbContexto>();
             _gridFsMock = new Mock<IGridFSBucket>();
             _mongoDbContextMock.Setup(c => c.GestionArchivos).Returns(_gridFsMock.Object);
-            _prestamoService        = new PrestamoService(_prestamoRepositoryMock.Object, _mongoDbContextMock.Object);
+            _prestamoService = new PrestamoService(_prestamoRepositoryMock.Object, _mongoDbContextMock.Object, _gridFsMock.Object);
         }
 
         [Test]
@@ -67,7 +67,7 @@ namespace IMT_Reservas.Tests.ServiceTests
             _prestamoRepositoryMock.Verify(r => r.Crear(comando), Times.Once);
             _gridFsMock.Verify(fs => fs.UploadFromStreamAsync(fileName, It.IsAny<Stream>(), null, default), Times.Once);
             mockContratosCollection.Verify(c => c.InsertOneAsync(It.Is<Contrato>(doc => doc.PrestamoId == prestamoId && doc.FileId == fileId.ToString()), null, default), Times.Once);
-            _prestamoRepositoryMock.Verify(r => r.ActualizarIdContrato(prestamoId, contratoId), Times.Once);
+            _prestamoRepositoryMock.Verify(r => r.ActualizarIdContrato(prestamoId, fileId.ToString()), Times.Once);
         }
 
         [Test]
