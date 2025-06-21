@@ -4,6 +4,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Configuration;
 using Moq;
 using IMT_Reservas.Server.Shared.Common;
+using Microsoft.AspNetCore.Http;
 
 namespace IMT_Reservas.Tests.ControllerTests
 {
@@ -59,16 +60,20 @@ namespace IMT_Reservas.Tests.ControllerTests
         [Test]
         public void CrearPrestamo_Valido_RetornaOk()
         {
-            CrearPrestamoComando comando = new CrearPrestamoComando(new int[] { 1 }, DateTime.Now.AddDays(1), DateTime.Now.AddDays(2), "Obs", "12890061", null);
+            var mockFile = new Mock<IFormFile>();
+            var comando = new CrearPrestamoComando(new int[] { 1 }, DateTime.Now.AddDays(1), DateTime.Now.AddDays(2), "Obs", "12890061", mockFile.Object);
             _prestamoServiceMock.Setup(s => s.CrearPrestamo(comando));
-            IActionResult resultadoAccion = _prestamosController.CrearPrestamo(comando);
+            
+            var resultadoAccion = _prestamosController.CrearPrestamo(comando);
+            
             Assert.That(resultadoAccion, Is.InstanceOf<OkObjectResult>());
         }
 
         private static IEnumerable<object[]> FuenteCasos_CrearPrestamo_BadRequest()
         {
-            yield return new object[] { new CrearPrestamoComando(new int[] { 1 }, DateTime.Now.AddDays(1), DateTime.Now.AddDays(2), "Obs", "", null), new ErrorNombreRequerido() };
-            yield return new object[] { new CrearPrestamoComando(new int[0], DateTime.Now.AddDays(1), DateTime.Now.AddDays(2), "Obs", "12345", null), new ErrorIdInvalido() };
+            var mockFile = new Mock<IFormFile>();
+            yield return new object[] { new CrearPrestamoComando(new int[] { 1 }, DateTime.Now.AddDays(1), DateTime.Now.AddDays(2), "Obs", "", mockFile.Object), new ErrorNombreRequerido() };
+            yield return new object[] { new CrearPrestamoComando(new int[0], DateTime.Now.AddDays(1), DateTime.Now.AddDays(2), "Obs", "12345", mockFile.Object), new ErrorIdInvalido() };
         }
 
         [Test]
@@ -76,25 +81,27 @@ namespace IMT_Reservas.Tests.ControllerTests
         public void CrearPrestamo_Invalido_RetornaBadRequest(CrearPrestamoComando comando, System.Exception excepcionLanzada)
         {
             _prestamoServiceMock.Setup(s => s.CrearPrestamo(comando)).Throws(excepcionLanzada);
-            IActionResult resultadoAccion = _prestamosController.CrearPrestamo(comando);
+            var resultadoAccion = _prestamosController.CrearPrestamo(comando);
             Assert.That(resultadoAccion, Is.InstanceOf<BadRequestObjectResult>());
         }
 
         [Test]
         public void CrearPrestamo_UsuarioNoEncontrado_RetornaNotFound()
         {
-            CrearPrestamoComando comando = new CrearPrestamoComando(new int[] { 1 }, DateTime.Now.AddDays(1), DateTime.Now.AddDays(2), "Obs", "00000", null);
+            var mockFile = new Mock<IFormFile>();
+            var comando = new CrearPrestamoComando(new int[] { 1 }, DateTime.Now.AddDays(1), DateTime.Now.AddDays(2), "Obs", "00000", mockFile.Object);
             _prestamoServiceMock.Setup(s => s.CrearPrestamo(It.IsAny<CrearPrestamoComando>())).Throws(new ErrorCarnetUsuarioNoEncontrado());
-            IActionResult resultadoAccion = _prestamosController.CrearPrestamo(comando);
+            var resultadoAccion = _prestamosController.CrearPrestamo(comando);
             Assert.That(resultadoAccion, Is.InstanceOf<NotFoundObjectResult>());
         }
 
         [Test]
         public void CrearPrestamo_SinEquiposDisponibles_RetornaConflict()
         {
-            CrearPrestamoComando comando = new CrearPrestamoComando(new int[] { 1 }, DateTime.Now.AddDays(1), DateTime.Now.AddDays(2), "Obs", "12890061", null);
+            var mockFile = new Mock<IFormFile>();
+            var comando = new CrearPrestamoComando(new int[] { 1 }, DateTime.Now.AddDays(1), DateTime.Now.AddDays(2), "Obs", "12890061", mockFile.Object);
             _prestamoServiceMock.Setup(s => s.CrearPrestamo(It.IsAny<CrearPrestamoComando>())).Throws(new ErrorNoEquiposDisponibles());
-            IActionResult resultadoAccion = _prestamosController.CrearPrestamo(comando);
+            var resultadoAccion = _prestamosController.CrearPrestamo(comando);
             Assert.That(resultadoAccion, Is.InstanceOf<ConflictObjectResult>());
         }
 
@@ -123,6 +130,53 @@ namespace IMT_Reservas.Tests.ControllerTests
             _prestamoServiceMock.Setup(s => s.EliminarPrestamo(It.Is<EliminarPrestamoComando>(c => c.Id == idEnUso))).Throws(new ErrorRegistroEnUso());
             IActionResult resultadoAccion = _prestamosController.EliminarPrestamo(idEnUso);
             Assert.That(resultadoAccion, Is.InstanceOf<ConflictObjectResult>());
+        }
+
+        [Test]
+        public void AceptarPrestamo_Valido_RetornaOk()
+        {
+            // Arrange
+            var mockFile = new Mock<IFormFile>();
+            var comando = new AceptarPrestamoComando { PrestamoId = 1, Contrato = mockFile.Object };
+            _prestamoServiceMock.Setup(s => s.AceptarPrestamo(comando));
+
+            // Act
+            var resultadoAccion = _prestamosController.AceptarPrestamo(comando);
+
+            // Assert
+            Assert.That(resultadoAccion, Is.InstanceOf<OkObjectResult>());
+        }
+
+        [Test]
+        public void AceptarPrestamo_ArgumentoInvalido_RetornaBadRequest()
+        {
+            // Arrange
+            var mockFile = new Mock<IFormFile>();
+            var comando = new AceptarPrestamoComando { PrestamoId = 1, Contrato = mockFile.Object };
+            _prestamoServiceMock.Setup(s => s.AceptarPrestamo(comando)).Throws(new ArgumentException("Argumento inválido"));
+
+            // Act
+            var resultadoAccion = _prestamosController.AceptarPrestamo(comando);
+
+            // Assert
+            Assert.That(resultadoAccion, Is.InstanceOf<BadRequestObjectResult>());
+        }
+
+        [Test]
+        public void AceptarPrestamo_ErrorServidor_RetornaError500()
+        {
+            // Arrange
+            var mockFile = new Mock<IFormFile>();
+            var comando = new AceptarPrestamoComando { PrestamoId = 1, Contrato = mockFile.Object };
+            _prestamoServiceMock.Setup(s => s.AceptarPrestamo(comando)).Throws(new Exception("Error de servidor"));
+
+            // Act
+            var resultadoAccion = _prestamosController.AceptarPrestamo(comando);
+
+            // Assert
+            Assert.That(resultadoAccion, Is.InstanceOf<ObjectResult>());
+            var objectResult = (ObjectResult)resultadoAccion;
+            Assert.That(objectResult.StatusCode, Is.EqualTo(500));
         }
     }
 }

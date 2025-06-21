@@ -1,3 +1,5 @@
+using Microsoft.AspNetCore.Http;
+
 public record CrearPrestamoComando
 (
     int[]?    GrupoEquipoId, //Se valida si no es nulo
@@ -5,5 +7,5 @@ public record CrearPrestamoComando
     DateTime? FechaDevolucionEsperada, //Se valida si no es nulo
     string?  Observacion,
     string?   CarnetUsuario, //Se valida si no es nulo
-    byte[]?  Contrato
+    IFormFile?  Contrato
 );

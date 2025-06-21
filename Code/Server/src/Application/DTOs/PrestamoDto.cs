@@ -14,4 +14,6 @@ public class PrestamoDto
     public DateTime? FechaDevolucion         { get; set; } = null;
     public string?   Observacion              { get; set; } = null;
     public string?   EstadoPrestamo          { get; set; } = null;
+    public string?   IdContrato              { get; set; } = null;
+    public string?   FileId                  { get; set; } = null; // Nuevo campo para el id del archivo en MongoDB
 }

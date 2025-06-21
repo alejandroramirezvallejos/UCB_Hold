@@ -328,4 +328,10 @@ public class PrestamoService : IPrestamoService
             EstadoPrestamo = fila["estado_prestamo"] == DBNull.Value ? null : fila["estado_prestamo"].ToString(),
         };
     }
+
+    public void AceptarPrestamo(AceptarPrestamoComando comando)
+    {
+        throw new NotImplementedException();
+        //HABLAR CON RAMIREZ Y QUITARLO
+    }
 }

@@ -1,5 +1,7 @@
 ﻿using Moq;
 using System.Data;
+using IMT_Reservas.Server.Shared.Common;
+using Microsoft.AspNetCore.Http;
 
 namespace IMT_Reservas.Tests.RepositoryTests
 {
@@ -19,13 +21,24 @@ namespace IMT_Reservas.Tests.RepositoryTests
         [Test]
         public void Crear_LlamaExecuteSpNR_ConParametrosCorrectos()
         {
-            CrearPrestamoComando comando = new CrearPrestamoComando(new int[] { 1 }, DateTime.Now.AddDays(1), DateTime.Now.AddDays(2), "Obs", "12890061", null);
-            _prestamoRepositorio.Crear(comando);
+            var comando = new CrearPrestamoComando(new int[] { 1 }, System.DateTime.Now.AddDays(1), System.DateTime.Now.AddDays(2), "Obs", "12890061", null);
+            var dt = new DataTable();
+            dt.Columns.Add("id_prestamo", typeof(int));
+            dt.Rows.Add(123);
 
-            _ejecutarConsultaMock.Verify(e => e.EjecutarSpNR(
-                It.Is<string>(s => s.Contains("insertar_prestamo")),
+            _ejecutarConsultaMock.Setup(e => e.EjecutarFuncion(
+                It.Is<string>(s => s.Contains("INSERT INTO")),
+                It.IsAny<Dictionary<string, object?>>()))
+                .Returns(dt);
+
+            var result = _prestamoRepositorio.Crear(comando);
+
+            _ejecutarConsultaMock.Verify(e => e.EjecutarFuncion(
+                It.Is<string>(s => s.Contains("INSERT INTO")),
                 It.Is<Dictionary<string, object?>>(d => (string)d["carnetUsuario"] == comando.CarnetUsuario)
             ), Times.Once);
+
+            Assert.That(result, Is.EqualTo(123));
         }
 
         [Test]
@@ -52,13 +65,29 @@ namespace IMT_Reservas.Tests.RepositoryTests
         }
 
         [Test]
+        public void ActualizarIdContrato_LlamaExecuteSpNR_ConParametrosCorrectos()
+        {
+            int prestamoId = 1;
+            string contratoId = "xyz";
+            _prestamoRepositorio.ActualizarIdContrato(prestamoId, contratoId);
+
+            _ejecutarConsultaMock.Verify(e => e.EjecutarSpNR(
+                It.Is<string>(s => s.Contains("UPDATE public.prestamos")),
+                It.Is<Dictionary<string, object?>>(d => (int)d["idPrestamo"] == prestamoId && (string)d["idContrato"] == contratoId)
+            ), Times.Once);
+        }
+
+        [Test]
         public void Repositorio_CuandoHayExcepcion_LanzaExcepcion()
         {
+            _ejecutarConsultaMock.Setup(e => e.EjecutarFuncion(It.IsAny<string>(), It.IsAny<Dictionary<string, object?>>()))
+                           .Throws(new System.Exception("test exception"));
             _ejecutarConsultaMock.Setup(e => e.EjecutarSpNR(It.IsAny<string>(), It.IsAny<Dictionary<string, object?>>()))
-                           .Throws(new Exception("test exception"));
+                           .Throws(new System.Exception("test exception"));
 
-            Assert.Throws<ErrorRepository>(() => _prestamoRepositorio.Crear(new CrearPrestamoComando(new int[] { 1 }, DateTime.Now, DateTime.Now, "Test", "12890061", null)));
+            Assert.Throws<ErrorRepository>(() => _prestamoRepositorio.Crear(new CrearPrestamoComando(new int[] { 1 }, System.DateTime.Now, System.DateTime.Now, "Test", "12890061", null)));
             Assert.Throws<ErrorRepository>(() => _prestamoRepositorio.Eliminar(19));
+            Assert.Throws<ErrorRepository>(() => _prestamoRepositorio.ActualizarIdContrato(1, "contract-id"));
         }
     }
 }

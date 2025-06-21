@@ -1,0 +1,52 @@
+<div class="mantenimientos-container">
+  <div class="modal-content">
+    
+    <!-- Header del modal -->
+    <div class="modal-header">
+      <h2 class="modal-title">Detalles de Mantenimientos</h2>
+      <button class="btn-close" (click)="cerrarDetalles()" title="Cerrar">
+        ×
+      </button>
+    </div>
+
+    <!-- TABLA -->
+    <div class="table-responsive">
+      <table class="data-table">
+        <thead>
+          <tr>
+            <th >
+              CodigoIMT 
+            </th>
+            <th>
+              Tipo de Mantenimiento
+              </th>
+            <th>
+              DescripciónEquipo
+            </th>
+          </tr>
+        </thead>
+        <tbody>
+          @for (mantenimiento of mantenimientos; track $index ; let i = $index) {
+            <tr>
+              <td>{{mantenimiento.CodigoImtEquipo}}</td>
+              <td>{{mantenimiento.TipoMantenimiento}}</td>
+              <td>{{mantenimiento.DescripcionEquipo }}</td>
+
+           
+            </tr>  
+          }
+          
+        </tbody>
+      </table>
+    </div>
+
+    <!-- Footer del modal -->
+    <div class="modal-footer">
+      <button class="btn btn-secondary" (click)="cerrarDetalles()">
+        Cerrar
+      </button>
+    </div>
+    
+  </div>
+</div>
+

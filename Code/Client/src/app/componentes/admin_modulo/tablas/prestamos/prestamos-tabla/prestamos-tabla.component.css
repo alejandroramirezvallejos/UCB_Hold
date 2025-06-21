@@ -442,7 +442,7 @@
   display: grid;
   grid-template-columns: 1fr;
   gap: 0;
-  max-height: 300px;
+  max-height: 400px;
   overflow-y: auto;
 }
 

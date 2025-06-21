@@ -37,7 +37,7 @@ export class MantenimientoService {
         Descripcion: item.Descripcion,
         TipoMantenimiento: item.TipoMantenimiento,
         NombreGrupoEquipo: item.NombreGrupoEquipo,
-        CodigoImtEquipo: item.CodigoIMT,
+        CodigoImtEquipo: item.CodigoImtEquipo,
         DescripcionEquipo: item.DescripcionEquipo
       })))
     );

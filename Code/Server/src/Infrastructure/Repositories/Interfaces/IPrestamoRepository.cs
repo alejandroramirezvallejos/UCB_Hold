@@ -1,9 +1,11 @@
 using System.Data;
 public interface IPrestamoRepository
 {
-    void Crear(CrearPrestamoComando comando);
+    int Crear(CrearPrestamoComando comando);
     void Eliminar(int id);
     DataTable ObtenerTodos();
     void ActualizarEstado(ActualizarEstadoPrestamoComando comando);
     DataTable ObtenerPorCarnetYEstadoPrestamo(string carnet, string estadoPrestamo);
+    void AceptarPrestamo(int prestamoId);
+    void ActualizarIdContrato(int prestamoId, string idContrato);
 }
