@@ -12,13 +12,15 @@ namespace IMT_Reservas.Tests.ServiceTests
     public class ComentarioServiceTest
     {
         private Mock<IComentarioRepository> _comentarioRepositoryMock;
+        private Mock<IExecuteQuery> _executeQueryMock;
         private ComentarioService _comentarioService;
 
         [SetUp]
         public void Setup()
         {
             _comentarioRepositoryMock = new Mock<IComentarioRepository>();
-            _comentarioService = new ComentarioService(_comentarioRepositoryMock.Object);
+            _executeQueryMock = new Mock<IExecuteQuery>();
+            _comentarioService = new ComentarioService(_comentarioRepositoryMock.Object, _executeQueryMock.Object);
         }
 
         [Test]
@@ -64,22 +66,29 @@ namespace IMT_Reservas.Tests.ServiceTests
             var comentariosDataTable = new DataTable();
             comentariosDataTable.Columns.Add("id_comentario", typeof(string));
             comentariosDataTable.Columns.Add("carnet_usuario", typeof(string));
-            comentariosDataTable.Columns.Add("nombre_usuario", typeof(string));
-            comentariosDataTable.Columns.Add("apellido_paterno_usuario", typeof(string));
             comentariosDataTable.Columns.Add("id_grupo_equipo", typeof(int));
             comentariosDataTable.Columns.Add("contenido_comentario", typeof(string));
             comentariosDataTable.Columns.Add("likes_comentario", typeof(int));
             comentariosDataTable.Columns.Add("fecha_creacion_comentario", typeof(DateTime));
             
-            comentariosDataTable.Rows.Add("68531f233cba0b4adf2ea2cd", "7", "Test", "User", 8, "El servidor está bien configurado, pero recomendaría actualizar el sis…", 3, DateTime.Parse("2025-06-12T09:15:00.000Z"));
+            comentariosDataTable.Rows.Add("68531f233cba0b4adf2ea2cd", "7", 8, "El servidor está bien configurado, pero recomendaría actualizar el sis…", 3, DateTime.Parse("2025-06-12T09:15:00.000Z"));
+
+            var usuariosDataTable = new DataTable();
+            usuariosDataTable.Columns.Add("carnet", typeof(string));
+            usuariosDataTable.Columns.Add("nombre", typeof(string));
+            usuariosDataTable.Columns.Add("apellido_paterno", typeof(string));
+            usuariosDataTable.Rows.Add("7", "Test", "User");
 
             _comentarioRepositoryMock.Setup(r => r.ObtenerPorGrupoEquipo(consulta.IdGrupoEquipo)).Returns(comentariosDataTable);
+            _executeQueryMock.Setup(e => e.EjecutarFuncion(It.IsAny<string>(), It.IsAny<Dictionary<string, object?>>())).Returns(usuariosDataTable);
 
             var resultado = _comentarioService.ObtenerComentariosPorGrupoEquipo(consulta);
             
             Assert.That(resultado, Has.Count.EqualTo(1));
             Assert.That(resultado[0].Id, Is.EqualTo("68531f233cba0b4adf2ea2cd"));
             Assert.That(resultado[0].CarnetUsuario, Is.EqualTo("7"));
+            Assert.That(resultado[0].NombreUsuario, Is.EqualTo("Test"));
+            Assert.That(resultado[0].ApellidoPaternoUsuario, Is.EqualTo("User"));
         }
 
         [Test]

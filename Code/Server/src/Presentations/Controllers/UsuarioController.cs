@@ -101,15 +101,11 @@ public class UsuarioController : ControllerBase
         catch (Exception ex) { return StatusCode(500, new { error = "Error interno del servidor", mensaje = "Ocurrió un error inesperado al obtener los usuarios" });
         }
     }
-    [HttpPut("{carnet}")]
-    public IActionResult ActualizarUsuario(string carnet, [FromBody] ActualizarUsuarioComando comando)
+    [HttpPut]
+    public IActionResult ActualizarUsuario([FromBody] ActualizarUsuarioComando comando)
     {
         try
         {
-            if (carnet != comando.Carnet)
-            {
-                return BadRequest(new { error = "Parámetro inconsistente", mensaje = "El carnet en la URL no coincide con el del cuerpo de la solicitud." });
-            }
             _servicio.ActualizarUsuario(comando);
             return Ok(new { message = "Usuario actualizado exitosamente" });
         }

@@ -136,13 +136,10 @@ namespace IMT_Reservas.Tests.RepositoryTests
                     { "Contenido", "El servidor está bien configurado, pero recomendaría actualizar el sis…" },
                     { "Likes", 3 },
                     { "FechaCreacion", DateTime.Parse("2025-06-12T09:15:00.000Z") },
-                    { "EstadoEliminado", false },
-                    { "usuario_info", new BsonDocument { { "Nombre", "Test" }, { "ApellidoPaterno", "User" } } }
+                    { "EstadoEliminado", false }
                 }
             };
             
-            _collectionMock.Setup(c => c.CountDocuments(It.IsAny<FilterDefinition<BsonDocument>>(), It.IsAny<CountOptions>(), default)).Returns(1L);
-
             var cursorMock = new Mock<IAsyncCursor<BsonDocument>>();
             cursorMock.Setup(_ => _.Current).Returns(documentos);
             cursorMock.SetupSequence(_ => _.MoveNext(It.IsAny<CancellationToken>())).Returns(true).Returns(false);
@@ -158,7 +155,7 @@ namespace IMT_Reservas.Tests.RepositoryTests
             Assert.That(resultado, Is.InstanceOf<DataTable>());
             Assert.That(resultado.Rows.Count, Is.EqualTo(1));
             Assert.That(resultado.Rows[0]["id_comentario"].ToString(), Is.EqualTo("68531f233cba0b4adf2ea2cd"));
-            Assert.That(resultado.Rows[0]["nombre_usuario"].ToString(), Is.EqualTo("Test"));
+            Assert.That(resultado.Rows[0]["carnet_usuario"].ToString(), Is.EqualTo("7"));
         }
 
         [Test]
