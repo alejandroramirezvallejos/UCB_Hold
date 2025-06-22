@@ -80,10 +80,16 @@ namespace IMT_Reservas.Tests.RepositoryTests
         [Test]
         public void AgregarLike_LlamaAUpdateOne()
         {
-            var comando = new AgregarLikeComentarioComando("68531f233cba0b4adf2ea2cc");
-
+            var comando = new AgregarLikeComentarioComando("68531f233cba0b4adf2ea2cc", "2");
             _collectionMock.Setup(c => c.CountDocuments(It.IsAny<FilterDefinition<BsonDocument>>(), It.IsAny<CountOptions>(), default)).Returns(1L);
-
+            var mockCursor = new Mock<IAsyncCursor<BsonDocument>>();
+            mockCursor.SetupSequence(x => x.MoveNext(It.IsAny<System.Threading.CancellationToken>())).Returns(false);
+            mockCursor.Setup(x => x.Current).Returns(new List<BsonDocument>());
+            _collectionMock.Setup(c => c.FindSync(
+                It.IsAny<FilterDefinition<BsonDocument>>(),
+                It.IsAny<FindOptions<BsonDocument, BsonDocument>>(),
+                It.IsAny<System.Threading.CancellationToken>()
+            )).Returns(mockCursor.Object);
             var mockUpdateResult = new Mock<UpdateResult>();
             mockUpdateResult.Setup(r => r.MatchedCount).Returns(1);
             _collectionMock.Setup(c => c.UpdateOne(
@@ -92,7 +98,6 @@ namespace IMT_Reservas.Tests.RepositoryTests
                 It.IsAny<UpdateOptions>(),
                 default))
             .Returns(mockUpdateResult.Object);
-
             _comentarioRepository.AgregarLike(comando);
 
             _collectionMock.Verify(c => c.UpdateOne(It.IsAny<FilterDefinition<BsonDocument>>(), It.IsAny<UpdateDefinition<BsonDocument>>(), It.IsAny<UpdateOptions>(), default), Times.Once);
@@ -101,7 +106,7 @@ namespace IMT_Reservas.Tests.RepositoryTests
         [Test]
         public void AgregarLike_IdNoExistente_LanzaErrorDataBase()
         {
-            var comando = new AgregarLikeComentarioComando("000000000000000000000000");
+            var comando = new AgregarLikeComentarioComando("000000000000000000000000", "2");
 
             _collectionMock.Setup(c => c.CountDocuments(It.IsAny<FilterDefinition<BsonDocument>>(), It.IsAny<CountOptions>(), default)).Returns(0L);
 
@@ -152,13 +157,11 @@ namespace IMT_Reservas.Tests.RepositoryTests
             var exception = new Exception("test exception");
 
             _collectionMock.Setup(c => c.InsertOne(It.IsAny<BsonDocument>(), null, default)).Throws(exception);
-            
-
             _collectionMock.Setup(c => c.CountDocuments(It.IsAny<FilterDefinition<BsonDocument>>(), It.IsAny<CountOptions>(), default)).Throws(exception);
 
             Assert.Throws<ErrorRepository>(() => _comentarioRepository.Crear(new CrearComentarioComando("1", 1, "test")));
             Assert.Throws<ErrorRepository>(() => _comentarioRepository.Eliminar(new EliminarComentarioComando(objectId)));
-            Assert.Throws<ErrorRepository>(() => _comentarioRepository.AgregarLike(new AgregarLikeComentarioComando(objectId)));
+            Assert.Throws<ErrorRepository>(() => _comentarioRepository.AgregarLike(new AgregarLikeComentarioComando(objectId, "2")));
             Assert.Throws<ErrorRepository>(() => _comentarioRepository.ObtenerPorGrupoEquipo(1));
         }
     }

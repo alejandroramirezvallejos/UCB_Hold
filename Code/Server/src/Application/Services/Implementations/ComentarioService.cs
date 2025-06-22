@@ -91,5 +91,6 @@ public class ComentarioService : IComentarioService
     {
         if (comando == null) throw new ArgumentNullException();
         if (string.IsNullOrWhiteSpace(comando.Id)) throw new ErrorIdInvalido();
+        if (string.IsNullOrWhiteSpace(comando.CarnetUsuario)) throw new ErrorCarnetInvalido();
     }
 }

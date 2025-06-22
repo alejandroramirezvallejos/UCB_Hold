@@ -108,7 +108,7 @@ namespace IMT_Reservas.Tests.ServiceTests
         [Test]
         public void AgregarLikeComentario_ComandoValido_LlamaRepositorioAgregarLike()
         {
-            var comando = new AgregarLikeComentarioComando("68531f233cba0b4adf2ea2cc");
+            var comando = new AgregarLikeComentarioComando("68531f233cba0b4adf2ea2cc", "2");
             _comentarioService.AgregarLikeComentario(comando);
             _comentarioRepositoryMock.Verify(r => r.AgregarLike(comando), Times.Once);
         }
@@ -116,7 +116,7 @@ namespace IMT_Reservas.Tests.ServiceTests
         [Test]
         public void AgregarLikeComentario_IdInvalido_LanzaErrorIdInvalido()
         {
-            var comando = new AgregarLikeComentarioComando("");
+            var comando = new AgregarLikeComentarioComando("", "2");
             Assert.Throws<ErrorIdInvalido>(() => _comentarioService.AgregarLikeComentario(comando));
         }
     }

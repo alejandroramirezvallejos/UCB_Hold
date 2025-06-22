@@ -1,4 +1,4 @@
 public record AgregarLikeComentarioComando(
-    string Id    
+    string Id,
+    string CarnetUsuario
 );
-

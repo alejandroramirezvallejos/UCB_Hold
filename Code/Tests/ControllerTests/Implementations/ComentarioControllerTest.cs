@@ -140,9 +140,10 @@ namespace IMT_Reservas.Tests.ControllerTests
         public void AgregarMeGusta_Valido_RetornaOk()
         {
             var idComentario = "68531f233cba0b4adf2ea2cc";
-            _comentarioServiceMock.Setup(s => s.AgregarLikeComentario(It.Is<AgregarLikeComentarioComando>(c => c.Id == idComentario)));
-            var resultado = _comentarioController.AgregarMeGusta(idComentario);
-            
+            var carnetUsuario = "2";
+            var comando = new AgregarLikeComentarioComando(idComentario, carnetUsuario);
+            _comentarioServiceMock.Setup(s => s.AgregarLikeComentario(It.Is<AgregarLikeComentarioComando>(c => c.Id == idComentario && c.CarnetUsuario == carnetUsuario)));
+            var resultado = _comentarioController.AgregarMeGusta(idComentario, comando);
             Assert.That(resultado, Is.InstanceOf<OkObjectResult>());
         }
 
@@ -150,9 +151,10 @@ namespace IMT_Reservas.Tests.ControllerTests
         public void AgregarMeGusta_IdInvalido_RetornaBadRequest()
         {
             var idComentario = "id_invalido";
-            _comentarioServiceMock.Setup(s => s.AgregarLikeComentario(It.Is<AgregarLikeComentarioComando>(c => c.Id == idComentario))).Throws(new ErrorIdInvalido());
-            var resultado = _comentarioController.AgregarMeGusta(idComentario);
-            
+            var carnetUsuario = "2";
+            var comando = new AgregarLikeComentarioComando(idComentario, carnetUsuario);
+            _comentarioServiceMock.Setup(s => s.AgregarLikeComentario(It.Is<AgregarLikeComentarioComando>(c => c.Id == idComentario && c.CarnetUsuario == carnetUsuario))).Throws(new ErrorIdInvalido());
+            var resultado = _comentarioController.AgregarMeGusta(idComentario, comando);
             Assert.That(resultado, Is.InstanceOf<BadRequestObjectResult>());
         }
 
@@ -160,9 +162,10 @@ namespace IMT_Reservas.Tests.ControllerTests
         public void AgregarMeGusta_NoEncontrado_RetornaNotFound()
         {
             var idComentario = "id_no_existente";
+            var carnetUsuario = "2";
+            var comando = new AgregarLikeComentarioComando(idComentario, carnetUsuario);
             _comentarioServiceMock.Setup(s => s.AgregarLikeComentario(It.IsAny<AgregarLikeComentarioComando>())).Throws(new ErrorRegistroNoEncontrado());
-            var resultado = _comentarioController.AgregarMeGusta(idComentario);
-            
+            var resultado = _comentarioController.AgregarMeGusta(idComentario, comando);
             Assert.That(resultado, Is.InstanceOf<NotFoundObjectResult>());
         }
     }

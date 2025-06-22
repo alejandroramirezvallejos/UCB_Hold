@@ -45,9 +45,9 @@ public class ComentarioController : ControllerBase
     }
 
     [HttpPost("{id}/like")]
-    public IActionResult AgregarMeGusta(string id)
+    public IActionResult AgregarMeGusta(string id, [FromBody] AgregarLikeComentarioComando input)
     {
-        try { servicio.AgregarLikeComentario(new AgregarLikeComentarioComando(id)); return Ok(new { mensaje = "Like agregado exitosamente al comentario" }); }
+        try { servicio.AgregarLikeComentario(new AgregarLikeComentarioComando(id, input.CarnetUsuario)); return Ok(new { mensaje = "Like agregado exitosamente al comentario" }); }
         catch (ErrorRegistroNoEncontrado) { return NotFound(new { error = "NoEncontrado", mensaje = "Comentario no encontrado" }); }
         catch (Exception ex) { return BadRequest(new { error = ex.GetType().Name, mensaje = ex.Message }); }
     }

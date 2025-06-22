@@ -15,7 +15,7 @@ public class ComentarioRepository : IComentarioRepository
             ["CarnetUsuario"] = comando.CarnetUsuario,
             ["IdGrupoEquipo"] = comando.IdGrupoEquipo,
             ["Contenido"] = comando.Contenido,
-            ["Likes"] = 0,
+            ["Likes"] = new BsonArray(), // Ahora es un array de objetos
             ["FechaCreacion"] = DateTime.UtcNow,
             ["EstadoEliminado"] = false
         };
@@ -67,7 +67,20 @@ public class ComentarioRepository : IComentarioRepository
                 throw new ErrorRepository($"Error al verificar existencia del comentario: {ex.Message}", ex);
             }
             if (!existe) throw new ErrorDataBase("No se encontró el comentario", null, null, null);
-            var res = _coleccion.UpdateOne(filtro, Builders<BsonDocument>.Update.Inc("Likes", 1));
+            // Verificar si el usuario ya dio like
+            var yaDioLike = _coleccion.Find(
+                Builders<BsonDocument>.Filter.And(
+                    filtro,
+                    Builders<BsonDocument>.Filter.ElemMatch("Likes", Builders<BsonDocument>.Filter.Eq("CarnetUsuario", comando.CarnetUsuario))
+                )
+            ).Any();
+            if (yaDioLike)
+                throw new ErrorRepository("El usuario ya dio like a este comentario", null);
+            var likeObj = new BsonDocument {
+                { "CarnetUsuario", comando.CarnetUsuario },
+                { "Fecha", DateTime.UtcNow }
+            };
+            var res = _coleccion.UpdateOne(filtro, Builders<BsonDocument>.Update.Push("Likes", likeObj));
             if (res == null || res.MatchedCount == 0) throw new ErrorDataBase("No se encontró el comentario", null, null, null);
         }
         catch (ErrorDataBase) { throw; }
@@ -113,7 +126,8 @@ public class ComentarioRepository : IComentarioRepository
             fila["carnet_usuario"] = doc["CarnetUsuario"].AsString;
             fila["id_grupo_equipo"] = doc["IdGrupoEquipo"].AsInt32;
             fila["contenido_comentario"] = doc["Contenido"].AsString;
-            fila["likes_comentario"] = doc["Likes"].AsInt32;
+            // Contar la cantidad de likes (array)
+            fila["likes_comentario"] = doc.Contains("Likes") && doc["Likes"].IsBsonArray ? doc["Likes"].AsBsonArray.Count : 0;
             fila["fecha_creacion_comentario"] = doc["FechaCreacion"].ToUniversalTime();
 
             tabla.Rows.Add(fila);
