@@ -4,54 +4,110 @@ public class EquipoService : IEquipoService
 {
     private readonly IEquipoRepository _equipoRepository;
     public EquipoService(IEquipoRepository equipoRepository) => _equipoRepository = equipoRepository;
-
     public void CrearEquipo(CrearEquipoComando comando)
     {
-        ValidarEntradaCreacion(comando);
-        _equipoRepository.Crear(comando);
+        try
+        {
+            ValidarEntradaCreacion(comando);
+            _equipoRepository.Crear(comando);
+        }
+        catch (ErrorNombreRequerido) { throw; }
+        catch (ErrorValorNegativo) { throw; }
+        catch (ErrorIdInvalido) { throw; }
+        catch (Exception ex)
+        {
+            if (ex is ErrorDataBase errorDb)
+            {
+                var mensaje = errorDb.Message?.ToLower() ?? "";
+                if (mensaje.Contains("no se encontró el grupo de equipos con nombre")) throw new ErrorReferenciaInvalida("nombre grupo de equipos");
+                if (mensaje.Contains("no se encontro el gavetero con nombre")) throw new ErrorReferenciaInvalida("nombre gavetero");
+                if (errorDb.SqlState == "23505" || mensaje.Contains("ya existe un equipo con ese código ucb o número serial")) throw new ErrorRegistroYaExiste();
+                if (mensaje.Contains("error al insertar equipo")) throw new Exception($"Error inesperado al insertar equipo: {errorDb.Message}", errorDb);
+                throw new Exception($"Error inesperado de base de datos al crear equipo: {errorDb.Message}", errorDb);
+            }
+            if (ex is ErrorRepository errorRepo) throw new Exception($"Error del repositorio al crear equipo: {errorRepo.Message}", errorRepo);
+            throw;
+        }
     }
-
-    public void ActualizarEquipo(ActualizarEquipoComando comando)
-    {
-        ValidarEntradaActualizacion(comando);
-        _equipoRepository.Actualizar(comando);
-    }
-
-    public void EliminarEquipo(EliminarEquipoComando comando)
-    {
-        ValidarEntradaEliminacion(comando);
-        _equipoRepository.Eliminar(comando.Id);
-    }
-
-    public List<EquipoDto>? ObtenerTodosEquipos()
-    {
-        DataTable resultado = _equipoRepository.ObtenerTodos();
-        var lista = new List<EquipoDto>(resultado.Rows.Count);
-        foreach (DataRow fila in resultado.Rows)
-            lista.Add(MapearFilaADto(fila));
-        return lista;
-    }
-
     private void ValidarEntradaCreacion(CrearEquipoComando comando)
     {
-        if (comando == null) throw new ArgumentNullException();
+        if (comando == null) throw new ArgumentNullException(nameof(comando));
         if (string.IsNullOrWhiteSpace(comando.NombreGrupoEquipo)) throw new ErrorNombreRequerido();
         if (string.IsNullOrWhiteSpace(comando.Modelo)) throw new ErrorModeloRequerido();
         if (string.IsNullOrWhiteSpace(comando.Marca)) throw new ErrorMarcaRequerida();
         if (comando.CostoReferencia.HasValue && comando.CostoReferencia < 0) throw new ErrorValorNegativo("costo de referencia");
         if (comando.TiempoMaximoPrestamo.HasValue && comando.TiempoMaximoPrestamo <= 0) throw new ErrorValorNegativo("Tiempo máximo de préstamo");
     }
+    public void ActualizarEquipo(ActualizarEquipoComando comando)
+    {
+        try
+        {
+            ValidarEntradaActualizacion(comando);
+            _equipoRepository.Actualizar(comando);
+        }
+        catch (ErrorIdInvalido) { throw; }
+        catch (ErrorValorNegativo) { throw; }
+        catch (Exception ex)
+        {
+            if (ex is ErrorDataBase errorDb)
+            {
+                var mensaje = errorDb.Message?.ToLower() ?? "";
+                if (mensaje.Contains("no se encontró un equipo activo con id")) throw new ErrorRegistroNoEncontrado();
+                if (mensaje.Contains("no se encontró el grupo de equipos con nombre")) throw new ErrorReferenciaInvalida("grupo de equipos");
+                if (mensaje.Contains("no se encontró el gavetero con nombre")) throw new ErrorReferenciaInvalida("gavetero");
+                if (mensaje.Contains("valor inválido para estado_equipo")) throw new ArgumentException("Estado de equipo inválido. Debe ser 'operativo', 'inoperativo', o 'parcialmente_operativo'.");
+                if (errorDb.SqlState == "23505") throw new ErrorRegistroYaExiste();
+                if (mensaje.Contains("error inesperado al actualizar el equipo")) throw new Exception($"Error inesperado al actualizar equipo: {errorDb.Message}", errorDb);
+                throw new Exception($"Error inesperado de base de datos al actualizar equipo: {errorDb.Message}", errorDb);
+            }
+            if (ex is ErrorRepository errorRepo) throw new Exception($"Error del repositorio al actualizar equipo: {errorRepo.Message}", errorRepo);
+            throw;
+        }
+    }
     private void ValidarEntradaActualizacion(ActualizarEquipoComando comando)
     {
-        if (comando == null) throw new ArgumentNullException();
+        if (comando == null) throw new ArgumentNullException(nameof(comando));
         if (comando.Id <= 0) throw new ErrorIdInvalido();
         if (comando.CostoReferencia.HasValue && comando.CostoReferencia < 0) throw new ErrorValorNegativo("costo de referencia");
         if (comando.TiempoMaximoPrestamo.HasValue && comando.TiempoMaximoPrestamo <= 0) throw new ErrorValorNegativo("Tiempo máximo de préstamo");
     }
+    public void EliminarEquipo(EliminarEquipoComando comando)
+    {
+        try
+        {
+            ValidarEntradaEliminacion(comando);
+            _equipoRepository.Eliminar(comando.Id);
+        }
+        catch (ErrorIdInvalido) { throw; }
+        catch (Exception ex)
+        {
+            if (ex is ErrorDataBase errorDb)
+            {
+                var mensaje = errorDb.Message?.ToLower() ?? "";
+                if (mensaje.Contains("no se encontró un equipo activo con id")) throw new ErrorRegistroNoEncontrado();
+                if (mensaje.Contains("error al eliminar lógicamente el equipo")) throw new Exception($"Error inesperado al eliminar equipo: {errorDb.Message}", errorDb);
+                throw new Exception($"Error inesperado de base de datos al eliminar equipo: {errorDb.Message}", errorDb);
+            }
+            if (ex is ErrorRepository errorRepo) throw new Exception($"Error del repositorio al eliminar equipo: {errorRepo.Message}", errorRepo);
+            throw;
+        }
+    }
     private void ValidarEntradaEliminacion(EliminarEquipoComando comando)
     {
-        if (comando == null) throw new ArgumentNullException();
+        if (comando == null) throw new ArgumentNullException(nameof(comando));
         if (comando.Id <= 0) throw new ErrorIdInvalido();
+    }
+    public List<EquipoDto>? ObtenerTodosEquipos()
+    {
+        try
+        {
+            DataTable resultado = _equipoRepository.ObtenerTodos();
+            var lista = new List<EquipoDto>(resultado.Rows.Count);
+            foreach (DataRow fila in resultado.Rows)
+                lista.Add(MapearFilaADto(fila));
+            return lista;
+        }
+        catch { throw; }
     }
     private static EquipoDto MapearFilaADto(DataRow fila) => new EquipoDto
     {

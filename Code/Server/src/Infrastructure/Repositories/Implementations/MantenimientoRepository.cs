@@ -5,7 +5,6 @@ public class MantenimientoRepository : IMantenimientoRepository
 {
     private readonly IExecuteQuery _ejecutarConsulta;
     public MantenimientoRepository(IExecuteQuery ejecutarConsulta) => _ejecutarConsulta = ejecutarConsulta;
-
     public void Crear(CrearMantenimientoComando comando)
     {
         const string sql = @"CALL public.insertar_mantenimiento(@fechaMantenimiento,@fechaFinalMantenimiento,@nombreEmpresa,@costo,@descripcion,@codigosImt,@tiposMantenimiento,@descripcionesEquipo)";
@@ -24,7 +23,6 @@ public class MantenimientoRepository : IMantenimientoRepository
         catch (NpgsqlException ex) { throw new ErrorDataBase($"Error de base de datos al crear mantenimiento: {ex.Message}", ex.SqlState, null, ex); }
         catch (Exception ex) { throw new ErrorRepository($"Error del repositorio al crear mantenimiento: {ex.Message}", ex); }
     }
-
     public void Eliminar(int id)
     {
         const string sql = @"CALL public.eliminar_mantenimiento(@id)";
@@ -33,10 +31,11 @@ public class MantenimientoRepository : IMantenimientoRepository
         catch (NpgsqlException ex) { throw new ErrorDataBase($"Error de base de datos al eliminar mantenimiento: {ex.Message}", ex.SqlState, null, ex); }
         catch (Exception ex) { throw new ErrorRepository($"Error del repositorio al eliminar mantenimiento: {ex.Message}", ex); }
     }
-
     public DataTable ObtenerTodos()
     {
         const string sql = @"SELECT * FROM public.obtener_mantenimientos()";
-        return _ejecutarConsulta.EjecutarFuncion(sql, new Dictionary<string, object?>());
+        try { return _ejecutarConsulta.EjecutarFuncion(sql, new Dictionary<string, object?>()); }
+        catch (NpgsqlException ex) { throw new ErrorDataBase($"Error de base de datos al obtener mantenimientos: {ex.Message}", ex.SqlState, null, ex); }
+        catch (Exception ex) { throw new ErrorRepository($"Error del repositorio al obtener mantenimientos: {ex.Message}", ex); }
     }
 }

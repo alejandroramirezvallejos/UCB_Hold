@@ -55,6 +55,8 @@ public class MuebleRepository : IMuebleRepository
     public DataTable ObtenerTodos()
     {
         const string sql = @"SELECT * from public.obtener_muebles()";
-        return _ejecutarConsulta.EjecutarFuncion(sql, new Dictionary<string, object?>());
+        try { return _ejecutarConsulta.EjecutarFuncion(sql, new Dictionary<string, object?>()); }
+        catch (NpgsqlException ex) { throw new ErrorDataBase($"Error de base de datos al obtener muebles: {ex.Message}", ex.SqlState, null, ex); }
+        catch (Exception ex) { throw new ErrorRepository($"Error del repositorio al obtener muebles: {ex.Message}", ex); }
     }
 }

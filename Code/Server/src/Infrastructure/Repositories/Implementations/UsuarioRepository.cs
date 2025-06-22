@@ -5,7 +5,6 @@ public class UsuarioRepository : IUsuarioRepository
 {
     private readonly IExecuteQuery _ejecutarConsulta;
     public UsuarioRepository(IExecuteQuery ejecutarConsulta) => _ejecutarConsulta = ejecutarConsulta;
-
     public void Crear(CrearUsuarioComando comando)
     {
         const string sql = @"CALL public.insertar_usuario(@carnet,@nombre,@apellidoPaterno,@apellidoMaterno,@rol::tipo_usuario,@email,@contrasena,@carrera,@telefono,@telefonoReferencia,@nombreReferencia,@emailReferencia)";
@@ -28,7 +27,6 @@ public class UsuarioRepository : IUsuarioRepository
         catch (NpgsqlException ex) { throw new ErrorDataBase($"Error de base de datos al crear usuario: {ex.Message}", ex.SqlState, null, ex); }
         catch (Exception ex) { throw new ErrorRepository($"Error en repositorio al crear usuario: {ex.Message}", "crear", "usuario", ex); }
     }
-
     public void Actualizar(ActualizarUsuarioComando comando)
     {
         const string sql = @"CALL public.actualizar_usuario(@carnet,@nombre,@apellidoPaterno,@apellidoMaterno,@email,@contrasena,@rol::tipo_usuario,@carrera,@telefono,@telefonoReferencia,@nombreReferencia,@emailReferencia)";
@@ -51,7 +49,6 @@ public class UsuarioRepository : IUsuarioRepository
         catch (NpgsqlException ex) { throw new ErrorDataBase($"Error de base de datos al actualizar usuario: {ex.Message}", ex.SqlState, null, ex); }
         catch (Exception ex) { throw new ErrorRepository($"Error en repositorio al actualizar usuario: {ex.Message}", "actualizar", "usuario", ex); }
     }
-
     public void Eliminar(string carnet)
     {
         const string sql = @"CALL public.eliminar_usuario(@carnet)";
@@ -60,7 +57,6 @@ public class UsuarioRepository : IUsuarioRepository
         catch (NpgsqlException ex) { throw new ErrorDataBase($"Error de base de datos al eliminar usuario: {ex.Message}", ex.SqlState, null, ex); }
         catch (Exception ex) { throw new ErrorRepository($"Error en repositorio al eliminar usuario: {ex.Message}", "eliminar", "usuario", ex); }
     }
-
     public DataTable ObtenerTodos()
     {
         const string sql = @"SELECT * from public.obtener_usuarios()";
@@ -68,7 +64,6 @@ public class UsuarioRepository : IUsuarioRepository
         catch (NpgsqlException ex) { throw new ErrorDataBase($"Error de base de datos al obtener usuarios: {ex.Message}", ex.SqlState, null, ex); }
         catch (Exception ex) { throw new ErrorRepository($"Error del repositorio al obtener usuarios: {ex.Message}", ex); }
     }
-
     public DataTable? ObtenerPorEmailYContrasena(string email, string contrasena)
     {
         const string sql = @"SELECT * from public.obtener_usuario_iniciar_sesion(@email,@contrasena)";
@@ -79,9 +74,9 @@ public class UsuarioRepository : IUsuarioRepository
         };
         try {
             var dt = _ejecutarConsulta.EjecutarFuncion(sql, parametros);
-            return dt.Rows.Count == 0 ? null : dt;
-        }
-        catch (NpgsqlException ex) { throw new ErrorDataBase($"Error de base de datos al obtener usuario: {ex.Message}", ex.SqlState, null, ex); }
+            if (dt.Rows.Count == 0) return null;
+            return dt;
+        } catch (NpgsqlException ex) { throw new ErrorDataBase($"Error de base de datos al obtener usuario: {ex.Message}", ex.SqlState, null, ex); }
         catch (Exception ex) { throw new ErrorRepository($"Error del repositorio al obtener usuario: {ex.Message}", ex); }
     }
 }

@@ -1,11 +1,9 @@
 using System.Data;
 using Npgsql;
-
 public class ComponenteRepository : IComponenteRepository
 {
     private readonly IExecuteQuery _ejecutarConsulta;
     public ComponenteRepository(IExecuteQuery ejecutarConsulta) => _ejecutarConsulta = ejecutarConsulta;
-
     public void Crear(CrearComponenteComando comando)
     {
         const string sql = @"CALL public.insertar_componente(@nombre,@modelo,@tipo,@codigoImt,@descripcion,@precioReferencia,@urlDataSheet)";
@@ -23,7 +21,6 @@ public class ComponenteRepository : IComponenteRepository
         catch (NpgsqlException ex) { throw new ErrorDataBase($"Error de base de datos al crear componente: {ex.Message}", ex.SqlState, null, ex); }
         catch (Exception ex) { throw new ErrorRepository($"Error en repositorio al crear componente: {ex.Message}", "crear", "componente", ex); }
     }
-
     public void Actualizar(ActualizarComponenteComando comando)
     {
         const string sql = @"CALL public.actualizar_componente(@id,@nombre,@modelo,@tipo,@codigoImt,@descripcion,@precioReferencia,@urlDataSheet)";
@@ -42,7 +39,6 @@ public class ComponenteRepository : IComponenteRepository
         catch (NpgsqlException ex) { throw new ErrorDataBase($"Error de base de datos al actualizar componente: {ex.Message}", ex.SqlState, null, ex); }
         catch (Exception ex) { throw new ErrorRepository($"Error en repositorio al actualizar componente: {ex.Message}", "actualizar", "componente", ex); }
     }
-
     public void Eliminar(int id)
     {
         const string sql = @"CALL public.eliminar_componente(@id)";
@@ -51,7 +47,6 @@ public class ComponenteRepository : IComponenteRepository
         catch (NpgsqlException ex) { throw new ErrorDataBase($"Error de base de datos al eliminar componente: {ex.Message}", ex.SqlState, null, ex); }
         catch (Exception ex) { throw new ErrorRepository($"Error en repositorio al eliminar componente: {ex.Message}", "eliminar", "componente", ex); }
     }
-
     public DataTable ObtenerTodos()
     {
         const string sql = @"SELECT * from public.obtener_componentes()";

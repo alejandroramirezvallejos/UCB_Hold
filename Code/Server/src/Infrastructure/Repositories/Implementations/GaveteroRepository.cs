@@ -5,7 +5,6 @@ public class GaveteroRepository : IGaveteroRepository
 {
     private readonly IExecuteQuery _ejecutarConsulta;
     public GaveteroRepository(IExecuteQuery ejecutarConsulta) => _ejecutarConsulta = ejecutarConsulta;
-
     public void Crear(CrearGaveteroComando comando)
     {
         const string sql = @"CALL public.insertar_gavetero(@nombre,@tipo,@nombreMueble,@longitud,@profundidad,@altura)";
@@ -22,7 +21,6 @@ public class GaveteroRepository : IGaveteroRepository
         catch (NpgsqlException ex) { throw new ErrorDataBase($"Error de base de datos al crear gavetero: {ex.Message}", ex.SqlState, null, ex); }
         catch (Exception ex) { throw new ErrorRepository($"Error del repositorio al crear gavetero: {ex.Message}", ex); }
     }
-
     public void Actualizar(ActualizarGaveteroComando comando)
     {
         const string sql = @"CALL public.actualizar_gavetero(@id,@nombre,@tipo,@nombreMueble,@longitud,@profundidad,@altura)";
@@ -40,7 +38,6 @@ public class GaveteroRepository : IGaveteroRepository
         catch (NpgsqlException ex) { throw new ErrorDataBase($"Error de base de datos al actualizar gavetero: {ex.Message}", ex.SqlState, null, ex); }
         catch (Exception ex) { throw new ErrorRepository($"Error del repositorio al actualizar gavetero: {ex.Message}", ex); }
     }
-
     public void Eliminar(int id)
     {
         const string sql = @"CALL public.eliminar_gavetero(@id)";
@@ -49,10 +46,11 @@ public class GaveteroRepository : IGaveteroRepository
         catch (NpgsqlException ex) { throw new ErrorDataBase($"Error de base de datos al eliminar gavetero: {ex.Message}", ex.SqlState, null, ex); }
         catch (Exception ex) { throw new ErrorRepository($"Error del repositorio al eliminar gavetero: {ex.Message}", ex); }
     }
-
     public DataTable ObtenerTodos()
     {
         const string sql = @"SELECT * from public.obtener_gaveteros()";
-        return _ejecutarConsulta.EjecutarFuncion(sql, new Dictionary<string, object?>());
+        try { return _ejecutarConsulta.EjecutarFuncion(sql, new Dictionary<string, object?>()); }
+        catch (NpgsqlException ex) { throw new ErrorDataBase($"Error de base de datos al obtener gaveteros: {ex.Message}", ex.SqlState, null, ex); }
+        catch (Exception ex) { throw new ErrorRepository($"Error del repositorio al obtener gaveteros: {ex.Message}", ex); }
     }
 }

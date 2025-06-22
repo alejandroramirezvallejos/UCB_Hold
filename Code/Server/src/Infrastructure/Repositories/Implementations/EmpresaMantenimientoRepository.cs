@@ -5,7 +5,6 @@ public class EmpresaMantenimientoRepository : IEmpresaMantenimientoRepository
 {
     private readonly IExecuteQuery _ejecutarConsulta;
     public EmpresaMantenimientoRepository(IExecuteQuery ejecutarConsulta) => _ejecutarConsulta = ejecutarConsulta;
-
     public void Crear(CrearEmpresaMantenimientoComando comando)
     {
         const string sql = @"CALL public.insertar_empresa_mantenimiento(@nombre,@nombreResponsable,@apellidoResponsable,@telefono,@direccion,@nit)";
@@ -22,7 +21,6 @@ public class EmpresaMantenimientoRepository : IEmpresaMantenimientoRepository
         catch (NpgsqlException ex) { throw new ErrorDataBase($"Error de base de datos al crear empresa de mantenimiento: {ex.Message}", ex.SqlState, null, ex); }
         catch (Exception ex) { throw new ErrorRepository($"Error del repositorio al crear empresa de mantenimiento: {ex.Message}", ex); }
     }
-
     public void Actualizar(ActualizarEmpresaMantenimientoComando comando)
     {
         const string sql = @"CALL public.actualizar_empresa_mantenimiento(@id,@nombre,@nombreResponsable,@apellidoResponsable,@telefono,@direccion,@nit)";
@@ -40,7 +38,6 @@ public class EmpresaMantenimientoRepository : IEmpresaMantenimientoRepository
         catch (NpgsqlException ex) { throw new ErrorDataBase($"Error de base de datos al actualizar empresa de mantenimiento: {ex.Message}", ex.SqlState, null, ex); }
         catch (Exception ex) { throw new ErrorRepository($"Error del repositorio al actualizar empresa de mantenimiento: {ex.Message}", ex); }
     }
-
     public void Eliminar(int id)
     {
         const string sql = @"CALL public.eliminar_empresas_mantenimiento(@id)";
@@ -49,10 +46,11 @@ public class EmpresaMantenimientoRepository : IEmpresaMantenimientoRepository
         catch (NpgsqlException ex) { throw new ErrorDataBase($"Error de base de datos al eliminar empresa de mantenimiento: {ex.Message}", ex.SqlState, null, ex); }
         catch (Exception ex) { throw new ErrorRepository($"Error del repositorio al eliminar empresa de mantenimiento: {ex.Message}", ex); }
     }
-
     public DataTable ObtenerTodos()
     {
         const string sql = @"SELECT * from public.obtener_empresas_mantenimiento()";
-        return _ejecutarConsulta.EjecutarFuncion(sql, new Dictionary<string, object?>());
+        try { return _ejecutarConsulta.EjecutarFuncion(sql, new Dictionary<string, object?>()); }
+        catch (NpgsqlException ex) { throw new ErrorDataBase($"Error de base de datos al obtener empresas de mantenimiento: {ex.Message}", ex.SqlState, null, ex); }
+        catch (Exception ex) { throw new ErrorRepository($"Error del repositorio al obtener empresas de mantenimiento: {ex.Message}", ex); }
     }
 }
