@@ -42,10 +42,16 @@ export class ComentarioService {
     return this.http.delete(url);
   }
 
-  aumentarlikeComentario(idComentario: string) {
+  aumentarlikeComentario(idComentario: string , carnet : string ) {
     const url = `${this.apiUrl}/${idComentario}/like`;
+    const envio = {
+      Id: idComentario,
+      CarnetUsuario: carnet
+    }
 
-    return this.http.post(url,null);
+
+
+    return this.http.post(url,envio);
 
   }
 

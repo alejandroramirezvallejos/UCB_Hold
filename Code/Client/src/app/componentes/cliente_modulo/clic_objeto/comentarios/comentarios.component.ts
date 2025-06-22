@@ -38,7 +38,7 @@ export class ComentariosComponent {
   }
 
   darlike(indice : number){
-    this.comentarioApi.aumentarlikeComentario(this.comentarios[indice].Id).subscribe({
+    this.comentarioApi.aumentarlikeComentario(this.comentarios[indice].Id , this.usuario.obtenercarnet()).subscribe({
       next: (data) => {
         this.cargarComentarios();
       },

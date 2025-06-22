@@ -24,6 +24,22 @@
     <img src="/assets/logo_universidad.png" alt="Logo UCB" class="logo-image" />
   </div>
   <div class="right-section">
+      <button
+      type="button"
+      class="icon-button"
+      (click)="botonnotificaciones()"
+    >
+      <img
+        #notificationIcon
+        src="/assets/notificaciones_line.png"
+        class="icon-image"
+        (mouseenter)="notificationIcon.src = '/assets/notificaciones_solid.png'"
+        (mouseleave)="notificationIcon.src = '/assets/notificaciones_line.png'"
+      />
+    </button>
+
+
+
     <button
       type="button"
       class="icon-button cart-button"
