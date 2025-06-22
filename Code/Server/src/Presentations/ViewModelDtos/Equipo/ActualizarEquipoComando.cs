@@ -1,6 +1,5 @@
-public record ActualizarEquipoComando
-(
-    int     Id,
+public record ActualizarEquipoComando(
+    int Id,
     string? NombreGrupoEquipo,
     string? Modelo,
     string? Marca,
@@ -10,7 +9,7 @@ public record ActualizarEquipoComando
     string? Ubicacion,
     string? Procedencia,
     double? CostoReferencia,
-    int?    TiempoMaximoPrestamo,
+    int? TiempoMaximoPrestamo,
     string? NombreGavetero,
     string? EstadoEquipo
 );

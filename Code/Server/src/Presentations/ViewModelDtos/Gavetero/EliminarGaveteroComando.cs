@@ -1,5 +1,3 @@
-//TODO: Implementar
-public record EliminarGaveteroComando
-(
+public record EliminarGaveteroComando(
     int Id
 );

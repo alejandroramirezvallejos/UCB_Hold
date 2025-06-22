@@ -1,4 +1,3 @@
-public record EliminarGrupoEquipoComando
-(
+public record EliminarGrupoEquipoComando(
     int Id
 );

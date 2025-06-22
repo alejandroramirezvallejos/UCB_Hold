@@ -1,5 +1,3 @@
-//TODO: Implementar
-public record ObtenerEmpresaMantenimientoComando
-(
-    int Id       
+public record ObtenerEmpresaMantenimientoComando(
+    int Id
 );

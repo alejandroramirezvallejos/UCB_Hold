@@ -1,4 +1,3 @@
-//TODO: Implementar
 public record EliminarComponenteComando(
-    int Id               
+    int Id
 );

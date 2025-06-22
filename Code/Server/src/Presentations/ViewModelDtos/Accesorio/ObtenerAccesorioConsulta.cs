@@ -1,4 +1,3 @@
-public record ObtenerAccesorioConsulta
-(
+public record ObtenerAccesorioConsulta(
     int Id
 );

@@ -38,7 +38,6 @@ public class ExecuteQuery : IExecuteQuery
             NpgsqlConnection conn = new NpgsqlConnection(_connectionString);
             conn.Open();
 
-            // EjecutarSpNR siempre maneja declaraciones CALL, que en PostgreSQL son Insert, Update o Delete 
             NpgsqlCommand cmd = new NpgsqlCommand(nombreSp, conn)
             {
                 CommandType = CommandType.Text
@@ -104,7 +103,6 @@ public class ExecuteQuery : IExecuteQuery
 
         foreach (KeyValuePair<string, object?> param in parametros)
         {
-            // Manejar diferentes tipos de arrays y listas para PostgreSQL
             if (param.Value != null && EsArrayOLista(param.Value))
             {
                 var npgsqlParam = CrearParametroArray(param.Key, param.Value);
@@ -194,11 +192,9 @@ public class ExecuteQuery : IExecuteQuery
     {
         var type = value.GetType();
         
-        // Si ya es array, retornarlo tal como está
         if (type.IsArray)
             return value;
             
-        // Si es List<T>, convertir a array
         if (type.IsGenericType && type.GetGenericTypeDefinition() == typeof(List<>))
         {
             var elementType = type.GetGenericArguments()[0];
@@ -206,7 +202,6 @@ public class ExecuteQuery : IExecuteQuery
             return toArrayMethod?.Invoke(null, new[] { value }) ?? value;
         }
         
-        // Si es IEnumerable<T>, intentar convertir a array
         var enumerableInterface = type.GetInterfaces()
             .FirstOrDefault(i => i.IsGenericType && i.GetGenericTypeDefinition() == typeof(IEnumerable<>));
             

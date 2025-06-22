@@ -31,10 +31,9 @@ namespace IMT_Reservas.Tests.ServiceTests
         [Test]
         public void CrearPrestamo_ComandoValido_LlamaRepositorioCrear()
         {
-            // Arrange
             var mockFile = new Mock<IFormFile>();
             var fileContent = "Hello World from a Fake File";
-            var fileName = "test.html"; // Cambiado a .html para pasar la validación
+            var fileName = "test.html";
             var ms = new MemoryStream();
             var writer = new StreamWriter(ms);
             writer.Write(fileContent);
@@ -60,10 +59,8 @@ namespace IMT_Reservas.Tests.ServiceTests
 
             _mongoDbContextMock.Setup(m => m.Contratos).Returns(mockContratosCollection.Object);
 
-            // Act
             _prestamoService.CrearPrestamo(comando);
 
-            // Assert
             _prestamoRepositoryMock.Verify(r => r.Crear(comando), Times.Once);
             _gridFsMock.Verify(fs => fs.UploadFromStreamAsync(fileName, It.IsAny<Stream>(), null, default), Times.Once);
             mockContratosCollection.Verify(c => c.InsertOneAsync(It.Is<Contrato>(doc => doc.PrestamoId == prestamoId && doc.FileId == fileId.ToString()), null, default), Times.Once);
@@ -112,7 +109,6 @@ namespace IMT_Reservas.Tests.ServiceTests
         [Test]
         public void CrearPrestamo_FechaPrestamoPasada_LanzaArgumentException()
         {
-            // TODO: Implementar
         }
 
         [Test]
@@ -167,11 +163,10 @@ namespace IMT_Reservas.Tests.ServiceTests
         [Test]
         public void AceptarPrestamo_ComandoValido_SubeArchivoYActualizaEstado()
         {
-            // Arrange
             var mockContratosCollection = new Mock<IMongoCollection<Contrato>>();
             var mockFile = new Mock<IFormFile>();
             var fileContent = "Nuevo contrato";
-            var fileName = "contrato_nuevo.html"; // Cambiado a .html
+            var fileName = "contrato_nuevo.html";
             var ms = new MemoryStream();
             var writer = new StreamWriter(ms);
             writer.Write(fileContent);
@@ -185,7 +180,6 @@ namespace IMT_Reservas.Tests.ServiceTests
             var contratoExistente = new Contrato { Id = "abc", PrestamoId = 1, FileId = "oldFileId" };
             _mongoDbContextMock.Setup(m => m.Contratos).Returns(mockContratosCollection.Object);
 
-            // Mock para FindSync (en vez de Find)
             var mockCursor = new Mock<IAsyncCursor<Contrato>>();
             mockCursor.SetupSequence(x => x.MoveNext(It.IsAny<CancellationToken>()))
                 .Returns(true)
@@ -198,10 +192,8 @@ namespace IMT_Reservas.Tests.ServiceTests
 
             _gridFsMock.Setup(fs => fs.UploadFromStreamAsync(It.IsAny<string>(), It.IsAny<Stream>(), null, default)).ReturnsAsync(ObjectId.GenerateNewId());
 
-            // Act
             _prestamoService.AceptarPrestamo(comando);
 
-            // Assert
             mockContratosCollection.Verify(c => c.UpdateOne(It.IsAny<FilterDefinition<Contrato>>(), It.IsAny<UpdateDefinition<Contrato>>(), null, default), Times.Once);
             _prestamoRepositoryMock.Verify(r => r.ActualizarEstado(It.Is<ActualizarEstadoPrestamoComando>(cmd => cmd.Id == comando.PrestamoId && cmd.EstadoPrestamo == "activo")), Times.Once);
         }
@@ -209,10 +201,8 @@ namespace IMT_Reservas.Tests.ServiceTests
         [Test]
         public void AceptarPrestamo_ContratoNulo_LanzaArgumentException()
         {
-            // Arrange
             var comando = new AceptarPrestamoComando { PrestamoId = 1, Contrato = null };
 
-            // Act & Assert
             Assert.Throws<ArgumentException>(() => _prestamoService.AceptarPrestamo(comando));
         }
     }

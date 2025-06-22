@@ -1,5 +1,3 @@
-//TODO: Implementar 
-public record EliminarMuebleComando
-(
+public record EliminarMuebleComando(
     int Id
 );

@@ -1,5 +1,4 @@
-public record ObtenerGrupoEquipoPorNombreYCategoriaConsulta
-(
+public record ObtenerGrupoEquipoPorNombreYCategoriaConsulta(
     string? Nombre,
     string? Categoria
 );

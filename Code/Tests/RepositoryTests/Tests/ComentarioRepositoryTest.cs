@@ -50,10 +50,8 @@ namespace IMT_Reservas.Tests.RepositoryTests
         {
             var comando = new EliminarComentarioComando("68531f233cba0b4adf2ea2cc");
 
-            // Arrange: Mock CountDocuments to return 1, so it doesn't throw "Not Found"
             _collectionMock.Setup(c => c.CountDocuments(It.IsAny<FilterDefinition<BsonDocument>>(), It.IsAny<CountOptions>(), default)).Returns(1L);
 
-            // Arrange: Mock UpdateOne
             var mockUpdateResult = new Mock<UpdateResult>();
             mockUpdateResult.Setup(r => r.MatchedCount).Returns(1);
             _collectionMock.Setup(c => c.UpdateOne(
@@ -63,10 +61,8 @@ namespace IMT_Reservas.Tests.RepositoryTests
                 default))
             .Returns(mockUpdateResult.Object);
 
-            // Act
             _comentarioRepository.Eliminar(comando);
 
-            // Assert
             _collectionMock.Verify(c => c.UpdateOne(It.IsAny<FilterDefinition<BsonDocument>>(), It.IsAny<UpdateDefinition<BsonDocument>>(), It.IsAny<UpdateOptions>(), default), Times.Once);
         }
         
@@ -75,10 +71,8 @@ namespace IMT_Reservas.Tests.RepositoryTests
         {
             var comando = new EliminarComentarioComando("000000000000000000000000");
             
-            // Arrange: Mock CountDocuments to return 0
             _collectionMock.Setup(c => c.CountDocuments(It.IsAny<FilterDefinition<BsonDocument>>(), It.IsAny<CountOptions>(), default)).Returns(0L);
 
-            // Act & Assert
             var ex = Assert.Throws<ErrorDataBase>(() => _comentarioRepository.Eliminar(comando));
             Assert.That(ex.Message, Is.EqualTo("No se encontró el comentario"));
         }
@@ -88,10 +82,8 @@ namespace IMT_Reservas.Tests.RepositoryTests
         {
             var comando = new AgregarLikeComentarioComando("68531f233cba0b4adf2ea2cc");
 
-            // Arrange: Mock CountDocuments to return 1
             _collectionMock.Setup(c => c.CountDocuments(It.IsAny<FilterDefinition<BsonDocument>>(), It.IsAny<CountOptions>(), default)).Returns(1L);
 
-            // Arrange: Mock UpdateOne
             var mockUpdateResult = new Mock<UpdateResult>();
             mockUpdateResult.Setup(r => r.MatchedCount).Returns(1);
             _collectionMock.Setup(c => c.UpdateOne(
@@ -101,10 +93,8 @@ namespace IMT_Reservas.Tests.RepositoryTests
                 default))
             .Returns(mockUpdateResult.Object);
 
-            // Act
             _comentarioRepository.AgregarLike(comando);
 
-            // Assert
             _collectionMock.Verify(c => c.UpdateOne(It.IsAny<FilterDefinition<BsonDocument>>(), It.IsAny<UpdateDefinition<BsonDocument>>(), It.IsAny<UpdateOptions>(), default), Times.Once);
         }
         
@@ -113,10 +103,8 @@ namespace IMT_Reservas.Tests.RepositoryTests
         {
             var comando = new AgregarLikeComentarioComando("000000000000000000000000");
 
-            // Arrange: Mock CountDocuments to return 0
             _collectionMock.Setup(c => c.CountDocuments(It.IsAny<FilterDefinition<BsonDocument>>(), It.IsAny<CountOptions>(), default)).Returns(0L);
 
-            // Act & Assert
             var ex = Assert.Throws<ErrorDataBase>(() => _comentarioRepository.AgregarLike(comando));
             Assert.That(ex.Message, Is.EqualTo("No se encontró el comentario"));
         }

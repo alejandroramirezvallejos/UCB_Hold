@@ -1,10 +1,9 @@
-public record ActualizarAccesorioComando 
-(
-    int     Id,
-    string?  Nombre,
+public record ActualizarAccesorioComando(
+    int Id,
+    string? Nombre,
     string? Modelo,
     string? Tipo,
-    int?     CodigoIMT,
+    int? CodigoIMT,
     string? Descripcion,
     double? Precio,
     string? UrlDataSheet

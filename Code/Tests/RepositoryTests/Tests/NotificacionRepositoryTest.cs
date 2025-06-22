@@ -76,7 +76,7 @@ namespace IMT_Reservas.Tests.RepositoryTests
                 It.Is<UpdateDefinition<BsonDocument>>(u => u.Render(serializer, BsonSerializer.SerializerRegistry).Equals(renderedExpected)),
                 It.IsAny<UpdateOptions>(),
                 default)).Verifiable();
-            
+
             _notificacionRepository.MarcarComoLeida(comando);
 
             _collectionMock.Verify();

@@ -1,4 +1,3 @@
-public record ObtenerCategoriaConsulta
-(
+public record ObtenerCategoriaConsulta(
     int Id
 );

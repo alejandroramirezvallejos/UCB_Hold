@@ -1,4 +1,3 @@
-public record EliminarAccesorioComando
-(
+public record EliminarAccesorioComando(
     int Id
 );

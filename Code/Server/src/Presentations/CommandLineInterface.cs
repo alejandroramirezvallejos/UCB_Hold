@@ -206,7 +206,7 @@ public static class CommandLineInterface
         builder.Services.AddControllers().AddJsonOptions(options =>
             {
                 options.JsonSerializerOptions.PropertyNamingPolicy = null;
-                options.JsonSerializerOptions.PropertyNameCaseInsensitive = true;//para ayudar a josue
+                options.JsonSerializerOptions.PropertyNameCaseInsensitive = true;
             });
 
         builder.Services.AddEndpointsApiExplorer();
@@ -224,7 +224,6 @@ public static class CommandLineInterface
 
         builder.Services.AddScoped<IExecuteQuery, ExecuteQuery>();
 
-        // Registrar servicios
         builder.Services.AddScoped<IAccesorioService, AccesorioService>();
         builder.Services.AddScoped<ICarreraService, CarreraService>();
         builder.Services.AddScoped<ICategoriaService, CategoriaService>();
@@ -240,7 +239,6 @@ public static class CommandLineInterface
         builder.Services.AddScoped<IComentarioService, ComentarioService>();
         builder.Services.AddScoped<INotificacionService, NotificacionService>();
 
-        // Registrar repositorios
         builder.Services.AddScoped<IAccesorioRepository, AccesorioRepository>();
         builder.Services.AddScoped<ICarreraRepository, CarreraRepository>();
         builder.Services.AddScoped<ICategoriaRepository, CategoriaRepository>();
@@ -256,17 +254,15 @@ public static class CommandLineInterface
         builder.Services.AddScoped<IComentarioRepository, ComentarioRepository>();
         builder.Services.AddScoped<INotificacionRepository, NotificacionRepository>();
 
-        // MongoDB GridFS
         builder.Services.AddSingleton<MongoDB.Driver.IMongoClient>(sp =>
         {
-            // Intenta obtener la cadena de conexión de MongoDb, si no existe, usa una por defecto
             var connectionString = builder.Configuration.GetConnectionString("MongoDb") ?? "mongodb://localhost:27018";
             return new MongoDB.Driver.MongoClient(connectionString);
         });
         builder.Services.AddScoped<MongoDB.Driver.GridFS.IGridFSBucket>(sp =>
         {
             var mongoClient = sp.GetRequiredService<MongoDB.Driver.IMongoClient>();
-            var database = mongoClient.GetDatabase("UCB_Hold"); // Nombre correcto de tu base de datos
+            var database = mongoClient.GetDatabase("UCB_Hold");
             return new MongoDB.Driver.GridFS.GridFSBucket(database);
         });
 
