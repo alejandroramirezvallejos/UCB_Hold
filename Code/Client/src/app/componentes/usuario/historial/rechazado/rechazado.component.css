@@ -1,0 +1,239 @@
+
+:root {
+  --color-primary: #2563eb;
+  --color-secondary: #FFCF00;
+  --color-success: #10b981;
+  --color-text: #334155;
+  --color-text-secondary: #64748b;
+  --color-border: #e2e8f0;
+  --color-background: #f8fafc;
+  --color-surface: #ffffff;
+  --shadow-sm: 0 1px 3px rgba(0, 0, 0, 0.12);
+  --shadow-md: 0 4px 6px rgba(0, 0, 0, 0.07);
+  --radius: 0.5rem;
+  --transition: all 0.2s ease-in-out;
+}
+
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+  font-family: "Manrope", sans-serif;
+}
+
+.prestamos-container {
+  padding: 1rem;
+  background-color: var(--color-background);
+  min-height: 100vh;
+  margin-top: 2rem;
+}
+
+.header-section {
+  margin-bottom: 1.5rem;
+  padding-bottom: 1rem;
+  border-bottom: 2px solid var(--color-border);
+}
+
+.title {
+  font-size: 1.8rem;
+  font-weight: 700;
+  color: var(--color-text);
+  margin-bottom: 0.25rem;
+}
+
+.subtitle {
+  font-size: 0.95rem;
+  color: var(--color-text-secondary);
+  margin-bottom: 0;
+}
+
+.prestamos-list {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+.prestamo-item {
+  background: var(--color-surface);
+ 
+  border-left: 5px solid var(--color-primary);
+  border-radius: var(--radius);
+  padding: 1.25rem;
+  margin: 0.75rem;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
+  transition: var(--transition);
+  position: relative;
+}
+
+.prestamo-item:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+  border-color: var(--color-primary);
+}
+
+.item-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  margin-bottom: 1rem;
+  padding-bottom: 0.75rem;
+  border-bottom: 1px solid var(--color-border);
+  flex-wrap: wrap;
+  gap: 1rem;
+}
+
+.usuario-info {
+  flex: 1;
+  min-width: 200px;
+}
+
+.usuario-nombre {
+  font-size: 1.3rem;
+  font-weight: 700;
+  color: var(--color-primary);
+  margin-bottom: 0.3rem;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.usuario-carnet {
+  font-size: 0.9rem;
+  color: var(--color-text);
+  background: var(--color-background);
+  padding: 0.3rem 0.8rem;
+  border-radius: 0.75rem;
+  display: inline-block;
+  border: 1px solid var(--color-border);
+  font-weight: 500;
+}
+
+.equipo-info {
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+  text-align: right;
+}
+
+.codigo-imt {
+  font-size: 0.8rem;
+  color: var(--color-text-secondary);
+}
+
+.fechas-info {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  gap: 0.75rem;
+  margin-bottom: 1rem;
+}
+
+.fecha-item {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  background: linear-gradient(135deg, var(--color-background), #ffffff);
+  padding: 0.6rem 0.9rem;
+  border-radius: 0.5rem;
+  border: 1px solid var(--color-border);
+  transition: var(--transition);
+}
+
+.fecha-item:hover {
+  border-color: var(--color-primary);
+  transform: translateY(-1px);
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.fecha-label {
+  font-size: 0.9rem;
+  font-weight: 600;
+  color: var(--color-text);
+}
+
+.fecha-valor {
+  font-size: 0.9rem;
+  font-weight: 700;
+  color: var(--color-primary);
+  background: #ffffff;
+  padding: 0.2rem 0.5rem;
+  border-radius: 0.3rem;
+  border: 1px solid var(--color-border);
+}
+
+.empty-state {
+  text-align: center;
+  padding: 3rem 2rem;
+  color: var(--color-text-secondary);
+  background: var(--color-surface);
+  border: 2px dashed var(--color-border);
+  border-radius: var(--radius);
+}
+
+.empty-icon {
+  font-size: 3rem;
+  margin-bottom: 1rem;
+}
+
+.empty-state h3 {
+  font-size: 1.3rem;
+  margin-bottom: 0.5rem;
+  color: var(--color-text);
+}
+
+.empty-state p {
+  font-size: 0.95rem;
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+  .prestamos-container {
+    padding: 0.75rem;
+    margin-top: 1rem;
+  }
+  
+  .title {
+    font-size: 1.5rem;
+  }
+  
+  .subtitle {
+    font-size: 0.9rem;
+  }
+  
+  .prestamo-item {
+    padding: 0.75rem;
+  }
+  
+  .item-header {
+    flex-direction: column;
+    gap: 0.5rem;
+    align-items: stretch;
+  }
+  
+  .equipo-info {
+    text-align: left;
+  }
+  
+  .fechas-info {
+    grid-template-columns: 1fr;
+    gap: 0.5rem;
+  }  
+  .fecha-item {
+    flex-direction: column;
+    gap: 0.25rem;
+    text-align: left;
+  }
+}
+
+@media (max-width: 480px) {
+  .prestamo-item {
+    padding: 0.5rem;
+  }
+  
+  .usuario-nombre {
+    font-size: 1rem;
+  }
+  
+  .fecha-item {
+    padding: 0.4rem 0.6rem;
+  }
+}

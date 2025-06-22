@@ -1,19 +1,19 @@
 <div class="prestamos-container">
   <div class="header-section">
     <h1 class="title">Préstamos Activos</h1>
-    <p class="subtitle">Equipos actualmente en préstamo</p>
+    <p class="subtitle">Equipos actualmente Activos</p>
   </div>
 
   <div class="prestamos-list">
-    @for (item of datos; track $index) {
+    @for (item of (datos | keyvalue) ; track item.key) {
       <div class="prestamo-item">        <!-- Header del préstamo -->
         <div class="item-header">
           <div class="usuario-info">
-            <h3 class="usuario-nombre">💻 {{ item.NombreGrupoEquipo }}</h3>
-            <span class="usuario-carnet">{{ item.NombreUsuario }} {{ item.ApellidoPaternoUsuario }} - {{ item.CarnetUsuario }}</span>
+            <h3 class="usuario-nombre">💻 {{ item.value.datosgrupo.NombreGrupoEquipo }}</h3>
+            <span class="usuario-carnet">{{ item.value.datosgrupo.NombreUsuario }} {{ item.value.datosgrupo.ApellidoPaternoUsuario }} - {{ item.value.datosgrupo.CarnetUsuario }}</span>
           </div>
           <div class="equipo-info">
-            <span class="codigo-imt">📋 {{ item.CodigoImt || 'N/A' }}</span>
+            <span class="codigo-imt">📋 {{ item.value.datosgrupo.CodigoImt || 'N/A' }}</span>
           </div>
         </div>
 
@@ -21,38 +21,28 @@
         <div class="fechas-info">
           <div class="fecha-item">
             <span class="fecha-label">📅 Solicitud:</span>
-            <span class="fecha-valor">{{ item.FechaSolicitud ? (item.FechaSolicitud | date:'dd/MM/yyyy') : 'N/A' }}</span>
+            <span class="fecha-valor">{{ item.value.datosgrupo.FechaSolicitud ? (item.value.datosgrupo.FechaSolicitud | date:'dd/MM/yyyy') : 'N/A' }}</span>
           </div>
 
           <div class="fecha-item">
             <span class="fecha-label">✅ Préstamo:</span>
-            <span class="fecha-valor">{{ item.FechaPrestamo ? (item.FechaPrestamo | date:'dd/MM/yyyy') : 'Pendiente' }}</span>
+            <span class="fecha-valor">{{ item.value.datosgrupo.FechaPrestamo ? (item.value.datosgrupo.FechaPrestamo | date:'dd/MM/yyyy') : item.value.datosgrupo.EstadoPrestamo }}</span>
           </div>
 
           <div class="fecha-item">
             <span class="fecha-label">⏰ Devolución Esperada:</span>
-            <span class="fecha-valor">{{ item.FechaDevolucionEsperada ? (item.FechaDevolucionEsperada | date:'dd/MM/yyyy') : 'N/A' }}</span>
+            <span class="fecha-valor">{{ item.value.datosgrupo.FechaDevolucionEsperada ? (item.value.datosgrupo.FechaDevolucionEsperada | date:'dd/MM/yyyy') : 'N/A' }}</span>
           </div>
         </div>
 
-        <!-- Observaciones si existen -->
-        @if (item.Observacion) {
-          <div class="observacion-section">
-            <span class="observacion-label">💬 Observación:</span>
-            <p class="observacion-texto">{{ item.Observacion }}</p>
-          </div>
-        }
+        <button class="finalizado" (click)="avisoDevolver(item.value.datosgrupo)"> DEVUELTO</button>
 
-        <!-- Footer con contacto -->
-        @if (item.TelefonoUsuario) {
-          <div class="contacto-info">
-            <span class="telefono">📞 {{ item.TelefonoUsuario }}</span>
-          </div>
-        }
+
+
       </div>
     }
 
-    @if (datos.length === 0) {
+    @if (datos.size === 0) {
       <div class="empty-state">
         <div class="empty-icon">📥</div>
         <h3>No hay préstamos activos</h3>
@@ -61,3 +51,11 @@
     }
   </div>
 </div>
+
+@if(aviso()) {
+  <app-aviso 
+    [mensaje]="'Al apretar aceptar usted afirma que el equipo ha sido devuelto y se cerrará el préstamo.'"
+    [cerrar]="aviso"
+    (aceptar)="finalizado()">
+  </app-aviso>
+}
