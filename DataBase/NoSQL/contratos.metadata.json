@@ -1,0 +1,1 @@
+{"indexes":[{"v":{"$numberInt":"2"},"key":{"_id":{"$numberInt":"1"}},"name":"_id_"},{"v":{"$numberInt":"2"},"key":{"prestamoId":{"$numberInt":"1"}},"name":"prestamoId_1","unique":true}],"uuid":"9c3359bda9a94217852de765cff5d52d","collectionName":"contratos","type":"collection"}
