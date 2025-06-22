@@ -38,7 +38,7 @@ export class UsuariosCrearComponent {
 
   // TODO : implementar
   registrar() {
-    this.usuarioApi.registrarCuenta(this.usuario, this.contrasena).subscribe(
+    this.usuarioApi.registrarCuenta(this.usuario, this.contrasena, this.usuario.rol).subscribe(
       response => {
         this.Actualizar.emit(); 
         this.cerrar();

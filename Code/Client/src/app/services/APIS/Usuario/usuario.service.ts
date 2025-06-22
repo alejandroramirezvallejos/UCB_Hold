@@ -12,12 +12,16 @@ export class UsuarioServiceAPI {
 
   constructor(private http : HttpClient) { }
 
-  registrarCuenta(usuario : Usuario , contrasena : string){
+  registrarCuenta(usuario : Usuario , contrasena : string , rol : string  |undefined){
+    if(!rol) {
+      rol = 'Estudiante';
+    }
     const envio={
     Carnet: usuario.carnet,
     Nombre: usuario.nombre,
     ApellidoPaterno: usuario.apellido_paterno,
     ApellidoMaterno: usuario.apellido_materno,
+    Rol: rol,
     Email: usuario.correo,
     Contrasena: contrasena,
     NombreCarrera: usuario.carrera,

@@ -42,4 +42,13 @@ export class UsuarioService {
     }
   }
 
+  obtenercarnet(){
+    if(this.usuario.carnet){
+      return this.usuario.carnet;
+    }
+    else{
+      return "";
+    }
+  }
+
 }

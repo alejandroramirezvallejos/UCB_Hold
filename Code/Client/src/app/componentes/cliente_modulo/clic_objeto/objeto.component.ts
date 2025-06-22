@@ -5,12 +5,13 @@ import { ActivatedRoute, Router } from '@angular/router';
 import { GrupoequipoService } from '../../../services/APIS/GrupoEquipo/grupoequipo.service';
 import { GrupoEquipo } from '../../../models/grupo_equipo';
 import { CarritoService } from '../../../services/carrito/carrito.service';
+import { ComentariosComponent } from './comentarios/comentarios.component';
 
 
 @Component({
   selector: 'app-objeto',
   standalone: true,
-  imports: [CommonModule],
+  imports: [CommonModule, ComentariosComponent],
   templateUrl: './objeto.component.html',
   styleUrl: './objeto.component.css'
 })
@@ -33,17 +34,19 @@ export class ObjetoComponent {
 
   // objeto.component.ts
   //WARNING  :  no tocar por que no se como solucionarlo si sale error
-
   ngOnInit(): void {
     const routeId = this.route.snapshot.paramMap.get('id');
     if (!routeId) {
       console.error('ID no proporcionado en la URL');
       return;
     }
+    
+    this.id = routeId;
+    
     this.servicio.getproducto(routeId).subscribe({
       next: (data) => this.producto = data,
       error: (error) => {
-        console.error('Error completo del backend:', error);
+        console.error('Error completo del backend:', error.error.mensaje);
         this.producto = {
           id: 0,
           nombre: 'Error de carga',

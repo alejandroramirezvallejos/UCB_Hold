@@ -37,7 +37,7 @@ export class RegistrarUsuarioComponent {
   registrar() {
     this.nuevoUsuario.rol = 'usuario';
     
-    this.registrarcuenta.registrarCuenta(this.nuevoUsuario,this.password).subscribe(
+    this.registrarcuenta.registrarCuenta(this.nuevoUsuario,this.password, "estudiante").subscribe(
       (response) => {
         console.log('Usuario registrado exitosamente:', response);
       },
