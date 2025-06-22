@@ -9,151 +9,50 @@ namespace API.Controllers;
 public class ComponenteController : ControllerBase
 {
     private readonly IComponenteService servicio;
+    public ComponenteController(IComponenteService servicio) => this.servicio = servicio;
 
-    public ComponenteController(IComponenteService servicio)
-    {
-        this.servicio = servicio;
-    }    [HttpPost]
+    [HttpPost]
     public IActionResult Crear([FromBody] CrearComponenteComando input)
     {
-        try
-        {
-            servicio.CrearComponente(input);
-            return Created();
-        }
-        catch (ErrorNombreRequerido ex)
-        {
-            return BadRequest(new { error = "Campo requerido", mensaje = ex.Message });
-        }
-        catch (ErrorModeloRequerido ex)
-        {
-            return BadRequest(new { error = "Campo requerido", mensaje = ex.Message });
-        }
-        catch (ErrorLongitudInvalida ex)
-        {
-            return BadRequest(new { error = "Longitud inválida", mensaje = ex.Message });
-        }
-        catch (ErrorIdInvalido ex)
-        {
-            return BadRequest(new { error = "ID inválido", mensaje = ex.Message });
-        }
-        catch (ErrorCodigoImtRequerido ex)
-        {
-            return BadRequest(new { error = "Campo requerido", mensaje = ex.Message });
-        }
-        catch (ErrorValorNegativo ex)
-        {
-            return BadRequest(new { error = "Valor inválido", mensaje = ex.Message });
-        }
-        catch (ErrorRegistroYaExiste ex)
-        {
-            return Conflict(new { error = "Componente duplicado", mensaje = ex.Message });
-        }        catch (ErrorReferenciaInvalida ex)
-        {
-            return BadRequest(new { error = "Referencia inválida", mensaje = ex.Message });
-        }
-        catch (ArgumentNullException ex)
-        {
-            return BadRequest(new { error = "Argumento requerido", mensaje = ex.Message });
-        }
-        catch (Exception) 
-        { 
-            return StatusCode(500, new { error = "Error interno del servidor", mensaje = "Ocurrió un error inesperado al crear el componente" });
+        try { servicio.CrearComponente(input); return Created("", new { message = "Componente creado exitosamente" }); }
+        catch (ErrorRegistroYaExiste ex) { return Conflict(new { error = ex.GetType().Name, mensaje = ex.Message }); }
+        catch (Exception ex) {
+            if (ex.Message.Contains("Error General Servidor") || ex.InnerException?.Message.Contains("Error General Servidor") == true)
+                return StatusCode(500, new { error = ex.GetType().Name, mensaje = ex.Message });
+            return new BadRequestObjectResult(new { error = ex.GetType().Name, mensaje = ex.Message });
         }
     }
 
     [HttpGet]
-    public ActionResult<List<ComponenteDto>> ObtenerTodos()
+    public IActionResult ObtenerTodos()
     {
-        try
-        {
-            var resultado = servicio.ObtenerTodosComponentes();
-            return Ok(resultado);
-        }
-        catch (Exception ex)
-        {
-            return BadRequest(new { error = "Error interno del servidor", mensaje = $"Error al obtener componentes: {ex.Message}" });
-        }
-    }    [HttpPut]
+        try { return Ok(servicio.ObtenerTodosComponentes()); }
+        catch (Exception ex) { return BadRequest(new { error = ex.GetType().Name, mensaje = ex.Message }); }
+    }
+
+    [HttpPut]
     public IActionResult Actualizar([FromBody] ActualizarComponenteComando input)
     {
-        try
-        {
-            servicio.ActualizarComponente(input);
-            return Ok(new { mensaje = "Componente actualizado exitosamente" });
-        }        catch (ErrorIdInvalido ex)
-        {
-            return BadRequest(new { error = "ID inválido", mensaje = ex.Message });
+        try { servicio.ActualizarComponente(input); return Ok(new { mensaje = "Componente actualizado exitosamente" }); }
+        catch (ErrorRegistroNoEncontrado ex) { return NotFound(new { error = ex.GetType().Name, mensaje = ex.Message }); }
+        catch (ErrorRegistroYaExiste ex) { return Conflict(new { error = ex.GetType().Name, mensaje = ex.Message }); }
+        catch (Exception ex) {
+            if (ex.Message.Contains("Error General Servidor") || ex.InnerException?.Message.Contains("Error General Servidor") == true)
+                return StatusCode(500, new { error = ex.GetType().Name, mensaje = ex.Message });
+            return new BadRequestObjectResult(new { error = ex.GetType().Name, mensaje = ex.Message });
         }
-        catch (ErrorNombreRequerido ex)
-        {
-            return BadRequest(new { error = "Campo requerido", mensaje = ex.Message });
-        }
-        catch (ErrorModeloRequerido ex)
-        {
-            return BadRequest(new { error = "Campo requerido", mensaje = ex.Message });
-        }
-        catch (ErrorLongitudInvalida ex)
-        {
-            return BadRequest(new { error = "Longitud inválida", mensaje = ex.Message });
-        }
-        catch (ErrorCodigoImtRequerido ex)
-        {
-            return BadRequest(new { error = "Campo requerido", mensaje = ex.Message });
-        }
-        catch (ErrorValorNegativo ex)
-        {
-            return BadRequest(new { error = "Valor inválido", mensaje = ex.Message });
-        }
-        catch(ErrorCodigoImtInvalido ex)
-        {
-            return BadRequest(new { error = "Código IMT inválido", mensaje = ex.Message });
-        }
-        catch (ErrorRegistroNoEncontrado ex)
-        {
-            return NotFound(new { error = "Componente no encontrado", mensaje = ex.Message });
-        }
-        catch (ErrorRegistroYaExiste ex)
-        {
-            return Conflict(new { error = "Componente duplicado", mensaje = ex.Message });
-        }        catch (ErrorReferenciaInvalida ex)
-        {
-            return BadRequest(new { error = "Referencia inválida", mensaje = ex.Message });
-        }
-        catch (ArgumentNullException ex)
-        {
-            return BadRequest(new { error = "Argumento requerido", mensaje = ex.Message });
-        }
-        catch (Exception) 
-        { 
-            return StatusCode(500, new { error = "Error interno del servidor", mensaje = "Ocurrió un error inesperado al actualizar el componente" });
-        }
-    }    [HttpDelete("{id}")]
+    }
+
+    [HttpDelete("{id}")]
     public IActionResult Eliminar(int id)
     {
-        try
-        {
-            var comando = new EliminarComponenteComando(id);
-            servicio.EliminarComponente(comando);
-            return NoContent();
-        }        catch (ErrorIdInvalido ex)
-        {
-            return BadRequest(new { error = "ID inválido", mensaje = ex.Message });
-        }        catch (ErrorRegistroNoEncontrado ex)
-        {
-            return NotFound(new { error = "Componente no encontrado", mensaje = ex.Message });
-        }
-        catch (ErrorRegistroEnUso ex)
-        {
-            return Conflict(new { error = "Registro en uso", mensaje = ex.Message });
-        }
-        catch (ArgumentNullException ex)
-        {
-            return BadRequest(new { error = "Argumento requerido", mensaje = ex.Message });
-        }
-        catch (Exception) 
-        { 
-            return StatusCode(500, new { error = "Error interno del servidor", mensaje = "Ocurrió un error inesperado al eliminar el componente" });
+        try { servicio.EliminarComponente(new EliminarComponenteComando(id)); return NoContent(); }
+        catch (ErrorRegistroNoEncontrado ex) { return NotFound(new { error = ex.GetType().Name, mensaje = ex.Message }); }
+        catch (ErrorRegistroEnUso ex) { return Conflict(new { error = ex.GetType().Name, mensaje = ex.Message }); }
+        catch (Exception ex) {
+            if (ex.Message.Contains("Error General Servidor") || ex.InnerException?.Message.Contains("Error General Servidor") == true)
+                return StatusCode(500, new { error = ex.GetType().Name, mensaje = ex.Message });
+            return new BadRequestObjectResult(new { error = ex.GetType().Name, mensaje = ex.Message });
         }
     }
 }

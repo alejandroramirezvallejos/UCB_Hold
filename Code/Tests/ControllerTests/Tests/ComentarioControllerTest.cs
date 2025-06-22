@@ -72,11 +72,9 @@ namespace IMT_Reservas.Tests.ControllerTests
                 new ComentarioDto { Id = "68531f233cba0b4adf2ea2cd", CarnetUsuario = "7", IdGrupoEquipo = 8, Contenido = "El servidor está bien configurado, pero recomendaría actualizar el sis…", Likes = 3, FechaCreacion = DateTime.Parse("2025-06-12T09:15:00.000Z") }
             };
             _comentarioServiceMock.Setup(s => s.ObtenerComentariosPorGrupoEquipo(It.Is<ObtenerComentariosPorGrupoEquipoConsulta>(c => c.IdGrupoEquipo == idGrupoEquipo))).Returns(comentariosEsperados);
-            
-            var resultado = _comentarioController.ObtenerComentariosPorGrupoEquipo(idGrupoEquipo);
-
-            Assert.That(resultado.Result, Is.InstanceOf<OkObjectResult>());
-            var okResult = resultado.Result as OkObjectResult;
+            IActionResult resultado = _comentarioController.ObtenerComentariosPorGrupoEquipo(idGrupoEquipo);
+            Assert.That(resultado, Is.InstanceOf<OkObjectResult>());
+            var okResult = resultado as OkObjectResult;
             Assert.That(okResult.Value, Is.EqualTo(comentariosEsperados));
         }
 
@@ -85,9 +83,8 @@ namespace IMT_Reservas.Tests.ControllerTests
         {
             var idGrupoEquipo = 999;
             _comentarioServiceMock.Setup(s => s.ObtenerComentariosPorGrupoEquipo(It.IsAny<ObtenerComentariosPorGrupoEquipoConsulta>())).Returns(new List<ComentarioDto>());
-            var resultado = _comentarioController.ObtenerComentariosPorGrupoEquipo(idGrupoEquipo);
-
-            Assert.That(resultado.Result, Is.InstanceOf<NotFoundObjectResult>());
+            IActionResult resultado = _comentarioController.ObtenerComentariosPorGrupoEquipo(idGrupoEquipo);
+            Assert.That(resultado, Is.InstanceOf<NotFoundObjectResult>());
         }
 
         [Test]
@@ -95,9 +92,8 @@ namespace IMT_Reservas.Tests.ControllerTests
         {
             var idGrupoEquipo = 0;
             _comentarioServiceMock.Setup(s => s.ObtenerComentariosPorGrupoEquipo(It.IsAny<ObtenerComentariosPorGrupoEquipoConsulta>())).Throws(new ErrorIdInvalido());
-            var resultado = _comentarioController.ObtenerComentariosPorGrupoEquipo(idGrupoEquipo);
-            
-            Assert.That(resultado.Result, Is.InstanceOf<BadRequestObjectResult>());
+            IActionResult resultado = _comentarioController.ObtenerComentariosPorGrupoEquipo(idGrupoEquipo);
+            Assert.That(resultado, Is.InstanceOf<BadRequestObjectResult>());
         }
 
         [Test]

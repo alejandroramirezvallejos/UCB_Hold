@@ -29,9 +29,9 @@ namespace IMT_Reservas.Tests.ControllerTests
                 new ComponenteDto { Id = 3, Nombre = "PRE", Modelo = "MODULAR" }
             };
             _componenteServiceMock.Setup(s => s.ObtenerTodosComponentes()).Returns(componentesEsperados);
-            ActionResult<List<ComponenteDto>> resultadoAccion = _componentesController.ObtenerTodos();
-            Assert.That(resultadoAccion.Result, Is.InstanceOf<OkObjectResult>());
-            OkObjectResult okObjectResult = (OkObjectResult)resultadoAccion.Result;
+            IActionResult resultadoAccion = _componentesController.ObtenerTodos();
+            Assert.That(resultadoAccion, Is.InstanceOf<OkObjectResult>());
+            OkObjectResult okObjectResult = (OkObjectResult)resultadoAccion;
             Assert.That(okObjectResult.Value, Is.InstanceOf<List<ComponenteDto>>().And.Count.EqualTo(componentesEsperados.Count));
         }
 
@@ -40,9 +40,9 @@ namespace IMT_Reservas.Tests.ControllerTests
         {
             List<ComponenteDto> componentesEsperados = new List<ComponenteDto>();
             _componenteServiceMock.Setup(s => s.ObtenerTodosComponentes()).Returns(componentesEsperados);
-            ActionResult<List<ComponenteDto>> resultadoAccion = _componentesController.ObtenerTodos();
-            Assert.That(resultadoAccion.Result, Is.InstanceOf<OkObjectResult>());
-            OkObjectResult okObjectResult = (OkObjectResult)resultadoAccion.Result;
+            IActionResult resultadoAccion = _componentesController.ObtenerTodos();
+            Assert.That(resultadoAccion, Is.InstanceOf<OkObjectResult>());
+            OkObjectResult okObjectResult = (OkObjectResult)resultadoAccion;
             Assert.That(okObjectResult.Value, Is.InstanceOf<List<ComponenteDto>>().And.Empty);
         }
 
@@ -50,8 +50,8 @@ namespace IMT_Reservas.Tests.ControllerTests
         public void GetComponentes_ServicioError_RetornaBadRequest()
         {
             _componenteServiceMock.Setup(s => s.ObtenerTodosComponentes()).Throws(new System.Exception("Error servicio"));
-            ActionResult<List<ComponenteDto>> resultadoAccion = _componentesController.ObtenerTodos();
-            Assert.That(resultadoAccion.Result, Is.InstanceOf<BadRequestObjectResult>());
+            IActionResult resultadoAccion = _componentesController.ObtenerTodos();
+            Assert.That(resultadoAccion, Is.InstanceOf<BadRequestObjectResult>());
         }
 
         [Test]

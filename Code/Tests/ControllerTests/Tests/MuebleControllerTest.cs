@@ -28,9 +28,9 @@ namespace IMT_Reservas.Tests.ControllerTests
                 new MuebleDto { Id = 4, Nombre = "ferprueba" }
             };
             _muebleServiceMock.Setup(s => s.ObtenerTodosMuebles()).Returns(mueblesEsperados);
-            ActionResult<List<MuebleDto>> resultadoAccion = _mueblesController.ObtenerTodos();
-            Assert.That(resultadoAccion.Result, Is.InstanceOf<OkObjectResult>());
-            OkObjectResult okObjectResult = (OkObjectResult)resultadoAccion.Result;
+            IActionResult resultadoAccion = _mueblesController.ObtenerTodos();
+            Assert.That(resultadoAccion, Is.InstanceOf<OkObjectResult>());
+            OkObjectResult okObjectResult = (OkObjectResult)resultadoAccion;
             Assert.That(okObjectResult.Value, Is.InstanceOf<List<MuebleDto>>().And.Count.EqualTo(mueblesEsperados.Count));
         }
 
@@ -39,9 +39,9 @@ namespace IMT_Reservas.Tests.ControllerTests
         {
             List<MuebleDto> mueblesEsperados = new List<MuebleDto>();
             _muebleServiceMock.Setup(s => s.ObtenerTodosMuebles()).Returns(mueblesEsperados);
-            ActionResult<List<MuebleDto>> resultadoAccion = _mueblesController.ObtenerTodos();
-            Assert.That(resultadoAccion.Result, Is.InstanceOf<OkObjectResult>());
-            OkObjectResult okObjectResult = (OkObjectResult)resultadoAccion.Result;
+            IActionResult resultadoAccion = _mueblesController.ObtenerTodos();
+            Assert.That(resultadoAccion, Is.InstanceOf<OkObjectResult>());
+            OkObjectResult okObjectResult = (OkObjectResult)resultadoAccion;
             Assert.That(okObjectResult.Value, Is.InstanceOf<List<MuebleDto>>().And.Empty);
         }
 
@@ -49,8 +49,8 @@ namespace IMT_Reservas.Tests.ControllerTests
         public void GetMuebles_ServicioError_RetornaBadRequest()
         {
             _muebleServiceMock.Setup(s => s.ObtenerTodosMuebles()).Throws(new System.Exception("Error servicio"));
-            ActionResult<List<MuebleDto>> resultadoAccion = _mueblesController.ObtenerTodos();
-            Assert.That(resultadoAccion.Result, Is.InstanceOf<BadRequestObjectResult>());
+            IActionResult resultadoAccion = _mueblesController.ObtenerTodos();
+            Assert.That(resultadoAccion, Is.InstanceOf<BadRequestObjectResult>());
         }
 
         [Test]

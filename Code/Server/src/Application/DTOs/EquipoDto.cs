@@ -1,17 +1,17 @@
 public class EquipoDto
 {
-    public int      Id              { get; set; }
-    public string?  NombreGrupoEquipo { get; set; } = null;
-    public string?  Modelo            { get; set; } = null;
-    public string?  Marca             { get; set; } = null;
-    public int?     CodigoImt       { get; set; } = null;
-    public string?  CodigoUcb        { get; set; } = null;
-    public string?  NumeroSerial     { get; set; } = null;
-    public string?  EstadoEquipo     { get; set; } = null;
-    public string?  Ubicacion        { get; set; } = null;
-    public string?  NombreGavetero   { get; set; } = null;
-    public double?  CostoReferencia  { get; set; } = null;
-    public string?  Descripcion      { get; set; } = null;
-    public int?     TiempoMaximoPrestamo { get; set; } = null;
-    public string?  Procedencia      { get; set; } = null;
+    public int Id { get; set; }
+    public string? NombreGrupoEquipo { get; set; }
+    public string? Modelo { get; set; }
+    public string? Marca { get; set; }
+    public int? CodigoImt { get; set; }
+    public string? CodigoUcb { get; set; }
+    public string? NumeroSerial { get; set; }
+    public string? EstadoEquipo { get; set; }
+    public string? Ubicacion { get; set; }
+    public string? NombreGavetero { get; set; }
+    public double? CostoReferencia { get; set; }
+    public string? Descripcion { get; set; }
+    public int? TiempoMaximoPrestamo { get; set; }
+    public string? Procedencia { get; set; }
 }

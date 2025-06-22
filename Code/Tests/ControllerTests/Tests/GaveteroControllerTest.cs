@@ -29,9 +29,9 @@ namespace IMT_Reservas.Tests.ControllerTests
                 new GaveteroDto { Id = 2, Nombre = "JJJJ" }
             };
             _gaveteroServiceMock.Setup(s => s.ObtenerTodosGaveteros()).Returns(gaveterosEsperados);
-            ActionResult<List<GaveteroDto>> resultadoAccion = _gaveterosController.ObtenerTodos();
-            Assert.That(resultadoAccion.Result, Is.InstanceOf<OkObjectResult>());
-            OkObjectResult okObjectResult = (OkObjectResult)resultadoAccion.Result;
+            IActionResult resultadoAccion = _gaveterosController.ObtenerTodos();
+            Assert.That(resultadoAccion, Is.InstanceOf<OkObjectResult>());
+            OkObjectResult okObjectResult = (OkObjectResult)resultadoAccion;
             Assert.That(okObjectResult.Value, Is.InstanceOf<List<GaveteroDto>>().And.Count.EqualTo(gaveterosEsperados.Count));
         }
 
@@ -40,9 +40,9 @@ namespace IMT_Reservas.Tests.ControllerTests
         {
             List<GaveteroDto> gaveterosEsperados = new List<GaveteroDto>();
             _gaveteroServiceMock.Setup(s => s.ObtenerTodosGaveteros()).Returns(gaveterosEsperados);
-            ActionResult<List<GaveteroDto>> resultadoAccion = _gaveterosController.ObtenerTodos();
-            Assert.That(resultadoAccion.Result, Is.InstanceOf<OkObjectResult>());
-            OkObjectResult okObjectResult = (OkObjectResult)resultadoAccion.Result;
+            IActionResult resultadoAccion = _gaveterosController.ObtenerTodos();
+            Assert.That(resultadoAccion, Is.InstanceOf<OkObjectResult>());
+            OkObjectResult okObjectResult = (OkObjectResult)resultadoAccion;
             Assert.That(okObjectResult.Value, Is.InstanceOf<List<GaveteroDto>>().And.Empty);
         }
 
@@ -50,8 +50,8 @@ namespace IMT_Reservas.Tests.ControllerTests
         public void GetGaveteros_ServicioError_RetornaBadRequest()
         {
             _gaveteroServiceMock.Setup(s => s.ObtenerTodosGaveteros()).Throws(new System.Exception("Error servicio"));
-            ActionResult<List<GaveteroDto>> resultadoAccion = _gaveterosController.ObtenerTodos();
-            Assert.That(resultadoAccion.Result, Is.InstanceOf<BadRequestObjectResult>());
+            IActionResult resultadoAccion = _gaveterosController.ObtenerTodos();
+            Assert.That(resultadoAccion, Is.InstanceOf<BadRequestObjectResult>());
         }
 
         [Test]

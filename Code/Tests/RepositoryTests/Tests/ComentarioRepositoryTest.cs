@@ -1,6 +1,5 @@
 ﻿using Moq;
 using System.Data;
-using IMT_Reservas.Server.Infrastructure.Repositories.Implementations;
 using IMT_Reservas.Server.Infrastructure.MongoDb;
 using MongoDB.Driver;
 using MongoDB.Bson;

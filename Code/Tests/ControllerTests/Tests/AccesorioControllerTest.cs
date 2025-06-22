@@ -1,7 +1,7 @@
-using API.Controllers;
-using Moq;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Configuration;
+using Moq;
+using IMT_Reservas.Server.Application.Interfaces;
 using IMT_Reservas.Server.Shared.Common;
 
 namespace IMT_Reservas.Tests.ControllerTests
@@ -9,22 +9,14 @@ namespace IMT_Reservas.Tests.ControllerTests
     [TestFixture]
     public class AccesorioControllerTest : IAccesorioControllerTest
     {
-        private Mock<AccesorioService>    _accesorioServiceMock;
-        private Mock<AccesorioRepository> _accesorioRepoMock;
-        private Mock<ExecuteQuery>        _queryExecMock;
-        private Mock<IConfiguration>      _configMock;
-        private AccesorioController       _accesoriosController;
+        private Mock<IAccesorioService> _accesorioServiceMock;
+        private AccesorioController _accesoriosController;
 
         [SetUp]
         public void Setup()
         {
-            _configMock           = new Mock<IConfiguration>();
-            _configMock.Setup(config => config.GetSection("ConnectionStrings")["DefaultConnection"]).Returns("fake_connection_string");
-            _queryExecMock        = new Mock<ExecuteQuery>(_configMock.Object);
-            _accesorioRepoMock    = new Mock<AccesorioRepository>(_queryExecMock.Object);
-            _accesorioServiceMock = new Mock<AccesorioService>(_accesorioRepoMock.Object);
+            _accesorioServiceMock = new Mock<IAccesorioService>();
             _accesoriosController = new AccesorioController(_accesorioServiceMock.Object);
-
         }
 
         [Test]
@@ -36,9 +28,9 @@ namespace IMT_Reservas.Tests.ControllerTests
                 new AccesorioDto { Id = 3, Nombre = "string", Modelo = "string" }
             };
             _accesorioServiceMock.Setup(s => s.ObtenerTodosAccesorios()).Returns(accesoriosEsperados);
-            ActionResult<List<AccesorioDto>> resultadoAccion = _accesoriosController.ObtenerTodos();
-            Assert.That(resultadoAccion.Result, Is.InstanceOf<OkObjectResult>());
-            OkObjectResult okObjectResult = (OkObjectResult)resultadoAccion.Result;
+            IActionResult resultadoAccion = _accesoriosController.ObtenerTodos();
+            Assert.That(resultadoAccion, Is.InstanceOf<OkObjectResult>());
+            OkObjectResult okObjectResult = (OkObjectResult)resultadoAccion;
             Assert.That(okObjectResult.Value, Is.InstanceOf<List<AccesorioDto>>().And.Count.EqualTo(accesoriosEsperados.Count));
         }
 
@@ -47,9 +39,9 @@ namespace IMT_Reservas.Tests.ControllerTests
         {
             List<AccesorioDto> accesoriosEsperados = new List<AccesorioDto>();
             _accesorioServiceMock.Setup(s => s.ObtenerTodosAccesorios()).Returns(accesoriosEsperados);
-            ActionResult<List<AccesorioDto>> resultadoAccion = _accesoriosController.ObtenerTodos();
-            Assert.That(resultadoAccion.Result, Is.InstanceOf<OkObjectResult>());
-            OkObjectResult okObjectResult = (OkObjectResult)resultadoAccion.Result;
+            IActionResult resultadoAccion = _accesoriosController.ObtenerTodos();
+            Assert.That(resultadoAccion, Is.InstanceOf<OkObjectResult>());
+            OkObjectResult okObjectResult = (OkObjectResult)resultadoAccion;
             Assert.That(okObjectResult.Value, Is.InstanceOf<List<AccesorioDto>>().And.Empty);
         }
 
@@ -57,8 +49,8 @@ namespace IMT_Reservas.Tests.ControllerTests
         public void GetAccesorios_ServicioError_RetornaBadRequest()
         {
             _accesorioServiceMock.Setup(s => s.ObtenerTodosAccesorios()).Throws(new System.Exception("Error servicio"));
-            ActionResult<List<AccesorioDto>> resultadoAccion = _accesoriosController.ObtenerTodos();
-            Assert.That(resultadoAccion.Result, Is.InstanceOf<BadRequestObjectResult>());
+            IActionResult resultadoAccion = _accesoriosController.ObtenerTodos();
+            Assert.That(resultadoAccion, Is.InstanceOf<BadRequestObjectResult>());
         }
 
         [Test]

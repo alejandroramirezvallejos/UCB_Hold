@@ -1,7 +1,5 @@
 using IMT_Reservas.Server.Application.Interfaces;
-using IMT_Reservas.Server.Application.Services;
 using IMT_Reservas.Server.Infrastructure.MongoDb;
-using IMT_Reservas.Server.Infrastructure.Repositories.Implementations;
 using Microsoft.AspNetCore.Mvc;
 using System.Collections.Generic;
 using System.Diagnostics;
@@ -257,6 +255,20 @@ public static class CommandLineInterface
         builder.Services.AddScoped<IUsuarioRepository, UsuarioRepository>();
         builder.Services.AddScoped<IComentarioRepository, ComentarioRepository>();
         builder.Services.AddScoped<INotificacionRepository, NotificacionRepository>();
+
+        // MongoDB GridFS
+        builder.Services.AddSingleton<MongoDB.Driver.IMongoClient>(sp =>
+        {
+            // Intenta obtener la cadena de conexión de MongoDb, si no existe, usa una por defecto
+            var connectionString = builder.Configuration.GetConnectionString("MongoDb") ?? "mongodb://localhost:27018";
+            return new MongoDB.Driver.MongoClient(connectionString);
+        });
+        builder.Services.AddScoped<MongoDB.Driver.GridFS.IGridFSBucket>(sp =>
+        {
+            var mongoClient = sp.GetRequiredService<MongoDB.Driver.IMongoClient>();
+            var database = mongoClient.GetDatabase("UCB_Hold"); // Nombre correcto de tu base de datos
+            return new MongoDB.Driver.GridFS.GridFSBucket(database);
+        });
 
         var app = builder.Build();
               

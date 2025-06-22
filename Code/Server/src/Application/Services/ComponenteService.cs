@@ -3,263 +3,68 @@ using IMT_Reservas.Server.Shared.Common;
 public class ComponenteService : IComponenteService
 {
     private readonly IComponenteRepository _componenteRepository;
-    public ComponenteService(IComponenteRepository componenteRepository)
+    public ComponenteService(IComponenteRepository componenteRepository) => _componenteRepository = componenteRepository;
+
+    public void CrearComponente(CrearComponenteComando comando)
     {
-        _componenteRepository = componenteRepository;
-    }    public virtual void CrearComponente(CrearComponenteComando comando)
+        ValidarEntradaCreacion(comando);
+        _componenteRepository.Crear(comando);
+    }
+
+    public List<ComponenteDto>? ObtenerTodosComponentes()
     {
-        try
-        {
-            ValidarEntradaCreacion(comando);
-            _componenteRepository.Crear(comando);
-        }
-        catch (ErrorNombreRequerido)
-        {
-            throw;
-        }
-        catch (ErrorLongitudInvalida)
-        {
-            throw;
-        }
-        catch (ErrorIdInvalido)
-        {
-            throw;
-        }
-        catch (ErrorModeloRequerido)
-        {
-            throw;
-        }
-        catch (ErrorCodigoImtRequerido)
-        {
-            throw;
-        }
-        catch (ErrorValorNegativo)
-        {
-            throw;
-        }        catch (Exception ex)
-        {
-            // Manejo específico para insertar_componente según el procedimiento almacenado
-            if (ex is ErrorDataBase errorDb)
-            {
-                var mensaje = errorDb.Message?.ToLower() ?? "";
-                
-                // Error: Equipo no encontrado por código IMT
-                if (mensaje.Contains("no se encontró el equipo con código imt"))
-                {
-                    throw new ErrorReferenciaInvalida("equipo");
-                }
-                
-                // Error: Componente duplicado
-                if (errorDb.SqlState == "23505" || mensaje.Contains("ya existe un componente con esos datos"))
-                {
-                    throw new ErrorRegistroYaExiste();
-                }
-                
-                // Error genérico del procedimiento
-                if (mensaje.Contains("error al insertar componente"))
-                {
-                    throw new Exception($"Error inesperado al insertar componente: {errorDb.Message}", errorDb);
-                }
-                
-                // Otros errores de base de datos
-                throw new Exception($"Error inesperado de base de datos al crear componente: {errorDb.Message}", errorDb);
-            }
-            
-            if (ex is ErrorRepository errorRepo)
-            {
-                throw new Exception($"Error del repositorio al crear componente: {errorRepo.Message}", errorRepo);
-            }
-            
-            throw;
-        }
+        DataTable resultado = _componenteRepository.ObtenerTodos();
+        var lista = new List<ComponenteDto>(resultado.Rows.Count);
+        foreach (DataRow fila in resultado.Rows)
+            lista.Add(MapearFilaADto(fila));
+        return lista;
+    }
+
+    public void ActualizarComponente(ActualizarComponenteComando comando)
+    {
+        ValidarEntradaActualizacion(comando);
+        _componenteRepository.Actualizar(comando);
+    }
+
+    public void EliminarComponente(EliminarComponenteComando comando)
+    {
+        ValidarEntradaEliminacion(comando);
+        _componenteRepository.Eliminar(comando.Id);
     }
 
     private void ValidarEntradaCreacion(CrearComponenteComando comando)
     {
-        if (comando == null)
-            throw new ArgumentNullException(nameof(comando));
-
-        if (string.IsNullOrWhiteSpace(comando.Nombre))
-            throw new ErrorNombreRequerido();
-        if (comando.Nombre.Length > 255)
-            throw new ErrorLongitudInvalida("nombre", 255);
-        if(string.IsNullOrWhiteSpace(comando.Modelo))
-            throw new ErrorModeloRequerido();
-        if (comando.Modelo.Length > 255)
-            throw new ErrorLongitudInvalida("modelo", 255);
-
-        if (comando.CodigoIMT <= 0)
-            throw new ErrorCodigoImtRequerido();
-
-        if (comando.PrecioReferencia.HasValue && comando.PrecioReferencia.Value < 0)
-            throw new ErrorValorNegativo("precio de referencia");
+        if (comando == null) throw new ArgumentNullException();
+        if (string.IsNullOrWhiteSpace(comando.Nombre)) throw new ErrorNombreRequerido();
+        if (comando.Nombre.Length > 255) throw new ErrorLongitudInvalida("nombre", 255);
+        if (string.IsNullOrWhiteSpace(comando.Modelo)) throw new ErrorModeloRequerido();
+        if (comando.Modelo.Length > 255) throw new ErrorLongitudInvalida("modelo", 255);
+        if (comando.CodigoIMT <= 0) throw new ErrorCodigoImtRequerido();
+        if (comando.PrecioReferencia.HasValue && comando.PrecioReferencia.Value < 0) throw new ErrorValorNegativo("precio de referencia");
     }
-    public virtual List<ComponenteDto>? ObtenerTodosComponentes()
+    private void ValidarEntradaActualizacion(ActualizarComponenteComando comando)
     {
-        try
-        {
-            DataTable resultado = _componenteRepository.ObtenerTodos();
-            var lista = new List<ComponenteDto>(resultado.Rows.Count);
-            foreach (DataRow fila in resultado.Rows)
-            {
-                lista.Add(MapearFilaADto(fila));
-            }
-            return lista;
-        }
-        catch
-        {
-            throw;
-        }
-    }    
-    public virtual void ActualizarComponente(ActualizarComponenteComando comando)
-    {
-        try
-        {
-            ValidarEntradaActualizacion(comando);
-            _componenteRepository.Actualizar(comando);
-        }
-        catch (ErrorIdInvalido)
-        {
-            throw;
-        }
-        catch (ErrorNombreRequerido)
-        {
-            throw;
-        }
-        catch (ErrorLongitudInvalida)
-        {
-            throw;
-        }catch (ErrorModeloRequerido)
-        {
-            throw;
-        }
-        catch (ErrorCodigoImtRequerido)
-        {
-            throw;
-        }
-        catch (ErrorValorNegativo)
-        {
-            throw;
-        }        catch (Exception ex)
-        {
-            // Manejo específico para actualizar_componente según el procedimiento almacenado
-            if (ex is ErrorDataBase errorDb)
-            {
-                var mensaje = errorDb.Message?.ToLower() ?? "";
-                
-                // Error: Componente no encontrado
-                if (mensaje.Contains("no se encontró un componente activo con id"))
-                {
-                    throw new ErrorRegistroNoEncontrado();
-                }
-                  // Error: Equipo no encontrado por código IMT
-                if (mensaje.Contains("no se encontró un equipo activo con código imt"))
-                {
-                    throw new ErrorReferenciaInvalida("equipo");
-                }
-                
-                // Error: Violación de unicidad
-                if (errorDb.SqlState == "23505" || mensaje.Contains("error de violación de unicidad"))
-                {
-                    throw new ErrorRegistroYaExiste();
-                }
-                
-                // Error genérico del procedimiento
-                if (mensaje.Contains("error inesperado al actualizar el componente"))
-                {
-                    throw new Exception($"Error inesperado al actualizar componente: {errorDb.Message}", errorDb);
-                }
-                
-                // Otros errores de base de datos
-                throw new Exception($"Error inesperado de base de datos al actualizar componente: {errorDb.Message}", errorDb);
-            }
-            
-            if (ex is ErrorRepository errorRepo)
-            {
-                throw new Exception($"Error del repositorio al actualizar componente: {errorRepo.Message}", errorRepo);
-            }
-            
-            throw;
-        }
+        if (comando == null) throw new ArgumentNullException();
+        if (comando.Id <= 0) throw new ErrorIdInvalido();
+        if (!string.IsNullOrWhiteSpace(comando.Nombre) && comando.Nombre.Length > 255) throw new ErrorLongitudInvalida("nombre", 255);
+        if (!string.IsNullOrWhiteSpace(comando.Modelo) && comando.Modelo.Length > 255) throw new ErrorLongitudInvalida("modelo", 255);
+        if (comando.PrecioReferencia.HasValue && comando.PrecioReferencia.Value < 0) throw new ErrorValorNegativo("precio de referencia");
     }
-
-    public virtual void EliminarComponente(EliminarComponenteComando comando)
+    private void ValidarEntradaEliminacion(EliminarComponenteComando comando)
     {
-        try
-        {
-            ValidarEntradaEliminacion(comando);
-            _componenteRepository.Eliminar(comando.Id);
-        }
-        catch (ErrorIdInvalido)
-        {
-            throw;
-        }        catch (Exception ex)
-        {
-            // Manejo específico para eliminar_componente según el procedimiento almacenado
-            if (ex is ErrorDataBase errorDb)
-            {
-                var mensaje = errorDb.Message?.ToLower() ?? "";
-                
-                // Error: Componente no encontrado
-                if (mensaje.Contains("no se encontró un componente activo con id"))
-                {
-                    throw new ErrorRegistroNoEncontrado();
-                }
-                
-                // Error genérico del procedimiento
-                if (mensaje.Contains("error al eliminar lógicamente el componente"))
-                {
-                    throw new Exception($"Error inesperado al eliminar componente: {errorDb.Message}", errorDb);
-                }
-                
-                // Otros errores de base de datos
-                throw new Exception($"Error inesperado de base de datos al eliminar componente: {errorDb.Message}", errorDb);
-            }
-            
-            if (ex is ErrorRepository errorRepo)
-            {
-                throw new Exception($"Error del repositorio al eliminar componente: {errorRepo.Message}", errorRepo);
-            }
-            
-            throw;
-        }
-    }    private void ValidarEntradaActualizacion(ActualizarComponenteComando comando)
-    {
-        if (comando == null)
-            throw new ArgumentNullException(nameof(comando));
-
-        if (comando.Id <= 0)
-            throw new ErrorIdInvalido();
-
-        if (!string.IsNullOrWhiteSpace(comando.Nombre) && comando.Nombre.Length > 255)
-            throw new ErrorLongitudInvalida("nombre", 255);
-
-        if (!string.IsNullOrWhiteSpace(comando.Modelo) && comando.Modelo.Length > 255)
-            throw new ErrorLongitudInvalida("modelo", 255);
-
-        if (comando.PrecioReferencia.HasValue && comando.PrecioReferencia.Value < 0)
-            throw new ErrorValorNegativo("precio de referencia");
-    }    private void ValidarEntradaEliminacion(EliminarComponenteComando comando)
-    {
-        if (comando == null)
-            throw new ArgumentNullException(nameof(comando));
-
-        if (comando.Id <= 0)
-            throw new ErrorIdInvalido();
+        if (comando == null) throw new ArgumentNullException();
+        if (comando.Id <= 0) throw new ErrorIdInvalido();
     }
-    private static ComponenteDto MapearFilaADto(DataRow fila)
+    private static ComponenteDto MapearFilaADto(DataRow fila) => new ComponenteDto
     {
-        return new ComponenteDto
-        {
-            Id = Convert.ToInt32(fila["id_componente"]),
-            Nombre = fila["nombre_componente"] == DBNull.Value ? null : fila["nombre_componente"].ToString(),
-            Modelo = fila["modelo_componente"] == DBNull.Value ? null : fila["modelo_componente"].ToString(),
-            Tipo = fila["tipo_componente"] == DBNull.Value ? null : fila["tipo_componente"].ToString(),
-            Descripcion = fila["descripcion_componente"] == DBNull.Value ? null : fila["descripcion_componente"].ToString(),
-            PrecioReferencia = fila["precio_referencia_componente"] == DBNull.Value ? null : Convert.ToDouble(fila["precio_referencia_componente"]),
-            NombreEquipo = fila["nombre_equipo"] == DBNull.Value ? null : fila["nombre_equipo"].ToString(),
-            CodigoImtEquipo = fila["codigo_imt_equipo"] == DBNull.Value ? null : Convert.ToInt32(fila["codigo_imt_equipo"]),
-            UrlDataSheet = fila["url_data_sheet_equipo"] == DBNull.Value ? null : fila["url_data_sheet_equipo"].ToString(),
-        };
-    }
+        Id = Convert.ToInt32(fila["id_componente"]),
+        Nombre = fila["nombre_componente"] == DBNull.Value ? null : fila["nombre_componente"].ToString(),
+        Modelo = fila["modelo_componente"] == DBNull.Value ? null : fila["modelo_componente"].ToString(),
+        Tipo = fila["tipo_componente"] == DBNull.Value ? null : fila["tipo_componente"].ToString(),
+        Descripcion = fila["descripcion_componente"] == DBNull.Value ? null : fila["descripcion_componente"].ToString(),
+        PrecioReferencia = fila["precio_referencia_componente"] == DBNull.Value ? null : Convert.ToDouble(fila["precio_referencia_componente"]),
+        NombreEquipo = fila["nombre_equipo"] == DBNull.Value ? null : fila["nombre_equipo"].ToString(),
+        CodigoImtEquipo = fila["codigo_imt_equipo"] == DBNull.Value ? null : Convert.ToInt32(fila["codigo_imt_equipo"]),
+        UrlDataSheet = fila["url_data_sheet_equipo"] == DBNull.Value ? null : fila["url_data_sheet_equipo"].ToString(),
+    };
 }

@@ -29,7 +29,7 @@ namespace IMT_Reservas.Tests.ControllerTests
                 new UsuarioDto { Carnet = "2", Nombre = "Juan" }
             };
             _usuarioServiceMock.Setup(s => s.ObtenerTodosUsuarios()).Returns(usuariosEsperados);
-            IActionResult resultadoAccion = _usuariosController.ObtenerUsuarios();
+            IActionResult resultadoAccion = _usuariosController.ObtenerTodos();
             Assert.That(resultadoAccion, Is.InstanceOf<OkObjectResult>());
             OkObjectResult okObjectResult = (OkObjectResult)resultadoAccion;
             Assert.That(okObjectResult.Value, Is.InstanceOf<List<UsuarioDto>>().And.Count.EqualTo(usuariosEsperados.Count));
@@ -40,7 +40,7 @@ namespace IMT_Reservas.Tests.ControllerTests
         {
             CrearUsuarioComando comando = new CrearUsuarioComando("3", "Juan", "Moreno", "Silva", null, "estudiante2@ucb.edu.bo", "password3", "Sistemas", "72742435", "61300599", "Lucia Herrera", "referencia7529@gmail.com");
             _usuarioServiceMock.Setup(s => s.CrearUsuario(comando));
-            IActionResult resultadoAccion = _usuariosController.CrearUsuario(comando);
+            IActionResult resultadoAccion = _usuariosController.Crear(comando);
             Assert.That(resultadoAccion, Is.InstanceOf<OkObjectResult>());
         }
 
@@ -49,7 +49,7 @@ namespace IMT_Reservas.Tests.ControllerTests
         {
             ActualizarUsuarioComando comando = new ActualizarUsuarioComando("1", "Andrea Maria", null, null, null, null, null, null, null, null, null, null);
             _usuarioServiceMock.Setup(s => s.ActualizarUsuario(comando));
-            IActionResult resultadoAccion = _usuariosController.ActualizarUsuario(comando);
+            IActionResult resultadoAccion = _usuariosController.Actualizar(comando);
             Assert.That(resultadoAccion, Is.InstanceOf<OkObjectResult>());
         }
 
@@ -58,7 +58,7 @@ namespace IMT_Reservas.Tests.ControllerTests
         {
             string carnetValido = "1";
             _usuarioServiceMock.Setup(s => s.EliminarUsuario(It.Is<EliminarUsuarioComando>(c => c.Carnet == carnetValido)));
-            IActionResult resultadoAccion = _usuariosController.EliminarUsuario(carnetValido);
+            IActionResult resultadoAccion = _usuariosController.Eliminar(carnetValido);
             Assert.That(resultadoAccion, Is.InstanceOf<OkObjectResult>());
         }
 

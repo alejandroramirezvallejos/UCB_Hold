@@ -35,9 +35,9 @@ namespace IMT_Reservas.Tests.ControllerTests
                 new EquipoDto { Id = 4, NombreGrupoEquipo = "Fuente de alimentación DC" }
             };
             _equipoServiceMock.Setup(s => s.ObtenerTodosEquipos()).Returns(equiposEsperados);
-            ActionResult<List<EquipoDto>> resultadoAccion = _equiposController.ObtenerTodos();
-            Assert.That(resultadoAccion.Result, Is.InstanceOf<OkObjectResult>());
-            OkObjectResult okObjectResult = (OkObjectResult)resultadoAccion.Result;
+            IActionResult resultadoAccion = _equiposController.ObtenerTodos();
+            Assert.That(resultadoAccion, Is.InstanceOf<OkObjectResult>());
+            OkObjectResult okObjectResult = (OkObjectResult)resultadoAccion;
             Assert.That(okObjectResult.Value, Is.InstanceOf<List<EquipoDto>>().And.Count.EqualTo(equiposEsperados.Count));
         }
 
@@ -46,9 +46,9 @@ namespace IMT_Reservas.Tests.ControllerTests
         {
             List<EquipoDto> equiposEsperados = new List<EquipoDto>();
             _equipoServiceMock.Setup(s => s.ObtenerTodosEquipos()).Returns(equiposEsperados);
-            ActionResult<List<EquipoDto>> resultadoAccion = _equiposController.ObtenerTodos();
-            Assert.That(resultadoAccion.Result, Is.InstanceOf<OkObjectResult>());
-            OkObjectResult okObjectResult = (OkObjectResult)resultadoAccion.Result;
+            IActionResult resultadoAccion = _equiposController.ObtenerTodos();
+            Assert.That(resultadoAccion, Is.InstanceOf<OkObjectResult>());
+            OkObjectResult okObjectResult = (OkObjectResult)resultadoAccion;
             Assert.That(okObjectResult.Value, Is.InstanceOf<List<EquipoDto>>().And.Empty);
         }
 
@@ -56,8 +56,8 @@ namespace IMT_Reservas.Tests.ControllerTests
         public void GetEquipos_ServicioError_RetornaBadRequest()
         {
             _equipoServiceMock.Setup(s => s.ObtenerTodosEquipos()).Throws(new System.Exception("Error servicio"));
-            ActionResult<List<EquipoDto>> resultadoAccion = _equiposController.ObtenerTodos();
-            Assert.That(resultadoAccion.Result, Is.InstanceOf<BadRequestObjectResult>());
+            IActionResult resultadoAccion = _equiposController.ObtenerTodos();
+            Assert.That(resultadoAccion, Is.InstanceOf<BadRequestObjectResult>());
         }
 
         [Test]
