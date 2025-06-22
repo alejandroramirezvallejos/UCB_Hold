@@ -1,5 +1,3 @@
-//TODO: Implementar
-public record ObtenerGaveteroConsulta
-(
+public record ObtenerGaveteroConsulta(
     int Id
 );

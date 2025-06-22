@@ -1,4 +1,4 @@
 public record ActualizarEstadoPrestamoComando(
-    int?    Id,
+    int? Id,
     string? EstadoPrestamo
 );

@@ -1,4 +1,3 @@
-public record ObtenerEquipoPorIdConsulta
-(
+public record ObtenerEquipoPorIdConsulta(
     int Id
 );

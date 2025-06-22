@@ -1,7 +1,5 @@
-//TODO: Implementar
-public record ActualizarMuebleComando
-(
-    int     Id,
+public record ActualizarMuebleComando(
+    int Id,
     string? Nombre,
     string? Tipo,
     double? Costo,

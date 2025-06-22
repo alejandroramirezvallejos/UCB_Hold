@@ -67,11 +67,11 @@ namespace IMT_Reservas.Tests.RepositoryTests
         [Test]
         public void Repositorio_CuandoHayExcepcion_LanzaExcepcion()
         {
-            _ejecutarConsultaMock.Setup(e => e.EjecutarSpNR(It.IsAny<string>(), It.IsAny<Dictionary<string, object?>>()))
+            _ejecutarConsultaMock.Setup(e => e.EjecutarSpNR(It.IsAny<string>(), It.IsAny<Dictionary<string, object?>>() ))
                            .Throws(new Exception("test exception"));
 
-            Assert.Throws<ErrorRepository>(() => _gaveteroRepositorio.Crear(new CrearGaveteroComando("Test", null, null, null, null, null)));
-            Assert.Throws<ErrorRepository>(() => _gaveteroRepositorio.Actualizar(new ActualizarGaveteroComando(1, "Test", null, null, null, null, null)));
+            Assert.Throws<ErrorRepository>(() => _gaveteroRepositorio.Crear(new CrearGaveteroComando("a", "b", "c", 1, 1, 1)));
+            Assert.Throws<ErrorRepository>(() => _gaveteroRepositorio.Actualizar(new ActualizarGaveteroComando(1, "a", "b", "c", 1, 1, 1)));
             Assert.Throws<ErrorRepository>(() => _gaveteroRepositorio.Eliminar(1));
         }
     }

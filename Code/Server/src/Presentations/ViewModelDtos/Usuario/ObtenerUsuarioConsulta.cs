@@ -1,4 +1,3 @@
-public record ObtenerUsuarioConsulta
-(
+public record ObtenerUsuarioConsulta(
     string Carnet
 );

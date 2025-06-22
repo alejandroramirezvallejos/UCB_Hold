@@ -2,156 +2,55 @@ using IMT_Reservas.Server.Application.Interfaces;
 using Microsoft.AspNetCore.Mvc;
 using IMT_Reservas.Server.Shared.Common;
 
-namespace API.Controllers;
-
 [ApiController]
 [Route("api/[controller]")]
 public class AccesorioController : ControllerBase
 {
     private readonly IAccesorioService servicio;
+    public AccesorioController(IAccesorioService servicio) => this.servicio = servicio;
 
-    public AccesorioController(IAccesorioService servicio)
-    {
-        this.servicio = servicio;
-    }    [HttpPost]
+    [HttpPost]
     public IActionResult Crear([FromBody] CrearAccesorioComando input)
     {
-        try
-        {
-            servicio.CrearAccesorio(input);
-            return Created("", new { message = "Accesorio creado exitosamente" });
-        }
-        catch (ErrorIdInvalido ex)
-        {
-            return BadRequest(new { error = "ID inválido", mensaje = ex.Message });
-        }
-        catch (ErrorNombreRequerido ex)
-        {
-            return BadRequest(new { error = "Campo requerido", mensaje = ex.Message });
-        }
-        catch (ErrorModeloRequerido ex)
-        {
-            return BadRequest(new { error = "Campo requerido", mensaje = ex.Message });
-        }
-        catch (ErrorLongitudInvalida ex)
-        {
-            return BadRequest(new { error = "Longitud inválida", mensaje = ex.Message });
-        }
-        catch (ErrorCodigoImtRequerido ex)
-        {
-            return BadRequest(new { error = "Campo requerido", mensaje = ex.Message });
-        }
-        catch (ErrorValorNegativo ex)
-        {
-            return BadRequest(new { error = "Valor inválido", mensaje = ex.Message });
-        }
-        catch (ErrorRegistroYaExiste ex)
-        {
-            return Conflict(new { error = "Registro duplicado", mensaje = ex.Message });
-        }
-        catch (ErrorReferenciaInvalida ex)
-        {
-            return BadRequest(new { error = "Referencia inválida", mensaje = ex.Message });
-        }
-        catch (ArgumentNullException ex)
-        {
-            return BadRequest(new { error = "Argumento requerido", mensaje = ex.Message });
-        }        catch (Exception)
-        {
-            return StatusCode(500, new { error = "Error interno del servidor", mensaje = "Ocurrió un error inesperado al crear el accesorio" });
+        try { servicio.CrearAccesorio(input); return Created("", new { message = "Accesorio creado exitosamente" }); }
+        catch (ErrorRegistroYaExiste ex) { return Conflict(new { error = ex.GetType().Name, mensaje = ex.Message }); }
+        catch (Exception ex) {
+            if (ex.Message.Contains("Error General Servidor") || ex.InnerException?.Message.Contains("Error General Servidor") == true)
+                return StatusCode(500, new { error = ex.GetType().Name, mensaje = ex.Message });
+            return BadRequest(new { error = ex.GetType().Name, mensaje = ex.Message });
         }
     }
 
     [HttpGet]
-    public ActionResult<List<AccesorioDto>> ObtenerTodos()
+    public IActionResult ObtenerTodos()
     {
-        try
-        {
-            var resultado = servicio.ObtenerTodosAccesorios();
-            return Ok(resultado);
-        }        catch (Exception ex)
-        {
-            return BadRequest(new { error = "Error interno del servidor", mensaje = $"Error al obtener accesorios: {ex.Message}" });
-        }
-    }    [HttpPut]
+        try { return Ok(servicio.ObtenerTodosAccesorios()); }
+        catch (Exception ex) { return BadRequest(new { error = ex.GetType().Name, mensaje = ex.Message }); }
+    }
+
+    [HttpPut]
     public IActionResult Actualizar([FromBody] ActualizarAccesorioComando input)
     {
-        try
-        {
-            servicio.ActualizarAccesorio(input);
-            return Ok(new { mensaje = "Accesorio actualizado exitosamente" });
-        }
-        catch (ErrorIdInvalido ex)
-        {
-            return BadRequest(new { error = "ID inválido", mensaje = ex.Message });
-        }
-        catch (ErrorNombreRequerido ex)
-        {
-            return BadRequest(new { error = "Campo requerido", mensaje = ex.Message });
-        }
-        catch (ErrorModeloRequerido ex)
-        {
-            return BadRequest(new { error = "Campo requerido", mensaje = ex.Message });
-        }
-        catch (ErrorLongitudInvalida ex)
-        {
-            return BadRequest(new { error = "Longitud inválida", mensaje = ex.Message });
-        }
-        catch (ErrorCodigoImtRequerido ex)
-        {
-            return BadRequest(new { error = "Campo requerido", mensaje = ex.Message });
-        }
-        catch (ErrorValorNegativo ex)
-        {
-            return BadRequest(new { error = "Valor inválido", mensaje = ex.Message });
-        }
-        catch (ErrorRegistroNoEncontrado ex)
-        {
-            return NotFound(new { error = "Accesorio no encontrado", mensaje = ex.Message });
-        }
-        catch (ErrorRegistroYaExiste ex)
-        {
-            return Conflict(new { error = "Registro duplicado", mensaje = ex.Message });
-        }        catch (ErrorReferenciaInvalida ex)
-        {
-            return BadRequest(new { error = "Referencia inválida", mensaje = ex.Message });
-        }
-        catch (ArgumentNullException ex)
-        {
-            return BadRequest(new { error = "Argumento requerido", mensaje = ex.Message });
-        }
-        catch (Exception)
-        {
-            return StatusCode(500, new { error = "Error interno del servidor", mensaje = "Ocurrió un error inesperado al actualizar el accesorio" });
+        try { servicio.ActualizarAccesorio(input); return Ok(new { mensaje = "Accesorio actualizado exitosamente" }); }
+        catch (ErrorRegistroNoEncontrado ex) { return NotFound(new { error = ex.GetType().Name, mensaje = ex.Message }); }
+        catch (ErrorRegistroYaExiste ex) { return Conflict(new { error = ex.GetType().Name, mensaje = ex.Message }); }
+        catch (Exception ex) {
+            if (ex.Message.Contains("Error General Servidor") || ex.InnerException?.Message.Contains("Error General Servidor") == true)
+                return StatusCode(500, new { error = ex.GetType().Name, mensaje = ex.Message });
+            return BadRequest(new { error = ex.GetType().Name, mensaje = ex.Message });
         }
     }
+
     [HttpDelete("{id}")]
     public IActionResult Eliminar(int id)
     {
-        try
-        {
-            var comando = new EliminarAccesorioComando(id);
-            servicio.EliminarAccesorio(comando);
-            return NoContent();
-        }
-        catch (ErrorIdInvalido ex)
-        {
-            return BadRequest(new { error = "ID inválido", mensaje = ex.Message });
-        }        catch (ErrorRegistroNoEncontrado ex)
-        {
-            return NotFound(new { error = "Accesorio no encontrado", mensaje = ex.Message });
-        }
-        catch (ErrorRegistroEnUso ex)
-        {
-            return Conflict(new { error = "Registro en uso", mensaje = ex.Message });
-        }
-        catch (ArgumentNullException ex)
-        {
-            return BadRequest(new { error = "Argumento requerido", mensaje = ex.Message });
-        }
-        catch (Exception)
-        {
-            return StatusCode(500, new { error = "Error interno del servidor", mensaje = "Ocurrió un error inesperado al eliminar el accesorio" });
+        try { servicio.EliminarAccesorio(new EliminarAccesorioComando(id)); return NoContent(); }
+        catch (ErrorRegistroNoEncontrado ex) { return NotFound(new { error = ex.GetType().Name, mensaje = ex.Message }); }
+        catch (ErrorRegistroEnUso ex) { return Conflict(new { error = ex.GetType().Name, mensaje = ex.Message }); }
+        catch (Exception ex) {
+            if (ex.Message.Contains("Error General Servidor") || ex.InnerException?.Message.Contains("Error General Servidor") == true)
+                return StatusCode(500, new { error = ex.GetType().Name, mensaje = ex.Message });
+            return BadRequest(new { error = ex.GetType().Name, mensaje = ex.Message });
         }
     }
 }

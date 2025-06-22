@@ -9,7 +9,7 @@ namespace IMT_Reservas.Tests.ControllerTests
     [TestFixture]
     public class MantenimientoControllerTest : IMantenimientoControllerTest
     {
-        private Mock<MantenimientoService>    _mantenimientoServiceMock;
+        private Mock<IMantenimientoService>    _mantenimientoServiceMock;
         private Mock<MantenimientoRepository> _mantenimientoRepoMock;
         private Mock<ExecuteQuery>            _queryExecMock;
         private Mock<IConfiguration>          _configMock;
@@ -22,7 +22,7 @@ namespace IMT_Reservas.Tests.ControllerTests
             _configMock.Setup(config => config.GetSection("ConnectionStrings")["DefaultConnection"]).Returns("fake_connection_string");
             _queryExecMock            = new Mock<ExecuteQuery>(_configMock.Object);
             _mantenimientoRepoMock    = new Mock<MantenimientoRepository>(_queryExecMock.Object);
-            _mantenimientoServiceMock = new Mock<MantenimientoService>(_mantenimientoRepoMock.Object);
+            _mantenimientoServiceMock = new Mock<IMantenimientoService>();
             _mantenimientosController = new MantenimientoController(_mantenimientoServiceMock.Object);
         }
 
@@ -35,9 +35,9 @@ namespace IMT_Reservas.Tests.ControllerTests
                 new MantenimientoDto { Id = 2, NombreEmpresaMantenimiento = "Empresa Ficticia 1" }
             };
             _mantenimientoServiceMock.Setup(s => s.ObtenerTodosMantenimientos()).Returns(mantenimientosEsperados);
-            ActionResult<List<MantenimientoDto>> resultadoAccion = _mantenimientosController.ObtenerTodos();
-            Assert.That(resultadoAccion.Result, Is.InstanceOf<OkObjectResult>());
-            OkObjectResult okObjectResult = (OkObjectResult)resultadoAccion.Result;
+            IActionResult resultadoAccion = _mantenimientosController.ObtenerTodos();
+            Assert.That(resultadoAccion, Is.InstanceOf<OkObjectResult>());
+            OkObjectResult okObjectResult = (OkObjectResult)resultadoAccion;
             Assert.That(okObjectResult.Value, Is.InstanceOf<List<MantenimientoDto>>().And.Count.EqualTo(mantenimientosEsperados.Count));
         }
 
@@ -46,9 +46,9 @@ namespace IMT_Reservas.Tests.ControllerTests
         {
             List<MantenimientoDto> mantenimientosEsperados = new List<MantenimientoDto>();
             _mantenimientoServiceMock.Setup(s => s.ObtenerTodosMantenimientos()).Returns(mantenimientosEsperados);
-            ActionResult<List<MantenimientoDto>> resultadoAccion = _mantenimientosController.ObtenerTodos();
-            Assert.That(resultadoAccion.Result, Is.InstanceOf<OkObjectResult>());
-            OkObjectResult okObjectResult = (OkObjectResult)resultadoAccion.Result;
+            IActionResult resultadoAccion = _mantenimientosController.ObtenerTodos();
+            Assert.That(resultadoAccion, Is.InstanceOf<OkObjectResult>());
+            OkObjectResult okObjectResult = (OkObjectResult)resultadoAccion;
             Assert.That(okObjectResult.Value, Is.InstanceOf<List<MantenimientoDto>>().And.Empty);
         }
 
@@ -56,8 +56,8 @@ namespace IMT_Reservas.Tests.ControllerTests
         public void GetMantenimientos_ServicioError_RetornaBadRequest()
         {
             _mantenimientoServiceMock.Setup(s => s.ObtenerTodosMantenimientos()).Throws(new System.Exception("Error servicio"));
-            ActionResult<List<MantenimientoDto>> resultadoAccion = _mantenimientosController.ObtenerTodos();
-            Assert.That(resultadoAccion.Result, Is.InstanceOf<BadRequestObjectResult>());
+            IActionResult resultadoAccion = _mantenimientosController.ObtenerTodos();
+            Assert.That(resultadoAccion, Is.InstanceOf<BadRequestObjectResult>());
         }
 
         [Test]

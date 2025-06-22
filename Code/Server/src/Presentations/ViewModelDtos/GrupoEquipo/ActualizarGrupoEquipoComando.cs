@@ -1,6 +1,5 @@
-public record ActualizarGrupoEquipoComando
-(
-    int     Id,
+public record ActualizarGrupoEquipoComando(
+    int Id,
     string? Nombre,
     string? Modelo,
     string? Marca,

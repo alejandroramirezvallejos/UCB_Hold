@@ -1,5 +1,4 @@
-//TODO: Implementar
 public record ActualizarCarreraComando(
-    int    Id      ,
+    int Id,
     string? Nombre
-) ;
+);

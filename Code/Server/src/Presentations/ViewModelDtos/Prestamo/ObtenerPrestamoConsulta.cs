@@ -1,4 +1,3 @@
-public record ObtenerPrestamoConsulta
-(
+public record ObtenerPrestamoConsulta(
     int Id
 );

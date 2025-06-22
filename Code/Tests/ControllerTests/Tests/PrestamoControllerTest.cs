@@ -30,7 +30,7 @@ namespace IMT_Reservas.Tests.ControllerTests
                 new PrestamoDto { Id = 6, CarnetUsuario = "12890061" }
             };
             _prestamoServiceMock.Setup(s => s.ObtenerTodosPrestamos()).Returns(prestamosEsperados);
-            IActionResult resultadoAccion = _prestamosController.ObtenerPrestamos();
+            IActionResult resultadoAccion = _prestamosController.ObtenerTodos();
             Assert.That(resultadoAccion, Is.InstanceOf<OkObjectResult>());
             OkObjectResult okObjectResult = (OkObjectResult)resultadoAccion;
             Assert.That(okObjectResult.Value, Is.InstanceOf<List<PrestamoDto>>().And.Count.EqualTo(prestamosEsperados.Count));
@@ -41,7 +41,7 @@ namespace IMT_Reservas.Tests.ControllerTests
         {
             List<PrestamoDto> prestamosEsperados = new List<PrestamoDto>();
             _prestamoServiceMock.Setup(s => s.ObtenerTodosPrestamos()).Returns(prestamosEsperados);
-            IActionResult resultadoAccion = _prestamosController.ObtenerPrestamos();
+            IActionResult resultadoAccion = _prestamosController.ObtenerTodos();
             Assert.That(resultadoAccion, Is.InstanceOf<OkObjectResult>());
             OkObjectResult okObjectResult = (OkObjectResult)resultadoAccion;
             Assert.That(okObjectResult.Value, Is.InstanceOf<List<PrestamoDto>>().And.Empty);
@@ -51,7 +51,7 @@ namespace IMT_Reservas.Tests.ControllerTests
         public void GetPrestamos_ServicioError_RetornaError500()
         {
             _prestamoServiceMock.Setup(s => s.ObtenerTodosPrestamos()).Throws(new System.Exception("Error servicio"));
-            IActionResult resultadoAccion = _prestamosController.ObtenerPrestamos();
+            IActionResult resultadoAccion = _prestamosController.ObtenerTodos();
             Assert.That(resultadoAccion, Is.InstanceOf<ObjectResult>());
             ObjectResult objectResult = (ObjectResult)resultadoAccion;
             Assert.That(objectResult.StatusCode, Is.EqualTo(500));
@@ -63,9 +63,7 @@ namespace IMT_Reservas.Tests.ControllerTests
             var mockFile = new Mock<IFormFile>();
             var comando = new CrearPrestamoComando(new int[] { 1 }, DateTime.Now.AddDays(1), DateTime.Now.AddDays(2), "Obs", "12890061", mockFile.Object);
             _prestamoServiceMock.Setup(s => s.CrearPrestamo(comando));
-            
-            var resultadoAccion = _prestamosController.CrearPrestamo(comando);
-            
+            var resultadoAccion = _prestamosController.Crear(comando);
             Assert.That(resultadoAccion, Is.InstanceOf<OkObjectResult>());
         }
 
@@ -81,7 +79,7 @@ namespace IMT_Reservas.Tests.ControllerTests
         public void CrearPrestamo_Invalido_RetornaBadRequest(CrearPrestamoComando comando, System.Exception excepcionLanzada)
         {
             _prestamoServiceMock.Setup(s => s.CrearPrestamo(comando)).Throws(excepcionLanzada);
-            var resultadoAccion = _prestamosController.CrearPrestamo(comando);
+            var resultadoAccion = _prestamosController.Crear(comando);
             Assert.That(resultadoAccion, Is.InstanceOf<BadRequestObjectResult>());
         }
 
@@ -91,7 +89,7 @@ namespace IMT_Reservas.Tests.ControllerTests
             var mockFile = new Mock<IFormFile>();
             var comando = new CrearPrestamoComando(new int[] { 1 }, DateTime.Now.AddDays(1), DateTime.Now.AddDays(2), "Obs", "00000", mockFile.Object);
             _prestamoServiceMock.Setup(s => s.CrearPrestamo(It.IsAny<CrearPrestamoComando>())).Throws(new ErrorCarnetUsuarioNoEncontrado());
-            var resultadoAccion = _prestamosController.CrearPrestamo(comando);
+            var resultadoAccion = _prestamosController.Crear(comando);
             Assert.That(resultadoAccion, Is.InstanceOf<NotFoundObjectResult>());
         }
 
@@ -101,7 +99,7 @@ namespace IMT_Reservas.Tests.ControllerTests
             var mockFile = new Mock<IFormFile>();
             var comando = new CrearPrestamoComando(new int[] { 1 }, DateTime.Now.AddDays(1), DateTime.Now.AddDays(2), "Obs", "12890061", mockFile.Object);
             _prestamoServiceMock.Setup(s => s.CrearPrestamo(It.IsAny<CrearPrestamoComando>())).Throws(new ErrorNoEquiposDisponibles());
-            var resultadoAccion = _prestamosController.CrearPrestamo(comando);
+            var resultadoAccion = _prestamosController.Crear(comando);
             Assert.That(resultadoAccion, Is.InstanceOf<ConflictObjectResult>());
         }
 
@@ -110,7 +108,7 @@ namespace IMT_Reservas.Tests.ControllerTests
         {
             int idValido = 19;
             _prestamoServiceMock.Setup(s => s.EliminarPrestamo(It.Is<EliminarPrestamoComando>(c => c.Id == idValido)));
-            IActionResult resultadoAccion = _prestamosController.EliminarPrestamo(idValido);
+            IActionResult resultadoAccion = _prestamosController.Eliminar(idValido);
             Assert.That(resultadoAccion, Is.InstanceOf<OkObjectResult>());
         }
 
@@ -119,7 +117,7 @@ namespace IMT_Reservas.Tests.ControllerTests
         {
             int idNoExistente = 99;
             _prestamoServiceMock.Setup(s => s.EliminarPrestamo(It.Is<EliminarPrestamoComando>(c => c.Id == idNoExistente))).Throws(new ErrorRegistroNoEncontrado());
-            IActionResult resultadoAccion = _prestamosController.EliminarPrestamo(idNoExistente);
+            IActionResult resultadoAccion = _prestamosController.Eliminar(idNoExistente);
             Assert.That(resultadoAccion, Is.InstanceOf<NotFoundObjectResult>());
         }
 
@@ -128,52 +126,37 @@ namespace IMT_Reservas.Tests.ControllerTests
         {
             int idEnUso = 5;
             _prestamoServiceMock.Setup(s => s.EliminarPrestamo(It.Is<EliminarPrestamoComando>(c => c.Id == idEnUso))).Throws(new ErrorRegistroEnUso());
-            IActionResult resultadoAccion = _prestamosController.EliminarPrestamo(idEnUso);
+            IActionResult resultadoAccion = _prestamosController.Eliminar(idEnUso);
             Assert.That(resultadoAccion, Is.InstanceOf<ConflictObjectResult>());
         }
 
         [Test]
         public void AceptarPrestamo_Valido_RetornaOk()
         {
-            // Arrange
             var mockFile = new Mock<IFormFile>();
             var comando = new AceptarPrestamoComando { PrestamoId = 1, Contrato = mockFile.Object };
             _prestamoServiceMock.Setup(s => s.AceptarPrestamo(comando));
-
-            // Act
-            var resultadoAccion = _prestamosController.AceptarPrestamo(comando);
-
-            // Assert
+            var resultadoAccion = _prestamosController.Aceptar(comando);
             Assert.That(resultadoAccion, Is.InstanceOf<OkObjectResult>());
         }
 
         [Test]
         public void AceptarPrestamo_ArgumentoInvalido_RetornaBadRequest()
         {
-            // Arrange
             var mockFile = new Mock<IFormFile>();
             var comando = new AceptarPrestamoComando { PrestamoId = 1, Contrato = mockFile.Object };
             _prestamoServiceMock.Setup(s => s.AceptarPrestamo(comando)).Throws(new ArgumentException("Argumento inválido"));
-
-            // Act
-            var resultadoAccion = _prestamosController.AceptarPrestamo(comando);
-
-            // Assert
+            var resultadoAccion = _prestamosController.Aceptar(comando);
             Assert.That(resultadoAccion, Is.InstanceOf<BadRequestObjectResult>());
         }
 
         [Test]
         public void AceptarPrestamo_ErrorServidor_RetornaError500()
         {
-            // Arrange
             var mockFile = new Mock<IFormFile>();
             var comando = new AceptarPrestamoComando { PrestamoId = 1, Contrato = mockFile.Object };
             _prestamoServiceMock.Setup(s => s.AceptarPrestamo(comando)).Throws(new Exception("Error de servidor"));
-
-            // Act
-            var resultadoAccion = _prestamosController.AceptarPrestamo(comando);
-
-            // Assert
+            var resultadoAccion = _prestamosController.Aceptar(comando);
             Assert.That(resultadoAccion, Is.InstanceOf<ObjectResult>());
             var objectResult = (ObjectResult)resultadoAccion;
             Assert.That(objectResult.StatusCode, Is.EqualTo(500));

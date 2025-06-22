@@ -9,112 +9,50 @@ namespace API.Controllers;
 public class CategoriaController : ControllerBase
 {
     private readonly ICategoriaService servicio;
+    public CategoriaController(ICategoriaService servicio) => this.servicio = servicio;
 
-    public CategoriaController(ICategoriaService servicio)
-    {
-        this.servicio = servicio;
-    }
     [HttpPost]
     public IActionResult Crear([FromBody] CrearCategoriaComando input)
     {
-        try
-        {
-            servicio.CrearCategoria(input);
-            return Created();
-        }
-        catch (ErrorNombreRequerido ex)
-        {
-            return BadRequest(new { error = "Campo requerido", mensaje = ex.Message });
-        }        catch (ErrorLongitudInvalida ex)
-        {
-            return BadRequest(new { error = "Longitud inválida", mensaje = ex.Message });
-        }        catch (ErrorRegistroYaExiste ex)
-        {
-            return Conflict(new { error = "Categoría duplicada", mensaje = ex.Message });
-        }
-        catch (ArgumentNullException ex)
-        {
-            return BadRequest(new { error = "Argumento requerido", mensaje = ex.Message });
-        }
-        catch (Exception) 
-        { 
-            return StatusCode(500, new { error = "Error interno del servidor", mensaje = "Ocurrió un error inesperado al crear la categoría" });
+        try { servicio.CrearCategoria(input); return Created(); }
+        catch (ErrorRegistroYaExiste ex) { return Conflict(new { error = ex.GetType().Name, mensaje = ex.Message }); }
+        catch (Exception ex) {
+            if (ex.Message.Contains("Error General Servidor") || ex.InnerException?.Message.Contains("Error General Servidor") == true)
+                return StatusCode(500, new { error = ex.GetType().Name, mensaje = ex.Message });
+            return BadRequest(new { error = ex.GetType().Name, mensaje = ex.Message });
         }
     }
 
     [HttpGet]
-    public ActionResult<List<CategoriaDto>> ObtenerTodos()
+    public IActionResult ObtenerTodos()
     {
-        try
-        {
-            var resultado = servicio.ObtenerTodasCategorias();
-            return Ok(resultado);
-        }
-        catch (Exception ex)
-        {
-            return BadRequest(new { error = "Error interno del servidor", mensaje = $"Error al obtener categorías: {ex.Message}" });
-        }
-    }    
+        try { return Ok(servicio.ObtenerTodasCategorias()); }
+        catch (Exception ex) { return BadRequest(new { error = ex.GetType().Name, mensaje = ex.Message }); }
+    }
+
     [HttpPut]
     public IActionResult Actualizar([FromBody] ActualizarCategoriaComando input)
     {
-        try
-        {
-            servicio.ActualizarCategoria(input);
-            return Ok(new { mensaje = "Categoría actualizada exitosamente" });
+        try { servicio.ActualizarCategoria(input); return Ok(new { mensaje = "Categoría actualizada exitosamente" }); }
+        catch (ErrorRegistroNoEncontrado ex) { return NotFound(new { error = ex.GetType().Name, mensaje = ex.Message }); }
+        catch (ErrorRegistroYaExiste ex) { return Conflict(new { error = ex.GetType().Name, mensaje = ex.Message }); }
+        catch (Exception ex) {
+            if (ex.Message.Contains("Error General Servidor") || ex.InnerException?.Message.Contains("Error General Servidor") == true)
+                return StatusCode(500, new { error = ex.GetType().Name, mensaje = ex.Message });
+            return BadRequest(new { error = ex.GetType().Name, mensaje = ex.Message });
         }
-        catch (ErrorIdInvalido ex)
-        {
-            return BadRequest(new { error = "ID inválido", mensaje = ex.Message });
-        }
-        catch (ErrorNombreRequerido ex)
-        {
-            return BadRequest(new { error = "Campo requerido", mensaje = ex.Message });
-        }
-        catch (ErrorLongitudInvalida ex)
-        {
-            return BadRequest(new { error = "Longitud inválida", mensaje = ex.Message });
-        }        catch (ErrorRegistroNoEncontrado ex)
-        {
-            return NotFound(new { error = "Categoría no encontrada", mensaje = ex.Message });
-        }        catch (ErrorRegistroYaExiste ex)
-        {
-            return Conflict(new { error = "Categoría duplicada", mensaje = ex.Message });
-        }
-        catch (ArgumentNullException ex)
-        {
-            return BadRequest(new { error = "Argumento requerido", mensaje = ex.Message });
-        }
-        catch (Exception) 
-        { 
-            return StatusCode(500, new { error = "Error interno del servidor", mensaje = "Ocurrió un error inesperado al actualizar la categoría" });
-        }
-    }      [HttpDelete("{id}")]
+    }
+
+    [HttpDelete("{id}")]
     public IActionResult Eliminar(int id)
     {
-        try
-        {
-            var comando = new EliminarCategoriaComando(id);
-            servicio.EliminarCategoria(comando);
-            return NoContent();
-        }
-        catch (ErrorIdInvalido ex)
-        {
-            return BadRequest(new { error = "ID inválido", mensaje = ex.Message });
-        }        catch (ErrorRegistroNoEncontrado ex)
-        {
-            return NotFound(new { error = "Categoría no encontrada", mensaje = ex.Message });
-        }        catch (ErrorRegistroEnUso ex)
-        {
-            return Conflict(new { error = "Registro en uso", mensaje = ex.Message });
-        }
-        catch (ArgumentNullException ex)
-        {
-            return BadRequest(new { error = "Argumento requerido", mensaje = ex.Message });
-        }
-        catch (Exception) 
-        { 
-            return StatusCode(500, new { error = "Error interno del servidor", mensaje = "Ocurrió un error inesperado al eliminar la categoría" });
+        try { servicio.EliminarCategoria(new EliminarCategoriaComando(id)); return NoContent(); }
+        catch (ErrorRegistroNoEncontrado ex) { return NotFound(new { error = ex.GetType().Name, mensaje = ex.Message }); }
+        catch (ErrorRegistroEnUso ex) { return Conflict(new { error = ex.GetType().Name, mensaje = ex.Message }); }
+        catch (Exception ex) {
+            if (ex.Message.Contains("Error General Servidor") || ex.InnerException?.Message.Contains("Error General Servidor") == true)
+                return StatusCode(500, new { error = ex.GetType().Name, mensaje = ex.Message });
+            return BadRequest(new { error = ex.GetType().Name, mensaje = ex.Message });
         }
     }
 }

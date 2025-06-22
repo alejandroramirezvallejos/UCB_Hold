@@ -1,12 +1,12 @@
 public class AccesorioDto
 {
-    public int      Id                      { get; set; }
-    public string?  Nombre                  { get; set; } = null;
-    public string?  Modelo                  { get; set; } = null;
-    public string?  Tipo                    { get; set; } = null;
-    public double?  Precio                  { get; set; } = null;
-    public string?  NombreEquipoAsociado    { get; set; } = null;
-    public int?     CodigoImtEquipoAsociado { get; set; } = null;
-    public string?  Descripcion             { get; set; } = null;
-    public string?  UrlDataSheet            { get; set; } = null;
+    public int Id { get; set; }
+    public string? Nombre { get; set; }
+    public string? Modelo { get; set; }
+    public string? Tipo { get; set; }
+    public double? Precio { get; set; }
+    public string? NombreEquipoAsociado { get; set; }
+    public int? CodigoImtEquipoAsociado { get; set; }
+    public string? Descripcion { get; set; }
+    public string? UrlDataSheet { get; set; }
 }

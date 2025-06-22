@@ -1,10 +1,10 @@
 public class EmpresaMantenimientoDto
 {
-    public int Id              { get; set; }
-    public string? NombreEmpresa { get; set; } = null;
-    public string? NombreResponsable   { get; set; } = null;
-    public string? ApellidoResponsable { get; set; } = null;
-    public string? Telefono            { get; set; } = null;
-    public string? Nit                 { get; set; } = null;
-    public string? Direccion           { get; set; } = null;    
+    public int Id { get; set; }
+    public string? NombreEmpresa { get; set; }
+    public string? NombreResponsable { get; set; }
+    public string? ApellidoResponsable { get; set; }
+    public string? Telefono { get; set; }
+    public string? Nit { get; set; }
+    public string? Direccion { get; set; }
 }

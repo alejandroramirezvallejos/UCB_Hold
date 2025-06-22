@@ -3,13 +3,14 @@ using Moq;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Configuration;
 using IMT_Reservas.Server.Shared.Common;
+using IMT_Reservas.Server.Application.Interfaces;
 
 namespace IMT_Reservas.Tests.ControllerTests
 {
     [TestFixture]
     public class CategoriaControllerTest : ICategoriaControllerTest
     {
-        private Mock<CategoriaService>    _categoriaServiceMock;
+        private Mock<ICategoriaService>    _categoriaServiceMock;
         private Mock<CategoriaRepository> _categoriaRepoMock;
         private Mock<ExecuteQuery>        _queryExecMock;
         private Mock<IConfiguration>      _configMock;
@@ -18,11 +19,7 @@ namespace IMT_Reservas.Tests.ControllerTests
         [SetUp]
         public void Setup()
         {
-            _configMock           = new Mock<IConfiguration>();
-            _configMock.Setup(config => config.GetSection("ConnectionStrings")["DefaultConnection"]).Returns("fake_connection_string");
-            _queryExecMock        = new Mock<ExecuteQuery>(_configMock.Object);
-            _categoriaRepoMock    = new Mock<CategoriaRepository>(_queryExecMock.Object);
-            _categoriaServiceMock = new Mock<CategoriaService>(_categoriaRepoMock.Object);
+            _categoriaServiceMock = new Mock<ICategoriaService>();
             _categoriasController = new CategoriaController(_categoriaServiceMock.Object);
         }
 
@@ -35,9 +32,9 @@ namespace IMT_Reservas.Tests.ControllerTests
                 new CategoriaDto { Id = 3, Nombre = "Cable" }
             };
             _categoriaServiceMock.Setup(s => s.ObtenerTodasCategorias()).Returns(categoriasEsperadas);
-            ActionResult<List<CategoriaDto>> resultadoAccion = _categoriasController.ObtenerTodos();
-            Assert.That(resultadoAccion.Result, Is.InstanceOf<OkObjectResult>());
-            OkObjectResult okObjectResult = (OkObjectResult)resultadoAccion.Result;
+            IActionResult resultadoAccion = _categoriasController.ObtenerTodos();
+            Assert.That(resultadoAccion, Is.InstanceOf<OkObjectResult>());
+            OkObjectResult okObjectResult = (OkObjectResult)resultadoAccion;
             Assert.That(okObjectResult.Value, Is.InstanceOf<List<CategoriaDto>>().And.Count.EqualTo(categoriasEsperadas.Count));
         }
 
@@ -46,9 +43,9 @@ namespace IMT_Reservas.Tests.ControllerTests
         {
             List<CategoriaDto> categoriasEsperadas = new List<CategoriaDto>();
             _categoriaServiceMock.Setup(s => s.ObtenerTodasCategorias()).Returns(categoriasEsperadas);
-            ActionResult<List<CategoriaDto>> resultadoAccion = _categoriasController.ObtenerTodos();
-            Assert.That(resultadoAccion.Result, Is.InstanceOf<OkObjectResult>());
-            OkObjectResult okObjectResult = (OkObjectResult)resultadoAccion.Result;
+            IActionResult resultadoAccion = _categoriasController.ObtenerTodos();
+            Assert.That(resultadoAccion, Is.InstanceOf<OkObjectResult>());
+            OkObjectResult okObjectResult = (OkObjectResult)resultadoAccion;
             Assert.That(okObjectResult.Value, Is.InstanceOf<List<CategoriaDto>>().And.Empty);
         }
 
@@ -56,8 +53,8 @@ namespace IMT_Reservas.Tests.ControllerTests
         public void GetCategorias_ServicioError_RetornaBadRequest()
         {
             _categoriaServiceMock.Setup(s => s.ObtenerTodasCategorias()).Throws(new System.Exception("Error servicio"));
-            ActionResult<List<CategoriaDto>> resultadoAccion = _categoriasController.ObtenerTodos();
-            Assert.That(resultadoAccion.Result, Is.InstanceOf<BadRequestObjectResult>());
+            IActionResult resultadoAccion = _categoriasController.ObtenerTodos();
+            Assert.That(resultadoAccion, Is.InstanceOf<BadRequestObjectResult>());
         }
 
         [Test]

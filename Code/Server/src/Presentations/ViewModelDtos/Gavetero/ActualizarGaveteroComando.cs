@@ -1,6 +1,5 @@
-public record ActualizarGaveteroComando
-(
-    int     Id,
+public record ActualizarGaveteroComando(
+    int Id,
     string? Nombre,
     string? Tipo,
     string? NombreMueble,

@@ -1,4 +1,3 @@
-public record EliminarUsuarioComando
-(
+public record EliminarUsuarioComando(
     string Carnet
 );

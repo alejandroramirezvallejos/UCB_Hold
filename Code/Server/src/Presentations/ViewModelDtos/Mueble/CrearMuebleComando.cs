@@ -1,7 +1,5 @@
-//TODO: Implementar
-public record CrearMuebleComando
-(
-    string?  Nombre,//Se valida si no es nulo
+public record CrearMuebleComando(
+    string? Nombre,
     string? Tipo,
     double? Costo,
     string? Ubicacion,

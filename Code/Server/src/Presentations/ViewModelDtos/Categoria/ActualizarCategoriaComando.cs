@@ -1,5 +1,4 @@
-public record ActualizarCategoriaComando
-(
-    int    Id,
+public record ActualizarCategoriaComando(
+    int Id,
     string? Nombre
 );

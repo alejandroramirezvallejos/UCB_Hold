@@ -1,6 +1,5 @@
 public record CrearNotificacionComando(
-    string CarnetUsuario,     
-    string Titulo,       
-    string Contenido         
+    string CarnetUsuario,
+    string Titulo,
+    string Contenido
 );
-

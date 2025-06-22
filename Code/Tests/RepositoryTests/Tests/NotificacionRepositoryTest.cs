@@ -1,6 +1,5 @@
 ﻿using Moq;
 using System.Data;
-using IMT_Reservas.Server.Infrastructure.Repositories.Implementations;
 using IMT_Reservas.Server.Infrastructure.MongoDb;
 using MongoDB.Driver;
 using MongoDB.Bson;
@@ -77,7 +76,7 @@ namespace IMT_Reservas.Tests.RepositoryTests
                 It.Is<UpdateDefinition<BsonDocument>>(u => u.Render(serializer, BsonSerializer.SerializerRegistry).Equals(renderedExpected)),
                 It.IsAny<UpdateOptions>(),
                 default)).Verifiable();
-            
+
             _notificacionRepository.MarcarComoLeida(comando);
 
             _collectionMock.Verify();

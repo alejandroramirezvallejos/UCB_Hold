@@ -1,6 +1,5 @@
-public record ActualizarUsuarioComando
-(
-    string  Carnet,
+public record ActualizarUsuarioComando(
+    string Carnet,
     string? Nombre,
     string? ApellidoPaterno,
     string? ApellidoMaterno,

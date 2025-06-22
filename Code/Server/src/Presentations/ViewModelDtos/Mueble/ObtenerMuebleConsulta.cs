@@ -1,5 +1,3 @@
-//TODO: Implementar 
-public record ObtenerMuebleConsulta
-(
+public record ObtenerMuebleConsulta(
     int Id
 );

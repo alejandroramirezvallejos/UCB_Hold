@@ -1,4 +1,3 @@
-public record EliminarCategoriaComando
-(
+public record EliminarCategoriaComando(
     int Id
 );

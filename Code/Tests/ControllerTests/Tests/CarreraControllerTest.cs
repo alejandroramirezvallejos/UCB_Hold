@@ -28,9 +28,9 @@ namespace IMT_Reservas.Tests.ControllerTests.Tests
                 new CarreraDto { Id = 2, Nombre = "Software" }
             };
             _carreraServiceMock.Setup(s => s.ObtenerTodasCarreras()).Returns(carrerasEsperadas);
-            ActionResult<List<CarreraDto>> resultadoAccion = _carrerasController.ObtenerTodos();
-            Assert.That(resultadoAccion.Result, Is.InstanceOf<OkObjectResult>());
-            OkObjectResult okObjectResult = (OkObjectResult)resultadoAccion.Result;
+            IActionResult resultadoAccion = _carrerasController.ObtenerTodos();
+            Assert.That(resultadoAccion, Is.InstanceOf<OkObjectResult>());
+            OkObjectResult okObjectResult = (OkObjectResult)resultadoAccion;
             Assert.That(okObjectResult.Value, Is.InstanceOf<List<CarreraDto>>().And.Count.EqualTo(carrerasEsperadas.Count));
         }
 
@@ -39,9 +39,9 @@ namespace IMT_Reservas.Tests.ControllerTests.Tests
         {
             List<CarreraDto> carrerasEsperadas = new List<CarreraDto>();
             _carreraServiceMock.Setup(s => s.ObtenerTodasCarreras()).Returns(carrerasEsperadas);
-            ActionResult<List<CarreraDto>> resultadoAccion = _carrerasController.ObtenerTodos();
-            Assert.That(resultadoAccion.Result, Is.InstanceOf<OkObjectResult>());
-            OkObjectResult okObjectResult = (OkObjectResult)resultadoAccion.Result;
+            IActionResult resultadoAccion = _carrerasController.ObtenerTodos();
+            Assert.That(resultadoAccion, Is.InstanceOf<OkObjectResult>());
+            OkObjectResult okObjectResult = (OkObjectResult)resultadoAccion;
             Assert.That(okObjectResult.Value, Is.InstanceOf<List<CarreraDto>>().And.Empty);
         }
 
@@ -49,8 +49,8 @@ namespace IMT_Reservas.Tests.ControllerTests.Tests
         public void GetCarreras_ServicioError_RetornaBadRequest()
         {
             _carreraServiceMock.Setup(s => s.ObtenerTodasCarreras()).Throws(new System.Exception("Error servicio"));
-            ActionResult<List<CarreraDto>> resultadoAccion = _carrerasController.ObtenerTodos();
-            Assert.That(resultadoAccion.Result, Is.InstanceOf<BadRequestObjectResult>());
+            IActionResult resultadoAccion = _carrerasController.ObtenerTodos();
+            Assert.That(resultadoAccion, Is.InstanceOf<BadRequestObjectResult>());
         }
 
         [Test]

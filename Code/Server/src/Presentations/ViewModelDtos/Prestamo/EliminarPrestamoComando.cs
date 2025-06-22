@@ -1,4 +1,3 @@
-public record EliminarPrestamoComando
-(
+public record EliminarPrestamoComando(
     int Id
 );
