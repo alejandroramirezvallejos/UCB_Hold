@@ -68,7 +68,7 @@ namespace IMT_Reservas.Tests.RepositoryTests
         {
             var comando = new MarcarComoLeidoComando("68535f7ddd47665ee70310b7");
             var serializer = BsonSerializer.SerializerRegistry.GetSerializer<BsonDocument>();
-            var expectedUpdate = Builders<BsonDocument>.Update.Set("Leida", true);
+            var expectedUpdate = Builders<BsonDocument>.Update.Set("Leido", true);
             var renderedExpected = expectedUpdate.Render(serializer, BsonSerializer.SerializerRegistry);
 
             _collectionMock.Setup(c => c.UpdateOne(
@@ -95,7 +95,7 @@ namespace IMT_Reservas.Tests.RepositoryTests
                     { "Titulo", "Solicitud aprobada" },
                     { "Contenido", "Tu solicitud de préstamo para Router Inalámbrico ha sido aprobada. Pue…" },
                     { "FechaEnvio", DateTime.Parse("2025-06-12T09:15:00.000Z") },
-                    { "Leida", false },
+                    { "Leido", false },
                     { "EstadoEliminado", false }
                 },
                 new BsonDocument
@@ -105,7 +105,7 @@ namespace IMT_Reservas.Tests.RepositoryTests
                     { "Titulo", "Solicitud rechazada" },
                     { "Contenido", "Tu solicitud de préstamo para Monitor Profesional ha sido rechazada de…" },
                     { "FechaEnvio", DateTime.Parse("2025-06-14T10:30:00.000Z") },
-                    { "Leida", false },
+                    { "Leido", false },
                     { "EstadoEliminado", false }
                 }
             };

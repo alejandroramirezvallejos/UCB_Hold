@@ -16,7 +16,7 @@ public class NotificacionRepository : INotificacionRepository
             ["Titulo"] = comando.Titulo,
             ["Contenido"] = comando.Contenido,
             ["FechaEnvio"] = DateTime.UtcNow,
-            ["Leida"] = false,
+            ["Leido"] = false,
             ["EstadoEliminado"] = false
         };
         try { _coleccion.InsertOne(doc); }
@@ -48,7 +48,7 @@ public class NotificacionRepository : INotificacionRepository
     {
         try {
             var filtro = new BsonDocument { ["_id"] = new ObjectId(comando.Id) };
-            var actualizacion = Builders<BsonDocument>.Update.Set("Leida", true);
+            var actualizacion = Builders<BsonDocument>.Update.Set("Leido", true);
             _coleccion.UpdateOne(filtro, actualizacion);
         }
         catch (FormatException ex) { throw new ErrorDataBase($"ID de notificación inválido: {ex.Message}", null, null, ex); }
@@ -73,7 +73,7 @@ public class NotificacionRepository : INotificacionRepository
         tabla.Columns.Add("titulo", typeof(string));
         tabla.Columns.Add("contenido", typeof(string));
         tabla.Columns.Add("fecha_envio", typeof(DateTime));
-        tabla.Columns.Add("leida", typeof(bool));
+        tabla.Columns.Add("leido", typeof(bool));
         foreach (var doc in docs)
         {
             var fila = tabla.NewRow();
@@ -82,7 +82,7 @@ public class NotificacionRepository : INotificacionRepository
             fila["titulo"] = doc["Titulo"].AsString;
             fila["contenido"] = doc["Contenido"].AsString;
             fila["fecha_envio"] = doc["FechaEnvio"].ToUniversalTime();
-            fila["leida"] = doc.GetValue("Leida", false).AsBoolean;
+            fila["leido"] = doc.GetValue("Leido", false).AsBoolean;
             tabla.Rows.Add(fila);
         }
         return tabla;

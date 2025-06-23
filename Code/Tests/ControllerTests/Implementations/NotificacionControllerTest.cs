@@ -36,8 +36,8 @@ namespace IMT_Reservas.Tests.ControllerTests
             var carnetUsuario = "12890061";
             var notificacionesEsperadas = new List<NotificacionDto>
             {
-                new NotificacionDto { Id = "68535f7ddd47665ee70310b7", CarnetUsuario = "12890061", Titulo = "Solicitud aprobada", Contenido = "Tu solicitud de préstamo para Router Inalámbrico ha sido aprobada. Pue…", FechaEnvio = DateTime.Parse("2025-06-12T09:15:00.000Z") },
-                new NotificacionDto { Id = "68535f7ddd47665ee70310b8", CarnetUsuario = "12890061", Titulo = "Solicitud rechazada", Contenido = "Tu solicitud de préstamo para Monitor Profesional ha sido rechazada de…", FechaEnvio = DateTime.Parse("2025-06-14T10:30:00.000Z") }
+                new NotificacionDto { Id = "68535f7ddd47665ee70310b7", CarnetUsuario = "12890061", Titulo = "Solicitud aprobada", Contenido = "Tu solicitud de préstamo para Router Inalámbrico ha sido aprobada. Pue…", FechaEnvio = DateTime.Parse("2025-06-12T09:15:00.000Z"), Leido = false },
+                new NotificacionDto { Id = "68535f7ddd47665ee70310b8", CarnetUsuario = "12890061", Titulo = "Solicitud rechazada", Contenido = "Tu solicitud de préstamo para Monitor Profesional ha sido rechazada de…", FechaEnvio = DateTime.Parse("2025-06-14T10:30:00.000Z"), Leido = false }
             };
             _notificacionServiceMock.Setup(s => s.ObtenerNotificacionesPorUsuario(It.Is<ObtenerNotificacionPorCarnetUsuarioConsulta>(c => c.CarnetUsuario == carnetUsuario))).Returns(notificacionesEsperadas);
             var resultado = _notificacionController.ObtenerPorUsuario(carnetUsuario);
