@@ -7,5 +7,8 @@
         List<NotificacionDto> ObtenerNotificacionesPorUsuario(ObtenerNotificacionPorCarnetUsuarioConsulta consulta);
         void MarcarNotificacionComoLeida(MarcarComoLeidoComando comando);
         bool TieneNotificacionesNoLeidas(TieneNotificacionesNoLeidasConsulta consulta);
+        void EnviarNotificacionesRetraso();
+        void EnviarPenalizaciones();
+        void EnviarEstadoDelPrestamo();
     }
 }
