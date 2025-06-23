@@ -6,6 +6,10 @@ import { CommonModule } from '@angular/common';
 import { BuscadorService } from '../../services/buscador/buscador.service';
 import { Router } from '@angular/router';
 import { UsuarioPrevioComponent } from './usuario-previo/usuario-previo.component';
+import { NotificacionService } from '../../services/APIS/Notificacion/notificacion.service';
+import { UsuarioService } from '../../services/usuario/usuario.service';
+import { interval, of } from 'rxjs';
+import { catchError, startWith, switchMap } from 'rxjs/operators';
 @Component({
   selector: 'app-navbar',
   standalone: true,
@@ -18,8 +22,28 @@ import { UsuarioPrevioComponent } from './usuario-previo/usuario-previo.componen
 export class NavbarComponent {
  
   showUserMenu : WritableSignal<boolean> = signal(false);
-  
-  constructor(private carrito : CarritoService, private buscador : BuscadorService , private router : Router) { }
+  notificaciones: boolean = false;
+  private intervalId: any;
+
+  constructor(private carrito : CarritoService, private buscador : BuscadorService , private router : Router , private notificacionesAPI : NotificacionService , private usuario : UsuarioService) { }
+
+
+  ngOnInit() {
+    this.verificarnotificaciones();
+ 
+     this.intervalId = setInterval(() => {
+      this.verificarnotificaciones();
+    }, 5000);
+  }
+
+  ngOnDestroy() { 
+    if (this.intervalId) {
+      clearInterval(this.intervalId);
+    }
+  }
+
+
+
 
   botonhome() {
     this.buscador.reiniciar();
@@ -43,4 +67,22 @@ export class NavbarComponent {
   mostrarcarrito() {
     this.router.navigate(['/Carrito']);
   }
+  
+  verificarnotificaciones() {
+    if(this.usuario.vacio()){
+      this.notificaciones = false;
+      return;
+    }
+    
+    this.notificacionesAPI.verificarnoleidas(this.usuario.obtenercarnet()).subscribe({
+      next: (data) => {
+        this.notificaciones = data;
+      },
+      error: (error) => {
+        console.error('Error verificando notificaciones:', error);
+        this.notificaciones = false;
+      }
+    });
+  }
+
 }

@@ -5,6 +5,7 @@ export interface Notificacion {
     Titulo: string,
     Contenido: string,
     FechaEnvio: string,
+    Leido : boolean
 
 
 }
