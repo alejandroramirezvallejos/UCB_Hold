@@ -19,7 +19,8 @@ export class NotificacionService {
         CarnetUsuario: item.CarnetUsuario,
         Titulo: item.Titulo,
         Contenido: item.Contenido,
-        FechaEnvio: item.FechaEnvio
+        FechaEnvio: item.FechaEnvio,
+        Leido: item.Leido
       })))
     );
   }
@@ -31,6 +32,60 @@ export class NotificacionService {
     return this.http.post(url, null)
 
   }
+
+  verificarnoleidas(carnet : string){
+    const url = `${this.apiUrl}/${carnet}/tiene-no-leidas`;
+    return this.http.get<{tieneNoLeidas : boolean}>(url).pipe(
+      map(data => data.tieneNoLeidas)
+    );
+
+  }
+
+
+  enviarretrasos(){
+    const url = `${this.apiUrl}/enviar-retrasos`;
+    return this.http.post(url, null);
+  }
+
+  enviarpenalizaciones(){
+    const url = `${this.apiUrl}/enviar-penalizaciones`;
+    return this.http.post(url, null);
+  }
+
+  enviarestadoprestamo(){
+    const url = `${this.apiUrl}/enviar-estado-prestamo`;
+    return this.http.post(url, null);
+  }
+
+  enviarnotificaciones(){
+            this.enviarretrasos().subscribe({
+          next: (data) => {
+
+          }
+          , error: (error) => {
+            console.error("Error al enviar retrasos: ", error);
+          }
+        });
+
+        this.enviarpenalizaciones().subscribe({
+          next: (data) => {
+
+          }
+          , error: (error) => {
+            console.error("Error al enviar penalizaciones: ", error);
+          }
+        });
+        this.enviarestadoprestamo().subscribe({
+          next: (data) => {
+
+          }
+          , error: (error) => {
+            console.error("Error al enviar estado de préstamo: ", error);
+          }
+        });
+        
+  }
+
 
 
 }

@@ -52,4 +52,26 @@ public class NotificacionController : ControllerBase
             return StatusCode(500, new { error = ex.GetType().Name, mensaje = ex.Message });
         }
     }
+
+    [HttpPost("enviar-retrasos")]
+    public IActionResult EnviarRetrasos()
+    {
+        try { servicio.EnviarNotificacionesRetraso(); return Ok(new { mensaje = "Notificaciones de retraso enviadas" }); }
+        catch (Exception ex) { return StatusCode(500, new { error = ex.GetType().Name, mensaje = ex.Message }); }
+    }
+
+    [HttpPost("enviar-penalizaciones")]
+    public IActionResult EnviarPenalizaciones()
+    {
+        try { servicio.EnviarPenalizaciones(); return Ok(new { mensaje = "Penalizaciones enviadas" }); }
+        catch (Exception ex) { return StatusCode(500, new { error = ex.GetType().Name, mensaje = ex.Message }); }
+    }
+
+    [HttpPost("enviar-estado-prestamo")]
+    public IActionResult EnviarEstadoPrestamo()
+    {
+        try { servicio.EnviarEstadoDelPrestamo(); return Ok(new { mensaje = "Notificaciones de estado de préstamo enviadas" }); }
+        catch (Exception ex) { return StatusCode(500, new { error = ex.GetType().Name, mensaje = ex.Message }); }
+    }
+
 }

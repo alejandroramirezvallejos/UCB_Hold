@@ -106,6 +106,23 @@ export class PrestamosAPIService {
 
   }
 
+  obtenercontratoPrestamo(id : number){
+    const APIurl = `${this.url}/contrato/${id}`;
+
+    return this.http.get<string[]>(APIurl).pipe(
+      map(response => {
+        const base64String = response[0];
+
+        const htmlContent = decodeURIComponent(escape(atob(base64String)));
+
+        return htmlContent;
+
+      })
+
+    )
+
+  }
+
 
 
 

@@ -11,13 +11,15 @@ namespace IMT_Reservas.Tests.ServiceTests
     public class NotificacionServiceTest
     {
         private Mock<INotificacionRepository> _notificacionRepositoryMock;
+        private Mock<IPrestamoRepository> _prestamoRepositoryMock;
         private NotificacionService _notificacionService;
 
         [SetUp]
         public void Setup()
         {
             _notificacionRepositoryMock = new Mock<INotificacionRepository>();
-            _notificacionService = new NotificacionService(_notificacionRepositoryMock.Object);
+            _prestamoRepositoryMock = new Mock<IPrestamoRepository>();
+            _notificacionService = new NotificacionService(_notificacionRepositoryMock.Object, _prestamoRepositoryMock.Object);
         }
 
         [Test]

@@ -6,6 +6,7 @@ import { UsuarioService } from '../../../services/usuario/usuario.service';
 import { Router } from '@angular/router';
 import { UsuarioServiceAPI } from '../../../services/APIS/Usuario/usuario.service';
 import { MostrarerrorComponent } from '../../mostrarerror/mostrarerror.component';
+import { NotificacionService } from '../../../services/APIS/Notificacion/notificacion.service';
 
 
 @Component({
@@ -21,7 +22,7 @@ export class IniciarSesionComponent {
   loading: boolean = false;
   incorrecto : boolean = false;
   errorraro : WritableSignal<number> = signal(0);
-  constructor(private usuario : UsuarioService , private router : Router , private usuarioapi : UsuarioServiceAPI){};
+  constructor(private usuario : UsuarioService , private router : Router , private usuarioapi : UsuarioServiceAPI ){};
 
   login(){
     this.loading = true;
@@ -30,7 +31,9 @@ export class IniciarSesionComponent {
         this.usuario.iniciarsesion(data);
         this.loading = false;
         this.incorrecto = false;
+
         this.router.navigate(["/home"]);
+
       },
       (error) => {
         if(error.status === 400 || error.status === 401){

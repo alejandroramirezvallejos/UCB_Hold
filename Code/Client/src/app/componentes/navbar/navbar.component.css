@@ -104,3 +104,29 @@
   position: relative;
   margin-right: -1rem;
 }
+
+.pendiente {
+  position: absolute;
+  top: -2px;
+  right: -2px;
+  width: 12px;
+  height: 12px;
+  background: #ffdd05;
+  color: #8f9195;
+  border-radius: 50%;
+  font-size: 0.55rem;
+  line-height: 12px;
+  padding: 0;
+  text-align: center;
+  pointer-events: none;
+  transition: background-color 0.2s, color 0.2s;
+}
+
+.notification-button {
+  position: relative;
+}
+
+.notification-button:hover .pendiente {
+  background-color: #8f9195;
+  color: #ffcf00;
+}
