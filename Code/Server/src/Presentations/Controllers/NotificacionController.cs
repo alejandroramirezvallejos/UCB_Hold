@@ -37,4 +37,19 @@ public class NotificacionController : ControllerBase
         try { servicio.MarcarNotificacionComoLeida(new MarcarComoLeidoComando(id)); return Ok(new { mensaje = "Notificación marcada como leída" }); }
         catch (Exception ex) { return StatusCode(500, new { error = ex.GetType().Name, mensaje = ex.Message }); }
     }
+
+    [HttpGet("{carnetUsuario}/tiene-no-leidas")]
+    public IActionResult TieneNoLeidas(string carnetUsuario)
+    {
+        try
+        {
+            var consulta = new TieneNotificacionesNoLeidasConsulta(carnetUsuario);
+            var tiene = servicio.TieneNotificacionesNoLeidas(consulta);
+            return Ok(new { tieneNoLeidas = tiene });
+        }
+        catch (Exception ex)
+        {
+            return StatusCode(500, new { error = ex.GetType().Name, mensaje = ex.Message });
+        }
+    }
 }

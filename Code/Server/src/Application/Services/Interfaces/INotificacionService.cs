@@ -6,5 +6,6 @@
         void EliminarNotificacion(EliminarNotificacionComando comando);
         List<NotificacionDto> ObtenerNotificacionesPorUsuario(ObtenerNotificacionPorCarnetUsuarioConsulta consulta);
         void MarcarNotificacionComoLeida(MarcarComoLeidoComando comando);
+        bool TieneNotificacionesNoLeidas(TieneNotificacionesNoLeidasConsulta consulta);
     }
 }

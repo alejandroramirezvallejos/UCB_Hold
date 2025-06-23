@@ -88,5 +88,30 @@ namespace IMT_Reservas.Tests.ControllerTests
             var okResult = resultado as OkObjectResult;
             Assert.That((List<NotificacionDto>)okResult.Value, Is.Empty);
         }
+
+        [Test]
+        public void TieneNoLeidas_True_RetornaOkTrue()
+        {
+            var carnetUsuario = "12890061";
+            _notificacionServiceMock.Setup(s => s.TieneNotificacionesNoLeidas(It.Is<TieneNotificacionesNoLeidasConsulta>(c => c.CarnetUsuario == carnetUsuario))).Returns(true);
+            var resultado = _notificacionController.TieneNoLeidas(carnetUsuario);
+            Assert.That(resultado, Is.InstanceOf<OkObjectResult>());
+            var okResult = resultado as OkObjectResult;
+            var dict = okResult.Value.GetType().GetProperties();
+            var tieneNoLeidas = okResult.Value.GetType().GetProperty("tieneNoLeidas").GetValue(okResult.Value, null);
+            Assert.That((bool)tieneNoLeidas, Is.True);
+        }
+
+        [Test]
+        public void TieneNoLeidas_False_RetornaOkFalse()
+        {
+            var carnetUsuario = "12890061";
+            _notificacionServiceMock.Setup(s => s.TieneNotificacionesNoLeidas(It.Is<TieneNotificacionesNoLeidasConsulta>(c => c.CarnetUsuario == carnetUsuario))).Returns(false);
+            var resultado = _notificacionController.TieneNoLeidas(carnetUsuario);
+            Assert.That(resultado, Is.InstanceOf<OkObjectResult>());
+            var okResult = resultado as OkObjectResult;
+            var tieneNoLeidas = okResult.Value.GetType().GetProperty("tieneNoLeidas").GetValue(okResult.Value, null);
+            Assert.That((bool)tieneNoLeidas, Is.False);
+        }
     }
 }

@@ -39,4 +39,9 @@ public class NotificacionService : INotificacionService
     {
         _notificacionRepository.MarcarComoLeida(comando);
     }
+
+    public bool TieneNotificacionesNoLeidas(TieneNotificacionesNoLeidasConsulta consulta)
+    {
+        return _notificacionRepository.TieneNotificacionesNoLeidas(consulta);
+    }
 }

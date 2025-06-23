@@ -55,6 +55,27 @@ public class NotificacionRepository : INotificacionRepository
         catch (Exception ex) { throw new ErrorRepository($"Error al marcar la notificación como leída: {ex.Message}", ex); }
     }
 
+    public bool TieneNotificacionesNoLeidas(TieneNotificacionesNoLeidasConsulta consulta)
+    {
+        var filtro = Builders<BsonDocument>.Filter.And(
+            Builders<BsonDocument>.Filter.Eq("CarnetUsuario", consulta.CarnetUsuario),
+            Builders<BsonDocument>.Filter.Eq("Leido", false),
+            Builders<BsonDocument>.Filter.Eq("EstadoEliminado", false)
+        );
+        try
+        {
+            // Usar FindSync en vez de Find para que sea mockeable y evitar problemas con argumentos opcionales/metodos de extensión
+            using (var cursor = _coleccion.FindSync(filtro, new FindOptions<BsonDocument, BsonDocument> { Limit = 1 }))
+            {
+                return cursor.MoveNext() && cursor.Current.Any();
+            }
+        }
+        catch (Exception ex)
+        {
+            throw new ErrorRepository($"Error al consultar notificaciones no leídas: {ex.Message}", ex);
+        }
+    }
+
     private DataTable ObtenerNotificaciones(BsonDocument filtro)
     {
         try {

@@ -67,5 +67,23 @@ namespace IMT_Reservas.Tests.ServiceTests
             _notificacionService.MarcarNotificacionComoLeida(comando);
             _notificacionRepositoryMock.Verify(r => r.MarcarComoLeida(comando), Times.Once);
         }
+
+        [Test]
+        public void TieneNotificacionesNoLeidas_True_RetornaTrue()
+        {
+            var consulta = new TieneNotificacionesNoLeidasConsulta("12890061");
+            _notificacionRepositoryMock.Setup(r => r.TieneNotificacionesNoLeidas(consulta)).Returns(true);
+            var resultado = _notificacionService.TieneNotificacionesNoLeidas(consulta);
+            Assert.That(resultado, Is.True);
+        }
+
+        [Test]
+        public void TieneNotificacionesNoLeidas_False_RetornaFalse()
+        {
+            var consulta = new TieneNotificacionesNoLeidasConsulta("12890061");
+            _notificacionRepositoryMock.Setup(r => r.TieneNotificacionesNoLeidas(consulta)).Returns(false);
+            var resultado = _notificacionService.TieneNotificacionesNoLeidas(consulta);
+            Assert.That(resultado, Is.False);
+        }
     }
 }
