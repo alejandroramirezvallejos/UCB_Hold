@@ -55,6 +55,15 @@ export class ComentarioService {
 
   }
 
+  quitarlikeComentario(idComentario: string , carnet : string ) {
+    const url = `${this.apiUrl}/${idComentario}/like`;
+    const envio = {
+      Id: idComentario,
+      CarnetUsuario: carnet
+    }
+
+    return this.http.delete(url, { body: envio }); 
+  }
 
 
 }

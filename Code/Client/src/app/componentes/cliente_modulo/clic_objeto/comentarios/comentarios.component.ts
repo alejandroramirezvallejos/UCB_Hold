@@ -43,6 +43,23 @@ export class ComentariosComponent {
         this.cargarComentarios();
       },
       error: (error) => {
+        if(error.error.mensaje==="Error al agregar like al comentario: El usuario ya dio like a este comentario"){
+            this.quitarlike(indice); 
+        }
+        else{
+            alert( error.error.error +": "+error.error.mensaje)
+        }
+
+      }
+    });
+  }
+
+  quitarlike(indice : number){
+    this.comentarioApi.quitarlikeComentario(this.comentarios[indice].Id , this.usuario.obtenercarnet()).subscribe({
+      next: (data) => {
+        this.cargarComentarios();
+      },
+      error: (error) => {
         alert( error.error.error +": "+error.error.mensaje)
       }
     });
