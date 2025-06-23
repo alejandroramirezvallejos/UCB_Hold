@@ -14,9 +14,13 @@
         <p>{{item.Contenido}}</p>
         <span class="notification-time">{{item.FechaEnvio}}</span>
       </div>
+
+        @if(item.Leido==false){
         <div class="notification-actions">
-        <button class="mark-read-button" (click)="leerNotificacion(item.Id)">Marcar como leída</button>
+          <button class="mark-read-button" (click)="leerNotificacion(item.Id)">Marcar como leída</button>
         </div>
+        }
+
     </div>
     }
 

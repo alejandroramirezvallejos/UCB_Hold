@@ -19,7 +19,8 @@ export class NotificacionService {
         CarnetUsuario: item.CarnetUsuario,
         Titulo: item.Titulo,
         Contenido: item.Contenido,
-        FechaEnvio: item.FechaEnvio
+        FechaEnvio: item.FechaEnvio,
+        Leido: item.Leido
       })))
     );
   }
@@ -29,6 +30,14 @@ export class NotificacionService {
     const url = `${this.apiUrl}/${id}/leida`;
     
     return this.http.post(url, null)
+
+  }
+
+  verificarnoleidas(carnet : string){
+    const url = `${this.apiUrl}/${carnet}/tiene-no-leidas`;
+    return this.http.get<{tieneNoLeidas : boolean}>(url).pipe(
+      map(data => data.tieneNoLeidas)
+    );
 
   }
 
