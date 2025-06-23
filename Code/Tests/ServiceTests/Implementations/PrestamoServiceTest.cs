@@ -77,7 +77,6 @@ namespace IMT_Reservas.Tests.ServiceTests
         [Test]
         public void CrearPrestamo_CarnetUsuarioVacio_LanzaErrorNombreRequerido()
         {
-            // Implementación dummy para cumplir con la interfaz, el test real es CrearPrestamo_CarnetUsuarioVacio_LanzaErrorCarnetRequerido
             Assert.Pass("Este test está implementado como CrearPrestamo_CarnetUsuarioVacio_LanzaErrorCarnetRequerido");
         }
 

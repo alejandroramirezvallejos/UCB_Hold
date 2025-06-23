@@ -87,6 +87,32 @@ public class ComentarioRepository : IComentarioRepository
         catch (Exception ex) { throw new ErrorRepository($"Error al agregar like al comentario: {ex.Message}", ex); }
     }
 
+    public void QuitarLike(QuitarLikeComentarioComando comando)
+    {
+        if (string.IsNullOrWhiteSpace(comando.Id) || comando.Id.Length != 24 || !ObjectId.TryParse(comando.Id, out var objectId))
+            throw new ErrorDataBase("ID de comentario inválido", null, null, null);
+        var filtro = Builders<BsonDocument>.Filter.And(
+            Builders<BsonDocument>.Filter.Eq("_id", objectId),
+            Builders<BsonDocument>.Filter.Eq("EstadoEliminado", false)
+        );
+        try {
+            if (_coleccion == null)
+                throw new ErrorDataBase("No se encontró el comentario", null, null, null);
+            bool existe;
+            try {
+                existe = _coleccion.CountDocuments(filtro) > 0;
+            } catch (Exception ex) {
+                throw new ErrorRepository($"Error al verificar existencia del comentario: {ex.Message}", ex);
+            }
+            if (!existe) throw new ErrorDataBase("No se encontró el comentario", null, null, null);
+            var update = Builders<BsonDocument>.Update.PullFilter("Likes", Builders<BsonDocument>.Filter.Eq("CarnetUsuario", comando.CarnetUsuario));
+            var res = _coleccion.UpdateOne(filtro, update);
+            if (res == null || res.MatchedCount == 0) throw new ErrorDataBase("No se encontró el comentario", null, null, null);
+        }
+        catch (ErrorDataBase) { throw; }
+        catch (Exception ex) { throw new ErrorRepository($"Error al quitar like al comentario: {ex.Message}", ex); }
+    }
+
     public DataTable ObtenerPorGrupoEquipo(int idGrupoEquipo)
     {
         var filtro = Builders<BsonDocument>.Filter.And(

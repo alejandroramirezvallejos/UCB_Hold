@@ -6,5 +6,6 @@
         List<ComentarioDto>? ObtenerComentariosPorGrupoEquipo(ObtenerComentariosPorGrupoEquipoConsulta consulta);
         void EliminarComentario(EliminarComentarioComando comando);
         void AgregarLikeComentario(AgregarLikeComentarioComando comando);
+        void QuitarLikeComentario(QuitarLikeComentarioComando comando);
     }
 }

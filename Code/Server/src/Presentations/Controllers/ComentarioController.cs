@@ -51,4 +51,15 @@ public class ComentarioController : ControllerBase
         catch (ErrorRegistroNoEncontrado) { return NotFound(new { error = "NoEncontrado", mensaje = "Comentario no encontrado" }); }
         catch (Exception ex) { return BadRequest(new { error = ex.GetType().Name, mensaje = ex.Message }); }
     }
+
+    [HttpDelete("{id}/like")]
+    public IActionResult QuitarMeGusta(string id, [FromBody] QuitarLikeComentarioComando input)
+    {
+        try {
+            servicio.QuitarLikeComentario(new QuitarLikeComentarioComando(id, input.CarnetUsuario));
+            return Ok(new { mensaje = "Like quitado exitosamente del comentario" });
+        }
+        catch (ErrorRegistroNoEncontrado) { return NotFound(new { error = "NoEncontrado", mensaje = "Comentario no encontrado" }); }
+        catch (Exception ex) { return BadRequest(new { error = ex.GetType().Name, mensaje = ex.Message }); }
+    }
 }

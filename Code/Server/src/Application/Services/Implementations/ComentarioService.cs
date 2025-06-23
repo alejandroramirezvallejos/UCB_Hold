@@ -86,6 +86,19 @@ public class ComentarioService : IComentarioService
         if (string.IsNullOrWhiteSpace(comando.CarnetUsuario)) throw new ErrorCarnetInvalido();
     }
     
+    public void QuitarLikeComentario(QuitarLikeComentarioComando comando)
+    {
+        ValidarEntradaQuitarLike(comando);
+        _comentarioRepository.QuitarLike(comando);
+    }
+
+    private void ValidarEntradaQuitarLike(QuitarLikeComentarioComando comando)
+    {
+        if (comando == null) throw new ArgumentNullException();
+        if (string.IsNullOrWhiteSpace(comando.Id)) throw new ErrorIdInvalido("comentario");
+        if (string.IsNullOrWhiteSpace(comando.CarnetUsuario)) throw new ErrorCarnetInvalido();
+    }
+
     private ComentarioDto MapearFilaADto(DataRow fila) => new ComentarioDto
     {
         Id = fila["id_comentario"].ToString(),
