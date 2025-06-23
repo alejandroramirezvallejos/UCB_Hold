@@ -28,7 +28,8 @@ public class NotificacionService : INotificacionService
                 CarnetUsuario = fila["carnet_usuario"].ToString(),
                 Titulo = fila["titulo"].ToString(),
                 Contenido = fila["contenido"].ToString(),
-                FechaEnvio = (System.DateTime)fila["fecha_envio"]
+                FechaEnvio = (System.DateTime)fila["fecha_envio"],
+                Leido = fila.Table.Columns.Contains("leido") ? Convert.ToBoolean(fila["leido"]) : false
             });
         }
         return notificaciones;
@@ -37,5 +38,10 @@ public class NotificacionService : INotificacionService
     public void MarcarNotificacionComoLeida(MarcarComoLeidoComando comando)
     {
         _notificacionRepository.MarcarComoLeida(comando);
+    }
+
+    public bool TieneNotificacionesNoLeidas(TieneNotificacionesNoLeidasConsulta consulta)
+    {
+        return _notificacionRepository.TieneNotificacionesNoLeidas(consulta);
     }
 }

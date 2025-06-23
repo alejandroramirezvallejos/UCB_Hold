@@ -38,7 +38,7 @@ namespace IMT_Reservas.Tests.ServiceTests
             notificacionesDataTable.Columns.Add("titulo", typeof(string));
             notificacionesDataTable.Columns.Add("contenido", typeof(string));
             notificacionesDataTable.Columns.Add("fecha_envio", typeof(DateTime));
-            notificacionesDataTable.Columns.Add("leida", typeof(bool));
+            notificacionesDataTable.Columns.Add("leido", typeof(bool));
 
             notificacionesDataTable.Rows.Add("68535f7ddd47665ee70310b7", "12890061", "Solicitud aprobada", "Tu solicitud de préstamo para Router Inalámbrico ha sido aprobada. Pue…", DateTime.Parse("2025-06-12T09:15:00.000Z"), false);
             notificacionesDataTable.Rows.Add("68535f7ddd47665ee70310b8", "12890061", "Solicitud rechazada", "Tu solicitud de préstamo para Monitor Profesional ha sido rechazada de…", DateTime.Parse("2025-06-14T10:30:00.000Z"), false);
@@ -66,6 +66,24 @@ namespace IMT_Reservas.Tests.ServiceTests
             var comando = new MarcarComoLeidoComando("68535f7ddd47665ee70310b7");
             _notificacionService.MarcarNotificacionComoLeida(comando);
             _notificacionRepositoryMock.Verify(r => r.MarcarComoLeida(comando), Times.Once);
+        }
+
+        [Test]
+        public void TieneNotificacionesNoLeidas_True_RetornaTrue()
+        {
+            var consulta = new TieneNotificacionesNoLeidasConsulta("12890061");
+            _notificacionRepositoryMock.Setup(r => r.TieneNotificacionesNoLeidas(consulta)).Returns(true);
+            var resultado = _notificacionService.TieneNotificacionesNoLeidas(consulta);
+            Assert.That(resultado, Is.True);
+        }
+
+        [Test]
+        public void TieneNotificacionesNoLeidas_False_RetornaFalse()
+        {
+            var consulta = new TieneNotificacionesNoLeidasConsulta("12890061");
+            _notificacionRepositoryMock.Setup(r => r.TieneNotificacionesNoLeidas(consulta)).Returns(false);
+            var resultado = _notificacionService.TieneNotificacionesNoLeidas(consulta);
+            Assert.That(resultado, Is.False);
         }
     }
 }

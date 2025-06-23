@@ -187,5 +187,21 @@ public class PrestamoService : IPrestamoService
             EstadoPrestamo = fila["estado_prestamo"] == DBNull.Value ? null : fila["estado_prestamo"].ToString(),
         };
     }
-    
+    public List<byte[]> ObtenerContratoPorPrestamo(ObtenerContratoPorPrestamoConsulta consulta)
+    {
+        var contrato = _mongoDbContext.Contratos.Find(x => x.PrestamoId == consulta.PrestamoId && !x.EstadoEliminado).FirstOrDefault();
+        if (contrato == null) throw new Exception($"No se encontró contrato para el préstamo {consulta.PrestamoId}");
+        var fileObjectId = MongoDB.Bson.ObjectId.Parse(contrato.FileId);
+        var chunksCollection = _mongoDbContext.BaseDeDatos.GetCollection<MongoDB.Bson.BsonDocument>("fs.chunks");
+        var filter = Builders<MongoDB.Bson.BsonDocument>.Filter.Eq("files_id", fileObjectId);
+        var chunks = chunksCollection.Find(filter).SortBy(c => c["n"]).ToList();
+        var dataChunks = new List<byte[]>();
+        foreach (var chunk in chunks)
+        {
+            if (chunk.Contains("data"))
+                dataChunks.Add(chunk["data"].AsBsonBinaryData.Bytes);
+        }
+        return dataChunks;
+    }
+
 }

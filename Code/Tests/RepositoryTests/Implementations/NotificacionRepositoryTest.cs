@@ -7,6 +7,8 @@ using System.Collections.Generic;
 using System;
 using Microsoft.Extensions.Options;
 using MongoDB.Bson.Serialization;
+using System.Linq;
+using System.Linq.Expressions;
 
 namespace IMT_Reservas.Tests.RepositoryTests
 {
@@ -68,7 +70,7 @@ namespace IMT_Reservas.Tests.RepositoryTests
         {
             var comando = new MarcarComoLeidoComando("68535f7ddd47665ee70310b7");
             var serializer = BsonSerializer.SerializerRegistry.GetSerializer<BsonDocument>();
-            var expectedUpdate = Builders<BsonDocument>.Update.Set("Leida", true);
+            var expectedUpdate = Builders<BsonDocument>.Update.Set("Leido", true);
             var renderedExpected = expectedUpdate.Render(serializer, BsonSerializer.SerializerRegistry);
 
             _collectionMock.Setup(c => c.UpdateOne(
@@ -95,7 +97,7 @@ namespace IMT_Reservas.Tests.RepositoryTests
                     { "Titulo", "Solicitud aprobada" },
                     { "Contenido", "Tu solicitud de préstamo para Router Inalámbrico ha sido aprobada. Pue…" },
                     { "FechaEnvio", DateTime.Parse("2025-06-12T09:15:00.000Z") },
-                    { "Leida", false },
+                    { "Leido", false },
                     { "EstadoEliminado", false }
                 },
                 new BsonDocument
@@ -105,7 +107,7 @@ namespace IMT_Reservas.Tests.RepositoryTests
                     { "Titulo", "Solicitud rechazada" },
                     { "Contenido", "Tu solicitud de préstamo para Monitor Profesional ha sido rechazada de…" },
                     { "FechaEnvio", DateTime.Parse("2025-06-14T10:30:00.000Z") },
-                    { "Leida", false },
+                    { "Leido", false },
                     { "EstadoEliminado", false }
                 }
             };
@@ -147,6 +149,51 @@ namespace IMT_Reservas.Tests.RepositoryTests
             var invalidId = "id";
             Assert.Throws<ErrorDataBase>(() => _notificacionRepository.Eliminar(new EliminarNotificacionComando(invalidId)));
             Assert.Throws<ErrorDataBase>(() => _notificacionRepository.MarcarComoLeida(new MarcarComoLeidoComando(invalidId)));
+        }
+
+        [Test]
+        public void TieneNotificacionesNoLeidas_TrueYFalse()
+        {
+            var carnetUsuario = "12890061";
+            var consulta = new TieneNotificacionesNoLeidasConsulta(carnetUsuario);
+            var filtro = Builders<BsonDocument>.Filter.And(
+                Builders<BsonDocument>.Filter.Eq("CarnetUsuario", carnetUsuario),
+                Builders<BsonDocument>.Filter.Eq("Leido", false),
+                Builders<BsonDocument>.Filter.Eq("EstadoEliminado", false)
+            );
+
+            // Caso true
+            var cursorMockTrue = new Mock<IAsyncCursor<BsonDocument>>();
+            cursorMockTrue.SetupSequence(c => c.MoveNext(It.IsAny<System.Threading.CancellationToken>()))
+                .Returns(true)
+                .Returns(false);
+            cursorMockTrue.Setup(c => c.Current).Returns(new List<BsonDocument> {
+                new BsonDocument {
+                    { "CarnetUsuario", carnetUsuario },
+                    { "Leido", false },
+                    { "EstadoEliminado", false }
+                }
+            });
+            _collectionMock.Setup(c => c.FindSync(
+                It.IsAny<FilterDefinition<BsonDocument>>(),
+                It.Is<FindOptions<BsonDocument, BsonDocument>>(o => o.Limit == 1),
+                default
+            )).Returns(cursorMockTrue.Object);
+            var resultadoTrue = _notificacionRepository.TieneNotificacionesNoLeidas(consulta);
+            Assert.That(resultadoTrue, Is.True);
+
+            // Caso false
+            var cursorMockFalse = new Mock<IAsyncCursor<BsonDocument>>();
+            cursorMockFalse.SetupSequence(c => c.MoveNext(It.IsAny<System.Threading.CancellationToken>()))
+                .Returns(false);
+            cursorMockFalse.Setup(c => c.Current).Returns(new List<BsonDocument>());
+            _collectionMock.Setup(c => c.FindSync(
+                It.IsAny<FilterDefinition<BsonDocument>>(),
+                It.Is<FindOptions<BsonDocument, BsonDocument>>(o => o.Limit == 1),
+                default
+            )).Returns(cursorMockFalse.Object);
+            var resultadoFalse = _notificacionRepository.TieneNotificacionesNoLeidas(consulta);
+            Assert.That(resultadoFalse, Is.False);
         }
     }
 }
