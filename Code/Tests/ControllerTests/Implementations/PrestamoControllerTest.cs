@@ -71,7 +71,7 @@ namespace IMT_Reservas.Tests.ControllerTests
         {
             var mockFile = new Mock<IFormFile>();
             yield return new object[] { new CrearPrestamoComando(new int[] { 1 }, DateTime.Now.AddDays(1), DateTime.Now.AddDays(2), "Obs", "", mockFile.Object), new ErrorNombreRequerido() };
-            yield return new object[] { new CrearPrestamoComando(new int[0], DateTime.Now.AddDays(1), DateTime.Now.AddDays(2), "Obs", "12345", mockFile.Object), new ErrorIdInvalido() };
+            yield return new object[] { new CrearPrestamoComando(new int[0], DateTime.Now.AddDays(1), DateTime.Now.AddDays(2), "Obs", "12345", mockFile.Object), new ErrorIdInvalido("Id inválido") };
         }
 
         [Test]

@@ -112,7 +112,7 @@ namespace IMT_Reservas.Tests.ControllerTests
 
         private static IEnumerable<object[]> FuenteCasos_ActualizarAccesorio_BadRequest()
         {
-            yield return new object[] { new ActualizarAccesorioComando(0, "Inválido", null, null, null, null, null, null), new ErrorIdInvalido() };
+            yield return new object[] { new ActualizarAccesorioComando(0, "Inválido", null, null, null, null, null, null), new ErrorIdInvalido("Id inválido") };
             yield return new object[] { new ActualizarAccesorioComando(1, "", null, null, null, null, null, null), new ErrorNombreRequerido() };
             yield return new object[] { new ActualizarAccesorioComando(1, new string('a', 101), null, null, null, null, null, null), new ErrorLongitudInvalida("nombre del accesorio", 100) };
             yield return new object[] { new ActualizarAccesorioComando(1, "Nombre Valido", null, null, 0, null, null, null), new ErrorCodigoImtRequerido() };
@@ -168,7 +168,7 @@ namespace IMT_Reservas.Tests.ControllerTests
 
         private static IEnumerable<object[]> FuenteCasos_EliminarAccesorio_BadRequest()
         {
-            yield return new object[] { 0, new ErrorIdInvalido() };
+            yield return new object[] { 0, new ErrorIdInvalido("Id inválido") };
         }
 
         [Test]

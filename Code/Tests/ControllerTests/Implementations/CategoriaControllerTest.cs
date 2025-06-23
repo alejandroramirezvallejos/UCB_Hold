@@ -112,7 +112,7 @@ namespace IMT_Reservas.Tests.ControllerTests
 
         private static IEnumerable<object[]> FuenteCasos_ActualizarCategoria_BadRequest()
         {
-            yield return new object[] { new ActualizarCategoriaComando(0, "Inválido"), new ErrorIdInvalido() };
+            yield return new object[] { new ActualizarCategoriaComando(0, "Inválido"), new ErrorIdInvalido("Id inválido") };
             yield return new object[] { new ActualizarCategoriaComando(1, ""), new ErrorNombreRequerido() };
             yield return new object[] { new ActualizarCategoriaComando(1, new string('a', 51)), new ErrorLongitudInvalida("nombre de la categoría", 50) };
         }
@@ -166,7 +166,7 @@ namespace IMT_Reservas.Tests.ControllerTests
 
         private static IEnumerable<object[]> FuenteCasos_EliminarCategoria_BadRequest()
         {
-            yield return new object[] { 0, new ErrorIdInvalido() };
+            yield return new object[] { 0, new ErrorIdInvalido("Id inválido") };
         }
 
         [Test]

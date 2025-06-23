@@ -112,7 +112,7 @@ namespace IMT_Reservas.Tests.ControllerTests
 
         private static IEnumerable<object[]> FuenteCasos_ActualizarGavetero_BadRequest()
         {
-            yield return new object[] { new ActualizarGaveteroComando(0, "Inválido", null, null, null, null, null), new ErrorIdInvalido() };
+            yield return new object[] { new ActualizarGaveteroComando(0, "Inválido", null, null, null, null, null), new ErrorIdInvalido("Id inválido") };
             yield return new object[] { new ActualizarGaveteroComando(1, "", null, "Mueble", null, null, null), new ErrorNombreRequerido() };
             yield return new object[] { new ActualizarGaveteroComando(1, "Nombre", null, "", null, null, null), new ErrorNombreRequerido() };
             yield return new object[] { new ActualizarGaveteroComando(1, "Nombre", null, "Mueble", -10, null, null), new ErrorValorNegativo("longitud") };
@@ -158,7 +158,7 @@ namespace IMT_Reservas.Tests.ControllerTests
 
         private static IEnumerable<object[]> FuenteCasos_EliminarGavetero_BadRequest()
         {
-            yield return new object[] { 0, new ErrorIdInvalido() };
+            yield return new object[] { 0, new ErrorIdInvalido("Id inválido") };
         }
 
         [Test]

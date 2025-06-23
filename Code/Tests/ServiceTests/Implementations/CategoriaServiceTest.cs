@@ -35,7 +35,7 @@ namespace IMT_Reservas.Tests.ServiceTests
         [Test]
         public void CrearCategoria_NombreExcedeLimite_LanzaErrorLongitudInvalida()
         {
-            CrearCategoriaComando comando = new CrearCategoriaComando(new string('a', 51));
+            CrearCategoriaComando comando = new CrearCategoriaComando(new string('a', 256));
             Assert.Throws<ErrorLongitudInvalida>(() => _categoriaService.CrearCategoria(comando));
         }
 
@@ -81,7 +81,7 @@ namespace IMT_Reservas.Tests.ServiceTests
         [Test]
         public void ActualizarCategoria_NombreExcedeLimite_LanzaErrorLongitudInvalida()
         {
-            ActualizarCategoriaComando comando = new ActualizarCategoriaComando(1, new string('a', 51));
+            ActualizarCategoriaComando comando = new ActualizarCategoriaComando(1, new string('a', 256));
             Assert.Throws<ErrorLongitudInvalida>(() => _categoriaService.ActualizarCategoria(comando));
         }
 

@@ -91,7 +91,7 @@ namespace IMT_Reservas.Tests.ControllerTests
         public void ObtenerComentariosPorGrupoEquipo_IdInvalido_RetornaBadRequest()
         {
             var idGrupoEquipo = 0;
-            _comentarioServiceMock.Setup(s => s.ObtenerComentariosPorGrupoEquipo(It.IsAny<ObtenerComentariosPorGrupoEquipoConsulta>())).Throws(new ErrorIdInvalido());
+            _comentarioServiceMock.Setup(s => s.ObtenerComentariosPorGrupoEquipo(It.IsAny<ObtenerComentariosPorGrupoEquipoConsulta>())).Throws(new ErrorIdInvalido("El IdGrupoEquipo es requerido y debe ser mayor a 0."));
             IActionResult resultado = _comentarioController.ObtenerComentariosPorGrupoEquipo(idGrupoEquipo);
             Assert.That(resultado, Is.InstanceOf<BadRequestObjectResult>());
         }
@@ -110,9 +110,8 @@ namespace IMT_Reservas.Tests.ControllerTests
         public void EliminarComentario_IdInvalido_RetornaBadRequest()
         {
             var idComentario = "id_invalido";
-            _comentarioServiceMock.Setup(s => s.EliminarComentario(It.Is<EliminarComentarioComando>(c => c.Id == idComentario))).Throws(new ErrorIdInvalido());
+            _comentarioServiceMock.Setup(s => s.EliminarComentario(It.Is<EliminarComentarioComando>(c => c.Id == idComentario))).Throws(new ErrorIdInvalido("Id inválido"));
             var resultado = _comentarioController.Eliminar(idComentario);
-            
             Assert.That(resultado, Is.InstanceOf<BadRequestObjectResult>());
         }
 
@@ -153,7 +152,7 @@ namespace IMT_Reservas.Tests.ControllerTests
             var idComentario = "id_invalido";
             var carnetUsuario = "2";
             var comando = new AgregarLikeComentarioComando(idComentario, carnetUsuario);
-            _comentarioServiceMock.Setup(s => s.AgregarLikeComentario(It.Is<AgregarLikeComentarioComando>(c => c.Id == idComentario && c.CarnetUsuario == carnetUsuario))).Throws(new ErrorIdInvalido());
+            _comentarioServiceMock.Setup(s => s.AgregarLikeComentario(It.Is<AgregarLikeComentarioComando>(c => c.Id == idComentario && c.CarnetUsuario == carnetUsuario))).Throws(new ErrorIdInvalido("Id inválido"));
             var resultado = _comentarioController.AgregarMeGusta(idComentario, comando);
             Assert.That(resultado, Is.InstanceOf<BadRequestObjectResult>());
         }

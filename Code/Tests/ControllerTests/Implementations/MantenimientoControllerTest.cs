@@ -81,7 +81,7 @@ namespace IMT_Reservas.Tests.ControllerTests
             yield return new object[] { new CrearMantenimientoComando(today, today.AddDays(1), "Empresa", 100.50, "Desc", new int[] { 1 }, new string[] { }, new string[] { "Equipo" }), new ErrorReferenciaInvalida("tipos de mantenimiento") };
             yield return new object[] { new CrearMantenimientoComando(today, today.AddDays(1), "Empresa", 100.50, "Desc", new int[] { 1, 2 }, new string[] { "Tipo" }, new string[] { "Equipo" }), new ErrorReferenciaInvalida("equipos y tipos") };
             yield return new object[] { new CrearMantenimientoComando(today, today.AddDays(1), "Empresa", 100.50, "Desc", new int[] { 1 }, new string[] { "Tipo" }, new string[] { "Desc1", "Desc2" }), new ErrorReferenciaInvalida("descripciones") };
-            yield return new object[] { new CrearMantenimientoComando(today, today.AddDays(1), "Empresa", 100.50, "Desc", new int[] { 0 }, new string[] { "Tipo" }, new string[] { "Equipo" }), new ErrorIdInvalido() };
+            yield return new object[] { new CrearMantenimientoComando(today, today.AddDays(1), "Empresa", 100.50, "Desc", new int[] { 0 }, new string[] { "Tipo" }, new string[] { "Equipo" }), new ErrorIdInvalido("Id inválido") };
             yield return new object[] { new CrearMantenimientoComando(today, today.AddDays(1), "Empresa", -100, "Desc", new int[] { 1 }, new string[] { "Tipo" }, new string[] { "Equipo" }), new ErrorValorNegativo("costo") };
         }
 
@@ -144,7 +144,7 @@ namespace IMT_Reservas.Tests.ControllerTests
         }
         private static IEnumerable<object[]> FuenteCasos_EliminarMantenimiento_BadRequest()
         {
-            yield return new object[] { 0, new ErrorIdInvalido() };
+            yield return new object[] { 0, new ErrorIdInvalido("Id inválido") };
         }
 
         [Test]

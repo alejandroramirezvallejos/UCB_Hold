@@ -111,7 +111,7 @@ namespace IMT_Reservas.Tests.ControllerTests
 
         private static IEnumerable<object[]> FuenteCasos_ActualizarMueble_BadRequest()
         {
-            yield return new object[] { new ActualizarMuebleComando(0, "Inválido", null, null, null, null, null, null), new ErrorIdInvalido() };
+            yield return new object[] { new ActualizarMuebleComando(0, "Inválido", null, null, null, null, null, null), new ErrorIdInvalido("Id inválido") };
             yield return new object[] { new ActualizarMuebleComando(1, "", null, null, null, null, null, null), new ErrorNombreRequerido() };
             yield return new object[] { new ActualizarMuebleComando(1, "Nombre", null, -10, null, null, null, null), new ErrorValorNegativo("costo") };
             yield return new object[] { new ActualizarMuebleComando(1, "Nombre", null, null, null, 0, null, null), new ErrorValorNegativo("longitud") };
@@ -159,7 +159,7 @@ namespace IMT_Reservas.Tests.ControllerTests
 
         private static IEnumerable<object[]> FuenteCasos_EliminarMueble_BadRequest()
         {
-            yield return new object[] { 0, new ErrorIdInvalido() };
+            yield return new object[] { 0, new ErrorIdInvalido("Id inválido") };
         }
 
         [Test]

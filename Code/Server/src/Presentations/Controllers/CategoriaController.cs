@@ -49,6 +49,7 @@ public class CategoriaController : ControllerBase
         try { servicio.EliminarCategoria(new EliminarCategoriaComando(id)); return NoContent(); }
         catch (ErrorRegistroNoEncontrado ex) { return NotFound(new { error = ex.GetType().Name, mensaje = ex.Message }); }
         catch (ErrorRegistroEnUso ex) { return Conflict(new { error = ex.GetType().Name, mensaje = ex.Message }); }
+        catch (ErrorIdInvalido ex) { return BadRequest(new { error = ex.GetType().Name, mensaje = ex.Message }); }
         catch (Exception ex) {
             if (ex.Message.Contains("Error General Servidor") || ex.InnerException?.Message.Contains("Error General Servidor") == true)
                 return StatusCode(500, new { error = ex.GetType().Name, mensaje = ex.Message });

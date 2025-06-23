@@ -75,7 +75,7 @@ namespace IMT_Reservas.Tests.ControllerTests
             yield return new object[] { new CrearEquipoComando("Laptop", "", "Marca", null, null, null, null, null, null, null, null), new ErrorModeloRequerido() };
             yield return new object[] { new CrearEquipoComando("Laptop", "Modelo", "", null, null, null, null, null, null, null, null), new ErrorNombreRequerido() };
             yield return new object[] { new CrearEquipoComando("Laptop", "Modelo", "Marca", null, null, null, null, null, -100, null, null), new ErrorValorNegativo("costo de referencia") };
-            yield return new object[] { new CrearEquipoComando("Laptop", "Modelo", "Marca", null, null, null, null, null, null, 0, null), new ErrorIdInvalido() };
+            yield return new object[] { new CrearEquipoComando("Laptop", "Modelo", "Marca", null, null, null, null, null, null, 0, null), new ErrorIdInvalido("Id inválido") };
         }
 
         [Test]
@@ -118,9 +118,9 @@ namespace IMT_Reservas.Tests.ControllerTests
 
         private static IEnumerable<object[]> FuenteCasos_ActualizarEquipo_BadRequest()
         {
-            yield return new object[] { new ActualizarEquipoComando(0, null, null, null, null, null, null, null, null, null, null, null, null), new ErrorIdInvalido() };
+            yield return new object[] { new ActualizarEquipoComando(0, null, null, null, null, null, null, null, null, null, null, null, null), new ErrorIdInvalido("Id inválido") };
             yield return new object[] { new ActualizarEquipoComando(1, null, null, null, null, null, null, null, null, -100, null, null, null), new ErrorValorNegativo("costo de referencia") };
-            yield return new object[] { new ActualizarEquipoComando(1, null, null, null, null, null, null, null, null, null, 0, null, null), new ErrorIdInvalido() };
+            yield return new object[] { new ActualizarEquipoComando(1, null, null, null, null, null, null, null, null, null, 0, null, null), new ErrorIdInvalido("Id inválido") };
         }
 
         [Test]
@@ -163,7 +163,7 @@ namespace IMT_Reservas.Tests.ControllerTests
 
         private static IEnumerable<object[]> FuenteCasos_EliminarEquipo_BadRequest()
         {
-            yield return new object[] { 0, new ErrorIdInvalido() };
+            yield return new object[] { 0, new ErrorIdInvalido("Id inválido") };
         }
 
         [Test]

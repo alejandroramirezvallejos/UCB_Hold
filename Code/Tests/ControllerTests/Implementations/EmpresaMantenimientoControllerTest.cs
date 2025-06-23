@@ -116,7 +116,7 @@ namespace IMT_Reservas.Tests.ControllerTests
 
         private static IEnumerable<object[]> FuenteCasos_ActualizarEmpresa_BadRequest()
         {
-            yield return new object[] { new ActualizarEmpresaMantenimientoComando(0, "Inválido", null, null, null, null, null), new ErrorIdInvalido() };
+            yield return new object[] { new ActualizarEmpresaMantenimientoComando(0, "Inválido", null, null, null, null, null), new ErrorIdInvalido("Id inválido") };
             yield return new object[] { new ActualizarEmpresaMantenimientoComando(1, "", null, null, null, null, null), new ErrorNombreRequerido() };
             yield return new object[] { new ActualizarEmpresaMantenimientoComando(1, new string('a', 101), null, null, null, null, null), new ErrorLongitudInvalida("nombre", 100) };
             yield return new object[] { new ActualizarEmpresaMantenimientoComando(1, "Empresa Valida", null, null, new string('a', 21), null, null), new ErrorLongitudInvalida("telefono", 20) };
@@ -172,7 +172,7 @@ namespace IMT_Reservas.Tests.ControllerTests
 
         private static IEnumerable<object[]> FuenteCasos_EliminarEmpresa_BadRequest()
         {
-            yield return new object[] { 0, new ErrorIdInvalido() };
+            yield return new object[] { 0, new ErrorIdInvalido("Id inválido") };
         }
 
         [Test]

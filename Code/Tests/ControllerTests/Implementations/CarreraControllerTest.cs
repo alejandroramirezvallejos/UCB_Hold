@@ -109,7 +109,7 @@ namespace IMT_Reservas.Tests.ControllerTests.Tests
 
         private static IEnumerable<object[]> FuenteCasos_ActualizarCarrera_BadRequest()
         {
-            yield return new object[] { new ActualizarCarreraComando(0, "Inválido"), new ErrorIdInvalido() };
+            yield return new object[] { new ActualizarCarreraComando(0, "Inválido"), new ErrorIdInvalido("Id inválido") };
             yield return new object[] { new ActualizarCarreraComando(1, ""), new ErrorNombreRequerido() };
             yield return new object[] { new ActualizarCarreraComando(1, new string('a', 257)), new ErrorLongitudInvalida("nombre de la carrera", 256) };
         }
@@ -164,7 +164,7 @@ namespace IMT_Reservas.Tests.ControllerTests.Tests
 
         private static IEnumerable<object[]> FuenteCasos_EliminarCarrera_BadRequest()
         {
-            yield return new object[] { 0, new ErrorIdInvalido() };
+            yield return new object[] { 0, new ErrorIdInvalido("Id inválido") };
         }
 
         [Test]

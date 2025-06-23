@@ -126,7 +126,6 @@ public class ComentarioRepository : IComentarioRepository
             fila["carnet_usuario"] = doc["CarnetUsuario"].AsString;
             fila["id_grupo_equipo"] = doc["IdGrupoEquipo"].AsInt32;
             fila["contenido_comentario"] = doc["Contenido"].AsString;
-            // Contar la cantidad de likes (array)
             fila["likes_comentario"] = doc.Contains("Likes") && doc["Likes"].IsBsonArray ? doc["Likes"].AsBsonArray.Count : 0;
             fila["fecha_creacion_comentario"] = doc["FechaCreacion"].ToUniversalTime();
 

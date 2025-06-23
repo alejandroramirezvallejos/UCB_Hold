@@ -119,7 +119,7 @@ namespace IMT_Reservas.Tests.ControllerTests
 
         private static IEnumerable<object[]> FuenteCasos_ActualizarGrupoEquipo_BadRequest()
         {
-            yield return new object[] { new ActualizarGrupoEquipoComando(0, "Inválido", null, null, null, null, null, null), new ErrorIdInvalido() };
+            yield return new object[] { new ActualizarGrupoEquipoComando(0, "Inválido", null, null, null, null, null, null), new ErrorIdInvalido("Id inválido") };
             yield return new object[] { new ActualizarGrupoEquipoComando(1, "", null, null, null, null, null, null), new ErrorNombreRequerido() };
             yield return new object[] { new ActualizarGrupoEquipoComando(1, "Nombre", "", null, null, null, null, null), new ErrorModeloRequerido() };
             yield return new object[] { new ActualizarGrupoEquipoComando(1, "Nombre", "Modelo", "", null, null, null, null), new ErrorCampoRequerido("marca") };

@@ -113,7 +113,7 @@ namespace IMT_Reservas.Tests.ControllerTests
 
         private static IEnumerable<object[]> FuenteCasos_ActualizarComponente_BadRequest()
         {
-            yield return new object[] { new ActualizarComponenteComando(0, "Inválido", "modelo", "tipo", 1, null, 0, null), new ErrorIdInvalido() };
+            yield return new object[] { new ActualizarComponenteComando(0, "Inválido", "modelo", "tipo", 1, null, 0, null), new ErrorIdInvalido("Id inválido") };
             yield return new object[] { new ActualizarComponenteComando(1, "", "SN1", "Tipo", 1, "desc", 10, null), new ErrorNombreRequerido() };
             yield return new object[] { new ActualizarComponenteComando(1, new string('a', 101), "SN2", "Tipo", 1, "desc", 10, null), new ErrorLongitudInvalida("nombre", 100) };
             yield return new object[] { new ActualizarComponenteComando(1, "CPU", "", "Tipo", 1, "desc", 10, null), new ErrorModeloRequerido() };
@@ -171,7 +171,7 @@ namespace IMT_Reservas.Tests.ControllerTests
 
         private static IEnumerable<object[]> FuenteCasos_EliminarComponente_BadRequest()
         {
-            yield return new object[] { 0, new ErrorIdInvalido() };
+            yield return new object[] { 0, new ErrorIdInvalido("Id inválido") };
         }
 
         [Test]
