@@ -83,3 +83,105 @@
   transform: translateY(1px);
   box-shadow: none;
 }
+
+
+
+/*contrato stylos */
+/* Puedes incluir estilos específicos si lo necesitas */
+ ::ng-deep .contrato-container {
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      line-height: 1.6;
+      max-width: 800px;
+      margin: 0 auto;
+      background-color: #f9f9f9;
+      color: #333;
+      padding: 20px;
+  }
+ ::ng-deep .contrato-container h1 {
+      text-align: center;
+      font-size: 24px;
+      color: #2c3e50;
+      margin-bottom: 20px;
+      text-transform: uppercase;
+  }
+ ::ng-deep .contrato-container p {
+      text-align: justify;
+      margin-bottom: 16px;
+      font-size: 16px;
+  }
+::ng-deep  .contrato-container strong {
+    display: inline;
+    
+    font-size: 16px;
+    color: #2c3e50;
+  }
+::ng-deep  .contrato-container table {
+      width: 100%;
+      border-collapse: collapse;
+      margin: 20px 0;
+      font-size: 14px;
+      border-spacing: 0;
+  }
+::ng-deep  .contrato-container table, 
+    .contrato-container td p {
+      margin: 0;
+      padding: 0;
+      line-height: 1.1 !important;  /* Más compacto que el general */
+      font-size: 13px;  /* Tamaño menor para detalles */
+  }
+
+::ng-deep  .contrato-container td strong {
+      display: block;  /* Para que el nombre quede en línea separada */
+      margin-bottom: 2px;
+      font-size: 14px;  /* Tamaño diferenciado */
+  }
+
+  /* Ajuste general para todas las celdas */
+::ng-deep  .contrato-container td {
+      padding: 4px 6px;
+      line-height: 1.2;
+      vertical-align: top;
+  }
+::ng-deep  .contrato-container td {
+      border: 1px solid #aaa;
+      padding: 4px 6px;  /* Reducido de 12px */
+      text-align: left;
+      line-height: 1.2;  /* Añadido para compactar texto */
+      vertical-align: top; /* Alineación superior */
+  }
+::ng-deep  .contrato-container th {
+      background-color: #e0e0e0;
+      padding: 6px 8px;  /* Padding ligeramente mayor para headers */
+      border: 1px solid #aaa;
+  }
+::ng-deep .contrato-container .signature {
+  margin-top: 40px;
+  display: flex;
+  justify-content: center;
+  align-items: flex-start; /* Alinea los bloques en la parte superior */
+  gap: 40px;
+}
+
+/* Nuevo contenedor para cada grupo de firma */
+::ng-deep .contrato-container .signature > div {
+  display: flex;
+  flex-direction: column;
+  align-items: center; /* Centra verticalmente los elementos */
+  text-align: center; /* Asegura que el texto esté centrado */
+  max-width: 300px; /* Ancho máximo para cada bloque de firma */
+}
+
+::ng-deep .contrato-container .signature img {
+  max-width: 200px;
+  height: auto;
+  border: 1px solid #ccc;
+  padding: 10px;
+  background-color: #fff;
+  margin-bottom: 10px; /* Espacio entre imagen y texto */
+}
+
+::ng-deep .contrato-container .signature p {
+   margin: 0px 0;
+  font-weight: bold;
+  text-align: center;
+} 

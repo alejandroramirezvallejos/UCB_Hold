@@ -8,8 +8,7 @@ import { Router } from '@angular/router';
 import { UsuarioPrevioComponent } from './usuario-previo/usuario-previo.component';
 import { NotificacionService } from '../../services/APIS/Notificacion/notificacion.service';
 import { UsuarioService } from '../../services/usuario/usuario.service';
-import { interval, of } from 'rxjs';
-import { catchError, startWith, switchMap } from 'rxjs/operators';
+
 @Component({
   selector: 'app-navbar',
   standalone: true,
