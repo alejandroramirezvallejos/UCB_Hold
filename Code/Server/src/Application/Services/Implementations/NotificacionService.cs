@@ -100,7 +100,7 @@ public class NotificacionService : INotificacionService
             {
                 var idPrestamo = fila["id_prestamo"].ToString();
                 var carnet = fila["carnet"].ToString();
-                var contenido = $"El préstamo con ID {{idPrestamo}} no ha sido devuelto. Tu cuenta permanecerá bloqueada hasta las {fechaDevolucionEsperada.AddDays(1)}.";
+                var contenido = $"El préstamo con ID {idPrestamo} no ha sido devuelto. Tu cuenta permanecerá bloqueada hasta las {fechaDevolucionEsperada.AddDays(1)}.";
                 var titulo = "Cuenta bloqueada";
                 if (!NotificacionYaExiste(carnet, titulo, contenido))
                 {
