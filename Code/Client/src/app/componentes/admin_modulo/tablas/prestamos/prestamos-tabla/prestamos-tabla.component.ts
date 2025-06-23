@@ -5,11 +5,12 @@ import { Prestamos } from '../../../../../models/admin/Prestamos';
 
 import { PrestamosAPIService } from '../../../../../services/APIS/prestamo/prestamos-api.service';
 import { PrestamoAgrupados } from '../../../../../models/PrestamoAgrupados';
+import { VercontratoComponent } from '../vercontrato/vercontrato.component';
 
 @Component({
   selector: 'app-prestamos-tabla',
   standalone: true,
-  imports: [CommonModule, FormsModule, ReactiveFormsModule],
+  imports: [CommonModule, FormsModule, ReactiveFormsModule , VercontratoComponent],
   templateUrl: './prestamos-tabla.component.html',
   styleUrls: ['./prestamos-tabla.component.css']
 })
@@ -20,6 +21,8 @@ export class PrestamosTablaComponent implements OnInit {
   alertaeliminar: boolean = false;
   prestamos: PrestamoAgrupados[] = [];
   prestamoscopia: PrestamoAgrupados[] = [];
+
+  vercontrato : WritableSignal<boolean> = signal(false);
 
   prestamoSeleccionado: Prestamos = {
     Id: 0,
@@ -246,5 +249,11 @@ export class PrestamosTablaComponent implements OnInit {
     });
 
   }
+
+  cambiarestadovercontrato(prestamo : Prestamos) {
+  this.prestamoSeleccionado = prestamo;
+  this.vercontrato.set(!this.vercontrato());
+  }
+
 
 }
