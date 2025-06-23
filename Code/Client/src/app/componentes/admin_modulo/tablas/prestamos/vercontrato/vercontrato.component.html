@@ -1,0 +1,39 @@
+<div class="modal-overlay">
+  <div class="modal-container">
+    <!-- Header with close button -->
+    <div class="modal-header">
+      <h2 class="modal-title">Ver Contrato</h2>
+      <button class="btn-close" (click)="cerrar()" type="button">
+        <i class="fas fa-times"></i>
+      </button>
+    </div>
+
+    <!-- Modal content -->
+    <div class="modal-content">
+      <div class="contract-viewer">
+        <div class="contract-content" *ngIf="contratoContent; else loading"
+           [innerHTML]="contratoContent">
+        </div>
+        
+        <ng-template #loading>
+          <div class="loading">
+            <div class="spinner"></div>
+            <p>Cargando contrato...</p>
+          </div>
+        </ng-template>
+      </div>
+    </div>
+
+    <!-- Footer with close button -->
+    <div class="modal-footer">
+      <button class="btn-secondary" (click)="cerrar()" type="button">
+        <i class="fas fa-times"></i>
+        Cerrar
+      </button>
+    </div>
+  </div>
+</div>
+
+
+
+
