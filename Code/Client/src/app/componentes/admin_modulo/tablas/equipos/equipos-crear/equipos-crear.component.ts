@@ -27,9 +27,9 @@ export class EquiposCrearComponent {
     EstadoEquipo: '',
     Ubicacion: '',
     NombreGavetero: '',
-    CostoReferencia: 0,
+    CostoReferencia: null,
     Descripcion: '',
-    TiempoMaximoPrestamo: 0,
+    TiempoMaximoPrestamo: null,
     Procedencia: ''
   };
 
@@ -40,7 +40,7 @@ export class EquiposCrearComponent {
   registrar(){
 
     this.equipoapi.crearEquipo(this.equipo).subscribe({
-      next: (response) => {
+      next: () => {
         this.Actualizar.emit();
         this.cerrar();
       },

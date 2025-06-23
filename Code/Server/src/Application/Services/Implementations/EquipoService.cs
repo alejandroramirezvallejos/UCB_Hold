@@ -19,8 +19,8 @@ public class EquipoService : IEquipoService
             if (ex is ErrorDataBase errorDb)
             {
                 var mensaje = errorDb.Message?.ToLower() ?? "";
-                if (mensaje.Contains("no se encontró el grupo de equipos con nombre")) throw new ErrorReferenciaInvalida("nombre grupo de equipos");
-                if (mensaje.Contains("no se encontro el gavetero con nombre")) throw new ErrorReferenciaInvalida("nombre gavetero");
+                if (mensaje.Contains("no se encontró el grupo de equipos con nombre")) throw new ErrorGrupoEquipoNoEncontrado();
+                if (mensaje.Contains("no se encontro el gavetero con nombre")) throw new ErrorGaveteroNoEncontrado();
                 if (errorDb.SqlState == "23505" || mensaje.Contains("ya existe un equipo con ese código ucb o número serial")) throw new ErrorRegistroYaExiste();
                 if (mensaje.Contains("error al insertar equipo")) throw new Exception($"Error inesperado al insertar equipo: {errorDb.Message}", errorDb);
                 throw new Exception($"Error inesperado de base de datos al crear equipo: {errorDb.Message}", errorDb);
@@ -53,8 +53,8 @@ public class EquipoService : IEquipoService
             {
                 var mensaje = errorDb.Message?.ToLower() ?? "";
                 if (mensaje.Contains("no se encontró un equipo activo con id")) throw new ErrorRegistroNoEncontrado();
-                if (mensaje.Contains("no se encontró el grupo de equipos con nombre")) throw new ErrorReferenciaInvalida("grupo de equipos");
-                if (mensaje.Contains("no se encontró el gavetero con nombre")) throw new ErrorReferenciaInvalida("gavetero");
+                if (mensaje.Contains("no se encontró el grupo de equipos con nombre")) throw new ErrorGrupoEquipoNoEncontrado();
+                if (mensaje.Contains("no se encontró el gavetero con nombre")) throw new ErrorGaveteroNoEncontrado();
                 if (mensaje.Contains("valor inválido para estado_equipo")) throw new ArgumentException("Estado de equipo inválido. Debe ser 'operativo', 'inoperativo', o 'parcialmente_operativo'.");
                 if (errorDb.SqlState == "23505") throw new ErrorRegistroYaExiste();
                 if (mensaje.Contains("error inesperado al actualizar el equipo")) throw new Exception($"Error inesperado al actualizar equipo: {errorDb.Message}", errorDb);
@@ -67,7 +67,7 @@ public class EquipoService : IEquipoService
     private void ValidarEntradaActualizacion(ActualizarEquipoComando comando)
     {
         if (comando == null) throw new ArgumentNullException(nameof(comando));
-        if (comando.Id <= 0) throw new ErrorIdInvalido();
+        if (comando.Id <= 0) throw new ErrorIdInvalido("equipo");
         if (comando.CostoReferencia.HasValue && comando.CostoReferencia < 0) throw new ErrorValorNegativo("costo de referencia");
         if (comando.TiempoMaximoPrestamo.HasValue && comando.TiempoMaximoPrestamo <= 0) throw new ErrorValorNegativo("Tiempo máximo de préstamo");
     }
@@ -95,7 +95,7 @@ public class EquipoService : IEquipoService
     private void ValidarEntradaEliminacion(EliminarEquipoComando comando)
     {
         if (comando == null) throw new ArgumentNullException(nameof(comando));
-        if (comando.Id <= 0) throw new ErrorIdInvalido();
+        if (comando.Id <= 0) throw new ErrorIdInvalido("equipo");
     }
     public List<EquipoDto>? ObtenerTodosEquipos()
     {

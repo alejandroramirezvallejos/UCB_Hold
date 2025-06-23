@@ -19,7 +19,7 @@ export class AccesoriosEditarComponent {
     tipo: '',
     descripcion: '',
     codigo_imt: '',
-    precio: 0,
+    precio: null,
     url_data_sheet: '',
     nombreEquipoAsociado: ''
   };

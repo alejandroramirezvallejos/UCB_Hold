@@ -16,13 +16,13 @@ export class MueblesEditarComponent implements OnChanges {
   @Input() muebleOriginal: Muebles = {
     Id: 0,
     Nombre: '',
-    NumeroGaveteros: 0,
+    NumeroGaveteros: null,
     Ubicacion: '',
     Tipo: '',
-    Costo: 0,
-    Longitud: 0,
-    Profundidad: 0,
-    Altura: 0
+    Costo: null,
+    Longitud: null,
+    Profundidad: null,
+    Altura: null
   };
 
   mueble: Muebles = { ...this.muebleOriginal };
@@ -41,7 +41,6 @@ export class MueblesEditarComponent implements OnChanges {
       },
       error: (error) => {
         alert(error.error.error + ': ' + error.error.mensaje);
-
       }
     });
   }

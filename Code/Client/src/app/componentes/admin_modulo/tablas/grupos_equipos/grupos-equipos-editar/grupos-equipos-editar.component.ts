@@ -40,7 +40,6 @@ export class GruposEquiposEditarComponent implements OnChanges {
       },
       error: (error) => {
         alert(error.error.error + ': ' + error.error.mensaje);
-
       }
     });
   }

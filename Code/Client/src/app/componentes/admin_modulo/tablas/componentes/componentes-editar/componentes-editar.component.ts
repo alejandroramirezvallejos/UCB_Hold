@@ -19,7 +19,7 @@ export class ComponentesEditarComponent {
     Modelo: '',
     Tipo: '',
     Descripcion: '',
-    PrecioReferencia: 0,
+    PrecioReferencia: null,
     CodigoImtEquipo: 0,
     UrlDataSheet: '',
     NombreEquipo: ''
@@ -35,7 +35,6 @@ export class ComponentesEditarComponent {
       },
       error: (error) => {
         alert(error.error.error + ': ' + error.error.mensaje);
-        this.cerrar();
       }
     });
   }

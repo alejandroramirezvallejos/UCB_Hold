@@ -36,7 +36,6 @@ export class CategoriasCrearComponent {
       },
       error => {
         alert(error.error.error + ': ' + error.error.mensaje);
-        this.cerrar();
       }
     );
   }

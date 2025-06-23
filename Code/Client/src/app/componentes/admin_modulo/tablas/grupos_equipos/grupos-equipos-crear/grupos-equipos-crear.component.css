@@ -103,7 +103,8 @@
 }
 
 .form-input:invalid {
-  border-color: #dc2626;
+  border-color: #dc2626 !important;
+  border-width: 2px !important;
 }
 
 textarea.form-input {

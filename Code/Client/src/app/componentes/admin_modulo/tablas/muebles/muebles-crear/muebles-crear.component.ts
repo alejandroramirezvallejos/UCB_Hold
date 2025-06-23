@@ -21,10 +21,10 @@ export class MueblesCrearComponent {
     NumeroGaveteros: 0,
     Ubicacion: '',
     Tipo: '',
-    Costo: 0,
-    Longitud: 0,
-    Profundidad: 0,
-    Altura: 0
+    Costo: null,
+    Longitud: null,
+    Profundidad: null,
+    Altura: null
   };
 
   constructor(private muebleapi: MuebleService) { }

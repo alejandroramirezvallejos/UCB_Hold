@@ -22,7 +22,7 @@ public class GrupoEquipoService : IGrupoEquipoService
             if (ex is ErrorDataBase errorDb)
             {
                 var mensaje = errorDb.Message?.ToLower() ?? "";
-                if (mensaje.Contains("no se encontró la categoría con nombre")) throw new ErrorReferenciaInvalida("categoría");
+                if (mensaje.Contains("no se encontró la categoría con nombre")) throw new ErrorCategoriaNoEncontrada();
                 if (mensaje.Contains("ya existe un grupo de equipos con nombre")) throw new ErrorRegistroYaExiste();
                 if (errorDb.SqlState == "23505" || mensaje.Contains("violación de unicidad al intentar insertar grupo de equipos")) throw new ErrorRegistroYaExiste();
                 if (mensaje.Contains("error al insertar grupo de equipos")) throw new Exception($"Error inesperado al insertar grupo de equipos: {errorDb.Message}", errorDb);
@@ -42,21 +42,8 @@ public class GrupoEquipoService : IGrupoEquipoService
         if (string.IsNullOrWhiteSpace(comando.NombreCategoria)) throw new ErrorCategoriaRequerida();
         if (string.IsNullOrWhiteSpace(comando.UrlImagen)) throw new ErrorUrlImagenRequerida();
     }
-    private void ValidarEntradaActualizacion(ActualizarGrupoEquipoComando comando)
-    {
-        if (comando == null) throw new ArgumentNullException(nameof(comando));
-        if (comando.Id <= 0) throw new ErrorIdInvalido();
-        if (!string.IsNullOrWhiteSpace(comando.Nombre) && comando.Nombre.Length > 255) throw new ErrorLongitudInvalida("nombre grupo equipo", 255);
-        if (!string.IsNullOrWhiteSpace(comando.Modelo) && comando.Modelo.Length > 255) throw new ErrorLongitudInvalida("modelo grupo equipo", 255);
-        if (!string.IsNullOrWhiteSpace(comando.Marca) && comando.Marca.Length > 255) throw new ErrorLongitudInvalida("marca grupo equipo", 255);
-        if (!string.IsNullOrWhiteSpace(comando.Descripcion) && comando.Descripcion.Length > 255) throw new ErrorLongitudInvalida("descripcion grupo equipo", 255);
-        if (!string.IsNullOrWhiteSpace(comando.NombreCategoria) && comando.NombreCategoria.Length > 255) throw new ErrorLongitudInvalida("nombre categoria grupo equipo", 255);
-    }
-    private void ValidarEntradaEliminacion(EliminarGrupoEquipoComando comando)
-    {
-        if (comando == null) throw new ArgumentNullException(nameof(comando));
-        if (comando.Id <= 0) throw new ErrorIdInvalido();
-    }
+    
+    
     public virtual GrupoEquipoDto? ObtenerGrupoEquipoPorId(ObtenerGrupoEquipoPorIdConsulta consulta)
     {
         try
@@ -108,7 +95,7 @@ public class GrupoEquipoService : IGrupoEquipoService
             {
                 var mensaje = errorDb.Message?.ToLower() ?? "";
                 if (mensaje.Contains("no se encontró un grupo de equipos activo con id")) throw new ErrorRegistroNoEncontrado();
-                if (mensaje.Contains("no se encontró la categoría activa con nombre")) throw new ErrorReferenciaInvalida("categoría");
+                if (mensaje.Contains("no se encontró la categoría activa con nombre")) throw new ErrorCategoriaNoEncontrada();
                 if (mensaje.Contains("ya existe otro grupo de equipos activo con la combinación")) throw new ErrorRegistroYaExiste();
                 if (errorDb.SqlState == "23505" || mensaje.Contains("la combinación nombre") || mensaje.Contains("ya está en uso")) throw new ErrorRegistroYaExiste();
                 if (mensaje.Contains("error inesperado al actualizar el grupo de equipos")) throw new Exception($"Error inesperado al actualizar grupo de equipos: {errorDb.Message}", errorDb);
@@ -117,6 +104,16 @@ public class GrupoEquipoService : IGrupoEquipoService
             if (ex is ErrorRepository errorRepo) throw new Exception($"Error del repositorio al actualizar grupo de equipos: {errorRepo.Message}", errorRepo);
             throw;
         }
+    }
+    private void ValidarEntradaActualizacion(ActualizarGrupoEquipoComando comando)
+    {
+        if (comando == null) throw new ArgumentNullException(nameof(comando));
+        if (comando.Id <= 0) throw new ErrorIdInvalido("grupo de equipos");
+        if (!string.IsNullOrWhiteSpace(comando.Nombre) && comando.Nombre.Length > 255) throw new ErrorLongitudInvalida("nombre grupo equipo", 255);
+        if (!string.IsNullOrWhiteSpace(comando.Modelo) && comando.Modelo.Length > 255) throw new ErrorLongitudInvalida("modelo grupo equipo", 255);
+        if (!string.IsNullOrWhiteSpace(comando.Marca) && comando.Marca.Length > 255) throw new ErrorLongitudInvalida("marca grupo equipo", 255);
+        if (!string.IsNullOrWhiteSpace(comando.Descripcion) && comando.Descripcion.Length > 255) throw new ErrorLongitudInvalida("descripcion grupo equipo", 255);
+        if (!string.IsNullOrWhiteSpace(comando.NombreCategoria) && comando.NombreCategoria.Length > 255) throw new ErrorLongitudInvalida("nombre categoria grupo equipo", 255);
     }
     public virtual void EliminarGrupoEquipo(EliminarGrupoEquipoComando comando)
     {
@@ -139,6 +136,12 @@ public class GrupoEquipoService : IGrupoEquipoService
             throw;
         }
     }
+    private void ValidarEntradaEliminacion(EliminarGrupoEquipoComando comando)
+    {
+        if (comando == null) throw new ArgumentNullException(nameof(comando));
+        if (comando.Id <= 0) throw new ErrorIdInvalido("grupo de equipos");
+    }
+    
     private GrupoEquipoDto MapearFilaADto(DataRow fila)
     {
         return new GrupoEquipoDto

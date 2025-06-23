@@ -24,9 +24,9 @@ public class MantenimientoService : IMantenimientoService
             if (ex is ErrorDataBase errorDb)
             {
                 var mensaje = errorDb.Message?.ToLower() ?? "";
-                if (mensaje.Contains("no se encontró la empresa con nombre")) throw new ErrorReferenciaInvalida("empresa de mantenimiento");
-                if (mensaje.Contains("los arreglos de equipos deben tener la misma longitud")) throw new ArgumentException("Los arreglos de equipos, tipos de mantenimiento y descripciones deben tener la misma longitud.");
-                if (mensaje.Contains("equipo no encontrado con código imt")) throw new ErrorReferenciaInvalida("equipo");
+                if (mensaje.Contains("no se encontró la empresa con nombre")) throw new ErrorEmpresaMantenimientoNoEncontrada();
+                if (mensaje.Contains("los arreglos de equipos deben tener la misma longitud")) throw new ErrorCodigoImtYTiposLongitudDiferente();
+                if (mensaje.Contains("equipo no encontrado con código imt")) throw new ErrorCodigoImtNoEncontrado();
                 if (errorDb.SqlState == "23505" || mensaje.Contains("violación de unicidad al insertar mantenimiento")) throw new ErrorRegistroYaExiste();
                 if (mensaje.Contains("error al insertar mantenimiento")) throw new Exception($"Error inesperado al insertar mantenimiento: {errorDb.Message}", errorDb);
                 throw new Exception($"Error inesperado de base de datos al crear mantenimiento: {errorDb.Message}", errorDb);
@@ -34,6 +34,19 @@ public class MantenimientoService : IMantenimientoService
             if (ex is ErrorRepository errorRepo) throw new Exception($"Error del repositorio al crear mantenimiento: {errorRepo.Message}", errorRepo);
             throw;
         }
+    }
+    private void ValidarEntradaCreacion(CrearMantenimientoComando comando)
+    {
+        if (comando == null) throw new ArgumentNullException(nameof(comando));
+        if (comando.FechaMantenimiento == null) throw new ErrorFechaMantenimientoInicioRequerida();
+        if (comando.FechaFinalDeMantenimiento == null) throw new ErrorFechaMantenimientoFinalRequerida();
+        if (comando.FechaFinalDeMantenimiento < comando.FechaMantenimiento) throw new ErrorFechaInvalida();
+        if (string.IsNullOrWhiteSpace(comando.NombreEmpresaMantenimiento)) throw new ErrorNombreRequerido();
+        if (comando.CodigoIMT == null || comando.CodigoIMT.Length == 0) throw new ErrorCodigoImtRequerido();
+        if (comando.TipoMantenimiento == null || comando.TipoMantenimiento.Length == 0) throw new ErrorTipoMantenimientoRequerido();
+        if (comando.CodigoIMT.Length != comando.TipoMantenimiento.Length) throw new ErrorCodigoImtYTiposLongitudDiferente();
+        if (comando.CodigoIMT.Any(codigo => codigo <= 0)) throw new ErrorCodigosImtInvalido();
+        if (comando.Costo.HasValue && comando.Costo.Value < 0) throw new ErrorValorNegativo("costo");
     }
     public virtual void EliminarMantenimiento(EliminarMantenimientoComando comando)
     {
@@ -55,6 +68,11 @@ public class MantenimientoService : IMantenimientoService
             if (ex is ErrorRepository errorRepo) throw new Exception($"Error del repositorio al eliminar mantenimiento: {errorRepo.Message}", errorRepo);
             throw;
         }
+    }
+    private void ValidarEntradaEliminacion(EliminarMantenimientoComando comando)
+    {
+        if (comando == null) throw new ArgumentNullException(nameof(comando));
+        if (comando.Id <= 0) throw new ErrorIdInvalido("mantenimiento");
     }
     public virtual List<MantenimientoDto>? ObtenerTodosMantenimientos()
     {
@@ -83,22 +101,6 @@ public class MantenimientoService : IMantenimientoService
             DescripcionEquipo = fila["descripcion_equipo"] == DBNull.Value ? null : fila["descripcion_equipo"].ToString()
         };
     }
-    private void ValidarEntradaCreacion(CrearMantenimientoComando comando)
-    {
-        if (comando == null) throw new ArgumentNullException(nameof(comando));
-        if (comando.FechaMantenimiento == null) throw new ErrorFechaMantenimientoInicioRequerida();
-        if (comando.FechaFinalDeMantenimiento == null) throw new ErrorFechaMantenimientoFinalRequerida();
-        if (comando.FechaFinalDeMantenimiento < comando.FechaMantenimiento) throw new ErrorFechaInvalida();
-        if (string.IsNullOrWhiteSpace(comando.NombreEmpresaMantenimiento)) throw new ErrorNombreRequerido();
-        if (comando.CodigoIMT == null || comando.CodigoIMT.Length == 0) throw new ErrorCodigoImtRequerido();
-        if (comando.TipoMantenimiento == null || comando.TipoMantenimiento.Length == 0) throw new ErrorTipoMantenimientoRequerido();
-        if (comando.CodigoIMT.Length != comando.TipoMantenimiento.Length) throw new ErrorCodigoImtYTiposLongitudDiferente();
-        if (comando.CodigoIMT.Any(codigo => codigo <= 0)) throw new ErrorCodigosImtInvalido();
-        if (comando.Costo.HasValue && comando.Costo.Value < 0) throw new ErrorValorNegativo("costo");
-    }
-    private void ValidarEntradaEliminacion(EliminarMantenimientoComando comando)
-    {
-        if (comando == null) throw new ArgumentNullException(nameof(comando));
-        if (comando.Id <= 0) throw new ErrorIdInvalido();
-    }
+    
+    
 }

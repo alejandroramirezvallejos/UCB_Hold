@@ -13,6 +13,7 @@
         name="grupo_equipo" 
         [(ngModel)]="equipo.NombreGrupoEquipo"
         required 
+        maxlength="50"
         placeholder="Nombre del grupo de equipo"
         class="form-input"
       />
@@ -26,6 +27,7 @@
         name="modelo" 
         [(ngModel)]="equipo.Modelo"
         required 
+        maxlength="50"
         placeholder="Modelo del equipo"
         class="form-input"
       />
@@ -39,6 +41,7 @@
         name="marca" 
         [(ngModel)]="equipo.Marca"
         required 
+        maxlength="50"
         placeholder="Marca del equipo"
         class="form-input"
       />
@@ -52,6 +55,7 @@
         name="codigo_ucb" 
         [(ngModel)]="equipo.CodigoUcb"
         required 
+        maxlength="20"
         placeholder="Código UCB del equipo"
         class="form-input"
       />
@@ -65,6 +69,7 @@
         name="numero_serial" 
         [(ngModel)]="equipo.NumeroSerial"
         required 
+        maxlength="50"
         placeholder="Número serial del equipo"
         class="form-input"
       />
@@ -78,6 +83,7 @@
         name="ubicacion" 
         [(ngModel)]="equipo.Ubicacion"
         required 
+        maxlength="200"
         placeholder="Ubicación del equipo"
         class="form-input"
       />
@@ -91,6 +97,7 @@
         name="nombre_gavetero" 
         [(ngModel)]="equipo.NombreGavetero"
         required 
+        maxlength="50"
         placeholder="Nombre del gavetero"
         class="form-input"
       />
@@ -103,8 +110,8 @@
         id="costo_referencia" 
         name="costo_referencia" 
         [(ngModel)]="equipo.CostoReferencia"
-        required
         step="0.01"
+        max="999999999"
         placeholder="0.00"
         class="form-input"
       />
@@ -117,6 +124,7 @@
         name="descripcion" 
         [(ngModel)]="equipo.Descripcion"
         rows="3"
+        maxlength="200"
         placeholder="Describe las características del equipo"
         class="form-input"
       ></textarea>
@@ -128,8 +136,8 @@
         type="number" 
         id="tiempo_max_prestamo" 
         name="tiempo_max_prestamo" 
+        max="365"
         [(ngModel)]="equipo.TiempoMaximoPrestamo"
-        required 
         placeholder="Tiempo en días"
         class="form-input"
       />
@@ -141,8 +149,8 @@
         type="text" 
         id="procedencia" 
         name="procedencia" 
+        maxlength="200"
         [(ngModel)]="equipo.Procedencia"
-        required 
         placeholder="Procedencia del equipo"
         class="form-input"
       />

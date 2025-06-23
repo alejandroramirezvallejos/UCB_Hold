@@ -17,7 +17,7 @@ public class PrestamoService : IPrestamoService
     public virtual void CrearPrestamo(CrearPrestamoComando comando)
     {
         ValidarEntradaCreacion(comando);
-        if (comando.Contrato == null) throw new ArgumentException("El contrato no puede ser nulo");
+        if (comando.Contrato == null) throw new ErrorContratoNoNulo();
         try
         {
             var prestamoId = _prestamoRepository.Crear(comando);
@@ -31,7 +31,7 @@ public class PrestamoService : IPrestamoService
                 _prestamoRepository.ActualizarIdContrato(prestamoId, contrato.FileId);
             }
         }
-        catch (ErrorNombreRequerido) { throw; }
+        catch (ErrorCarnetRequerido) { throw; }
         catch (ErrorIdInvalido) { throw; }
         catch (ErrorGrupoEquipoIdInvalido) { throw; }
         catch (ErrorFechaPrestamoYFechaDevolucionInvalidas) { throw; }
@@ -42,7 +42,7 @@ public class PrestamoService : IPrestamoService
     private void ValidarEntradaCreacion(CrearPrestamoComando comando)
     {
         if (comando == null) throw new ArgumentNullException(nameof(comando));
-        if (string.IsNullOrWhiteSpace(comando.CarnetUsuario)) throw new ErrorNombreRequerido();
+        if (string.IsNullOrWhiteSpace(comando.CarnetUsuario)) throw new ErrorCarnetRequerido();
         if (comando.GrupoEquipoId == null || comando.GrupoEquipoId.Length == 0) throw new ErrorGrupoEquipoIdInvalido();
         if (comando.GrupoEquipoId.Any(id => id <= 0)) throw new ErrorGrupoEquipoIdInvalido();
         if (comando.FechaPrestamoEsperada == null) throw new ErrorFechaPrestamoEsperadaRequerida();
@@ -98,7 +98,7 @@ public class PrestamoService : IPrestamoService
     private void ValidarEntradaEliminacion(EliminarPrestamoComando comando)
     {
         if (comando == null) throw new ArgumentNullException(nameof(comando));
-        if (comando.Id <= 0) throw new ErrorIdInvalido();
+        if (comando.Id <= 0) throw new ErrorIdInvalido("préstamo");
     }
     public virtual List<PrestamoDto>? ObtenerTodosPrestamos()
     {
@@ -137,7 +137,7 @@ public class PrestamoService : IPrestamoService
     private void ValidarEntradaActualizacionEstado(ActualizarEstadoPrestamoComando comando)
     {
         if (comando == null) throw new ArgumentNullException(nameof(comando));
-        if (comando.Id <= 0) throw new ErrorIdInvalido();
+        if (comando.Id <= 0) throw new ErrorIdInvalido("préstamo");
         if (string.IsNullOrWhiteSpace(comando.EstadoPrestamo)) throw new ErrorEstadoPrestamoRequerido();
         if (comando.EstadoPrestamo != "pendiente" && comando.EstadoPrestamo != "rechazado" &&
             comando.EstadoPrestamo != "finalizado" && comando.EstadoPrestamo != "cancelado" &&
@@ -154,6 +154,18 @@ public class PrestamoService : IPrestamoService
             return lista;
         }
         catch { throw; }
+    }
+    public void AceptarPrestamo(AceptarPrestamoComando comando)
+    {
+        if (comando.Contrato == null) throw new ErrorContratoNoNulo();
+        var fileName = comando.Contrato.FileName;
+        using var stream = comando.Contrato.OpenReadStream();
+        var fileId = _gridFsBucket.UploadFromStreamAsync(fileName, stream, null, default).GetAwaiter().GetResult();
+        var contrato = new Contrato { PrestamoId = comando.PrestamoId, FileId = fileId.ToString() };
+        _mongoDbContext.Contratos.UpdateOne(
+            Builders<Contrato>.Filter.Eq(x => x.PrestamoId, comando.PrestamoId),
+            Builders<Contrato>.Update.Set(x => x.FileId, contrato.FileId));
+        _prestamoRepository.ActualizarEstado(new ActualizarEstadoPrestamoComando(comando.PrestamoId, "activo"));
     }
     private static PrestamoDto MapearFilaADto(DataRow fila)
     {
@@ -175,16 +187,5 @@ public class PrestamoService : IPrestamoService
             EstadoPrestamo = fila["estado_prestamo"] == DBNull.Value ? null : fila["estado_prestamo"].ToString(),
         };
     }
-    public void AceptarPrestamo(AceptarPrestamoComando comando)
-    {
-        if (comando.Contrato == null) throw new ArgumentException("El contrato no puede ser nulo");
-        var fileName = comando.Contrato.FileName;
-        using var stream = comando.Contrato.OpenReadStream();
-        var fileId = _gridFsBucket.UploadFromStreamAsync(fileName, stream, null, default).GetAwaiter().GetResult();
-        var contrato = new Contrato { PrestamoId = comando.PrestamoId, FileId = fileId.ToString() };
-        _mongoDbContext.Contratos.UpdateOne(
-            Builders<Contrato>.Filter.Eq(x => x.PrestamoId, comando.PrestamoId),
-            Builders<Contrato>.Update.Set(x => x.FileId, contrato.FileId));
-        _prestamoRepository.ActualizarEstado(new ActualizarEstadoPrestamoComando(comando.PrestamoId, "activo"));
-    }
+    
 }

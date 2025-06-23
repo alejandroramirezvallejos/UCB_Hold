@@ -21,9 +21,9 @@ export class GaveterosCrearComponent {
     Nombre: '',
     Tipo: '',
     NombreMueble: '',
-    Longitud: 0,
-    Profundidad: 0,
-    Altura: 0
+    Longitud: null,
+    Profundidad: null,
+    Altura: null
   };
 
 
@@ -39,7 +39,6 @@ export class GaveterosCrearComponent {
       },
       error => {
         alert(error.error.error + ': ' + error.error.mensaje);
-        this.cerrar();
       }
     );
    

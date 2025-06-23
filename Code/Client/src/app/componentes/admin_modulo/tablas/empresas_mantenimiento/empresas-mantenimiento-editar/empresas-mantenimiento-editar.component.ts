@@ -36,7 +36,6 @@ export class EmpresasMantenimientoEditarComponent {
       },
       error => {
         alert(error.error.error + ': ' + error.error.mensaje);
-        this.cerrar();
       }
     );
   }

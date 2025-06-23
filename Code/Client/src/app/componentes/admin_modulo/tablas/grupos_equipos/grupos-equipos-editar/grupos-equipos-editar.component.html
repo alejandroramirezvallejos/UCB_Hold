@@ -3,7 +3,7 @@
     <i class="fas fa-times"></i>
   </button>
   <h2>Editar Grupo de Equipo</h2>
-  <form (ngSubmit)="confirmar()">
+  <form #form="ngForm" (ngSubmit)="confirmar()">
     <div class="form-group">
       <label for="nombre">Nombre</label>
       <input 
@@ -12,6 +12,7 @@
         name="nombre" 
         [(ngModel)]="grupoEquipo.nombre"
         required 
+        maxlength="50"
         placeholder="Ingresa el nombre del grupo de equipo"
         class="form-input"
       />
@@ -24,6 +25,8 @@
         id="modelo" 
         name="modelo" 
         [(ngModel)]="grupoEquipo.modelo"
+        required
+        maxlength="50"
         placeholder="Modelo del grupo de equipo"
         class="form-input"
       />
@@ -36,6 +39,8 @@
         id="marca" 
         name="marca" 
         [(ngModel)]="grupoEquipo.marca"
+        required
+        maxlength="50"
         placeholder="Marca del grupo de equipo"
         class="form-input"
       />
@@ -46,7 +51,8 @@
       <select
         type="text" 
         id="nombreCategoria" 
-        name="nombreCategoria" 
+        name="nombreCategoria"
+        required
         [(ngModel)]="grupoEquipo.nombreCategoria"
         placeholder="Categoría del grupo de equipo"
         class="form-input"
@@ -66,6 +72,8 @@
         name="descripcion" 
         [(ngModel)]="grupoEquipo.descripcion"
         rows="3"
+        maxlength="200"
+        required
         placeholder="Describe las características del grupo de equipo"
         class="form-input"
       ></textarea>
@@ -77,6 +85,8 @@
         type="url" 
         id="url_data_sheet" 
         name="url_data_sheet" 
+        maxlength="200"
+        pattern="https?://.+"
         [(ngModel)]="grupoEquipo.url_data_sheet"
         placeholder="https://ejemplo.com/datasheet.pdf"
         class="form-input"
@@ -90,13 +100,16 @@
         id="link" 
         name="link" 
         [(ngModel)]="grupoEquipo.link"
+        required
+        maxlength="200"
+        pattern="https?://.+"
         placeholder="https://ejemplo.com/imagen.jpg"
         class="form-input"
       />
     </div>
 
     <div class="form-submit">
-      <button type="submit" class="register-button">
+      <button type="submit" class="register-button" [disabled]="!form.valid">
         <span>Confirmar Cambios</span>
       </button>
     </div>

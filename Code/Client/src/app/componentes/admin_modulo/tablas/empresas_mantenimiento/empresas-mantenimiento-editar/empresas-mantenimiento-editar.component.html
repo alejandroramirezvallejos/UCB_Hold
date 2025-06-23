@@ -3,7 +3,7 @@
     <i class="fas fa-times"></i>
   </button>
   <h2>Editar Empresa de Mantenimiento</h2>
-  <form (ngSubmit)="confirmar()">
+  <form #form="ngForm" (ngSubmit)="confirmar()">    
     <div class="form-group">
       <label for="nombre">Nombre de la Empresa</label>
       <input 
@@ -12,6 +12,7 @@
         name="nombre" 
         [(ngModel)]="empresaMantenimiento.NombreEmpresa"
         required 
+        maxlength="50"
         placeholder="Ingresa el nombre de la empresa"
         class="form-input"
       />
@@ -25,12 +26,11 @@
         name="nombre_responsable" 
         [(ngModel)]="empresaMantenimiento.NombreResponsable"
         required 
+        maxlength="50"
         placeholder="Nombre del responsable"
         class="form-input"
       />
-    </div>
-
-    <div class="form-group">
+    </div>    <div class="form-group">
       <label for="apellido_responsable">Apellido del Responsable</label>
       <input 
         type="text" 
@@ -38,6 +38,7 @@
         name="apellido_responsable" 
         [(ngModel)]="empresaMantenimiento.ApellidoResponsable"
         required 
+        maxlength="50"
         placeholder="Apellido del responsable"
         class="form-input"
       />
@@ -50,20 +51,20 @@
         id="telefono" 
         name="telefono" 
         [(ngModel)]="empresaMantenimiento.Telefono"
-        required 
+        required
+        pattern="[0-9]{12}"
+        maxlength="12"
         placeholder="Teléfono de contacto"
         class="form-input"
       />
-    </div>
-
-    <div class="form-group">
+    </div>    <div class="form-group">
       <label for="direccion">Dirección</label>
       <input 
         type="text" 
         id="direccion" 
         name="direccion" 
         [(ngModel)]="empresaMantenimiento.Direccion"
-        required 
+        maxlength="100"
         placeholder="Dirección de la empresa"
         class="form-input"
       />
@@ -76,14 +77,15 @@
         id="nit" 
         name="nit" 
         [(ngModel)]="empresaMantenimiento.Nit"
-        required 
+        pattern="[0-9]{1,15}"
+        maxlength="15"
         placeholder="NIT de la empresa"
         class="form-input"
       />
     </div>
 
     <div class="form-submit">
-      <button type="submit" class="register-button">
+      <button type="submit" class="register-button" [disabled]="!form.valid">
         <span>Confirmar Cambios</span>
       </button>
     </div>

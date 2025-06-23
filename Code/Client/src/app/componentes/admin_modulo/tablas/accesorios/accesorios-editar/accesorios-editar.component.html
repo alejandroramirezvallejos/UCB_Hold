@@ -3,7 +3,7 @@
     <i class="fas fa-times"></i>
   </button>
   <h2>Editar Accesorio</h2>
-  <form (ngSubmit)="confirmar()">
+  <form #form="ngForm" (ngSubmit)="confirmar()">
     <div class="form-group">
       <label for="nombre">Nombre</label>
       <input 
@@ -12,6 +12,7 @@
         name="nombre" 
         [(ngModel)]="accesorio.nombre"
         required 
+        maxlength="25"
         placeholder="Ingresa el nombre del accesorio"
         class="form-input"
       />
@@ -25,6 +26,7 @@
         name="modelo" 
         [(ngModel)]="accesorio.modelo"
         required 
+        maxlength="25"
         placeholder="Modelo del accesorio"
         class="form-input"
       />
@@ -38,6 +40,7 @@
         name="tipo" 
         [(ngModel)]="accesorio.tipo"
         required 
+        maxlength="25"
         placeholder="Tipo de accesorio"
         class="form-input"
       />
@@ -50,6 +53,7 @@
         name="descripcion" 
         [(ngModel)]="accesorio.descripcion"
         rows="3"
+        maxlength="100"
         placeholder="Describe las características del accesorio"
         class="form-input"
       ></textarea>
@@ -63,6 +67,8 @@
         name="codigo_imt" 
         [(ngModel)]="accesorio.codigo_imt"
         required 
+        maxlength="10"
+        pattern="[0-9]{1,10}"
         placeholder="Código IMT del equipo"
         class="form-input"
       />
@@ -76,6 +82,7 @@
         name="precio" 
         [(ngModel)]="accesorio.precio"
         step="0.01"
+        max="999999999"
         placeholder="0.00"
         class="form-input"
       />
@@ -89,13 +96,15 @@
         name="url_data_sheet" 
         [(ngModel)]="accesorio.url_data_sheet"
         required 
+        maxlength="255"
+        pattern="https?://.+"
         placeholder="https://ejemplo.com/datasheet.pdf"
         class="form-input"
       />
     </div>
 
     <div class="form-submit">
-      <button type="submit" class="register-button">
+      <button type="submit" class="register-button" [disabled]="!form.valid">
         <span>Confirmar Cambios</span>
       </button>
     </div>

@@ -3,7 +3,7 @@
     <i class="fas fa-times"></i>
   </button>
   <h2>Editar Gavetero</h2>
-  <form (ngSubmit)="confirmar()">
+  <form #form="ngForm" (ngSubmit)="confirmar()">
     <div class="form-group">
       <label for="nombre">Nombre</label>
       <input 
@@ -12,6 +12,7 @@
         name="nombre" 
         [(ngModel)]="gavetero.Nombre"
         required 
+        maxlength="50"
         placeholder="Ingresa el nombre del gavetero"
         class="form-input"
       />
@@ -25,6 +26,7 @@
         name="tipo" 
         [(ngModel)]="gavetero.Tipo"
         required 
+        maxlength="50"
         placeholder="Tipo de gavetero"
         class="form-input"
       />
@@ -38,6 +40,7 @@
         name="nombre_mueble" 
         [(ngModel)]="gavetero.NombreMueble"
         required 
+        maxlength="50"
         placeholder="Nombre del mueble"
         class="form-input"
       />
@@ -50,7 +53,7 @@
         id="longitud" 
         name="longitud" 
         [(ngModel)]="gavetero.Longitud"
-        required
+        max="10000"
         step="0.01"
         placeholder="0.00"
         class="form-input"
@@ -64,7 +67,7 @@
         id="profundidad" 
         name="profundidad" 
         [(ngModel)]="gavetero.Profundidad"
-        required
+        max="10000"
         step="0.01"
         placeholder="0.00"
         class="form-input"
@@ -78,7 +81,7 @@
         id="altura" 
         name="altura" 
         [(ngModel)]="gavetero.Altura"
-        required
+        max="10000"
         step="0.01"
         placeholder="0.00"
         class="form-input"
@@ -86,7 +89,7 @@
     </div>
 
     <div class="form-submit">
-      <button type="submit" class="register-button">
+      <button type="submit" class="register-button" [disabled]="!form.valid">
         <span>Confirmar Cambios</span>
       </button>
     </div>

@@ -12,6 +12,7 @@
         name="nombre" 
         [(ngModel)]="componente.Nombre"
         required 
+        maxlength="50"
         placeholder="Ingresa el nombre del componente"
         class="form-input"
       />
@@ -25,6 +26,7 @@
         name="modelo" 
         [(ngModel)]="componente.Modelo"
         required 
+        maxlength="50"
         placeholder="Modelo del componente"
         class="form-input"
       />
@@ -38,6 +40,7 @@
         name="tipo" 
         [(ngModel)]="componente.Tipo"
         required 
+        maxlength="50"
         placeholder="Tipo de componente"
         class="form-input"
       />
@@ -50,6 +53,7 @@
         name="descripcion" 
         [(ngModel)]="componente.Descripcion"
         rows="3"
+        maxlength="200"
         placeholder="Describe las características del componente"
         class="form-input"
       ></textarea>
@@ -58,11 +62,13 @@
     <div class="form-group">
       <label for="codigo_imt">Código IMT del Equipo</label>
       <input 
-        type="number" 
+        type="text" 
         id="codigo_imt" 
         name="codigo_imt" 
         [(ngModel)]="componente.CodigoImtEquipo"
         required 
+        pattern="[0-9]{1,10}"
+        maxlength="9"
         placeholder="Código IMT del equipo"
         class="form-input"
       />
@@ -76,6 +82,7 @@
         name="precio_referencia" 
         [(ngModel)]="componente.PrecioReferencia"
         step="0.01"
+        max="999999999"
         placeholder="0.00"
         class="form-input"
       />
@@ -87,6 +94,7 @@
         type="url" 
         id="url_data_sheet" 
         name="url_data_sheet" 
+        maxlength="200"
         [(ngModel)]="componente.UrlDataSheet"
         placeholder="https://ejemplo.com/datasheet.pdf"
         class="form-input"

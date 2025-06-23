@@ -34,13 +34,12 @@ export class EmpresasMantenimientoCrearComponent {
 
     this.empresaMantenimientoapi.crearEmpresaMantenimiento(this.empresaMantenimiento).subscribe({
 
-      next: (response) => {
+      next: () => {
         this.Actualizar.emit(); 
         this.cerrar();
       },
       error: (error) => {
         alert(error.error.error + ': ' + error.error.mensaje);
-        this.cerrar();
       }
     });
 
