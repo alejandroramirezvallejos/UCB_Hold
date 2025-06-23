@@ -95,7 +95,10 @@ export class FormularioComponent implements OnInit {
       this.firmar();
     } 
     else{
-      this.mandarprestamo.crearPrestamo(this.carrito.obtenercarrito(),this.usuario.usuario.carnet!,null).subscribe({
+
+      const contratoblob= this.generarHTMLBinario(); 
+
+      this.mandarprestamo.crearPrestamo(this.carrito.obtenercarrito(),this.usuario.usuario.carnet!,contratoblob).subscribe({
         next: (response) => {
           console.log('Préstamo creado exitosamente:', response);
           alert('Préstamo creado exitosamente');
@@ -104,6 +107,7 @@ export class FormularioComponent implements OnInit {
           this.router.navigate(["/home"]);
         },
         error: (error) => {
+        
           console.error('Error al crear préstamo:', error);
           this.error.set(1);
           this.mensajeerror = error.error.error+ " - " + error.error.mensaje;
@@ -111,6 +115,8 @@ export class FormularioComponent implements OnInit {
       })
     }
   }
+  
+  
   guardarfirma(signatureData: string): void {
   this.firma = signatureData;
   // Actualiza la imagen de la firma en el contrato sin reprocesar todo el contenido.
@@ -211,42 +217,17 @@ private quintavalordebienes(carrito :  Carrito) : string{
     });
   }
 
-  // Método para generar PDF como binario
-  async generarPDFBinario(): Promise<Blob> {
-    const contrato = this.contratoContainer.nativeElement;
 
-    return new Promise((resolve, reject) => {
-      html2canvas(contrato, { scale: 2 }).then((canvas) => {
-        const imgData = canvas.toDataURL('image/png');
-        const pdf = new jsPDF('p', 'mm', 'a4');
-        
-        const pdfWidth = pdf.internal.pageSize.getWidth();
-        const pdfHeight = pdf.internal.pageSize.getHeight();
-        
-        const imgProps = pdf.getImageProperties(imgData);
-        const imgHeight = (imgProps.height * pdfWidth) / imgProps.width;
-
-        let heightLeft = imgHeight;
-        let position = 0;
-
-        pdf.addImage(imgData, 'PNG', 0, position, pdfWidth, imgHeight);
-        heightLeft -= pdfHeight;
-
-        while (heightLeft > 0) {
-          position = heightLeft - imgHeight;
-          pdf.addPage();
-          pdf.addImage(imgData, 'PNG', 0, position, pdfWidth, imgHeight);
-          heightLeft -= pdfHeight;
-        }
-        
-        // Convertir el PDF a Blob
-        const pdfBlob = pdf.output('blob');
-        resolve(pdfBlob);
-      }).catch(reject);
-    });
-  }
-
-
+generarHTMLBinario(): Blob {
+  // Obtener el HTML actualizado del contenedor del contrato
+  const contratoElement = this.contratoContainer.nativeElement;
+  const htmlContent = contratoElement.outerHTML;
+  
+  // Crear un Blob con el contenido HTML
+  const htmlBlob = new Blob([htmlContent], { type: 'text/html;charset=utf-8' });
+  
+  return htmlBlob;
+}
 
 }
 
