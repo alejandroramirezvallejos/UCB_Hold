@@ -45,19 +45,25 @@ export class PrestamosAPIService {
             }
           }
       }
-  
-  
-  
-      const formulario = {
-        GrupoEquipoId: grupoid,
-        FechaPrestamoEsperada: carrito[grupoid[0]].fecha_inicio,
-        FechaDevolucionEsperada: carrito[grupoid[0]].fecha_final,
-        CarnetUsuario : carnet,
-        Contrato : null,
-        Observacion : null,
-      };
-  
-      return this.http.post(this.url, formulario);
+      
+      const formData = new FormData();
+      
+       grupoid.forEach(id => {
+        formData.append('GrupoEquipoId', id.toString());
+      });
+      
+      formData.append('FechaPrestamoEsperada', carrito[grupoid[0]].fecha_inicio || '');
+      formData.append('FechaDevolucionEsperada', carrito[grupoid[0]].fecha_final || '');
+      formData.append('CarnetUsuario', carnet);
+      formData.append('Observacion', 'string');
+
+
+      if (contrato) {
+          formData.append('Contrato', contrato, 'contrato.html');
+      }
+        
+      return this.http.post(this.url, formData);
+    
     }
 
     eliminarPrestamo(id: number) {
