@@ -26,6 +26,12 @@ export class NavbarComponent {
     this.router.navigate(['/home']);
   }
 
+  botonnotificaciones() {
+    
+    this.router.navigate(['/Notificaciones']);
+
+  }
+
   toggleUserMenu() {
     this.showUserMenu.set(!this.showUserMenu());
   }
