@@ -28,11 +28,12 @@ export class NavbarComponent {
 
 
   ngOnInit() {
+    this.notificacionesAPI.enviarnotificaciones(); 
     this.verificarnotificaciones();
- 
-     this.intervalId = setInterval(() => {
+    this.intervalId = setInterval(() => {
+      this.notificacionesAPI.enviarnotificaciones(); 
       this.verificarnotificaciones();
-    }, 5000);
+    }, 1000);
   }
 
   ngOnDestroy() { 
