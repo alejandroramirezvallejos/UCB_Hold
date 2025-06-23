@@ -42,7 +42,6 @@ namespace IMT_Reservas.Tests.ServiceTests
         [Test]
         public void CrearAccesorio_CodigoImtInvalido_LanzaErrorIdInvalido()
         {
-            // Implementación dummy para cumplir con la interfaz, pero el test real es CrearAccesorio_CodigoImtInvalido_LanzaErrorCodigoImtInvalido
             Assert.Pass("Este test está implementado como CrearAccesorio_CodigoImtInvalido_LanzaErrorCodigoImtInvalido");
         }
 

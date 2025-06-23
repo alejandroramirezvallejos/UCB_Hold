@@ -119,5 +119,27 @@ namespace IMT_Reservas.Tests.ServiceTests
             var comando = new AgregarLikeComentarioComando("", "2");
             Assert.Throws<ErrorIdInvalido>(() => _comentarioService.AgregarLikeComentario(comando));
         }
+
+        [Test]
+        public void QuitarLikeComentario_ComandoValido_LlamaRepositorioQuitarLike()
+        {
+            var comando = new QuitarLikeComentarioComando("68531f233cba0b4adf2ea2cc", "2");
+            _comentarioService.QuitarLikeComentario(comando);
+            _comentarioRepositoryMock.Verify(r => r.QuitarLike(comando), Times.Once);
+        }
+
+        [Test]
+        public void QuitarLikeComentario_IdInvalido_LanzaErrorIdInvalido()
+        {
+            var comando = new QuitarLikeComentarioComando("", "2");
+            Assert.Throws<ErrorIdInvalido>(() => _comentarioService.QuitarLikeComentario(comando));
+        }
+
+        [Test]
+        public void QuitarLikeComentario_CarnetUsuarioVacio_LanzaErrorCarnetInvalido()
+        {
+            var comando = new QuitarLikeComentarioComando("68531f233cba0b4adf2ea2cc", "");
+            Assert.Throws<ErrorCarnetInvalido>(() => _comentarioService.QuitarLikeComentario(comando));
+        }
     }
 }

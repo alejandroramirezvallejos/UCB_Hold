@@ -164,5 +164,31 @@ namespace IMT_Reservas.Tests.RepositoryTests
             Assert.Throws<ErrorRepository>(() => _comentarioRepository.AgregarLike(new AgregarLikeComentarioComando(objectId, "2")));
             Assert.Throws<ErrorRepository>(() => _comentarioRepository.ObtenerPorGrupoEquipo(1));
         }
+
+        [Test]
+        public void QuitarLike_LlamaAUpdateOne()
+        {
+            var comando = new QuitarLikeComentarioComando("68531f233cba0b4adf2ea2cc", "2");
+            _collectionMock.Setup(c => c.CountDocuments(It.IsAny<FilterDefinition<BsonDocument>>(), It.IsAny<CountOptions>(), default)).Returns(1L);
+            var mockUpdateResult = new Mock<UpdateResult>();
+            mockUpdateResult.Setup(r => r.MatchedCount).Returns(1);
+            _collectionMock.Setup(c => c.UpdateOne(
+                It.IsAny<FilterDefinition<BsonDocument>>(),
+                It.IsAny<UpdateDefinition<BsonDocument>>(),
+                It.IsAny<UpdateOptions>(),
+                default))
+            .Returns(mockUpdateResult.Object);
+            _comentarioRepository.QuitarLike(comando);
+            _collectionMock.Verify(c => c.UpdateOne(It.IsAny<FilterDefinition<BsonDocument>>(), It.IsAny<UpdateDefinition<BsonDocument>>(), It.IsAny<UpdateOptions>(), default), Times.Once);
+        }
+
+        [Test]
+        public void QuitarLike_IdNoExistente_LanzaErrorDataBase()
+        {
+            var comando = new QuitarLikeComentarioComando("000000000000000000000000", "2");
+            _collectionMock.Setup(c => c.CountDocuments(It.IsAny<FilterDefinition<BsonDocument>>(), It.IsAny<CountOptions>(), default)).Returns(0L);
+            var ex = Assert.Throws<ErrorDataBase>(() => _comentarioRepository.QuitarLike(comando));
+            Assert.That(ex.Message, Is.EqualTo("No se encontró el comentario"));
+        }
     }
 }

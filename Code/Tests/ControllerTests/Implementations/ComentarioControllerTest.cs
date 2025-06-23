@@ -167,5 +167,38 @@ namespace IMT_Reservas.Tests.ControllerTests
             var resultado = _comentarioController.AgregarMeGusta(idComentario, comando);
             Assert.That(resultado, Is.InstanceOf<NotFoundObjectResult>());
         }
+
+        [Test]
+        public void QuitarMeGusta_Valido_RetornaOk()
+        {
+            var idComentario = "68531f233cba0b4adf2ea2cc";
+            var carnetUsuario = "2";
+            var comando = new QuitarLikeComentarioComando(idComentario, carnetUsuario);
+            _comentarioServiceMock.Setup(s => s.QuitarLikeComentario(It.Is<QuitarLikeComentarioComando>(c => c.Id == idComentario && c.CarnetUsuario == carnetUsuario)));
+            var resultado = _comentarioController.QuitarMeGusta(idComentario, comando);
+            Assert.That(resultado, Is.InstanceOf<OkObjectResult>());
+        }
+
+        [Test]
+        public void QuitarMeGusta_IdInvalido_RetornaBadRequest()
+        {
+            var idComentario = "id_invalido";
+            var carnetUsuario = "2";
+            var comando = new QuitarLikeComentarioComando(idComentario, carnetUsuario);
+            _comentarioServiceMock.Setup(s => s.QuitarLikeComentario(It.Is<QuitarLikeComentarioComando>(c => c.Id == idComentario && c.CarnetUsuario == carnetUsuario))).Throws(new ErrorIdInvalido("Id inválido"));
+            var resultado = _comentarioController.QuitarMeGusta(idComentario, comando);
+            Assert.That(resultado, Is.InstanceOf<BadRequestObjectResult>());
+        }
+
+        [Test]
+        public void QuitarMeGusta_NoEncontrado_RetornaNotFound()
+        {
+            var idComentario = "id_no_existente";
+            var carnetUsuario = "2";
+            var comando = new QuitarLikeComentarioComando(idComentario, carnetUsuario);
+            _comentarioServiceMock.Setup(s => s.QuitarLikeComentario(It.IsAny<QuitarLikeComentarioComando>())).Throws(new ErrorRegistroNoEncontrado());
+            var resultado = _comentarioController.QuitarMeGusta(idComentario, comando);
+            Assert.That(resultado, Is.InstanceOf<NotFoundObjectResult>());
+        }
     }
 }
