@@ -73,4 +73,16 @@ public class PrestamoController : ControllerBase
         try { var prestamos = servicio.ObtenerTodosPrestamos(); var prestamo = prestamos?.FirstOrDefault(p => p.Id == id); if (prestamo == null) return NotFound(); return Ok(prestamo); }
         catch (Exception ex) { return StatusCode(500, new { error = ex.GetType().Name, mensaje = ex.Message }); }
     }
+
+    [HttpGet("contrato/{prestamoId}")]
+    public IActionResult ObtenerChunksContratoPorPrestamo(int prestamoId)
+    {
+        try
+        {
+            var consulta = new ObtenerContratoPorPrestamoConsulta(prestamoId);
+            var chunks = servicio.ObtenerContratoPorPrestamo(consulta);
+            return Ok(chunks);
+        }
+        catch (Exception ex) { return StatusCode(500, new { error = ex.GetType().Name, mensaje = ex.Message }); }
+    }
 }
