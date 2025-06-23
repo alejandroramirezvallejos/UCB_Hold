@@ -21,8 +21,8 @@ export class ComponentesCrearComponent {
     Modelo: '',
     Tipo: '',
     Descripcion: '',
-    PrecioReferencia: 0,
-    CodigoImtEquipo: 0,
+    PrecioReferencia: null,
+    CodigoImtEquipo: null,
     UrlDataSheet: '',
     NombreEquipo: ''
   };
@@ -37,7 +37,6 @@ export class ComponentesCrearComponent {
       },
       error => {
         alert(error.error.error + ': ' + error.error.mensaje);
-        this.cerrar();
       }
     );
   }

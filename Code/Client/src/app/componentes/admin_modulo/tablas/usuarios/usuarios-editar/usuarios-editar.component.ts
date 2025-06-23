@@ -42,7 +42,6 @@ export class UsuariosEditarComponent {
       },
       error => {
         alert(error.error.error + ': ' + error.error.mensaje);
-        this.cerrar();
       }
     );
   }

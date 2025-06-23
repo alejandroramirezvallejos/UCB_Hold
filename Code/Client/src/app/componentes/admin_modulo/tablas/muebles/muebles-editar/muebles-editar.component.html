@@ -3,7 +3,7 @@
     <i class="fas fa-times"></i>
   </button>
   <h2>Editar Mueble</h2>
-  <form (ngSubmit)="confirmar()">
+  <form #form="ngForm" (ngSubmit)="confirmar()">
     <div class="form-group">
       <label for="Nombre">Nombre</label>
       <input 
@@ -12,6 +12,7 @@
         name="Nombre" 
         [(ngModel)]="mueble.Nombre"
         required 
+        maxlength="50"
         placeholder="Nombre del mueble"
         class="form-input"
       />
@@ -24,7 +25,7 @@
         id="Tipo" 
         name="Tipo" 
         [(ngModel)]="mueble.Tipo"
-        required 
+        maxlength="50"
         placeholder="Tipo de mueble"
         class="form-input"
       />
@@ -37,7 +38,7 @@
         id="Ubicacion" 
         name="Ubicacion" 
         [(ngModel)]="mueble.Ubicacion"
-        required 
+        maxlength="200"
         placeholder="Ubicación del mueble"
         class="form-input"
       />
@@ -50,7 +51,7 @@
         id="Costo" 
         name="Costo" 
         [(ngModel)]="mueble.Costo"
-        required
+        max="999999999"
         step="0.01"
         min="0"
         placeholder="0.00"
@@ -66,7 +67,7 @@
         id="Longitud" 
         name="Longitud" 
         [(ngModel)]="mueble.Longitud"
-        required
+        max="10000"
         step="0.01"
         min="0"
         placeholder="0.00"
@@ -81,7 +82,7 @@
         id="Profundidad" 
         name="Profundidad" 
         [(ngModel)]="mueble.Profundidad"
-        required
+        max="10000"
         step="0.01"
         min="0"
         placeholder="0.00"
@@ -96,7 +97,7 @@
         id="Altura" 
         name="Altura" 
         [(ngModel)]="mueble.Altura"
-        required
+        max="10000"
         step="0.01"
         min="0"
         placeholder="0.00"
@@ -105,7 +106,7 @@
     </div>
 
     <div class="form-submit">
-      <button type="submit" class="register-button">
+      <button type="submit" class="register-button" [disabled]="!form.valid">
         <span>Confirmar Cambios</span>
       </button>
     </div>

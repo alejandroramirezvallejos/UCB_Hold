@@ -31,7 +31,6 @@ export class CarrerasCrearComponent {
       },
       error => {
         alert(error.error.error + ': ' + error.error.mensaje);
-        this.cerrar();
       }
     );
   }

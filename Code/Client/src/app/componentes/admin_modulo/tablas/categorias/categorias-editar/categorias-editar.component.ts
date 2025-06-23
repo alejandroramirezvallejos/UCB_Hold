@@ -33,7 +33,6 @@ export class CategoriasEditarComponent {
       },
       error => {
         alert(error.error.error + ': ' + error.error.mensaje);
-        this.cerrar();
       }
     );
   }

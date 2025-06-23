@@ -5,7 +5,7 @@ export interface Accesorio {
   tipo: string;
   descripcion?: string;
   codigo_imt: string;
-  precio: number;
-  url_data_sheet?: string;
+  precio?: number|null;
+  url_data_sheet?: string|null;
   nombreEquipoAsociado?: string;
 }

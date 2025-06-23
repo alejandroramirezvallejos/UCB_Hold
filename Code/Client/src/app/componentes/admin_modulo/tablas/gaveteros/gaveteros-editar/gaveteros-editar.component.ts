@@ -17,9 +17,9 @@ export class GaveterosEditarComponent {
     Nombre: '',
     Tipo: '',
     NombreMueble: '',
-    Longitud: 0,
-    Profundidad: 0,
-    Altura: 0
+    Longitud: null,
+    Profundidad: null,
+    Altura: null
   };
 
   constructor(private gaveteroapi: GaveteroService) {}; 
@@ -30,14 +30,12 @@ export class GaveterosEditarComponent {
   confirmar (){
  
     this.gaveteroapi.editarGavetero(this.gavetero).subscribe({
-      next: (response) => {
-        alert( response);
+      next: () => {
         this.actualizar.emit();
         this.cerrar();
       },
       error: (error) => {
         alert(error.error.error + ': ' + error.error.mensaje);
-        this.cerrar();
       }
     });
   }

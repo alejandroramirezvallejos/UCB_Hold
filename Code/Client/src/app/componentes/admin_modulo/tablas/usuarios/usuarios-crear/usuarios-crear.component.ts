@@ -34,9 +34,7 @@ export class UsuariosCrearComponent {
 
   contrasena: string = '';
 
-  constructor(private usuarioApi: UsuarioServiceAPI) {}
-
-  // TODO : implementar
+  constructor(private usuarioApi: UsuarioServiceAPI) {}  // TODO : implementar
   registrar() {
     this.usuarioApi.registrarCuenta(this.usuario, this.contrasena, this.usuario.rol).subscribe(
       response => {
@@ -44,8 +42,12 @@ export class UsuariosCrearComponent {
         this.cerrar();
       },
       error => {
+        console.error('Error completo:', error);
+        console.error('error.error:', error.error);
+        console.error('error.error.error:', error.error?.error);
+        console.error('error.error.mensaje:', error.error?.mensaje);
+        
         alert(error.error.error + ': ' + error.error.mensaje);
-        this.cerrar();
       }
     );
   }

@@ -22,7 +22,7 @@ public class ComponenteService : IComponenteService
             if (ex is ErrorDataBase errorDb)
             {
                 var mensaje = errorDb.Message?.ToLower() ?? "";
-                if (mensaje.Contains("no se encontró el equipo con código imt")) throw new ErrorReferenciaInvalida("equipo");
+                if (mensaje.Contains("no se encontró el equipo con código imt")) throw new ErrorCodigoImtNoEncontrado();
                 if (errorDb.SqlState == "23505" || mensaje.Contains("ya existe un componente con esos datos")) throw new ErrorRegistroYaExiste();
                 if (mensaje.Contains("error al insertar componente")) throw new Exception($"Error inesperado al insertar componente: {errorDb.Message}", errorDb);
                 throw new Exception($"Error inesperado de base de datos al crear componente: {errorDb.Message}", errorDb);
@@ -72,7 +72,7 @@ public class ComponenteService : IComponenteService
             {
                 var mensaje = errorDb.Message?.ToLower() ?? "";
                 if (mensaje.Contains("no se encontró un componente activo con id")) throw new ErrorRegistroNoEncontrado();
-                if (mensaje.Contains("no se encontró un equipo activo con código imt")) throw new ErrorReferenciaInvalida("equipo");
+                if (mensaje.Contains("no se encontró un equipo activo con código imt")) throw new ErrorCodigoImtNoEncontrado();
                 if (errorDb.SqlState == "23505" || mensaje.Contains("error de violación de unicidad")) throw new ErrorRegistroYaExiste();
                 if (mensaje.Contains("error inesperado al actualizar el componente")) throw new Exception($"Error inesperado al actualizar componente: {errorDb.Message}", errorDb);
                 throw new Exception($"Error inesperado de base de datos al actualizar componente: {errorDb.Message}", errorDb);
@@ -81,6 +81,16 @@ public class ComponenteService : IComponenteService
             throw;
         }
     }
+
+    private void ValidarEntradaActualizacion(ActualizarComponenteComando comando)
+    {
+        if (comando == null) throw new ArgumentNullException(nameof(comando));
+        if (comando.Id <= 0) throw new ErrorIdInvalido("componente");
+        if (!string.IsNullOrWhiteSpace(comando.Nombre) && comando.Nombre.Length > 255) throw new ErrorLongitudInvalida("nombre", 255);
+        if (!string.IsNullOrWhiteSpace(comando.Modelo) && comando.Modelo.Length > 255) throw new ErrorLongitudInvalida("modelo", 255);
+        if (comando.PrecioReferencia.HasValue && comando.PrecioReferencia.Value < 0) throw new ErrorValorNegativo("precio de referencia");
+    }
+
     public virtual void EliminarComponente(EliminarComponenteComando comando)
     {
         try
@@ -102,19 +112,13 @@ public class ComponenteService : IComponenteService
             throw;
         }
     }
-    private void ValidarEntradaActualizacion(ActualizarComponenteComando comando)
-    {
-        if (comando == null) throw new ArgumentNullException(nameof(comando));
-        if (comando.Id <= 0) throw new ErrorIdInvalido();
-        if (!string.IsNullOrWhiteSpace(comando.Nombre) && comando.Nombre.Length > 255) throw new ErrorLongitudInvalida("nombre", 255);
-        if (!string.IsNullOrWhiteSpace(comando.Modelo) && comando.Modelo.Length > 255) throw new ErrorLongitudInvalida("modelo", 255);
-        if (comando.PrecioReferencia.HasValue && comando.PrecioReferencia.Value < 0) throw new ErrorValorNegativo("precio de referencia");
-    }
+    
     private void ValidarEntradaEliminacion(EliminarComponenteComando comando)
     {
         if (comando == null) throw new ArgumentNullException(nameof(comando));
-        if (comando.Id <= 0) throw new ErrorIdInvalido();
+        if (comando.Id <= 0) throw new ErrorIdInvalido("componente");
     }
+    
     private static ComponenteDto MapearFilaADto(DataRow fila) => new ComponenteDto
     {
         Id = Convert.ToInt32(fila["id_componente"]),

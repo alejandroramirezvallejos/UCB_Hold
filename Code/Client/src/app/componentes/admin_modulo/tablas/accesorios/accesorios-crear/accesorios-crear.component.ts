@@ -23,7 +23,7 @@ export class AccesoriosCrearComponent {
     tipo: '',
     descripcion: '',
     codigo_imt: '',
-    precio: 0,
+    precio: null,
     url_data_sheet: '',
     nombreEquipoAsociado: ''
   };
@@ -41,7 +41,6 @@ export class AccesoriosCrearComponent {
       },
       error => {
         alert(error.error.error + ': ' + error.error.mensaje);
-        this.cerrar();
       }
     );
    

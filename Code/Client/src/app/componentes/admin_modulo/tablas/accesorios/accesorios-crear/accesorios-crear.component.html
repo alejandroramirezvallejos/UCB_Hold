@@ -11,7 +11,8 @@
         id="nombre" 
         name="nombre" 
         [(ngModel)]="accesorio.nombre"
-        required 
+        required
+        maxlength="25"
         placeholder="Ingresa el nombre del accesorio"
         class="form-input"
       />
@@ -25,6 +26,7 @@
         name="modelo" 
         [(ngModel)]="accesorio.modelo"
         required 
+        maxlength="25"
         placeholder="Modelo del accesorio"
         class="form-input"
       />
@@ -38,6 +40,7 @@
         name="tipo" 
         [(ngModel)]="accesorio.tipo"
         required 
+        maxlength="25"
         placeholder="Tipo de accesorio"
         class="form-input"
       />
@@ -50,6 +53,7 @@
         name="descripcion" 
         [(ngModel)]="accesorio.descripcion"
         rows="3"
+        maxlength="100"
         placeholder="Describe las características del accesorio"
         class="form-input"
       ></textarea>
@@ -62,7 +66,9 @@
         id="codigo_imt" 
         name="codigo_imt" 
         [(ngModel)]="accesorio.codigo_imt"
-        required 
+        required
+        pattern="[0-9]{1,10}"
+        maxlength="10"
         placeholder="Código IMT del equipo"
         class="form-input"
       />
@@ -75,6 +81,7 @@
         id="precio" 
         name="precio" 
         [(ngModel)]="accesorio.precio"
+        max="999999999"
         step="0.01"
         placeholder="0.00"
         class="form-input"
@@ -88,7 +95,8 @@
         id="url_data_sheet" 
         name="url_data_sheet" 
         [(ngModel)]="accesorio.url_data_sheet"
-        required 
+        pattern="https?://.+"
+        maxlength="255"
         placeholder="https://ejemplo.com/datasheet.pdf"
         class="form-input"
       />

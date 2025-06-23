@@ -10,9 +10,12 @@
         type="text" 
         id="carnet" 
         name="carnet" 
+        pattern="[0-9]+"
+        minlength="7"
+        maxlength="10"
         [(ngModel)]="usuario.carnet"
         required 
-        placeholder="Ingresa el carnet del usuario"
+        placeholder="12891161"
         class="form-input"
       />
     </div>
@@ -25,6 +28,7 @@
         name="nombre" 
         [(ngModel)]="usuario.nombre"
         required 
+        maxlength="30"
         placeholder="Nombre del usuario"
         class="form-input"
       />
@@ -38,6 +42,7 @@
         name="apellido_paterno" 
         [(ngModel)]="usuario.apellido_paterno"
         required 
+        maxlength="30"
         placeholder="Apellido paterno del usuario"
         class="form-input"
       />
@@ -50,6 +55,8 @@
         id="apellido_materno" 
         name="apellido_materno" 
         [(ngModel)]="usuario.apellido_materno"
+        required
+        maxlength="30"
         placeholder="Apellido materno del usuario"
         class="form-input"
       />
@@ -63,6 +70,7 @@
         name="correo" 
         [(ngModel)]="usuario.correo"
         required 
+        maxlength="50"
         pattern="^[a-zA-Z0-9._%+-]+@ucb\.edu\.bo$"
         placeholder="ejemplo@ucb.edu.bo"
         class="form-input"
@@ -77,6 +85,7 @@
         name="contrasena" 
         [(ngModel)]="contrasena"
         required 
+        maxlength="30"
         placeholder="Contraseña del usuario"
         class="form-input"
       />
@@ -90,7 +99,9 @@
         name="telefono" 
         [(ngModel)]="usuario.telefono"
         required 
-        placeholder="Teléfono del usuario"
+        pattern="[0-9]{8,10}"
+        maxlength="10"
+        placeholder="79943044"
         class="form-input"
       />
     </div>
@@ -136,6 +147,7 @@
         type="text" 
         id="nombre_referencia" 
         name="nombre_referencia" 
+        maxlength="30"
         [(ngModel)]="usuario.nombre_referencia"
         placeholder="Nombre de referencia"
         class="form-input"
@@ -148,6 +160,8 @@
         type="tel" 
         id="telefono_referencia" 
         name="telefono_referencia" 
+        maxlength="10"
+        pattern="[0-9]{8,10}"
         [(ngModel)]="usuario.telefono_referencia"
         placeholder="Teléfono de referencia"
         class="form-input"
@@ -160,6 +174,8 @@
         type="email" 
         id="email_referencia" 
         name="email_referencia" 
+        maxlength="50"
+        pattern="[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}"
         [(ngModel)]="usuario.email_referencia"
         placeholder="Email de referencia"
         class="form-input"

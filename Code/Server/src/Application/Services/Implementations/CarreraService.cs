@@ -32,7 +32,7 @@ public class CarreraService : ICarreraService
     {
         if (comando == null) throw new ArgumentNullException(nameof(comando));
         if (string.IsNullOrWhiteSpace(comando.Nombre)) throw new ErrorNombreRequerido();
-        if (comando.Nombre.Length > 256) throw new ErrorLongitudInvalida("nombre de la carrera", 256);
+        if (comando.Nombre.Length > 256) throw new ErrorLongitudInvalida("nombre de la carrera", 255);
     }
     public virtual List<CarreraDto>? ObtenerTodasCarreras()
     {
@@ -63,7 +63,7 @@ public class CarreraService : ICarreraService
                 var mensaje = errorDb.Message?.ToLower() ?? "";
                 if (mensaje.Contains("no se encontró una carrera activa con el id")) throw new ErrorRegistroNoEncontrado();
                 if (mensaje.Contains("el nuevo nombre de la carrera no puede estar vacío")) throw new ErrorNombreRequerido();
-                if (mensaje.Contains("el id de la carrera debe ser un número positivo")) throw new ErrorIdInvalido();
+                if (mensaje.Contains("el id de la carrera debe ser un número positivo")) throw new ErrorIdInvalido("carrera");
                 if (mensaje.Contains("ya existe otra carrera con el nombre")) throw new ErrorRegistroYaExiste();
                 throw new Exception($"Error inesperado de base de datos al actualizar carrera: {errorDb.Message}", errorDb);
             }
@@ -74,7 +74,7 @@ public class CarreraService : ICarreraService
     private void ValidarEntradaActualizacion(ActualizarCarreraComando comando)
     {
         if (comando == null) throw new ArgumentNullException(nameof(comando));
-        if (comando.Id <= 0) throw new ErrorIdInvalido();
+        if (comando.Id <= 0) throw new ErrorIdInvalido("carrera");
         if (string.IsNullOrWhiteSpace(comando.Nombre)) throw new ErrorNombreRequerido();
         if (comando.Nombre.Length > 255) throw new ErrorLongitudInvalida("nombre de la carrera", 255);
     }
@@ -102,7 +102,7 @@ public class CarreraService : ICarreraService
     private void ValidarEntradaEliminacion(EliminarCarreraComando comando)
     {
         if (comando == null) throw new ArgumentNullException(nameof(comando));
-        if (comando.Id <= 0) throw new ErrorIdInvalido();
+        if (comando.Id <= 0) throw new ErrorIdInvalido("carrera");
     }
     private CarreraDto MapearFilaADto(DataRow fila) => new CarreraDto
     {

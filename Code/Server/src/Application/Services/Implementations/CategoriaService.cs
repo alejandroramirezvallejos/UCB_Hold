@@ -31,7 +31,7 @@ public class CategoriaService : ICategoriaService
     {
         if (comando == null) throw new ArgumentNullException(nameof(comando));
         if (string.IsNullOrWhiteSpace(comando.Nombre)) throw new ErrorNombreRequerido();
-        if (comando.Nombre.Length > 50) throw new ErrorLongitudInvalida("nombre de la categoría", 50);
+        if (comando.Nombre.Length > 255) throw new ErrorLongitudInvalida("nombre de la categoría", 255);
     }
     public virtual List<CategoriaDto>? ObtenerTodasCategorias()
     {
@@ -70,6 +70,13 @@ public class CategoriaService : ICategoriaService
             throw;
         }
     }
+    private void ValidarEntradaActualizacion(ActualizarCategoriaComando comando)
+    {
+        if (comando == null) throw new ArgumentNullException(nameof(comando));
+        if (comando.Id <= 0) throw new ErrorIdInvalido("categoría");
+        if (string.IsNullOrWhiteSpace(comando.Nombre)) throw new ErrorNombreRequerido();
+        if (comando.Nombre.Length > 255) throw new ErrorLongitudInvalida("nombre de la categoría", 255);
+    }
     public virtual void EliminarCategoria(EliminarCategoriaComando comando)
     {
         try
@@ -91,18 +98,13 @@ public class CategoriaService : ICategoriaService
             throw;
         }
     }
-    private void ValidarEntradaActualizacion(ActualizarCategoriaComando comando)
-    {
-        if (comando == null) throw new ArgumentNullException(nameof(comando));
-        if (comando.Id <= 0) throw new ErrorIdInvalido();
-        if (string.IsNullOrWhiteSpace(comando.Nombre)) throw new ErrorNombreRequerido();
-        if (comando.Nombre.Length > 50) throw new ErrorLongitudInvalida("nombre de la categoría", 50);
-    }
+    
     private void ValidarEntradaEliminacion(EliminarCategoriaComando comando)
     {
         if (comando == null) throw new ArgumentNullException(nameof(comando));
-        if (comando.Id <= 0) throw new ErrorIdInvalido();
+        if (comando.Id <= 0) throw new ErrorIdInvalido("categoría");
     }
+    
     private static CategoriaDto MapearFilaADto(DataRow fila) => new CategoriaDto
     {
         Id = Convert.ToInt32(fila["id_categoria"]),

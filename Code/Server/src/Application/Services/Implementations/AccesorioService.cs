@@ -16,7 +16,7 @@ public class AccesorioService : IAccesorioService
         catch (ErrorNombreRequerido) { throw; }
         catch (ErrorModeloRequerido) { throw; }
         catch (ErrorLongitudInvalida) { throw; }
-        catch (ErrorIdInvalido) { throw; }
+        catch (ErrorCodigoImtInvalido) { throw; }
         catch (ErrorValorNegativo) { throw; }
         catch (Exception ex)
         {
@@ -24,7 +24,7 @@ public class AccesorioService : IAccesorioService
             {
                 var mensaje = errorDb.Message?.ToLower() ?? "";
                 if (mensaje.Contains("no se encontró el equipo con código imt"))
-                    throw new ErrorReferenciaInvalida("El código IMT del equipo no existe o está inactivo");
+                    throw new ErrorCodigoImtNoEncontrado();
                 if (errorDb.SqlState == "23505" || mensaje.Contains("ya existe un accesorio con esos datos"))
                     throw new ErrorRegistroYaExiste();
                 if (mensaje.Contains("error al insertar accesorio"))
@@ -41,8 +41,8 @@ public class AccesorioService : IAccesorioService
         if (comando == null) throw new ArgumentNullException(nameof(comando));
         if (string.IsNullOrWhiteSpace(comando.Nombre)) throw new ErrorNombreRequerido();
         if (string.IsNullOrWhiteSpace(comando.Modelo)) throw new ErrorModeloRequerido();
-        if (comando.Nombre.Length > 256) throw new ErrorLongitudInvalida("nombre del accesorio", 256);
-        if (comando.CodigoIMT <= 0) throw new ErrorIdInvalido();
+        if (comando.Nombre.Length > 256) throw new ErrorLongitudInvalida("nombre del accesorio", 255);
+        if (comando.CodigoIMT <= 0) throw new ErrorCodigoImtInvalido();
         if (comando.Precio.HasValue && comando.Precio.Value <= 0) throw new ErrorValorNegativo("precio");
     }
     public virtual List<AccesorioDto>? ObtenerTodosAccesorios()
@@ -67,6 +67,8 @@ public class AccesorioService : IAccesorioService
         catch (ErrorIdInvalido) { throw; }
         catch (ErrorNombreRequerido) { throw; }
         catch (ErrorModeloRequerido) { throw; }
+        catch (ErrorCodigoImtInvalido) { throw; }
+        catch (ErrorCodigoImtNoEncontrado) { throw; }
         catch (ErrorLongitudInvalida) { throw; }
         catch (ErrorValorNegativo) { throw; }
         catch (Exception ex)
@@ -77,7 +79,7 @@ public class AccesorioService : IAccesorioService
                 if (mensaje.Contains("no se encontró un accesorio activo con id"))
                     throw new ErrorRegistroNoEncontrado();
                 if (mensaje.Contains("no se encontró un equipo activo con código imt"))
-                    throw new ErrorReferenciaInvalida("El código IMT del equipo no existe o está inactivo");
+                    throw new ErrorCodigoImtNoEncontrado();
                 if (errorDb.SqlState == "23505" || mensaje.Contains("error de violación de unicidad"))
                     throw new ErrorRegistroYaExiste();
                 if (mensaje.Contains("error inesperado al actualizar el accesorio"))
@@ -88,6 +90,14 @@ public class AccesorioService : IAccesorioService
                 throw new Exception($"Error del repositorio al actualizar accesorio: {errorRepo.Message}", errorRepo);
             throw;
         }
+    }
+    private void ValidarEntradaActualizacion(ActualizarAccesorioComando comando)
+    {
+        if (comando == null) throw new ArgumentNullException(nameof(comando));
+        if (comando.Id <= 0) throw new ErrorIdInvalido("accesorio");
+        if (!string.IsNullOrWhiteSpace(comando.Nombre) && comando.Nombre.Length > 255) throw new ErrorLongitudInvalida("nombre del accesorio", 255);
+        if (comando.CodigoIMT <= 0) throw new ErrorCodigoImtInvalido();
+        if (comando.Precio.HasValue && comando.Precio.Value < 0) throw new ErrorValorNegativo("precio");
     }
     public virtual void EliminarAccesorio(EliminarAccesorioComando comando)
     {
@@ -113,6 +123,11 @@ public class AccesorioService : IAccesorioService
             throw;
         }
     }
+    private void ValidarEntradaEliminacion(EliminarAccesorioComando comando)
+    {
+        if (comando == null) throw new ArgumentNullException(nameof(comando));
+        if (comando.Id <= 0) throw new ErrorIdInvalido("accesorio");
+    }
     private static AccesorioDto MapearFilaADto(DataRow fila) => new AccesorioDto
     {
         Id = Convert.ToInt32(fila["id_accesorio"]),
@@ -125,17 +140,4 @@ public class AccesorioService : IAccesorioService
         Descripcion = fila["descripcion_accesorio"] == DBNull.Value ? null : fila["descripcion_accesorio"].ToString(),
         UrlDataSheet = fila["url_data_sheet_accesorio"] == DBNull.Value ? null : fila["url_data_sheet_accesorio"].ToString(),
     };
-    private void ValidarEntradaActualizacion(ActualizarAccesorioComando comando)
-    {
-        if (comando == null) throw new ArgumentNullException(nameof(comando));
-        if (comando.Id <= 0) throw new ErrorIdInvalido();
-        if (!string.IsNullOrWhiteSpace(comando.Nombre) && comando.Nombre.Length > 255) throw new ErrorLongitudInvalida("nombre del accesorio", 255);
-        if (comando.CodigoIMT <= 0) throw new ErrorIdInvalido();
-        if (comando.Precio.HasValue && comando.Precio.Value < 0) throw new ErrorValorNegativo("precio");
-    }
-    private void ValidarEntradaEliminacion(EliminarAccesorioComando comando)
-    {
-        if (comando == null) throw new ArgumentNullException(nameof(comando));
-        if (comando.Id <= 0) throw new ErrorIdInvalido();
-    }
 }

@@ -29,6 +29,15 @@ public class MuebleService : IMuebleService
             throw;
         }
     }
+    private void ValidarEntradaCreacion(CrearMuebleComando comando)
+    {
+        if (comando == null) throw new ArgumentNullException(nameof(comando));
+        if (string.IsNullOrWhiteSpace(comando.Nombre)) throw new ErrorNombreRequerido();
+        if (comando.Costo.HasValue && comando.Costo < 0) throw new ErrorValorNegativo("costo");
+        if (comando.Longitud.HasValue && comando.Longitud <= 0) throw new ErrorValorNegativo("longitud");
+        if (comando.Profundidad.HasValue && comando.Profundidad <= 0) throw new ErrorValorNegativo("profundidad");
+        if (comando.Altura.HasValue && comando.Altura <= 0) throw new ErrorValorNegativo("altura");
+    }
     public virtual void ActualizarMueble(ActualizarMuebleComando comando)
     {
         try
@@ -53,6 +62,16 @@ public class MuebleService : IMuebleService
             throw;
         }
     }
+    private void ValidarEntradaActualizacion(ActualizarMuebleComando comando)
+    {
+        if (comando == null) throw new ArgumentNullException(nameof(comando));
+        if (comando.Id <= 0) throw new ErrorIdInvalido("mueble");
+        if (!string.IsNullOrWhiteSpace(comando.Nombre) && comando.Nombre.Length > 255) throw new ErrorLongitudInvalida("nombre mueble", 255);
+        if (comando.Costo.HasValue && comando.Costo < 0) throw new ErrorValorNegativo("costo");
+        if (comando.Longitud.HasValue && comando.Longitud <= 0) throw new ErrorValorNegativo("longitud");
+        if (comando.Profundidad.HasValue && comando.Profundidad <= 0) throw new ErrorValorNegativo("profundidad");
+        if (comando.Altura.HasValue && comando.Altura <= 0) throw new ErrorValorNegativo("altura");
+    }
     public virtual void EliminarMueble(EliminarMuebleComando comando)
     {
         try
@@ -73,6 +92,11 @@ public class MuebleService : IMuebleService
             if (ex is ErrorRepository errorRepo) throw new Exception($"Error del repositorio al eliminar mueble: {errorRepo.Message}", errorRepo);
             throw;
         }
+    }
+    private void ValidarEntradaEliminacion(EliminarMuebleComando comando)
+    {
+        if (comando == null) throw new ArgumentNullException(nameof(comando));
+        if (comando.Id <= 0) throw new ErrorIdInvalido("mueble");
     }
     public virtual List<MuebleDto>? ObtenerTodosMuebles()
     {
@@ -99,29 +123,5 @@ public class MuebleService : IMuebleService
             Profundidad = fila["profundidad_mueble"] == DBNull.Value ? null : Convert.ToDouble(fila["profundidad_mueble"]),
             Altura = fila["altura_mueble"] == DBNull.Value ? null : Convert.ToDouble(fila["altura_mueble"])
         };
-    }
-    private void ValidarEntradaCreacion(CrearMuebleComando comando)
-    {
-        if (comando == null) throw new ArgumentNullException(nameof(comando));
-        if (string.IsNullOrWhiteSpace(comando.Nombre)) throw new ErrorNombreRequerido();
-        if (comando.Costo.HasValue && comando.Costo < 0) throw new ErrorValorNegativo("costo");
-        if (comando.Longitud.HasValue && comando.Longitud <= 0) throw new ErrorValorNegativo("longitud");
-        if (comando.Profundidad.HasValue && comando.Profundidad <= 0) throw new ErrorValorNegativo("profundidad");
-        if (comando.Altura.HasValue && comando.Altura <= 0) throw new ErrorValorNegativo("altura");
-    }
-    private void ValidarEntradaActualizacion(ActualizarMuebleComando comando)
-    {
-        if (comando == null) throw new ArgumentNullException(nameof(comando));
-        if (comando.Id <= 0) throw new ErrorIdInvalido();
-        if (!string.IsNullOrWhiteSpace(comando.Nombre) && comando.Nombre.Length > 255) throw new ErrorLongitudInvalida("nombre mueble", 255);
-        if (comando.Costo.HasValue && comando.Costo < 0) throw new ErrorValorNegativo("costo");
-        if (comando.Longitud.HasValue && comando.Longitud <= 0) throw new ErrorValorNegativo("longitud");
-        if (comando.Profundidad.HasValue && comando.Profundidad <= 0) throw new ErrorValorNegativo("profundidad");
-        if (comando.Altura.HasValue && comando.Altura <= 0) throw new ErrorValorNegativo("altura");
-    }
-    private void ValidarEntradaEliminacion(EliminarMuebleComando comando)
-    {
-        if (comando == null) throw new ArgumentNullException(nameof(comando));
-        if (comando.Id <= 0) throw new ErrorIdInvalido();
     }
 }

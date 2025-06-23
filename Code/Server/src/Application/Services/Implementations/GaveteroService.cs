@@ -21,7 +21,7 @@ public class GaveteroService : IGaveteroService
             if (ex is ErrorDataBase errorDb)
             {
                 var mensaje = errorDb.Message?.ToLower() ?? "";
-                if (mensaje.Contains("no se encontró el mueble con nombre")) throw new ErrorReferenciaInvalida("mueble");
+                if (mensaje.Contains("no se encontró el mueble con nombre")) throw new ErrorMuebleNoEncontrado();
                 if (mensaje.Contains("ya existe un gavetero con nombre")) throw new ErrorRegistroYaExiste();
                 if (errorDb.SqlState == "23505" || mensaje.Contains("violación de unicidad al intentar insertar gavetero")) throw new ErrorRegistroYaExiste();
                 if (mensaje.Contains("error al insertar gavetero")) throw new Exception($"Error inesperado al insertar gavetero: {errorDb.Message}", errorDb);
@@ -56,7 +56,7 @@ public class GaveteroService : IGaveteroService
             {
                 var mensaje = errorDb.Message?.ToLower() ?? "";
                 if (mensaje.Contains("no se encontró un gavetero activo con id")) throw new ErrorRegistroNoEncontrado();
-                if (mensaje.Contains("no se encontró el mueble activo con nombre")) throw new ErrorReferenciaInvalida("mueble");
+                if (mensaje.Contains("no se encontró el mueble activo con nombre")) throw new ErrorMuebleNoEncontrado();
                 if (mensaje.Contains("ya existe otro gavetero activo con el nombre")) throw new ErrorRegistroYaExiste();
                 if (errorDb.SqlState == "23505" || mensaje.Contains("violación de unicidad")) throw new ErrorRegistroYaExiste();
                 if (mensaje.Contains("error inesperado al actualizar el gavetero")) throw new Exception($"Error inesperado al actualizar gavetero: {errorDb.Message}", errorDb);
@@ -66,6 +66,18 @@ public class GaveteroService : IGaveteroService
             throw;
         }
     }
+    
+    private void ValidarEntradaActualizacion(ActualizarGaveteroComando comando)
+    {
+        if (comando == null) throw new ArgumentNullException(nameof(comando));
+        if (comando.Id <= 0) throw new ErrorIdInvalido("gavetero");
+        if (!string.IsNullOrWhiteSpace(comando.Nombre) && comando.Nombre.Length > 255) throw new ErrorLongitudInvalida("nombre gavetero", 255);
+        if (!string.IsNullOrWhiteSpace(comando.NombreMueble) && comando.NombreMueble.Length > 255) throw new ErrorLongitudInvalida("nombre mueble", 255);
+        if (comando.Longitud.HasValue && comando.Longitud <= 0) throw new ErrorValorNegativo("longitud");
+        if (comando.Profundidad.HasValue && comando.Profundidad <= 0) throw new ErrorValorNegativo("profundidad");
+        if (comando.Altura.HasValue && comando.Altura <= 0) throw new ErrorValorNegativo("altura");
+    }
+
     public virtual void EliminarGavetero(EliminarGaveteroComando comando)
     {
         try
@@ -87,20 +99,11 @@ public class GaveteroService : IGaveteroService
             throw;
         }
     }
-    private void ValidarEntradaActualizacion(ActualizarGaveteroComando comando)
-    {
-        if (comando == null) throw new ArgumentNullException(nameof(comando));
-        if (comando.Id <= 0) throw new ErrorIdInvalido();
-        if (!string.IsNullOrWhiteSpace(comando.Nombre) && comando.Nombre.Length > 255) throw new ErrorLongitudInvalida("nombre gavetero", 255);
-        if (!string.IsNullOrWhiteSpace(comando.NombreMueble) && comando.NombreMueble.Length > 255) throw new ErrorLongitudInvalida("nombre mueble", 255);
-        if (comando.Longitud.HasValue && comando.Longitud <= 0) throw new ErrorValorNegativo("longitud");
-        if (comando.Profundidad.HasValue && comando.Profundidad <= 0) throw new ErrorValorNegativo("profundidad");
-        if (comando.Altura.HasValue && comando.Altura <= 0) throw new ErrorValorNegativo("altura");
-    }
+    
     private void ValidarEntradaEliminacion(EliminarGaveteroComando comando)
     {
         if (comando == null) throw new ArgumentNullException(nameof(comando));
-        if (comando.Id <= 0) throw new ErrorIdInvalido();
+        if (comando.Id <= 0) throw new ErrorIdInvalido("gavetero");
     }
     public virtual List<GaveteroDto>? ObtenerTodosGaveteros()
     {

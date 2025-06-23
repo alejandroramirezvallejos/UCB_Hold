@@ -19,10 +19,19 @@ public class ComentarioService : IComentarioService
         _comentarioRepository.Crear(comando);
     }
 
+    private void ValidarEntradaCreacion(CrearComentarioComando comando)
+    {
+        if (comando == null) throw new ArgumentNullException();
+        if (string.IsNullOrWhiteSpace(comando.CarnetUsuario)) throw new ErrorCarnetInvalido();
+        if (comando.IdGrupoEquipo <= 0) throw new ErrorIdInvalido("grupo equipo");
+        if (string.IsNullOrWhiteSpace(comando.Contenido)) throw new ErrorCampoRequerido("contenido");
+        if (comando.Contenido.Length > 500) throw new ErrorLongitudInvalida("contenido", 500);
+    }
+
     public List<ComentarioDto>? ObtenerComentariosPorGrupoEquipo(ObtenerComentariosPorGrupoEquipoConsulta consulta)
     {
         if (consulta == null) throw new ArgumentNullException();
-        if (consulta.IdGrupoEquipo <= 0) throw new ErrorIdInvalido();
+        if (consulta.IdGrupoEquipo <= 0) throw new ErrorIdInvalido("comentarios");
         var comentariosData = _comentarioRepository.ObtenerPorGrupoEquipo(consulta.IdGrupoEquipo);
         if (comentariosData.Rows.Count == 0) return new List<ComentarioDto>();
         var carnets = comentariosData.AsEnumerable().Select(r => r.Field<string>("carnet_usuario")).Where(c => !string.IsNullOrEmpty(c)).Distinct().ToList();
@@ -58,12 +67,25 @@ public class ComentarioService : IComentarioService
         _comentarioRepository.Eliminar(comando);
     }
 
+    private void ValidarEntradaEliminacion(EliminarComentarioComando comando)
+    {
+        if (comando == null) throw new ArgumentNullException();
+        if (string.IsNullOrWhiteSpace(comando.Id)) throw new ErrorIdInvalido("comentario");
+    }
+
     public void AgregarLikeComentario(AgregarLikeComentarioComando comando)
     {
         ValidarEntradaLike(comando);
         _comentarioRepository.AgregarLike(comando);
     }
 
+    private void ValidarEntradaLike(AgregarLikeComentarioComando comando)
+    {
+        if (comando == null) throw new ArgumentNullException();
+        if (string.IsNullOrWhiteSpace(comando.Id)) throw new ErrorIdInvalido("comentario");
+        if (string.IsNullOrWhiteSpace(comando.CarnetUsuario)) throw new ErrorCarnetInvalido();
+    }
+    
     private ComentarioDto MapearFilaADto(DataRow fila) => new ComentarioDto
     {
         Id = fila["id_comentario"].ToString(),
@@ -73,24 +95,4 @@ public class ComentarioService : IComentarioService
         Likes = fila["likes_comentario"] == DBNull.Value ? 0 : Convert.ToInt32(fila["likes_comentario"]),
         FechaCreacion = fila["fecha_creacion_comentario"] == DBNull.Value ? null : Convert.ToDateTime(fila["fecha_creacion_comentario"])
     };
-
-    private void ValidarEntradaCreacion(CrearComentarioComando comando)
-    {
-        if (comando == null) throw new ArgumentNullException();
-        if (string.IsNullOrWhiteSpace(comando.CarnetUsuario)) throw new ErrorCarnetInvalido();
-        if (comando.IdGrupoEquipo <= 0) throw new ErrorIdInvalido();
-        if (string.IsNullOrWhiteSpace(comando.Contenido)) throw new ErrorCampoRequerido("contenido");
-        if (comando.Contenido.Length > 500) throw new ErrorLongitudInvalida("contenido", 500);
-    }
-    private void ValidarEntradaEliminacion(EliminarComentarioComando comando)
-    {
-        if (comando == null) throw new ArgumentNullException();
-        if (string.IsNullOrWhiteSpace(comando.Id)) throw new ErrorIdInvalido();
-    }
-    private void ValidarEntradaLike(AgregarLikeComentarioComando comando)
-    {
-        if (comando == null) throw new ArgumentNullException();
-        if (string.IsNullOrWhiteSpace(comando.Id)) throw new ErrorIdInvalido();
-        if (string.IsNullOrWhiteSpace(comando.CarnetUsuario)) throw new ErrorCarnetInvalido();
-    }
 }

@@ -79,6 +79,15 @@ public class EmpresaMantenimientoService : IEmpresaMantenimientoService
             throw;
         }
     }
+
+    private void ValidarEntradaActualizacion(ActualizarEmpresaMantenimientoComando comando)
+    {
+        if (comando == null) throw new ArgumentNullException(nameof(comando));
+        if (comando.Id <= 0) throw new ErrorIdInvalido("empresa de mantenimiento");
+        if (!string.IsNullOrWhiteSpace(comando.NombreEmpresa) && comando.NombreEmpresa.Length > 255)
+            throw new ErrorLongitudInvalida("nombre de la empresa", 255);
+    }
+
     public virtual void EliminarEmpresaMantenimiento(EliminarEmpresaMantenimientoComando comando)
     {
         try
@@ -103,18 +112,13 @@ public class EmpresaMantenimientoService : IEmpresaMantenimientoService
             throw;
         }
     }
-    private void ValidarEntradaActualizacion(ActualizarEmpresaMantenimientoComando comando)
-    {
-        if (comando == null) throw new ArgumentNullException(nameof(comando));
-        if (comando.Id <= 0) throw new ErrorIdInvalido();
-        if (!string.IsNullOrWhiteSpace(comando.NombreEmpresa) && comando.NombreEmpresa.Length > 255)
-            throw new ErrorLongitudInvalida("nombre de la empresa", 255);
-    }
+    
     private void ValidarEntradaEliminacion(EliminarEmpresaMantenimientoComando comando)
     {
         if (comando == null) throw new ArgumentNullException(nameof(comando));
-        if (comando.Id <= 0) throw new ErrorIdInvalido();
+        if (comando.Id <= 0) throw new ErrorIdInvalido("empresa de mantenimiento");
     }
+    
     private static EmpresaMantenimientoDto MapearFilaADto(DataRow fila)
     {
         return new EmpresaMantenimientoDto

@@ -23,9 +23,9 @@ export class EquiposEditarComponent {
     EstadoEquipo: '',
     Ubicacion: '',
     NombreGavetero: '',
-    CostoReferencia: 0,
+    CostoReferencia: null,
     Descripcion: '',
-    TiempoMaximoPrestamo: 0,
+    TiempoMaximoPrestamo: null,
     Procedencia: ''
   };
 
@@ -34,14 +34,12 @@ export class EquiposEditarComponent {
   confirmar (){
  
     this.equipoapi.editarEquipo(this.equipo).subscribe({
-      next: (response) => {
-        alert( response);
+      next: () => {
         this.actualizar.emit();
         this.cerrar();
       },
       error: (error) => {
         alert( error.error.error + ': ' + error.error.message);
-        this.cerrar();
       }
         });
   }
