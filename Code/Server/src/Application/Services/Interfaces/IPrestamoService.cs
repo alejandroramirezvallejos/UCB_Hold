@@ -5,6 +5,5 @@ public interface IPrestamoService
     List<PrestamoDto>? ObtenerPrestamosPorCarnetYEstadoPrestamo(string carnetUsuario, string estadoPrestamo);
     void EliminarPrestamo(EliminarPrestamoComando comando);
     void ActualizarEstadoPrestamo(ActualizarEstadoPrestamoComando comando);
-    void AceptarPrestamo(AceptarPrestamoComando comando);
     List<byte[]> ObtenerContratoPorPrestamo(ObtenerContratoPorPrestamoConsulta consulta);
 }

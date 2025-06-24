@@ -61,14 +61,6 @@ public class PrestamoRepository : IPrestamoRepository
         catch (NpgsqlException ex) { throw new ErrorDataBase($"Error de base de datos al obtener préstamos: {ex.Message}", ex.SqlState, null, ex); }
         catch (Exception ex) { throw new ErrorRepository($"Error del repositorio al obtener préstamos: {ex.Message}", ex); }
     }
-    public void AceptarPrestamo(int prestamoId)
-    {
-        const string sql = @"CALL public.aceptar_prestamo(@idPrestamo)";
-        var parametros = new Dictionary<string, object?> { ["idPrestamo"] = prestamoId };
-        try { _ejecutarConsulta.EjecutarSpNR(sql, parametros); }
-        catch (NpgsqlException ex) { throw new ErrorDataBase($"Error de base de datos al aceptar el préstamo: {ex.Message}", ex.SqlState, null, ex); }
-        catch (Exception ex) { throw new ErrorRepository($"Error del repositorio al aceptar el préstamo: {ex.Message}", ex); }
-    }
     public DataTable ObtenerPorCarnetYEstadoPrestamo(string carnetUsuario, string estadoPrestamo)
     {
         const string sql = @"SELECT * from public.obtener_prestamos_por_carnet_y_estado_prestamo(@carnetUsuario,@estadoPrestamo::estado_prestamo)";
