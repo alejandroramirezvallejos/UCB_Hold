@@ -1,6 +1,5 @@
 using System.Data;
 using Npgsql;
-using NpgsqlTypes;
 
 public class PrestamoRepository : IPrestamoRepository
 {
@@ -8,23 +7,43 @@ public class PrestamoRepository : IPrestamoRepository
     public PrestamoRepository(IExecuteQuery ejecutarConsulta) => _ejecutarConsulta = ejecutarConsulta;
     public int Crear(CrearPrestamoComando comando)
     {
-        const string sql = @"INSERT INTO public.prestamos (fecha_solicitud,fecha_prestamo_esperada,fecha_devolucion_esperada,observacion,estado_prestamo,carnet,estado_eliminado) VALUES (@fechaSolicitud,@fechaPrestamoEsperada,@fechaDevolucionEsperada,@observacion,@estadoPrestamo::estado_prestamo,@carnetUsuario,@estadoEliminado) RETURNING id_prestamo;";
+        const string sql = @"CALL public.insertar_prestamo(
+	    @grupoEquipoId,
+	    @fechaPrestamoEsperada,
+	    @fechaDevolucionEsperada,
+	    @observacion,
+	    @carnetUsuario,
+	    @idContrato
+        )";
         var parametros = new Dictionary<string, object?>
         {
-            ["fechaSolicitud"] = DateTime.Now,
+            ["grupoEquipoId"] = comando.GrupoEquipoId ?? (object)DBNull.Value,
             ["fechaPrestamoEsperada"] = comando.FechaPrestamoEsperada.HasValue ? (object)comando.FechaPrestamoEsperada.Value : DBNull.Value,
             ["fechaDevolucionEsperada"] = comando.FechaDevolucionEsperada.HasValue ? (object)comando.FechaDevolucionEsperada.Value : DBNull.Value,
             ["observacion"] = comando.Observacion ?? (object)DBNull.Value,
-            ["estadoPrestamo"] = "pendiente",
             ["carnetUsuario"] = comando.CarnetUsuario ?? (object)DBNull.Value,
-            ["estadoEliminado"] = false
+            ["idContrato"] =DBNull.Value
         };
-        try {
-            var dt = _ejecutarConsulta.EjecutarFuncion(sql, parametros);
+        const string sqlId= @"Select id_prestamo from public.prestamos 
+                        where fecha_prestamo_esperada = @fechaPrestamoEsperada
+                        and fecha_devolucion_esperada = @fechaDevolucionEsperada
+                        and carnet = @carnetUsuario
+                        order by id_prestamo desc
+                        limit 1";
+        var parametrosId = new Dictionary<string, object?> {
+            ["fechaPrestamoEsperada"] = comando.FechaPrestamoEsperada ?? (object)DBNull.Value,
+            ["fechaDevolucionEsperada"] = comando.FechaDevolucionEsperada ?? (object)DBNull.Value,
+            ["carnetUsuario"] = comando.CarnetUsuario ?? (object)DBNull.Value
+        };
+        
+        try
+        {
+            _ejecutarConsulta.EjecutarSpNR(sql, parametros);
+            var dt= _ejecutarConsulta.EjecutarFuncion(sqlId, parametrosId);
             if (dt != null && dt.Rows.Count > 0 && dt.Rows[0][0] != DBNull.Value) return Convert.ToInt32(dt.Rows[0][0]);
             throw new Exception("Fallo crítico: No se pudo crear el préstamo y obtener el ID.");
         }
-        catch (Npgsql.NpgsqlException ex) { throw new ErrorDataBase($"Error de base de datos al crear préstamo: {ex.Message}", ex.SqlState, null, ex); }
+        catch (NpgsqlException ex) { throw new ErrorDataBase($"Error de base de datos al crear préstamo: {ex.Message}", ex.SqlState, null, ex); }
         catch (Exception ex) { throw new ErrorRepository($"Error del repositorio al crear préstamo: {ex.Message}", ex); }
     }
     public void Eliminar(int id)

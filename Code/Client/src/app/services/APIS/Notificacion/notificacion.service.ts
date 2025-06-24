@@ -42,4 +42,50 @@ export class NotificacionService {
   }
 
 
+  enviarretrasos(){
+    const url = `${this.apiUrl}/enviar-retrasos`;
+    return this.http.post(url, null);
+  }
+
+  enviarpenalizaciones(){
+    const url = `${this.apiUrl}/enviar-penalizaciones`;
+    return this.http.post(url, null);
+  }
+
+  enviarestadoprestamo(){
+    const url = `${this.apiUrl}/enviar-estado-prestamo`;
+    return this.http.post(url, null);
+  }
+
+  enviarnotificaciones(){
+            this.enviarretrasos().subscribe({
+          next: (data) => {
+
+          }
+          , error: (error) => {
+            console.error("Error al enviar retrasos: ", error);
+          }
+        });
+
+        this.enviarpenalizaciones().subscribe({
+          next: (data) => {
+
+          }
+          , error: (error) => {
+            console.error("Error al enviar penalizaciones: ", error);
+          }
+        });
+        this.enviarestadoprestamo().subscribe({
+          next: (data) => {
+
+          }
+          , error: (error) => {
+            console.error("Error al enviar estado de préstamo: ", error);
+          }
+        });
+        
+  }
+
+
+
 }
