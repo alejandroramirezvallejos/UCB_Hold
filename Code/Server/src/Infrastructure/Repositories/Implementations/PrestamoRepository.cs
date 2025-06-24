@@ -24,12 +24,12 @@ public class PrestamoRepository : IPrestamoRepository
             ["carnetUsuario"] = comando.CarnetUsuario ?? (object)DBNull.Value,
             ["idContrato"] =DBNull.Value
         };
-        const string sqlId= @"Select id_prestamo from public.prestamos 
-                        where fecha_prestamo_esperada = @fechaPrestamoEsperada
-                        and fecha_devolucion_esperada = @fechaDevolucionEsperada
-                        and carnet = @carnetUsuario
-                        order by id_prestamo desc
-                        limit 1";
+        const string sqlId= @"SELECT id_prestamo FROM public.prestamos 
+                        WHERE fecha_prestamo_esperada = @fechaPrestamoEsperada
+                        AND fecha_devolucion_esperada = @fechaDevolucionEsperada
+                        AND carnet = @carnetUsuario
+                        ORDER BY id_prestamo DESC
+                        LIMIT 1";
         var parametrosId = new Dictionary<string, object?> {
             ["fechaPrestamoEsperada"] = comando.FechaPrestamoEsperada ?? (object)DBNull.Value,
             ["fechaDevolucionEsperada"] = comando.FechaDevolucionEsperada ?? (object)DBNull.Value,
@@ -40,7 +40,7 @@ public class PrestamoRepository : IPrestamoRepository
         {
             _ejecutarConsulta.EjecutarSpNR(sql, parametros);
             var dt= _ejecutarConsulta.EjecutarFuncion(sqlId, parametrosId);
-            if (dt != null && dt.Rows.Count > 0 && dt.Rows[0][0] != DBNull.Value) return Convert.ToInt32(dt.Rows[0][0]);
+            if (dt != null && dt.Rows.Count > 0 && dt.Rows[0]["id_prestamo"] != DBNull.Value) return Convert.ToInt32(dt.Rows[0]["id_prestamo"]);
             throw new Exception("Fallo crítico: No se pudo crear el préstamo y obtener el ID.");
         }
         catch (NpgsqlException ex) { throw new ErrorDataBase($"Error de base de datos al crear préstamo: {ex.Message}", ex.SqlState, null, ex); }

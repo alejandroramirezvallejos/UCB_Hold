@@ -27,14 +27,14 @@ namespace IMT_Reservas.Tests.RepositoryTests
             dt.Rows.Add(123);
 
             _ejecutarConsultaMock.Setup(e => e.EjecutarFuncion(
-                It.Is<string>(s => s.Contains("INSERT INTO")),
+                It.Is<string>(s => s.Contains("SELECT id_prestamo")),
                 It.IsAny<Dictionary<string, object?>>()))
                 .Returns(dt);
 
             var result = _prestamoRepositorio.Crear(comando);
 
             _ejecutarConsultaMock.Verify(e => e.EjecutarFuncion(
-                It.Is<string>(s => s.Contains("INSERT INTO")),
+                It.Is<string>(s => s.Contains("SELECT id_prestamo")),
                 It.Is<Dictionary<string, object?>>(d => (string)d["carnetUsuario"] == comando.CarnetUsuario)
             ), Times.Once);
 
