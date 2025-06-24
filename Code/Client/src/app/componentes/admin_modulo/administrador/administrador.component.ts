@@ -21,10 +21,11 @@ import { PrestamosTablaComponent } from '../tablas/prestamos/prestamos-tabla/pre
   templateUrl: './administrador.component.html',
   styleUrls: ['./administrador.component.css']
 })
-//TODO : Agregar los componentes de las tablas
+
 export class AdministradorComponent {
   tablas : string[] = ['Prestamos', 'Carreras', 'Usuarios', 'Categorias', 'Componentes', "Empresas de Mantenimiento",
-     'Equipos', 'Gaveteros', 'Grupos de Equipos', 'Mantenimientos', 'Muebles', 'Accesorios', "Equipos que Necesitan Mantenimiento", "Ubicacion de Grupos de Equipos"];
+     'Equipos', 'Gaveteros', 'Grupos de Equipos', 'Mantenimientos', 'Muebles',
+      'Accesorios'];
   
   item : string = 'Prestamos';
 
