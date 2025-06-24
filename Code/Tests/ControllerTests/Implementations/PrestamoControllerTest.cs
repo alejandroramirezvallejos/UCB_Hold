@@ -161,5 +161,41 @@ namespace IMT_Reservas.Tests.ControllerTests
             var objectResult = (ObjectResult)resultadoAccion;
             Assert.That(objectResult.StatusCode, Is.EqualTo(500));
         }
+
+        [Test]
+        public void ObtenerPorCarnetYEstado_ConDatos_RetornaOk()
+        {
+            var carnetUsuario = "12890061";
+            var estadoPrestamo = "Activo";
+            var prestamosEsperados = new List<PrestamoDto>
+            {
+                new PrestamoDto { Id = 1, CarnetUsuario = carnetUsuario, EstadoPrestamo = estadoPrestamo },
+                new PrestamoDto { Id = 2, CarnetUsuario = carnetUsuario, EstadoPrestamo = estadoPrestamo }
+            };
+
+            _prestamoServiceMock.Setup(s => s.ObtenerPrestamosPorCarnetYEstadoPrestamo(carnetUsuario, estadoPrestamo)).Returns(prestamosEsperados);
+
+            var resultadoAccion = _prestamosController.ObtenerPorCarnetYEstado(carnetUsuario, estadoPrestamo);
+
+            Assert.That(resultadoAccion, Is.InstanceOf<OkObjectResult>());
+            var okObjectResult = (OkObjectResult)resultadoAccion;
+            Assert.That(okObjectResult.Value, Is.InstanceOf<List<PrestamoDto>>().And.Count.EqualTo(prestamosEsperados.Count));
+        }
+
+        [Test]
+        public void ObtenerPorCarnetYEstado_SinDatos_RetornaOkVacia()
+        {
+            var carnetUsuario = "12890061";
+            var estadoPrestamo = "Activo";
+            var prestamosEsperados = new List<PrestamoDto>();
+
+            _prestamoServiceMock.Setup(s => s.ObtenerPrestamosPorCarnetYEstadoPrestamo(carnetUsuario, estadoPrestamo)).Returns(prestamosEsperados);
+
+            var resultadoAccion = _prestamosController.ObtenerPorCarnetYEstado(carnetUsuario, estadoPrestamo);
+
+            Assert.That(resultadoAccion, Is.InstanceOf<OkObjectResult>());
+            var okObjectResult = (OkObjectResult)resultadoAccion;
+            Assert.That(okObjectResult.Value, Is.InstanceOf<List<PrestamoDto>>().And.Empty);
+        }
     }
 }
