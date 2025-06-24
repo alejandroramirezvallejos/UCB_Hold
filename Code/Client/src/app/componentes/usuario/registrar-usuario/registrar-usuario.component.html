@@ -59,16 +59,18 @@
           <input 
             type="text" 
             name="carnet" 
-             maxlength="50"
+            minlength="7"
+            maxlength="10"
             [(ngModel)]="nuevoUsuario.carnet"
             required
             placeholder="Ingresa tu carnet"
+            pattern="[0-9]+"
             required
             class="form-input"
             #carnetInput="ngModel"
           >
           @if (carnetInput.invalid && (carnetInput.dirty || carnetInput.touched)) {
-            <div class="error-message">El carnet es requerido</div>
+            <div class="error-message">El carnet es invalido</div>
           }
         </div>
 
@@ -92,9 +94,6 @@
               @if (correoInput.errors?.['required']) {
                 <div>El correo electrónico es requerido</div>
               }
-              @if (correoInput.errors?.['email']) {
-                <div>Formato de correo inválido</div>
-              }
               @if (correoInput.errors?.['pattern']) {
             <div>Debe usar un correo institucional &#64;ucb.edu.bo</div>
               }
@@ -108,7 +107,8 @@
             type="tel" 
             name="telefono" 
             [(ngModel)]="nuevoUsuario.telefono"
-             maxlength="50"
+               maxlength="10"
+            pattern="[0-9]{8,10}"
             required
             placeholder="70000000"
             class="form-input"
@@ -165,6 +165,8 @@
             type="tel" 
             name="telefonoReferencia" 
             [(ngModel)]="nuevoUsuario.telefono_referencia"
+            pattern="[0-9]{8,10}"
+            maxlength="10"
             placeholder="70000000"
             class="form-input"
           >
