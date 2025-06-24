@@ -2,11 +2,15 @@ import { Component, EventEmitter, Input, Output, signal, WritableSignal } from '
 import { FormsModule } from '@angular/forms';
 import { Mantenimientos } from '../../../../../models/admin/Mantenimientos';
 import { MantenimientoService } from '../../../../../services/APIS/Mantenimiento/mantenimiento.service';
+import { ListaequipoComponent } from './listaequipo/listaequipo.component';
+import { MantenimientosServiceEquipos } from '../../../../../services/mantenimientoEquipos/mantenimientosEquipos.service';
+import { CommonModule } from '@angular/common';
+import { EmpresamantenimientoService } from '../../../../../services/APIS/EmpresaMantenimiento/empresamantenimiento.service';
 
 @Component({
   selector: 'app-mantenimientos-crear',
   standalone: true,
-  imports: [FormsModule],
+  imports: [FormsModule , ListaequipoComponent, CommonModule],
   templateUrl: './mantenimientos-crear.component.html',
   styleUrl: './mantenimientos-crear.component.css'
 })
@@ -14,6 +18,8 @@ export class MantenimientosCrearComponent {
 
   @Input() botoncrear: WritableSignal<boolean> = signal(true);
   @Output() Actualizar = new EventEmitter<void>();
+
+  agregarequipo : WritableSignal<boolean> = signal(false);
 
   mantenimiento: Mantenimientos = {
     Id: 0,
@@ -27,8 +33,50 @@ export class MantenimientosCrearComponent {
     CodigoImtEquipo: 0,
     DescripcionEquipo: ''
   };
+  empresas : string[] = [];
 
-  constructor(private mantenimientoapi: MantenimientoService) { }
+  mantenimientoSeleccionado: Map<number, {
+        TipoMantenimiento: string;
+        DescripcionEquipo : string ; 
+        nombre : string }> = new Map();
+
+  constructor(private mantenimientoapi: MantenimientoService , private mantenimientoequipo : MantenimientosServiceEquipos  , private empresa : EmpresamantenimientoService) { }
+
+  ngOnInit() {
+    this.obtenermantenimientoSeleccionado();
+    this.obtenereempresasMantenimiento();
+  }
+
+  ngOnDestroy() {
+    this.mantenimientoequipo.vaciarEquiposMantenimientos(); 
+  }
+
+  obtenereempresasMantenimiento() {
+    this.empresa.obtenerEmpresaMantenimiento().subscribe({
+      next: (empresas) => {
+        this.empresas = empresas.map(empresa => empresa.NombreEmpresa);
+
+      },
+      error: (error) => {
+        console.error('Error al obtener las empresas de mantenimiento:', error);
+        alert('Error al cargar las empresas de mantenimiento. Por favor, inténtelo de nuevo más tarde.');
+      }
+    }
+    );
+  }
+
+  agregarEquipo() {
+    this.agregarequipo.set(!this.agregarequipo());
+  }
+
+  obtenermantenimientoSeleccionado() {
+    this.mantenimientoSeleccionado= this.mantenimientoequipo.obtenerEquiposMantenimientos();
+  }
+
+  eliminarEquipo(codigo: number) {
+    this.mantenimientoequipo.quitarequipo(codigo);
+    this.obtenermantenimientoSeleccionado();
+  }
 
   registrar() {
     // Convertir el objeto para que coincida con lo que espera el servicio
@@ -38,12 +86,9 @@ export class MantenimientosCrearComponent {
       NombreEmpresaMantenimiento: this.mantenimiento.NombreEmpresaMantenimiento,
       Costo: this.mantenimiento.Costo,
       DescripcionMantenimiento: this.mantenimiento.Descripcion,
-      CodigoIMT: this.mantenimiento.CodigoImtEquipo,
-      TipoMantenimiento: this.mantenimiento.TipoMantenimiento,
-      DescripcionEquipo: this.mantenimiento.DescripcionEquipo
     };
 
-    this.mantenimientoapi.crearMantenimiento(mantenimientoParaEnvio).subscribe(
+    this.mantenimientoapi.crearMantenimiento(mantenimientoParaEnvio , this.mantenimientoSeleccionado).subscribe(
       response => {
         this.Actualizar.emit();
         this.cerrar();

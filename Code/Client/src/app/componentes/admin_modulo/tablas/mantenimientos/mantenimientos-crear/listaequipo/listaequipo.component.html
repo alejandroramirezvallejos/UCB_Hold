@@ -1,0 +1,101 @@
+<div class="container">
+  <!-- BUSCADOR-->
+  <div class="search-container">
+    <div class="search-input-wrapper">
+      <i class="fas fa-search search-icon"></i>      <input 
+        type="text" 
+        [(ngModel)]="terminoBusqueda" 
+        (keydown.enter)="buscar()"
+        placeholder="Buscar equipos..." 
+        class="search-input"
+      />
+      @if (terminoBusqueda) {
+        <button class="clear-search" (click)="limpiarBusqueda()">
+          <i class="fas fa-times"></i>
+        </button>
+      }
+    </div>
+
+  </div>
+
+  <!-- TABLA -->
+  <div class="table-responsive">
+    <table class="data-table">
+      <thead>        <tr>
+          <th (click)="ordenarPor('Nombre')">
+            Nombre 
+            @if (sortColumn === 'Nombre') {
+              <i [class]="sortDirection === 'asc' ? 'fas fa-sort-up' : 'fas fa-sort-down'"></i>
+            }
+          </th>
+          <th (click)="ordenarPor('EstadoEquipo')">
+            EstadoEquipo 
+            @if (sortColumn === 'EstadoEquipo') {
+              <i [class]="sortDirection === 'asc' ? 'fas fa-sort-up' : 'fas fa-sort-down'"></i>
+            }
+          </th>
+          <th (click)="ordenarPor('Ubicacion')">
+            Ubicacion 
+            @if (sortColumn === 'Ubicacion') {
+              <i [class]="sortDirection === 'asc' ? 'fas fa-sort-up' : 'fas fa-sort-down'"></i>
+            }
+          </th>
+          <th (click)="ordenarPor('CodigoImt')">
+            Código IMT
+            @if (sortColumn === 'CodigoImt') {
+              <i [class]="sortDirection === 'asc' ? 'fas fa-sort-up' : 'fas fa-sort-down'"></i>
+            }
+          </th>
+          <th (click)="ordenarPor('CostoReferencia')">
+            Costo 
+            @if (sortColumn === 'CostoReferencia') {
+              <i [class]="sortDirection === 'asc' ? 'fas fa-sort-up' : 'fas fa-sort-down'"></i>
+            }
+          </th>
+          <th>Acciones</th>
+        </tr>
+      </thead>      <tbody>
+        @for (equipo of equipos; track $index ; let i = $index) {
+          @if(mantenimientoequipos.validarsiexitecodigo(equipo.CodigoImt)){
+
+          }
+          @else {
+            <tr>
+            <td>{{equipo.NombreGrupoEquipo}}</td>
+            <td>{{equipo.EstadoEquipo}}</td>
+            <td>{{equipo.Ubicacion}}</td>
+            <td>{{equipo.CodigoImt}}</td>
+            <td class="precio-column">{{equipo.CostoReferencia | currency:'Bs ':'symbol':'1.2-2'}}</td>
+            <td class="actions-column">
+              <button class="btn-icon btn-add" (click)="agregarEquipo(equipo)">
+                <i class="fas fa-plus"></i>
+              </button>
+     
+
+
+            </td>        </tr>  
+          }
+        }
+        @if (equipos.length === 0) {
+          <tr>
+            <td colspan="6" class="empty-table">
+              <div class="empty-state">
+                <i class="fas fa-search fa-3x"></i>
+                <p>No se encontraron equipos</p>
+                <button class="btn btn-outline" (click)="limpiarBusqueda()">Limpiar filtros</button>
+              </div>
+            </td>
+          </tr>
+        }
+      </tbody>
+    </table>  </div>  <!-- ALERTA DE ELIMINACIÓN -->
+</div>
+
+@if(agregarEquipoSeleccionado()){
+  <app-formulario-datos
+  [agregarEquipoSeleccionado]="agregarEquipoSeleccionado"
+  [equipo]="equipoSeleccionado"
+  >
+
+  </app-formulario-datos>
+}
