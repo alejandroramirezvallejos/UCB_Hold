@@ -6,6 +6,5 @@ public interface IPrestamoRepository
     DataTable ObtenerTodos();
     void ActualizarEstado(ActualizarEstadoPrestamoComando comando);
     DataTable ObtenerPorCarnetYEstadoPrestamo(string carnet, string estadoPrestamo);
-    void AceptarPrestamo(int prestamoId);
     void ActualizarIdContrato(int prestamoId, string idContrato);
 }

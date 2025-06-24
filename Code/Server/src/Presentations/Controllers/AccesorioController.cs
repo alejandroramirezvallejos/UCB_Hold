@@ -1,6 +1,5 @@
 using IMT_Reservas.Server.Application.Interfaces;
 using Microsoft.AspNetCore.Mvc;
-using IMT_Reservas.Server.Shared.Common;
 
 [ApiController]
 [Route("api/[controller]")]

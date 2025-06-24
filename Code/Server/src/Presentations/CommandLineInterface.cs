@@ -197,12 +197,6 @@ public static class CommandLineInterface
 
         var builder = WebApplication.CreateBuilder(args);
 
-        builder.Services.AddMongoDb(builder.Configuration)
-            .AddScoped<IComentarioService, ComentarioService>()
-            .AddScoped<INotificacionService, NotificacionService>()
-            .AddScoped<IComentarioRepository, ComentarioRepository>()
-            .AddScoped<INotificacionRepository, NotificacionRepository>();
-
         builder.Services.AddControllers().AddJsonOptions(options =>
             {
                 options.JsonSerializerOptions.PropertyNamingPolicy = null;
@@ -221,6 +215,13 @@ public static class CommandLineInterface
                       .AllowAnyHeader();
             });
         });
+
+        builder.Services.AddMongoDb(builder.Configuration)
+            .AddScoped<IComentarioService, ComentarioService>()
+            .AddScoped<INotificacionService, NotificacionService>()
+            .AddScoped<IComentarioRepository, ComentarioRepository>()
+            .AddScoped<INotificacionRepository, NotificacionRepository>();
+            
 
         builder.Services.AddScoped<IExecuteQuery, ExecuteQuery>();
 

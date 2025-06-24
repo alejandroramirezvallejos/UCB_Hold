@@ -30,7 +30,7 @@ public class GrupoEquipoController : ControllerBase
     }
 
     [HttpGet("{id}")]
-    public ActionResult<GrupoEquipoDto> ObtenerPorId(int id)
+    public IActionResult ObtenerPorId(int id)
     {
         try
         {
@@ -46,7 +46,7 @@ public class GrupoEquipoController : ControllerBase
     }
 
     [HttpGet("buscar")]
-    public ActionResult<List<GrupoEquipoDto>> ObtenerPorNombreYCategoria([FromQuery] string? nombre, [FromQuery] string? categoria)
+    public IActionResult ObtenerPorNombreYCategoria([FromQuery] string? nombre, [FromQuery] string? categoria)
     {
         try
         {
