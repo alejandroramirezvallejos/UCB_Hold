@@ -62,6 +62,18 @@ public class NotificacionService : INotificacionService
         return false;
     }
 
+    private bool NotificacionBloqueoYaExiste(string carnet)
+    {
+        var consulta = new ObtenerNotificacionPorCarnetUsuarioConsulta(carnet);
+        var notificaciones = _notificacionRepository.ObtenerPorUsuario(consulta);
+        foreach (DataRow fila in notificaciones.Rows)
+        {
+            if (fila["titulo"].ToString() == "Cuenta bloqueada")
+                return true;
+        }
+        return false;
+    }
+
     public void EnviarNotificacionesRetraso()
     {
         var prestamos = _prestamoRepository.ObtenerTodos();
@@ -102,7 +114,7 @@ public class NotificacionService : INotificacionService
                 var carnet = fila["carnet"].ToString();
                 var contenido = $"El préstamo con ID {idPrestamo} no ha sido devuelto. Tu cuenta permanecerá bloqueada hasta las {fechaDevolucionEsperada.AddDays(1)}.";
                 var titulo = "Cuenta bloqueada";
-                if (!NotificacionYaExiste(carnet, titulo, contenido))
+                if (!NotificacionBloqueoYaExiste(carnet))
                 {
                     var comando = new CrearNotificacionComando(carnet, titulo, contenido);
                     _notificacionRepository.Crear(comando);

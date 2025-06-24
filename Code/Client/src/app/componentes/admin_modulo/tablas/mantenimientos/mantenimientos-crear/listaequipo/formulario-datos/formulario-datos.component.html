@@ -1,0 +1,47 @@
+<div class="form-container">
+  <button class="btn-close" (click)="cerrar()">
+    <i class="fas fa-times"></i>
+  </button>
+  <h2>Agregar Equipo al Mantenimiento</h2>
+  <form #form="ngForm">
+    <div class="form-group">
+      <label for="tipoMantenimiento">Tipo de Mantenimiento</label>
+      <select 
+        id="tipoMantenimiento" 
+        name="tipoMantenimiento" 
+        [(ngModel)]="tipomantenimiento"
+        required 
+        class="form-input"
+      >
+        <option value="" disabled>Selecciona el tipo de mantenimiento</option>
+        <option value="preventivo">Preventivo</option>
+        <option value="correctivo">Correctivo</option>
+      </select>
+    </div>
+
+    <div class="form-group">
+      <label for="descripcion">Descripción del Mantenimiento</label>
+      <textarea 
+        id="descripcion" 
+        name="descripcion" 
+        [(ngModel)]="descripcion"
+        required
+        rows="4"
+        placeholder="Describe el mantenimiento a realizar en este equipo"
+        class="form-input"
+      ></textarea>
+    </div>
+
+    <div class="form-submit">
+      <button 
+        (click)="agregarEquipo()" 
+        type="submit" 
+        class="register-button" 
+        [disabled]="!form.valid"
+      >
+        <i class="fas fa-plus"></i>
+        <span>Agregar Equipo</span>
+      </button>
+    </div>
+  </form>
+</div>

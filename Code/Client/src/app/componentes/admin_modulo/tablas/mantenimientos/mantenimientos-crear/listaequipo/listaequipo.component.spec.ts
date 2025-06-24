@@ -1,18 +1,18 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 
-import { HistorialComponent } from './historial.component';
+import { ListaequipoComponent } from './listaequipo.component';
 
-describe('HistorialComponent', () => {
-  let component: HistorialComponent;
-  let fixture: ComponentFixture<HistorialComponent>;
+describe('ListaequipoComponent', () => {
+  let component: ListaequipoComponent;
+  let fixture: ComponentFixture<ListaequipoComponent>;
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      imports: [HistorialComponent]
+      imports: [ListaequipoComponent]
     })
     .compileComponents();
 
-    fixture = TestBed.createComponent(HistorialComponent);
+    fixture = TestBed.createComponent(ListaequipoComponent);
     component = fixture.componentInstance;
     fixture.detectChanges();
   });
@@ -21,4 +21,3 @@ describe('HistorialComponent', () => {
     expect(component).toBeTruthy();
   });
 });
-

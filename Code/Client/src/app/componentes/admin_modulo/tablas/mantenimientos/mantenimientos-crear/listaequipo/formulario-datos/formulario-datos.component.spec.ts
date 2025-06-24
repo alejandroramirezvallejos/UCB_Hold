@@ -1,18 +1,18 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 
-import { HistorialComponent } from './historial.component';
+import { FormularioDatosComponent } from './formulario-datos.component';
 
-describe('HistorialComponent', () => {
-  let component: HistorialComponent;
-  let fixture: ComponentFixture<HistorialComponent>;
+describe('FormularioDatosComponent', () => {
+  let component: FormularioDatosComponent;
+  let fixture: ComponentFixture<FormularioDatosComponent>;
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      imports: [HistorialComponent]
+      imports: [FormularioDatosComponent]
     })
     .compileComponents();
 
-    fixture = TestBed.createComponent(HistorialComponent);
+    fixture = TestBed.createComponent(FormularioDatosComponent);
     component = fixture.componentInstance;
     fixture.detectChanges();
   });
@@ -21,4 +21,3 @@ describe('HistorialComponent', () => {
     expect(component).toBeTruthy();
   });
 });
-

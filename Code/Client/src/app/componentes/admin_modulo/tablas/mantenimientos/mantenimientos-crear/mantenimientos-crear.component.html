@@ -3,18 +3,23 @@
     <i class="fas fa-times"></i>
   </button>
   <h2>Registrar Mantenimiento</h2>
-  <form #form="ngForm" (ngSubmit)="registrar()">
+  <form #form="ngForm" >
     <div class="form-group">
       <label for="NombreEmpresaMantenimiento">Empresa de Mantenimiento</label>
-      <input 
-        type="text" 
+      <select
         id="NombreEmpresaMantenimiento" 
         name="NombreEmpresaMantenimiento" 
         [(ngModel)]="mantenimiento.NombreEmpresaMantenimiento"
         required 
-        placeholder="Nombre de la empresa"
         class="form-input"
-      />
+      >
+      <option value="" disabled>Selecciona una empresa</option>
+      @for (item of empresas; track $index) {
+        <option [value]="item">{{item}}</option>
+      }
+      </select> 
+      
+
     </div>
 
     <div class="form-group">
@@ -40,21 +45,6 @@
       />
     </div>
 
-    <div class="form-group">
-      <label for="TipoMantenimiento">Tipo de Mantenimiento</label>
-      <select 
-        id="TipoMantenimiento" 
-        name="TipoMantenimiento" 
-        [(ngModel)]="mantenimiento.TipoMantenimiento"
-        required 
-        class="form-input"
-      >
-        <option value="">Seleccione un tipo</option>
-        <option value="Preventivo">Preventivo</option>
-        <option value="Correctivo">Correctivo</option>
-        <option value="Predictivo">Predictivo</option>
-      </select>
-    </div>
 
     <div class="form-group">
       <label for="Costo">Costo</label>
@@ -71,29 +61,9 @@
       />
     </div>
 
-    <div class="form-group">
-      <label for="NombreGrupoEquipo">Grupo de Equipo</label>
-      <input 
-        type="text" 
-        id="NombreGrupoEquipo" 
-        name="NombreGrupoEquipo" 
-        [(ngModel)]="mantenimiento.NombreGrupoEquipo"
-        placeholder="Nombre del grupo de equipo"
-        class="form-input"
-      />
-    </div>
+ 
 
-    <div class="form-group">
-      <label for="CodigoImtEquipo">Código IMT</label>
-      <input 
-        type="number" 
-        id="CodigoImtEquipo" 
-        name="CodigoImtEquipo" 
-        [(ngModel)]="mantenimiento.CodigoImtEquipo"
-        placeholder="Código IMT del equipo"
-        class="form-input"
-      />
-    </div>
+
 
     <div class="form-group">
       <label for="Descripcion">Descripción del Mantenimiento</label>
@@ -105,25 +75,34 @@
         placeholder="Describe el mantenimiento realizado"
         class="form-input"
       ></textarea>
-    </div>
+    </div>    
+    
+    <button class="btn-agregar-equipo " (click)="agregarEquipo()">agregar equipo</button>
+    
+    @for (item of (mantenimientoSeleccionado | keyvalue); track item.key) {
+      <div class="equipo-pill">
+        <span class="equipo-id">{{item.key}}</span>
+        <span class="equipo-nombre">{{item.value.nombre}}</span>
+        <span class="equipo-tipo">{{item.value.TipoMantenimiento}}</span>
+        <button class="btn-remove" (click)="eliminarEquipo(item.key)">
+          <i class="fas fa-times"></i>
+        </button>
+      </div>
+    }
 
-    <div class="form-group">
-      <label for="DescripcionEquipo">Descripción del Equipo</label>
-      <textarea 
-        id="DescripcionEquipo" 
-        name="DescripcionEquipo" 
-        [(ngModel)]="mantenimiento.DescripcionEquipo"
-        rows="3"
-        placeholder="Describe el equipo mantenido"
-        class="form-input"
-      ></textarea>
-    </div>
 
     <div class="form-submit">
-      <button type="submit" class="register-button" [disabled]="!form.valid">
+      <button (click)="registrar()" type="submit" class="register-button" [disabled]="!form.valid">
         <span>Registrar Mantenimiento</span>
       </button>
     </div>
   </form>
 </div>
 
+
+@if(agregarequipo()){
+  <app-listaequipo
+  [agregarequipo]="agregarequipo"
+  >
+  </app-listaequipo>
+}
