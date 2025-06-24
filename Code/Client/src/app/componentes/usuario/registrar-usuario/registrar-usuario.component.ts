@@ -40,14 +40,15 @@ export class RegistrarUsuarioComponent {
     this.registrarcuenta.registrarCuenta(this.nuevoUsuario,this.password, "estudiante").subscribe(
       (response) => {
         console.log('Usuario registrado exitosamente:', response);
+        this.usuarioS.usuario = this.nuevoUsuario;
       },
       (error) => {
-        alert('Error al registrar el usuario:' + error);
+        alert('Error al registrar el usuario:' + error.error.mensaje);
       }
     );
 
 
-    this.usuarioS.usuario = this.nuevoUsuario;
+
     this.router.navigate(['/home']);
   }
 

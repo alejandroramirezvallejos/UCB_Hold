@@ -16,6 +16,7 @@
             name="nombre" 
             [(ngModel)]="nuevoUsuario.nombre"
             required
+             maxlength="50"
             placeholder="Ingresa tu nombre"
             class="form-input"
             #nombreInput="ngModel"
@@ -31,6 +32,7 @@
             <input 
               type="text" 
               name="apellidoPaterno" 
+               maxlength="50"
               [(ngModel)]="nuevoUsuario.apellido_paterno"
               required
               placeholder="Apellido paterno"
@@ -43,6 +45,7 @@
             <input 
               type="text" 
               name="apellidoMaterno" 
+               maxlength="50"
               [(ngModel)]="nuevoUsuario.apellido_materno"
               required
               placeholder="Apellido materno"
@@ -56,6 +59,7 @@
           <input 
             type="text" 
             name="carnet" 
+             maxlength="50"
             [(ngModel)]="nuevoUsuario.carnet"
             required
             placeholder="Ingresa tu carnet"
@@ -76,7 +80,9 @@
             [(ngModel)]="nuevoUsuario.correo"
             required
             email
+             maxlength="50"
             placeholder="tu@ucb.edu.bo"
+            pattern="^[a-zA-Z0-9._%+-]+@ucb\.edu\.bo$"
             required
             class="form-input"
             #correoInput="ngModel"
@@ -89,6 +95,9 @@
               @if (correoInput.errors?.['email']) {
                 <div>Formato de correo inválido</div>
               }
+              @if (correoInput.errors?.['pattern']) {
+            <div>Debe usar un correo institucional &#64;ucb.edu.bo</div>
+              }
             </div>
           }
         </div>
@@ -99,6 +108,7 @@
             type="tel" 
             name="telefono" 
             [(ngModel)]="nuevoUsuario.telefono"
+             maxlength="50"
             required
             placeholder="70000000"
             class="form-input"
