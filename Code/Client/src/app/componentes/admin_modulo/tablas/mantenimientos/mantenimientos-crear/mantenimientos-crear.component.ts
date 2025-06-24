@@ -21,6 +21,10 @@ export class MantenimientosCrearComponent {
 
   agregarequipo : WritableSignal<boolean> = signal(false);
 
+  fechaminima = new Date().toISOString().split('T')[0];
+
+  
+
   mantenimiento: Mantenimientos = {
     Id: 0,
     NombreEmpresaMantenimiento: '',
@@ -42,6 +46,8 @@ export class MantenimientosCrearComponent {
 
   constructor(private mantenimientoapi: MantenimientoService , private mantenimientoequipo : MantenimientosServiceEquipos  , private empresa : EmpresamantenimientoService) { }
 
+
+  
   ngOnInit() {
     this.obtenermantenimientoSeleccionado();
     this.obtenereempresasMantenimiento();
@@ -50,6 +56,39 @@ export class MantenimientosCrearComponent {
   ngOnDestroy() {
     this.mantenimientoequipo.vaciarEquiposMantenimientos(); 
   }
+
+  validarFecha() {
+    if (!this.mantenimiento.FechaMantenimiento || !this.mantenimiento.FechaFinalDeMantenimiento) {
+    return false;
+  }
+  
+ 
+  const fechaInicio = new Date(this.mantenimiento.FechaMantenimiento);
+  const fechaFinal = new Date(this.mantenimiento.FechaFinalDeMantenimiento);
+  const fechaMinima = new Date(this.fechaminima);
+  
+  if (fechaInicio > fechaFinal) {
+    return false;
+  }
+  
+  if (fechaInicio < fechaMinima) {
+    return false;
+  }
+  
+  return true;
+  }
+
+  fechamaxima(fecha : Date | null){
+    if (!fecha) {
+      return null;
+    }
+      const fechaMaxima = new Date(fecha);
+      fechaMaxima.setFullYear(fechaMaxima.getFullYear() + 1);
+      return fechaMaxima;
+    
+
+  }
+
 
   obtenereempresasMantenimiento() {
     this.empresa.obtenerEmpresaMantenimiento().subscribe({

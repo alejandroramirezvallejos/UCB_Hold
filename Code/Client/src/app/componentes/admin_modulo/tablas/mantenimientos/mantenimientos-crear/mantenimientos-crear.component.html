@@ -31,6 +31,8 @@
         [(ngModel)]="mantenimiento.FechaMantenimiento"
         required 
         class="form-input"
+        [min]="fechaminima"
+        [max]="fechamaxima(mantenimiento.FechaMantenimiento)"
       />
     </div>
 
@@ -41,7 +43,10 @@
         id="FechaFinalDeMantenimiento" 
         name="FechaFinalDeMantenimiento" 
         [(ngModel)]="mantenimiento.FechaFinalDeMantenimiento"
+         required 
         class="form-input"
+        [min]="mantenimiento.FechaMantenimiento"
+        [max]="fechamaxima(mantenimiento.FechaMantenimiento)"
       />
     </div>
 
@@ -92,7 +97,7 @@
 
 
     <div class="form-submit">
-      <button (click)="registrar()" type="submit" class="register-button" [disabled]="!form.valid">
+      <button (click)="registrar()" type="submit" class="register-button" [disabled]="!form.valid || !validarFecha()">
         <span>Registrar Mantenimiento</span>
       </button>
     </div>
