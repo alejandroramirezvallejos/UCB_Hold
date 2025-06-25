@@ -5,6 +5,7 @@ import { PrestamosAPIService } from '../../../../services/APIS/prestamo/prestamo
 import { CommonModule } from '@angular/common';
 import { PrestamoAgrupados } from '../../../../models/PrestamoAgrupados';
 import { Aviso } from '../aviso/aviso.component';
+import { HistorialBase } from '../BASE/HistorialBase';
 
 @Component({
   selector: 'app-aprobado',
@@ -13,43 +14,24 @@ import { Aviso } from '../aviso/aviso.component';
   templateUrl: './aprobado.component.html',
   styleUrl: './aprobado.component.css'
 })
-export class AprobadoComponent {
-  datos  = new Map<number, PrestamoAgrupados>;
+export class AprobadoComponent extends HistorialBase {
+
+  override estado: string = 'aprobado';
+
   avisocancelar : WritableSignal<boolean> = signal(false);
   avisoaprobar : WritableSignal<boolean> = signal(false);
-  itemSeleccionado : Prestamos | null = null;
 
-  constructor( private usuario : UsuarioService , private prestamoApi : PrestamosAPIService){}; 
+
+  constructor( protected override usuario : UsuarioService ,  protected override prestamoApi : PrestamosAPIService)
+  {super(prestamoApi, usuario);}; 
 
 
   ngOnInit() {
     this.cargarDatos();
   }
 
-  cargarDatos() {
-    this.prestamoApi.obtenerPrestamosPorUsuario(this.usuario.usuario.id! , 'aprobado').subscribe({
-      next: (data) => {
-        this.agruparPrestamos(data);
-      },
-      error: (error) => {
-        alert( error.error.error + ': ' + error.error.mensaje);
-      }
+ 
 
-    }); 
-}
-
-  agruparPrestamos(datos: Prestamos[]) {
-    this.datos.clear();
-    for (let prestamo of datos) {
-      if( this.datos.has(prestamo.Id!)) {
-        this.datos.get(prestamo.Id)!.insertarEquipo(prestamo);
-      }
-      else{
-        this.datos.set(prestamo.Id! , new PrestamoAgrupados([prestamo]));
-      }
-    }
-
-  }
   avisocancelarf(item : Prestamos) {
     this.avisocancelar.set(!this.avisocancelar());
     this.itemSeleccionado = item;

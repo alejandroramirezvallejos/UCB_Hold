@@ -1,5 +1,7 @@
-export class Prestamos{
-    Id: number = 0;
+import { Basemodel } from "../base/Basemodel";
+
+export class Prestamos extends Basemodel{
+
     CarnetUsuario: string | null = null;
     NombreUsuario: string | null = null;
     ApellidoPaternoUsuario: string | null = null;
@@ -16,7 +18,7 @@ export class Prestamos{
 
     
     constructor(){
-        this.Id = 0;
+        super();
         this.CarnetUsuario = null;
         this.NombreUsuario = null;
         this.ApellidoPaternoUsuario = null;

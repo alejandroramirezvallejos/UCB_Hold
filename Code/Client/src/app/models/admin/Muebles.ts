@@ -1,5 +1,7 @@
-export class Muebles{
-    Id: number = 0;
+import { Basemodel } from "../base/Basemodel";
+
+export class Muebles extends Basemodel{
+
     Nombre: string | null = null;
     NumeroGaveteros: number | null = null;
     Ubicacion: string | null = null;
@@ -10,7 +12,7 @@ export class Muebles{
     Altura: number | null = null;
 
     constructor(){
-        this.Id = 0;
+        super();
         this.Nombre = null;
         this.NumeroGaveteros = null;
         this.Ubicacion = null;

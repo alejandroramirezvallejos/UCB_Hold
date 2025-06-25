@@ -39,7 +39,7 @@ export class GruposEquiposTablaComponent implements OnInit {
   obtenerCategorias() {
     this.categoriasAPI.obtenercategorias().subscribe(
       (data) => {
-        this.categorias = data.map(categoria => categoria.nombre);
+        this.categorias = data.map(categoria => categoria.Nombre);
       },
       (error) => {
         console.error('Error al cargar las categorías:', error.error.mensaje);

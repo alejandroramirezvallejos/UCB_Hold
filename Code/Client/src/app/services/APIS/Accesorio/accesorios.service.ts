@@ -13,7 +13,7 @@ export class AccesoriosService {
   obtenerAccesorios() {
     return this.http.get<any[]>(this.apiurl).pipe(
       map(data => data.map(item => ({
-        id: item.Id,
+        Id: item.Id,
         nombre: item.Nombre,
         modelo: item.Modelo,
         tipo: item.Tipo,
@@ -48,7 +48,7 @@ export class AccesoriosService {
 
   editarAccesorio(accesorio: Accesorio) {
     const envio = {
-      Id : accesorio.id,
+      Id : accesorio.Id,
       Nombre: accesorio.nombre,
       Modelo: accesorio.modelo,
       Tipo: accesorio.tipo,

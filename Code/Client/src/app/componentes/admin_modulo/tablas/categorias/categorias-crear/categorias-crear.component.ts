@@ -26,6 +26,7 @@ export class CategoriasCrearComponent {
     }
 
     const categoria: Categorias = {
+      Id: 0, 
       Nombre: this.nombreCategoria
     };
 
