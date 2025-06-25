@@ -8,7 +8,8 @@ public class PrestamoService : BaseServicios, IPrestamoService
     public PrestamoService(IPrestamoRepository prestamoRepository)
     {
         _prestamoRepository = prestamoRepository;
-    }    public virtual void CrearPrestamo(CrearPrestamoComando comando)
+    }
+    public virtual void CrearPrestamo(CrearPrestamoComando comando)
     {
         ValidarEntradaCreacion(comando);
         try
@@ -60,9 +61,10 @@ public class PrestamoService : BaseServicios, IPrestamoService
             if (errorDb.SqlState == "23505") throw new ErrorRegistroYaExiste();
             throw new Exception($"Error inesperado de base de datos al crear préstamo: {errorDb.Message}", errorDb);
         }
-        else if (ex is ErrorRepository errorRepo) throw new Exception($"Error del repositorio al crear préstamo: {errorRepo.Message}", errorRepo);
-        else throw new Exception($"Error inesperado al crear préstamo: {ex.Message}", ex);
-    }    public virtual void EliminarPrestamo(EliminarPrestamoComando comando)
+        if (ex is ErrorRepository errorRepo) throw new Exception($"Error del repositorio al crear préstamo: {errorRepo.Message}", errorRepo);
+        throw new Exception($"Error inesperado al crear préstamo: {ex.Message}", ex);
+    }   
+    public virtual void EliminarPrestamo(EliminarPrestamoComando comando)
     {
         try
         {
@@ -95,7 +97,8 @@ public class PrestamoService : BaseServicios, IPrestamoService
             throw new Exception($"Error inesperado de base de datos al eliminar préstamo: {errorDb.Message}", errorDb);
         }
         if (ex is ErrorRepository errorRepo) throw new Exception($"Error del repositorio al eliminar préstamo: {errorRepo.Message}", errorRepo);
-    }    public virtual List<PrestamoDto>? ObtenerTodosPrestamos()
+    } 
+    public virtual List<PrestamoDto>? ObtenerTodosPrestamos()
     {
         try
         {
@@ -142,7 +145,8 @@ public class PrestamoService : BaseServicios, IPrestamoService
             comando.EstadoPrestamo != "finalizado" && comando.EstadoPrestamo != "cancelado" &&
             comando.EstadoPrestamo != "aprobado" && comando.EstadoPrestamo != "activo")
             throw new ErrorEstadoPrestamoInvalido();
-    }    public virtual List<PrestamoDto>? ObtenerPrestamosPorCarnetYEstadoPrestamo(string carnetUsuario, string estadoPrestamo)
+    }   
+    public virtual List<PrestamoDto>? ObtenerPrestamosPorCarnetYEstadoPrestamo(string carnetUsuario, string estadoPrestamo)
     {
         try
         {

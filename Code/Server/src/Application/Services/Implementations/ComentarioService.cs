@@ -24,7 +24,6 @@ public class ComentarioService : BaseServicios, IComentarioService
     {
         base.ValidarEntradaCreacion(comando); // Validación base (null check)
         
-        // Validaciones específicas para CrearComentarioComando
         if (comando is CrearComentarioComando comentarioComando)
         {
             if (string.IsNullOrWhiteSpace(comentarioComando.CarnetUsuario)) throw new ErrorCarnetInvalido();
@@ -38,34 +37,40 @@ public class ComentarioService : BaseServicios, IComentarioService
     {
         if (consulta == null) throw new ArgumentNullException();
         if (consulta.IdGrupoEquipo <= 0) throw new ErrorIdInvalido("comentarios");
-        
+
         var comentariosData = _comentarioRepository.ObtenerPorGrupoEquipo(consulta.IdGrupoEquipo);
         if (comentariosData.Rows.Count == 0) return new List<ComentarioDto>();
         
-        var carnets = comentariosData.AsEnumerable()
-            .Select(r => r.Field<string>("carnet_usuario"))
-            .Where(c => !string.IsNullOrEmpty(c))
-            .OfType<string>()
-            .Distinct()
-            .ToList();
-        
+        List<string> carnets = new List<string>();
+        for (int i = 0; i < comentariosData.Rows.Count; i++)
+        {
+            var carnet = comentariosData.Rows[i]["carnet_usuario"]?.ToString();
+            if (!string.IsNullOrEmpty(carnet) && !carnets.Contains(carnet))
+                carnets.Add(carnet);
+        }
+
         var usuariosMap = new Dictionary<string, (string Nombre, string Apellido)>();
-        if (carnets.Any())
+        if (carnets.Count > 0)
         {
             var usuariosData = _usuarioRepository.ObtenerPorCarnets(carnets);
-            usuariosMap = usuariosData.AsEnumerable().ToDictionary(
-                row => row.Field<string>("carnet")!,
-                row => (row.Field<string>("nombre")!, row.Field<string>("apellido_paterno")!)
-            );
+            for (int i = 0; i < usuariosData.Rows.Count; i++)
+            {
+                var row = usuariosData.Rows[i];
+                var carnet = row["carnet"]?.ToString();
+                var nombre = row["nombre"]?.ToString() ?? string.Empty;
+                var apellido = row["apellido_paterno"]?.ToString() ?? string.Empty;
+                if (!string.IsNullOrEmpty(carnet) && !usuariosMap.ContainsKey(carnet))
+                    usuariosMap[carnet] = (nombre, apellido);
+            }
         }
         
         var lista = new List<ComentarioDto>(comentariosData.Rows.Count);
-        foreach (DataRow fila in comentariosData.Rows)
+        for (int i = 0; i < comentariosData.Rows.Count; i++)
         {
-            var baseDto = MapearFilaADto(fila);
+            var baseDto = MapearFilaADto(comentariosData.Rows[i]);
             if (baseDto is ComentarioDto dto)
             {
-                if (dto.CarnetUsuario != null && usuariosMap.ContainsKey(dto.CarnetUsuario))
+                if (!string.IsNullOrEmpty(dto.CarnetUsuario) && usuariosMap.ContainsKey(dto.CarnetUsuario))
                 {
                     var usuario = usuariosMap[dto.CarnetUsuario];
                     dto.NombreUsuario = usuario.Nombre;

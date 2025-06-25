@@ -69,7 +69,8 @@ public class GrupoEquipoService : BaseServicios, IGrupoEquipoService
             return null;
         }
         catch { throw; }
-    }    public virtual List<GrupoEquipoDto>? ObtenerTodosGruposEquipos()
+    }    
+    public virtual List<GrupoEquipoDto>? ObtenerTodosGruposEquipos()
     {
         try
         {
@@ -83,7 +84,8 @@ public class GrupoEquipoService : BaseServicios, IGrupoEquipoService
             return lista;
         }
         catch { throw; }
-    }    public virtual List<GrupoEquipoDto>? ObtenerGrupoEquipoPorNombreYCategoria(ObtenerGrupoEquipoPorNombreYCategoriaConsulta consulta)
+    }   
+    public virtual List<GrupoEquipoDto>? ObtenerGrupoEquipoPorNombreYCategoria(ObtenerGrupoEquipoPorNombreYCategoriaConsulta consulta)
     {
         try
         {
