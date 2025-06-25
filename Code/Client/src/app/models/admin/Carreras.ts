@@ -1,9 +1,12 @@
-export class Carrera {
-    Id?: number | null; 
+import { Basemodel } from "../base/Basemodel";
+
+
+export class Carrera extends Basemodel {
+ 
     Nombre?: string | null;
 
     constructor() {
-        this.Id = null;
+        super();
         this.Nombre = null;
     }
 }

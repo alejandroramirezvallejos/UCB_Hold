@@ -1,9 +1,10 @@
-export class Categorias {
-    Id?: number |null;
+import { Basemodel } from "../base/Basemodel";
+
+export class Categorias extends Basemodel {
     Nombre?: string | null;
 
     constructor(){
-        this.Id =null; 
+        super();
         this.Nombre = null;
     }
 

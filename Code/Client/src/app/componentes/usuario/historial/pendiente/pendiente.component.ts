@@ -5,6 +5,7 @@ import { PrestamosAPIService } from '../../../../services/APIS/prestamo/prestamo
 import { Prestamos } from '../../../../models/admin/Prestamos';
 import { CommonModule } from '@angular/common';
 import { Aviso } from '../aviso/aviso.component';
+import { HistorialBase } from '../BASE/HistorialBase';
 
 @Component({
   selector: 'app-pendiente',
@@ -12,30 +13,22 @@ import { Aviso } from '../aviso/aviso.component';
   templateUrl: './pendiente.component.html',
   styleUrl: './pendiente.component.css'
 })
-export class PendienteComponent {
- datos  = new Map<number, PrestamoAgrupados>;
+export class PendienteComponent extends HistorialBase {
 
-  itemSeleccionado: Prestamos | null = null;
+
+  override estado: string = 'pendiente';
+
+ 
   avisocancelar : WritableSignal<boolean> = signal(false);
 
-  constructor( private usuario : UsuarioService , private prestamoApi : PrestamosAPIService){}; 
+  constructor( protected override usuario : UsuarioService ,  protected override prestamoApi : PrestamosAPIService)
+  {super(prestamoApi, usuario);}; 
 
 
   ngOnInit() {
     this.cargarDatos();
   }
 
-  cargarDatos() {
-    this.prestamoApi.obtenerPrestamosPorUsuario(this.usuario.usuario.id! , 'pendiente').subscribe({
-      next: (data) => {
-        this.agruparPrestamos(data);
-      },
-      error: (error) => {
-        alert( error.error.error + ': ' + error.error.mensaje);
-      }
-
-    }); 
-    }
   
   aviso(item : Prestamos) {
     this.itemSeleccionado = item;
@@ -43,19 +36,6 @@ export class PendienteComponent {
 
   }
 
-
-  agruparPrestamos(datos: Prestamos[]) {
-    this.datos.clear();
-    for (let prestamo of datos) {
-      if( this.datos.has(prestamo.Id!)) {
-        this.datos.get(prestamo.Id)!.insertarEquipo(prestamo);
-      }
-      else{
-        this.datos.set(prestamo.Id! , new PrestamoAgrupados([prestamo]));
-      }
-    }
-
-  }
 
   cancelar() {
     this.prestamoApi.cambiarEstadoPrestamo(this.itemSeleccionado!.Id, 'cancelado').subscribe({

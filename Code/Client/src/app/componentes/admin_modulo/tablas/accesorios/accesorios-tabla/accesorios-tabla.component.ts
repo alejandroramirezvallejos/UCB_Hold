@@ -101,7 +101,7 @@ eliminarAccesorio(accesorio : Accesorio) {
 }
 
 confirmarEliminacion() {
-  this.accesoriosapi.eliminarAccesorio(this.accesorioSeleccionado.id).subscribe(
+  this.accesoriosapi.eliminarAccesorio(this.accesorioSeleccionado.Id).subscribe(
     (response) => {
 
        this.cargarAccesorios(); 

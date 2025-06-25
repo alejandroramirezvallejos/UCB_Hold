@@ -1,5 +1,6 @@
-export class EmpresaMantenimiento {
-    Id?: number;
+import { Basemodel } from "../base/Basemodel";
+
+export class EmpresaMantenimiento extends Basemodel {
     NombreEmpresa?: string | null;
     NombreResponsable?: string | null;
     ApellidoResponsable?: string | null;
@@ -8,7 +9,7 @@ export class EmpresaMantenimiento {
     Direccion?: string | null;
 
     constructor(){
-        this.Id = 0;
+        super();
         this.NombreEmpresa = null;
         this.NombreResponsable = null;
         this.ApellidoResponsable = null;

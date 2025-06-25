@@ -2,6 +2,9 @@
 using System.Data;
 using IMT_Reservas.Server.Shared.Common;
 using Microsoft.AspNetCore.Http;
+using IMT_Reservas.Server.Infrastructure.MongoDb;
+using MongoDB.Driver;
+using MongoDB.Driver.GridFS;
 
 namespace IMT_Reservas.Tests.RepositoryTests
 {
@@ -9,13 +12,17 @@ namespace IMT_Reservas.Tests.RepositoryTests
     public class PrestamoRepositoryTest : IPrestamoRepositoryTest
     {
         private Mock<IExecuteQuery>  _ejecutarConsultaMock;
+        private Mock<MongoDbContexto> _mongoDbContextoMock;
+        private Mock<IGridFSBucket> _gridFsBucketMock;
         private IPrestamoRepository _prestamoRepositorio;
 
         [SetUp]
         public void Setup()
         {
             _ejecutarConsultaMock = new Mock<IExecuteQuery>();
-            _prestamoRepositorio  = new PrestamoRepository(_ejecutarConsultaMock.Object);
+            _mongoDbContextoMock = new Mock<MongoDbContexto>();
+            _gridFsBucketMock = new Mock<IGridFSBucket>();
+            _prestamoRepositorio  = new PrestamoRepository(_ejecutarConsultaMock.Object, _mongoDbContextoMock.Object, _gridFsBucketMock.Object);
         }
 
         [Test]

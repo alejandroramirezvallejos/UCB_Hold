@@ -6,45 +6,21 @@
   <form #form="ngForm" (ngSubmit)="registrar()">
     
     <div class="form-group">
-      <label for="grupo_equipo">Nombre Grupo Equipo</label>
-      <input 
-        type="text" 
-        id="grupo_equipo" 
-        name="grupo_equipo" 
-        [(ngModel)]="equipo.NombreGrupoEquipo"
-        required 
-        maxlength="50"
-        placeholder="Nombre del grupo de equipo"
+      <label for="grupo_equipo">Grupo Equipo</label>
+      <select
+        id="grupo_equipo"
+        name="grupo_equipo"
+        [(ngModel)]="grupoequipoSeleccionado"
+        required
         class="form-input"
-      />
-    </div>
+        >
+        <option value="" disabled selected>Seleccione un grupo</option>
+        @for (item of grupoequipo; track $index) {
+        <option [ngValue]="item">{{ item.nombre }} {{ item.modelo }} {{ item.marca }}</option>
+        }
 
-    <div class="form-group">
-      <label for="modelo">Modelo</label>
-      <input 
-        type="text" 
-        id="modelo" 
-        name="modelo" 
-        [(ngModel)]="equipo.Modelo"
-        required 
-        maxlength="50"
-        placeholder="Modelo del equipo"
-        class="form-input"
-      />
-    </div>
 
-    <div class="form-group">
-      <label for="marca">Marca</label>
-      <input 
-        type="text" 
-        id="marca" 
-        name="marca" 
-        [(ngModel)]="equipo.Marca"
-        required 
-        maxlength="50"
-        placeholder="Marca del equipo"
-        class="form-input"
-      />
+      </select> 
     </div>
 
     <div class="form-group">
@@ -91,16 +67,17 @@
 
     <div class="form-group">
       <label for="nombre_gavetero">Nombre Gavetero</label>
-      <input 
-        type="text" 
-        id="nombre_gavetero" 
+      <select 
+      id="nombre_gavetero" 
         name="nombre_gavetero" 
         [(ngModel)]="equipo.NombreGavetero"
-        required 
-        maxlength="50"
-        placeholder="Nombre del gavetero"
+        required
         class="form-input"
-      />
+      >
+      @for (item of Gaveteros; track $index) {
+        <option [value]="item"> {{item}}</option>
+      }
+      </select>
     </div>
 
     <div class="form-group">

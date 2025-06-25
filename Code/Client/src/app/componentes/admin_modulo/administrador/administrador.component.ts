@@ -13,11 +13,14 @@ import { GruposEquiposTablaComponent } from '../tablas/grupos_equipos/grupos-equ
 import { MantenimientosTablaComponent } from '../tablas/mantenimientos/mantenimientos-tabla/mantenimientos-tabla.component';
 import { MueblesTablaComponent } from '../tablas/muebles/muebles-tabla/muebles-tabla.component';
 import { PrestamosTablaComponent } from '../tablas/prestamos/prestamos-tabla/prestamos-tabla.component';
+import { UsuarioService } from '../../../services/usuario/usuario.service';
 
 @Component({
   selector: 'app-administrador',
   standalone: true,
-  imports: [SidebardComponent,AccesoriosTablaComponent,CarrerasTablaComponent,UsuariosTablaComponent,CategoriasTablaComponent,ComponentesTablaComponent,EmpresasMantenimientoTablaComponent,EquiposTablaComponent,GaveterosTablaComponent,GruposEquiposTablaComponent,MantenimientosTablaComponent,MueblesTablaComponent,PrestamosTablaComponent],
+  imports: [SidebardComponent,AccesoriosTablaComponent,CarrerasTablaComponent,UsuariosTablaComponent,
+    CategoriasTablaComponent,ComponentesTablaComponent,EmpresasMantenimientoTablaComponent,EquiposTablaComponent,GaveterosTablaComponent,
+    GruposEquiposTablaComponent,MantenimientosTablaComponent,MueblesTablaComponent,PrestamosTablaComponent],
   templateUrl: './administrador.component.html',
   styleUrls: ['./administrador.component.css']
 })
@@ -29,7 +32,16 @@ export class AdministradorComponent {
   
   item : string = 'Prestamos';
 
-  constructor(public  router: Router) {
+  constructor(public  router: Router , private usuario :UsuarioService) {
+  }
+
+  ngOnInit() {
+    if(this.usuario.vacio()){
+      this.router.navigate(['/Iniciar-Sesion']);
+    }
+    else if(this.usuario.obtenerrol()!="administrador"){
+      this.router.navigate(['/home']);
+    }
   }
 
   clickitem(item : string){
