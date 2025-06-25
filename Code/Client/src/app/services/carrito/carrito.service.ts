@@ -28,7 +28,7 @@ export class CarritoService {
     const fechaISO = `${año}-${mes}-${día}`;
 
 
-    // cambiar precio
+   
     if (!this.carrito[id]) {
       this.carrito[id] = { nombre,modelo,marca ,cantidad: 1 ,fecha_inicio : fechaISO ,fecha_final : null , imagen : link , precio};
       this.cantidadtotal++;
