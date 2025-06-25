@@ -89,7 +89,7 @@ En todos los procedures tenemos principios ACID con atomicidad y transacciones
 
 ---
 
-## Colección Comentarios
+## 6. 💬 Colección Comentarios
 
 ### Estructura de documento
 ```json
@@ -215,7 +215,7 @@ db.comentarios.updateOne(
 
 ---
 
-## Colección contratos (MongoDB) y tabla prestamos (PostgreSQL)
+## 7. 📝 Colección contratos (MongoDB) y tabla prestamos (PostgreSQL)
 
 ### Estructura de documento en MongoDB
 ```json
@@ -312,7 +312,7 @@ if (prestamo && prestamo.id_contrato) {
 
 ---
 
-## Colección notificaciones
+## 8. 🚨 Colección notificaciones
 
 ### Estructura de documento
 ```json
@@ -407,7 +407,7 @@ db.notificaciones.updateOne({ _id: ObjectId(id) }, { $set: { EstadoEliminado: tr
 
 ---
 
-## Inserción directa de notificaciones en MongoDB (Simulación de notificaciones automáticas)
+## 8. 🔔 Inserción directa de notificaciones en MongoDB (Simulación de notificaciones automáticas)
 
 ### Ejemplo de inserción directa en MongoDB shell
 ```js
@@ -534,7 +534,7 @@ private bool NotificacionYaExiste(string carnet, string titulo, string contenido
 }
 ```
 
-## 6. ⬇️ Instalar
+## 9. ⬇️ Instalar
 
 npm install signature_pad
 
@@ -544,7 +544,7 @@ npm install html2canvas
 
 ---
 
-## 7. 👥 Miembros
+## 10. 👥 Miembros
 
 - [Josue Galo Balbontin Ugarteche](https://github.com/josue-balbontin)
 - [Alejandro Ramirez Vallejos](https://github.com/alejandroramirezvallejos)
