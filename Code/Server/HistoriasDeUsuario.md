@@ -30,8 +30,8 @@ Como administrador, quiero registrar nuevos usuarios con sus datos personales y 
 - Controlador: `src/Presentations/Controllers/UsuarioController.cs`
 - Servicio: `src/Application/Services/Implementations/UsuarioService.cs`
 - Interfaz de Servicio: `src/Application/Services/Interfaces/IUsuarioService.cs`
-- Modelo: `src/Application/Modelos/Usuario/CrearUsuarioComando.cs`
-- DTO: `src/Application/DTOs/UsuarioDto.cs`
+- Request DTO: `src/Application/Request DTOs/Usuario/CrearUsuarioComando.cs`
+- Response DTO: `src/Application/Response DTOs/UsuarioDto.cs`
 - Repositorio: `src/Infrastructure/Repositories/UsuarioRepository.cs`
 - Interfaz de Repositorio: `src/Infrastructure/Repositories/IUsuarioRepository.cs`
 - Excepciones: `src/Shared/Exceptions/ErrorCarnetInvalido.cs`, `src/Shared/Exceptions/ErrorCarnetRequerido.cs`, `src/Shared/Exceptions/ErrorEmailInvalido.cs`, `src/Shared/Exceptions/ErrorCampoRequerido.cs`, `src/Shared/Exceptions/ErrorUsuarioYaExiste.cs`, `src/Shared/Exceptions/ErrorLongitudMaxima.cs`, `src/Shared/Exceptions/ErrorTelefonoInvalido.cs`
@@ -71,7 +71,7 @@ Como administrador, quiero obtener la lista de todos los usuarios registrados pa
 - Controlador: `src/Presentations/Controllers/UsuarioController.cs`
 - Servicio: `src/Application/Services/Implementations/UsuarioService.cs`
 - Interfaz de Servicio: `src/Application/Services/Interfaces/IUsuarioService.cs`
-- DTO: `src/Application/DTOs/UsuarioDto.cs`
+- Response DTO: `src/Application/Response DTOs/UsuarioDto.cs`
 - Repositorio: `src/Infrastructure/Repositories/UsuarioRepository.cs`
 - Interfaz de Repositorio: `src/Infrastructure/Repositories/IUsuarioRepository.cs`
 - Excepción: `src/Shared/Exceptions/ErrorUsuarioNoEncontrado.cs`
@@ -117,7 +117,8 @@ Como administrador o usuario registrado, quiero actualizar mis datos personales 
 - Controlador: `src/Presentations/Controllers/UsuarioController.cs`
 - Servicio: `src/Application/Services/Implementations/UsuarioService.cs`
 - Interfaz de Servicio: `src/Application/Services/Interfaces/IUsuarioService.cs`
-- DTO: `src/Application/DTOs/UsuarioDto.cs`
+- Request DTO: `src/Application/Request DTOs/Usuario/ActualizarUsuarioComando.cs`
+- Response DTO: `src/Application/Response DTOs/UsuarioDto.cs`
 - Repositorio: `src/Infrastructure/Repositories/UsuarioRepository.cs`
 - Interfaz de Repositorio: `src/Infrastructure/Repositories/IUsuarioRepository.cs`
 - Excepciones: `src/Shared/Exceptions/ErrorCarnetInvalido.cs`, `src/Shared/Exceptions/ErrorEmailInvalido.cs`, `src/Shared/Exceptions/ErrorUsuarioNoEncontrado.cs`
@@ -164,7 +165,8 @@ Como administrador, quiero actualizar los datos de los usuarios para mantener la
 - Controlador: `src/Presentations/Controllers/UsuarioController.cs`
 - Servicio: `src/Application/Services/Implementations/UsuarioService.cs`
 - Interfaz de Servicio: `src/Application/Services/Interfaces/IUsuarioService.cs`
-- DTO: `src/Application/DTOs/UsuarioDto.cs`
+- Request DTO: `src/Application/Request DTOs/Usuario/ActualizarUsuarioComando.cs`
+- Response DTO: `src/Application/Response DTOs/UsuarioDto.cs`
 - Repositorio: `src/Infrastructure/Repositories/UsuarioRepository.cs`
 - Interfaz de Repositorio: `src/Infrastructure/Repositories/IUsuarioRepository.cs`
 - Excepciones: `src/Shared/Exceptions/ErrorCarnetInvalido.cs`, `src/Shared/Exceptions/ErrorEmailInvalido.cs`, `src/Shared/Exceptions/ErrorTelefonoInvalido.cs`, `src/Shared/Exceptions/ErrorUsuarioNoEncontrado.cs`
@@ -205,7 +207,8 @@ Como administrador, quiero eliminar usuarios del sistema para gestionar los regi
 - Controlador: `src/Presentations/Controllers/UsuarioController.cs`
 - Servicio: `src/Application/Services/Implementations/UsuarioService.cs`
 - Interfaz de Servicio: `src/Application/Services/Interfaces/IUsuarioService.cs`
-- DTO: `src/Application/DTOs/UsuarioDto.cs`
+- Request DTO: `src/Application/Request DTOs/Usuario/EliminarUsuarioComando.cs`
+- Response DTO: `src/Application/Response DTOs/UsuarioDto.cs`
 - Repositorio: `src/Infrastructure/Repositories/UsuarioRepository.cs`
 - Interfaz de Repositorio: `src/Infrastructure/Repositories/IUsuarioRepository.cs`
 - Excepciones: `src/Shared/Exceptions/ErrorCarnetInvalido.cs`, `src/Shared/Exceptions/ErrorUsuarioNoEncontrado.cs`
@@ -251,8 +254,8 @@ Como usuario, quiero solicitar préstamos de equipos para usarlos en mis activid
 - Controlador: `src/Presentations/Controllers/PrestamoController.cs`
 - Servicio: `src/Application/Services/Implementations/PrestamoService.cs`
 - Interfaz de Servicio: `src/Application/Services/Interfaces/IPrestamoService.cs`
-- Modelo: `src/Application/Modelos/Prestamo/CrearPrestamoComando.cs`
-- DTO: `src/Application/DTOs/PrestamoDto.cs`
+- Request DTO: `src/Application/Request DTOs/Prestamo/CrearPrestamoComando.cs`
+- Response DTO: `src/Application/Response DTOs/PrestamoDto.cs`
 - Repositorio: `src/Infrastructure/Repositories/PrestamoRepository.cs`
 - Interfaz de Repositorio: `src/Infrastructure/Repositories/IPrestamoRepository.cs`
 - Excepciones: `src/Shared/Exceptions/ErrorFechaInvalida.cs`, `src/Shared/Exceptions/ErrorPrestamoYaExiste.cs`, `src/Shared/Exceptions/ErrorUsuarioNoEncontrado.cs`, `src/Shared/Exceptions/ErrorEquipoNoDisponible.cs`
@@ -292,7 +295,7 @@ Como administrador, quiero obtener la lista de todos los préstamos registrados 
 - Controlador: `src/Presentations/Controllers/PrestamoController.cs`
 - Servicio: `src/Application/Services/Implementations/PrestamoService.cs`
 - Interfaz de Servicio: `src/Application/Services/Interfaces/IPrestamoService.cs`
-- DTO: `src/Application/DTOs/PrestamoDto.cs`
+- Response DTO: `src/Application/Response DTOs/PrestamoDto.cs`
 - Repositorio: `src/Infrastructure/Repositories/PrestamoRepository.cs`
 - Interfaz de Repositorio: `src/Infrastructure/Repositories/IPrestamoRepository.cs`
 - Excepción: `src/Shared/Exceptions/ErrorPrestamoNoEncontrado.cs`
@@ -332,7 +335,8 @@ Como administrador, quiero eliminar préstamos del sistema para corregir registr
 - Controlador: `src/Presentations/Controllers/PrestamoController.cs`
 - Servicio: `src/Application/Services/Implementations/PrestamoService.cs`
 - Interfaz de Servicio: `src/Application/Services/Interfaces/IPrestamoService.cs`
-- DTO: `src/Application/DTOs/PrestamoDto.cs`
+- Request DTO: `src/Application/Request DTOs/Prestamo/EliminarPrestamoComando.cs`
+- Response DTO: `src/Application/Response DTOs/PrestamoDto.cs`
 - Repositorio: `src/Infrastructure/Repositories/PrestamoRepository.cs`
 - Interfaz de Repositorio: `src/Infrastructure/Repositories/IPrestamoRepository.cs`
 - Excepción: `src/Shared/Exceptions/ErrorPrestamoNoEncontrado.cs`
@@ -364,7 +368,8 @@ Como administrador, quiero gestionar los equipos disponibles para préstamo para
 
 #### Criterios de Aceptación Funcionales
 - El sistema permite registrar, consultar, actualizar y eliminar lógicamente equipos.
-- Datos obligatorios: Nombre, Modelo, Marca, Categoría, Descripción, URL Imagen. (URL Data Sheet es opcional).
+- Los datos obligatorios son: Grupo de Equipo, Código UCB, Número de Serie, Ubicación y Nombre del Gavetero.
+- Como datos opcionales se incluyen: Costo de Referencia, Tiempo Máximo de Préstamo (en días) y Descripción de la Procedencia.
 
 #### Excepciones y Validaciones
 - ErrorEquipoNoEncontrado.cs
@@ -375,8 +380,8 @@ Como administrador, quiero gestionar los equipos disponibles para préstamo para
 - Controlador: `src/Presentations/Controllers/EquipoController.cs`
 - Servicio: `src/Application/Services/Implementations/EquipoService.cs`
 - Interfaz de Servicio: `src/Application/Services/Interfaces/IEquipoService.cs`
-- Modelo: `src/Application/Modelos/Equipo/CrearEquipoComando.cs`
-- DTO: `src/Application/DTOs/EquipoDto.cs`
+- Request DTO: `src/Application/Request DTOs/Equipo/CrearEquipoComando.cs`
+- Response DTO: `src/Application/Response DTOs/EquipoDto.cs`
 - Repositorio: `src/Infrastructure/Repositories/EquipoRepository.cs`
 - Interfaz de Repositorio: `src/Infrastructure/Repositories/IEquipoRepository.cs`
 - Excepciones: `src/Shared/Exceptions/ErrorEquipoNoEncontrado.cs`, `src/Shared/Exceptions/ErrorCampoRequerido.cs`, `src/Shared/Exceptions/ErrorCategoriaNoEncontrada.cs`
@@ -417,8 +422,8 @@ Como administrador, quiero gestionar grupos de equipos para clasificar y organiz
 - Controlador: `src/Presentations/Controllers/GrupoEquipoController.cs`
 - Servicio: `src/Application/Services/Implementations/GrupoEquipoService.cs`
 - Interfaz de Servicio: `src/Application/Services/Interfaces/IGrupoEquipoService.cs`
-- Modelo: `src/Application/Modelos/GrupoEquipo/CrearGrupoEquipoComando.cs`
-- DTO: `src/Application/DTOs/GrupoEquipoDto.cs`
+- Request DTO: `src/Application/Request DTOs/GrupoEquipo/CrearGrupoEquipoComando.cs`
+- Response DTO: `src/Application/Response DTOs/GrupoEquipoDto.cs`
 - Repositorio: `src/Infrastructure/Repositories/GrupoEquipoRepository.cs`
 - Interfaz de Repositorio: `src/Infrastructure/Repositories/IGrupoEquipoRepository.cs`
 - Excepciones: `src/Shared/Exceptions/ErrorGrupoEquipoNoEncontrado.cs`, `src/Shared/Exceptions/ErrorCampoRequerido.cs`, `src/Shared/Exceptions/ErrorCategoriaNoEncontrada.cs`

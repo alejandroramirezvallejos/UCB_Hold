@@ -19,8 +19,8 @@ Como administrador del sistema, quiero completar el proceso de solicitud de pré
 - Controlador Backend: `src/Presentations/Controllers/PrestamoController.cs`
 - Servicio Backend: `src/Application/Services/Implementations/PrestamoService.cs`
 - Interfaz de Servicio: `src/Application/Services/Interfaces/IPrestamoService.cs`
-- Modelo: `src/Application/Modelos/Prestamo/ActualizarEstadoPrestamoComando.cs`
-- DTO: `src/Application/DTOs/PrestamoDto.cs`
+- Request DTO: `src/Application/Request DTOs/Prestamo/ActualizarEstadoPrestamoComando.cs`
+- Response DTO: `src/Application/Response DTOs/PrestamoDto.cs`
 - Repositorio: `src/Infrastructure/Repositories/PrestamoRepository.cs`
 - Interfaz de Repositorio: `src/Infrastructure/Repositories/IPrestamoRepository.cs`
 - Excepciones: `src/Shared/Exceptions/ErrorPrestamoNoEncontrado.cs`, `src/Shared/Exceptions/ErrorEstadoPrestamoInvalido.cs`
@@ -60,7 +60,7 @@ Como administrador del sistema, quiero visualizar los préstamos de los usuarios
 - Controlador Backend: `src/Presentations/Controllers/PrestamoController.cs`
 - Servicio Backend: `src/Application/Services/Implementations/PrestamoService.cs`
 - Interfaz de Servicio: `src/Application/Services/Interfaces/IPrestamoService.cs`
-- DTO: `src/Application/DTOs/PrestamoDto.cs`
+- Response DTO: `src/Application/Response DTOs/PrestamoDto.cs`
 - Repositorio: `src/Infrastructure/Repositories/PrestamoRepository.cs`
 - Interfaz de Repositorio: `src/Infrastructure/Repositories/IPrestamoRepository.cs`
 - Excepción: `src/Shared/Exceptions/ErrorPrestamoNoEncontrado.cs`
@@ -101,7 +101,7 @@ Como usuario del sistema, quiero ver mi historial completo de préstamos para ll
 - Servicio Backend: `src/Application/Services/Implementations/PrestamoService.cs`
 - Controlador Backend: `src/Presentations/Controllers/PrestamoController.cs`
 - Interfaz de Servicio: `src/Application/Services/Interfaces/IPrestamoService.cs`
-- DTO: `src/Application/DTOs/PrestamoDto.cs`
+- Response DTO: `src/Application/Response DTOs/PrestamoDto.cs`
 - Repositorio: `src/Infrastructure/Repositories/PrestamoRepository.cs`
 - Interfaz de Repositorio: `src/Infrastructure/Repositories/IPrestamoRepository.cs`
 - Excepción: `src/Shared/Exceptions/ErrorPrestamoNoEncontrado.cs`
@@ -174,7 +174,7 @@ Como usuario del sistema, quiero recibir y gestionar notificaciones relacionadas
 - Controlador: `src/Presentations/Controllers/NotificacionController.cs`
 - Servicio: `src/Application/Services/Implementations/NotificacionService.cs`
 - Interfaz de Servicio: `src/Application/Services/Interfaces/INotificacionService.cs`
-- DTO: `src/Application/DTOs/NotificacionDto.cs`
+- Response DTO: `src/Application/Response DTOs/NotificacionDto.cs`
 - Repositorio: `src/Infrastructure/Repositories/NotificacionRepository.cs`
 - Interfaz de Repositorio: `src/Infrastructure/Repositories/INotificacionRepository.cs`
 - Excepción: `src/Shared/Exceptions/ErrorNotificacionNoEncontrada.cs`
@@ -212,7 +212,7 @@ Como usuario del sistema, quiero ver mi perfil para revisar y actualizar mi info
 - Controlador: `src/Presentations/Controllers/UsuarioController.cs`
 - Servicio: `src/Application/Services/Implementations/UsuarioService.cs`
 - Interfaz de Servicio: `src/Application/Services/Interfaces/IUsuarioService.cs`
-- DTO: `src/Application/DTOs/UsuarioDto.cs`
+- Response DTO: `src/Application/Response DTOs/UsuarioDto.cs`
 - Repositorio: `src/Infrastructure/Repositories/UsuarioRepository.cs`
 - Interfaz de Repositorio: `src/Infrastructure/Repositories/IUsuarioRepository.cs`
 - Excepción: `src/Shared/Exceptions/ErrorUsuarioNoEncontrado.cs`
@@ -250,8 +250,8 @@ Como administrador del sistema, quiero gestionar los grupos de equipos a través
 - Controlador: `src/Presentations/Controllers/GrupoEquipoController.cs`
 - Servicio: `src/Application/Services/Implementations/GrupoEquipoService.cs`
 - Interfaz de Servicio: `src/Application/Services/Interfaces/IGrupoEquipoService.cs`
-- Modelo: `src/Application/Modelos/GrupoEquipo/CrearGrupoEquipoComando.cs`
-- DTO: `src/Application/DTOs/GrupoEquipoDto.cs`
+- Request DTO: `src/Application/Request DTOs/GrupoEquipo/CrearGrupoEquipoComando.cs`
+- Response DTO: `src/Application/Response DTOs/GrupoEquipoDto.cs`
 - Repositorio: `src/Infrastructure/Repositories/GrupoEquipoRepository.cs`
 - Interfaz de Repositorio: `src/Infrastructure/Repositories/IGrupoEquipoRepository.cs`
 - Excepciones: `src/Shared/Exceptions/ErrorCampoRequerido.cs`, `src/Shared/Exceptions/ErrorGrupoEquipoNoEncontrado.cs`, `src/Shared/Exceptions/ErrorCategoriaNoEncontrada.cs`
@@ -291,8 +291,8 @@ Como administrador del sistema, quiero crear, eliminar, editar y ver la lista de
 - Controlador: `src/Presentations/Controllers/GaveteroController.cs`
 - Servicio: `src/Application/Services/Implementations/GaveteroService.cs`
 - Interfaz de Servicio: `src/Application/Services/Interfaces/IGaveteroService.cs`
-- Modelo: `src/Application/Modelos/Gavetero/CrearGaveteroComando.cs`
-- DTO: `src/Application/DTOs/GaveteroDto.cs`
+- Request DTO: `src/Application/Request DTOs/Gavetero/CrearGaveteroComando.cs`
+- Response DTO: `src/Application/Response DTOs/GaveteroDto.cs`
 - Repositorio: `src/Infrastructure/Repositories/GaveteroRepository.cs`
 - Interfaz de Repositorio: `src/Infrastructure/Repositories/IGaveteroRepository.cs`
 - Excepciones: `src/Shared/Exceptions/ErrorCampoRequerido.cs`, `src/Shared/Exceptions/ErrorMuebleNoEncontrado.cs`, `src/Shared/Exceptions/ErrorLongitudMaxima.cs`
@@ -333,8 +333,8 @@ Como administrador del sistema, quiero crear, eliminar, editar y ver la lista de
 - Controlador: `src/Presentations/Controllers/MuebleController.cs`
 - Servicio: `src/Application/Services/Implementations/MuebleService.cs`
 - Interfaz de Servicio: `src/Application/Services/Interfaces/IMuebleService.cs`
-- Modelo: `src/Application/Modelos/Mueble/CrearMuebleComando.cs`
-- DTO: `src/Application/DTOs/MuebleDto.cs`
+- Request DTO: `src/Application/Request DTOs/Mueble/CrearMuebleComando.cs`
+- Response DTO: `src/Application/Response DTOs/MuebleDto.cs`
 - Repositorio: `src/Infrastructure/Repositories/MuebleRepository.cs`
 - Interfaz de Repositorio: `src/Infrastructure/Repositories/IMuebleRepository.cs`
 - Excepciones: `src/Shared/Exceptions/ErrorCampoRequerido.cs`, `src/Shared/Exceptions/ErrorLongitudMaxima.cs`, `src/Shared/Exceptions/ErrorValorNegativoNoPermitido.cs`
@@ -371,8 +371,8 @@ Como administrador del sistema, quiero ver la lista de las carreras, crear, elim
 - Controlador: `src/Presentations/Controllers/CarreraController.cs`
 - Servicio: `src/Application/Services/Implementations/CarreraService.cs`
 - Interfaz de Servicio: `src/Application/Services/Interfaces/ICarreraService.cs`
-- Modelo: `src/Application/Modelos/Carrera/CrearCarreraComando.cs`
-- DTO: `src/Application/DTOs/CarreraDto.cs`
+- Request DTO: `src/Application/Request DTOs/Carrera/CrearCarreraComando.cs`
+- Response DTO: `src/Application/Response DTOs/CarreraDto.cs`
 - Repositorio: `src/Infrastructure/Repositories/CarreraRepository.cs`
 - Interfaz de Repositorio: `src/Infrastructure/Repositories/ICarreraRepository.cs`
 - Excepciones: `src/Shared/Exceptions/ErrorCampoRequerido.cs`, `src/Shared/Exceptions/ErrorCarreraNoEncontrada.cs`
@@ -412,8 +412,8 @@ Como administrador del sistema, quiero ver la lista de empresas de mantenimiento
 - Controlador: `src/Presentations/Controllers/EmpresaMantenimientoController.cs`
 - Servicio: `src/Application/Services/Implementations/EmpresaMantenimientoService.cs`
 - Interfaz de Servicio: `src/Application/Services/Interfaces/IEmpresaMantenimientoService.cs`
-- Modelo: `src/Application/Modelos/EmpresaMantenimiento/CrearEmpresaMantenimientoComando.cs`
-- DTO: `src/Application/DTOs/EmpresaMantenimientoDto.cs`
+- Request DTO: `src/Application/Request DTOs/EmpresaMantenimiento/CrearEmpresaMantenimientoComando.cs`
+- Response DTO: `src/Application/Response DTOs/EmpresaMantenimientoDto.cs`
 - Repositorio: `src/Infrastructure/Repositories/EmpresaMantenimientoRepository.cs`
 - Interfaz de Repositorio: `src/Infrastructure/Repositories/IEmpresaMantenimientoRepository.cs`
 - Excepciones: `src/Shared/Exceptions/ErrorCampoRequerido.cs`, `src/Shared/Exceptions/ErrorEmpresaMantenimientoNoEncontrada.cs`, `src/Shared/Exceptions/ErrorLongitudMaxima.cs`
