@@ -34,37 +34,23 @@
     <table class="data-table">
       <thead>
         <tr>
-          <th (click)="ordenarPor('NombreEmpresaMantenimiento')">
+          <th >
             Empresa 
-            @if (sortColumn === 'NombreEmpresaMantenimiento') {
-              <i [class]="sortDirection === 'asc' ? 'fas fa-sort-up' : 'fas fa-sort-down'"></i>
-            }
+          
           </th>
-          <th (click)="ordenarPor('codigoIMT')">
+          <th >
             codigosIMT
-            @if (sortColumn === 'codigosIMT') {
-              <i [class]="sortDirection === 'asc' ? 'fas fa-sort-up' : 'fas fa-sort-down'"></i>
-            }
-            
-
           </th>
-          <th (click)="ordenarPor('FechaMantenimiento')">
+          <th >
             Fecha Inicio
-            @if (sortColumn === 'FechaMantenimiento') {
-              <i [class]="sortDirection === 'asc' ? 'fas fa-sort-up' : 'fas fa-sort-down'"></i>
-            }
           </th>
-          <th (click)="ordenarPor('FechaFinalDeMantenimiento')">
+          <th >
             Fecha Fin
-            @if (sortColumn === 'FechaFinalDeMantenimiento') {
-              <i [class]="sortDirection === 'asc' ? 'fas fa-sort-up' : 'fas fa-sort-down'"></i>
-            }
+ 
           </th>
-          <th (click)="ordenarPor('Costo')">
+          <th >
             Costo
-            @if (sortColumn === 'Costo') {
-              <i [class]="sortDirection === 'asc' ? 'fas fa-sort-up' : 'fas fa-sort-down'"></i>
-            }
+   
           </th>
           <th >
             Tipo Y nombre  equipos

@@ -34,35 +34,25 @@
     <table class="data-table">
       <thead>
         <tr>
-          <th (click)="ordenarPor('Nombre')">
+          <th >
             Nombre 
-            @if (sortColumn === 'Nombre') {
-              <i [class]="sortDirection === 'asc' ? 'fas fa-sort-up' : 'fas fa-sort-down'"></i>
-            }
+           
           </th>
-          <th (click)="ordenarPor('Tipo')">
+          <th >
             Tipo
-            @if (sortColumn === 'Tipo') {
-              <i [class]="sortDirection === 'asc' ? 'fas fa-sort-up' : 'fas fa-sort-down'"></i>
-            }
+          
           </th>
-          <th (click)="ordenarPor('Ubicacion')">
+          <th >
             Ubicación
-            @if (sortColumn === 'Ubicacion') {
-              <i [class]="sortDirection === 'asc' ? 'fas fa-sort-up' : 'fas fa-sort-down'"></i>
-            }
+            
           </th>
-          <th (click)="ordenarPor('Costo')">
+          <th >
             Costo
-            @if (sortColumn === 'Costo') {
-              <i [class]="sortDirection === 'asc' ? 'fas fa-sort-up' : 'fas fa-sort-down'"></i>
-            }
+           
           </th>
-          <th (click)="ordenarPor('NumeroGaveteros')">
+          <th >
             Gaveteros
-            @if (sortColumn === 'NumeroGaveteros') {
-              <i [class]="sortDirection === 'asc' ? 'fas fa-sort-up' : 'fas fa-sort-down'"></i>
-            }
+        
           </th>
           <th>Dimensiones</th>
           <th>Acciones</th>

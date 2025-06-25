@@ -37,8 +37,6 @@ export class GruposEquiposTablaComponent implements OnInit {
   };
 
   terminoBusqueda: string = '';
-  sortColumn: string = 'nombre';
-  sortDirection: 'asc' | 'desc' = 'asc';
 
   constructor(private grupoequipoapi: GrupoequipoService , private categoriasAPI : CategoriaService) { }
 
@@ -104,7 +102,7 @@ export class GruposEquiposTablaComponent implements OnInit {
         (grupoequipo.descripcion || '').toLowerCase().includes(this.terminoBusqueda.toLowerCase())
       );
     }
-    this.aplicarOrdenamiento();
+    
   }
 
   limpiarBusqueda() {
@@ -141,32 +139,5 @@ export class GruposEquiposTablaComponent implements OnInit {
     this.limpiarGrupoEquipoSeleccionado();
   }
 
-  aplicarOrdenamiento() {
-    this.gruposEquiposFiltrados.sort((a, b) => {
-      const valorA = (a as any)[this.sortColumn];
-      const valorB = (b as any)[this.sortColumn];
 
-      let compA = typeof valorA === 'string' ? valorA.toLowerCase() : valorA;
-      let compB = typeof valorB === 'string' ? valorB.toLowerCase() : valorB;
-
-      if (compA < compB) {
-        return this.sortDirection === 'asc' ? -1 : 1;
-      } else if (compA > compB) {
-        return this.sortDirection === 'asc' ? 1 : -1;
-      } else {
-        return 0;
-      }
-    });
-  }
-
-  ordenarPor(columna: string) {
-    if (this.sortColumn === columna) {
-      this.sortDirection = this.sortDirection === 'asc' ? 'desc' : 'asc';
-    } else {
-      this.sortColumn = columna;
-      this.sortDirection = 'asc';
-    }
-
-    this.aplicarOrdenamiento();
-  }
 }

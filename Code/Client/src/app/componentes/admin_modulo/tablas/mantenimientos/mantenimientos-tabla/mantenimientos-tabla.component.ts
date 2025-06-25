@@ -40,8 +40,7 @@ export class MantenimientosTablaComponent implements OnInit {
   };
 
   terminoBusqueda: string = '';
-  sortColumn: string = 'NombreEmpresaMantenimiento';
-  sortDirection: 'asc' | 'desc' = 'asc';
+
 
   constructor(private mantenimientoapi: MantenimientoService) { }
 
@@ -117,7 +116,7 @@ export class MantenimientosTablaComponent implements OnInit {
         String(mantenimiento.datosgrupo.Costo || '').toLowerCase().includes(this.terminoBusqueda.toLowerCase())
       );
     }
-    this.aplicarOrdenamiento();
+  
   }
 
   limpiarBusqueda() {
@@ -150,40 +149,6 @@ export class MantenimientosTablaComponent implements OnInit {
     this.limpiarMantenimientoSeleccionado();
   }
 
-  aplicarOrdenamiento() {
-    this.mantenimientosFiltrados.sort((a, b) => {
-      const valorA = (a as any)[this.sortColumn];
-      const valorB = (b as any)[this.sortColumn];
-
-      let compA = typeof valorA === 'string' ? valorA.toLowerCase() : valorA;
-      let compB = typeof valorB === 'string' ? valorB.toLowerCase() : valorB;
-
-      // Manejo especial para fechas
-      if (this.sortColumn === 'FechaMantenimiento' || this.sortColumn === 'FechaFinalDeMantenimiento') {
-        compA = valorA ? new Date(valorA).getTime() : 0;
-        compB = valorB ? new Date(valorB).getTime() : 0;
-      }
-
-      if (compA < compB) {
-        return this.sortDirection === 'asc' ? -1 : 1;
-      } else if (compA > compB) {
-        return this.sortDirection === 'asc' ? 1 : -1;
-      } else {
-        return 0;
-      }
-    });
-  }
-
-  ordenarPor(columna: string) {
-    if (this.sortColumn === columna) {
-      this.sortDirection = this.sortDirection === 'asc' ? 'desc' : 'asc';
-    } else {
-      this.sortColumn = columna;
-      this.sortDirection = 'asc';
-    }
-
-    this.aplicarOrdenamiento();
-  }
 
 
   mostrarmantenimientosindividuales(mantenimientosgrupo : MantenimientosAgrupados){

@@ -58,30 +58,25 @@ export class NotificacionService {
   }
 
   enviarnotificaciones(){
-            this.enviarretrasos().subscribe({
-          next: (data) => {
-
+    this.enviarretrasos().subscribe({
+      next: (data) => {
+      }
+      , error: (error) => {
+      console.error("Error al enviar retrasos: ", error);
+      }
+     });
+     this.enviarpenalizaciones().subscribe({
+      next: (data) => {
+      }
+      , error: (error) => {
+      console.error("Error al enviar penalizaciones: ", error);
+        }});
+      this.enviarestadoprestamo().subscribe({
+      next: (data) => {
           }
-          , error: (error) => {
-            console.error("Error al enviar retrasos: ", error);
-          }
-        });
-
-        this.enviarpenalizaciones().subscribe({
-          next: (data) => {
-
-          }
-          , error: (error) => {
-            console.error("Error al enviar penalizaciones: ", error);
-          }
-        });
-        this.enviarestadoprestamo().subscribe({
-          next: (data) => {
-
-          }
-          , error: (error) => {
-            console.error("Error al enviar estado de préstamo: ", error);
-          }
+       , error: (error) => {
+      console.error("Error al enviar estado de préstamo: ", error);
+      }
         });
         
   }

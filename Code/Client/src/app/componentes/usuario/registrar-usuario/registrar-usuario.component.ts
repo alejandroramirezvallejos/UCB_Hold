@@ -22,18 +22,22 @@ export class RegistrarUsuarioComponent {
 
 
   ngOnInit() {
-    this.carrerasS.obtenerCarreras().subscribe(
-      (response: any[]) => {
-        this.carreras = response.map(carrera => carrera.nombre); 
+    this.carrerasS.obtenerCarreras().subscribe({
+      next: (response) => {
+         this.carreras = response.map(carrera => carrera.nombre); 
       },
-      (error) => {
-        console.error('Error al obtener las carreras:', error);
+      error: (error) => {
+        console.error('Error al obtener las carreras:', error.error.mensaje);
       }
-    );
+
+    });
 
   }
 
-  // TODO : mandar a la base de datos
+
+
+
+
   registrar() {
     this.nuevoUsuario.rol = 'usuario';
     

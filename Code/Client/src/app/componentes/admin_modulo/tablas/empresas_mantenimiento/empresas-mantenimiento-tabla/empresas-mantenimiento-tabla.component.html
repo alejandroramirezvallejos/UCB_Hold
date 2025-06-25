@@ -32,29 +32,21 @@
   <div class="table-responsive">
     <table class="data-table">
       <thead>        <tr>
-          <th (click)="ordenarPor('NombreEmpresa')">
+          <th >
             Nombre Empresa 
-            @if (sortColumn === 'NombreEmpresa') {
-              <i [class]="sortDirection === 'asc' ? 'fas fa-sort-up' : 'fas fa-sort-down'"></i>
-            }
+           
           </th>
-          <th (click)="ordenarPor('NombreResponsable')">
+          <th >
             Responsable 
-            @if (sortColumn === 'NombreResponsable') {
-              <i [class]="sortDirection === 'asc' ? 'fas fa-sort-up' : 'fas fa-sort-down'"></i>
-            }
+         
           </th>
-          <th (click)="ordenarPor('Telefono')">
+          <th >
             Teléfono 
-            @if (sortColumn === 'Telefono') {
-              <i [class]="sortDirection === 'asc' ? 'fas fa-sort-up' : 'fas fa-sort-down'"></i>
-            }
+          
           </th>
-          <th (click)="ordenarPor('Nit')">
+          <th >
             NIT 
-            @if (sortColumn === 'Nit') {
-              <i [class]="sortDirection === 'asc' ? 'fas fa-sort-up' : 'fas fa-sort-down'"></i>
-            }
+          
           </th>
           <th class="actions-column">Acciones</th>
         </tr>

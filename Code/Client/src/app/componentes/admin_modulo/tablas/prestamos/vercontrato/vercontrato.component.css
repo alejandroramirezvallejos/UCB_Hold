@@ -241,7 +241,7 @@
       border-spacing: 0;
   }
 ::ng-deep  .contrato-container table, 
-    .contrato-container td p {
+::ng-deep     .contrato-container td p {
       margin: 0;
       padding: 0;
       line-height: 1.1 !important;  /* Más compacto que el general */

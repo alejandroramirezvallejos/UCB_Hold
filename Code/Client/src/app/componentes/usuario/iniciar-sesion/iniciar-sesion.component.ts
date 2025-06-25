@@ -53,8 +53,5 @@ export class IniciarSesionComponent {
     this.router.navigate(["/Registrar-Usuario"])
   }
 
-  recuperarContrasena(){
-    this.router.navigate(["/Recuperar-Contrasena"])
-  }
-  
+
 }

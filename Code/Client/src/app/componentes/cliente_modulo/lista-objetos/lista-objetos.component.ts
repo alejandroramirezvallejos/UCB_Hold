@@ -26,9 +26,7 @@ export class ListaObjetosComponent {
     console.log(this.productos)
   }
 
-  handleImageError(item: GrupoEquipo) {
-    item.link = undefined; // Elimina la imagen fallida
-  }
+
 
 
 

@@ -98,4 +98,27 @@ export class CarritoService {
   }
 }
 
+
+  obtenerfechainicio(){
+    const items = Object.values(this.carrito)
+    if (items.length > 0) {
+      return items[0].fecha_inicio; 
+    }
+    else{
+      return null; 
+    }
+
+  }
+
+    obtenerfechafinal(){
+    const items = Object.values(this.carrito)
+    if (items.length > 0) {
+      return items[0].fecha_final; 
+    }
+    else{
+      return null; 
+    }
+
+  }
+
 }

@@ -33,35 +33,25 @@
   <div class="table-responsive">
     <table class="data-table">
       <thead>        <tr>
-          <th (click)="ordenarPor('Nombre')">
+          <th >
             Nombre 
-            @if (sortColumn === 'Nombre') {
-              <i [class]="sortDirection === 'asc' ? 'fas fa-sort-up' : 'fas fa-sort-down'"></i>
-            }
+            
           </th>
-          <th (click)="ordenarPor('Tipo')">
+          <th >
             Tipo 
-            @if (sortColumn === 'Tipo') {
-              <i [class]="sortDirection === 'asc' ? 'fas fa-sort-up' : 'fas fa-sort-down'"></i>
-            }
+           
           </th>
-          <th (click)="ordenarPor('NombreMueble')">
+          <th >
             Nombre Mueble 
-            @if (sortColumn === 'NombreMueble') {
-              <i [class]="sortDirection === 'asc' ? 'fas fa-sort-up' : 'fas fa-sort-down'"></i>
-            }
+           
           </th>
-          <th (click)="ordenarPor('Longitud')">
+          <th >
             Longitud
-            @if (sortColumn === 'Longitud') {
-              <i [class]="sortDirection === 'asc' ? 'fas fa-sort-up' : 'fas fa-sort-down'"></i>
-            }
+           
           </th>
-          <th (click)="ordenarPor('Altura')">
+          <th >
             Altura 
-            @if (sortColumn === 'Altura') {
-              <i [class]="sortDirection === 'asc' ? 'fas fa-sort-up' : 'fas fa-sort-down'"></i>
-            }
+         
           </th>
           <th>Acciones</th>
         </tr>

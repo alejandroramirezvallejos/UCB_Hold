@@ -30,10 +30,9 @@ export class ObjetoComponent {
 
    addedToCart = false;
 
-  constructor(private route: ActivatedRoute , private servicio : GrupoequipoService, private carrito : CarritoService, private router : Router) { }
+  constructor(private route: ActivatedRoute , private servicio : GrupoequipoService, private carrito : CarritoService) { }
 
-  // objeto.component.ts
-  //WARNING  :  no tocar por que no se como solucionarlo si sale error
+
   ngOnInit(): void {
     const routeId = this.route.snapshot.paramMap.get('id');
     if (!routeId) {

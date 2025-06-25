@@ -33,35 +33,22 @@
   <div class="table-responsive">
     <table class="data-table">
       <thead>        <tr>
-          <th (click)="ordenarPor('nombre')">
+          <th>
             Nombre 
-            @if (sortColumn === 'nombre') {
-              <i [class]="sortDirection === 'asc' ? 'fas fa-sort-up' : 'fas fa-sort-down'"></i>
-            }
           </th>
-          <th (click)="ordenarPor('modelo')">
+          <th >
             Modelo 
-            @if (sortColumn === 'modelo') {
-              <i [class]="sortDirection === 'asc' ? 'fas fa-sort-up' : 'fas fa-sort-down'"></i>
-            }
+            
           </th>
-          <th (click)="ordenarPor('tipo')">
+          <th >
             Tipo 
-            @if (sortColumn === 'tipo') {
-              <i [class]="sortDirection === 'asc' ? 'fas fa-sort-up' : 'fas fa-sort-down'"></i>
-            }
           </th>
-          <th (click)="ordenarPor('codigo_imt')">
+          <th >
             Código IMT del Equipo
-            @if (sortColumn === 'codigo_imt') {
-              <i [class]="sortDirection === 'asc' ? 'fas fa-sort-up' : 'fas fa-sort-down'"></i>
-            }
           </th>
-          <th (click)="ordenarPor('precio')">
+          <th >
             Precio 
-            @if (sortColumn === 'precio') {
-              <i [class]="sortDirection === 'asc' ? 'fas fa-sort-up' : 'fas fa-sort-down'"></i>
-            }
+           
           </th>
           <th>Acciones</th>
         </tr>

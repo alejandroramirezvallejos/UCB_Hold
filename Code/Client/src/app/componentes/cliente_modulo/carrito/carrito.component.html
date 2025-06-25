@@ -20,7 +20,7 @@
         <select
           id="cantidad_{{ item.key }}"
           [ngModel]="item.value.cantidad"
-          (ngModelChange)="onCantidadChange(item.key, $event)"
+          (ngModelChange)="cambiarcantidad(item.key, $event)"
         >
           <option *ngFor="let n of cantidades" [value]="n">{{ n }}</option>
         </select>
@@ -33,8 +33,8 @@
             type="date"
             id="fechaInicio_{{ item.key }}"
             [(ngModel)]="item.value.fecha_inicio"
-            (ngModelChange)="onInicioChange($event)"
-            [min]="hoy"
+            (ngModelChange)="cambiarfechainicio($event)"
+            [min]="hoystr"
             [max]="fechamaxima(item.value.fecha_inicio)"
           />
         </div>
@@ -44,7 +44,7 @@
             type="date"
             id="fechaFin_{{ item.key }}"
             [(ngModel)]="item.value.fecha_final"
-            (ngModelChange)="onFinChange($event)"
+            (ngModelChange)="cambiarfechafinal($event)"
             [min]="item.value.fecha_inicio"
             [max]="fechamaxima(item.value.fecha_inicio)"
           />

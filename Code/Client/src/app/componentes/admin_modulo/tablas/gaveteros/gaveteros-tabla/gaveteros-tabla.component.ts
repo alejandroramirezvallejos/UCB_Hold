@@ -40,10 +40,6 @@ export class GaveterosTablaComponent {
   constructor(private gaveterosapi : GaveteroService){}; 
 
 
-  // ----
-  sortColumn: string = 'Nombre';
-
-  sortDirection: 'asc' | 'desc' = 'asc';
 
 
   ngOnInit(){
@@ -90,9 +86,9 @@ buscar(){
   }
 
   this.gaveteros = this.gaveteroscopia.filter(gavetero =>
-    gavetero.Nombre?.toLowerCase().includes(this.terminoBusqueda.toLowerCase()) ||
-    gavetero.Tipo?.toLowerCase().includes(this.terminoBusqueda.toLowerCase()) ||
-    gavetero.NombreMueble?.toLowerCase().includes(this.terminoBusqueda.toLowerCase())
+    (gavetero.Nombre|| '').toLowerCase().includes(this.terminoBusqueda.toLowerCase()) ||
+    (gavetero.Tipo ||'').toLowerCase().includes(this.terminoBusqueda.toLowerCase()) ||
+    (gavetero.NombreMueble || '').toLowerCase().includes(this.terminoBusqueda.toLowerCase())
   );
 }
 
@@ -134,44 +130,6 @@ cancelarEliminacion(){
   this.limpiarGaveteroSeleccionado(); 
 }
 
-
-
-
-
-// nose que hace
-aplicarOrdenamiento() {
-  this.gaveteros.sort((a, b) => {
-    // Type assertion para acceso dinámico
-    const valorA = (a as any)[this.sortColumn];
-    const valorB = (b as any)[this.sortColumn];
-
-    // Convertir a minúsculas si son strings
-    let compA = typeof valorA === 'string' ? valorA.toLowerCase() : valorA;
-    let compB = typeof valorB === 'string' ? valorB.toLowerCase() : valorB;
-
-    if (compA < compB) {
-      return this.sortDirection === 'asc' ? -1 : 1;
-    } else if (compA > compB) {
-      return this.sortDirection === 'asc' ? 1 : -1;
-    } else {
-      return 0;
-    }
-  });
-}
-
-
-
-ordenarPor(columna: string) {
- if (this.sortColumn === columna) {
-    this.sortDirection = this.sortDirection === 'asc' ? 'desc' : 'asc';
-  } else {
-    this.sortColumn = columna;
-    this.sortDirection = 'asc';
-  }
-
-  this.aplicarOrdenamiento();    // Aplicar el ordenamiento
-
-}
 
 
 }

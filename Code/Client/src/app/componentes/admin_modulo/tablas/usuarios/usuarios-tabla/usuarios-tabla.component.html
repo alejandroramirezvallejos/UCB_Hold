@@ -33,65 +33,45 @@
     <table class="data-table">
       <thead>
         <tr>
-          <th (click)="ordenarPor('carnet')">
+          <th >
             Carnet 
-            @if (sortColumn === 'carnet') {
-              <i [class]="sortDirection === 'asc' ? 'fas fa-sort-up' : 'fas fa-sort-down'"></i>
-            }
+           
           </th>
-          <th (click)="ordenarPor('nombre')">
+          <th >
             Nombre 
-            @if (sortColumn === 'nombre') {
-              <i [class]="sortDirection === 'asc' ? 'fas fa-sort-up' : 'fas fa-sort-down'"></i>
-            }
+           
           </th>
-          <th (click)="ordenarPor('apellido_paterno')">
+          <th >
             Apellido Paterno 
-            @if (sortColumn === 'apellido_paterno') {
-              <i [class]="sortDirection === 'asc' ? 'fas fa-sort-up' : 'fas fa-sort-down'"></i>
-            }
+           
           </th>
-          <th (click)="ordenarPor('apellido_materno')">
+          <th >
             Apellido Materno 
-            @if (sortColumn === 'apellido_materno') {
-              <i [class]="sortDirection === 'asc' ? 'fas fa-sort-up' : 'fas fa-sort-down'"></i>
-            }
+          
           </th>
-          <th (click)="ordenarPor('correo')">
+          <th >
             Correo
-            @if (sortColumn === 'correo') {
-              <i [class]="sortDirection === 'asc' ? 'fas fa-sort-up' : 'fas fa-sort-down'"></i>
-            }
+      
           </th>
-          <th (click)="ordenarPor('telefono')">
+          <th >
             Teléfono
-            @if (sortColumn === 'telefono') {
-              <i [class]="sortDirection === 'asc' ? 'fas fa-sort-up' : 'fas fa-sort-down'"></i>
-            }
+       
           </th>
-          <th (click)="ordenarPor('rol')">
+          <th >
             Rol 
-            @if (sortColumn === 'rol') {
-              <i [class]="sortDirection === 'asc' ? 'fas fa-sort-up' : 'fas fa-sort-down'"></i>
-            }
+        
           </th>
-          <th (click)="ordenarPor('carrera')">
+          <th >
             Carrera 
-            @if (sortColumn === 'carrera') {
-              <i [class]="sortDirection === 'asc' ? 'fas fa-sort-up' : 'fas fa-sort-down'"></i>
-            }
+          
           </th>
-          <th (click)="ordenarPor('nombre_referencia')">
+          <th >
             Referencia 
-            @if (sortColumn === 'nombre_referencia') {
-              <i [class]="sortDirection === 'asc' ? 'fas fa-sort-up' : 'fas fa-sort-down'"></i>
-            }
+          
           </th>
-          <th (click)="ordenarPor('telefono_referencia')">
+          <th >
             Tel. Referencia 
-            @if (sortColumn === 'telefono_referencia') {
-              <i [class]="sortDirection === 'asc' ? 'fas fa-sort-up' : 'fas fa-sort-down'"></i>
-            }
+        
           </th>
           <th>Acciones</th>
         </tr>

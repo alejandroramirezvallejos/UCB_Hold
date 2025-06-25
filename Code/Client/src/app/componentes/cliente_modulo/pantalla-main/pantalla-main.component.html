@@ -11,7 +11,7 @@
       alt="Buscar"
       (mouseenter)="hover.search = true"
       (mouseleave)="hover.search = false"
-      (click)="submitRequest()"
+      (click)="actualizarobjetos()"
       [src]="
         hover.search ? '/assets/search_solid.png' : '/assets/search_line.png'
       "
@@ -21,7 +21,7 @@
       [(ngModel)]="solicitud"
       placeholder="Buscar..."
       rows="1"
-      (keydown.enter)="submitRequest(); $event.preventDefault()"
+      (keydown.enter)="actualizarobjetos(); $event.preventDefault()"
       (focus)="showCategories = false"
     ></textarea>
 
@@ -45,7 +45,7 @@
       class="icon category-icon"
       src="/assets/categories_line.png"
       alt="Categorías"
-      (click)="toggleCategories()"
+      (click)="mostrarcategorias()"
       (mouseenter)="hover.categories = true"
       (mouseleave)="hover.categories = false"
       [src]="
@@ -62,11 +62,11 @@
   @if (showCategories) {
     <div class="categories-panel">
       <div class="categories-list">
-        <div class="no-category-item" (click)="selectCategory('')">
+        <div class="no-category-item" (click)="seleccionarcategoria('')">
           Sin categoría
         </div>
         @for (item of items; track item.nombre) {
-          <div class="category-item" (click)="selectCategory(item.nombre)">
+          <div class="category-item" (click)="seleccionarcategoria(item.nombre)">
             {{ item.nombre }}
           </div>
         }

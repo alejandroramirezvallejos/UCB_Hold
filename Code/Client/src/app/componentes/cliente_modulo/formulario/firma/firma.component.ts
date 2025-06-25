@@ -8,11 +8,11 @@ import SignaturePad from 'signature_pad';
   styleUrl: './firma.component.css'
 })
 
-// TODO : REFACTORIZAR ESTO 
+
 export class FirmaComponent {
  @ViewChild('signatureCanvas') signatureCanvas!: ElementRef<HTMLCanvasElement>;
   signaturePad!: SignaturePad;
-  // Aquí se almacenará la firma en Base64 una vez guardada
+ 
   signatureData: string = '';
   @Output() firma = new EventEmitter<string>();
   @Input() clickfirma : WritableSignal<boolean> = signal(true);
@@ -22,13 +22,13 @@ export class FirmaComponent {
   }
 
 
-  // Actualizar ngAfterViewInit
+
   ngAfterViewInit(): void {
     const canvas = this.signatureCanvas.nativeElement;
     this.signaturePad = new SignaturePad(canvas);
     this.resizeCanvas();
     
-    // Agregar listener para resize de ventana
+    
     window.addEventListener('resize', () => this.resizeCanvas());
   }
   

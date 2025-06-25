@@ -35,8 +35,7 @@ export class MueblesTablaComponent implements OnInit {
   };
 
   terminoBusqueda: string = '';
-  sortColumn: string = 'Nombre';
-  sortDirection: 'asc' | 'desc' = 'asc';
+
 
   constructor(private muebleapi: MuebleService) { }
 
@@ -91,7 +90,7 @@ export class MueblesTablaComponent implements OnInit {
         String(mueble.NumeroGaveteros || '').toLowerCase().includes(this.terminoBusqueda.toLowerCase())
       );
     }
-    this.aplicarOrdenamiento();
+
   }
 
   limpiarBusqueda() {
@@ -128,32 +127,5 @@ export class MueblesTablaComponent implements OnInit {
     this.limpiarMuebleSeleccionado();
   }
 
-  aplicarOrdenamiento() {
-    this.mueblesFiltrados.sort((a, b) => {
-      const valorA = (a as any)[this.sortColumn];
-      const valorB = (b as any)[this.sortColumn];
-
-      let compA = typeof valorA === 'string' ? valorA.toLowerCase() : valorA;
-      let compB = typeof valorB === 'string' ? valorB.toLowerCase() : valorB;
-
-      if (compA < compB) {
-        return this.sortDirection === 'asc' ? -1 : 1;
-      } else if (compA > compB) {
-        return this.sortDirection === 'asc' ? 1 : -1;
-      } else {
-        return 0;
-      }
-    });
-  }
-
-  ordenarPor(columna: string) {
-    if (this.sortColumn === columna) {
-      this.sortDirection = this.sortDirection === 'asc' ? 'desc' : 'asc';
-    } else {
-      this.sortColumn = columna;
-      this.sortDirection = 'asc';
-    }
-
-    this.aplicarOrdenamiento();
-  }
+  
 }

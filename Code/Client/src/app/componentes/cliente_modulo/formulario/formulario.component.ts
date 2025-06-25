@@ -22,7 +22,7 @@ import { PrestamosAPIService } from '../../../services/APIS/prestamo/prestamos-a
   styleUrl: './formulario.component.css'
 })
 
-// TODO APRENDER QUE HACE
+
 export class FormularioComponent implements OnInit {
   @ViewChild('contratoContainer', { static: false }) contratoContainer!: ElementRef;
   contenidoHtml!: SafeHtml;
@@ -46,7 +46,12 @@ export class FormularioComponent implements OnInit {
   }
 
   ngOnInit(): void {
-    // Se hace una petición para obtener el archivo HTML desde assets
+
+    const fechaInicio = new Date(this.carrito.obtenerfechainicio());
+    const fechaFinal = new Date(this.carrito.obtenerfechafinal());
+
+    const diffDias = Math.ceil((fechaFinal.getTime() - fechaInicio.getTime()) / (1000 * 60 * 60 * 24));
+
     this.http.get('assets/contrato.html', { responseType: 'text' })
       .subscribe({
         next: (data: string) => {
@@ -57,14 +62,15 @@ export class FormularioComponent implements OnInit {
             usuario:  this.usuario.usuario.nombre!,
             usuario_ci : this.usuario.usuario.carnet!,
             tablaprimera: this.primeradelobjeto(this.carrito.obtenercarrito()),
-
+            fechaMaxima : String(diffDias),
             precio : this.carrito.preciototal().toString(),
             tablasegunda : this.quintavalordebienes(this.carrito.obtenercarrito()),
-
+            dia_devolucion : (fechaFinal.getDate()+1).toString(),
+            mes_devolucion : (fechaFinal.getMonth()+1).toString(),
+            año_devolucion : fechaFinal.getFullYear().toString(),
             firmausuario : "",
 
           });
-          // Se sanitiza el HTML recibido
           this.contenidoHtml = this.sanitizer.bypassSecurityTrustHtml(processedTemplate);
         },
         error: (error) => console.error('Error al cargar el HTML: ', error)
@@ -103,7 +109,7 @@ export class FormularioComponent implements OnInit {
           console.log('Préstamo creado exitosamente:', response);
           alert('Préstamo creado exitosamente');
           this.carrito.vaciarcarrito();
-          this.generarPDF(); 
+
           this.router.navigate(["/home"]);
         },
         error: (error) => {
@@ -119,7 +125,7 @@ export class FormularioComponent implements OnInit {
   
   guardarfirma(signatureData: string): void {
   this.firma = signatureData;
-  // Actualiza la imagen de la firma en el contrato sin reprocesar todo el contenido.
+ 
   if (this.contratoContainer) {
     const signatureImage: HTMLElement | null = this.contratoContainer.nativeElement.querySelector('#firmaUsuarioPlaceholder');
     if (signatureImage) {
@@ -178,44 +184,6 @@ private quintavalordebienes(carrito :  Carrito) : string{
 
 }
     
- generarPDF(): void {
-    const contrato = this.contratoContainer.nativeElement;
-
-    html2canvas(contrato, { scale: 2 }).then((canvas) => {
-      // Convertir el contenido del canvas a imagen (Base64)
-      const imgData = canvas.toDataURL('image/png');
-      
-      // Creamos el PDF en orientación vertical y tamaño A4
-      const pdf = new jsPDF('p', 'mm', 'a4');
-      
-      // Obtenemos dimensiones del PDF
-      const pdfWidth = pdf.internal.pageSize.getWidth();
-      const pdfHeight = pdf.internal.pageSize.getHeight();
-      
-      // Calculamos las dimensiones de la imagen manteniendo la proporción
-      // Utilizaremos la anchura completa de la página:
-      const imgProps = pdf.getImageProperties(imgData);
-      const imgHeight = (imgProps.height * pdfWidth) / imgProps.width;
-
-      // Si la imagen es más alta que la página, la dividimos en varias
-      let heightLeft = imgHeight;
-      let position = 0;
-
-      // Inserta la primera imagen en la primera página
-      pdf.addImage(imgData, 'PNG', 0, position, pdfWidth, imgHeight);
-      heightLeft -= pdfHeight;
-
-      // Agregar nuevas páginas mientras quede contenido
-      while (heightLeft > 0) {
-        position = heightLeft - imgHeight;
-        pdf.addPage();
-        pdf.addImage(imgData, 'PNG', 0, position, pdfWidth, imgHeight);
-        heightLeft -= pdfHeight;
-      }
-      
-      pdf.save('contrato.pdf');
-    });
-  }
 
 
 generarHTMLBinario(): Blob {
