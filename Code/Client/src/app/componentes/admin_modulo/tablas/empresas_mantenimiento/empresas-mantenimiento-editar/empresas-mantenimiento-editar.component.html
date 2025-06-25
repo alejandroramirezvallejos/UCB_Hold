@@ -52,7 +52,7 @@
         name="telefono" 
         [(ngModel)]="empresaMantenimiento.Telefono"
         required
-        pattern="[0-9]{12}"
+        pattern="[0-9]{8,12}"
         maxlength="12"
         placeholder="Teléfono de contacto"
         class="form-input"

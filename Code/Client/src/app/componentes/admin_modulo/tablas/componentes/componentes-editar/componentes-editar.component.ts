@@ -2,6 +2,8 @@ import { Component, EventEmitter, Input, Output, signal, WritableSignal } from '
 import { FormsModule } from '@angular/forms';
 import { Componente } from '../../../../../models/admin/Componente';
 import { ComponenteService } from '../../../../../services/APIS/Componente/componente.service';
+import { EquipoService } from '../../../../../services/APIS/Equipo/equipo.service';
+import { Equipos } from '../../../../../models/admin/Equipos';
 
 @Component({
   selector: 'app-componentes-editar',
@@ -15,7 +17,26 @@ export class ComponentesEditarComponent {
   @Output() actualizar: EventEmitter<void> = new EventEmitter<void>();
   @Input() componente: Componente = new Componente();
 
-  constructor(private componenteService: ComponenteService) {}
+  equipos : Equipos[] = [];
+
+  constructor(private componenteService: ComponenteService, private equiposAPI : EquipoService) {}
+
+   ngOnInit() {
+    this.cargarEquipos();
+  }
+
+  cargarEquipos() {
+    this.equiposAPI.obtenerEquipos().subscribe({
+      next: (data: any[]) => {
+        this.equipos = data;
+      },
+      error: (error) => {
+        console.error('Error al cargar los equipos:', error.error.mensaje);
+      }
+    })
+  }
+
+
 
   confirmar() {
     this.componenteService.actualizarComponente(this.componente).subscribe({

@@ -34,16 +34,18 @@
 
     <div class="form-group">
       <label for="nombre_mueble">Nombre Mueble</label>
-      <input 
-        type="text" 
-        id="nombre_mueble" 
-        name="nombre_mueble" 
-        [(ngModel)]="gavetero.NombreMueble"
-        required 
-        maxlength="50"
-        placeholder="Nombre del mueble"
-        class="form-input"
-      />
+      <select 
+      id="nombre_mueble" 
+      name="nombre_mueble" 
+      [(ngModel)]="gavetero.NombreMueble"
+      required
+      class="form-input"
+      >
+      @for (item of muebles; track $index) {
+        <option [value]="item">{{ item }}</option>
+      }
+    
+    </select>
     </div>
 
     <div class="form-group">

@@ -61,17 +61,19 @@
 
     <div class="form-group">
       <label for="codigo_imt">Código IMT del Equipo</label>
-      <input 
-        type="text" 
-        id="codigo_imt" 
-        name="codigo_imt" 
+      <select
+        id="codigo_imt"
+        name="codigo_imt"
         [(ngModel)]="componente.CodigoImtEquipo"
-        required 
-        pattern="[0-9]{1,10}"
-        maxlength="9"
-        placeholder="Código IMT del equipo"
+        required
         class="form-input"
-      />
+        >
+        
+        @for (item of equipos; track $index) {
+        <option [value]="item.CodigoImt">{{ item.NombreGrupoEquipo }} {{item.CodigoImt}}</option>
+        }
+
+      </select> 
     </div>
 
     <div class="form-group">
