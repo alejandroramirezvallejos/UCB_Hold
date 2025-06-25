@@ -1,24 +1,24 @@
 using System.Data;
 
-public class ServiciosAbstraccion
+public class BaseServicios
 {
-    public virtual void ValidarEntradaCreacion<T>(T comando)
+    protected virtual void ValidarEntradaCreacion<T>(T comando)
     {
         if (comando == null) throw new ArgumentNullException(nameof(comando));
     }
-    public virtual void ValidarEntradaEliminacion<T>(T comando)
+    protected virtual void ValidarEntradaEliminacion<T>(T comando)
     {
         if (comando == null) throw new ArgumentNullException(nameof(comando));
     }
-    public virtual void InterpretarErrorCreacion<T>(T comando, Exception ex = null)
+    protected virtual void InterpretarErrorCreacion<T>(T comando, Exception ex )
     {
         if (comando == null) throw new ArgumentNullException(nameof(comando));
     }
-    public virtual void InterpretarErrorEliminacion<T>(T comando, Exception ex = null)
+    protected virtual void InterpretarErrorEliminacion<T>(T comando, Exception ex)
     {
         if (comando == null) throw new ArgumentNullException(nameof(comando));
     }    
-    public virtual BaseDto MapearFilaADto(DataRow fila)
+    protected virtual BaseDto MapearFilaADto(DataRow fila)
     {
         throw new NotImplementedException("Las clases hijas deben implementar MapearFilaADto para su DTO específico");
     }

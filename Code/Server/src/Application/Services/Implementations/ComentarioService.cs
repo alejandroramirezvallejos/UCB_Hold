@@ -3,7 +3,7 @@ using System.Linq;
 using IMT_Reservas.Server.Application.Interfaces;
 using IMT_Reservas.Server.Shared.Common;
 
-public class ComentarioService : ServiciosAbstraccion, IComentarioService
+public class ComentarioService : BaseServicios, IComentarioService
 {
     private readonly IComentarioRepository _comentarioRepository;
     private readonly IExecuteQuery _executeQuery;
@@ -19,7 +19,7 @@ public class ComentarioService : ServiciosAbstraccion, IComentarioService
         _comentarioRepository.Crear(comando);
     }
     
-    public override void ValidarEntradaCreacion<T>(T comando)
+    protected override void ValidarEntradaCreacion<T>(T comando)
     {
         base.ValidarEntradaCreacion(comando); // Validación base (null check)
         
@@ -72,10 +72,11 @@ public class ComentarioService : ServiciosAbstraccion, IComentarioService
     {
         ValidarEntradaEliminacion(comando);
         _comentarioRepository.Eliminar(comando);
-    }    public override void ValidarEntradaEliminacion<T>(T comando)
+    }
+    protected override void ValidarEntradaEliminacion<T>(T comando)
     {
         base.ValidarEntradaEliminacion(comando); // Validación base (null check)
-        
+
         // Validaciones específicas para EliminarComentarioComando
         if (comando is EliminarComentarioComando comentarioComando)
         {
@@ -87,7 +88,8 @@ public class ComentarioService : ServiciosAbstraccion, IComentarioService
     {
         ValidarEntradaLike(comando);
         _comentarioRepository.AgregarLike(comando);
-    }    private void ValidarEntradaLike(AgregarLikeComentarioComando comando)
+    }
+    private void ValidarEntradaLike(AgregarLikeComentarioComando comando)
     {
         if (comando == null) throw new ArgumentNullException(nameof(comando));
         if (string.IsNullOrWhiteSpace(comando.Id)) throw new ErrorIdInvalido("comentario");
@@ -103,7 +105,8 @@ public class ComentarioService : ServiciosAbstraccion, IComentarioService
         if (comando == null) throw new ArgumentNullException(nameof(comando));
         if (string.IsNullOrWhiteSpace(comando.Id)) throw new ErrorIdInvalido("comentario");
         if (string.IsNullOrWhiteSpace(comando.CarnetUsuario)) throw new ErrorCarnetInvalido();
-    }public override BaseDto MapearFilaADto(DataRow fila)
+    }
+    protected override BaseDto MapearFilaADto(DataRow fila)
     {
         return new ComentarioDto
         {

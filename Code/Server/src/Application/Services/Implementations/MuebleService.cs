@@ -1,6 +1,6 @@
 using System.Data;
 using IMT_Reservas.Server.Shared.Common;
-public class MuebleService : ServiciosAbstraccion, IMuebleService
+public class MuebleService : BaseServicios, IMuebleService
 {
     private readonly IMuebleRepository _muebleRepository;    public MuebleService(IMuebleRepository muebleRepository)
     {
@@ -21,7 +21,7 @@ public class MuebleService : ServiciosAbstraccion, IMuebleService
             throw;
         }
     }
-    public override void ValidarEntradaCreacion<T>(T comando)
+    protected override void ValidarEntradaCreacion<T>(T comando)
     {
         base.ValidarEntradaCreacion(comando);
         if (comando is CrearMuebleComando cmd)
@@ -33,7 +33,7 @@ public class MuebleService : ServiciosAbstraccion, IMuebleService
             if (cmd.Altura.HasValue && cmd.Altura <= 0) throw new ErrorValorNegativo("altura");
         }
     }
-    public override void InterpretarErrorCreacion<T>(T comando, Exception ex)
+    protected override void InterpretarErrorCreacion<T>(T comando, Exception ex)
     {
         base.InterpretarErrorCreacion(comando, ex);
         if (ex is ErrorDataBase errorDb)
@@ -92,7 +92,7 @@ public class MuebleService : ServiciosAbstraccion, IMuebleService
             throw;
         }
     }
-    public override void ValidarEntradaEliminacion<T>(T comando)
+    protected override void ValidarEntradaEliminacion<T>(T comando)
     {
         base.ValidarEntradaEliminacion(comando);
         if (comando is EliminarMuebleComando cmd)
@@ -100,7 +100,7 @@ public class MuebleService : ServiciosAbstraccion, IMuebleService
             if (cmd.Id <= 0) throw new ErrorIdInvalido("mueble");
         }
     }
-    public override void InterpretarErrorEliminacion<T>(T comando, Exception ex)
+    protected override void InterpretarErrorEliminacion<T>(T comando, Exception ex)
     {
         base.InterpretarErrorEliminacion(comando, ex);
         if (ex is ErrorDataBase errorDb)
@@ -126,7 +126,7 @@ public class MuebleService : ServiciosAbstraccion, IMuebleService
         }
         catch { throw; }
     }
-    public override BaseDto MapearFilaADto(DataRow fila)
+    protected override BaseDto MapearFilaADto(DataRow fila)
     {
         return new MuebleDto
         {

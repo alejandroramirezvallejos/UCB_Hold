@@ -1,7 +1,7 @@
 using System.Data;
 using IMT_Reservas.Server.Shared.Common;
 
-public class EquipoService : ServiciosAbstraccion, IEquipoService
+public class EquipoService : BaseServicios, IEquipoService
 {
     private readonly IEquipoRepository _equipoRepository;
     public EquipoService(IEquipoRepository equipoRepository) => _equipoRepository = equipoRepository;    public void CrearEquipo(CrearEquipoComando comando)
@@ -19,7 +19,7 @@ public class EquipoService : ServiciosAbstraccion, IEquipoService
             InterpretarErrorCreacion(comando, ex);
         }
     }    
-    public override void ValidarEntradaCreacion<T>(T comando)
+    protected override void ValidarEntradaCreacion<T>(T comando)
     {
         base.ValidarEntradaCreacion(comando); // Validación base (null check)
         
@@ -34,7 +34,7 @@ public class EquipoService : ServiciosAbstraccion, IEquipoService
         }
     }
     
-    public override void InterpretarErrorCreacion<T>(T comando, Exception ex)
+    protected override void InterpretarErrorCreacion<T>(T comando, Exception ex)
     {
         if (ex is ErrorDataBase errorDb)
         {
@@ -93,7 +93,7 @@ public class EquipoService : ServiciosAbstraccion, IEquipoService
             InterpretarErrorEliminacion(comando, ex);
         }
     }    
-    public override void ValidarEntradaEliminacion<T>(T comando)
+    protected override void ValidarEntradaEliminacion<T>(T comando)
     {
         base.ValidarEntradaEliminacion(comando); // Validación base (null check)
         
@@ -104,7 +104,7 @@ public class EquipoService : ServiciosAbstraccion, IEquipoService
         }
     }
     
-    public override void InterpretarErrorEliminacion<T>(T comando, Exception ex)
+    protected override void InterpretarErrorEliminacion<T>(T comando, Exception ex)
     {
         if (ex is ErrorDataBase errorDb)
         {
@@ -130,7 +130,7 @@ public class EquipoService : ServiciosAbstraccion, IEquipoService
         }
         catch { throw; }
     }    
-    public override BaseDto MapearFilaADto(DataRow fila) => new EquipoDto
+    protected override BaseDto MapearFilaADto(DataRow fila) => new EquipoDto
     {
         Id = Convert.ToInt32(fila["id_equipo"]),
         NombreGrupoEquipo = fila["nombre_grupo_equipo"] == DBNull.Value ? null : fila["nombre_grupo_equipo"].ToString(),

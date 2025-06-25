@@ -2,7 +2,7 @@
 using IMT_Reservas.Server.Application.Interfaces;
 using IMT_Reservas.Server.Shared.Common;
 
-public class NotificacionService : ServiciosAbstraccion, INotificacionService
+public class NotificacionService : BaseServicios, INotificacionService
 {
     private readonly INotificacionRepository _notificacionRepository;
     private readonly IPrestamoRepository _prestamoRepository;
@@ -16,7 +16,7 @@ public class NotificacionService : ServiciosAbstraccion, INotificacionService
         ValidarEntradaCreacion(comando);
         _notificacionRepository.Crear(comando);
     }
-    public override void ValidarEntradaCreacion<T>(T comando)
+    protected override void ValidarEntradaCreacion<T>(T comando)
     {
         base.ValidarEntradaCreacion(comando);
     }
@@ -25,7 +25,7 @@ public class NotificacionService : ServiciosAbstraccion, INotificacionService
         ValidarEntradaEliminacion(comando);
         _notificacionRepository.Eliminar(comando);
     }    
-    public override void ValidarEntradaEliminacion<T>(T comando)
+    protected override void ValidarEntradaEliminacion<T>(T comando)
     {
         base.ValidarEntradaEliminacion(comando);
         if (comando is EliminarNotificacionComando notificacionComando)
@@ -44,8 +44,7 @@ public class NotificacionService : ServiciosAbstraccion, INotificacionService
         }
         return notificaciones;
     }
-    
-    public override BaseDto MapearFilaADto(DataRow fila)
+    protected override BaseDto MapearFilaADto(DataRow fila)
     {
         return new NotificacionDto
         {

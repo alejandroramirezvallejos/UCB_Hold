@@ -1,7 +1,7 @@
 using System.Data;
 using IMT_Reservas.Server.Shared.Common;
 
-public class CarreraService : ServiciosAbstraccion, ICarreraService
+public class CarreraService : BaseServicios, ICarreraService
 {
     private readonly ICarreraRepository _carreraRepository;
     public CarreraService(ICarreraRepository carreraRepository) => _carreraRepository = carreraRepository;
@@ -19,7 +19,7 @@ public class CarreraService : ServiciosAbstraccion, ICarreraService
         }
     }
     
-    public override void InterpretarErrorCreacion<T>(T comando, Exception ex)
+    protected override void InterpretarErrorCreacion<T>(T comando, Exception ex)
     {
         if (ex is ErrorDataBase errorDb)
         {
@@ -33,7 +33,7 @@ public class CarreraService : ServiciosAbstraccion, ICarreraService
         throw ex ?? new Exception("Error desconocido en creación");
     }
     
-    public override void ValidarEntradaCreacion<T>(T comando)
+    protected override void ValidarEntradaCreacion<T>(T comando)
     {
         base.ValidarEntradaCreacion(comando); // Validación base (null check)
         
@@ -109,7 +109,7 @@ public class CarreraService : ServiciosAbstraccion, ICarreraService
         }
     }
     
-    public override void InterpretarErrorEliminacion<T>(T comando, Exception ex)
+    protected override void InterpretarErrorEliminacion<T>(T comando, Exception ex)
     {
         if (ex is ErrorDataBase errorDb)
         {
@@ -122,7 +122,7 @@ public class CarreraService : ServiciosAbstraccion, ICarreraService
         throw ex ?? new Exception("Error desconocido en eliminación");
     }
     
-    public override void ValidarEntradaEliminacion<T>(T comando)
+    protected override void ValidarEntradaEliminacion<T>(T comando)
     {
         base.ValidarEntradaEliminacion(comando); // Validación base (null check)
         
@@ -132,7 +132,7 @@ public class CarreraService : ServiciosAbstraccion, ICarreraService
             if (carreraComando.Id <= 0) throw new ErrorIdInvalido("carrera");
         }
     }    
-    public override BaseDto MapearFilaADto(DataRow fila)
+    protected override BaseDto MapearFilaADto(DataRow fila)
     {
         return new CarreraDto
         {

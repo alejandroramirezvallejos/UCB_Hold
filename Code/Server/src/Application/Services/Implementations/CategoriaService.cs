@@ -1,7 +1,7 @@
 using System.Data;
 using IMT_Reservas.Server.Shared.Common;
 
-public class CategoriaService : ServiciosAbstraccion, ICategoriaService
+public class CategoriaService : BaseServicios, ICategoriaService
 {
     private readonly ICategoriaRepository _categoriaRepository;
     public CategoriaService(ICategoriaRepository categoriaRepository) => _categoriaRepository = categoriaRepository;
@@ -20,7 +20,7 @@ public class CategoriaService : ServiciosAbstraccion, ICategoriaService
         }
     }
     
-    public override void InterpretarErrorCreacion<T>(T comando, Exception ex)
+    protected override void InterpretarErrorCreacion<T>(T comando, Exception ex)
     {
         if (ex is ErrorDataBase errorDb)
         {
@@ -34,7 +34,7 @@ public class CategoriaService : ServiciosAbstraccion, ICategoriaService
         throw ex ?? new Exception("Error desconocido en creación");
     }
     
-    public override void ValidarEntradaCreacion<T>(T comando)
+    protected override void ValidarEntradaCreacion<T>(T comando)
     {
         base.ValidarEntradaCreacion(comando); // Validación base (null check)
         
@@ -109,7 +109,7 @@ public class CategoriaService : ServiciosAbstraccion, ICategoriaService
         }
     }
     
-    public override void InterpretarErrorEliminacion<T>(T comando, Exception ex)
+    protected override void InterpretarErrorEliminacion<T>(T comando, Exception ex)
     {
         if (ex is ErrorDataBase errorDb)
         {
@@ -122,7 +122,7 @@ public class CategoriaService : ServiciosAbstraccion, ICategoriaService
         throw ex ?? new Exception("Error desconocido en eliminación");
     }
     
-    public override void ValidarEntradaEliminacion<T>(T comando)
+    protected override void ValidarEntradaEliminacion<T>(T comando)
     {
         base.ValidarEntradaEliminacion(comando); // Validación base (null check)
         
@@ -132,7 +132,7 @@ public class CategoriaService : ServiciosAbstraccion, ICategoriaService
             if (categoriaComando.Id <= 0) throw new ErrorIdInvalido("categoría");
         }
     }
-      public override BaseDto MapearFilaADto(DataRow fila)
+    protected override BaseDto MapearFilaADto(DataRow fila)
     {
         return new CategoriaDto
         {
