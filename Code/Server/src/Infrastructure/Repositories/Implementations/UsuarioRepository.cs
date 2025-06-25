@@ -79,4 +79,16 @@ public class UsuarioRepository : IUsuarioRepository
         } catch (NpgsqlException ex) { throw new ErrorDataBase($"Error de base de datos al obtener usuario: {ex.Message}", ex.SqlState, null, ex); }
         catch (Exception ex) { throw new ErrorRepository($"Error del repositorio al obtener usuario: {ex.Message}", ex); }
     }
+
+    public DataTable ObtenerPorCarnets(List<string> carnets)
+    {
+        if (carnets == null || !carnets.Any()) return new DataTable();
+        
+        const string sql = @"SELECT carnet, nombre, apellido_paterno FROM public.usuarios WHERE carnet = ANY(@carnets)";
+        var parametros = new Dictionary<string, object?> { ["carnets"] = carnets };
+        
+        try { return _ejecutarConsulta.EjecutarFuncion(sql, parametros); }
+        catch (NpgsqlException ex) { throw new ErrorDataBase($"Error de base de datos al obtener usuarios por carnets: {ex.Message}", ex.SqlState, null, ex); }
+        catch (Exception ex) { throw new ErrorRepository($"Error del repositorio al obtener usuarios por carnets: {ex.Message}", ex); }
+    }
 }

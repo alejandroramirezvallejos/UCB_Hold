@@ -1,10 +1,22 @@
 using System.Data;
 using Npgsql;
+using IMT_Reservas.Server.Infrastructure.MongoDb;
+using MongoDB.Driver;
+using MongoDB.Driver.GridFS;
+using Microsoft.AspNetCore.Http;
 
 public class PrestamoRepository : IPrestamoRepository
 {
     private readonly IExecuteQuery _ejecutarConsulta;
-    public PrestamoRepository(IExecuteQuery ejecutarConsulta) => _ejecutarConsulta = ejecutarConsulta;
+    private readonly MongoDbContexto _mongoDbContext;
+    private readonly IGridFSBucket _gridFsBucket;
+    
+    public PrestamoRepository(IExecuteQuery ejecutarConsulta, MongoDbContexto mongoDbContext, IGridFSBucket gridFsBucket)
+    {
+        _ejecutarConsulta = ejecutarConsulta;
+        _mongoDbContext = mongoDbContext;
+        _gridFsBucket = gridFsBucket;
+    }
     public int Crear(CrearPrestamoComando comando)
     {
         const string sql = @"CALL public.insertar_prestamo(
@@ -22,9 +34,9 @@ public class PrestamoRepository : IPrestamoRepository
             ["fechaDevolucionEsperada"] = comando.FechaDevolucionEsperada.HasValue ? (object)comando.FechaDevolucionEsperada.Value : DBNull.Value,
             ["observacion"] = comando.Observacion ?? (object)DBNull.Value,
             ["carnetUsuario"] = comando.CarnetUsuario ?? (object)DBNull.Value,
-            ["idContrato"] =DBNull.Value
+            ["idContrato"] = DBNull.Value
         };
-        const string sqlId= @"SELECT id_prestamo FROM public.prestamos 
+        const string sqlId = @"SELECT id_prestamo FROM public.prestamos 
                         WHERE fecha_prestamo_esperada = @fechaPrestamoEsperada
                         AND fecha_devolucion_esperada = @fechaDevolucionEsperada
                         AND carnet = @carnetUsuario
@@ -39,8 +51,24 @@ public class PrestamoRepository : IPrestamoRepository
         try
         {
             _ejecutarConsulta.EjecutarSpNR(sql, parametros);
-            var dt= _ejecutarConsulta.EjecutarFuncion(sqlId, parametrosId);
-            if (dt != null && dt.Rows.Count > 0 && dt.Rows[0]["id_prestamo"] != DBNull.Value) return Convert.ToInt32(dt.Rows[0]["id_prestamo"]);
+            var dt = _ejecutarConsulta.EjecutarFuncion(sqlId, parametrosId);
+            if (dt != null && dt.Rows.Count > 0 && dt.Rows[0]["id_prestamo"] != DBNull.Value)
+            {
+                var prestamoId = Convert.ToInt32(dt.Rows[0]["id_prestamo"]);
+                
+                // Manejar contrato si existe
+                if (comando.Contrato != null)
+                {
+                    var fileName = comando.Contrato.FileName;
+                    using var stream = comando.Contrato.OpenReadStream();
+                    var fileId = _gridFsBucket.UploadFromStreamAsync(fileName, stream, null, default).GetAwaiter().GetResult();
+                    var contrato = new Contrato { PrestamoId = prestamoId, FileId = fileId.ToString() };
+                    _mongoDbContext.Contratos.InsertOneAsync(contrato, null, default).GetAwaiter().GetResult();
+                    ActualizarIdContrato(prestamoId, contrato.FileId);
+                }
+                
+                return prestamoId;
+            }
             throw new Exception("Fallo crítico: No se pudo crear el préstamo y obtener el ID.");
         }
         catch (NpgsqlException ex) { throw new ErrorDataBase($"Error de base de datos al crear préstamo: {ex.Message}", ex.SqlState, null, ex); }
@@ -96,5 +124,22 @@ public class PrestamoRepository : IPrestamoRepository
         try { _ejecutarConsulta.EjecutarSpNR(sql, parametros); }
         catch (NpgsqlException ex) { throw new ErrorDataBase($"Error de base de datos al actualizar el id del contrato: {ex.Message}", ex.SqlState, null, ex); }
         catch (Exception ex) { throw new ErrorRepository($"Error del repositorio al actualizar el id del contrato: {ex.Message}", ex); }
+    }
+
+    public List<byte[]> ObtenerContratoPorPrestamo(ObtenerContratoPorPrestamoConsulta consulta)
+    {
+        var contrato = _mongoDbContext.Contratos.Find(x => x.PrestamoId == consulta.PrestamoId && !x.EstadoEliminado).FirstOrDefault();
+        if (contrato == null) throw new Exception($"No se encontró contrato para el préstamo {consulta.PrestamoId}");
+        var fileObjectId = MongoDB.Bson.ObjectId.Parse(contrato.FileId);
+        var chunksCollection = _mongoDbContext.BaseDeDatos.GetCollection<MongoDB.Bson.BsonDocument>("fs.chunks");
+        var filter = Builders<MongoDB.Bson.BsonDocument>.Filter.Eq("files_id", fileObjectId);
+        var chunks = chunksCollection.Find(filter).SortBy(c => c["n"]).ToList();
+        var dataChunks = new List<byte[]>();
+        foreach (var chunk in chunks)
+        {
+            if (chunk.Contains("data"))
+                dataChunks.Add(chunk["data"].AsBsonBinaryData.Bytes);
+        }
+        return dataChunks;
     }
 }
