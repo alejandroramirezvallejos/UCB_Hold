@@ -358,7 +358,7 @@ coleccion.InsertOne(notificacion);
 
 El frontend, específicamente en el componente del navbar, realiza una consulta cada segundo a las APIs de notificaciones para verificar si existen nuevas notificaciones para el usuario, únicamente si este ha iniciado sesión. De esta manera, cada usuario conectado funciona como un "nodo" que mantiene actualizado tanto el envío como la visualización de notificaciones en tiempo real.
 
-El sistema dispone de endpoints y lógica de servicios que permiten el envío automático de notificaciones relacionadas con préstamos, tales como retrasos, penalizaciones y cambios de estado. Estas notificaciones se generan e insertan automáticamente en la colección `notificaciones` de MongoDB, y el proceso de verificación y actualización se ejecuta también cada segundo desde el navbar.
+El sistema dispone de endpoints y lógica de servicios que permiten el envío automático de notificaciones relacionadas con préstamos, tales como retrasos, cambios de estado, penalizaciones. Estas notificaciones se generan e insertan automáticamente en la colección `notificaciones` de MongoDB, y el proceso de verificación y actualización se ejecuta también cada segundo desde el navbar.
 
 ## Diagrama
 
