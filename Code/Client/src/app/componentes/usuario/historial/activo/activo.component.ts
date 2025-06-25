@@ -5,6 +5,7 @@ import { PrestamosAPIService } from '../../../../services/APIS/prestamo/prestamo
 import { CommonModule, DatePipe } from '@angular/common';
 import { PrestamoAgrupados } from '../../../../models/PrestamoAgrupados';
 import { Aviso } from '../aviso/aviso.component';
+import { HistorialBase } from '../BASE/HistorialBase';
 
 @Component({
   selector: 'app-activo',
@@ -12,48 +13,30 @@ import { Aviso } from '../aviso/aviso.component';
   templateUrl: './activo.component.html',
   styleUrl: './activo.component.css'
 })
-export class ActivoComponent {
-  datos  = new Map<number, PrestamoAgrupados>;
+export class ActivoComponent extends HistorialBase {
 
-  itemSeleccionado: Prestamos | null = null;
+  
+  override estado: string = 'activo';
+  
   aviso : WritableSignal<boolean> = signal(false);
 
-  constructor( private usuario : UsuarioService , private prestamoApi : PrestamosAPIService){}; 
+  constructor(   protected override usuario : UsuarioService ,  protected override prestamoApi : PrestamosAPIService){
+    super(prestamoApi, usuario);
+  }; 
 
 
   ngOnInit() {
     this.cargarDatos();
   }
 
-  cargarDatos() {
-    this.prestamoApi.obtenerPrestamosPorUsuario(this.usuario.usuario.id! , 'activo').subscribe({
-      next: (data) => {
-        this.agruparPrestamos(data);
-      },
-      error: (error) => {
-        alert( error.error.error + ': ' + error.error.mensaje);
-      }
-
-    }); 
-}
+ 
 
   avisoDevolver(item : Prestamos) {
     this.itemSeleccionado = item;
     this.aviso.set(!this.aviso());
   }
 
-  agruparPrestamos(datos: Prestamos[]) {
-    this.datos.clear();
-    for (let prestamo of datos) {
-      if( this.datos.has(prestamo.Id!)) {
-        this.datos.get(prestamo.Id)!.insertarEquipo(prestamo);
-      }
-      else{
-        this.datos.set(prestamo.Id! , new PrestamoAgrupados([prestamo]));
-      }
-    }
-
-  }
+  
 
   finalizado() {
     this.prestamoApi.cambiarEstadoPrestamo(this.itemSeleccionado!.Id, 'finalizado').subscribe({

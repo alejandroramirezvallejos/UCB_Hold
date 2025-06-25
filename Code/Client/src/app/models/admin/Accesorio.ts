@@ -1,5 +1,6 @@
-export class Accesorio {
-  id: number;
+import { Basemodel } from "../base/Basemodel";
+
+export class Accesorio  extends Basemodel{
   nombre: string | null;
   modelo: string | null;
   tipo: string | null;
@@ -10,7 +11,7 @@ export class Accesorio {
   nombreEquipoAsociado?: string | null;
 
   constructor() {
-    this.id = 0;
+    super();
     this.nombre = null;
     this.modelo = null;
     this.tipo = null;

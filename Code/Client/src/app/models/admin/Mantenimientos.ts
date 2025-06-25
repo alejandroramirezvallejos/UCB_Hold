@@ -1,5 +1,7 @@
-export class Mantenimientos{
-    Id: number = 0;
+import { Basemodel } from "../base/Basemodel";
+
+export class Mantenimientos extends Basemodel{
+
     NombreEmpresaMantenimiento: string | null = null;
     FechaMantenimiento: Date | null = null;
     FechaFinalDeMantenimiento: Date | null = null;
@@ -11,7 +13,7 @@ export class Mantenimientos{
     DescripcionEquipo: string | null = null;
 
     constructor(){
-        this.Id = 0;
+        super();
         this.NombreEmpresaMantenimiento = null;
         this.FechaMantenimiento = null;
         this.FechaFinalDeMantenimiento = null;

@@ -45,10 +45,7 @@ export class CategoriasTablaComponent  {
   cargarCategorias() {
     this.categoriaService.obtenercategorias().subscribe(
       (data: any[]) => {
-        this.categorias = data.map(item => ({
-          Id: item.id,
-          Nombre: item.nombre
-        }));
+        this.categorias = data; 
         this.categoriascopia = [...this.categorias];
       },
       (error) => {

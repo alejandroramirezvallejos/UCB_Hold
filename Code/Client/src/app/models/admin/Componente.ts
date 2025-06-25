@@ -1,5 +1,6 @@
-export class Componente {
-  Id?: number;
+import { Basemodel } from "../base/Basemodel";
+
+export class Componente extends Basemodel {
   Nombre?: string | null;
   Modelo?: string | null;
   Tipo?: string | null;
@@ -10,7 +11,7 @@ export class Componente {
   UrlDataSheet?: string | null;
 
   constructor(){
-    this.Id = 0;
+    super();
     this.Nombre = null;
     this.Modelo = null;
     this.Tipo = null;

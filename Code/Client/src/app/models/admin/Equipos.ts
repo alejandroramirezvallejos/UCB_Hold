@@ -1,6 +1,7 @@
-export class Equipos{
+import { Basemodel } from "../base/Basemodel";
+
+export class Equipos extends Basemodel{
     NombreGrupoEquipo: string | null = null;
-    Id: number = 0;
     Modelo: string | null = null;
     Marca: string | null = null;
     CodigoImt: number | null = null;
@@ -15,8 +16,8 @@ export class Equipos{
     Procedencia: string | null = null;
 
     constructor(){
+        super();
         this.NombreGrupoEquipo = null;
-        this.Id = 0;
         this.Modelo = null;
         this.Marca = null;
         this.CodigoImt = null;
