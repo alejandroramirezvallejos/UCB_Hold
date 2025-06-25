@@ -3,7 +3,7 @@ using IMT_Reservas.Server.Shared.Common;
 using IMT_Reservas.Server.Infrastructure.MongoDb;
 using MongoDB.Driver;
 using MongoDB.Driver.GridFS;
-public class PrestamoService : ServiciosAbstraccion, IPrestamoService
+public class PrestamoService : BaseServicios, IPrestamoService
 {
     private readonly IPrestamoRepository _prestamoRepository;
     private readonly MongoDbContexto _mongoDbContext;
@@ -37,7 +37,7 @@ public class PrestamoService : ServiciosAbstraccion, IPrestamoService
         catch (ErrorNoEquiposDisponibles) { throw; }
         catch (Exception ex) { InterpretarErrorCreacion(comando, ex); throw; }
     }
-    public override void ValidarEntradaCreacion<T>(T comando)
+    protected override void ValidarEntradaCreacion<T>(T comando)
     {
         base.ValidarEntradaCreacion(comando);
         if (comando is CrearPrestamoComando cmd)
@@ -51,7 +51,7 @@ public class PrestamoService : ServiciosAbstraccion, IPrestamoService
             if (cmd.FechaDevolucionEsperada < cmd.FechaPrestamoEsperada) throw new ErrorFechaPrestamoYFechaDevolucionInvalidas();
         }
     }
-    public override void InterpretarErrorCreacion<T>(T comando, Exception ex)
+    protected override void InterpretarErrorCreacion<T>(T comando, Exception ex)
     {
         base.InterpretarErrorCreacion(comando, ex);
         var errorMessage = ex.Message?.ToLower() ?? "";
@@ -90,7 +90,7 @@ public class PrestamoService : ServiciosAbstraccion, IPrestamoService
             throw;
         }
     }
-    public override void ValidarEntradaEliminacion<T>(T comando)
+    protected override void ValidarEntradaEliminacion<T>(T comando)
     {
         base.ValidarEntradaEliminacion(comando);
         if (comando is EliminarPrestamoComando cmd)
@@ -98,7 +98,7 @@ public class PrestamoService : ServiciosAbstraccion, IPrestamoService
             if (cmd.Id <= 0) throw new ErrorIdInvalido("préstamo");
         }
     }
-    public override void InterpretarErrorEliminacion<T>(T comando, Exception ex)
+    protected override void InterpretarErrorEliminacion<T>(T comando, Exception ex)
     {
         base.InterpretarErrorEliminacion(comando, ex);
         if (ex is ErrorDataBase errorDb)
@@ -171,7 +171,7 @@ public class PrestamoService : ServiciosAbstraccion, IPrestamoService
         }
         catch { throw; }
     }
-    public override BaseDto MapearFilaADto(DataRow fila)
+    protected override BaseDto MapearFilaADto(DataRow fila)
     {
         return new PrestamoDto
         {

@@ -1,5 +1,5 @@
 using System.Data;
-public class UsuarioService : ServiciosAbstraccion, IUsuarioService
+public class UsuarioService : BaseServicios, IUsuarioService
 {
     private readonly IUsuarioRepository _usuarioRepository;
     public UsuarioService(IUsuarioRepository usuarioRepository)
@@ -29,7 +29,8 @@ public class UsuarioService : ServiciosAbstraccion, IUsuarioService
             InterpretarErrorCreacion(comando, ex);
             throw;
         }
-    }    public override void ValidarEntradaCreacion<T>(T comando)
+    }
+    protected override void ValidarEntradaCreacion<T>(T comando)
     {
         base.ValidarEntradaCreacion(comando);
         if (comando is CrearUsuarioComando cmd)
@@ -49,10 +50,10 @@ public class UsuarioService : ServiciosAbstraccion, IUsuarioService
             if (string.IsNullOrWhiteSpace(cmd.NombreCarrera)) throw new ErrorCarreraRequerida();
             if (string.IsNullOrWhiteSpace(cmd.Telefono)) throw new ErrorTelefonoRequerido();
             if (cmd.Telefono.Length > 20) throw new ErrorLongitudInvalida("telefono", 20);
-            if(cmd.Rol != "administrador" && cmd.Rol != "estudiante") throw new ErrorRolInvalido();
+            if (cmd.Rol != "administrador" && cmd.Rol != "estudiante") throw new ErrorRolInvalido();
         }
     }
-    public override void InterpretarErrorCreacion<T>(T comando, Exception ex)
+    protected override void InterpretarErrorCreacion<T>(T comando, Exception ex)
     {
         base.InterpretarErrorCreacion(comando, ex);
         if (ex is ErrorDataBase errorDb)
@@ -134,7 +135,7 @@ public class UsuarioService : ServiciosAbstraccion, IUsuarioService
             throw;
         }
     }
-    public override void ValidarEntradaEliminacion<T>(T comando)
+    protected override void ValidarEntradaEliminacion<T>(T comando)
     {
         base.ValidarEntradaEliminacion(comando);
         if (comando is EliminarUsuarioComando cmd)
@@ -143,7 +144,7 @@ public class UsuarioService : ServiciosAbstraccion, IUsuarioService
             if (cmd.Carnet.Length > 15) throw new ErrorLongitudInvalida("carnet", 15);
         }
     }
-    public override void InterpretarErrorEliminacion<T>(T comando, Exception ex)
+    protected override void InterpretarErrorEliminacion<T>(T comando, Exception ex)
     {
         base.InterpretarErrorEliminacion(comando, ex);
         if (ex is ErrorDataBase errorDb)
@@ -169,7 +170,8 @@ public class UsuarioService : ServiciosAbstraccion, IUsuarioService
         if (string.IsNullOrWhiteSpace(email)) return false;
         try { var addr = new System.Net.Mail.MailAddress(email); return addr.Address == email; }
         catch { return false; }
-    }    public override BaseDto MapearFilaADto(DataRow fila)
+    }
+    protected override BaseDto MapearFilaADto(DataRow fila)
     {
         return new UsuarioDto
         {

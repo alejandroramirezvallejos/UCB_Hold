@@ -1,7 +1,7 @@
 using System.Data;
 using IMT_Reservas.Server.Shared.Common;
 
-public class GaveteroService : ServiciosAbstraccion, IGaveteroService
+public class GaveteroService : BaseServicios, IGaveteroService
 {
     private readonly IGaveteroRepository _gaveteroRepository;
     public GaveteroService(IGaveteroRepository gaveteroRepository)
@@ -21,7 +21,7 @@ public class GaveteroService : ServiciosAbstraccion, IGaveteroService
             InterpretarErrorCreacion(comando, ex);
         }
     }    
-    public override void ValidarEntradaCreacion<T>(T comando)
+    protected override void ValidarEntradaCreacion<T>(T comando)
     {
         base.ValidarEntradaCreacion(comando); // Validación base (null check)
         
@@ -36,7 +36,7 @@ public class GaveteroService : ServiciosAbstraccion, IGaveteroService
         }
     }
     
-    public override void InterpretarErrorCreacion<T>(T comando, Exception ex)
+    protected override void InterpretarErrorCreacion<T>(T comando, Exception ex)
     {
         if (ex is ErrorDataBase errorDb)
         {
@@ -88,7 +88,7 @@ public class GaveteroService : ServiciosAbstraccion, IGaveteroService
             InterpretarErrorEliminacion(comando, ex);
         }
     }    
-    public override void ValidarEntradaEliminacion<T>(T comando)
+    protected override void ValidarEntradaEliminacion<T>(T comando)
     {
         base.ValidarEntradaEliminacion(comando); // Validación base (null check)
         
@@ -99,7 +99,7 @@ public class GaveteroService : ServiciosAbstraccion, IGaveteroService
         }
     }
     
-    public override void InterpretarErrorEliminacion<T>(T comando, Exception ex)
+    protected override void InterpretarErrorEliminacion<T>(T comando, Exception ex)
     {
         if (ex is ErrorDataBase errorDb)
         {
@@ -140,7 +140,7 @@ public class GaveteroService : ServiciosAbstraccion, IGaveteroService
         }
         catch { throw; }
     }    
-    public override BaseDto MapearFilaADto(DataRow fila)
+    protected override BaseDto MapearFilaADto(DataRow fila)
     {
         return new GaveteroDto
         {
