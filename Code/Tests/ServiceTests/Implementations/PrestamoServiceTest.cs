@@ -157,50 +157,5 @@ namespace IMT_Reservas.Tests.ServiceTests
             EliminarPrestamoComando comando = new EliminarPrestamoComando(0);
             Assert.Throws<ErrorIdInvalido>(() => _prestamoService.EliminarPrestamo(comando));
         }
-
-        [Test]
-        public void AceptarPrestamo_ComandoValido_SubeArchivoYActualizaEstado()
-        {
-            var mockContratosCollection = new Mock<IMongoCollection<Contrato>>();
-            var mockFile = new Mock<IFormFile>();
-            var fileContent = "Nuevo contrato";
-            var fileName = "contrato_nuevo.html";
-            var ms = new MemoryStream();
-            var writer = new StreamWriter(ms);
-            writer.Write(fileContent);
-            writer.Flush();
-            ms.Position = 0;
-            mockFile.Setup(_ => _.OpenReadStream()).Returns(ms);
-            mockFile.Setup(_ => _.FileName).Returns(fileName);
-            mockFile.Setup(_ => _.Length).Returns(ms.Length);
-
-            var comando = new AceptarPrestamoComando { PrestamoId = 1, Contrato = mockFile.Object };
-            var contratoExistente = new Contrato { Id = "abc", PrestamoId = 1, FileId = "oldFileId" };
-            _mongoDbContextMock.Setup(m => m.Contratos).Returns(mockContratosCollection.Object);
-
-            var mockCursor = new Mock<IAsyncCursor<Contrato>>();
-            mockCursor.SetupSequence(x => x.MoveNext(It.IsAny<CancellationToken>()))
-                .Returns(true)
-                .Returns(false);
-            mockCursor.Setup(x => x.Current).Returns(new List<Contrato> { contratoExistente });
-            mockContratosCollection.Setup(c => c.FindSync(
-                It.IsAny<FilterDefinition<Contrato>>(),
-                It.IsAny<FindOptions<Contrato, Contrato>>(),
-                It.IsAny<CancellationToken>())).Returns(mockCursor.Object);
-
-            _gridFsMock.Setup(fs => fs.UploadFromStreamAsync(It.IsAny<string>(), It.IsAny<Stream>(), null, default)).ReturnsAsync(ObjectId.GenerateNewId());
-
-            _prestamoService.AceptarPrestamo(comando);
-
-            mockContratosCollection.Verify(c => c.UpdateOne(It.IsAny<FilterDefinition<Contrato>>(), It.IsAny<UpdateDefinition<Contrato>>(), null, default), Times.Once);
-            _prestamoRepositoryMock.Verify(r => r.ActualizarEstado(It.Is<ActualizarEstadoPrestamoComando>(cmd => cmd.Id == comando.PrestamoId && cmd.EstadoPrestamo == "activo")), Times.Once);
-        }
-
-        [Test]
-        public void AceptarPrestamo_ContratoNulo_LanzaErrorContratoNoNulo()
-        {
-            var comando = new AceptarPrestamoComando { PrestamoId = 1, Contrato = null };
-            Assert.Throws<ErrorContratoNoNulo>(() => _prestamoService.AceptarPrestamo(comando));
-        }
     }
 }

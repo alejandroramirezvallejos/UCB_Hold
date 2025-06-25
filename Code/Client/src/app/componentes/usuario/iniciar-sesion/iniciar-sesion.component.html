@@ -14,6 +14,7 @@
           [(ngModel)]="email"
           required
           email
+          pattern="^[a-zA-Z0-9._%+-]+@ucb\.edu\.bo$"
           placeholder="tu@ucb.edu.bo"
           class="form-input"
           #emailInput="ngModel"
@@ -24,10 +25,9 @@
               @if (emailInput.errors?.['required']) {
                 <div>El correo electrónico es requerido</div>
               }
-              @if (emailInput.errors?.['email']) {
-                <div>Formato de correo inválido</div>
+              @if (emailInput.errors?.['pattern']) {
+                <div>El correo debe ser de la UCB (&#64;ucb.edu.bo)</div>
               }
-              
           
           }
           @if(incorrecto==true){
@@ -92,6 +92,6 @@
 @if(errorraro()==1){
   <app-mostrarerror
   [error]="errorraro"
-  mensaje="Error desconocido"
+  mensaje="Error contraseña o usuario invalido"
   ></app-mostrarerror>
 }

@@ -16,6 +16,7 @@
             name="nombre" 
             [(ngModel)]="nuevoUsuario.nombre"
             required
+             maxlength="50"
             placeholder="Ingresa tu nombre"
             class="form-input"
             #nombreInput="ngModel"
@@ -31,6 +32,7 @@
             <input 
               type="text" 
               name="apellidoPaterno" 
+               maxlength="50"
               [(ngModel)]="nuevoUsuario.apellido_paterno"
               required
               placeholder="Apellido paterno"
@@ -43,6 +45,7 @@
             <input 
               type="text" 
               name="apellidoMaterno" 
+               maxlength="50"
               [(ngModel)]="nuevoUsuario.apellido_materno"
               required
               placeholder="Apellido materno"
@@ -56,15 +59,18 @@
           <input 
             type="text" 
             name="carnet" 
+            minlength="7"
+            maxlength="10"
             [(ngModel)]="nuevoUsuario.carnet"
             required
             placeholder="Ingresa tu carnet"
+            pattern="[0-9]+"
             required
             class="form-input"
             #carnetInput="ngModel"
           >
           @if (carnetInput.invalid && (carnetInput.dirty || carnetInput.touched)) {
-            <div class="error-message">El carnet es requerido</div>
+            <div class="error-message">El carnet es invalido</div>
           }
         </div>
 
@@ -76,7 +82,9 @@
             [(ngModel)]="nuevoUsuario.correo"
             required
             email
+             maxlength="50"
             placeholder="tu@ucb.edu.bo"
+            pattern="^[a-zA-Z0-9._%+-]+@ucb\.edu\.bo$"
             required
             class="form-input"
             #correoInput="ngModel"
@@ -86,8 +94,8 @@
               @if (correoInput.errors?.['required']) {
                 <div>El correo electrónico es requerido</div>
               }
-              @if (correoInput.errors?.['email']) {
-                <div>Formato de correo inválido</div>
+              @if (correoInput.errors?.['pattern']) {
+            <div>Debe usar un correo institucional &#64;ucb.edu.bo</div>
               }
             </div>
           }
@@ -99,6 +107,8 @@
             type="tel" 
             name="telefono" 
             [(ngModel)]="nuevoUsuario.telefono"
+               maxlength="10"
+            pattern="[0-9]{8,10}"
             required
             placeholder="70000000"
             class="form-input"
@@ -155,6 +165,8 @@
             type="tel" 
             name="telefonoReferencia" 
             [(ngModel)]="nuevoUsuario.telefono_referencia"
+            pattern="[0-9]{8,10}"
+            maxlength="10"
             placeholder="70000000"
             class="form-input"
           >

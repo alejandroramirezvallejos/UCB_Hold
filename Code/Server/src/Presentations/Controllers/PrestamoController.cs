@@ -58,15 +58,6 @@ public class PrestamoController : ControllerBase
         catch (Exception ex) { return StatusCode(500, new { error = ex.GetType().Name, mensaje = ex.Message }); }
     }
 
-    [HttpPost("aceptar")]
-    public IActionResult Aceptar([FromForm] AceptarPrestamoComando comando)
-    {
-        try { servicio.AceptarPrestamo(comando); return Ok(new { mensaje = "Préstamo aceptado exitosamente" }); }
-        catch (ArgumentException ex) { return BadRequest(new { error = ex.GetType().Name, mensaje = ex.Message }); }
-        catch (DomainException ex) { return BadRequest(new { error = ex.GetType().Name, mensaje = ex.Message }); }
-        catch (Exception ex) { return StatusCode(500, new { error = ex.GetType().Name, mensaje = ex.Message }); }
-    }
-
     [HttpGet("{id}")]
     public IActionResult ObtenerPorId(int id)
     {

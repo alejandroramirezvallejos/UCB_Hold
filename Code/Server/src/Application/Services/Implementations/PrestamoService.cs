@@ -17,7 +17,6 @@ public class PrestamoService : IPrestamoService
     public virtual void CrearPrestamo(CrearPrestamoComando comando)
     {
         ValidarEntradaCreacion(comando);
-        if (comando.Contrato == null) throw new ErrorContratoNoNulo();
         try
         {
             var prestamoId = _prestamoRepository.Crear(comando);
@@ -42,6 +41,7 @@ public class PrestamoService : IPrestamoService
     private void ValidarEntradaCreacion(CrearPrestamoComando comando)
     {
         if (comando == null) throw new ArgumentNullException(nameof(comando));
+        if (comando.Contrato == null) throw new ErrorContratoNoNulo();
         if (string.IsNullOrWhiteSpace(comando.CarnetUsuario)) throw new ErrorCarnetRequerido();
         if (comando.GrupoEquipoId == null || comando.GrupoEquipoId.Length == 0) throw new ErrorGrupoEquipoIdInvalido();
         if (comando.GrupoEquipoId.Any(id => id <= 0)) throw new ErrorGrupoEquipoIdInvalido();
@@ -155,18 +155,6 @@ public class PrestamoService : IPrestamoService
         }
         catch { throw; }
     }
-    public void AceptarPrestamo(AceptarPrestamoComando comando)
-    {
-        if (comando.Contrato == null) throw new ErrorContratoNoNulo();
-        var fileName = comando.Contrato.FileName;
-        using var stream = comando.Contrato.OpenReadStream();
-        var fileId = _gridFsBucket.UploadFromStreamAsync(fileName, stream, null, default).GetAwaiter().GetResult();
-        var contrato = new Contrato { PrestamoId = comando.PrestamoId, FileId = fileId.ToString() };
-        _mongoDbContext.Contratos.UpdateOne(
-            Builders<Contrato>.Filter.Eq(x => x.PrestamoId, comando.PrestamoId),
-            Builders<Contrato>.Update.Set(x => x.FileId, contrato.FileId));
-        _prestamoRepository.ActualizarEstado(new ActualizarEstadoPrestamoComando(comando.PrestamoId, "activo"));
-    }
     private static PrestamoDto MapearFilaADto(DataRow fila)
     {
         return new PrestamoDto
@@ -203,5 +191,4 @@ public class PrestamoService : IPrestamoService
         }
         return dataChunks;
     }
-
 }

@@ -35,6 +35,7 @@
             [(ngModel)]="item.value.fecha_inicio"
             (ngModelChange)="onInicioChange($event)"
             [min]="hoy"
+            [max]="fechamaxima(item.value.fecha_inicio)"
           />
         </div>
         <div class="date-field">
@@ -45,6 +46,7 @@
             [(ngModel)]="item.value.fecha_final"
             (ngModelChange)="onFinChange($event)"
             [min]="item.value.fecha_inicio"
+            [max]="fechamaxima(item.value.fecha_inicio)"
           />
         </div>
       </div>
