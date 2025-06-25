@@ -25,16 +25,7 @@ export class GruposEquiposTablaComponent implements OnInit {
 
   categorias: string[] = []; 
 
-  grupoEquipoSeleccionado: GrupoEquipo = {
-    id: 0,
-    nombre: '',
-    modelo: '',
-    marca: '',
-    nombreCategoria: '',
-    descripcion: '',
-    url_data_sheet: '',
-    link: ''
-  };
+  grupoEquipoSeleccionado: GrupoEquipo = new GrupoEquipo();
 
   terminoBusqueda: string = '';
 
@@ -57,16 +48,7 @@ export class GruposEquiposTablaComponent implements OnInit {
   }
 
   limpiarGrupoEquipoSeleccionado() {
-    this.grupoEquipoSeleccionado = {
-      id: 0,
-      nombre: '',
-      modelo: '',
-      marca: '',
-      nombreCategoria: '',
-      descripcion: '',
-      url_data_sheet: '',
-      link: ''
-    };
+    this.grupoEquipoSeleccionado = new GrupoEquipo();
   }
 
   creargrupoequipo() {
@@ -95,7 +77,7 @@ export class GruposEquiposTablaComponent implements OnInit {
       this.gruposEquiposFiltrados = [...this.gruposEquipos];
     } else {
       this.gruposEquiposFiltrados = this.gruposEquipos.filter(grupoequipo =>
-        grupoequipo.nombre.toLowerCase().includes(this.terminoBusqueda.toLowerCase()) ||
+        (grupoequipo.nombre ||'').toLowerCase().includes(this.terminoBusqueda.toLowerCase()) ||
         (grupoequipo.modelo || '').toLowerCase().includes(this.terminoBusqueda.toLowerCase()) ||
         (grupoequipo.marca || '').toLowerCase().includes(this.terminoBusqueda.toLowerCase()) ||
         (grupoequipo.nombreCategoria || '').toLowerCase().includes(this.terminoBusqueda.toLowerCase()) ||

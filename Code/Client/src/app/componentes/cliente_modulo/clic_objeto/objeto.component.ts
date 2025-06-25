@@ -18,15 +18,7 @@ import { ComentariosComponent } from './comentarios/comentarios.component';
 export class ObjetoComponent {
   @Input() id: string = ''
 
-  producto: GrupoEquipo = {
-    id: 0,
-    nombre: '',
-    descripcion: '',
-    modelo: '',
-    marca: '',
-    url_data_sheet: '',
-    link: ''
-  };
+  producto: GrupoEquipo = new GrupoEquipo();
 
    addedToCart = false;
 

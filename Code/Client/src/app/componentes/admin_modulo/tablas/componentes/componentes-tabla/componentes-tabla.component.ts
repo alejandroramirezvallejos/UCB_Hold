@@ -22,17 +22,7 @@ export class ComponentesTablaComponent implements OnInit {
   componentes: Componente[] = [];
   componentescopia: Componente[] = [];
 
-  componenteSeleccionado: Componente = {
-    Id: 0,
-    Nombre: '',
-    Modelo: '',
-    Tipo: '',
-    Descripcion: '',
-    PrecioReferencia: 0,
-    NombreEquipo: '',
-    CodigoImtEquipo: 0,
-    UrlDataSheet: ''
-  };
+  componenteSeleccionado: Componente = new Componente();
 
   terminoBusqueda: string = '';
 
@@ -44,17 +34,7 @@ export class ComponentesTablaComponent implements OnInit {
   }
 
   limpiarComponenteSeleccionado() {
-    this.componenteSeleccionado = {
-      Id: 0,
-      Nombre: '',
-      Modelo: '',
-      Tipo: '',
-      Descripcion: '',
-      PrecioReferencia: 0,
-      NombreEquipo: '',
-      CodigoImtEquipo: 0,
-      UrlDataSheet: ''
-    };
+    this.componenteSeleccionado = new Componente();
   }
 
   crearComponente() {

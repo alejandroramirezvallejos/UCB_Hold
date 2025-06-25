@@ -12,15 +12,7 @@ import { EmpresamantenimientoService } from '../../../../../services/APIS/Empres
 export class EmpresasMantenimientoEditarComponent {
   @Input() botoneditar: WritableSignal<boolean> = signal(true);
   @Output() actualizar: EventEmitter<void> = new EventEmitter<void>();
-  @Input() empresaMantenimiento : EmpresaMantenimiento ={
-    Id: 0,
-    NombreEmpresa: '',
-    NombreResponsable: '',
-    ApellidoResponsable: '',
-    Telefono: '',
-    Nit: '',
-    Direccion: ''
-  };
+  @Input() empresaMantenimiento : EmpresaMantenimiento =new EmpresaMantenimiento();
 
   constructor(private empresaMantenimientoapi: EmpresamantenimientoService) {}; 
 

@@ -12,7 +12,7 @@ export class UsuarioServiceAPI {
 
   constructor(private http : HttpClient) { }
 
-  registrarCuenta(usuario : Usuario , contrasena : string , rol : string  |undefined){
+  registrarCuenta(usuario : Usuario , contrasena : string , rol : string  | null){
     if(!rol) {
       rol = 'Estudiante';
     }

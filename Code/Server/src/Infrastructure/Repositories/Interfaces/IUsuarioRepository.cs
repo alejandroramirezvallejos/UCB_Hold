@@ -6,4 +6,5 @@ public interface IUsuarioRepository
     void Eliminar(string carnet);
     DataTable ObtenerTodos();
     DataTable? ObtenerPorEmailYContrasena(string email, string contrasena);
+    DataTable ObtenerPorCarnets(List<string> carnets);
 }

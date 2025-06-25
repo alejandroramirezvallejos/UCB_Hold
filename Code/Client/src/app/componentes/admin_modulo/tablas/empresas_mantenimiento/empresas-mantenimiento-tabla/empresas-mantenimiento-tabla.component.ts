@@ -22,15 +22,7 @@ export class EmpresasMantenimientoTablaComponent implements OnInit {
   empresas: EmpresaMantenimiento[] = [];
   empresascopia: EmpresaMantenimiento[] = [];
 
-  empresaSeleccionada: EmpresaMantenimiento = {
-    Id: 0,
-    NombreEmpresa: '',
-    NombreResponsable: '',
-    ApellidoResponsable: '',
-    Telefono: '',
-    Nit: '',
-    Direccion: ''
-  };
+  empresaSeleccionada: EmpresaMantenimiento = new EmpresaMantenimiento();
 
   terminoBusqueda: string = '';
 
@@ -43,16 +35,9 @@ export class EmpresasMantenimientoTablaComponent implements OnInit {
   }
 
   limpiarEmpresaSeleccionada() {
-    this.empresaSeleccionada = {
-      Id: 0,
-      NombreEmpresa: '',
-      NombreResponsable: '',
-      ApellidoResponsable: '',
-      Telefono: '',
-      Nit: '',
-      Direccion: ''
-    };
-  }  crearempresamantenimiento() {
+    this.empresaSeleccionada = new EmpresaMantenimiento();
+  }  
+  crearempresamantenimiento() {
     this.botoncrear.set(true);
   }
 

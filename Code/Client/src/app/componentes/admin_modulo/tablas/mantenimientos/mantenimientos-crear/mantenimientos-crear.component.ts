@@ -25,18 +25,7 @@ export class MantenimientosCrearComponent {
 
   
 
-  mantenimiento: Mantenimientos = {
-    Id: 0,
-    NombreEmpresaMantenimiento: '',
-    FechaMantenimiento: null,
-    FechaFinalDeMantenimiento: null,
-    Costo: 0,
-    Descripcion: '',
-    TipoMantenimiento: '',
-    NombreGrupoEquipo: '',
-    CodigoImtEquipo: 0,
-    DescripcionEquipo: ''
-  };
+  mantenimiento: Mantenimientos = new Mantenimientos();
   empresas : string[] = [];
 
   mantenimientoSeleccionado: Map<number, {

@@ -24,15 +24,7 @@ export class GaveterosTablaComponent {
   gaveteros : Gaveteros[] = [];
   gaveteroscopia: Gaveteros[] = [];
 
-  gaveteroSeleccionado:  Gaveteros= {
-    Id: 0,
-    Nombre: '',
-    Tipo: '',
-    NombreMueble: '',
-    Longitud: 0,
-    Profundidad: 0,
-    Altura: 0
-  }  ;
+  gaveteroSeleccionado:  Gaveteros= new Gaveteros(); 
 
   terminoBusqueda: string = '';
 
@@ -48,15 +40,7 @@ export class GaveterosTablaComponent {
 
 
   limpiarGaveteroSeleccionado() {
-    this.gaveteroSeleccionado = {
-      Id: 0,
-      Nombre: '',
-      Tipo: '',
-      NombreMueble: '',
-      Longitud: 0,
-      Profundidad: 0,
-      Altura: 0
-    };
+    this.gaveteroSeleccionado = new Gaveteros();
   }
 
 

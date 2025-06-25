@@ -13,4 +13,23 @@ export class Equipos{
     Descripcion: string | null = null;
     TiempoMaximoPrestamo: number | null = null;
     Procedencia: string | null = null;
+
+    constructor(){
+        this.NombreGrupoEquipo = null;
+        this.Id = 0;
+        this.Modelo = null;
+        this.Marca = null;
+        this.CodigoImt = null;
+        this.CodigoUcb = null;
+        this.NumeroSerial = null;
+        this.EstadoEquipo = null;
+        this.Ubicacion = null;
+        this.NombreGavetero = null;
+        this.CostoReferencia = null;
+        this.Descripcion = null;
+        this.TiempoMaximoPrestamo = null;
+        this.Procedencia = null;
+    }
+
+
 }

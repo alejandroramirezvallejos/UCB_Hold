@@ -53,6 +53,9 @@
             Altura 
          
           </th>
+          <th>
+            Profundidad
+          </th>
           <th>Acciones</th>
         </tr>
       </thead>      <tbody>
@@ -61,8 +64,9 @@
             <td>{{gavetero.Nombre}}</td>
             <td>{{gavetero.Tipo}}</td>
             <td>{{gavetero.NombreMueble}}</td>
-            <td>{{gavetero.Longitud}}</td>
-            <td>{{gavetero.Altura}}</td>
+            <td>{{gavetero.Longitud}} m</td>
+            <td>{{gavetero.Altura}} m </td>
+            <td>{{gavetero.Profundidad}} m</td>
             <td class="actions-column">
               <button class="btn-icon btn-delete" (click)="eliminarGavetero(gavetero)">
                 <i class="fas fa-trash-alt"></i>

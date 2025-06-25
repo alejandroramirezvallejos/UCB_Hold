@@ -22,10 +22,7 @@ export class CarrerasTablaComponent  {
   carreras: Carrera[] = [];
   carrerascopia: Carrera[] = [];
 
-  carreraSeleccionada: Carrera = {
-    Id: 0,
-    Nombre: ''
-  };
+  carreraSeleccionada: Carrera = new Carrera();
 
   terminoBusqueda: string = '';
 
@@ -38,10 +35,7 @@ export class CarrerasTablaComponent  {
   }
 
   limpiarCarreraSeleccionada() {
-    this.carreraSeleccionada = {
-      Id: 0,
-      Nombre: ''
-    };
+    this.carreraSeleccionada = new Carrera();
   }
 
   crearCarrera() {

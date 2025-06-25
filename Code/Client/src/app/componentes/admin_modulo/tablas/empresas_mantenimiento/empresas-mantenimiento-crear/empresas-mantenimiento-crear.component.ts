@@ -16,15 +16,7 @@ export class EmpresasMantenimientoCrearComponent {
   @Output() Actualizar = new EventEmitter<void>();
 
 
-  empresaMantenimiento : EmpresaMantenimiento = {
-    Id: 0,
-    NombreEmpresa: '',
-    NombreResponsable: '',
-    ApellidoResponsable: '',
-    Telefono: '',
-    Nit: '',
-    Direccion: ''
-  };
+  empresaMantenimiento : EmpresaMantenimiento = new EmpresaMantenimiento();
 
 
   constructor(private empresaMantenimientoapi : EmpresamantenimientoService){}; 

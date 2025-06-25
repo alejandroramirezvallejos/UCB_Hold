@@ -1,4 +1,4 @@
-export interface Componente {
+export class Componente {
   Id?: number;
   Nombre?: string | null;
   Modelo?: string | null;
@@ -8,4 +8,18 @@ export interface Componente {
   NombreEquipo?: string | null;
   CodigoImtEquipo?: number | null;
   UrlDataSheet?: string | null;
+
+  constructor(){
+    this.Id = 0;
+    this.Nombre = null;
+    this.Modelo = null;
+    this.Tipo = null;
+    this.Descripcion = null;
+    this.PrecioReferencia = null;
+    this.NombreEquipo = null;
+    this.CodigoImtEquipo = null;
+    this.UrlDataSheet = null;
+  }
+
+
 }

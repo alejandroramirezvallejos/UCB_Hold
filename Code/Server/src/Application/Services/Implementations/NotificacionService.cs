@@ -151,7 +151,7 @@ public class NotificacionService : BaseServicios, INotificacionService
             var carnet = fila["carnet"].ToString();
             if (estado == "aprobado")
             {
-                var contenido = $"Tu solicitud de préstamo con el id {idPrestamo} ha sido aprobada.";
+                var contenido = $"Tu solicitud de préstamo con el Numero de Prestamo {idPrestamo} ha sido aprobada.";
                 var titulo = "Solicitud aprobada";
                 if (!NotificacionYaExiste(carnet, titulo, contenido))
                 {
@@ -161,7 +161,7 @@ public class NotificacionService : BaseServicios, INotificacionService
             }
             else if (estado == "rechazado")
             {
-                var contenido = $"Tu solicitud de préstamo con el id {idPrestamo} ha sido rechazada.";
+                var contenido = $"Tu solicitud de préstamo con el Numero de Prestamo {idPrestamo} ha sido rechazada.";
                 var titulo = "Solicitud rechazada";
                 if (!NotificacionYaExiste(carnet, titulo, contenido))
                 {
