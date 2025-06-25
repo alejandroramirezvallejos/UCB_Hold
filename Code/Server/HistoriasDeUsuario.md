@@ -1,5 +1,7 @@
 # Historias de Usuario
 
+## Módulo Usuarios
+
 ### HU1 - Creación y Registro de Usuario desde Administración
 
 #### Descripción
@@ -226,6 +228,8 @@ Como administrador, quiero eliminar usuarios del sistema para gestionar los regi
 
 ---
 
+## Módulo Préstamos
+
 ### HU6 - Solicitar Préstamo
 
 #### Descripción
@@ -350,6 +354,8 @@ Como administrador, quiero eliminar préstamos del sistema para corregir registr
 - Auditoría: Los préstamos solo se eliminan de forma lógica, nunca física.
 
 ---
+
+## Módulo Equipos y Grupos de Equipos
 
 ### HU9 - Gestión de Equipos
 

@@ -1,4 +1,6 @@
-﻿### HU11 - Gestión de Categorías
+﻿## Módulo Categorías
+
+### HU11 - Gestión de Categorías
 
 #### Descripción
 Como administrador del sistema, quiero gestionar categorías para clasificar los grupos de equipos según su tipo y uso.
@@ -38,6 +40,8 @@ Como administrador del sistema, quiero gestionar categorías para clasificar los
 - **Auditoría:** Se aplica eliminación es lógica para preservar la trazabilidad de los datos.
 
 ---
+
+## Módulo Accesorios
 
 ### HU12 - Gestión de Accesorios
 
@@ -81,6 +85,8 @@ Como administrador del sistema, quiero gestionar los accesorios de equipos para 
 
 ---
 
+## Módulo Componentes
+
 ### HU13 - Gestión de Componentes
 
 #### Descripción
@@ -122,6 +128,8 @@ Como administrador del sistema, quiero gestionar componentes de equipos para lle
 - **Auditoría:** La eliminación lógica mantiene la trazabilidad de los componentes.
 
 ---
+
+## Módulo Mantenimientos
 
 ### HU14 - Gestión de Mantenimientos
 
@@ -165,6 +173,8 @@ Como administrador del sistema, quiero registrar y consultar los mantenimientos 
 
 ---
 
+## Módulo Administración
+
 ### HU15 - Panel de Administración
 
 #### Descripción:
@@ -194,6 +204,8 @@ Como administrador del sistema, quiero acceder a un panel centralizado que me pe
 - Test de componente: `Client/src/app/componentes/admin_modulo/administrador/administrador.component.spec.ts`
 
 ---
+
+## Módulo Catálogo y Búsqueda de Equipos
 
 ### HU16 - Visualización de Catálogo de Equipos
 

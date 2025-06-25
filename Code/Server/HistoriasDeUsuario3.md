@@ -1,4 +1,6 @@
-﻿### HU20 - Aceptar y Rechazar Solicitud de Préstamo desde Interfaz
+﻿## Módulo Préstamos
+
+### HU20 - Aceptar y Rechazar Solicitud de Préstamo desde Interfaz
 
 #### Descripción
 Como administrador del sistema, quiero completar el proceso de solicitud de préstamo de equipos a través de una interfaz simple y rápida.
@@ -122,6 +124,8 @@ Como usuario del sistema, quiero ver mi historial completo de préstamos para ll
 
 ---
 
+## Módulo Seguridad y Control de Acceso
+
 ### HU23 - Control de Acceso Basado en Roles
 
 #### Descripción
@@ -150,6 +154,8 @@ Como administrador del sistema, quiero que las funcionalidades estén restringid
 - Usabilidad: El sistema muestra menús y opciones de acuerdo al rol, facilitando la navegación y evitando confusiones.
 
 ---
+
+## Módulo Notificaciones
 
 ### HU24 - Sistema de Notificaciones
 
@@ -189,6 +195,8 @@ Como usuario del sistema, quiero recibir y gestionar notificaciones relacionadas
 
 ---
 
+## Módulo Perfil de Usuario
+
 ### HU25 - Ver Perfil
 
 #### Descripción
@@ -218,6 +226,8 @@ Como usuario del sistema, quiero ver mi perfil para revisar y actualizar mi info
 - Seguridad: Solo el usuario autenticado puede ver su perfil. Los DTOs no exponen datos sensibles.
 
 ---
+
+## Módulo Administración de Inventario
 
 ### HU26 - Administración de Grupos de Equipos en Interfaz
 
