@@ -1,6 +1,5 @@
-public class EmpresaMantenimientoDto
+public class EmpresaMantenimientoDto : BaseDto
 {
-    public int Id { get; set; }
     public string? NombreEmpresa { get; set; }
     public string? NombreResponsable { get; set; }
     public string? ApellidoResponsable { get; set; }

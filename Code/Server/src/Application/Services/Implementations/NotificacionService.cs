@@ -1,7 +1,8 @@
 ﻿using System.Data;
 using IMT_Reservas.Server.Application.Interfaces;
+using IMT_Reservas.Server.Shared.Common;
 
-public class NotificacionService : INotificacionService
+public class NotificacionService : ServiciosAbstraccion, INotificacionService
 {
     private readonly INotificacionRepository _notificacionRepository;
     private readonly IPrestamoRepository _prestamoRepository;
@@ -9,35 +10,52 @@ public class NotificacionService : INotificacionService
     {
         _notificacionRepository = notificacionRepository;
         _prestamoRepository = prestamoRepository;
-    }
-
+    }    
     public void CrearNotificacion(CrearNotificacionComando comando)
     {
+        ValidarEntradaCreacion(comando);
         _notificacionRepository.Crear(comando);
     }
-
+    public override void ValidarEntradaCreacion<T>(T comando)
+    {
+        base.ValidarEntradaCreacion(comando);
+    }
     public void EliminarNotificacion(EliminarNotificacionComando comando)
     {
+        ValidarEntradaEliminacion(comando);
         _notificacionRepository.Eliminar(comando);
+    }    
+    public override void ValidarEntradaEliminacion<T>(T comando)
+    {
+        base.ValidarEntradaEliminacion(comando);
+        if (comando is EliminarNotificacionComando notificacionComando)
+        {
+            if (string.IsNullOrWhiteSpace(notificacionComando.Id)) throw new ErrorIdInvalido("notificación");
+        }
     }
-
     public List<NotificacionDto> ObtenerNotificacionesPorUsuario(ObtenerNotificacionPorCarnetUsuarioConsulta consulta)
     {
         var tabla = _notificacionRepository.ObtenerPorUsuario(consulta);
         var notificaciones = new List<NotificacionDto>(tabla.Rows.Count);
         foreach (DataRow fila in tabla.Rows)
         {
-            notificaciones.Add(new NotificacionDto
-            {
-                Id = fila["id_notificacion"].ToString(),
-                CarnetUsuario = fila["carnet_usuario"].ToString(),
-                Titulo = fila["titulo"].ToString(),
-                Contenido = fila["contenido"].ToString(),
-                FechaEnvio = (System.DateTime)fila["fecha_envio"],
-                Leido = fila.Table.Columns.Contains("leido") ? Convert.ToBoolean(fila["leido"]) : false
-            });
+            var dto = MapearFilaADto(fila) as NotificacionDto;
+            if (dto != null) notificaciones.Add(dto);
         }
         return notificaciones;
+    }
+    
+    public override BaseDto MapearFilaADto(DataRow fila)
+    {
+        return new NotificacionDto
+        {
+            Id = fila["id_notificacion"].ToString(),
+            CarnetUsuario = fila["carnet_usuario"].ToString(),
+            Titulo = fila["titulo"].ToString(),
+            Contenido = fila["contenido"].ToString(),
+            FechaEnvio = (System.DateTime)fila["fecha_envio"],
+            Leido = fila.Table.Columns.Contains("leido") ? Convert.ToBoolean(fila["leido"]) : false
+        };
     }
 
     public void MarcarNotificacionComoLeida(MarcarComoLeidoComando comando)
@@ -68,7 +86,7 @@ public class NotificacionService : INotificacionService
         var notificaciones = _notificacionRepository.ObtenerPorUsuario(consulta);
         foreach (DataRow fila in notificaciones.Rows)
         {
-            if (fila["titulo"].ToString() == "Cuenta bloqueada")
+            if (fila["titulo"].ToString() == "Retraso en el pedido")
                 return true;
         }
         return false;
@@ -88,7 +106,7 @@ public class NotificacionService : INotificacionService
                 var idPrestamo = fila["id_prestamo"].ToString();
                 var carnet = fila["carnet"].ToString();
                 var fechaPenalizacion = fechaDevolucionEsperada.AddDays(1);
-                var contenido = $"El préstamo con ID {idPrestamo} no ha sido devuelto. Si no lo entregas antes del {fechaPenalizacion:yyyy-MM-dd HH:mm}, tu cuenta será bloqueada.";
+                var contenido = $"El préstamo con Numero de Prestamo {idPrestamo} no ha sido devuelto. Entregalo antes del {fechaPenalizacion:yyyy-MM-dd HH:mm}.";
                 var titulo = "Préstamo retrasado";
                 if (!NotificacionYaExiste(carnet, titulo, contenido))
                 {
@@ -112,8 +130,8 @@ public class NotificacionService : INotificacionService
             {
                 var idPrestamo = fila["id_prestamo"].ToString();
                 var carnet = fila["carnet"].ToString();
-                var contenido = $"El préstamo con ID {idPrestamo} no ha sido devuelto. Tu cuenta permanecerá bloqueada hasta las {fechaDevolucionEsperada.AddDays(1)}.";
-                var titulo = "Cuenta bloqueada";
+                var contenido = $"El préstamo con Numero de Prestamo {idPrestamo} no ha sido devuelto. Entregalo lo mas pronto posible.";
+                var titulo = "Atraso";
                 if (!NotificacionBloqueoYaExiste(carnet))
                 {
                     var comando = new CrearNotificacionComando(carnet, titulo, contenido);

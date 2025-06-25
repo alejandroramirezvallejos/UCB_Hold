@@ -1,6 +1,6 @@
-﻿public class ComentarioDto
+﻿public class ComentarioDto : BaseDto
 {
-    public string Id { get; set; }
+    public new string Id { get; set; } // PARA EL MONGO QUE USA string en el id enves de int
     public string CarnetUsuario { get; set; }
     public string NombreUsuario { get; set; }
     public string ApellidoPaternoUsuario { get; set; }
