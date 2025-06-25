@@ -2,7 +2,7 @@ import { CommonModule } from '@angular/common';
 import { Component, EventEmitter, input, Output } from '@angular/core';
 import { ListaObjetosComponent } from '../lista-objetos/lista-objetos.component';
 import { FormsModule } from '@angular/forms';
-import { BuscadorService } from '../../../services/buscador/buscador.service';
+
 import { CategoriaService } from '../../../services/APIS/Categoria/categoria.service';
 
 @Component({
@@ -20,22 +20,18 @@ export class PantallaMainComponent {
   items: any[] = [];
   hover: {
     search: boolean;
-    microfono: boolean;
-    scanner: boolean;
     categories: boolean;
+    clear: boolean;
   } = {
     search: false,
-    microfono: false,
-    scanner: false,
     categories: false,
+    clear: false,
   };
 
   constructor(
-    private buscador: BuscadorService,
     private categorias: CategoriaService
   ) {
-    this.solicitud = buscador.producto;
-    this.categoria = buscador.categoria;
+
   }
 
   ngOnInit(): void {
@@ -43,11 +39,16 @@ export class PantallaMainComponent {
       next: (data) => (this.items = data),
       error: (error) => alert('Error en componente:' + error),
     });
-
-    
   }
 
-  // Añade este método
+  limpiar(){
+    this.solicitud = '';
+    this.categoria = '';
+    this.hover.clear = false;
+    this.enviar = !this.enviar;
+  }
+
+
   toggleCategories() {
     this.showCategories = !this.showCategories;
   }
@@ -62,18 +63,14 @@ export class PantallaMainComponent {
     this.submitRequest();
   }
 
-  //TODO : Optimizar esto seguro que es mala practica
+ 
   submitRequest() {
-    // Actualiza el servicio con los datos actuales
-    this.buscador.producto = this.solicitud;
-    this.buscador.categoria = this.categoria;
-    this.enviar = false;
-    setTimeout(() => {
-      this.enviar = true;
-    }, 0);
+   this.enviar = !this.enviar;
   }
 
   trackByName(index: number, item: { name: string }): string {
     return item.name;
   }
+
+
 }

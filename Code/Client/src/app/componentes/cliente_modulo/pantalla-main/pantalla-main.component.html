@@ -25,29 +25,21 @@
       (focus)="showCategories = false"
     ></textarea>
 
-    <img
-      class="icon"
-      src="/assets/microphone_line.png"
-      alt="Micrófono"
-      (mouseenter)="hover.microfono = true"
-      (mouseleave)="hover.microfono = false"
-      [src]="
-        hover.microfono
-          ? '/assets/microphone_solid.png'
-          : '/assets/microphone_line.png'
-      "
-    />
+     @if(solicitud.length > 0) {
+        <img
+          class="icon clear-icon"
+          src="/assets/x.png"
+          alt="Limpiar búsqueda"
+          (click)="limpiar()"
+          (mouseenter)="hover.clear = true"
+          (mouseleave)="hover.clear = false"
+          [src]="
+            hover.clear ? '/assets/x_color.png' : '/assets/x.png'
+          "
+        />       
 
-    <img
-      class="icon"
-      src="/assets/scanner_line.png"
-      alt="Escáner"
-      (mouseenter)="hover.scanner = true"
-      (mouseleave)="hover.scanner = false"
-      [src]="
-        hover.scanner ? '/assets/scanner_solid.png' : '/assets/scanner_line.png'
-      "
-    />
+      
+      } 
 
     <img
       class="icon category-icon"
@@ -62,6 +54,10 @@
           : '/assets/categories_line.png'
       "
     />
+
+
+
+
   </div>
   @if (showCategories) {
     <div class="categories-panel">

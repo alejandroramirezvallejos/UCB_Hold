@@ -3,7 +3,7 @@ import { Component, Output, EventEmitter, signal, WritableSignal } from '@angula
 import { RouterModule } from '@angular/router';
 import { CarritoService } from '../../services/carrito/carrito.service';
 import { CommonModule } from '@angular/common';
-import { BuscadorService } from '../../services/buscador/buscador.service';
+
 import { Router } from '@angular/router';
 import { UsuarioPrevioComponent } from './usuario-previo/usuario-previo.component';
 import { NotificacionService } from '../../services/APIS/Notificacion/notificacion.service';
@@ -24,7 +24,7 @@ export class NavbarComponent {
   notificaciones: boolean = false;
   private intervalId: any;
 
-  constructor(private carrito : CarritoService, private buscador : BuscadorService , private router : Router , private notificacionesAPI : NotificacionService , private usuario : UsuarioService) { }
+  constructor(private carrito : CarritoService , private router : Router , private notificacionesAPI : NotificacionService , private usuario : UsuarioService) { }
 
 
   ngOnInit() {
@@ -46,7 +46,7 @@ export class NavbarComponent {
 
 
   botonhome() {
-    this.buscador.reiniciar();
+   
     this.router.navigate(['/home']);
   }
 

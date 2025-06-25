@@ -28,7 +28,7 @@ export class UsuarioService {
     this.usuario = new Usuario();
   }
 
-  // Método para depuración
+
   obtenerDatosUsuario() {
     return this.usuario;
   }
