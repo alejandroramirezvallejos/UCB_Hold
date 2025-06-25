@@ -24,22 +24,7 @@ export class PrestamosTablaComponent implements OnInit {
 
   vercontrato : WritableSignal<boolean> = signal(false);
 
-  prestamoSeleccionado: Prestamos = {
-    Id: 0,
-    CarnetUsuario: null,
-    NombreUsuario: null,
-    ApellidoPaternoUsuario: null,
-    TelefonoUsuario: null,
-    NombreGrupoEquipo: null,
-    CodigoImt: null,
-    FechaSolicitud: null,
-    FechaPrestamoEsperada: null,
-    FechaPrestamo: null,
-    FechaDevolucionEsperada: null,
-    FechaDevolucion: null,
-    Observacion: null,
-    EstadoPrestamo: null
-  };
+  prestamoSeleccionado: Prestamos =  new Prestamos();
 
   terminoBusqueda: string = '';
   
@@ -54,30 +39,14 @@ export class PrestamosTablaComponent implements OnInit {
 
   constructor(private prestamosapi: PrestamosAPIService ) {}
 
-  sortColumn: string = 'NombreUsuario';
-  sortDirection: 'asc' | 'desc' = 'asc';
+
 
   ngOnInit() {
     this.cargarPrestamos();
   }
 
   limpiarPrestamoSeleccionado() {
-    this.prestamoSeleccionado = {
-      Id: 0,
-      CarnetUsuario: null,
-      NombreUsuario: null,
-      ApellidoPaternoUsuario: null,
-      TelefonoUsuario: null,
-      NombreGrupoEquipo: null,
-      CodigoImt: null,
-      FechaSolicitud: null,
-      FechaPrestamoEsperada: null,
-      FechaPrestamo: null,
-      FechaDevolucionEsperada: null,
-      FechaDevolucion: null,
-      Observacion: null,
-      EstadoPrestamo: null
-    };
+    this.prestamoSeleccionado = new Prestamos();
   }
 
   crearprestamo() {
@@ -149,36 +118,7 @@ export class PrestamosTablaComponent implements OnInit {
 
 //-----------------------------------------------------
 
-  aplicarOrdenamiento() {
-    this.prestamos.sort((a, b) => {
-      // Type assertion para acceso dinámico
-      const valorA = (a.datosgrupo as any)[this.sortColumn];
-      const valorB = (b.datosgrupo as any)[this.sortColumn];
 
-      // Convertir a minúsculas si son strings
-      let compA = typeof valorA === 'string' ? valorA.toLowerCase() : valorA;
-      let compB = typeof valorB === 'string' ? valorB.toLowerCase() : valorB;
-
-      if (compA < compB) {
-        return this.sortDirection === 'asc' ? -1 : 1;
-      } else if (compA > compB) {
-        return this.sortDirection === 'asc' ? 1 : -1;
-      } else {
-        return 0;
-      }
-    });
-  }
-
-  ordenarPor(columna: string) {
-    if (this.sortColumn === columna) {
-      this.sortDirection = this.sortDirection === 'asc' ? 'desc' : 'asc';
-    } else {
-      this.sortColumn = columna;
-      this.sortDirection = 'asc';
-    }
-
-    this.aplicarOrdenamiento(); // Aplicar el ordenamiento
-  }
 
 
   mostrarEstados() {
@@ -198,19 +138,19 @@ export class PrestamosTablaComponent implements OnInit {
     // Aplicar filtro de búsqueda si existe
     if (this.terminoBusqueda.trim() !== '') {
       prestamosFiltrados = prestamosFiltrados.filter(prestamo =>
-        prestamo.datosgrupo.NombreUsuario?.toLowerCase().includes(this.terminoBusqueda.toLowerCase()) ||
-        prestamo.datosgrupo.ApellidoPaternoUsuario?.toLowerCase().includes(this.terminoBusqueda.toLowerCase()) ||
-        prestamo.datosgrupo.CarnetUsuario?.toLowerCase().includes(this.terminoBusqueda.toLowerCase()) ||
-        prestamo.datosgrupo.NombreGrupoEquipo?.toLowerCase().includes(this.terminoBusqueda.toLowerCase()) ||
-        prestamo.datosgrupo.CodigoImt?.toLowerCase().includes(this.terminoBusqueda.toLowerCase()) ||
-        prestamo.datosgrupo.EstadoPrestamo?.toLowerCase().includes(this.terminoBusqueda.toLowerCase())
+        (prestamo.datosgrupo.NombreUsuario|| '').toLowerCase().includes(this.terminoBusqueda.toLowerCase()) ||
+        (prestamo.datosgrupo.ApellidoPaternoUsuario|| '').toLowerCase().includes(this.terminoBusqueda.toLowerCase()) ||
+        (prestamo.datosgrupo.CarnetUsuario|| '').toLowerCase().includes(this.terminoBusqueda.toLowerCase()) ||
+        (prestamo.datosgrupo.NombreGrupoEquipo || '').toLowerCase().includes(this.terminoBusqueda.toLowerCase()) ||
+        (prestamo.datosgrupo.CodigoImt || '').toLowerCase().includes(this.terminoBusqueda.toLowerCase()) ||
+        (prestamo.datosgrupo.EstadoPrestamo|| '').toLowerCase().includes(this.terminoBusqueda.toLowerCase())
       );
     }
 
     // Aplicar filtro de estado si existe
     if (this.estadoSeleccionado !== '') {
       prestamosFiltrados = prestamosFiltrados.filter(prestamo =>
-        prestamo.datosgrupo.EstadoPrestamo?.toLowerCase() === this.estadoSeleccionado.toLowerCase()
+        (prestamo.datosgrupo.EstadoPrestamo || '').toLowerCase() === this.estadoSeleccionado.toLowerCase()
       );
     }
 

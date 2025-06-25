@@ -1,4 +1,10 @@
-export interface Categorias {
-    Id?: number;
-    Nombre?: string;
+export class Categorias {
+    Id?: number |null;
+    Nombre?: string | null;
+
+    constructor(){
+        this.Id =null; 
+        this.Nombre = null;
+    }
+
 }

@@ -49,28 +49,26 @@ export class PantallaMainComponent {
   }
 
 
-  toggleCategories() {
+  mostrarcategorias() {
     this.showCategories = !this.showCategories;
   }
 
-  selectCategory(categoria: string) {
+  seleccionarcategoria(categoria: string) {
     if (categoria == 'sin categoria') {
       this.categoria = '';
     } else {
       this.categoria = categoria;
     }
-    this.toggleCategories();
-    this.submitRequest();
+    this.mostrarcategorias();
+    this.actualizarobjetos();
   }
 
  
-  submitRequest() {
+  actualizarobjetos() {
    this.enviar = !this.enviar;
   }
 
-  trackByName(index: number, item: { name: string }): string {
-    return item.name;
-  }
+
 
 
 }

@@ -23,33 +23,13 @@ export class EquiposTablaComponent {
   equipos : any[] = [];
   equiposcopia: any[] = [];
 
-  equipoSeleccionado:  Equipos= {
-    Id: 0,
-    NombreGrupoEquipo: '',
-    Modelo: '',
-    Marca: '',
-    CodigoImt: 0,
-    CodigoUcb: '',
-    NumeroSerial: '',
-    EstadoEquipo: '',
-    Ubicacion: '',
-    NombreGavetero: '',
-    CostoReferencia: 0,
-    Descripcion: '',
-    TiempoMaximoPrestamo: 0,
-    Procedencia: ''
-  }  ;
+  equipoSeleccionado:  Equipos= new Equipos();
 
   terminoBusqueda: string = '';
 
 
   constructor(private equiposapi : EquipoService){}; 
 
-
-  // ----
-  sortColumn: string = 'Nombre';
-
-  sortDirection: 'asc' | 'desc' = 'asc';
 
 
   ngOnInit(){
@@ -58,22 +38,7 @@ export class EquiposTablaComponent {
 
 
   limpiarEquipoSeleccionado() {
-    this.equipoSeleccionado = {
-      Id: 0,
-      NombreGrupoEquipo: '',
-      Modelo: '',
-      Marca: '',
-      CodigoImt: 0,
-      CodigoUcb: '',
-      NumeroSerial: '',
-      EstadoEquipo: '',
-      Ubicacion: '',
-      NombreGavetero: '',
-      CostoReferencia: 0,
-      Descripcion: '',
-      TiempoMaximoPrestamo: 0,
-      Procedencia: ''
-    };
+    this.equipoSeleccionado = new Equipos();
   }
 
 
@@ -102,13 +67,13 @@ buscar(){
   }
 
   this.equipos = this.equiposcopia.filter(equipo =>
-    equipo.Nombre?.toLowerCase().includes(this.terminoBusqueda.toLowerCase()) ||
-    equipo.Modelo?.toLowerCase().includes(this.terminoBusqueda.toLowerCase()) ||
-    equipo.Marca?.toLowerCase().includes(this.terminoBusqueda.toLowerCase()) ||
+    (equipo.Nombre|| '').toLowerCase().includes(this.terminoBusqueda.toLowerCase()) ||
+    (equipo.Modelo|| '').toLowerCase().includes(this.terminoBusqueda.toLowerCase()) ||
+    (equipo.Marca|| '').toLowerCase().includes(this.terminoBusqueda.toLowerCase()) ||
     String(equipo.CodigoImt || '').toLowerCase().includes(this.terminoBusqueda.toLowerCase()) ||
-    equipo.CodigoUcb?.toLowerCase().includes(this.terminoBusqueda.toLowerCase()) ||
-    equipo.NumeroSerial?.toLowerCase().includes(this.terminoBusqueda.toLowerCase()) ||
-    equipo.NombreGrupoEquipo?.toLowerCase().includes(this.terminoBusqueda.toLowerCase()) 
+    (equipo.CodigoUcb|| '').toLowerCase().includes(this.terminoBusqueda.toLowerCase()) ||
+    (equipo.NumeroSerial|| '').toLowerCase().includes(this.terminoBusqueda.toLowerCase()) ||
+    (equipo.NombreGrupoEquipo|| '').toLowerCase().includes(this.terminoBusqueda.toLowerCase()) 
   );
 }
 
@@ -154,40 +119,7 @@ cancelarEliminacion(){
 
 
 
-// nose que hace
-aplicarOrdenamiento() {
-  this.equipos.sort((a, b) => {
-    // Type assertion para acceso dinámico
-    const valorA = (a as any)[this.sortColumn];
-    const valorB = (b as any)[this.sortColumn];
 
-    // Convertir a minúsculas si son strings
-    let compA = typeof valorA === 'string' ? valorA.toLowerCase() : valorA;
-    let compB = typeof valorB === 'string' ? valorB.toLowerCase() : valorB;
-
-    if (compA < compB) {
-      return this.sortDirection === 'asc' ? -1 : 1;
-    } else if (compA > compB) {
-      return this.sortDirection === 'asc' ? 1 : -1;
-    } else {
-      return 0;
-    }
-  });
-}
-
-
-
-ordenarPor(columna: string) {
- if (this.sortColumn === columna) {
-    this.sortDirection = this.sortDirection === 'asc' ? 'desc' : 'asc';
-  } else {
-    this.sortColumn = columna;
-    this.sortDirection = 'asc';
-  }
-
-  this.aplicarOrdenamiento();    // Aplicar el ordenamiento
-
-}
 
 
 }

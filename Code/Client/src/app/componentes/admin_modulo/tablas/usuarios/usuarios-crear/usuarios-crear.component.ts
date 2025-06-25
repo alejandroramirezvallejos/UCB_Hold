@@ -16,27 +16,13 @@ export class UsuariosCrearComponent {
   @Output() Actualizar = new EventEmitter<void>();
   @Input() carreras: string[] = [];
 
-  usuario: Usuario = {
-    id: '',
-    carnet: '',
-    nombre: '',
-    apellido_materno: '',
-    apellido_paterno: '',
-    rol: '',
-    carrera_Id: 0,
-    carrera: '',
-    correo: '',
-    telefono: '',
-    nombre_referencia: '',
-    telefono_referencia: '',
-    email_referencia: ''
-  };
+  usuario: Usuario = new Usuario();
 
   contrasena: string = '';
 
   constructor(private usuarioApi: UsuarioServiceAPI) {}  // TODO : implementar
   registrar() {
-    this.usuarioApi.registrarCuenta(this.usuario, this.contrasena, this.usuario.rol).subscribe(
+    this.usuarioApi.registrarCuenta(this.usuario, this.contrasena, this.usuario.rol!).subscribe(
       response => {
         this.Actualizar.emit(); 
         this.cerrar();

@@ -14,7 +14,7 @@ export class CarritoService {
   constructor() {}
 
 
-  agregarproducto(id : number , nombre :string , link : string , marca : string , modelo : string ,precio : number) {
+  agregarproducto(id : number , nombre :string | null , link : string , marca : string , modelo : string ,precio : number) {
     nombre = nombre 
     if (nombre == '' || nombre == undefined) {
       return; 
@@ -97,5 +97,28 @@ export class CarritoService {
     delete this.carrito[key];
   }
 }
+
+
+  obtenerfechainicio(){
+    const items = Object.values(this.carrito)
+    if (items.length > 0) {
+      return items[0].fecha_inicio; 
+    }
+    else{
+      return null; 
+    }
+
+  }
+
+    obtenerfechafinal(){
+    const items = Object.values(this.carrito)
+    if (items.length > 0) {
+      return items[0].fecha_final; 
+    }
+    else{
+      return null; 
+    }
+
+  }
 
 }

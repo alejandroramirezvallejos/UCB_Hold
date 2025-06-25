@@ -12,22 +12,7 @@ import { EquipoService } from '../../../../../services/APIS/Equipo/equipo.servic
 export class EquiposEditarComponent {
   @Input() botoneditar: WritableSignal<boolean> = signal(true);
   @Output() actualizar: EventEmitter<void> = new EventEmitter<void>();
-  @Input() equipo : Equipos ={
-    Id: 0,
-    Modelo: '',
-    Marca: '',
-    NombreGrupoEquipo: '',
-    CodigoImt: 0,
-    CodigoUcb: '',
-    NumeroSerial: '',
-    EstadoEquipo: '',
-    Ubicacion: '',
-    NombreGavetero: '',
-    CostoReferencia: null,
-    Descripcion: '',
-    TiempoMaximoPrestamo: null,
-    Procedencia: ''
-  };
+  @Input() equipo : Equipos = new Equipos();
 
   constructor(private equipoapi: EquipoService) {}; 
 

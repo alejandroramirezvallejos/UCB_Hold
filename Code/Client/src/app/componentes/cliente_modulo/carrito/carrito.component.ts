@@ -24,7 +24,7 @@ export class CarritoComponent {
   public cantidades = Array.from({ length: 11 }, (_, i) => i);
 
   hoy : Date= new Date();
- 
+  hoystr : string = this.hoy.toISOString().split('T')[0];
 
   carrito: Carrito = {};
   constructor(private carritoS: CarritoService , private router : Router  , private usuario : UsuarioService) {
@@ -114,21 +114,21 @@ export class CarritoComponent {
 
   
 
-  // ramirez
 
-   onCantidadChange(key: string, n: number) {
+
+  cambiarcantidad(key: string, n: number) {
     this.carritoS.editarcantidad(Number(key), n);
   }
 
-  onInicioChange(newDate: string) {
+  cambiarfechainicio(fecha: string) {
     Object.values(this.carrito).forEach((item) => {
-      item.fecha_inicio = newDate;
+      item.fecha_inicio = fecha;
     });
   }
 
-  onFinChange(newDate: string) {
+  cambiarfechafinal(fecha: string) {
     Object.values(this.carrito).forEach((item) => {
-      item.fecha_final = newDate;
+      item.fecha_final = fecha;
     });
   }
 

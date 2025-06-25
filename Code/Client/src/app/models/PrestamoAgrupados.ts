@@ -1,14 +1,8 @@
 import { Prestamos } from "./admin/Prestamos";
-
-
-
-
 export class PrestamoAgrupados {
     datosgrupo : Prestamos ; 
 
     equipos : Prestamos[] ;  
-
-
 
     constructor(equipos : any[] ) {
         this.equipos = equipos;

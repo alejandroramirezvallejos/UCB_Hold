@@ -34,37 +34,23 @@
     <table class="data-table">
       <thead>
         <tr>
-          <th (click)="ordenarPor('NombreEmpresaMantenimiento')">
+          <th >
             Empresa 
-            @if (sortColumn === 'NombreEmpresaMantenimiento') {
-              <i [class]="sortDirection === 'asc' ? 'fas fa-sort-up' : 'fas fa-sort-down'"></i>
-            }
+          
           </th>
-          <th (click)="ordenarPor('codigoIMT')">
+          <th >
             codigosIMT
-            @if (sortColumn === 'codigosIMT') {
-              <i [class]="sortDirection === 'asc' ? 'fas fa-sort-up' : 'fas fa-sort-down'"></i>
-            }
-            
-
           </th>
-          <th (click)="ordenarPor('FechaMantenimiento')">
+          <th >
             Fecha Inicio
-            @if (sortColumn === 'FechaMantenimiento') {
-              <i [class]="sortDirection === 'asc' ? 'fas fa-sort-up' : 'fas fa-sort-down'"></i>
-            }
           </th>
-          <th (click)="ordenarPor('FechaFinalDeMantenimiento')">
+          <th >
             Fecha Fin
-            @if (sortColumn === 'FechaFinalDeMantenimiento') {
-              <i [class]="sortDirection === 'asc' ? 'fas fa-sort-up' : 'fas fa-sort-down'"></i>
-            }
+ 
           </th>
-          <th (click)="ordenarPor('Costo')">
+          <th >
             Costo
-            @if (sortColumn === 'Costo') {
-              <i [class]="sortDirection === 'asc' ? 'fas fa-sort-up' : 'fas fa-sort-down'"></i>
-            }
+   
           </th>
           <th >
             Tipo Y nombre  equipos
@@ -85,7 +71,7 @@
             <td class="precio-column">Bs {{mantenimiento.datosgrupo.Costo | number:'1.2-2'}}</td>
             <td (click)="mostrarmantenimientosindividuales(mantenimiento)">.......</td>
             <td class="actions-column">
-              <button class="btn-icon btn-delete" (click)="eliminarMantenimiento(mantenimiento.matenimientos[i])">
+              <button class="btn-icon btn-delete" (click)="eliminarMantenimiento(mantenimiento)">
                 <i class="fas fa-trash-alt"></i>
               </button>
             </td>

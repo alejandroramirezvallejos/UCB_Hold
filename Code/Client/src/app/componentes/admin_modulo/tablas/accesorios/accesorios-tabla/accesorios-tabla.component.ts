@@ -24,17 +24,7 @@ export class AccesoriosTablaComponent {
   accesorios : Accesorio[] = [];
   accesorioscopia: Accesorio[] = [];
 
-  accesorioSeleccionado:  Accesorio= {
-    id: 0,
-    nombre: '',
-    modelo: '',
-    tipo: '',
-    descripcion: '',
-    codigo_imt: '',
-    precio: 0,
-    nombreEquipoAsociado: '',
-    url_data_sheet: ''
-  }  ;
+  accesorioSeleccionado:  Accesorio= new Accesorio();
 
   terminoBusqueda: string = '';
 
@@ -42,9 +32,7 @@ export class AccesoriosTablaComponent {
   constructor(private accesoriosapi : AccesoriosService){}; 
 
 
-  sortColumn: string = 'nombre';
 
-  sortDirection: 'asc' | 'desc' = 'asc';
 
 
   ngOnInit(){
@@ -53,17 +41,8 @@ export class AccesoriosTablaComponent {
 
 
   limpiarAccesorioSeleccionado() {
-    this.accesorioSeleccionado = {
-      id: 0,
-      nombre: '',
-      modelo: '',
-      tipo: '',
-      descripcion: '',
-      codigo_imt: '',
-      precio: 0,
-      nombreEquipoAsociado: '',
-      url_data_sheet: ''
-    };
+    this.accesorioSeleccionado = new Accesorio();
+
   }
 
 
@@ -93,11 +72,11 @@ buscar(){
   }
 
   this.accesorios = this.accesorioscopia.filter(accesorio =>
-    accesorio.nombre.toLowerCase().includes(this.terminoBusqueda.toLowerCase()) ||
-    accesorio.modelo.toLowerCase().includes(this.terminoBusqueda.toLowerCase()) ||
-    accesorio.tipo.toLowerCase().includes(this.terminoBusqueda.toLowerCase()) ||
+    (accesorio.nombre || '').toLowerCase().includes(this.terminoBusqueda.toLowerCase() ) ||
+    (accesorio.modelo|| '').toLowerCase().includes(this.terminoBusqueda.toLowerCase()) ||
+    (accesorio.tipo|| '').toLowerCase().includes(this.terminoBusqueda.toLowerCase()) ||
     String(accesorio.codigo_imt || '').toLowerCase().includes(this.terminoBusqueda.toLowerCase()) ||
-    accesorio.nombreEquipoAsociado?.toLowerCase().includes(this.terminoBusqueda.toLowerCase()) 
+    (accesorio.nombreEquipoAsociado || '').toLowerCase().includes(this.terminoBusqueda.toLowerCase()) 
   );
 
 
@@ -145,40 +124,7 @@ cancelarEliminacion(){
 
 
 
-// nose que hace
-aplicarOrdenamiento() {
-  this.accesorios.sort((a, b) => {
-    // Type assertion para acceso dinámico
-    const valorA = (a as any)[this.sortColumn];
-    const valorB = (b as any)[this.sortColumn];
 
-    // Convertir a minúsculas si son strings
-    let compA = typeof valorA === 'string' ? valorA.toLowerCase() : valorA;
-    let compB = typeof valorB === 'string' ? valorB.toLowerCase() : valorB;
-
-    if (compA < compB) {
-      return this.sortDirection === 'asc' ? -1 : 1;
-    } else if (compA > compB) {
-      return this.sortDirection === 'asc' ? 1 : -1;
-    } else {
-      return 0;
-    }
-  });
-}
-
-
-
-ordenarPor(columna: string) {
- if (this.sortColumn === columna) {
-    this.sortDirection = this.sortDirection === 'asc' ? 'desc' : 'asc';
-  } else {
-    this.sortColumn = columna;
-    this.sortDirection = 'asc';
-  }
-
-  this.aplicarOrdenamiento();    // Aplicar el ordenamiento
-
-}
 
 
 }

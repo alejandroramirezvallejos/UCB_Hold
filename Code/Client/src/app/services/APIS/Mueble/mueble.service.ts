@@ -12,7 +12,7 @@ export class MuebleService {
 
   constructor(private http: HttpClient) { }
 
-// FALTAN COSAS EN EL SWAGER PARECE
+
   crearMueble(mueble : Muebles){
     const enviar={
       Nombre: mueble.Nombre,

@@ -34,11 +34,9 @@
     <table class="data-table">
       <thead>
         <tr>
-          <th (click)="ordenarPor('Nombre')">
+          <th >
             Nombre 
-            @if (sortColumn === 'Nombre') {
-              <i [class]="sortDirection === 'asc' ? 'fas fa-sort-up' : 'fas fa-sort-down'"></i>
-            }
+            
           </th>
           <th>Acciones</th>
         </tr>

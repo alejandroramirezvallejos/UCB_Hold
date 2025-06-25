@@ -13,7 +13,7 @@ import { CategoriaService } from '../../../../../services/APIS/Categoria/categor
   templateUrl: './categorias-tabla.component.html',
   styleUrl: './categorias-tabla.component.css'
 })
-export class CategoriasTablaComponent implements OnInit {
+export class CategoriasTablaComponent  {
 
   botoncrear: WritableSignal<boolean> = signal(false);
   botoneditar: WritableSignal<boolean> = signal(false);
@@ -22,16 +22,11 @@ export class CategoriasTablaComponent implements OnInit {
   categorias: Categorias[] = [];
   categoriascopia: Categorias[] = [];
 
-  categoriaSeleccionada: Categorias = {
-    Id: 0,
-    Nombre: ''
-  };
+  categoriaSeleccionada: Categorias = new Categorias();
 
   terminoBusqueda: string = '';
 
-  // Sorting properties
-  sortColumn: string = 'Nombre';
-  sortDirection: 'asc' | 'desc' = 'asc';
+  
 
   constructor(private categoriaService: CategoriaService) {}
 
@@ -40,10 +35,7 @@ export class CategoriasTablaComponent implements OnInit {
   }
 
   limpiarCategoriaSeleccionada() {
-    this.categoriaSeleccionada = {
-      Id: 0,
-      Nombre: ''
-    };
+    this.categoriaSeleccionada = new Categorias();
   }
 
   crearCategoria() {
@@ -112,32 +104,6 @@ export class CategoriasTablaComponent implements OnInit {
     this.limpiarCategoriaSeleccionada();
   }
 
-  aplicarOrdenamiento() {
-    this.categorias.sort((a, b) => {
-      const valorA = (a as any)[this.sortColumn];
-      const valorB = (b as any)[this.sortColumn];
 
-      let compA = typeof valorA === 'string' ? valorA.toLowerCase() : valorA;
-      let compB = typeof valorB === 'string' ? valorB.toLowerCase() : valorB;
 
-      if (compA < compB) {
-        return this.sortDirection === 'asc' ? -1 : 1;
-      } else if (compA > compB) {
-        return this.sortDirection === 'asc' ? 1 : -1;
-      } else {
-        return 0;
-      }
-    });
-  }
-
-  ordenarPor(columna: string) {
-    if (this.sortColumn === columna) {
-      this.sortDirection = this.sortDirection === 'asc' ? 'desc' : 'asc';
-    } else {
-      this.sortColumn = columna;
-      this.sortDirection = 'asc';
-    }
-
-    this.aplicarOrdenamiento();
-  }
 }

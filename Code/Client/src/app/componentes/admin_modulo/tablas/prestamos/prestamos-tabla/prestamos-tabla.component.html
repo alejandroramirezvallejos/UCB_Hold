@@ -92,59 +92,41 @@
     <table class="data-table">
       <thead>
         <tr>
-          <th (click)="ordenarPor('NombreUsuario')">
+          <th >
             Usuario 
-            @if (sortColumn === 'NombreUsuario') {
-              <i [class]="sortDirection === 'asc' ? 'fas fa-sort-up' : 'fas fa-sort-down'"></i>
-            }
+           
           </th>
-          <th (click)="ordenarPor('CarnetUsuario')">
+          <th >
             Carnet 
-            @if (sortColumn === 'CarnetUsuario') {
-              <i [class]="sortDirection === 'asc' ? 'fas fa-sort-up' : 'fas fa-sort-down'"></i>
-            }
+          
           </th>
-            <th (click)="ordenarPor('TelefonoUsuario')">
+            <th >
                 Teléfono
-                @if (sortColumn === 'TelefonoUsuario') {
-                <i [class]="sortDirection === 'asc' ? 'fas fa-sort-up' : 'fas fa-sort-down'"></i>
-                }
+            
             </th>
-          <th (click)="ordenarPor('NombreGrupoEquipo')">
+          <th >
              Equipos
-            @if (sortColumn === 'NombreGrupoEquipo') {
-              <i [class]="sortDirection === 'asc' ? 'fas fa-sort-up' : 'fas fa-sort-down'"></i>
-            }
+          
           </th>
-          <th (click)="ordenarPor('CodigoImt')">
+          <th >
             Códigos IMT
-            @if (sortColumn === 'CodigoImt') {
-              <i [class]="sortDirection === 'asc' ? 'fas fa-sort-up' : 'fas fa-sort-down'"></i>
-            }
+           
           </th>
-          <th (click)="ordenarPor('FechaSolicitud')">
+          <th >
             Fecha Solicitud
-            @if (sortColumn === 'FechaSolicitud') {
-              <i [class]="sortDirection === 'asc' ? 'fas fa-sort-up' : 'fas fa-sort-down'"></i>
-            }
+           
           </th>
-          <th (click)="ordenarPor('FechaPrestamoEsperada')">
+          <th >
             Fecha Préstamo Esperada
-            @if (sortColumn === 'FechaPrestamoEsperada') {
-              <i [class]="sortDirection === 'asc' ? 'fas fa-sort-up' : 'fas fa-sort-down'"></i>
-            }
+            
           </th>
-            <th (click)="ordenarPor('FechaDevolucionEsperada')">
+            <th >
                 Fecha Devolución Esperada
-                @if (sortColumn === 'FechaDevolucionEsperada') {
-                <i [class]="sortDirection === 'asc' ? 'fas fa-sort-up' : 'fas fa-sort-down'"></i>
-                }
+               
             </th>
-          <th (click)="ordenarPor('EstadoPrestamo')">
+          <th >
             Estado
-            @if (sortColumn === 'EstadoPrestamo') {
-              <i [class]="sortDirection === 'asc' ? 'fas fa-sort-up' : 'fas fa-sort-down'"></i>
-            }
+         
           </th>
           <th>Acciones</th>
         </tr>

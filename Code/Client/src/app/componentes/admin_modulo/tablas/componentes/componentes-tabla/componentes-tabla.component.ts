@@ -22,24 +22,11 @@ export class ComponentesTablaComponent implements OnInit {
   componentes: Componente[] = [];
   componentescopia: Componente[] = [];
 
-  componenteSeleccionado: Componente = {
-    Id: 0,
-    Nombre: '',
-    Modelo: '',
-    Tipo: '',
-    Descripcion: '',
-    PrecioReferencia: 0,
-    NombreEquipo: '',
-    CodigoImtEquipo: 0,
-    UrlDataSheet: ''
-  };
+  componenteSeleccionado: Componente = new Componente();
 
   terminoBusqueda: string = '';
 
-  // Sorting properties
-  sortColumn: string = 'Nombre';
-  sortDirection: 'asc' | 'desc' = 'asc';
-
+  
   constructor(private componenteService: ComponenteService) {}
 
   ngOnInit() {
@@ -47,17 +34,7 @@ export class ComponentesTablaComponent implements OnInit {
   }
 
   limpiarComponenteSeleccionado() {
-    this.componenteSeleccionado = {
-      Id: 0,
-      Nombre: '',
-      Modelo: '',
-      Tipo: '',
-      Descripcion: '',
-      PrecioReferencia: 0,
-      NombreEquipo: '',
-      CodigoImtEquipo: 0,
-      UrlDataSheet: ''
-    };
+    this.componenteSeleccionado = new Componente();
   }
 
   crearComponente() {
@@ -83,11 +60,11 @@ export class ComponentesTablaComponent implements OnInit {
     }
 
     this.componentes = this.componentescopia.filter(componente =>
-      componente.Nombre?.toLowerCase().includes(this.terminoBusqueda.toLowerCase()) ||
-      componente.Modelo?.toLowerCase().includes(this.terminoBusqueda.toLowerCase()) ||
-      componente.Tipo?.toLowerCase().includes(this.terminoBusqueda.toLowerCase()) ||
+      (componente.Nombre|| '').toLowerCase().includes(this.terminoBusqueda.toLowerCase()) ||
+      (componente.Modelo|| '').toLowerCase().includes(this.terminoBusqueda.toLowerCase()) ||
+      (componente.Tipo|| '').toLowerCase().includes(this.terminoBusqueda.toLowerCase()) ||
       String(componente.CodigoImtEquipo || '').toLowerCase().includes(this.terminoBusqueda.toLowerCase()) ||
-      componente.NombreEquipo?.toLowerCase().includes(this.terminoBusqueda.toLowerCase())
+      (componente.NombreEquipo|| '').toLowerCase().includes(this.terminoBusqueda.toLowerCase())
     );
   }
 
@@ -127,32 +104,5 @@ export class ComponentesTablaComponent implements OnInit {
     this.limpiarComponenteSeleccionado();
   }
 
-  aplicarOrdenamiento() {
-    this.componentes.sort((a, b) => {
-      const valorA = (a as any)[this.sortColumn];
-      const valorB = (b as any)[this.sortColumn];
 
-      let compA = typeof valorA === 'string' ? valorA.toLowerCase() : valorA;
-      let compB = typeof valorB === 'string' ? valorB.toLowerCase() : valorB;
-
-      if (compA < compB) {
-        return this.sortDirection === 'asc' ? -1 : 1;
-      } else if (compA > compB) {
-        return this.sortDirection === 'asc' ? 1 : -1;
-      } else {
-        return 0;
-      }
-    });
-  }
-
-  ordenarPor(columna: string) {
-    if (this.sortColumn === columna) {
-      this.sortDirection = this.sortDirection === 'asc' ? 'desc' : 'asc';
-    } else {
-      this.sortColumn = columna;
-      this.sortDirection = 'asc';
-    }
-
-    this.aplicarOrdenamiento();
-  }
 }

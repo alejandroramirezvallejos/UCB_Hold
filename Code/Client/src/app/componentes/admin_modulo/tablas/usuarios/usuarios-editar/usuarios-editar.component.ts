@@ -12,21 +12,7 @@ import { UsuarioServiceAPI } from '../../../../../services/APIS/Usuario/usuario.
 export class UsuariosEditarComponent {
   @Input() botoneditar: WritableSignal<boolean> = signal(true);
   @Output() actualizar: EventEmitter<void> = new EventEmitter<void>();
-  @Input() usuario: Usuario = {
-    id: '',
-    carnet: '',
-    nombre: '',
-    apellido_materno: '',
-    apellido_paterno: '',
-    rol: '',
-    carrera_Id: 0,
-    carrera: '',
-    correo: '',
-    telefono: '',
-    nombre_referencia: '',
-    telefono_referencia: '',
-    email_referencia: ''
-  };
+  @Input() usuario: Usuario = new Usuario();
   @Input() carreras: string[] = [];
 
 

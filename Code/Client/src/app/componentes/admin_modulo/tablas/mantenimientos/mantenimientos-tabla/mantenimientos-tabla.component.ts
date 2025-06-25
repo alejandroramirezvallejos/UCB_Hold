@@ -26,22 +26,10 @@ export class MantenimientosTablaComponent implements OnInit {
 
   mantenimientosFiltrados: MantenimientosAgrupados[] = [];
 
-  mantenimientoSeleccionado: Mantenimientos = {
-    Id: 0,
-    NombreEmpresaMantenimiento: '',
-    FechaMantenimiento: null,
-    FechaFinalDeMantenimiento: null,
-    Costo: 0,
-    Descripcion: '',
-    TipoMantenimiento: '',
-    NombreGrupoEquipo: '',
-    CodigoImtEquipo: 0,
-    DescripcionEquipo: ''
-  };
+  mantenimientoSeleccionado: Mantenimientos = new Mantenimientos();
 
   terminoBusqueda: string = '';
-  sortColumn: string = 'NombreEmpresaMantenimiento';
-  sortDirection: 'asc' | 'desc' = 'asc';
+
 
   constructor(private mantenimientoapi: MantenimientoService) { }
 
@@ -50,18 +38,7 @@ export class MantenimientosTablaComponent implements OnInit {
   }
 
   limpiarMantenimientoSeleccionado() {
-    this.mantenimientoSeleccionado = {
-      Id: 0,
-      NombreEmpresaMantenimiento: '',
-      FechaMantenimiento: null,
-      FechaFinalDeMantenimiento: null,
-      Costo: 0,
-      Descripcion: '',
-      TipoMantenimiento: '',
-      NombreGrupoEquipo: '',
-      CodigoImtEquipo: 0,
-      DescripcionEquipo: ''
-    };
+    this.mantenimientoSeleccionado = new Mantenimientos();
   }
 
   crearmantenimiento() {
@@ -69,20 +46,23 @@ export class MantenimientosTablaComponent implements OnInit {
   }
 
   cargarMantenimientos() {
-    this.mantenimientoapi.obtenerMantenimientos().subscribe(
-      (data: Mantenimientos[]) => {
-       this.agruparMantenimientos(data);
+    this.mantenimientoapi.obtenerMantenimientos().subscribe({
+      next: (datos) => {
+        this.agruparMantenimientos(datos);
       },
-      (error) => {
-        console.error('Error al cargar los mantenimientos:', error);
+      error: (error) => {
+        alert('Error al cargar los mantenimientos: ' + error.error.mensaje);
       }
-    );
+    });
   }
 
   agruparMantenimientos(datos : Mantenimientos[]) {
     this.mantenimientos = []; 
 
-    if (datos.length === 0) return;
+    if (datos.length === 0) {
+      this.mantenimientosFiltrados = [];
+     return;
+    }
 
     let mantenimientosArray: Mantenimientos[] = [];
 
@@ -117,7 +97,7 @@ export class MantenimientosTablaComponent implements OnInit {
         String(mantenimiento.datosgrupo.Costo || '').toLowerCase().includes(this.terminoBusqueda.toLowerCase())
       );
     }
-    this.aplicarOrdenamiento();
+  
   }
 
   limpiarBusqueda() {
@@ -127,22 +107,28 @@ export class MantenimientosTablaComponent implements OnInit {
 
 
 
-  eliminarMantenimiento(mantenimiento: Mantenimientos) {
-    this.mantenimientoSeleccionado = mantenimiento;
+  eliminarMantenimiento(mantenimiento: MantenimientosAgrupados) {
+    this.mantenimientoSeleccionado = mantenimiento.matenimientos[0]; 
     this.alertaeliminar = true;
   }
 
   confirmarEliminacion() {
-    this.mantenimientoapi.eliminarMantenimiento(this.mantenimientoSeleccionado.Id).subscribe(
-      (response) => {
-        this.cargarMantenimientos();
+ 
+    this.mantenimientoapi.eliminarMantenimiento(this.mantenimientoSeleccionado.Id).subscribe({
+      next: () => {
+         this.limpiarMantenimientoSeleccionado();
+          this.alertaeliminar = false;
+          this.cargarMantenimientos();
       },
-      (error) => {
-        alert('Error al eliminar el mantenimiento: ' + error);
+      error: (error) => {
+         alert('Error al eliminar el mantenimiento: ' + error.error.mensaje);
+            this.limpiarMantenimientoSeleccionado();
+           this.alertaeliminar = false;
       }
-    );
-    this.limpiarMantenimientoSeleccionado();
-    this.alertaeliminar = false;
+    })
+  
+
+    
   }
 
   cancelarEliminacion() {
@@ -150,40 +136,6 @@ export class MantenimientosTablaComponent implements OnInit {
     this.limpiarMantenimientoSeleccionado();
   }
 
-  aplicarOrdenamiento() {
-    this.mantenimientosFiltrados.sort((a, b) => {
-      const valorA = (a as any)[this.sortColumn];
-      const valorB = (b as any)[this.sortColumn];
-
-      let compA = typeof valorA === 'string' ? valorA.toLowerCase() : valorA;
-      let compB = typeof valorB === 'string' ? valorB.toLowerCase() : valorB;
-
-      // Manejo especial para fechas
-      if (this.sortColumn === 'FechaMantenimiento' || this.sortColumn === 'FechaFinalDeMantenimiento') {
-        compA = valorA ? new Date(valorA).getTime() : 0;
-        compB = valorB ? new Date(valorB).getTime() : 0;
-      }
-
-      if (compA < compB) {
-        return this.sortDirection === 'asc' ? -1 : 1;
-      } else if (compA > compB) {
-        return this.sortDirection === 'asc' ? 1 : -1;
-      } else {
-        return 0;
-      }
-    });
-  }
-
-  ordenarPor(columna: string) {
-    if (this.sortColumn === columna) {
-      this.sortDirection = this.sortDirection === 'asc' ? 'desc' : 'asc';
-    } else {
-      this.sortColumn = columna;
-      this.sortDirection = 'asc';
-    }
-
-    this.aplicarOrdenamiento();
-  }
 
 
   mostrarmantenimientosindividuales(mantenimientosgrupo : MantenimientosAgrupados){

@@ -14,7 +14,7 @@ export class EquipoService {
   constructor(private http: HttpClient) { }
 
 
-  // AREGLAR PIDE MODELO Y MARCA Y EN EL OTRO NO 
+  
   crearEquipo(equipo: any) {
     const envio = {
       NombreGrupoEquipo: equipo.NombreGrupoEquipo,

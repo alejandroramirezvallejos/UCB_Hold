@@ -12,15 +12,7 @@ import { GaveteroService } from '../../../../../services/APIS/Gavetero/gavetero.
 export class GaveterosEditarComponent {
   @Input() botoneditar: WritableSignal<boolean> = signal(true);
   @Output() actualizar: EventEmitter<void> = new EventEmitter<void>();
-  @Input() gavetero : Gaveteros ={
-    Id: 0,
-    Nombre: '',
-    Tipo: '',
-    NombreMueble: '',
-    Longitud: null,
-    Profundidad: null,
-    Altura: null
-  };
+  @Input() gavetero : Gaveteros =new Gaveteros();
 
   constructor(private gaveteroapi: GaveteroService) {}; 
 

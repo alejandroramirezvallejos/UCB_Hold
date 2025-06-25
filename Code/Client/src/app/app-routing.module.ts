@@ -9,7 +9,6 @@ import { IniciarSesionComponent } from './componentes/usuario/iniciar-sesion/ini
 import { HistorialComponent } from './componentes/usuario/historial/historial.component';
 import { PerfilComponent } from './componentes/usuario/perfil/perfil.component';
 import { RegistrarUsuarioComponent } from './componentes/usuario/registrar-usuario/registrar-usuario.component';
-import { RecuperarContrasenaComponent } from './componentes/usuario/recuperar-contrasena/recuperar-contrasena.component';
 import { NotificacionesComponent } from './componentes/notificaciones/notificaciones.component';
 
 
@@ -30,7 +29,7 @@ const routes: Routes = [
   { path: 'Perfil', component: PerfilComponent },
   {path : 'Notificaciones', component : NotificacionesComponent},
   { path: 'Registrar-Usuario', component: RegistrarUsuarioComponent },
-  { path: 'Recuperar-Contrasena', component: RecuperarContrasenaComponent },
+
 
 
 ];

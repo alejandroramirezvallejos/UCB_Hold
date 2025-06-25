@@ -22,21 +22,10 @@ export class MueblesTablaComponent implements OnInit {
   muebles: Muebles[] = [];
   mueblesFiltrados: Muebles[] = [];
 
-  muebleSeleccionado: Muebles = {
-    Id: 0,
-    Nombre: '',
-    NumeroGaveteros: 0,
-    Ubicacion: '',
-    Tipo: '',
-    Costo: 0,
-    Longitud: 0,
-    Profundidad: 0,
-    Altura: 0
-  };
+  muebleSeleccionado: Muebles = new Muebles() ;
 
   terminoBusqueda: string = '';
-  sortColumn: string = 'Nombre';
-  sortDirection: 'asc' | 'desc' = 'asc';
+
 
   constructor(private muebleapi: MuebleService) { }
 
@@ -45,17 +34,7 @@ export class MueblesTablaComponent implements OnInit {
   }
 
   limpiarMuebleSeleccionado() {
-    this.muebleSeleccionado = {
-      Id: 0,
-      Nombre: '',
-      NumeroGaveteros: 0,
-      Ubicacion: '',
-      Tipo: '',
-      Costo: 0,
-      Longitud: 0,
-      Profundidad: 0,
-      Altura: 0
-    };
+    this.muebleSeleccionado = new Muebles();
   }
 
   crearmueble() {
@@ -91,7 +70,7 @@ export class MueblesTablaComponent implements OnInit {
         String(mueble.NumeroGaveteros || '').toLowerCase().includes(this.terminoBusqueda.toLowerCase())
       );
     }
-    this.aplicarOrdenamiento();
+
   }
 
   limpiarBusqueda() {
@@ -128,32 +107,5 @@ export class MueblesTablaComponent implements OnInit {
     this.limpiarMuebleSeleccionado();
   }
 
-  aplicarOrdenamiento() {
-    this.mueblesFiltrados.sort((a, b) => {
-      const valorA = (a as any)[this.sortColumn];
-      const valorB = (b as any)[this.sortColumn];
-
-      let compA = typeof valorA === 'string' ? valorA.toLowerCase() : valorA;
-      let compB = typeof valorB === 'string' ? valorB.toLowerCase() : valorB;
-
-      if (compA < compB) {
-        return this.sortDirection === 'asc' ? -1 : 1;
-      } else if (compA > compB) {
-        return this.sortDirection === 'asc' ? 1 : -1;
-      } else {
-        return 0;
-      }
-    });
-  }
-
-  ordenarPor(columna: string) {
-    if (this.sortColumn === columna) {
-      this.sortDirection = this.sortDirection === 'asc' ? 'desc' : 'asc';
-    } else {
-      this.sortColumn = columna;
-      this.sortDirection = 'asc';
-    }
-
-    this.aplicarOrdenamiento();
-  }
+  
 }

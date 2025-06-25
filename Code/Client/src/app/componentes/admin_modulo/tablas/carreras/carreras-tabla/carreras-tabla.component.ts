@@ -13,7 +13,7 @@ import { CarreraService } from '../../../../../services/APIS/Carrera/carrera.ser
   templateUrl: './carreras-tabla.component.html',
   styleUrl: './carreras-tabla.component.css'
 })
-export class CarrerasTablaComponent implements OnInit {
+export class CarrerasTablaComponent  {
 
   botoncrear: WritableSignal<boolean> = signal(false);
   botoneditar: WritableSignal<boolean> = signal(false);
@@ -22,16 +22,11 @@ export class CarrerasTablaComponent implements OnInit {
   carreras: Carrera[] = [];
   carrerascopia: Carrera[] = [];
 
-  carreraSeleccionada: Carrera = {
-    Id: 0,
-    Nombre: ''
-  };
+  carreraSeleccionada: Carrera = new Carrera();
 
   terminoBusqueda: string = '';
 
-  // Sorting properties
-  sortColumn: string = 'Nombre';
-  sortDirection: 'asc' | 'desc' = 'asc';
+ 
 
   constructor(private carreraService: CarreraService) {}
 
@@ -40,10 +35,7 @@ export class CarrerasTablaComponent implements OnInit {
   }
 
   limpiarCarreraSeleccionada() {
-    this.carreraSeleccionada = {
-      Id: 0,
-      Nombre: ''
-    };
+    this.carreraSeleccionada = new Carrera();
   }
 
   crearCarrera() {
@@ -112,32 +104,7 @@ export class CarrerasTablaComponent implements OnInit {
     this.limpiarCarreraSeleccionada();
   }
 
-  aplicarOrdenamiento() {
-    this.carreras.sort((a, b) => {
-      const valorA = (a as any)[this.sortColumn];
-      const valorB = (b as any)[this.sortColumn];
+ 
 
-      let compA = typeof valorA === 'string' ? valorA.toLowerCase() : valorA;
-      let compB = typeof valorB === 'string' ? valorB.toLowerCase() : valorB;
-
-      if (compA < compB) {
-        return this.sortDirection === 'asc' ? -1 : 1;
-      } else if (compA > compB) {
-        return this.sortDirection === 'asc' ? 1 : -1;
-      } else {
-        return 0;
-      }
-    });
-  }
-
-  ordenarPor(columna: string) {
-    if (this.sortColumn === columna) {
-      this.sortDirection = this.sortDirection === 'asc' ? 'desc' : 'asc';
-    } else {
-      this.sortColumn = columna;
-      this.sortDirection = 'asc';
-    }
-
-    this.aplicarOrdenamiento();
-  }
+  
 }

@@ -33,35 +33,25 @@
   <div class="table-responsive">
     <table class="data-table">
       <thead>        <tr>
-          <th (click)="ordenarPor('nombre')">
+          <th >
             Nombre 
-            @if (sortColumn === 'nombre') {
-              <i [class]="sortDirection === 'asc' ? 'fas fa-sort-up' : 'fas fa-sort-down'"></i>
-            }
+          
           </th>
-          <th (click)="ordenarPor('modelo')">
+          <th >
             Modelo 
-            @if (sortColumn === 'modelo') {
-              <i [class]="sortDirection === 'asc' ? 'fas fa-sort-up' : 'fas fa-sort-down'"></i>
-            }
+         
           </th>
-          <th (click)="ordenarPor('marca')">
+          <th >
             Marca 
-            @if (sortColumn === 'marca') {
-              <i [class]="sortDirection === 'asc' ? 'fas fa-sort-up' : 'fas fa-sort-down'"></i>
-            }
+          
           </th>
-          <th (click)="ordenarPor('nombreCategoria')">
+          <th >
             Categoría
-            @if (sortColumn === 'nombreCategoria') {
-              <i [class]="sortDirection === 'asc' ? 'fas fa-sort-up' : 'fas fa-sort-down'"></i>
-            }
+          
           </th>
-          <th (click)="ordenarPor('descripcion')">
+          <th >
             Descripción 
-            @if (sortColumn === 'descripcion') {
-              <i [class]="sortDirection === 'asc' ? 'fas fa-sort-up' : 'fas fa-sort-down'"></i>
-            }
+          
           </th>
           <th>Acciones</th>
         </tr>
