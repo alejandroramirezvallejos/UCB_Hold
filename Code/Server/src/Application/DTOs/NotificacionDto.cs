@@ -1,6 +1,6 @@
-﻿public class NotificacionDto
+﻿public class NotificacionDto : BaseDto
 {
-    public string Id { get; set; }
+    public new string Id { get; set; } // PARA EL MONGO QUE USE STRING ID ENVES DE INT
     public string CarnetUsuario { get; set; }
     public string Titulo { get; set; }
     public string Contenido { get; set; }

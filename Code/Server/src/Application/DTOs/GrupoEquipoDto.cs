@@ -1,6 +1,5 @@
-public class GrupoEquipoDto
+public class GrupoEquipoDto : BaseDto
 {
-    public int Id { get; set; }
     public string? Nombre { get; set; }
     public string? Modelo { get; set; }
     public string? Marca { get; set; }

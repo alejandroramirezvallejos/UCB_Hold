@@ -1,6 +1,5 @@
-public class PrestamoDto
+public class PrestamoDto : BaseDto
 {
-    public int Id { get; set; }
     public string? CarnetUsuario { get; set; }
     public string? NombreUsuario { get; set; }
     public string? ApellidoPaternoUsuario { get; set; }

@@ -1,6 +1,5 @@
-public class GaveteroDto
+public class GaveteroDto : BaseDto
 {
-    public int Id { get; set; }
     public string? Nombre { get; set; }
     public string? Tipo { get; set; }
     public string? NombreMueble { get; set; }

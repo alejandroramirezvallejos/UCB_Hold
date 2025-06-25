@@ -1,5 +1,4 @@
-public class CategoriaDto
+public class CategoriaDto : BaseDto
 {
-    public int Id { get; set; }
     public string? Nombre { get; set; }
 }
