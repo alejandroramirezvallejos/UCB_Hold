@@ -11,15 +11,15 @@ namespace IMT_Reservas.Tests.ServiceTests
     public class ComentarioServiceTest
     {
         private Mock<IComentarioRepository> _comentarioRepositoryMock;
-        private Mock<IExecuteQuery> _executeQueryMock;
+        private Mock<IUsuarioRepository> _usuarioRepositoryMock;
         private ComentarioService _comentarioService;
 
         [SetUp]
         public void Setup()
         {
             _comentarioRepositoryMock = new Mock<IComentarioRepository>();
-            _executeQueryMock = new Mock<IExecuteQuery>();
-            _comentarioService = new ComentarioService(_comentarioRepositoryMock.Object, _executeQueryMock.Object);
+            _usuarioRepositoryMock = new Mock<IUsuarioRepository>();
+            _comentarioService = new ComentarioService(_comentarioRepositoryMock.Object, _usuarioRepositoryMock.Object);
         }
 
         [Test]
@@ -79,7 +79,7 @@ namespace IMT_Reservas.Tests.ServiceTests
             usuariosDataTable.Rows.Add("7", "Test", "User");
 
             _comentarioRepositoryMock.Setup(r => r.ObtenerPorGrupoEquipo(consulta.IdGrupoEquipo)).Returns(comentariosDataTable);
-            _executeQueryMock.Setup(e => e.EjecutarFuncion(It.IsAny<string>(), It.IsAny<Dictionary<string, object?>>())).Returns(usuariosDataTable);
+            _usuarioRepositoryMock.Setup(e => e.ObtenerPorCarnets(It.IsAny<List<string>>())).Returns(usuariosDataTable);
 
             var resultado = _comentarioService.ObtenerComentariosPorGrupoEquipo(consulta);
             

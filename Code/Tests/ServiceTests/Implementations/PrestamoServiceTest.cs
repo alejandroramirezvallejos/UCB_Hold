@@ -14,18 +14,13 @@ namespace IMT_Reservas.Tests.ServiceTests
     public class PrestamoServiceTest : IPrestamoServiceTest
     {
         private Mock<IPrestamoRepository> _prestamoRepositoryMock;
-        private Mock<MongoDbContexto> _mongoDbContextMock;
-        private Mock<IGridFSBucket> _gridFsMock;
-        private PrestamoService          _prestamoService;
+        private PrestamoService _prestamoService;
 
         [SetUp]
         public void Setup()
         {
             _prestamoRepositoryMock = new Mock<IPrestamoRepository>();
-            _mongoDbContextMock = new Mock<MongoDbContexto>();
-            _gridFsMock = new Mock<IGridFSBucket>();
-            _mongoDbContextMock.Setup(c => c.GestionArchivos).Returns(_gridFsMock.Object);
-            _prestamoService = new PrestamoService(_prestamoRepositoryMock.Object, _mongoDbContextMock.Object, _gridFsMock.Object);
+            _prestamoService = new PrestamoService(_prestamoRepositoryMock.Object);
         }
 
         [Test]
@@ -49,22 +44,15 @@ namespace IMT_Reservas.Tests.ServiceTests
             var contratoId = ObjectId.GenerateNewId().ToString();
 
             _prestamoRepositoryMock.Setup(r => r.Crear(comando)).Returns(prestamoId);
-            _gridFsMock.Setup(fs => fs.UploadFromStreamAsync(It.IsAny<string>(), It.IsAny<Stream>(), It.IsAny<GridFSUploadOptions>(), It.IsAny<CancellationToken>()))
-                .ReturnsAsync(fileId);
-            
+
             var mockContratosCollection = new Mock<IMongoCollection<Contrato>>();
             mockContratosCollection.Setup(c => c.InsertOneAsync(It.IsAny<Contrato>(), null, default))
                 .Callback<Contrato, InsertOneOptions, CancellationToken>((doc, options, token) => doc.Id = contratoId)
                 .Returns(Task.CompletedTask);
 
-            _mongoDbContextMock.Setup(m => m.Contratos).Returns(mockContratosCollection.Object);
-
             _prestamoService.CrearPrestamo(comando);
 
             _prestamoRepositoryMock.Verify(r => r.Crear(comando), Times.Once);
-            _gridFsMock.Verify(fs => fs.UploadFromStreamAsync(fileName, It.IsAny<Stream>(), null, default), Times.Once);
-            mockContratosCollection.Verify(c => c.InsertOneAsync(It.Is<Contrato>(doc => doc.PrestamoId == prestamoId && doc.FileId == fileId.ToString()), null, default), Times.Once);
-            _prestamoRepositoryMock.Verify(r => r.ActualizarIdContrato(prestamoId, fileId.ToString()), Times.Once);
         }
 
         [Test]
