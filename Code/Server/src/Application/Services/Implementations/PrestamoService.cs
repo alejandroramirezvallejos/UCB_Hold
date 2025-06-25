@@ -1,33 +1,19 @@
 using System.Data;
 using IMT_Reservas.Server.Shared.Common;
-using IMT_Reservas.Server.Infrastructure.MongoDb;
-using MongoDB.Driver;
-using MongoDB.Driver.GridFS;
+
 public class PrestamoService : BaseServicios, IPrestamoService
 {
     private readonly IPrestamoRepository _prestamoRepository;
-    private readonly MongoDbContexto _mongoDbContext;
-    private readonly IGridFSBucket _gridFsBucket;
-    public PrestamoService(IPrestamoRepository prestamoRepository, MongoDbContexto mongoDbContext, IGridFSBucket gridFsBucket)
+    
+    public PrestamoService(IPrestamoRepository prestamoRepository)
     {
         _prestamoRepository = prestamoRepository;
-        _mongoDbContext = mongoDbContext;
-        _gridFsBucket = gridFsBucket;
     }    public virtual void CrearPrestamo(CrearPrestamoComando comando)
     {
         ValidarEntradaCreacion(comando);
         try
         {
-            var prestamoId = _prestamoRepository.Crear(comando);
-            if (comando.Contrato != null)
-            {
-                var fileName = comando.Contrato.FileName;
-                using var stream = comando.Contrato.OpenReadStream();
-                var fileId = _gridFsBucket.UploadFromStreamAsync(fileName, stream, null, default).GetAwaiter().GetResult();
-                var contrato = new Contrato { PrestamoId = prestamoId, FileId = fileId.ToString() };
-                _mongoDbContext.Contratos.InsertOneAsync(contrato, null, default).GetAwaiter().GetResult();
-                _prestamoRepository.ActualizarIdContrato(prestamoId, contrato.FileId);
-            }
+            _prestamoRepository.Crear(comando);
         }
         catch (ErrorCarnetRequerido) { throw; }
         catch (ErrorIdInvalido) { throw; }
@@ -193,18 +179,6 @@ public class PrestamoService : BaseServicios, IPrestamoService
     }
     public List<byte[]> ObtenerContratoPorPrestamo(ObtenerContratoPorPrestamoConsulta consulta)
     {
-        var contrato = _mongoDbContext.Contratos.Find(x => x.PrestamoId == consulta.PrestamoId && !x.EstadoEliminado).FirstOrDefault();
-        if (contrato == null) throw new Exception($"No se encontró contrato para el préstamo {consulta.PrestamoId}");
-        var fileObjectId = MongoDB.Bson.ObjectId.Parse(contrato.FileId);
-        var chunksCollection = _mongoDbContext.BaseDeDatos.GetCollection<MongoDB.Bson.BsonDocument>("fs.chunks");
-        var filter = Builders<MongoDB.Bson.BsonDocument>.Filter.Eq("files_id", fileObjectId);
-        var chunks = chunksCollection.Find(filter).SortBy(c => c["n"]).ToList();
-        var dataChunks = new List<byte[]>();
-        foreach (var chunk in chunks)
-        {
-            if (chunk.Contains("data"))
-                dataChunks.Add(chunk["data"].AsBsonBinaryData.Bytes);
-        }
-        return dataChunks;
+        return _prestamoRepository.ObtenerContratoPorPrestamo(consulta);
     }
 }

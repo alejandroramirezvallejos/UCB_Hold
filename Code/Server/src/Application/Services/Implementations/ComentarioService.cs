@@ -6,11 +6,12 @@ using IMT_Reservas.Server.Shared.Common;
 public class ComentarioService : BaseServicios, IComentarioService
 {
     private readonly IComentarioRepository _comentarioRepository;
-    private readonly IExecuteQuery _executeQuery;
-    public ComentarioService(IComentarioRepository comentarioRepository, IExecuteQuery executeQuery)
+    private readonly IUsuarioRepository _usuarioRepository;
+    
+    public ComentarioService(IComentarioRepository comentarioRepository, IUsuarioRepository usuarioRepository)
     {
         _comentarioRepository = comentarioRepository;
-        _executeQuery = executeQuery;
+        _usuarioRepository = usuarioRepository;
     }
 
     public void CrearComentario(CrearComentarioComando comando)
@@ -37,21 +38,29 @@ public class ComentarioService : BaseServicios, IComentarioService
     {
         if (consulta == null) throw new ArgumentNullException();
         if (consulta.IdGrupoEquipo <= 0) throw new ErrorIdInvalido("comentarios");
+        
         var comentariosData = _comentarioRepository.ObtenerPorGrupoEquipo(consulta.IdGrupoEquipo);
         if (comentariosData.Rows.Count == 0) return new List<ComentarioDto>();
-        var carnets = comentariosData.AsEnumerable().Select(r => r.Field<string>("carnet_usuario")).Where(c => !string.IsNullOrEmpty(c)).Distinct().ToList();
+        
+        var carnets = comentariosData.AsEnumerable()
+            .Select(r => r.Field<string>("carnet_usuario"))
+            .Where(c => !string.IsNullOrEmpty(c))
+            .OfType<string>()
+            .Distinct()
+            .ToList();
+        
         var usuariosMap = new Dictionary<string, (string Nombre, string Apellido)>();
         if (carnets.Any())
         {
-            var sql = "SELECT carnet, nombre, apellido_paterno FROM public.usuarios WHERE carnet = ANY(@carnets)";
-            var parametros = new Dictionary<string, object?> { { "carnets", carnets } };
-            var usuariosData = _executeQuery.EjecutarFuncion(sql, parametros);
+            var usuariosData = _usuarioRepository.ObtenerPorCarnets(carnets);
             usuariosMap = usuariosData.AsEnumerable().ToDictionary(
-                row => row.Field<string>("carnet"),
-                row => (row.Field<string>("nombre"), row.Field<string>("apellido_paterno"))
+                row => row.Field<string>("carnet")!,
+                row => (row.Field<string>("nombre")!, row.Field<string>("apellido_paterno")!)
             );
         }
-        var lista = new List<ComentarioDto>(comentariosData.Rows.Count);        foreach (DataRow fila in comentariosData.Rows)
+        
+        var lista = new List<ComentarioDto>(comentariosData.Rows.Count);
+        foreach (DataRow fila in comentariosData.Rows)
         {
             var baseDto = MapearFilaADto(fila);
             if (baseDto is ComentarioDto dto)
@@ -89,7 +98,8 @@ public class ComentarioService : BaseServicios, IComentarioService
         ValidarEntradaLike(comando);
         _comentarioRepository.AgregarLike(comando);
     }
-    private void ValidarEntradaLike(AgregarLikeComentarioComando comando)
+    
+    protected virtual void ValidarEntradaLike(AgregarLikeComentarioComando comando)
     {
         if (comando == null) throw new ArgumentNullException(nameof(comando));
         if (string.IsNullOrWhiteSpace(comando.Id)) throw new ErrorIdInvalido("comentario");
@@ -100,7 +110,9 @@ public class ComentarioService : BaseServicios, IComentarioService
     {
         ValidarEntradaQuitarLike(comando);
         _comentarioRepository.QuitarLike(comando);
-    }    private void ValidarEntradaQuitarLike(QuitarLikeComentarioComando comando)
+    }
+    
+    protected virtual void ValidarEntradaQuitarLike(QuitarLikeComentarioComando comando)
     {
         if (comando == null) throw new ArgumentNullException(nameof(comando));
         if (string.IsNullOrWhiteSpace(comando.Id)) throw new ErrorIdInvalido("comentario");
@@ -110,7 +122,7 @@ public class ComentarioService : BaseServicios, IComentarioService
     {
         return new ComentarioDto
         {
-            Id = fila["id_comentario"].ToString(),
+            Id = fila["id_comentario"].ToString() ?? string.Empty,
             CarnetUsuario = fila["carnet_usuario"] == DBNull.Value ? null : fila["carnet_usuario"].ToString(),
             IdGrupoEquipo = fila["id_grupo_equipo"] == DBNull.Value ? 0 : Convert.ToInt32(fila["id_grupo_equipo"]),
             Contenido = fila["contenido_comentario"] == DBNull.Value ? null : fila["contenido_comentario"].ToString(),
