@@ -47,7 +47,7 @@
       />
     </div>
 
-    <div class="form-group">
+     <div class="form-group">
       <label for="correo">Correo Institucional</label>
       <input 
         type="email" 
@@ -67,6 +67,7 @@
           </div>
         }
     </div>
+
 
     <div class="form-group">
       <label for="contrasena">Contraseña</label>
@@ -94,22 +95,10 @@
         placeholder="79943044"
         class="form-input"
       />
-    </div>
 
-    <div class="form-group">
-      <label for="rol">Rol</label>
-      <select 
-        id="rol" 
-        name="rol" 
-        [(ngModel)]="usuario.rol"
-        required
-        class="form-input"
-      >
-        <option value="">Seleccionar rol</option>
-        <option value="administrador">Administrador</option>
-        <option value="estudiante">Estudiante</option>
-      </select>
+      
     </div>
+     
 
     <div class="form-group">
       <label for="carrera">Carrera</label>
@@ -177,3 +166,4 @@
     </div>
   </form>
 </div>
+

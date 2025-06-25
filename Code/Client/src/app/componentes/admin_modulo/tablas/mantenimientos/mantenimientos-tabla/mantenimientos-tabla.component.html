@@ -82,7 +82,7 @@
             <td>{{mantenimiento.datosgrupo.CodigoImtEquipo}}</td>
             <td>{{mantenimiento.datosgrupo.FechaMantenimiento | date:'dd/MM/yyyy'}}</td>
             <td>{{mantenimiento.datosgrupo.FechaFinalDeMantenimiento | date:'dd/MM/yyyy'}}</td>
-            <td class="precio-column">${{mantenimiento.datosgrupo.Costo | number:'1.2-2'}}</td>
+            <td class="precio-column">Bs {{mantenimiento.datosgrupo.Costo | number:'1.2-2'}}</td>
             <td (click)="mostrarmantenimientosindividuales(mantenimiento)">.......</td>
             <td class="actions-column">
               <button class="btn-icon btn-delete" (click)="eliminarMantenimiento(mantenimiento.matenimientos[i])">

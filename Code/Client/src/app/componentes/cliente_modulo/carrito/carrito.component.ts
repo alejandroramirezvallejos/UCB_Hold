@@ -43,6 +43,7 @@ export class CarritoComponent {
       return "";
     }
 
+  
  
   
     const fechaInicio = this.parseDateLocal(item.value.fecha_inicio);
@@ -53,12 +54,28 @@ export class CarritoComponent {
       this.error = true;
       return "Error: La fecha de inicio no puede ser mayor a la fecha final";
     }
+    if( fechaInicio < this.hoy) {
+      this.error = true;
+      return "Error: La fecha de inicio no puede ser menor a la fecha actual";
+    }
   
   
     this.error = false;
     return "";
   }
   
+  fechamaxima(fechaInicio: string | null): string {
+    if (!fechaInicio || fechaInicio==null) return '';
+  
+    const fecha = new Date(fechaInicio);
+    fecha.setFullYear(fecha.getFullYear() + 1);
+  
+
+    return fecha.toISOString().split('T')[0];
+  }
+
+
+
   clickboton() {
     if ( this.error ) {
       this.errorboton.set(1);
