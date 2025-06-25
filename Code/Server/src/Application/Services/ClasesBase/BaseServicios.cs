@@ -1,6 +1,6 @@
 using System.Data;
 
-public class BaseServicios
+public abstract class BaseServicios
 {
     protected virtual void ValidarEntradaCreacion<T>(T comando)
     {

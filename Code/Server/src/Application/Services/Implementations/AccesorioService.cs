@@ -45,7 +45,6 @@ public class AccesorioService : BaseServicios, IAccesorioService
     {
         base.ValidarEntradaCreacion(comando); // Validación base (null check)
         
-        // Validaciones específicas para CrearAccesorioComando
         if (comando is CrearAccesorioComando accesorioComando)
         {
             if (string.IsNullOrWhiteSpace(accesorioComando.Nombre)) throw new ErrorNombreRequerido();
@@ -120,7 +119,7 @@ public class AccesorioService : BaseServicios, IAccesorioService
             ValidarEntradaEliminacion(comando);
             _accesorioRepository.Eliminar(comando.Id);
         }
-        catch (ErrorIdInvalido) { throw;        }
+        catch (ErrorIdInvalido) { throw; }
         catch (Exception ex)
         {
             InterpretarErrorEliminacion(comando, ex);
@@ -146,7 +145,6 @@ public class AccesorioService : BaseServicios, IAccesorioService
     {
         base.ValidarEntradaEliminacion(comando); // Validación base (null check)
         
-        // Validaciones específicas para EliminarAccesorioComando
         if (comando is EliminarAccesorioComando accesorioComando)
         {
             if (accesorioComando.Id <= 0) throw new ErrorIdInvalido("accesorio");
