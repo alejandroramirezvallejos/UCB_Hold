@@ -1,6 +1,5 @@
-public class AccesorioDto
+public class AccesorioDto : BaseDto
 {
-    public int Id { get; set; }
     public string? Nombre { get; set; }
     public string? Modelo { get; set; }
     public string? Tipo { get; set; }

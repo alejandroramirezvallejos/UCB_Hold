@@ -1,9 +1,8 @@
 using System.Data;
 using IMT_Reservas.Server.Shared.Common;
-public class MuebleService : IMuebleService
+public class MuebleService : ServiciosAbstraccion, IMuebleService
 {
-    private readonly IMuebleRepository _muebleRepository;
-    public MuebleService(IMuebleRepository muebleRepository)
+    private readonly IMuebleRepository _muebleRepository;    public MuebleService(IMuebleRepository muebleRepository)
     {
         _muebleRepository = muebleRepository;
     }
@@ -18,25 +17,33 @@ public class MuebleService : IMuebleService
         catch (ErrorValorNegativo) { throw; }
         catch (Exception ex)
         {
-            if (ex is ErrorDataBase errorDb)
-            {
-                var mensaje = errorDb.Message?.ToLower() ?? "";
-                if (errorDb.SqlState == "23505" || mensaje.Contains("ya existe un mueble con el mismo nombre")) throw new ErrorRegistroYaExiste();
-                if (mensaje.Contains("error al insertar mueble")) throw new Exception($"Error inesperado al insertar mueble: {errorDb.Message}", errorDb);
-                throw new Exception($"Error inesperado de base de datos al crear mueble: {errorDb.Message}", errorDb);
-            }
-            if (ex is ErrorRepository errorRepo) throw new Exception($"Error del repositorio al crear mueble: {errorRepo.Message}", errorRepo);
+            InterpretarErrorCreacion(comando, ex);
             throw;
         }
     }
-    private void ValidarEntradaCreacion(CrearMuebleComando comando)
+    public override void ValidarEntradaCreacion<T>(T comando)
     {
-        if (comando == null) throw new ArgumentNullException(nameof(comando));
-        if (string.IsNullOrWhiteSpace(comando.Nombre)) throw new ErrorNombreRequerido();
-        if (comando.Costo.HasValue && comando.Costo < 0) throw new ErrorValorNegativo("costo");
-        if (comando.Longitud.HasValue && comando.Longitud <= 0) throw new ErrorValorNegativo("longitud");
-        if (comando.Profundidad.HasValue && comando.Profundidad <= 0) throw new ErrorValorNegativo("profundidad");
-        if (comando.Altura.HasValue && comando.Altura <= 0) throw new ErrorValorNegativo("altura");
+        base.ValidarEntradaCreacion(comando);
+        if (comando is CrearMuebleComando cmd)
+        {
+            if (string.IsNullOrWhiteSpace(cmd.Nombre)) throw new ErrorNombreRequerido();
+            if (cmd.Costo.HasValue && cmd.Costo < 0) throw new ErrorValorNegativo("costo");
+            if (cmd.Longitud.HasValue && cmd.Longitud <= 0) throw new ErrorValorNegativo("longitud");
+            if (cmd.Profundidad.HasValue && cmd.Profundidad <= 0) throw new ErrorValorNegativo("profundidad");
+            if (cmd.Altura.HasValue && cmd.Altura <= 0) throw new ErrorValorNegativo("altura");
+        }
+    }
+    public override void InterpretarErrorCreacion<T>(T comando, Exception ex)
+    {
+        base.InterpretarErrorCreacion(comando, ex);
+        if (ex is ErrorDataBase errorDb)
+        {
+            var mensaje = errorDb.Message?.ToLower() ?? "";
+            if (errorDb.SqlState == "23505" || mensaje.Contains("ya existe un mueble con el mismo nombre")) throw new ErrorRegistroYaExiste();
+            if (mensaje.Contains("error al insertar mueble")) throw new Exception($"Error inesperado al insertar mueble: {errorDb.Message}", errorDb);
+            throw new Exception($"Error inesperado de base de datos al crear mueble: {errorDb.Message}", errorDb);
+        }
+        if (ex is ErrorRepository errorRepo) throw new Exception($"Error del repositorio al crear mueble: {errorRepo.Message}", errorRepo);
     }
     public virtual void ActualizarMueble(ActualizarMuebleComando comando)
     {
@@ -61,8 +68,7 @@ public class MuebleService : IMuebleService
             if (ex is ErrorRepository errorRepo) throw new Exception($"Error del repositorio al actualizar mueble: {errorRepo.Message}", errorRepo);
             throw;
         }
-    }
-    private void ValidarEntradaActualizacion(ActualizarMuebleComando comando)
+    }    private void ValidarEntradaActualizacion(ActualizarMuebleComando comando)
     {
         if (comando == null) throw new ArgumentNullException(nameof(comando));
         if (comando.Id <= 0) throw new ErrorIdInvalido("mueble");
@@ -82,21 +88,28 @@ public class MuebleService : IMuebleService
         catch (ErrorIdInvalido) { throw; }
         catch (Exception ex)
         {
-            if (ex is ErrorDataBase errorDb)
-            {
-                var mensaje = errorDb.Message?.ToLower() ?? "";
-                if (mensaje.Contains("no se encontró un mueble activo con id")) throw new ErrorRegistroNoEncontrado();
-                if (mensaje.Contains("error al eliminar lógicamente el mueble")) throw new Exception($"Error inesperado al eliminar mueble: {errorDb.Message}", errorDb);
-                throw new Exception($"Error inesperado de base de datos al eliminar mueble: {errorDb.Message}", errorDb);
-            }
-            if (ex is ErrorRepository errorRepo) throw new Exception($"Error del repositorio al eliminar mueble: {errorRepo.Message}", errorRepo);
+            InterpretarErrorEliminacion(comando, ex);
             throw;
         }
     }
-    private void ValidarEntradaEliminacion(EliminarMuebleComando comando)
+    public override void ValidarEntradaEliminacion<T>(T comando)
     {
-        if (comando == null) throw new ArgumentNullException(nameof(comando));
-        if (comando.Id <= 0) throw new ErrorIdInvalido("mueble");
+        base.ValidarEntradaEliminacion(comando);
+        if (comando is EliminarMuebleComando cmd)
+        {
+            if (cmd.Id <= 0) throw new ErrorIdInvalido("mueble");
+        }
+    }
+    public override void InterpretarErrorEliminacion<T>(T comando, Exception ex)
+    {
+        base.InterpretarErrorEliminacion(comando, ex);
+        if (ex is ErrorDataBase errorDb)
+        {
+            var mensaje = errorDb.Message?.ToLower() ?? "";
+            if (mensaje.Contains("no se encontró un mueble activo con id")) throw new ErrorRegistroNoEncontrado();
+            if (mensaje.Contains("error al eliminar lógicamente el mueble")) throw new Exception($"Error inesperado al eliminar mueble: {errorDb.Message}", errorDb);
+            throw new Exception($"Error inesperado de base de datos al eliminar mueble: {errorDb.Message}", errorDb);
+        }        if (ex is ErrorRepository errorRepo) throw new Exception($"Error del repositorio al eliminar mueble: {errorRepo.Message}", errorRepo);
     }
     public virtual List<MuebleDto>? ObtenerTodosMuebles()
     {
@@ -104,12 +117,16 @@ public class MuebleService : IMuebleService
         {
             DataTable resultado = _muebleRepository.ObtenerTodos();
             var lista = new List<MuebleDto>(resultado.Rows.Count);
-            foreach (DataRow fila in resultado.Rows) lista.Add(MapearFilaADto(fila));
+            foreach (DataRow fila in resultado.Rows)
+            {
+                var dto = MapearFilaADto(fila) as MuebleDto;
+                if (dto != null) lista.Add(dto);
+            }
             return lista;
         }
         catch { throw; }
     }
-    private MuebleDto MapearFilaADto(DataRow fila)
+    public override BaseDto MapearFilaADto(DataRow fila)
     {
         return new MuebleDto
         {

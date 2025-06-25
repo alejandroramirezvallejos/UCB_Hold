@@ -1,6 +1,5 @@
-public class MuebleDto
+public class MuebleDto : BaseDto
 {
-    public int Id { get; set; }
     public string? Nombre { get; set; }
     public int? NumeroGaveteros { get; set; }
     public string? Ubicacion { get; set; }

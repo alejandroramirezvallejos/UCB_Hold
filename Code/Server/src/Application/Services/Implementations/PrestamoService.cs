@@ -3,7 +3,7 @@ using IMT_Reservas.Server.Shared.Common;
 using IMT_Reservas.Server.Infrastructure.MongoDb;
 using MongoDB.Driver;
 using MongoDB.Driver.GridFS;
-public class PrestamoService : IPrestamoService
+public class PrestamoService : ServiciosAbstraccion, IPrestamoService
 {
     private readonly IPrestamoRepository _prestamoRepository;
     private readonly MongoDbContexto _mongoDbContext;
@@ -13,8 +13,7 @@ public class PrestamoService : IPrestamoService
         _prestamoRepository = prestamoRepository;
         _mongoDbContext = mongoDbContext;
         _gridFsBucket = gridFsBucket;
-    }
-    public virtual void CrearPrestamo(CrearPrestamoComando comando)
+    }    public virtual void CrearPrestamo(CrearPrestamoComando comando)
     {
         ValidarEntradaCreacion(comando);
         try
@@ -36,21 +35,25 @@ public class PrestamoService : IPrestamoService
         catch (ErrorFechaPrestamoYFechaDevolucionInvalidas) { throw; }
         catch (ErrorCarnetUsuarioNoEncontrado) { throw; }
         catch (ErrorNoEquiposDisponibles) { throw; }
-        catch (Exception ex) { InterpretarErrorCreacionPrestamo(ex, comando); }
+        catch (Exception ex) { InterpretarErrorCreacion(comando, ex); throw; }
     }
-    private void ValidarEntradaCreacion(CrearPrestamoComando comando)
+    public override void ValidarEntradaCreacion<T>(T comando)
     {
-        if (comando == null) throw new ArgumentNullException(nameof(comando));
-        if (comando.Contrato == null) throw new ErrorContratoNoNulo();
-        if (string.IsNullOrWhiteSpace(comando.CarnetUsuario)) throw new ErrorCarnetRequerido();
-        if (comando.GrupoEquipoId == null || comando.GrupoEquipoId.Length == 0) throw new ErrorGrupoEquipoIdInvalido();
-        if (comando.GrupoEquipoId.Any(id => id <= 0)) throw new ErrorGrupoEquipoIdInvalido();
-        if (comando.FechaPrestamoEsperada == null) throw new ErrorFechaPrestamoEsperadaRequerida();
-        if (comando.FechaDevolucionEsperada == null) throw new ErrorFechaDevolucionEsperadaRequerida();
-        if (comando.FechaDevolucionEsperada < comando.FechaPrestamoEsperada) throw new ErrorFechaPrestamoYFechaDevolucionInvalidas();
+        base.ValidarEntradaCreacion(comando);
+        if (comando is CrearPrestamoComando cmd)
+        {
+            if (cmd.Contrato == null) throw new ErrorContratoNoNulo();
+            if (string.IsNullOrWhiteSpace(cmd.CarnetUsuario)) throw new ErrorCarnetRequerido();
+            if (cmd.GrupoEquipoId == null || cmd.GrupoEquipoId.Length == 0) throw new ErrorGrupoEquipoIdInvalido();
+            if (cmd.GrupoEquipoId.Any(id => id <= 0)) throw new ErrorGrupoEquipoIdInvalido();
+            if (cmd.FechaPrestamoEsperada == null) throw new ErrorFechaPrestamoEsperadaRequerida();
+            if (cmd.FechaDevolucionEsperada == null) throw new ErrorFechaDevolucionEsperadaRequerida();
+            if (cmd.FechaDevolucionEsperada < cmd.FechaPrestamoEsperada) throw new ErrorFechaPrestamoYFechaDevolucionInvalidas();
+        }
     }
-    private void InterpretarErrorCreacionPrestamo(Exception ex, CrearPrestamoComando comando)
+    public override void InterpretarErrorCreacion<T>(T comando, Exception ex)
     {
+        base.InterpretarErrorCreacion(comando, ex);
         var errorMessage = ex.Message?.ToLower() ?? "";
         if (errorMessage.Contains("error al crear préstamo general: conflicto de llave única")) throw new ErrorRegistroYaExiste();
         if (errorMessage.Contains("error inesperado") && errorMessage.Contains("al crear el préstamo general")) throw new Exception($"Error inesperado al crear el préstamo general: {ex.Message}", ex);
@@ -73,8 +76,7 @@ public class PrestamoService : IPrestamoService
         }
         else if (ex is ErrorRepository errorRepo) throw new Exception($"Error del repositorio al crear préstamo: {errorRepo.Message}", errorRepo);
         else throw new Exception($"Error inesperado al crear préstamo: {ex.Message}", ex);
-    }
-    public virtual void EliminarPrestamo(EliminarPrestamoComando comando)
+    }    public virtual void EliminarPrestamo(EliminarPrestamoComando comando)
     {
         try
         {
@@ -84,29 +86,40 @@ public class PrestamoService : IPrestamoService
         catch (ErrorIdInvalido) { throw; }
         catch (Exception ex)
         {
-            if (ex is ErrorDataBase errorDb)
-            {
-                var mensaje = errorDb.Message?.ToLower() ?? "";
-                if (mensaje.Contains("no se encontró un préstamo activo con id")) throw new ErrorRegistroNoEncontrado();
-                if (mensaje.Contains("error al eliminar lógicamente el préstamo")) throw new Exception($"Error inesperado al eliminar préstamo: {errorDb.Message}", errorDb);
-                throw new Exception($"Error inesperado de base de datos al eliminar préstamo: {errorDb.Message}", errorDb);
-            }
-            if (ex is ErrorRepository errorRepo) throw new Exception($"Error del repositorio al eliminar préstamo: {errorRepo.Message}", errorRepo);
+            InterpretarErrorEliminacion(comando, ex);
             throw;
         }
     }
-    private void ValidarEntradaEliminacion(EliminarPrestamoComando comando)
+    public override void ValidarEntradaEliminacion<T>(T comando)
     {
-        if (comando == null) throw new ArgumentNullException(nameof(comando));
-        if (comando.Id <= 0) throw new ErrorIdInvalido("préstamo");
+        base.ValidarEntradaEliminacion(comando);
+        if (comando is EliminarPrestamoComando cmd)
+        {
+            if (cmd.Id <= 0) throw new ErrorIdInvalido("préstamo");
+        }
     }
-    public virtual List<PrestamoDto>? ObtenerTodosPrestamos()
+    public override void InterpretarErrorEliminacion<T>(T comando, Exception ex)
+    {
+        base.InterpretarErrorEliminacion(comando, ex);
+        if (ex is ErrorDataBase errorDb)
+        {
+            var mensaje = errorDb.Message?.ToLower() ?? "";
+            if (mensaje.Contains("no se encontró un préstamo activo con id")) throw new ErrorRegistroNoEncontrado();
+            if (mensaje.Contains("error al eliminar lógicamente el préstamo")) throw new Exception($"Error inesperado al eliminar préstamo: {errorDb.Message}", errorDb);
+            throw new Exception($"Error inesperado de base de datos al eliminar préstamo: {errorDb.Message}", errorDb);
+        }
+        if (ex is ErrorRepository errorRepo) throw new Exception($"Error del repositorio al eliminar préstamo: {errorRepo.Message}", errorRepo);
+    }    public virtual List<PrestamoDto>? ObtenerTodosPrestamos()
     {
         try
         {
             DataTable resultado = _prestamoRepository.ObtenerTodos();
             var lista = new List<PrestamoDto>(resultado.Rows.Count);
-            foreach (DataRow fila in resultado.Rows) lista.Add(MapearFilaADto(fila));
+            foreach (DataRow fila in resultado.Rows)
+            {
+                var dto = MapearFilaADto(fila) as PrestamoDto;
+                if (dto != null) lista.Add(dto);
+            }
             return lista;
         }
         catch { throw; }
@@ -143,19 +156,22 @@ public class PrestamoService : IPrestamoService
             comando.EstadoPrestamo != "finalizado" && comando.EstadoPrestamo != "cancelado" &&
             comando.EstadoPrestamo != "aprobado" && comando.EstadoPrestamo != "activo")
             throw new ErrorEstadoPrestamoInvalido();
-    }
-    public virtual List<PrestamoDto>? ObtenerPrestamosPorCarnetYEstadoPrestamo(string carnetUsuario, string estadoPrestamo)
+    }    public virtual List<PrestamoDto>? ObtenerPrestamosPorCarnetYEstadoPrestamo(string carnetUsuario, string estadoPrestamo)
     {
         try
         {
             DataTable resultado = _prestamoRepository.ObtenerPorCarnetYEstadoPrestamo(carnetUsuario, estadoPrestamo);
             var lista = new List<PrestamoDto>(resultado.Rows.Count);
-            foreach (DataRow fila in resultado.Rows) lista.Add(MapearFilaADto(fila));
+            foreach (DataRow fila in resultado.Rows)
+            {
+                var dto = MapearFilaADto(fila) as PrestamoDto;
+                if (dto != null) lista.Add(dto);
+            }
             return lista;
         }
         catch { throw; }
     }
-    private static PrestamoDto MapearFilaADto(DataRow fila)
+    public override BaseDto MapearFilaADto(DataRow fila)
     {
         return new PrestamoDto
         {

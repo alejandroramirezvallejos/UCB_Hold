@@ -1,12 +1,11 @@
 using System.Data;
-public class UsuarioService : IUsuarioService
+public class UsuarioService : ServiciosAbstraccion, IUsuarioService
 {
     private readonly IUsuarioRepository _usuarioRepository;
     public UsuarioService(IUsuarioRepository usuarioRepository)
     {
         _usuarioRepository = usuarioRepository;
-    }
-    public void CrearUsuario(CrearUsuarioComando comando)
+    }    public void CrearUsuario(CrearUsuarioComando comando)
     {
         try
         {
@@ -27,45 +26,55 @@ public class UsuarioService : IUsuarioService
         catch (ErrorLongitudInvalida) { throw; }
         catch (Exception ex)
         {
-            if (ex is ErrorDataBase errorDb)
-            {
-                var mensaje = errorDb.Message?.ToLower() ?? "";
-                if (mensaje.Contains("no se encontró la carrera con nombre")) throw new ErrorCarreraNoEncontrada();
-                if (errorDb.SqlState == "23505" || mensaje.Contains("el carnet o email ya está registrado")) throw new ErrorRegistroYaExiste();
-                if (mensaje.Contains("hubo un error inesperado durante el proceso de inserción")) throw new Exception($"Error inesperado al insertar usuario: {errorDb.Message}", errorDb);
-                throw new Exception($"Error inesperado de base de datos al crear usuario: {errorDb.Message}", errorDb);
-            }
-            if (ex is ErrorRepository errorRepo) throw new Exception($"Error del repositorio al crear usuario: {errorRepo.Message}", errorRepo);
+            InterpretarErrorCreacion(comando, ex);
             throw;
         }
-    }
-    private void ValidarEntradaCreacion(CrearUsuarioComando comando)
+    }    public override void ValidarEntradaCreacion<T>(T comando)
     {
-        if (comando == null) throw new ArgumentNullException(nameof(comando));
-        if (string.IsNullOrWhiteSpace(comando.Carnet)) throw new ErrorCarnetRequerido();
-        if (comando.Carnet.Length > 15) throw new ErrorLongitudInvalida("carnet", 15);
-        if (string.IsNullOrWhiteSpace(comando.Nombre)) throw new ErrorNombreRequerido();
-        if (comando.Nombre.Length > 100) throw new ErrorLongitudInvalida("nombre", 100);
-        if (string.IsNullOrWhiteSpace(comando.ApellidoPaterno)) throw new ErrorApellidoPaternoRequerido();
-        if (comando.ApellidoPaterno.Length > 100) throw new ErrorLongitudInvalida("apellido paterno", 100);
-        if (string.IsNullOrWhiteSpace(comando.ApellidoMaterno)) throw new ErrorApellidoMaternoRequerido();
-        if (comando.ApellidoMaterno.Length > 100) throw new ErrorLongitudInvalida("apellido materno", 100);
-        if (string.IsNullOrWhiteSpace(comando.Email) || !IsValidEmail(comando.Email)) throw new ErrorEmailInvalido();
-        if (comando.Email.Length > 150) throw new ErrorLongitudInvalida("email", 150);
-        if (string.IsNullOrWhiteSpace(comando.Contrasena)) throw new ErrorContrasenaRequerida();
-        if (comando.Contrasena.Length < 6) throw new ErrorLongitudInvalida("contraseña", 6, 100);
-        if (string.IsNullOrWhiteSpace(comando.NombreCarrera)) throw new ErrorCarreraRequerida();
-        if (string.IsNullOrWhiteSpace(comando.Telefono)) throw new ErrorTelefonoRequerido();
-        if (comando.Telefono.Length > 20) throw new ErrorLongitudInvalida("telefono", 20);
-        if(comando.Rol != "administrador" && comando.Rol != "estudiante") throw new ErrorRolInvalido();
+        base.ValidarEntradaCreacion(comando);
+        if (comando is CrearUsuarioComando cmd)
+        {
+            if (string.IsNullOrWhiteSpace(cmd.Carnet)) throw new ErrorCarnetRequerido();
+            if (cmd.Carnet.Length > 15) throw new ErrorLongitudInvalida("carnet", 15);
+            if (string.IsNullOrWhiteSpace(cmd.Nombre)) throw new ErrorNombreRequerido();
+            if (cmd.Nombre.Length > 100) throw new ErrorLongitudInvalida("nombre", 100);
+            if (string.IsNullOrWhiteSpace(cmd.ApellidoPaterno)) throw new ErrorApellidoPaternoRequerido();
+            if (cmd.ApellidoPaterno.Length > 100) throw new ErrorLongitudInvalida("apellido paterno", 100);
+            if (string.IsNullOrWhiteSpace(cmd.ApellidoMaterno)) throw new ErrorApellidoMaternoRequerido();
+            if (cmd.ApellidoMaterno.Length > 100) throw new ErrorLongitudInvalida("apellido materno", 100);
+            if (string.IsNullOrWhiteSpace(cmd.Email) || !IsValidEmail(cmd.Email)) throw new ErrorEmailInvalido();
+            if (cmd.Email.Length > 150) throw new ErrorLongitudInvalida("email", 150);
+            if (string.IsNullOrWhiteSpace(cmd.Contrasena)) throw new ErrorContrasenaRequerida();
+            if (cmd.Contrasena.Length < 6) throw new ErrorLongitudInvalida("contraseña", 6, 100);
+            if (string.IsNullOrWhiteSpace(cmd.NombreCarrera)) throw new ErrorCarreraRequerida();
+            if (string.IsNullOrWhiteSpace(cmd.Telefono)) throw new ErrorTelefonoRequerido();
+            if (cmd.Telefono.Length > 20) throw new ErrorLongitudInvalida("telefono", 20);
+            if(cmd.Rol != "administrador" && cmd.Rol != "estudiante") throw new ErrorRolInvalido();
+        }
     }
-    public List<UsuarioDto>? ObtenerTodosUsuarios()
+    public override void InterpretarErrorCreacion<T>(T comando, Exception ex)
+    {
+        base.InterpretarErrorCreacion(comando, ex);
+        if (ex is ErrorDataBase errorDb)
+        {
+            var mensaje = errorDb.Message?.ToLower() ?? "";
+            if (mensaje.Contains("no se encontró la carrera con nombre")) throw new ErrorCarreraNoEncontrada();
+            if (errorDb.SqlState == "23505" || mensaje.Contains("el carnet o email ya está registrado")) throw new ErrorRegistroYaExiste();
+            if (mensaje.Contains("hubo un error inesperado durante el proceso de inserción")) throw new Exception($"Error inesperado al insertar usuario: {errorDb.Message}", errorDb);
+            throw new Exception($"Error inesperado de base de datos al crear usuario: {errorDb.Message}", errorDb);
+        }
+        if (ex is ErrorRepository errorRepo) throw new Exception($"Error del repositorio al crear usuario: {errorRepo.Message}", errorRepo);
+    }    public List<UsuarioDto>? ObtenerTodosUsuarios()
     {
         try
         {
             DataTable resultado = _usuarioRepository.ObtenerTodos();
             var lista = new List<UsuarioDto>(resultado.Rows.Count);
-            foreach (DataRow fila in resultado.Rows) lista.Add(MapearFilaADto(fila));
+            foreach (DataRow fila in resultado.Rows)
+            {
+                var dto = MapearFilaADto(fila) as UsuarioDto;
+                if (dto != null) lista.Add(dto);
+            }
             return lista;
         }
         catch { throw; }
@@ -111,8 +120,7 @@ public class UsuarioService : IUsuarioService
         if (!string.IsNullOrWhiteSpace(comando.Contrasena) && comando.Contrasena.Length < 6) throw new ErrorLongitudInvalida("contraseña", 6, 100);
         if (!string.IsNullOrWhiteSpace(comando.Telefono) && comando.Telefono.Length > 20) throw new ErrorLongitudInvalida("telefono", 20);
         if(comando.Rol != "administrador" && comando.Rol != "estudiante") throw new ErrorRolInvalido();
-    }
-    public void EliminarUsuario(EliminarUsuarioComando comando)
+    }    public void EliminarUsuario(EliminarUsuarioComando comando)
     {
         try
         {
@@ -122,29 +130,36 @@ public class UsuarioService : IUsuarioService
         catch (ErrorCarnetInvalido) { throw; }
         catch (Exception ex)
         {
-            if (ex is ErrorDataBase errorDb)
-            {
-                var mensaje = errorDb.Message?.ToLower() ?? "";
-                if (mensaje.Contains("no se encontró un usuario activo con carnet")) throw new ErrorRegistroNoEncontrado();
-                if (mensaje.Contains("error al eliminar lógicamente el usuario")) throw new Exception($"Error inesperado al eliminar usuario: {errorDb.Message}", errorDb);
-                throw new Exception($"Error inesperado de base de datos al eliminar usuario: {errorDb.Message}", errorDb);
-            }
-            if (ex is ErrorRepository errorRepo) throw new Exception($"Error del repositorio al eliminar usuario: {errorRepo.Message}", errorRepo);
+            InterpretarErrorEliminacion(comando, ex);
             throw;
         }
     }
-    private void ValidarEntradaEliminacion(EliminarUsuarioComando comando)
+    public override void ValidarEntradaEliminacion<T>(T comando)
     {
-        if (comando == null) throw new ArgumentNullException(nameof(comando));
-        if (string.IsNullOrWhiteSpace(comando.Carnet)) throw new ErrorCarnetInvalido();
-        if (comando.Carnet.Length > 15) throw new ErrorLongitudInvalida("carnet", 15);
+        base.ValidarEntradaEliminacion(comando);
+        if (comando is EliminarUsuarioComando cmd)
+        {
+            if (string.IsNullOrWhiteSpace(cmd.Carnet)) throw new ErrorCarnetInvalido();
+            if (cmd.Carnet.Length > 15) throw new ErrorLongitudInvalida("carnet", 15);
+        }
     }
-    public UsuarioDto? IniciarSesionUsuario(IniciarSesionUsuarioConsulta consulta)
+    public override void InterpretarErrorEliminacion<T>(T comando, Exception ex)
+    {
+        base.InterpretarErrorEliminacion(comando, ex);
+        if (ex is ErrorDataBase errorDb)
+        {
+            var mensaje = errorDb.Message?.ToLower() ?? "";
+            if (mensaje.Contains("no se encontró un usuario activo con carnet")) throw new ErrorRegistroNoEncontrado();
+            if (mensaje.Contains("error al eliminar lógicamente el usuario")) throw new Exception($"Error inesperado al eliminar usuario: {errorDb.Message}", errorDb);
+            throw new Exception($"Error inesperado de base de datos al eliminar usuario: {errorDb.Message}", errorDb);
+        }
+        if (ex is ErrorRepository errorRepo) throw new Exception($"Error del repositorio al eliminar usuario: {errorRepo.Message}", errorRepo);
+    }    public UsuarioDto? IniciarSesionUsuario(IniciarSesionUsuarioConsulta consulta)
     {
         try
         {
             DataTable? resultado = _usuarioRepository.ObtenerPorEmailYContrasena(consulta.Email, consulta.Contrasena);
-            if (resultado?.Rows.Count > 0) return MapearFilaADto(resultado.Rows[0]);
+            if (resultado?.Rows.Count > 0) return MapearFilaADto(resultado.Rows[0]) as UsuarioDto;
             return null;
         }
         catch { throw; }
@@ -154,8 +169,7 @@ public class UsuarioService : IUsuarioService
         if (string.IsNullOrWhiteSpace(email)) return false;
         try { var addr = new System.Net.Mail.MailAddress(email); return addr.Address == email; }
         catch { return false; }
-    }
-    private UsuarioDto MapearFilaADto(DataRow fila)
+    }    public override BaseDto MapearFilaADto(DataRow fila)
     {
         return new UsuarioDto
         {

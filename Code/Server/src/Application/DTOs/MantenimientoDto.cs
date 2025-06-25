@@ -1,6 +1,5 @@
-public class MantenimientoDto
+public class MantenimientoDto : BaseDto
 {
-    public int Id { get; set; }
     public string? NombreEmpresaMantenimiento { get; set; }
     public DateOnly? FechaMantenimiento { get; set; }
     public DateOnly? FechaFinalDeMantenimiento { get; set; }

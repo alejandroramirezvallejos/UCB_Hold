@@ -3,7 +3,7 @@ using System.Linq;
 using IMT_Reservas.Server.Application.Interfaces;
 using IMT_Reservas.Server.Shared.Common;
 
-public class ComentarioService : IComentarioService
+public class ComentarioService : ServiciosAbstraccion, IComentarioService
 {
     private readonly IComentarioRepository _comentarioRepository;
     private readonly IExecuteQuery _executeQuery;
@@ -18,14 +18,19 @@ public class ComentarioService : IComentarioService
         ValidarEntradaCreacion(comando);
         _comentarioRepository.Crear(comando);
     }
-
-    private void ValidarEntradaCreacion(CrearComentarioComando comando)
+    
+    public override void ValidarEntradaCreacion<T>(T comando)
     {
-        if (comando == null) throw new ArgumentNullException();
-        if (string.IsNullOrWhiteSpace(comando.CarnetUsuario)) throw new ErrorCarnetInvalido();
-        if (comando.IdGrupoEquipo <= 0) throw new ErrorIdInvalido("grupo equipo");
-        if (string.IsNullOrWhiteSpace(comando.Contenido)) throw new ErrorCampoRequerido("contenido");
-        if (comando.Contenido.Length > 500) throw new ErrorLongitudInvalida("contenido", 500);
+        base.ValidarEntradaCreacion(comando); // Validación base (null check)
+        
+        // Validaciones específicas para CrearComentarioComando
+        if (comando is CrearComentarioComando comentarioComando)
+        {
+            if (string.IsNullOrWhiteSpace(comentarioComando.CarnetUsuario)) throw new ErrorCarnetInvalido();
+            if (comentarioComando.IdGrupoEquipo <= 0) throw new ErrorIdInvalido("grupo equipo");
+            if (string.IsNullOrWhiteSpace(comentarioComando.Contenido)) throw new ErrorCampoRequerido("contenido");
+            if (comentarioComando.Contenido.Length > 500) throw new ErrorLongitudInvalida("contenido", 500);
+        }
     }
 
     public List<ComentarioDto>? ObtenerComentariosPorGrupoEquipo(ObtenerComentariosPorGrupoEquipoConsulta consulta)
@@ -46,17 +51,19 @@ public class ComentarioService : IComentarioService
                 row => (row.Field<string>("nombre"), row.Field<string>("apellido_paterno"))
             );
         }
-        var lista = new List<ComentarioDto>(comentariosData.Rows.Count);
-        foreach (DataRow fila in comentariosData.Rows)
+        var lista = new List<ComentarioDto>(comentariosData.Rows.Count);        foreach (DataRow fila in comentariosData.Rows)
         {
-            var dto = MapearFilaADto(fila);
-            if (dto.CarnetUsuario != null && usuariosMap.ContainsKey(dto.CarnetUsuario))
+            var baseDto = MapearFilaADto(fila);
+            if (baseDto is ComentarioDto dto)
             {
-                var usuario = usuariosMap[dto.CarnetUsuario];
-                dto.NombreUsuario = usuario.Nombre;
-                dto.ApellidoPaternoUsuario = usuario.Apellido;
+                if (dto.CarnetUsuario != null && usuariosMap.ContainsKey(dto.CarnetUsuario))
+                {
+                    var usuario = usuariosMap[dto.CarnetUsuario];
+                    dto.NombreUsuario = usuario.Nombre;
+                    dto.ApellidoPaternoUsuario = usuario.Apellido;
+                }
+                lista.Add(dto);
             }
-            lista.Add(dto);
         }
         return lista;
     }
@@ -65,23 +72,24 @@ public class ComentarioService : IComentarioService
     {
         ValidarEntradaEliminacion(comando);
         _comentarioRepository.Eliminar(comando);
-    }
-
-    private void ValidarEntradaEliminacion(EliminarComentarioComando comando)
+    }    public override void ValidarEntradaEliminacion<T>(T comando)
     {
-        if (comando == null) throw new ArgumentNullException();
-        if (string.IsNullOrWhiteSpace(comando.Id)) throw new ErrorIdInvalido("comentario");
+        base.ValidarEntradaEliminacion(comando); // Validación base (null check)
+        
+        // Validaciones específicas para EliminarComentarioComando
+        if (comando is EliminarComentarioComando comentarioComando)
+        {
+            if (string.IsNullOrWhiteSpace(comentarioComando.Id)) throw new ErrorIdInvalido("comentario");
+        }
     }
 
     public void AgregarLikeComentario(AgregarLikeComentarioComando comando)
     {
         ValidarEntradaLike(comando);
         _comentarioRepository.AgregarLike(comando);
-    }
-
-    private void ValidarEntradaLike(AgregarLikeComentarioComando comando)
+    }    private void ValidarEntradaLike(AgregarLikeComentarioComando comando)
     {
-        if (comando == null) throw new ArgumentNullException();
+        if (comando == null) throw new ArgumentNullException(nameof(comando));
         if (string.IsNullOrWhiteSpace(comando.Id)) throw new ErrorIdInvalido("comentario");
         if (string.IsNullOrWhiteSpace(comando.CarnetUsuario)) throw new ErrorCarnetInvalido();
     }
@@ -90,22 +98,21 @@ public class ComentarioService : IComentarioService
     {
         ValidarEntradaQuitarLike(comando);
         _comentarioRepository.QuitarLike(comando);
-    }
-
-    private void ValidarEntradaQuitarLike(QuitarLikeComentarioComando comando)
+    }    private void ValidarEntradaQuitarLike(QuitarLikeComentarioComando comando)
     {
-        if (comando == null) throw new ArgumentNullException();
+        if (comando == null) throw new ArgumentNullException(nameof(comando));
         if (string.IsNullOrWhiteSpace(comando.Id)) throw new ErrorIdInvalido("comentario");
         if (string.IsNullOrWhiteSpace(comando.CarnetUsuario)) throw new ErrorCarnetInvalido();
-    }
-
-    private ComentarioDto MapearFilaADto(DataRow fila) => new ComentarioDto
+    }public override BaseDto MapearFilaADto(DataRow fila)
     {
-        Id = fila["id_comentario"].ToString(),
-        CarnetUsuario = fila["carnet_usuario"] == DBNull.Value ? null : fila["carnet_usuario"].ToString(),
-        IdGrupoEquipo = fila["id_grupo_equipo"] == DBNull.Value ? 0 : Convert.ToInt32(fila["id_grupo_equipo"]),
-        Contenido = fila["contenido_comentario"] == DBNull.Value ? null : fila["contenido_comentario"].ToString(),
-        Likes = fila["likes_comentario"] == DBNull.Value ? 0 : Convert.ToInt32(fila["likes_comentario"]),
-        FechaCreacion = fila["fecha_creacion_comentario"] == DBNull.Value ? null : Convert.ToDateTime(fila["fecha_creacion_comentario"])
-    };
+        return new ComentarioDto
+        {
+            Id = fila["id_comentario"].ToString(),
+            CarnetUsuario = fila["carnet_usuario"] == DBNull.Value ? null : fila["carnet_usuario"].ToString(),
+            IdGrupoEquipo = fila["id_grupo_equipo"] == DBNull.Value ? 0 : Convert.ToInt32(fila["id_grupo_equipo"]),
+            Contenido = fila["contenido_comentario"] == DBNull.Value ? null : fila["contenido_comentario"].ToString(),
+            Likes = fila["likes_comentario"] == DBNull.Value ? 0 : Convert.ToInt32(fila["likes_comentario"]),
+            FechaCreacion = fila["fecha_creacion_comentario"] == DBNull.Value ? null : Convert.ToDateTime(fila["fecha_creacion_comentario"])
+        };
+    }
 }
