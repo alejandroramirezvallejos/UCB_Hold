@@ -2,6 +2,8 @@ import { Component, EventEmitter, Input, Output, signal, WritableSignal } from '
 import { FormsModule } from '@angular/forms';
 import { Accesorio } from '../../../../../models/admin/Accesorio';
 import { AccesoriosService } from '../../../../../services/APIS/Accesorio/accesorios.service';
+import { EquipoService } from '../../../../../services/APIS/Equipo/equipo.service';
+import { Equipos } from '../../../../../models/admin/Equipos';
 
 @Component({
   selector: 'app-accesorios-editar',
@@ -14,9 +16,28 @@ export class AccesoriosEditarComponent {
   @Output() actualizar: EventEmitter<void> = new EventEmitter<void>();
   @Input() accesorio : Accesorio = new Accesorio();
 
-  constructor(private accesorioapi: AccesoriosService) {}; 
+
+   equipos : Equipos[] = [] ;  
+
+  constructor(private accesorioapi: AccesoriosService , private equipoAPI : EquipoService) {}; 
 
   
+  ngOnInit(){
+    this.cargarEquipos();
+  }
+
+  cargarEquipos(){
+    this.equipoAPI.obtenerEquipos().subscribe({
+      next: (data) => {
+        this.equipos = data;
+      },
+      error: (error) => {
+        alert(error.error.error + ': ' + error.error.mensaje);
+      }
+    })
+  }
+
+
 
 
   confirmar (){
