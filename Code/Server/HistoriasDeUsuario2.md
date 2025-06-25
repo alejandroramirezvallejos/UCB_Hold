@@ -17,8 +17,8 @@ Como administrador del sistema, quiero gestionar categorías para clasificar los
 - Controlador: `src/Presentations/Controllers/CategoriaController.cs`
 - Servicio: `src/Application/Services/Implementations/CategoriaService.cs`
 - Interfaz de Servicio: `src/Application/Services/Interfaces/ICategoriaService.cs`
-- Modelo: `src/Application/Modelos/Categoria/CrearCategoriaComando.cs`
-- DTO: `src/Application/DTOs/CategoriaDto.cs`
+- Request DTO: `src/Application/Request DTOs/Categoria/CrearCategoriaComando.cs`
+- Response DTO: `src/Application/Response DTOs/CategoriaDto.cs`
 - Repositorio: `src/Infrastructure/Repositories/CategoriaRepository.cs`
 - Interfaz de Repositorio: `src/Infrastructure/Repositories/ICategoriaRepository.cs`
 - Excepciones: `src/Shared/Exceptions/ErrorCampoRequerido.cs`, `src/Shared/Exceptions/ErrorCategoriaNoEncontrada.cs`, `src/Shared/Exceptions/ErrorLongitudMaxima.cs`
@@ -61,8 +61,8 @@ Como administrador del sistema, quiero gestionar los accesorios de equipos para 
 - Controlador: `src/Presentations/Controllers/AccesorioController.cs`
 - Servicio: `src/Application/Services/Implementations/AccesorioService.cs`
 - Interfaz de Servicio: `src/Application/Services/Interfaces/IAccesorioService.cs`
-- Modelo: `src/Application/Modelos/Accesorio/CrearAccesorioComando.cs`
-- DTO: `src/Application/DTOs/AccesorioDto.cs`
+- Request DTO: `src/Application/Request DTOs/Accesorio/CrearAccesorioComando.cs`
+- Response DTO: `src/Application/Response DTOs/AccesorioDto.cs`
 - Repositorio: `src/Infrastructure/Repositories/AccesorioRepository.cs`
 - Interfaz de Repositorio: `src/Infrastructure/Repositories/IAccesorioRepository.cs`
 - Excepciones: `src/Shared/Exceptions/ErrorCampoRequerido.cs`, `src/Shared/Exceptions/ErrorEquipoNoEncontrado.cs`, `src/Shared/Exceptions/ErrorLongitudMaxima.cs`
@@ -105,8 +105,8 @@ Como administrador del sistema, quiero gestionar componentes de equipos para lle
 - Controlador: `src/Presentations/Controllers/ComponenteController.cs`
 - Servicio: `src/Application/Services/Implementations/ComponenteService.cs`
 - Interfaz de Servicio: `src/Application/Services/Interfaces/IComponenteService.cs`
-- Modelo: `src/Application/Modelos/Componente/CrearComponenteComando.cs`
-- DTO: `src/Application/DTOs/ComponenteDto.cs`
+- Request DTO: `src/Application/Request DTOs/Componente/CrearComponenteComando.cs`
+- Response DTO: `src/Application/Response DTOs/ComponenteDto.cs`
 - Repositorio: `src/Infrastructure/Repositories/ComponenteRepository.cs`
 - Interfaz de Repositorio: `src/Infrastructure/Repositories/IComponenteRepository.cs`
 - Excepciones: `src/Shared/Exceptions/ErrorCampoRequerido.cs`, `src/Shared/Exceptions/ErrorEquipoNoEncontrado.cs`, `src/Shared/Exceptions/ErrorLongitudMaxima.cs`
@@ -149,8 +149,8 @@ Como administrador del sistema, quiero registrar y consultar los mantenimientos 
 - Controlador: `src/Presentations/Controllers/MantenimientoController.cs`
 - Servicio: `src/Application/Services/Implementations/MantenimientoService.cs`
 - Interfaz de Servicio: `src/Application/Services/Interfaces/IMantenimientoService.cs`
-- Modelo: `src/Application/Modelos/Mantenimiento/CrearMantenimientoComando.cs`
-- DTO: `src/Application/DTOs/MantenimientoDto.cs`
+- Request DTO: `src/Application/Request DTOs/Mantenimiento/CrearMantenimientoComando.cs`
+- Response DTO: `src/Application/Response DTOs/MantenimientoDto.cs`
 - Repositorio: `src/Infrastructure/Repositories/MantenimientoRepository.cs`
 - Interfaz de Repositorio: `src/Infrastructure/Repositories/IMantenimientoRepository.cs`
 - Excepciones: `src/Shared/Exceptions/ErrorCampoRequerido.cs`, `src/Shared/Exceptions/ErrorEquipoNoEncontrado.cs`, `src/Shared/Exceptions/ErrorLongitudMaxima.cs`
