@@ -48,7 +48,8 @@ export class CarritoComponent {
   
     const fechaInicio = this.parseDateLocal(item.value.fecha_inicio);
     const fechaFinal = this.parseDateLocal(item.value.fecha_final);
-    
+    const hoyMasUnAnio = new Date(this.hoy);
+    hoyMasUnAnio.setFullYear(this.hoy.getFullYear() + 1);
 
     if (fechaInicio > fechaFinal) {
       this.error = true;
@@ -57,6 +58,10 @@ export class CarritoComponent {
     if( fechaInicio < this.hoy) {
       this.error = true;
       return "Error: La fecha de inicio no puede ser menor a la fecha actual";
+    }
+    if(hoyMasUnAnio  <fechaInicio ){
+      this.error = true;
+      return "Error: La fecha de inicio no puede ser mayor a un año desde la fecha actual";
     }
   
   
