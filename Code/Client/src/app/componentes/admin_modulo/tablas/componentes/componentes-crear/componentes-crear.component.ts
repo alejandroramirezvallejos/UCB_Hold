@@ -15,17 +15,7 @@ export class ComponentesCrearComponent {
   @Input() botoncrear: WritableSignal<boolean> = signal(true);
   @Output() Actualizar = new EventEmitter<void>();
 
-  componente: Componente = {
-    Id: 0,
-    Nombre: '',
-    Modelo: '',
-    Tipo: '',
-    Descripcion: '',
-    PrecioReferencia: null,
-    CodigoImtEquipo: null,
-    UrlDataSheet: '',
-    NombreEquipo: ''
-  };
+  componente: Componente = new Componente() ;
 
   constructor(private componenteService: ComponenteService) {}
 

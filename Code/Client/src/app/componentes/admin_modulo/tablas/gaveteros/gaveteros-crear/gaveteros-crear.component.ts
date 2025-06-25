@@ -16,15 +16,7 @@ export class GaveterosCrearComponent {
   @Output() Actualizar = new EventEmitter<void>();
 
 
-  gavetero : Gaveteros = {
-    Id: 0,
-    Nombre: '',
-    Tipo: '',
-    NombreMueble: '',
-    Longitud: null,
-    Profundidad: null,
-    Altura: null
-  };
+  gavetero : Gaveteros = new Gaveteros();
 
 
   constructor(private gaveteroapi : GaveteroService){}; 

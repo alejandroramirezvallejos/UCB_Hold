@@ -23,22 +23,7 @@ export class EquiposTablaComponent {
   equipos : any[] = [];
   equiposcopia: any[] = [];
 
-  equipoSeleccionado:  Equipos= {
-    Id: 0,
-    NombreGrupoEquipo: '',
-    Modelo: '',
-    Marca: '',
-    CodigoImt: 0,
-    CodigoUcb: '',
-    NumeroSerial: '',
-    EstadoEquipo: '',
-    Ubicacion: '',
-    NombreGavetero: '',
-    CostoReferencia: 0,
-    Descripcion: '',
-    TiempoMaximoPrestamo: 0,
-    Procedencia: ''
-  }  ;
+  equipoSeleccionado:  Equipos= new Equipos();
 
   terminoBusqueda: string = '';
 
@@ -53,22 +38,7 @@ export class EquiposTablaComponent {
 
 
   limpiarEquipoSeleccionado() {
-    this.equipoSeleccionado = {
-      Id: 0,
-      NombreGrupoEquipo: '',
-      Modelo: '',
-      Marca: '',
-      CodigoImt: 0,
-      CodigoUcb: '',
-      NumeroSerial: '',
-      EstadoEquipo: '',
-      Ubicacion: '',
-      NombreGavetero: '',
-      CostoReferencia: 0,
-      Descripcion: '',
-      TiempoMaximoPrestamo: 0,
-      Procedencia: ''
-    };
+    this.equipoSeleccionado = new Equipos();
   }
 
 

@@ -13,17 +13,7 @@ import { MuebleService } from '../../../../../services/APIS/Mueble/mueble.servic
 export class MueblesEditarComponent implements OnChanges {
   @Input() botoneditar: WritableSignal<boolean> = signal(true);
   @Output() actualizar: EventEmitter<void> = new EventEmitter<void>();
-  @Input() muebleOriginal: Muebles = {
-    Id: 0,
-    Nombre: '',
-    NumeroGaveteros: null,
-    Ubicacion: '',
-    Tipo: '',
-    Costo: null,
-    Longitud: null,
-    Profundidad: null,
-    Altura: null
-  };
+  @Input() muebleOriginal: Muebles = new Muebles();
 
   mueble: Muebles = { ...this.muebleOriginal };
 

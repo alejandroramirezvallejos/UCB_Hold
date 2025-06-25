@@ -16,22 +16,7 @@ export class EquiposCrearComponent {
   @Output() Actualizar = new EventEmitter<void>();
 
 
-  equipo : Equipos = {
-    Id: 0,
-    Modelo: '',
-    Marca: '',
-    NombreGrupoEquipo: '',
-    CodigoImt: 0,
-    CodigoUcb: '',
-    NumeroSerial: '',
-    EstadoEquipo: '',
-    Ubicacion: '',
-    NombreGavetero: '',
-    CostoReferencia: null,
-    Descripcion: '',
-    TiempoMaximoPrestamo: null,
-    Procedencia: ''
-  };
+  equipo : Equipos = new Equipos();
 
 
   constructor(private equipoapi : EquipoService){}; 

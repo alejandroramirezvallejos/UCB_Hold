@@ -24,17 +24,7 @@ export class AccesoriosTablaComponent {
   accesorios : Accesorio[] = [];
   accesorioscopia: Accesorio[] = [];
 
-  accesorioSeleccionado:  Accesorio= {
-    id: 0,
-    nombre: '',
-    modelo: '',
-    tipo: '',
-    descripcion: '',
-    codigo_imt: '',
-    precio: 0,
-    nombreEquipoAsociado: '',
-    url_data_sheet: ''
-  }  ;
+  accesorioSeleccionado:  Accesorio= new Accesorio();
 
   terminoBusqueda: string = '';
 
@@ -51,17 +41,8 @@ export class AccesoriosTablaComponent {
 
 
   limpiarAccesorioSeleccionado() {
-    this.accesorioSeleccionado = {
-      id: 0,
-      nombre: '',
-      modelo: '',
-      tipo: '',
-      descripcion: '',
-      codigo_imt: '',
-      precio: 0,
-      nombreEquipoAsociado: '',
-      url_data_sheet: ''
-    };
+    this.accesorioSeleccionado = new Accesorio();
+
   }
 
 

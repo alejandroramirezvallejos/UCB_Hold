@@ -16,17 +16,7 @@ export class AccesoriosCrearComponent {
   @Output() Actualizar = new EventEmitter<void>();
 
 
-  accesorio : Accesorio = {
-    id: 0,
-    nombre: '',
-    modelo: '',
-    tipo: '',
-    descripcion: '',
-    codigo_imt: '',
-    precio: null,
-    url_data_sheet: '',
-    nombreEquipoAsociado: ''
-  };
+  accesorio : Accesorio = new Accesorio();
 
 
   constructor(private accesorioapi : AccesoriosService){}; 

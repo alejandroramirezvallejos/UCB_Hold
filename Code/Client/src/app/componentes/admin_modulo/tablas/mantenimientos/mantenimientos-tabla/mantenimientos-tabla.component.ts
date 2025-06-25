@@ -26,18 +26,7 @@ export class MantenimientosTablaComponent implements OnInit {
 
   mantenimientosFiltrados: MantenimientosAgrupados[] = [];
 
-  mantenimientoSeleccionado: Mantenimientos = {
-    Id: 0,
-    NombreEmpresaMantenimiento: '',
-    FechaMantenimiento: null,
-    FechaFinalDeMantenimiento: null,
-    Costo: 0,
-    Descripcion: '',
-    TipoMantenimiento: '',
-    NombreGrupoEquipo: '',
-    CodigoImtEquipo: 0,
-    DescripcionEquipo: ''
-  };
+  mantenimientoSeleccionado: Mantenimientos = new Mantenimientos();
 
   terminoBusqueda: string = '';
 
@@ -49,18 +38,7 @@ export class MantenimientosTablaComponent implements OnInit {
   }
 
   limpiarMantenimientoSeleccionado() {
-    this.mantenimientoSeleccionado = {
-      Id: 0,
-      NombreEmpresaMantenimiento: '',
-      FechaMantenimiento: null,
-      FechaFinalDeMantenimiento: null,
-      Costo: 0,
-      Descripcion: '',
-      TipoMantenimiento: '',
-      NombreGrupoEquipo: '',
-      CodigoImtEquipo: 0,
-      DescripcionEquipo: ''
-    };
+    this.mantenimientoSeleccionado = new Mantenimientos();
   }
 
   crearmantenimiento() {
@@ -68,20 +46,23 @@ export class MantenimientosTablaComponent implements OnInit {
   }
 
   cargarMantenimientos() {
-    this.mantenimientoapi.obtenerMantenimientos().subscribe(
-      (data: Mantenimientos[]) => {
-       this.agruparMantenimientos(data);
+    this.mantenimientoapi.obtenerMantenimientos().subscribe({
+      next: (datos) => {
+        this.agruparMantenimientos(datos);
       },
-      (error) => {
-        console.error('Error al cargar los mantenimientos:', error);
+      error: (error) => {
+        alert('Error al cargar los mantenimientos: ' + error.error.mensaje);
       }
-    );
+    });
   }
 
   agruparMantenimientos(datos : Mantenimientos[]) {
     this.mantenimientos = []; 
 
-    if (datos.length === 0) return;
+    if (datos.length === 0) {
+      this.mantenimientosFiltrados = [];
+     return;
+    }
 
     let mantenimientosArray: Mantenimientos[] = [];
 
@@ -126,22 +107,28 @@ export class MantenimientosTablaComponent implements OnInit {
 
 
 
-  eliminarMantenimiento(mantenimiento: Mantenimientos) {
-    this.mantenimientoSeleccionado = mantenimiento;
+  eliminarMantenimiento(mantenimiento: MantenimientosAgrupados) {
+    this.mantenimientoSeleccionado = mantenimiento.matenimientos[0]; 
     this.alertaeliminar = true;
   }
 
   confirmarEliminacion() {
-    this.mantenimientoapi.eliminarMantenimiento(this.mantenimientoSeleccionado.Id).subscribe(
-      (response) => {
-        this.cargarMantenimientos();
+ 
+    this.mantenimientoapi.eliminarMantenimiento(this.mantenimientoSeleccionado.Id).subscribe({
+      next: () => {
+         this.limpiarMantenimientoSeleccionado();
+          this.alertaeliminar = false;
+          this.cargarMantenimientos();
       },
-      (error) => {
-        alert('Error al eliminar el mantenimiento: ' + error);
+      error: (error) => {
+         alert('Error al eliminar el mantenimiento: ' + error.error.mensaje);
+            this.limpiarMantenimientoSeleccionado();
+           this.alertaeliminar = false;
       }
-    );
-    this.limpiarMantenimientoSeleccionado();
-    this.alertaeliminar = false;
+    })
+  
+
+    
   }
 
   cancelarEliminacion() {

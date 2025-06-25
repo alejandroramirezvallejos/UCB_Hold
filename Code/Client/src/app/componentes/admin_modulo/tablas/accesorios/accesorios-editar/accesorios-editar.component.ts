@@ -12,17 +12,7 @@ import { AccesoriosService } from '../../../../../services/APIS/Accesorio/acceso
 export class AccesoriosEditarComponent {
   @Input() botoneditar: WritableSignal<boolean> = signal(true);
   @Output() actualizar: EventEmitter<void> = new EventEmitter<void>();
-  @Input() accesorio : Accesorio ={
-    id: 0,
-    nombre: '',
-    modelo: '',
-    tipo: '',
-    descripcion: '',
-    codigo_imt: '',
-    precio: null,
-    url_data_sheet: '',
-    nombreEquipoAsociado: ''
-  };
+  @Input() accesorio : Accesorio = new Accesorio();
 
   constructor(private accesorioapi: AccesoriosService) {}; 
 

@@ -25,21 +25,7 @@ export class UsuariosTablaComponent implements OnInit {
   usuarioscopia: Usuario[] = [];
   carreras: string[] = []; 
 
-  usuarioSeleccionado: Usuario = {
-    id: '',
-    carnet: '',
-    nombre: '',
-    apellido_materno: '',
-    apellido_paterno: '',
-    rol: '',
-    carrera_Id: 0,
-    carrera: '',
-    correo: '',
-    telefono: '',
-    nombre_referencia: '',
-    telefono_referencia: '',
-    email_referencia: ''
-  };
+  usuarioSeleccionado: Usuario = new Usuario();
 
   terminoBusqueda: string = '';
 

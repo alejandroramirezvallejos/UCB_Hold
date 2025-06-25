@@ -13,10 +13,7 @@ import { CategoriaService } from '../../../../../services/APIS/Categoria/categor
 export class CategoriasEditarComponent {
   @Input() botoneditar: WritableSignal<boolean> = signal(true);
   @Output() actualizar: EventEmitter<void> = new EventEmitter<void>();
-  @Input() categoria: Categorias = {
-    Id: 0,
-    Nombre: ''
-  };
+  @Input() categoria: Categorias = new Categorias();
 
   constructor(private categoriaService: CategoriaService) {}
 

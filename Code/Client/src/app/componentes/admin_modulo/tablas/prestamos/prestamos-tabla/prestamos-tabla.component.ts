@@ -24,22 +24,7 @@ export class PrestamosTablaComponent implements OnInit {
 
   vercontrato : WritableSignal<boolean> = signal(false);
 
-  prestamoSeleccionado: Prestamos = {
-    Id: 0,
-    CarnetUsuario: null,
-    NombreUsuario: null,
-    ApellidoPaternoUsuario: null,
-    TelefonoUsuario: null,
-    NombreGrupoEquipo: null,
-    CodigoImt: null,
-    FechaSolicitud: null,
-    FechaPrestamoEsperada: null,
-    FechaPrestamo: null,
-    FechaDevolucionEsperada: null,
-    FechaDevolucion: null,
-    Observacion: null,
-    EstadoPrestamo: null
-  };
+  prestamoSeleccionado: Prestamos =  new Prestamos();
 
   terminoBusqueda: string = '';
   
@@ -61,22 +46,7 @@ export class PrestamosTablaComponent implements OnInit {
   }
 
   limpiarPrestamoSeleccionado() {
-    this.prestamoSeleccionado = {
-      Id: 0,
-      CarnetUsuario: null,
-      NombreUsuario: null,
-      ApellidoPaternoUsuario: null,
-      TelefonoUsuario: null,
-      NombreGrupoEquipo: null,
-      CodigoImt: null,
-      FechaSolicitud: null,
-      FechaPrestamoEsperada: null,
-      FechaPrestamo: null,
-      FechaDevolucionEsperada: null,
-      FechaDevolucion: null,
-      Observacion: null,
-      EstadoPrestamo: null
-    };
+    this.prestamoSeleccionado = new Prestamos();
   }
 
   crearprestamo() {

@@ -13,17 +13,7 @@ import { ComponenteService } from '../../../../../services/APIS/Componente/compo
 export class ComponentesEditarComponent {
   @Input() botoneditar: WritableSignal<boolean> = signal(true);
   @Output() actualizar: EventEmitter<void> = new EventEmitter<void>();
-  @Input() componente: Componente = {
-    Id: 0,
-    Nombre: '',
-    Modelo: '',
-    Tipo: '',
-    Descripcion: '',
-    PrecioReferencia: null,
-    CodigoImtEquipo: 0,
-    UrlDataSheet: '',
-    NombreEquipo: ''
-  };
+  @Input() componente: Componente = new Componente();
 
   constructor(private componenteService: ComponenteService) {}
 

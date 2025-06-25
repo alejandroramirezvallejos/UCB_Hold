@@ -22,10 +22,7 @@ export class CategoriasTablaComponent  {
   categorias: Categorias[] = [];
   categoriascopia: Categorias[] = [];
 
-  categoriaSeleccionada: Categorias = {
-    Id: 0,
-    Nombre: ''
-  };
+  categoriaSeleccionada: Categorias = new Categorias();
 
   terminoBusqueda: string = '';
 
@@ -38,10 +35,7 @@ export class CategoriasTablaComponent  {
   }
 
   limpiarCategoriaSeleccionada() {
-    this.categoriaSeleccionada = {
-      Id: 0,
-      Nombre: ''
-    };
+    this.categoriaSeleccionada = new Categorias();
   }
 
   crearCategoria() {

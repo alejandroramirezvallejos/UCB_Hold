@@ -13,10 +13,7 @@ import { CarreraService } from '../../../../../services/APIS/Carrera/carrera.ser
 export class CarrerasEditarComponent {
   @Input() botoneditar: WritableSignal<boolean> = signal(true);
   @Output() actualizar: EventEmitter<void> = new EventEmitter<void>();
-  @Input() carrera: Carrera = {
-    Id: 0,
-    Nombre: ''
-  };
+  @Input() carrera: Carrera = new Carrera();
 
   constructor(private carreraService: CarreraService) {}
 

@@ -22,17 +22,7 @@ export class MueblesTablaComponent implements OnInit {
   muebles: Muebles[] = [];
   mueblesFiltrados: Muebles[] = [];
 
-  muebleSeleccionado: Muebles = {
-    Id: 0,
-    Nombre: '',
-    NumeroGaveteros: 0,
-    Ubicacion: '',
-    Tipo: '',
-    Costo: 0,
-    Longitud: 0,
-    Profundidad: 0,
-    Altura: 0
-  };
+  muebleSeleccionado: Muebles = new Muebles() ;
 
   terminoBusqueda: string = '';
 
@@ -44,17 +34,7 @@ export class MueblesTablaComponent implements OnInit {
   }
 
   limpiarMuebleSeleccionado() {
-    this.muebleSeleccionado = {
-      Id: 0,
-      Nombre: '',
-      NumeroGaveteros: 0,
-      Ubicacion: '',
-      Tipo: '',
-      Costo: 0,
-      Longitud: 0,
-      Profundidad: 0,
-      Altura: 0
-    };
+    this.muebleSeleccionado = new Muebles();
   }
 
   crearmueble() {

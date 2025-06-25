@@ -14,16 +14,7 @@ export class GruposEquiposEditarComponent implements OnChanges {
   @Input() botoneditar: WritableSignal<boolean> = signal(true);
   @Output() actualizar: EventEmitter<void> = new EventEmitter<void>();
   @Input() categorias: string[] = [];
-  @Input() grupoequipo: GrupoEquipo = {
-    id: 0,
-    nombre: '',
-    modelo: '',
-    marca: '',
-    nombreCategoria: '',
-    descripcion: '',
-    url_data_sheet: '',
-    link: ''
-  };
+  @Input() grupoequipo: GrupoEquipo = new GrupoEquipo();
   grupoEquipo: GrupoEquipo = { ...this.grupoequipo };
 
   constructor(private grupoEquipoapi: GrupoequipoService) { }

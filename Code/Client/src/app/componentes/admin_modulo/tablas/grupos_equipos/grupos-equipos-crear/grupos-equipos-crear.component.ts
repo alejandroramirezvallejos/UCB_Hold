@@ -16,16 +16,7 @@ export class GruposEquiposCrearComponent {
   @Input() categorias: string[] = [];
   @Output() Actualizar = new EventEmitter<void>();
 
-  grupoEquipo: GrupoEquipo = {
-    id: 0,
-    nombre: '',
-    modelo: '',
-    marca: '',
-    nombreCategoria: '',
-    descripcion: '',
-    url_data_sheet: '',
-    link: ''
-  };
+  grupoEquipo: GrupoEquipo = new GrupoEquipo();
 
   constructor(private grupoEquipoapi: GrupoequipoService) { }
 

@@ -15,17 +15,7 @@ export class MueblesCrearComponent {
   @Input() botoncrear: WritableSignal<boolean> = signal(true);
   @Output() Actualizar = new EventEmitter<void>();
 
-  mueble: Muebles = {
-    Id: 0,
-    Nombre: '',
-    NumeroGaveteros: 0,
-    Ubicacion: '',
-    Tipo: '',
-    Costo: null,
-    Longitud: null,
-    Profundidad: null,
-    Altura: null
-  };
+  mueble: Muebles = new Muebles();
 
   constructor(private muebleapi: MuebleService) { }
 
