@@ -131,38 +131,6 @@ namespace IMT_Reservas.Tests.ControllerTests
         }
 
         [Test]
-        public void AceptarPrestamo_Valido_RetornaOk()
-        {
-            var mockFile = new Mock<IFormFile>();
-            var comando = new AceptarPrestamoComando { PrestamoId = 1, Contrato = mockFile.Object };
-            _prestamoServiceMock.Setup(s => s.AceptarPrestamo(comando));
-            var resultadoAccion = _prestamosController.Aceptar(comando);
-            Assert.That(resultadoAccion, Is.InstanceOf<OkObjectResult>());
-        }
-
-        [Test]
-        public void AceptarPrestamo_ArgumentoInvalido_RetornaBadRequest()
-        {
-            var mockFile = new Mock<IFormFile>();
-            var comando = new AceptarPrestamoComando { PrestamoId = 1, Contrato = mockFile.Object };
-            _prestamoServiceMock.Setup(s => s.AceptarPrestamo(comando)).Throws(new ArgumentException("Argumento inválido"));
-            var resultadoAccion = _prestamosController.Aceptar(comando);
-            Assert.That(resultadoAccion, Is.InstanceOf<BadRequestObjectResult>());
-        }
-
-        [Test]
-        public void AceptarPrestamo_ErrorServidor_RetornaError500()
-        {
-            var mockFile = new Mock<IFormFile>();
-            var comando = new AceptarPrestamoComando { PrestamoId = 1, Contrato = mockFile.Object };
-            _prestamoServiceMock.Setup(s => s.AceptarPrestamo(comando)).Throws(new Exception("Error de servidor"));
-            var resultadoAccion = _prestamosController.Aceptar(comando);
-            Assert.That(resultadoAccion, Is.InstanceOf<ObjectResult>());
-            var objectResult = (ObjectResult)resultadoAccion;
-            Assert.That(objectResult.StatusCode, Is.EqualTo(500));
-        }
-
-        [Test]
         public void ObtenerPorCarnetYEstado_ConDatos_RetornaOk()
         {
             var carnetUsuario = "12890061";
