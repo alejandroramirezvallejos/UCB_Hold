@@ -22,14 +22,14 @@
 ### Inserción
 La inserción de un comentario se realiza en la clase `ComentarioRepository`, método `Crear`, mediante la construcción de un documento BSON y el uso de `InsertOne`.
 
-#### Inserción en C#
+#### En C#
 ```csharp
 coleccion.InsertOne(doc);
 ```
 Clase: ComentarioRepository  
 Método: Crear
 
-#### Inserción en MongoDB shell
+#### En MongoDB shell
 ```js
 db.comentarios.insertOne({
   CarnetUsuario: "12890061",
@@ -44,7 +44,7 @@ db.comentarios.insertOne({
 ### Consulta
 Para obtener comentarios de un grupo:
 
-#### Consulta en C#
+#### En C#
 ```csharp
 var filtro = Builders<BsonDocument>.Filter.And(
     Builders<BsonDocument>.Filter.Eq("IdGrupoEquipo", idGrupoEquipo),
@@ -55,22 +55,22 @@ coleccion.Find(filtro).SortByDescending(x => x["FechaCreacion"]);
 Clase: ComentarioRepository  
 Método: ObtenerPorGrupoEquipo
 
-#### Consulta en MongoDB shell
+#### En MongoDB shell
 ```js
 db.comentarios.find({ IdGrupoEquipo: 20, EstadoEliminado: false }).sort({ FechaCreacion: -1 })
 ```
 
-### Actualización (Eliminación lógica)
+### Eliminación lógica
 Para eliminar un comentario (soft delete):
 
-#### Actualización en C#
+#### En C#
 ```csharp
 coleccion.UpdateOne(filtro, Builders<BsonDocument>.Update.Set("EstadoEliminado", true));
 ```
 Clase: ComentarioRepository  
 Método: Eliminar
 
-#### Actualización en MongoDB shell
+#### En MongoDB shell
 ```js
 db.comentarios.updateOne({ _id: ObjectId(id), EstadoEliminado: false }, { $set: { EstadoEliminado: true } })
 ```
@@ -111,10 +111,8 @@ db.comentarios.updateOne(
 
 ### Justificación de índices
 - `_id`: Identificador único por defecto.
-- `CarnetUsuario_1_IdGrupoEquipo_1`: Permite búsquedas eficientes por usuario y grupo, útil para filtrar comentarios de un usuario en un grupo.
+- `CarnetUsuario_1_IdGrupoEquipo_1`: Permite búsquedas eficientes por usuario y grupo, útil para filtrar comentarios de un usuario en un grupo de equipos.
 - `IdGrupoEquipo_1`: Optimiza la consulta principal de comentarios por grupo.
-
-Estos índices están alineados con los patrones de acceso más frecuentes y evitan escaneos completos de la colección.
 
 ---
 
@@ -148,34 +146,16 @@ Estos índices están alineados con los patrones de acceso más frecuentes y evi
 | fecha_prestamo_esperada| timestamp      | Fecha esperada para el inicio del préstamo  |
 | id_contrato            | text           | Id del contrato en MongoDB (índice único)   |
 
-**Nota:** En la tabla `prestamos` de PostgreSQL, el campo `id_contrato` tiene un índice único, lo que garantiza que cada contrato esté asociado a un solo préstamo y no se repitan referencias de contrato.
 
 ### Consulta de préstamos
 
-#### Consulta en C# (PostgreSQL)
+#### En C# (PostgreSQL)
 ```csharp
 const string sql = @"SELECT id_prestamo, fecha_solicitud, fecha_prestamo, fecha_devolucion_esperada, observacion, estado_prestamo, carnet, estado_eliminado, fecha_devolucion, fecha_prestamo_esperada, id_contrato FROM public.prestamos;";
 var resultado = _ejecutarConsulta.EjecutarFuncion(sql, new Dictionary<string, object?>());
 ```
 Clase: PrestamoRepository  
 Método: ObtenerTodos
-
-#### Consulta en MongoDB shell (equivalente)
-```js
-db.prestamos.find({}, {
-  id_prestamo: 1,
-  fecha_solicitud: 1,
-  fecha_prestamo: 1,
-  fecha_devolucion_esperada: 1,
-  observacion: 1,
-  estado_prestamo: 1,
-  carnet: 1,
-  estado_eliminado: 1,
-  fecha_devolucion: 1,
-  fecha_prestamo_esperada: 1,
-  id_contrato: 1
-})
-```
 
 ### Inserción de préstamo y contrato
 La inserción de un préstamo y su contrato se realiza en la clase `PrestamoRepository`, método `Crear`.
@@ -206,7 +186,7 @@ db.contratos.insertOne({
 INSERT INTO public.prestamos (/* campos */) VALUES (/* valores */) RETURNING id_prestamo;
 ```
 
-### Consulta unificada para el frontend
+### Consulta 
 - El servicio consulta la tabla de préstamos en PostgreSQL.
 - Si existe `id_contrato`, se puede consultar el contrato en MongoDB.
 - El DTO de respuesta (`PrestamoDto`) incluye ambos datos.
@@ -221,9 +201,8 @@ if (prestamo != null && prestamo.IdContrato != null) {
 }
 ```
 
-En MongoDB shell:
+Traduccion en MongoDB Shell:
 ```js
-var prestamo = db.prestamos.findOne({ id_prestamo: id });
 if (prestamo && prestamo.id_contrato) {
     var contrato = db.contratos.findOne({ fileId: prestamo.id_contrato, EstadoEliminado: false });
 }
@@ -232,6 +211,7 @@ if (prestamo && prestamo.id_contrato) {
 ### Justificación de índices
 - `_id`: Único por documento.
 - `prestamoId_1`: Único, garantiza un contrato por préstamo y búsquedas rápidas.
+- En la tabla `prestamos` de PostgreSQL, el campo `id_contrato` tiene un índice único, lo que garantiza que cada contrato esté asociado a un solo préstamo y no se repitan referencias de contrato.
 
 ---
 
@@ -264,7 +244,7 @@ Método: Crear
 
 #### En MongoDB shell
 ```js
-coleccionNotificaciones.insertOne({
+db.notificaciones.insertOne({
   CarnetUsuario: carnet,
   Titulo: titulo,
   Contenido: contenido,
@@ -286,7 +266,7 @@ Método: ObtenerPorUsuario
 
 #### En MongoDB shell
 ```js
-coleccionNotificaciones.find({ CarnetUsuario: carnet, EstadoEliminado: false }).sort({ FechaEnvio: -1 })
+db.notificaciones.find({ CarnetUsuario: carnet, EstadoEliminado: false }).sort({ FechaEnvio: -1 })
 ```
 Verificar si hay no leídas:
 
@@ -299,7 +279,7 @@ Método: TieneNotificacionesNoLeidas
 
 #### En MongoDB shell
 ```js
-coleccionNotificaciones.find({ CarnetUsuario: carnet, Leido: false, EstadoEliminado: false }).limit(1)
+db.notificaciones.find({ CarnetUsuario: carnet, Leido: false, EstadoEliminado: false }).limit(1)
 ```
 
 ### Actualización
@@ -314,7 +294,7 @@ Método: MarcarComoLeida
 
 #### En MongoDB shell
 ```js
-coleccionNotificaciones.updateOne({ _id: ObjectId(id) }, { $set: { Leido: true } })
+db.notificaciones.updateOne({ _id: ObjectId(id) }, { $set: { Leido: true } })
 ```
 Eliminar lógicamente:
 
@@ -327,5 +307,5 @@ Método: Eliminar
 
 #### En MongoDB shell
 ```js
-coleccionNotificaciones.updateOne({ _id: ObjectId(id) }, { $set: { EstadoEliminado: true } })
+db.notificaciones.updateOne({ _id: ObjectId(id) }, { $set: { EstadoEliminado: true } })
 ```
