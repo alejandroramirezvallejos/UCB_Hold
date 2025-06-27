@@ -78,4 +78,20 @@ public class GrupoEquipoRepository : IGrupoEquipoRepository
         catch (NpgsqlException ex) { throw new ErrorDataBase($"Error de base de datos al obtener grupos de equipos: {ex.Message}", ex.SqlState, null, ex); }
         catch (Exception ex) { throw new ErrorRepository($"Error del repositorio al obtener grupos de equipos: {ex.Message}", ex); }
     }
+    public DataTable ObtenerFavoritosPorCarnetUsuario(string carnetUsuario)
+    {
+        string sql = $"SELECT * FROM public.obtener_grupos_equipos_favoritos_por_carnet_usuario('{carnetUsuario}')";
+        try {
+            return _ejecutarConsulta.EjecutarFuncion(sql, new Dictionary<string, object?>());
+        } catch (NpgsqlException ex) { throw new ErrorDataBase($"Error de base de datos al obtener favoritos: {ex.Message}", ex.SqlState, null, ex); }
+        catch (Exception ex) { throw new ErrorRepository($"Error del repositorio al obtener favoritos: {ex.Message}", ex); }
+    }
+
+    public void MarcarComoFavorito(MarcarComoFavoritoComando comando)
+    {
+        string sql = $"CALL public.marcar_equipo_como_favorito({comando.Id}, '{comando.CarnetUsuario}')";
+        try { _ejecutarConsulta.EjecutarSpNR(sql, new Dictionary<string, object?>()); }
+        catch (NpgsqlException ex) { throw new ErrorDataBase($"Error de base de datos al marcar favorito: {ex.Message}", ex.SqlState, null, ex); }
+        catch (Exception ex) { throw new ErrorRepository($"Error del repositorio al marcar favorito: {ex.Message}", ex); }
+    }
 }

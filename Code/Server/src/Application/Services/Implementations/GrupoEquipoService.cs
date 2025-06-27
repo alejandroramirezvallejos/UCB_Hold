@@ -175,19 +175,37 @@ public class GrupoEquipoService : BaseServicios, IGrupoEquipoService
         if (ex is ErrorRepository errorRepo) throw new Exception($"Error del repositorio al actualizar grupo de equipos: {errorRepo.Message}", errorRepo);
         throw ex ?? new Exception("Error desconocido en actualización");
     }
+
     protected override BaseDto MapearFilaADto(DataRow fila)
     {
         return new GrupoEquipoDto
         {
-            Id = Convert.ToInt32(fila["id_grupo_equipo"]),
-            Nombre = fila["nombre_grupo_equipo"] == DBNull.Value ? null : fila["nombre_grupo_equipo"].ToString(),
-            Modelo = fila["modelo_grupo_equipo"] == DBNull.Value ? null : fila["modelo_grupo_equipo"].ToString(),
-            Marca = fila["marca_grupo_equipo"] == DBNull.Value ? null : fila["marca_grupo_equipo"].ToString(),
-            Descripcion = fila["descripcion_grupo_equipo"] == DBNull.Value ? null : fila["descripcion_grupo_equipo"].ToString(),
-            NombreCategoria = fila["nombre_categoria"] == DBNull.Value ? null : fila["nombre_categoria"].ToString(),
-            UrlDataSheet = fila["url_data_sheet_grupo_equipo"] == DBNull.Value ? null : fila["url_data_sheet_grupo_equipo"].ToString(),
-            UrlImagen = fila["url_imagen_grupo_equipo"] == DBNull.Value ? null : fila["url_imagen_grupo_equipo"].ToString(),
-            Cantidad = fila["cantidad_grupo_equipo"] == DBNull.Value ? null : Convert.ToInt32(fila["cantidad_grupo_equipo"])
+            Id = fila.Table.Columns.Contains("id_grupo_equipo") && fila["id_grupo_equipo"] != DBNull.Value ? Convert.ToInt32(fila["id_grupo_equipo"]) : 0,
+            Nombre = fila.Table.Columns.Contains("nombre_grupo_equipo") && fila["nombre_grupo_equipo"] != DBNull.Value ? fila["nombre_grupo_equipo"].ToString() : null,
+            Modelo = fila.Table.Columns.Contains("modelo_grupo_equipo") && fila["modelo_grupo_equipo"] != DBNull.Value ? fila["modelo_grupo_equipo"].ToString() : null,
+            Marca = fila.Table.Columns.Contains("marca_grupo_equipo") && fila["marca_grupo_equipo"] != DBNull.Value ? fila["marca_grupo_equipo"].ToString() : null,
+            Descripcion = fila.Table.Columns.Contains("descripcion_grupo_equipo") && fila["descripcion_grupo_equipo"] != DBNull.Value ? fila["descripcion_grupo_equipo"].ToString() : null,
+            NombreCategoria = fila.Table.Columns.Contains("nombre_categoria") && fila["nombre_categoria"] != DBNull.Value ? fila["nombre_categoria"].ToString() : null,
+            UrlDataSheet = fila.Table.Columns.Contains("url_data_sheet_grupo_equipo") && fila["url_data_sheet_grupo_equipo"] != DBNull.Value ? fila["url_data_sheet_grupo_equipo"].ToString() : null,
+            UrlImagen = fila.Table.Columns.Contains("url_imagen_grupo_equipo") && fila["url_imagen_grupo_equipo"] != DBNull.Value ? fila["url_imagen_grupo_equipo"].ToString() : null,
+            Cantidad = fila.Table.Columns.Contains("cantidad_grupo_equipo") && fila["cantidad_grupo_equipo"] != DBNull.Value ? Convert.ToInt32(fila["cantidad_grupo_equipo"]) : (int?)null
         };
+    }
+    
+    public virtual List<GrupoEquipoDto>? ObtenerFavoritosPorUsuario(ObtenerFavoritosPorCarnetUsuarioConsulta consulta)
+    {
+        var resultado = _grupoEquipoRepository.ObtenerFavoritosPorCarnetUsuario(consulta.CarnetUsuario);
+        var lista = new List<GrupoEquipoDto>(resultado.Rows.Count);
+        foreach (DataRow fila in resultado.Rows)
+        {
+            var dto = MapearFilaADto(fila) as GrupoEquipoDto;
+            if (dto != null) lista.Add(dto);
+        }
+        return lista;
+    }
+
+    public virtual void MarcarComoFavorito(MarcarComoFavoritoComando comando)
+    {
+        _grupoEquipoRepository.MarcarComoFavorito(comando);
     }
 }

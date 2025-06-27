@@ -6,4 +6,7 @@ public interface IGrupoEquipoService
     List<GrupoEquipoDto>? ObtenerGrupoEquipoPorNombreYCategoria(ObtenerGrupoEquipoPorNombreYCategoriaConsulta consulta);
     void ActualizarGrupoEquipo(ActualizarGrupoEquipoComando comando);
     void EliminarGrupoEquipo(EliminarGrupoEquipoComando comando);
+    
+    List<GrupoEquipoDto>? ObtenerFavoritosPorUsuario(ObtenerFavoritosPorCarnetUsuarioConsulta consulta);
+    void MarcarComoFavorito(MarcarComoFavoritoComando comando);
 }

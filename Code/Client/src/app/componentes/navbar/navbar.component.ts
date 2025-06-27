@@ -19,24 +19,25 @@ import { UsuarioService } from '../../services/usuario/usuario.service';
 
 
 export class NavbarComponent {
- 
+
   showUserMenu : WritableSignal<boolean> = signal(false);
   notificaciones: boolean = false;
   private intervalId: any;
+  favoritoActivo = false;
 
   constructor(private carrito : CarritoService , private router : Router , private notificacionesAPI : NotificacionService , private usuario : UsuarioService) { }
 
 
   ngOnInit() {
-    this.notificacionesAPI.enviarnotificaciones(); 
+    this.notificacionesAPI.enviarnotificaciones();
     this.verificarnotificaciones();
     this.intervalId = setInterval(() => {
-      this.notificacionesAPI.enviarnotificaciones(); 
+      this.notificacionesAPI.enviarnotificaciones();
       this.verificarnotificaciones();
     }, 1000);
   }
 
-  ngOnDestroy() { 
+  ngOnDestroy() {
     if (this.intervalId) {
       clearInterval(this.intervalId);
     }
@@ -46,12 +47,12 @@ export class NavbarComponent {
 
 
   botonhome() {
-   
+
     this.router.navigate(['/home']);
   }
 
   botonnotificaciones() {
-    
+
     this.router.navigate(['/Notificaciones']);
 
   }
@@ -67,13 +68,13 @@ export class NavbarComponent {
   mostrarcarrito() {
     this.router.navigate(['/Carrito']);
   }
-  
+
   verificarnotificaciones() {
     if(this.usuario.vacio()){
       this.notificaciones = false;
       return;
     }
-    
+
     this.notificacionesAPI.verificarnoleidas(this.usuario.obtenercarnet()).subscribe({
       next: (data) => {
         this.notificaciones = data;
@@ -83,6 +84,11 @@ export class NavbarComponent {
         this.notificaciones = false;
       }
     });
+  }
+
+  toggleFavorito() {
+    this.favoritoActivo = !this.favoritoActivo;
+    this.router.navigate(['/favoritos']);
   }
 
 }

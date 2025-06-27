@@ -1,6 +1,6 @@
 import { NgModule } from '@angular/core';
 import { RouterModule, Routes } from '@angular/router';
-import { PantallaMainComponent } from './componentes/cliente_modulo/pantalla-main/pantalla-main.component'; 
+import { PantallaMainComponent } from './componentes/cliente_modulo/pantalla-main/pantalla-main.component';
 import { ObjetoComponent } from './componentes/cliente_modulo/clic_objeto/objeto.component';
 import { CarritoComponent } from './componentes/cliente_modulo/carrito/carrito.component';
 import { AdministradorComponent } from './componentes/admin_modulo/administrador/administrador.component';
@@ -10,7 +10,7 @@ import { HistorialComponent } from './componentes/usuario/historial/historial.co
 import { PerfilComponent } from './componentes/usuario/perfil/perfil.component';
 import { RegistrarUsuarioComponent } from './componentes/usuario/registrar-usuario/registrar-usuario.component';
 import { NotificacionesComponent } from './componentes/notificaciones/notificaciones.component';
-
+import { FavoritosComponent } from './componentes/favoritos/favoritos.component';
 
 const routes: Routes = [
   { path: '', redirectTo: '/home', pathMatch: 'full' },
@@ -27,15 +27,13 @@ const routes: Routes = [
   { path: 'Iniciar-Sesion', component: IniciarSesionComponent },
   { path: 'Historial', component: HistorialComponent },
   { path: 'Perfil', component: PerfilComponent },
-  {path : 'Notificaciones', component : NotificacionesComponent},
+  { path: 'Notificaciones', component: NotificacionesComponent },
   { path: 'Registrar-Usuario', component: RegistrarUsuarioComponent },
-
-
-
+  { path: 'favoritos', component: FavoritosComponent },
 ];
 
 @NgModule({
   imports: [RouterModule.forRoot(routes)],
-  exports: [RouterModule]
+  exports: [RouterModule],
 })
-export class AppRoutingModule { }
+export class AppRoutingModule {}

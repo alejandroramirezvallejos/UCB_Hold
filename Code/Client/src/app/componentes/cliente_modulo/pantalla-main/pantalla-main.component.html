@@ -36,10 +36,10 @@
           [src]="
             hover.clear ? '/assets/x_color.png' : '/assets/x.png'
           "
-        />       
+        />
 
-      
-      } 
+
+      }
 
     <img
       class="icon category-icon"
@@ -65,9 +65,9 @@
         <div class="no-category-item" (click)="seleccionarcategoria('')">
           Sin categoría
         </div>
-        @for (item of items; track item.nombre) {
-          <div class="category-item" (click)="seleccionarcategoria(item.nombre)">
-            {{ item.nombre }}
+        @for (item of items; track item.Nombre) {
+          <div class="category-item" (click)="seleccionarcategoria(item.Nombre)">
+            {{ item.Nombre }}
           </div>
         }
       </div>

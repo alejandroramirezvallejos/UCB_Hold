@@ -34,12 +34,12 @@ export class GrupoequipoService {
       map(data => data.map(item => ({
         id: item.Id,
         nombre: item.Nombre ,
-        descripcion : item.Descripcion  , 
+        descripcion : item.Descripcion  ,
         modelo: item.Modelo ,
         url_data_sheet: item.UrlDataSheet  ,
         marca: item.Marca ,
         link: item.UrlImagen ,
-        nombreCategoria: item.NombreCategoria 
+        nombreCategoria: item.NombreCategoria
       })))
     );
   }
@@ -52,7 +52,7 @@ export class GrupoequipoService {
       map(data => data.map(item => ({
         id: item.Id,
         nombre: item.Nombre ,
-        descripcion : item.Descripcion  || '', 
+        descripcion : item.Descripcion  || '',
         modelo: ' '+item.Modelo || '',
         url_data_sheet: item.UrlDataSheet || '' ,
         marca: ' '+item.Marca || '',
@@ -97,6 +97,15 @@ export class GrupoequipoService {
 
   eliminarGrupoEquipo(id: number) {
     return this.http.delete<any>(`${this.apiUrl}/${id}`);
+  }
+
+
+  obtenerFavoritosPorCarnetUsuario(carnetUsuario: string): Observable<GrupoEquipo[]> {
+    return this.http.get<GrupoEquipo[]>(`${this.apiUrl}/${carnetUsuario}/favoritos`);
+  }
+
+  marcarComoFavorito(id: number, carnetUsuario: string): Observable<any> {
+    return this.http.post(`${this.apiUrl}/${id}/favorito?carnetUsuario=${encodeURIComponent(carnetUsuario)}`, {});
   }
 
 }

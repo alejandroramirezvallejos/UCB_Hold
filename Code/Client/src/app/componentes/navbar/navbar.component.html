@@ -39,9 +39,9 @@
       @if(notificaciones) {
             <span class="pendiente">!</span>
       }
-  
-      
-  
+
+
+
     </button>
 
 
@@ -61,7 +61,21 @@
         (mouseleave)="cartIcon.src = '/assets/shopping_card_line.png'"
       />
       <span class="cart-count">{{ totalproductos() }}</span>
+
     </button>
+    <button
+      type="button"
+      class="icon-button favorite-button"
+      (click)="toggleFavorito()"
+      aria-label="Favoritos"
+    >
+      <img
+        [src]="favoritoActivo ? '/assets/star-line-yellow.png' : '/assets/star-line-grey.png'"
+        alt="Favoritos"
+        class="icon-image"
+      />
+    </button>
+
     <div class="user-menu">
        <button
         type="button"
@@ -90,4 +104,3 @@
     [showUserMenu]="showUserMenu"
   ></app-usuario-previo>
 }
-

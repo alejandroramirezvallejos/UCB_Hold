@@ -80,4 +80,29 @@ public class GrupoEquipoController : ControllerBase
         catch (ErrorRegistroEnUso ex) { return Conflict(new { error = ex.GetType().Name, mensaje = ex.Message }); }
         catch (Exception ex) { return BadRequest(new { error = ex.GetType().Name, mensaje = ex.Message }); }
     }
+    
+    
+    [HttpGet("{carnetUsuario}/favoritos")]
+    public IActionResult ObtenerFavoritosPorCarnetUsuario(string carnetUsuario)
+    {
+        try {
+            var consulta = new ObtenerFavoritosPorCarnetUsuarioConsulta(carnetUsuario);
+            return Ok(servicio.ObtenerFavoritosPorUsuario(consulta));
+        }
+        catch (Exception ex) {
+            return BadRequest(new { mensaje = "Ocurrió un error al obtener los favoritos." });
+        }
+    }
+
+    [HttpPost("{id}/favorito")]
+    public IActionResult MarcarComoFavorito(int id, [FromQuery] string carnetUsuario)
+    {
+        try {
+            servicio.MarcarComoFavorito(new MarcarComoFavoritoComando(id, carnetUsuario));
+            return Ok(new { mensaje = "Equipo marcado como favorito" });
+        }
+        catch (Exception ex) {
+            return BadRequest(new { mensaje = "Ocurrió un error al marcar como favorito." });
+        }
+    }
 }

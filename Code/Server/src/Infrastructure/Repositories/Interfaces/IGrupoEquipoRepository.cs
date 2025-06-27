@@ -7,4 +7,7 @@ public interface IGrupoEquipoRepository
     void Actualizar(ActualizarGrupoEquipoComando comando);
     void Eliminar(int id);
     DataTable ObtenerTodos();
+    
+    DataTable ObtenerFavoritosPorCarnetUsuario(string carnetUsuario);
+    void MarcarComoFavorito(MarcarComoFavoritoComando comando);
 }
