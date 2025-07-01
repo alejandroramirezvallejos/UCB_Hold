@@ -45,8 +45,6 @@ export class AccesoriosTablaComponent {
 
   }
 
-
-
   crearaccesorio() {
     this.botoncrear.set(true);
   }
