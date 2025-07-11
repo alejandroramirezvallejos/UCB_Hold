@@ -18,11 +18,11 @@
   display: flex;
   align-items: flex-start;
   justify-content: center;
-  background: linear-gradient(135deg, #f0f4f8 0%, #d9e2ec 100%);
-  padding: 4rem 2rem 2rem;
+  background: linear-gradient(135deg, #ffffff 0%, #ffffff 100%);
+  padding: 10rem 2rem 1rem;
 }
 
-.login-card {
+.login-card { 
   background: white;
   padding: 2.5rem;
   border-radius: 1rem;
@@ -31,6 +31,7 @@
   box-shadow: 0 15px 25px rgba(0, 0, 0, 0.1);
   width: 100%;
   max-width: 400px;
+  animation: slideInUp 0.6s ease-out;
 }
 
 .logo-container {
@@ -180,6 +181,17 @@ label {
 @keyframes spin {
   to {
     transform: rotate(360deg);
+  }
+}
+
+@keyframes slideInUp {
+  from {
+    opacity: 0;
+    transform: translateY(30px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
   }
 }
 
