@@ -65,8 +65,8 @@
         <div class="no-category-item" (click)="seleccionarcategoria('')">
           Sin categoría
         </div>
-        @for (item of items; track item.nombre) {
-          <div class="category-item" (click)="seleccionarcategoria(item.nombre)">
+        @for (item of items; track item.Nombre) {
+          <div class="category-item" (click)="seleccionarcategoria(item.Nombre!)">
             {{ item.Nombre }}
           </div>
         }

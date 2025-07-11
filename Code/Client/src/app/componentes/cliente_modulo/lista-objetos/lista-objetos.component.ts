@@ -23,7 +23,7 @@ export class ListaObjetosComponent {
       error: (error) => console.error('Error en componente:', error)
     });
 
-    console.log(this.productos)
+    
   }
 
 

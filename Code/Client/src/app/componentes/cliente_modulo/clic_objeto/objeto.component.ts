@@ -5,13 +5,13 @@ import { ActivatedRoute, Router } from '@angular/router';
 import { GrupoequipoService } from '../../../services/APIS/GrupoEquipo/grupoequipo.service';
 import { GrupoEquipo } from '../../../models/grupo_equipo';
 import { CarritoService } from '../../../services/carrito/carrito.service';
-import { ComentariosComponent } from './comentarios/comentarios.component';
+
 
 
 @Component({
   selector: 'app-objeto',
   standalone: true,
-  imports: [CommonModule, ComentariosComponent],
+  imports: [CommonModule],
   templateUrl: './objeto.component.html',
   styleUrl: './objeto.component.css'
 })

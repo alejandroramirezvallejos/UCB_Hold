@@ -4,6 +4,7 @@ import { ListaObjetosComponent } from '../lista-objetos/lista-objetos.component'
 import { FormsModule } from '@angular/forms';
 
 import { CategoriaService } from '../../../services/APIS/Categoria/categoria.service';
+import { Categorias } from '../../../models/admin/Categorias';
 
 @Component({
   selector: 'app-pantalla-main',
@@ -17,7 +18,7 @@ export class PantallaMainComponent {
   solicitud: string = '';
   categoria: string = '';
   enviar: boolean = false;
-  items: any[] = [];
+  items: Categorias[] = [];
   hover: {
     search: boolean;
     categories: boolean;
