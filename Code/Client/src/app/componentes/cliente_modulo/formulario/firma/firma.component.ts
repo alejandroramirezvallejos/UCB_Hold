@@ -52,7 +52,6 @@ export class FirmaComponent {
     if (!this.signaturePad.isEmpty()) {
       // Convierte la firma en formato dataURL (Base64)
       this.signatureData = this.signaturePad.toDataURL();
-      console.log(this.signatureData);
       this.firma.emit(this.signatureData);
       this.clickfirma.set(false);
 
