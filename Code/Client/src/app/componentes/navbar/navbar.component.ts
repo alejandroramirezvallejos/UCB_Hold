@@ -25,14 +25,21 @@ export class NavbarComponent {
   constructor(private carrito : CarritoService , private router : Router , private usuario : UsuarioService) { }
 
   botonhome() {
+    if(this.usuario.vacio()==true){
+      this.router.navigate(['/Iniciar-Sesion']);
+    }
+    else{
+       this.router.navigate(['/home']);
+    }
+
+
    
-    this.router.navigate(['/home']);
   }
 
 
 
   toggleUserMenu() {
-    this.showUserMenu.set(!this.showUserMenu());
+      this.showUserMenu.set(!this.showUserMenu());
   }
 
   totalproductos(): number {
@@ -40,7 +47,13 @@ export class NavbarComponent {
   }
 
   mostrarcarrito() {
-    this.router.navigate(['/Carrito']);
+    if(this.usuario.vacio()==true){
+      this.router.navigate(['/Iniciar-Sesion']);
+    }
+    else{
+      this.router.navigate(['/Carrito']);
+    }
+
   }
   
 
