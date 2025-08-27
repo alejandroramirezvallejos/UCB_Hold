@@ -13,7 +13,7 @@ import { RegistrarUsuarioComponent } from './componentes/usuario/registrar-usuar
 
 
 const routes: Routes = [
-  { path: '', redirectTo: '/home', pathMatch: 'full' },
+  { path: '', redirectTo: '/Iniciar-Sesion', pathMatch: 'full' },
 
   // Ruta principal de administración
   { path: 'admin', component: AdministradorComponent },
