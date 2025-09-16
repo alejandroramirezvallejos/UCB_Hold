@@ -72,7 +72,7 @@ export class GrupoequipoService {
         nombre: item.Nombre,
         modelo: ' ' + item.Modelo || '',
         marca: ' ' + item.Marca || '',
-        url_data_sheet: item.UrlData,
+        url_data_sheet: item.UrlDataSheet,
         link: item.UrlImagen
       }))
     );

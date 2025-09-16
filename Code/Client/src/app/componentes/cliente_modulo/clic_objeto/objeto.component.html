@@ -17,12 +17,28 @@
       </ng-template>
     </div>
   </div>
+  
 
   <div class="seccion-detalles">
     <h2 class="nombre-objeto">
       {{ producto.nombre + " " + producto.modelo + " " + producto.marca }}
     </h2>
     <p class="descripcion-objeto">{{ producto.descripcion }}</p>
+    
+
+    @if(producto.url_data_sheet){
+       <a
+        class="ficha-link debajo-texto"
+        [href]="producto.url_data_sheet"
+        target="_blank"
+        rel="noopener noreferrer"
+        aria-label="Abrir ficha técnica en nueva pestaña"
+      >
+        Ver ficha técnica
+      </a>
+    }
+    
+    
     <button
       (click)="addproductocarrito()"
       class="boton-carrito"
@@ -33,5 +49,6 @@
     </button>
   </div>
 </div>
+
 }
 
