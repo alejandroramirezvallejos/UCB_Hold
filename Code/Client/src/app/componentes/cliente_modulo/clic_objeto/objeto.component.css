@@ -92,6 +92,67 @@
   transition: none;
 }
 
+
+.ficha-link {
+  display: inline-block;
+  margin: 0 0 0.6rem 0; 
+  padding: 0;
+  background: transparent;
+  color: rgba(107,119,134,0.7); 
+  border: none; 
+  border-radius: 0;
+  text-decoration: underline dotted rgba(107,119,134,0.35); 
+  font-weight: 400;
+  font-size: 0.9rem; 
+  width: auto;
+  opacity: 0.85;
+  transition: opacity 0.12s;
+}
+
+.ficha-link:hover {
+  opacity: 1; 
+  text-decoration-color: rgba(107,119,134,0.6);
+}
+
+
+.acciones {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  justify-content: flex-start; 
+}
+
+.ficha-link.debajo-texto {
+  display: block; 
+  width: 100%;
+  margin-top: 0.5rem;
+  margin-bottom: 0.8rem;
+  padding: 0;
+  text-decoration: underline dotted rgba(107,119,134,0.35);
+  color: rgba(107,119,134,0.75);
+  text-align: right; 
+}
+
+
+@media (max-width: 992px) {
+  .ficha-link.debajo-texto {
+    text-align: left;
+    width: 100%;
+  }
+}
+
+@media (max-width: 992px) {
+  .acciones {
+    flex-direction: column-reverse;
+    align-items: stretch;
+  }
+  .acciones .ficha-link {
+    margin-inline-start: 0;
+    align-self: flex-start;
+    margin-bottom: 0.6rem;
+  }
+}
+
 @media (max-width: 992px) {
   .contenedor-objeto {
     grid-template-columns: 1fr;
