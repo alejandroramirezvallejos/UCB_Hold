@@ -20,6 +20,8 @@ export class ObjetoComponent {
 
   producto: GrupoEquipo = new GrupoEquipo();
 
+  cargando: boolean = true;
+
    addedToCart = false;
 
   constructor(private route: ActivatedRoute , private servicio : GrupoequipoService, private carrito : CarritoService) { }
@@ -35,7 +37,10 @@ export class ObjetoComponent {
     this.id = routeId;
     
     this.servicio.getproducto(routeId).subscribe({
-      next: (data) => this.producto = data,
+      next: (data) => {
+        this.producto = data;
+        this.cargando = false;
+      },
       error: (error) => {
         console.error('Error completo del backend:', error.error.mensaje);
         this.producto = {
@@ -47,6 +52,7 @@ export class ObjetoComponent {
           url_data_sheet: '',
           link: ''
         };
+        this.cargando = false;
       }
     });
   }

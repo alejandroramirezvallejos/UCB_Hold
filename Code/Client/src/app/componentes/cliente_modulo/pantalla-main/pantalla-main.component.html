@@ -3,7 +3,6 @@
   <div
     class="search-input"
     [class.open]="showCategories"
-    (focusin)="showCategories = false"
   >
     <img
       class="icon"
@@ -39,7 +38,9 @@
         />       
 
       
-      } 
+      }
+      
+  
 
     <img
       class="icon category-icon"
@@ -53,10 +54,21 @@
           ? '/assets/categories_solid.png'
           : '/assets/categories_line.png'
       "
+      
     />
 
-
-
+    <div
+      class="category-label"
+      (mouseenter)="hover.categories = true"
+      (mouseleave)="hover.categories = false"
+      (mousedown)="$event.preventDefault()"
+      (click)="mostrarcategorias()"
+      role="button"
+      tabindex="0"
+      (keydown.enter)="mostrarcategorias()"
+    >
+      {{ categoria }}
+    </div>
 
   </div>
   @if (showCategories) {

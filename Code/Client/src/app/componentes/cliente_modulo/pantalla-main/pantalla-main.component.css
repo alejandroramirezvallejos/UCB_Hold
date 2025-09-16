@@ -47,8 +47,9 @@
   position: absolute;
   top: 100%;
   margin-top: -21px;
-  left: -0.7px;
-  width: calc(100% + 1px);
+  left: -1px;     
+  right: -1px;      
+  width: auto;
   background: #fff;
   border: 1px solid rgba(0, 0, 0, 0.1);
   border-top: none;
@@ -161,5 +162,19 @@
   margin-left: 4px;
   margin-right: 12px;
 }
+
+
+
+/* pruebas */
+
+.category-label {
+  margin-left: 0px;
+  color: #000000;
+  font-weight: 500;
+  cursor: pointer;
+  user-select: none;
+}
+
+
 
 
