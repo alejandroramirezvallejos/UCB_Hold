@@ -1,7 +1,7 @@
 <body>
   <div class="page-wrapper">
     <div class="grid-container">
-      @for (item of productos; track item.nombre) {
+      @for (item of productos[paginaActual]; track item.nombre) {
       <div class="product-card">
         <a [routerLink]="['/Objeto', item.id]" class="product-card__link">
           <div class="product-card__image-wrapper">
@@ -36,7 +36,19 @@
       </div>
     </div>
     }
+    <!-- paginacion -->
+    <div class="pagination">
+          @for (pagina of productos; track $index) {
+            <button
+              class="pagination__button"
+              [class.pagination__button--active]="$index === paginaActual"
+              (click)="actualizarPagina($index)"
+            >
+              {{ $index + 1 }}
+            </button>
+          }
 
+    </div>
     <!-- Footer -->
     <footer class="site-footer">
       <div class="footer-content">
