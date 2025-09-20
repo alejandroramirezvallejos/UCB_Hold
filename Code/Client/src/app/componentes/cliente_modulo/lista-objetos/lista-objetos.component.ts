@@ -43,6 +43,7 @@ export class ListaObjetosComponent {
 
   actualizarPagina(pagina: number): void {
     this.paginaActual = pagina;
+  
   }
 
 

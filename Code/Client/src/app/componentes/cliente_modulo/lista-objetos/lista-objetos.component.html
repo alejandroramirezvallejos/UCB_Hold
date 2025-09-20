@@ -38,6 +38,9 @@
     }
     <!-- paginacion -->
     <div class="pagination">
+         
+          <div class="fe--arrow-left" (click)="actualizarPagina(paginaActual - 1)"  [class.pagination__arrow--disabled]="paginaActual === 0"></div>
+        
           @for (pagina of productos; track $index) {
             <button
               class="pagination__button"
@@ -47,6 +50,8 @@
               {{ $index + 1 }}
             </button>
           }
+
+          <div class="fe--arrow-right" (click)="actualizarPagina(paginaActual + 1)" [class.pagination__arrow--disabled]="paginaActual === productos.length - 1"></div>
 
     </div>
     <!-- Footer -->

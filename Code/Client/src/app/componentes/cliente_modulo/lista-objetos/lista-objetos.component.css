@@ -258,3 +258,35 @@ body {
     margin: 1px;
   }
 }
+
+
+.fe--arrow-left {
+  display: inline-block;
+  width: 24px;
+  height: 24px;
+  background-repeat: no-repeat;
+  background-size: 100% 100%;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3E%3Cpath fill='8f9195' fill-rule='evenodd' d='m15 4l2 2l-6 6l6 6l-2 2l-8-8z'/%3E%3C/svg%3E");
+  
+}
+
+
+.fe--arrow-right {
+  display: inline-block;
+  width: 24px;
+  height: 24px;
+  background-repeat: no-repeat;
+  background-size: 100% 100%;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3E%3Cpath fill='8f9195' fill-rule='evenodd' d='m15 4l2 2l-6 6l6 6l-2 2l-8-8z'/%3E%3C/svg%3E");
+  transform: rotate(180deg);
+}
+.pagination__arrow--disabled {
+    visibility: hidden;
+  pointer-events: none;
+}
+.fe--arrow-left:hover,
+.fe--arrow-right:hover {
+  opacity: 0.5;
+  filter: brightness(1.2) sepia(0.2) hue-rotate(10deg);
+  transition: opacity 0.2s, filter 0.2s;
+}
