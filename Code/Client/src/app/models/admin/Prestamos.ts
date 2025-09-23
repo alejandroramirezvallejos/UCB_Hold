@@ -15,6 +15,8 @@ export class Prestamos extends Basemodel{
     FechaDevolucion: Date | null = null;
     Observacion: string | null = null;
     EstadoPrestamo: string | null = null;
+//    IdContrato: number | null = null;
+//    FileId : number | null = null;
 
     
     constructor(){

@@ -132,42 +132,43 @@
         </tr>
       </thead>
       <tbody>
-        @for (prestamo of prestamos; track $index ; let i = $index) {
+        @for (prestamo of (prestamos | keyvalue) ; track prestamo.key){
           <tr>
-            <td>{{prestamo.datosgrupo.NombreUsuario}} {{prestamo.datosgrupo.ApellidoPaternoUsuario}}</td>
-            <td>{{prestamo.datosgrupo.CarnetUsuario}}</td>
-            <td>{{prestamo.datosgrupo.TelefonoUsuario}}</td>
-            <td>{{prestamo.datosgrupo.NombreGrupoEquipo}}</td>
-            <td>{{prestamo.datosgrupo.CodigoImt}}</td>
-            <td>{{prestamo.datosgrupo.FechaSolicitud | date:'dd/MM/yyyy'}}</td>
-            <td>{{prestamo.datosgrupo.FechaPrestamoEsperada | date:'dd/MM/yyyy'}}</td>
-            <td>{{prestamo.datosgrupo.FechaDevolucionEsperada | date:'dd/MM/yyyy'}}</td>
+            <td>{{prestamo.value.datosgrupo.NombreUsuario}} {{prestamo.value.datosgrupo.ApellidoPaternoUsuario}}</td>
+            <td>{{prestamo.value.datosgrupo.CarnetUsuario}}</td>
+            <td>{{prestamo.value.datosgrupo.TelefonoUsuario}}</td>
+            <td>{{prestamo.value.datosgrupo.NombreGrupoEquipo}}</td>
+            <td>{{prestamo.value.datosgrupo.CodigoImt}}</td>
+            <td>{{prestamo.value.datosgrupo.FechaSolicitud | date:'dd/MM/yyyy'}}</td>
+            <td>{{prestamo.value.datosgrupo.FechaPrestamoEsperada | date:'dd/MM/yyyy'}}</td>
+            <td>{{prestamo.value.datosgrupo.FechaDevolucionEsperada | date:'dd/MM/yyyy'}}</td>
             <td>
-              <span [class]="'estado-' + (prestamo.datosgrupo.EstadoPrestamo?.toLowerCase() || '')">
-                {{prestamo.datosgrupo.EstadoPrestamo}}
+              <span [class]="'estado-' + (prestamo.value.datosgrupo.EstadoPrestamo?.toLowerCase() || '')">
+                {{prestamo.value.datosgrupo.EstadoPrestamo}}
               </span>
             </td>
             <td class="actions-column">
-            <button class="btn-icon btn-view" (click)="cambiarestadovercontrato(prestamo.datosgrupo)">
+            <button class="btn-icon btn-view" (click)="cambiarestadovercontrato(prestamo.value.datosgrupo)">
                 <i class="fas fa-file-contract"></i>
             </button>
 
 
-            @if(prestamo.datosgrupo.EstadoPrestamo == 'rechazado' || prestamo.datosgrupo.EstadoPrestamo == 'aprobado' || prestamo.datosgrupo.EstadoPrestamo == 'finalizado' || prestamo.datosgrupo.EstadoPrestamo == 'cancelado'){
-            <button class="btn-icon btn-delete" (click)="eliminarPrestamo(prestamo.datosgrupo)">
+            @if(prestamo.value.datosgrupo.EstadoPrestamo == 'rechazado' || prestamo.value.datosgrupo.EstadoPrestamo == 'aprobado' || prestamo.value.datosgrupo.EstadoPrestamo == 'finalizado' || prestamo.value.datosgrupo.EstadoPrestamo == 'cancelado'){
+            <button class="btn-icon btn-delete" (click)="eliminarPrestamo(prestamo.value.datosgrupo)">
                 <i class="fas fa-trash-alt"></i>
             </button>
-            }            @else if (prestamo.datosgrupo.EstadoPrestamo=='pendiente') {
-                <button class="btn-action btn-accept" (click)="aprobarprestamo(i)">
+            }     
+            @else if (prestamo.value.datosgrupo.EstadoPrestamo=='pendiente') {
+                <button class="btn-action btn-accept" (click)="aprobarprestamo(prestamo.key)">
                   <i class="fas fa-check"></i>
                   Aceptar
                 </button>
-                <button class="btn-action btn-reject" (click)="rechazarprestamo(i)">
+                <button class="btn-action btn-reject" (click)="rechazarprestamo(prestamo.key)">
                   <i class="fas fa-times"></i>
                   Rechazar
                 </button>
             }
-            @else if (prestamo.datosgrupo.EstadoPrestamo=='activo') {
+            @else if (prestamo.value.datosgrupo.EstadoPrestamo=='activo') {
 
             }
 
@@ -175,9 +176,9 @@
             </td>
           </tr>  
         }
-        @if (prestamos.length === 0) {
+        @if (prestamos.size === 0) {
           <tr>
-            <td colspan="7" class="empty-table">
+            <td colspan="10" class="empty-table">
               <div class="empty-state">
                 <i class="fas fa-search fa-3x"></i>
                 <p>No se encontraron préstamos</p>
