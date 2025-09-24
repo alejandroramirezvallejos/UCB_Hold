@@ -6,17 +6,20 @@ import { Prestamos } from '../../../../../models/admin/Prestamos';
 import { PrestamosAPIService } from '../../../../../services/APIS/prestamo/prestamos-api.service';
 import { PrestamoAgrupados } from '../../../../../models/PrestamoAgrupados';
 import { VercontratoComponent } from '../vercontrato/vercontrato.component';
+import { PantallaCargaComponent } from '../../../../pantalla-carga/pantalla-carga.component';
+import { finalize } from 'rxjs';
 
 @Component({
   selector: 'app-prestamos-tabla',
   standalone: true,
-  imports: [CommonModule, FormsModule, ReactiveFormsModule , VercontratoComponent],
+  imports: [CommonModule, FormsModule, ReactiveFormsModule , VercontratoComponent, PantallaCargaComponent],
   templateUrl: './prestamos-tabla.component.html',
   styleUrls: ['./prestamos-tabla.component.css']
 })
 export class PrestamosTablaComponent implements OnInit {
 
   botoncrear: WritableSignal<boolean> = signal(false);
+  cargando : boolean = false;
 
   alertaeliminar: boolean = false;
   prestamos:  Map<number, PrestamoAgrupados>= new Map<number, PrestamoAgrupados>();
@@ -57,6 +60,7 @@ export class PrestamosTablaComponent implements OnInit {
     this.prestamosapi.obtenerPrestamos().subscribe({
       next :(data: Prestamos[]) => {
         this.agruparPrestamos(data);
+        this.seleccionarEstado(this.estadoSeleccionado);
       },
       error: (error) => {
         console.error('Error al cargar los préstamos:', error);
@@ -100,10 +104,13 @@ export class PrestamosTablaComponent implements OnInit {
   }
 
   confirmarEliminacion() {
-    this.prestamosapi.eliminarPrestamo(this.prestamoSeleccionado.Id).subscribe({
+    this.cargando=true; 
+    this.prestamosapi.eliminarPrestamo(this.prestamoSeleccionado.Id)
+    .pipe(finalize(() => this.cargando = false))
+    .subscribe({
       next: (response) => {
         this.cargarPrestamos();
-  
+
       },
       error: (error) => {
         alert('Error al eliminar el préstamo: ' + error);
@@ -194,8 +201,8 @@ export class PrestamosTablaComponent implements OnInit {
   }
 
   cambiarestadovercontrato(prestamo : Prestamos) {
-  this.prestamoSeleccionado = prestamo;
-  this.vercontrato.set(!this.vercontrato());
+    this.prestamoSeleccionado = prestamo;
+    this.vercontrato.set(!this.vercontrato());
   }
 
 
