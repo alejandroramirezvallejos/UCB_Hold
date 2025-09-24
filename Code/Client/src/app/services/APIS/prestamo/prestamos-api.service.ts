@@ -30,7 +30,9 @@ export class PrestamosAPIService {
         FechaDevolucionEsperada: item.FechaDevolucionEsperada,
         FechaDevolucion: item.FechaDevolucion,
         Observacion: item.observacion,
-        EstadoPrestamo: item.EstadoPrestamo
+        EstadoPrestamo: item.EstadoPrestamo,
+        IdContrato: item.IdContrato,
+        FileId: item.FileId
       })))
     );
   }
@@ -100,7 +102,9 @@ export class PrestamosAPIService {
         FechaDevolucionEsperada: item.FechaDevolucionEsperada? new Date(item.FechaDevolucionEsperada) : null,
         FechaDevolucion: item.FechaDevolucion? new Date(item.FechaDevolucion) : null,
         Observacion: item.Observacion,
-        EstadoPrestamo: item.EstadoPrestamo
+        EstadoPrestamo: item.EstadoPrestamo,
+        IdContrato: item.IdContrato,
+        FileId: item.FileId
       })))
     );
 
