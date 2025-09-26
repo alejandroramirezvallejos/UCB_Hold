@@ -15,4 +15,9 @@ public class PrestamoDto : BaseDto
     public string? EstadoPrestamo { get; set; }
     public string? IdContrato { get; set; }
     public string? FileId { get; set; }
+
+    public string? Ubicacion_Equipo { get; set; }
+    public string? Nombre_Gavetero { get; set; }
+    public string? Nombre_Mueble { get; set; }
+    public string? Ubicacion_Mueble { get; set; }
 }

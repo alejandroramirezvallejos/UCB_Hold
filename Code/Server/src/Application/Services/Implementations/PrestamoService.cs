@@ -179,6 +179,10 @@ public class PrestamoService : BaseServicios, IPrestamoService
             FechaDevolucion = fila["fecha_devolucion"] == DBNull.Value ? null : Convert.ToDateTime(fila["fecha_devolucion"]),
             Observacion = fila["observacion"] == DBNull.Value ? null : fila["observacion"].ToString(),
             EstadoPrestamo = fila["estado_prestamo"] == DBNull.Value ? null : fila["estado_prestamo"].ToString(),
+            Ubicacion_Equipo = fila["ubicacion_equipo"] == DBNull.Value ? null : fila["ubicacion_equipo"].ToString(),
+            Nombre_Gavetero = fila["nombre_gavetero"] == DBNull.Value ? null : fila["nombre_gavetero"].ToString(),
+            Nombre_Mueble = fila["nombre_mueble"] == DBNull.Value ? null : fila["nombre_mueble"].ToString(),
+            Ubicacion_Mueble = fila["ubicacion_mueble"] == DBNull.Value ? null : fila["ubicacion_mueble"].ToString()
         };
     }
     public List<byte[]> ObtenerContratoPorPrestamo(ObtenerContratoPorPrestamoConsulta consulta)

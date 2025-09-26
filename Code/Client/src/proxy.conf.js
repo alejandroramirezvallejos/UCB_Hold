@@ -7,6 +7,7 @@ const PROXY_CONFIG = [
   {
     context: [
       "/IMT_Reservas",
+      "/api"
     ],
     target,
     secure: false

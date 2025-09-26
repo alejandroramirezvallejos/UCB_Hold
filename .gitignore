@@ -1,0 +1,104 @@
+##################################################
+# Archivos del sistema Mac
+##################################################
+.DS_Store
+.AppleDouble
+.LSOverride
+__MACOSX/
+
+##################################################
+# Archivos del sistema Windows
+##################################################
+Thumbs.db
+ehthumbs.db
+Desktop.ini
+$RECYCLE.BIN/
+*.lnk
+
+##################################################
+# Archivos de Visual Studio / Visual Studio Code
+##################################################
+.vscode/
+.vs/
+*.code-workspace
+*.user
+*.suo
+*.userosscache
+*.sln.docstates
+
+##################################################
+# Archivos de .NET / C#
+##################################################
+[Bb]in/
+[Oo]bj/
+[Dd]ebug/
+[Rr]elease/
+x64/
+x86/
+[Aa][Rr][Mm]/
+[Aa][Rr][Mm]64/
+*.dll
+*.exe
+*.pdb
+*.cache
+*.log
+*.dbmdl
+*.bak
+*.backup
+*.ldf
+*.ndf
+
+# Paquetes NuGet
+*.nupkg
+project.lock.json
+project.fragment.lock.json
+artifacts/
+.nuget/
+packages/
+# No ignorar packages.config ni .nuspec
+!packages.config
+!*.nuspec
+
+##################################################
+# Archivos de Angular / Node.js
+##################################################
+node_modules/
+dist/
+build/
+.tmp/
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+package-lock.json
+yarn.lock
+coverage/
+
+##################################################
+# Archivos de Git (conflictos / merges)
+##################################################
+*.orig
+*.rej
+*.swp
+*.swo
+*.idea/
+*.iml
+
+##################################################
+# Archivos de Base de Datos / Backups
+##################################################
+*.bak
+*.backup
+*.sql
+*.db
+*.sqlite
+*.mdf
+*.ldf
+
+##################################################
+# Otros temporales
+##################################################
+*.log
+*.tmp
+*.temp
+*.swp
+*.swo
