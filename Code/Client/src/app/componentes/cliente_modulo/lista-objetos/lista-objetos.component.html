@@ -38,21 +38,44 @@
     }
     <!-- paginacion -->
     <div class="pagination">
-         
-          <div class="fe--arrow-left" (click)="actualizarPagina(paginaActual - 1)"  [class.pagination__arrow--disabled]="paginaActual === 0"></div>
-        
-          @for (pagina of productos; track $index) {
-            <button
-              class="pagination__button"
-              [class.pagination__button--active]="$index === paginaActual"
-              (click)="actualizarPagina($index)"
-            >
-              {{ $index + 1 }}
-            </button>
-          }
+      <button
+        class="pagination__arrow-btn"
+        [class.pagination__arrow--disabled]="paginaActual === 0"
+        (click)="actualizarPagina(paginaActual - 1)">
+        <svg class="pagination__arrow-icon" viewBox="0 0 24 24">
+          <path d="M15.41 16.59L10.83 12l4.58-4.59L14 6l-6 6 6 6 1.41-1.41z"/>
+        </svg>
+      </button>
 
-          <div class="fe--arrow-right" (click)="actualizarPagina(paginaActual + 1)" [class.pagination__arrow--disabled]="paginaActual === productos.length - 1"></div>
+      @if (paginaActual > 2) {
+        <button class="pagination__button" (click)="actualizarPagina(0)">1</button>
+        <span class="pagination__ellipsis">...</span>
+      }
 
+      @for (pagina of obtenerRangoPaginas(); track pagina) {
+        <button
+          class="pagination__button"
+          [class.pagination__button--active]="pagina === paginaActual"
+          (click)="actualizarPagina(pagina)">
+          {{ pagina + 1 }}
+        </button>
+      }
+
+      @if (paginaActual < productos.length - 3) {
+        <span class="pagination__ellipsis">...</span>
+        <button class="pagination__button" (click)="actualizarPagina(productos.length - 1)">
+          {{ productos.length }}
+        </button>
+      }
+
+      <button
+        class="pagination__arrow-btn"
+        [class.pagination__arrow--disabled]="paginaActual === productos.length - 1"
+        (click)="actualizarPagina(paginaActual + 1)">
+        <svg class="pagination__arrow-icon" viewBox="0 0 24 24">
+          <path d="M8.59 16.59L13.17 12 8.59 7.41 10 6l6 6-6 6-1.41-1.41z"/>
+        </svg>
+      </button>
     </div>
     <!-- Footer -->
     <footer class="site-footer">
