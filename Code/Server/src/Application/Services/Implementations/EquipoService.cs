@@ -95,9 +95,8 @@ public class EquipoService : BaseServicios, IEquipoService
     }    
     protected override void ValidarEntradaEliminacion<T>(T comando)
     {
-        base.ValidarEntradaEliminacion(comando); // Validación base (null check)
+        base.ValidarEntradaEliminacion(comando); 
         
-        // Validaciones específicas para EliminarEquipoComando
         if (comando is EliminarEquipoComando equipoComando)
         {
             if (equipoComando.Id <= 0) throw new ErrorIdInvalido("equipo");
@@ -115,7 +114,8 @@ public class EquipoService : BaseServicios, IEquipoService
         }
         if (ex is ErrorRepository errorRepo) throw new Exception($"Error del repositorio al eliminar equipo: {errorRepo.Message}", errorRepo);
         throw ex ?? new Exception("Error desconocido en eliminación");
-    }    public List<EquipoDto>? ObtenerTodosEquipos()
+    }    
+    public List<EquipoDto>? ObtenerTodosEquipos()
     {
         try
         {

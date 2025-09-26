@@ -11,7 +11,7 @@ import { Router } from '@angular/router';
   styleUrl: './lista-objetos.component.css'
 })
 export class ListaObjetosComponent {
-  @Input() categoria: string = ''; 
+  @Input() categoria: string = '';
   @Input() producto: string = '';
   productos: GrupoEquipo[][] = [];
 
@@ -30,7 +30,7 @@ export class ListaObjetosComponent {
       error: (error) => console.error('Error en componente:', error)
     });
 
-    
+
   }
 
   paginar(productos: GrupoEquipo[]): GrupoEquipo[][] {
@@ -41,11 +41,31 @@ export class ListaObjetosComponent {
     return resultado;
   }
 
-  actualizarPagina(pagina: number): void {
-    this.paginaActual = pagina;
-  
+  obtenerRangoPaginas(): number[] {
+    const totalPaginas = this.productos.length;
+    const paginasAMostrar = 5;
+    const rangoMedio = Math.floor(paginasAMostrar / 2);
+
+    let inicio = Math.max(this.paginaActual - rangoMedio, 0);
+    let fin = Math.min(inicio + paginasAMostrar - 1, totalPaginas - 1);
+
+    if (fin - inicio + 1 < paginasAMostrar) {
+      inicio = Math.max(fin - paginasAMostrar + 1, 0);
+    }
+
+    return Array.from({length: fin - inicio + 1}, (_, i) => inicio + i);
   }
 
+  actualizarPagina(pagina: number): void {
+    if (pagina >= 0 && pagina < this.productos.length) {
+      this.paginaActual = pagina;
+    }
+  }
 
+  mostrarPuntosSuspensivos(index: number): boolean {
+    const totalPaginas = this.productos.length;
+    return (index === 0 && this.paginaActual > 2) ||
+           (index === totalPaginas - 1 && this.paginaActual < totalPaginas - 3);
+  }
 
 }
