@@ -10,17 +10,15 @@
       alt="Buscar"
       (mouseenter)="hover.search = true"
       (mouseleave)="hover.search = false"
-      (click)="actualizarobjetos()"
       [src]="
         hover.search ? '/assets/search_solid.png' : '/assets/search_line.png'
-      "
-    />
+      " />
 
     <textarea
       [(ngModel)]="solicitud"
       placeholder="Buscar..."
       rows="1"
-      (keydown.enter)="actualizarobjetos(); $event.preventDefault()"
+      (keydown.enter)="$event.preventDefault()"
       (focus)="showCategories = false"
     ></textarea>
 
@@ -35,12 +33,8 @@
           [src]="
             hover.clear ? '/assets/x_color.png' : '/assets/x.png'
           "
-        />       
-
-      
+        />
       }
-      
-  
 
     <img
       class="icon category-icon"
@@ -54,31 +48,23 @@
           ? '/assets/categories_solid.png'
           : '/assets/categories_line.png'
       "
-      
     />
-
-    <div
-      class="category-label"
-      (mouseenter)="hover.categories = true"
-      (mouseleave)="hover.categories = false"
-      (mousedown)="$event.preventDefault()"
-      (click)="mostrarcategorias()"
-      role="button"
-      tabindex="0"
-      (keydown.enter)="mostrarcategorias()"
-    >
-      {{ categoria }}
-    </div>
-
   </div>
+
   @if (showCategories) {
     <div class="categories-panel">
       <div class="categories-list">
-        <div class="no-category-item" (click)="seleccionarcategoria('')">
+        <div
+          class="no-category-item"
+          [class.selected]="estaCategoriaSeleccionada('')"
+          (click)="seleccionarcategoria('')">
           Sin categoría
         </div>
         @for (item of items; track item.Nombre) {
-          <div class="category-item" (click)="seleccionarcategoria(item.Nombre!)">
+          <div
+            class="category-item"
+            [class.selected]="estaCategoriaSeleccionada(item.Nombre!)"
+            (click)="seleccionarcategoria(item.Nombre!)">
             {{ item.Nombre }}
           </div>
         }
@@ -87,15 +73,7 @@
   }
 </div>
 
-<!-- 3. Lista de resultados fuera del buscador -->
-@if (enviar) {
-  <app-lista-objetos
-    [categoria]="categoria"
-    [producto]="solicitud"
-  ></app-lista-objetos>
-} @else {
-  <app-lista-objetos
-    [categoria]="categoria"
-    [producto]="solicitud"
-  ></app-lista-objetos>
-}
+<app-lista-objetos
+  [categorias]="categoriasArray"
+  [producto]="solicitud"
+></app-lista-objetos>

@@ -47,8 +47,8 @@
   position: absolute;
   top: 100%;
   margin-top: -21px;
-  left: -1px;     
-  right: -1px;      
+  left: -1px;
+  right: -1px;
   width: auto;
   background: #fff;
   border: 1px solid rgba(0, 0, 0, 0.1);
@@ -81,12 +81,12 @@
   font-size: 1rem;
   line-height: 1.2rem;
   font-weight: 500;
-  color: #8f9195;
+  color: #5f6368;
   background: #f8f9fa;
   padding: 6px 14px;
   border-radius: 16px;
   cursor: pointer;
-  transition: background 0.2s;
+  transition: all 0.2s ease;
 }
 
 .categories-list .no-category-item {
@@ -163,10 +163,6 @@
   margin-right: 12px;
 }
 
-
-
-/* pruebas */
-
 .category-label {
   margin-left: 0px;
   color: #000000;
@@ -175,6 +171,8 @@
   user-select: none;
 }
 
-
-
-
+.categories-list .category-item.selected,
+.categories-list .no-category-item.selected {
+  background-color: #ffcf00;
+  color: #5f6368;
+}

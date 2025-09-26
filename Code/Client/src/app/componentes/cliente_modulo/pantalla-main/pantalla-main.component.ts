@@ -1,5 +1,5 @@
 import { CommonModule } from '@angular/common';
-import { Component, EventEmitter, input, Output } from '@angular/core';
+import { Component } from '@angular/core';
 import { ListaObjetosComponent } from '../lista-objetos/lista-objetos.component';
 import { FormsModule } from '@angular/forms';
 
@@ -16,8 +16,7 @@ import { Categorias } from '../../../models/admin/Categorias';
 export class PantallaMainComponent {
   showCategories = false;
   solicitud: string = '';
-  categoria: string = '';
-  enviar: boolean = false;
+  categoriasSeleccionadas: Set<string> = new Set();
   items: Categorias[] = [];
   hover: {
     search: boolean;
@@ -29,11 +28,7 @@ export class PantallaMainComponent {
     clear: false,
   };
 
-  constructor(
-    private categorias: CategoriaService
-  ) {
-
-  }
+  constructor(private categorias: CategoriaService) {}
 
   ngOnInit(): void {
     this.categorias.obtenercategorias().subscribe({
@@ -42,34 +37,34 @@ export class PantallaMainComponent {
     });
   }
 
-  limpiar(){
+  limpiar() {
     this.solicitud = '';
-    this.categoria = '';
+    this.categoriasSeleccionadas.clear();
     this.hover.clear = false;
-    this.enviar = !this.enviar;
   }
-
 
   mostrarcategorias() {
     this.showCategories = !this.showCategories;
   }
 
   seleccionarcategoria(categoria: string) {
-    if (categoria == 'sin categoria') {
-      this.categoria = '';
+    if (this.categoriasSeleccionadas.has(categoria)) {
+      this.categoriasSeleccionadas.delete(categoria);
     } else {
-      this.categoria = categoria;
+      if (categoria === '') {
+        this.categoriasSeleccionadas.clear();
+      } else {
+        this.categoriasSeleccionadas.delete('');
+      }
+      this.categoriasSeleccionadas.add(categoria);
     }
-    this.mostrarcategorias();
-    this.actualizarobjetos();
   }
 
- 
-  actualizarobjetos() {
-   this.enviar = !this.enviar;
+  estaCategoriaSeleccionada(categoria: string): boolean {
+    return this.categoriasSeleccionadas.has(categoria);
   }
 
-
-
-
+  get categoriasArray(): string[] {
+    return Array.from(this.categoriasSeleccionadas);
+  }
 }

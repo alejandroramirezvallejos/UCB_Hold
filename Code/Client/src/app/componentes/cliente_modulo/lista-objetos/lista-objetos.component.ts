@@ -1,8 +1,9 @@
-import { Component, Input } from '@angular/core';
+import { Component, Input, OnChanges, SimpleChanges } from '@angular/core';
 import { RouterModule } from '@angular/router';
 import { GrupoequipoService } from '../../../services/APIS/GrupoEquipo/grupoequipo.service';
 import { GrupoEquipo } from '../../../models/grupo_equipo';
 import { Router } from '@angular/router';
+
 @Component({
   selector: 'app-lista-objetos',
   standalone: true,
@@ -10,27 +11,53 @@ import { Router } from '@angular/router';
   templateUrl: './lista-objetos.component.html',
   styleUrl: './lista-objetos.component.css'
 })
-export class ListaObjetosComponent {
-  @Input() categoria: string = '';
+export class ListaObjetosComponent implements OnChanges {
+  @Input() categorias: string[] = [];
   @Input() producto: string = '';
   productos: GrupoEquipo[][] = [];
-
+  todosLosProductos: GrupoEquipo[] = [];
   cantidadObjetos: number = 20;
-
   paginaActual: number = 0;
 
 
   constructor(private servicio: GrupoequipoService) { };
 
   ngOnInit(): void {
-    this.servicio.getGrupoEquipo(this.categoria , this.producto).subscribe({
-      next: (data) =>{
-        this.productos = this.paginar(data);
+    this.servicio.getGrupoEquipo('', '').subscribe({
+      next: (data) => {
+        this.todosLosProductos = data;
+        this.actualizarProductosFiltrados();
       },
       error: (error) => console.error('Error en componente:', error)
     });
+  }
+
+  ngOnChanges(changes: SimpleChanges): void {
+    if ((changes['categorias'] || changes['producto']) && this.todosLosProductos.length > 0) {
+      this.actualizarProductosFiltrados();
+    }
+  }
+
+  private actualizarProductosFiltrados(): void {
+    let productosFiltrados = this.todosLosProductos;
+
+    if (this.categorias.length > 0) {
+      productosFiltrados = this.todosLosProductos.filter(producto =>
+        this.categorias.includes(producto.nombreCategoria || '')
+      );
+    }
 
 
+    if (this.producto) {
+      const busqueda = this.producto.toLowerCase();
+      productosFiltrados = productosFiltrados.filter(producto =>
+        producto.nombre?.toLowerCase().includes(busqueda) ||
+        producto.descripcion?.toLowerCase().includes(busqueda)
+      );
+    }
+
+    this.productos = this.paginar(productosFiltrados);
+    this.paginaActual = 0;
   }
 
   paginar(productos: GrupoEquipo[]): GrupoEquipo[][] {
