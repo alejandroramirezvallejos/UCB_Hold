@@ -83,6 +83,12 @@
 	word-break: break-word;
 }
 
+/* Evitar corte en código IMT */
+.vista-table tbody td:nth-child(2) {
+	white-space: nowrap;
+	word-break: normal;
+}
+
 @media (max-width: 980px) {
 	.form-container.adaptativo {
 		max-width: 100vw;
