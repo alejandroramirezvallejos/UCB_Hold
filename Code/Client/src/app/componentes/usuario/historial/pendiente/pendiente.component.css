@@ -1,4 +1,3 @@
-
 :root {
   --color-primary: #2563eb;
   --color-secondary: #FFCF00;
@@ -26,6 +25,7 @@
   background-color: var(--color-background);
   min-height: 100vh;
   margin-top: 2rem;
+  margin-right: 2.5rem;
 }
 
 .header-section {
@@ -33,6 +33,7 @@
   padding-bottom: 1rem;
   border-bottom: 2px solid var(--color-border);
 }
+
 
 .title {
   font-size: 1.8rem;
@@ -55,7 +56,6 @@
 
 .prestamo-item {
   background: var(--color-surface);
- 
   border-left: 5px solid var(--color-primary);
   border-radius: var(--radius);
   padding: 1.25rem;
@@ -92,9 +92,12 @@
   font-weight: 700;
   color: var(--color-primary);
   margin-bottom: 0.3rem;
-  display: flex;
-  align-items: center;
-  gap: 0.5rem;
+  /* Limitar a una línea con ellipsis */
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  max-width: 95%;
+  line-height: 1.2;
 }
 
 .usuario-carnet {
@@ -118,6 +121,11 @@
 .codigo-imt {
   font-size: 0.8rem;
   color: var(--color-text-secondary);
+  /* Limitar códigos IMT para que ocupen menos espacio */
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  max-width: 250px;
 }
 
 .fechas-info {
@@ -139,9 +147,9 @@
 }
 
 .fecha-item:hover {
-  border-color: var(--color-primary);
-  transform: translateY(-1px);
-  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  border-color: inherit;
+  transform: none;
+  box-shadow: none;
 }
 
 .fecha-label {
@@ -182,6 +190,26 @@
 
 .empty-state p {
   font-size: 0.95rem;
+}
+
+/* Mostrar cantidad de equipos */
+.cantidad-equipos {
+  font-size: 0.8rem;
+  color: var(--color-primary);
+  background: rgba(37, 99, 235, 0.1);
+  padding: 0.2rem 0.5rem;
+  border-radius: 12px;
+  display: inline-block;
+  margin-top: 0.3rem;
+  font-weight: 500;
+}
+
+.prestamo-item {
+  cursor: pointer;
+}
+
+.prestamo-item  {
+  cursor: default;
 }
 
 .cancelar {
@@ -288,3 +316,5 @@
 
 
 }
+
+

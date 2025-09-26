@@ -1,3 +1,4 @@
+import { signal, WritableSignal } from "@angular/core";
 import { Prestamos } from "../../../../models/admin/Prestamos";
 import { PrestamoAgrupados } from "../../../../models/PrestamoAgrupados";
 import { PrestamosAPIService } from "../../../../services/APIS/prestamo/prestamos-api.service";
@@ -6,6 +7,11 @@ import { UsuarioService } from "../../../../services/usuario/usuario.service";
 export abstract class HistorialBase {
 datos  = new Map<number, PrestamoAgrupados>;
 itemSeleccionado: Prestamos | null = null;
+
+prestamosVista : Prestamos[] = [];
+
+abrirVistaPrestamos : boolean = false;
+
 
 
 protected abstract estado : string ; 
@@ -41,7 +47,15 @@ cargarDatos() {
 
   }
 
-  
+AbrirVista(item: Prestamos[]) {
+  this.prestamosVista = item;
+  this.abrirVistaPrestamos = true;
+}
+
+cerrarVista() {
+  this.abrirVistaPrestamos = false;
+  this.prestamosVista = [];
+} 
 
 
 

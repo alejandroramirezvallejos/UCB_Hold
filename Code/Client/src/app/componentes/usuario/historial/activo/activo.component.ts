@@ -6,10 +6,11 @@ import { CommonModule, DatePipe } from '@angular/common';
 import { PrestamoAgrupados } from '../../../../models/PrestamoAgrupados';
 import { Aviso } from '../aviso/aviso.component';
 import { HistorialBase } from '../BASE/HistorialBase';
+import { VistaPrestamosComponent } from '../../../vista-prestamos/vista-prestamos.component';
 
 @Component({
   selector: 'app-activo',
-  imports: [CommonModule, DatePipe , Aviso],
+  imports: [CommonModule, DatePipe , Aviso,VistaPrestamosComponent],
   templateUrl: './activo.component.html',
   styleUrl: './activo.component.css'
 })

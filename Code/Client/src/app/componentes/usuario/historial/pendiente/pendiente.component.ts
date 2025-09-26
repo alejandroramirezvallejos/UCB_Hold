@@ -6,10 +6,11 @@ import { Prestamos } from '../../../../models/admin/Prestamos';
 import { CommonModule } from '@angular/common';
 import { Aviso } from '../aviso/aviso.component';
 import { HistorialBase } from '../BASE/HistorialBase';
+import { VistaPrestamosComponent } from '../../../vista-prestamos/vista-prestamos.component';
 
 @Component({
   selector: 'app-pendiente',
-  imports: [CommonModule , Aviso],
+  imports: [CommonModule , Aviso , VistaPrestamosComponent],
   templateUrl: './pendiente.component.html',
   styleUrl: './pendiente.component.css'
 })

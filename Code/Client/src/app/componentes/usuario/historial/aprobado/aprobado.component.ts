@@ -6,11 +6,12 @@ import { CommonModule } from '@angular/common';
 import { PrestamoAgrupados } from '../../../../models/PrestamoAgrupados';
 import { Aviso } from '../aviso/aviso.component';
 import { HistorialBase } from '../BASE/HistorialBase';
+import { VistaPrestamosComponent } from '../../../vista-prestamos/vista-prestamos.component';
 
 @Component({
   selector: 'app-aprobado',
   standalone: true,
-  imports: [CommonModule, Aviso],
+  imports: [CommonModule, Aviso , VistaPrestamosComponent],
   templateUrl: './aprobado.component.html',
   styleUrl: './aprobado.component.css'
 })

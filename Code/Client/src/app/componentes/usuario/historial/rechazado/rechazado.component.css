@@ -1,4 +1,3 @@
-
 :root {
   --color-primary: #2563eb;
   --color-secondary: #FFCF00;
@@ -26,6 +25,7 @@
   background-color: var(--color-background);
   min-height: 100vh;
   margin-top: 2rem;
+  margin-right: 2.5rem;
 }
 
 .header-section {
@@ -55,7 +55,6 @@
 
 .prestamo-item {
   background: var(--color-surface);
- 
   border-left: 5px solid var(--color-primary);
   border-radius: var(--radius);
   padding: 1.25rem;
@@ -92,9 +91,12 @@
   font-weight: 700;
   color: var(--color-primary);
   margin-bottom: 0.3rem;
-  display: flex;
-  align-items: center;
-  gap: 0.5rem;
+  /* Limitar a una línea con ellipsis */
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  max-width: 95%;
+  line-height: 1.2;
 }
 
 .usuario-carnet {
@@ -118,6 +120,11 @@
 .codigo-imt {
   font-size: 0.8rem;
   color: var(--color-text-secondary);
+  /* Limitar códigos IMT para que ocupen menos espacio */
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  max-width: 250px;
 }
 
 .fechas-info {
@@ -138,10 +145,11 @@
   transition: var(--transition);
 }
 
+/* quitar elevación en fecha-item para que no parezcan botones interactivos */
 .fecha-item:hover {
-  border-color: var(--color-primary);
-  transform: translateY(-1px);
-  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  border-color: inherit;
+  transform: none;
+  box-shadow: none;
 }
 
 .fecha-label {
@@ -182,6 +190,30 @@
 
 .empty-state p {
   font-size: 0.95rem;
+}
+
+
+
+
+/* Mostrar cantidad de equipos */
+.cantidad-equipos {
+  font-size: 0.8rem;
+  color: var(--color-primary);
+  background: rgba(37, 99, 235, 0.1);
+  padding: 0.2rem 0.5rem;
+  border-radius: 12px;
+  display: inline-block;
+  margin-top: 0.3rem;
+  font-weight: 500;
+}
+
+/* Cursor pointer para toda la tarjeta */
+.prestamo-item {
+  cursor: pointer;
+}
+
+.prestamo-item  {
+  cursor: default;
 }
 
 /* Responsive Design */
@@ -236,4 +268,92 @@
   .fecha-item {
     padding: 0.4rem 0.6rem;
   }
+  
+  
+}
+
+
+.empty-state {
+  text-align: center;
+  padding: 3rem 2rem;
+  color: var(--color-text-secondary);
+  background: var(--color-surface);
+  border: 2px dashed var(--color-border);
+  border-radius: var(--radius);
+}
+
+.empty-icon {
+  font-size: 3rem;
+  margin-bottom: 1rem;
+}
+
+.empty-state h3 {
+  font-size: 1.3rem;
+  margin-bottom: 0.5rem;
+  color: var(--color-text);
+}
+
+.empty-state p {
+  font-size: 0.95rem;
+}
+
+
+
+
+/* Responsive Design */
+@media (max-width: 768px) {
+  .prestamos-container {
+    padding: 0.75rem;
+    margin-top: 1rem;
+  }
+  
+  .title {
+    font-size: 1.5rem;
+  }
+  
+  .subtitle {
+    font-size: 0.9rem;
+  }
+  
+  .prestamo-item {
+    padding: 0.75rem;
+  }
+  
+  .item-header {
+    flex-direction: column;
+    gap: 0.5rem;
+    align-items: stretch;
+  }
+  
+  .equipo-info {
+    text-align: left;
+  }
+  
+  .fechas-info {
+    grid-template-columns: 1fr;
+    gap: 0.5rem;
+  }  
+  .fecha-item {
+    flex-direction: column;
+    gap: 0.25rem;
+    text-align: left;
+  }
+}
+
+@media (max-width: 480px) {
+  .prestamo-item {
+    padding: 0.5rem;
+  }
+  
+  .usuario-nombre {
+    font-size: 1rem;
+  }
+  
+  .fecha-item {
+    padding: 0.4rem 0.6rem;
+  }
+
+
+
+
 }
