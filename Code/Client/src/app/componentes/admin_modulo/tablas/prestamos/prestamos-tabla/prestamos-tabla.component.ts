@@ -8,11 +8,12 @@ import { PrestamoAgrupados } from '../../../../../models/PrestamoAgrupados';
 import { VercontratoComponent } from '../vercontrato/vercontrato.component';
 import { PantallaCargaComponent } from '../../../../pantalla-carga/pantalla-carga.component';
 import { finalize } from 'rxjs';
+import { VistaPrestamosComponent } from '../../../../vista-prestamos/vista-prestamos.component';
 
 @Component({
   selector: 'app-prestamos-tabla',
   standalone: true,
-  imports: [CommonModule, FormsModule, ReactiveFormsModule , VercontratoComponent, PantallaCargaComponent],
+  imports: [CommonModule, FormsModule, ReactiveFormsModule , VercontratoComponent, PantallaCargaComponent , VistaPrestamosComponent],
   templateUrl: './prestamos-tabla.component.html',
   styleUrls: ['./prestamos-tabla.component.css']
 })
@@ -39,6 +40,12 @@ export class PrestamosTablaComponent implements OnInit {
   hover = {
     filter: false
   };
+
+
+  abrirVista : boolean = false;
+
+  prestamosVista : Prestamos[] = [];
+
 
   constructor(private prestamosapi: PrestamosAPIService ) {}
 
@@ -203,6 +210,18 @@ export class PrestamosTablaComponent implements OnInit {
   cambiarestadovercontrato(prestamo : Prestamos) {
     this.prestamoSeleccionado = prestamo;
     this.vercontrato.set(!this.vercontrato());
+  }
+
+
+  // Vista prestamos
+  abrirVistaPrestamos(prestamos : Prestamos[]) {
+    this.prestamosVista = prestamos;
+    this.abrirVista = true;
+  }
+
+  cerrarVistaPrestamos() {
+    this.abrirVista = false;
+    this.prestamosVista = [];
   }
 
 

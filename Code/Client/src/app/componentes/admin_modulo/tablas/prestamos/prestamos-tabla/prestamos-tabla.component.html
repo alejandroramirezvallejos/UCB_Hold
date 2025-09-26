@@ -108,10 +108,7 @@
              Equipos
           
           </th>
-          <th >
-            Códigos IMT
-           
-          </th>
+          
           <th >
             Fecha Solicitud
            
@@ -134,11 +131,22 @@
       <tbody>
         @for (prestamo of (prestamos | keyvalue) ; track prestamo.key){
           <tr>
-            <td>{{prestamo.value.datosgrupo.NombreUsuario}} {{prestamo.value.datosgrupo.ApellidoPaternoUsuario}}</td>
+            <td class="nombre-usuario">
+              <span title="{{prestamo.value.datosgrupo.NombreUsuario}} {{prestamo.value.datosgrupo.ApellidoPaternoUsuario}}">
+                {{prestamo.value.datosgrupo.NombreUsuario}} {{prestamo.value.datosgrupo.ApellidoPaternoUsuario}}
+              </span>
+            </td>
             <td>{{prestamo.value.datosgrupo.CarnetUsuario}}</td>
             <td>{{prestamo.value.datosgrupo.TelefonoUsuario}}</td>
-            <td>{{prestamo.value.datosgrupo.NombreGrupoEquipo}}</td>
-            <td>{{prestamo.value.datosgrupo.CodigoImt}}</td>
+            <td class="equipos-cell">
+              <div class="equipos-info">
+                <span class="nombre-equipo" title="{{prestamo.value.datosgrupo.NombreGrupoEquipo}}">
+                  {{prestamo.value.datosgrupo.NombreGrupoEquipo}}
+                </span>
+                <small class="cantidad-equipos">{{ prestamo.value.equipos?.length || 0 }} equipos</small>
+              </div>
+            </td>
+
             <td>{{prestamo.value.datosgrupo.FechaSolicitud | date:'dd/MM/yyyy'}}</td>
             <td>{{prestamo.value.datosgrupo.FechaPrestamoEsperada | date:'dd/MM/yyyy'}}</td>
             <td>{{prestamo.value.datosgrupo.FechaDevolucionEsperada | date:'dd/MM/yyyy'}}</td>
@@ -148,6 +156,15 @@
               </span>
             </td>
             <td class="actions-column">
+           
+              <button
+                class="btn-icon btn-view"
+                title="Ver detalles"
+                aria-label="Ver detalles"
+                (click)="abrirVistaPrestamos(prestamo.value.equipos)">
+                <i class="fas fa-eye"></i>
+               </button>
+
             <button class="btn-icon btn-view" (click)="cambiarestadovercontrato(prestamo.value.datosgrupo)">
                 <i class="fas fa-file-contract"></i>
             </button>
@@ -214,4 +231,12 @@
 
 @if (cargando) {
   <app-pantalla-carga> </app-pantalla-carga>
+}
+
+
+@if (abrirVista) {
+  <app-vista-prestamos
+    [prestamos]="prestamosVista"
+    (cerrar)="cerrarVistaPrestamos()"
+  ></app-vista-prestamos>
 }
