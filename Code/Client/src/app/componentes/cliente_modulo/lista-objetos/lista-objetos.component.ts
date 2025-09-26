@@ -14,50 +14,64 @@ import { Router } from '@angular/router';
 export class ListaObjetosComponent implements OnChanges {
   @Input() categorias: string[] = [];
   @Input() producto: string = '';
-  productos: GrupoEquipo[][] = [];
-  todosLosProductos: GrupoEquipo[] = [];
+
+  private todosLosProductos: GrupoEquipo[] = [];
+  productosFiltrados: GrupoEquipo[] = [];
+  productosPaginados: GrupoEquipo[][] = [];
   cantidadObjetos: number = 20;
   paginaActual: number = 0;
+  totalPaginas: number = 0;
 
-
-  constructor(private servicio: GrupoequipoService) { };
+  constructor(private servicio: GrupoequipoService) {}
 
   ngOnInit(): void {
+    this.cargarProductos();
+  }
+
+  ngOnChanges(changes: SimpleChanges): void {
+    if ((changes['categorias'] || changes['producto']) && this.todosLosProductos.length > 0) {
+      this.filtrarProductos();
+    }
+  }
+
+  private cargarProductos(): void {
     this.servicio.getGrupoEquipo('', '').subscribe({
       next: (data) => {
         this.todosLosProductos = data;
-        this.actualizarProductosFiltrados();
+        this.filtrarProductos();
       },
       error: (error) => console.error('Error en componente:', error)
     });
   }
 
-  ngOnChanges(changes: SimpleChanges): void {
-    if ((changes['categorias'] || changes['producto']) && this.todosLosProductos.length > 0) {
-      this.actualizarProductosFiltrados();
-    }
-  }
+  private filtrarProductos(): void {
+    let productos = [...this.todosLosProductos];
 
-  private actualizarProductosFiltrados(): void {
-    let productosFiltrados = this.todosLosProductos;
-
+    // Filtrar por categorías
     if (this.categorias.length > 0) {
-      productosFiltrados = this.todosLosProductos.filter(producto =>
-        this.categorias.includes(producto.nombreCategoria || '')
+      productos = productos.filter(p =>
+        this.categorias.includes(p.nombreCategoria || '')
       );
     }
 
-
+    // Filtrar por término de búsqueda
     if (this.producto) {
       const busqueda = this.producto.toLowerCase();
-      productosFiltrados = productosFiltrados.filter(producto =>
-        producto.nombre?.toLowerCase().includes(busqueda) ||
-        producto.descripcion?.toLowerCase().includes(busqueda)
+      productos = productos.filter(p =>
+        (p.nombre?.toLowerCase().includes(busqueda) ||
+         p.descripcion?.toLowerCase().includes(busqueda) ||
+         p.marca?.toLowerCase().includes(busqueda))
       );
     }
 
-    this.productos = this.paginar(productosFiltrados);
-    this.paginaActual = 0;
+    this.productosFiltrados = productos;
+    this.productosPaginados = this.paginar(productos);
+    this.totalPaginas = this.productosPaginados.length;
+
+    // Asegurarse de que la página actual sea válida
+    if (this.paginaActual >= this.totalPaginas) {
+      this.paginaActual = Math.max(0, this.totalPaginas - 1);
+    }
   }
 
   paginar(productos: GrupoEquipo[]): GrupoEquipo[][] {
@@ -69,30 +83,36 @@ export class ListaObjetosComponent implements OnChanges {
   }
 
   obtenerRangoPaginas(): number[] {
-    const totalPaginas = this.productos.length;
     const paginasAMostrar = 5;
     const rangoMedio = Math.floor(paginasAMostrar / 2);
 
     let inicio = Math.max(this.paginaActual - rangoMedio, 0);
-    let fin = Math.min(inicio + paginasAMostrar - 1, totalPaginas - 1);
+    let fin = Math.min(inicio + paginasAMostrar - 1, this.totalPaginas - 1);
 
+    // Ajustar el inicio si no hay suficientes páginas al final
     if (fin - inicio + 1 < paginasAMostrar) {
-      inicio = Math.max(fin - paginasAMostrar + 1, 0);
+      inicio = Math.max(0, fin - paginasAMostrar + 1);
     }
 
-    return Array.from({length: fin - inicio + 1}, (_, i) => inicio + i);
+    // Generar el rango de páginas
+    return Array.from({ length: fin - inicio + 1 }, (_, i) => inicio + i);
   }
 
   actualizarPagina(pagina: number): void {
-    if (pagina >= 0 && pagina < this.productos.length) {
+    if (pagina >= 0 && pagina < this.totalPaginas) {
       this.paginaActual = pagina;
     }
   }
 
-  mostrarPuntosSuspensivos(index: number): boolean {
-    const totalPaginas = this.productos.length;
-    return (index === 0 && this.paginaActual > 2) ||
-           (index === totalPaginas - 1 && this.paginaActual < totalPaginas - 3);
+  get productosActuales(): GrupoEquipo[] {
+    return this.productosPaginados[this.paginaActual] || [];
   }
 
+  get hayPaginasAnteriores(): boolean {
+    return this.paginaActual > 0;
+  }
+
+  get hayPaginasSiguientes(): boolean {
+    return this.paginaActual < this.totalPaginas - 1;
+  }
 }
