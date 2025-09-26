@@ -651,6 +651,50 @@
   }
 }
 
+/* Estilos para truncamiento de texto largo en celdas */
+.nombre-usuario {
+  max-width: 180px;
+}
+
+.nombre-usuario span {
+  display: block;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  width: 100%;
+}
+
+.equipos-cell {
+  max-width: 100px;
+}
+
+.equipos-info {
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+}
+
+.nombre-equipo {
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  font-weight: 500;
+  color: var(--color-text);
+}
+
+.cantidad-equipos {
+  font-size: 0.75rem;
+  color: var(--color-text-secondary);
+  font-weight: 600;
+}
+
+.codigos-cell {
+  max-width: 150px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
 /* Responsive general para modal y botones */
 @media (max-width: 480px) {
   .modal-content {
