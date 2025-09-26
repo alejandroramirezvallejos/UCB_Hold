@@ -1,0 +1,32 @@
+
+
+
+<div class="form-container adaptativo">
+    <button class="btn-close" (click)="cerrarVista()">
+        <i class="fas fa-times"></i>
+    </button>
+    <h2 class="titulo-minimo">Préstamos</h2>
+
+    <div class="tabla-wrapper">
+        <table class="vista-table">
+            <thead>
+                <tr>
+                    <th>Equipo</th>
+                    <th>Codigo IMT</th>
+                    <th>Observación</th>
+                    <th>Ubicacion</th>
+                </tr>
+            </thead>
+            <tbody>
+                @for(prestamo of prestamos; track $index) {
+                    <tr>
+                        <td>{{prestamo.NombreGrupoEquipo}}</td>
+                        <td>{{prestamo.CodigoImt}}</td>
+                        <td>{{prestamo.Observacion}}</td>
+                        <td>{{"en produccion prueba de tamaño muy grande AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA"}}</td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    </div>
+</div>

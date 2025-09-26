@@ -5,10 +5,11 @@ import { PrestamosAPIService } from '../../../../services/APIS/prestamo/prestamo
 import { Prestamos } from '../../../../models/admin/Prestamos';
 import { CommonModule } from '@angular/common';
 import { HistorialBase } from '../BASE/HistorialBase';
+import { VistaPrestamosComponent } from '../../../vista-prestamos/vista-prestamos.component';
 
 @Component({
   selector: 'app-finalizado',
-  imports: [CommonModule],
+  imports: [CommonModule , VistaPrestamosComponent],
   templateUrl: './finalizado.component.html',
   styleUrl: './finalizado.component.css'
 })

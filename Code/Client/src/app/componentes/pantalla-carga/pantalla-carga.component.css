@@ -1,0 +1,56 @@
+/* Overlay de carga: similar a mostrarerror/aviso pero más simple y sin bordes */
+.loading-overlay {
+	position: fixed;
+	inset: 0; /* top:0; right:0; bottom:0; left:0 */
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	background: rgba(0, 0, 0, 0.45);
+	z-index: 2000;
+}
+
+.loading-overlay > div,
+.loading-overlay > p {
+	color: #ffffff;
+}
+
+.loading-overlay .spinner {
+	width: 56px;
+	height: 56px;
+	border-radius: 50%;
+	border: 6px solid rgba(255,255,255,0.18);
+	border-top-color: #ffffff;
+	animation: spin 0.9s linear infinite;
+	box-shadow: 0 6px 18px rgba(0,0,0,0.4);
+	margin-bottom: 12px;
+}
+
+.loading-overlay p {
+	margin-top: 8px;
+	font-size: 1rem;
+	font-weight: 600;
+	text-align: center;
+}
+
+/* Contenedor interno para spinner + texto (para apilar verticalmente) */
+.loading-overlay .content {
+	display: flex;
+	flex-direction: column;
+	align-items: center;
+	gap: 8px;
+	background: rgba(0,0,0,0.25);
+	padding: 18px 24px;
+	border-radius: 8px;
+}
+
+@keyframes spin {
+	to { transform: rotate(360deg); }
+}
+
+/* Responsive */
+@media (max-width: 480px) {
+	.loading-overlay .spinner { width: 44px; height: 44px; border-width: 5px; }
+	.loading-overlay p { font-size: 0.95rem; }
+	.loading-overlay .content { padding: 14px; }
+}
+

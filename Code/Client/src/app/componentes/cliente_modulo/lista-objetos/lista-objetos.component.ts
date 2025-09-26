@@ -13,20 +13,38 @@ import { Router } from '@angular/router';
 export class ListaObjetosComponent {
   @Input() categoria: string = ''; 
   @Input() producto: string = '';
-  productos: GrupoEquipo[] = [];
+  productos: GrupoEquipo[][] = [];
+
+  cantidadObjetos: number = 20;
+
+  paginaActual: number = 0;
+
 
   constructor(private servicio: GrupoequipoService) { };
 
   ngOnInit(): void {
     this.servicio.getGrupoEquipo(this.categoria , this.producto).subscribe({
-      next: (data) => this.productos = data,
+      next: (data) =>{
+        this.productos = this.paginar(data);
+      },
       error: (error) => console.error('Error en componente:', error)
     });
 
     
   }
 
+  paginar(productos: GrupoEquipo[]): GrupoEquipo[][] {
+    const resultado: GrupoEquipo[][] = [];
+    for (let i = 0; i < productos.length; i += this.cantidadObjetos) {
+      resultado.push(productos.slice(i, i + this.cantidadObjetos));
+    }
+    return resultado;
+  }
 
+  actualizarPagina(pagina: number): void {
+    this.paginaActual = pagina;
+  
+  }
 
 
 

@@ -16,6 +16,9 @@ export class Prestamos extends Basemodel{
     Observacion: string | null = null;
     EstadoPrestamo: string | null = null;
 
+    IdContrato: number | null = null;
+    FileId : number | null = null;
+
     
     constructor(){
         super();
@@ -32,6 +35,8 @@ export class Prestamos extends Basemodel{
         this.FechaDevolucion = null;
         this.Observacion = null;
         this.EstadoPrestamo = null;
+        this.IdContrato = null;
+        this.FileId = null;
     }
 
 }

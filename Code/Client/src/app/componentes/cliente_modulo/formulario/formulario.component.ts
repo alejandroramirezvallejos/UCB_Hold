@@ -11,13 +11,15 @@ import { MostrarerrorComponent } from '../../mostrarerror/mostrarerror.component
 import { Router } from '@angular/router';
 import { UsuarioService } from '../../../services/usuario/usuario.service';
 import { PrestamosAPIService } from '../../../services/APIS/prestamo/prestamos-api.service';
+import { PantallaCargaComponent } from '../../pantalla-carga/pantalla-carga.component';
+import { finalize } from 'rxjs';
 
 
 
 @Component({
   selector: 'app-formulario',
   standalone: true,
-  imports: [FirmaComponent , CommonModule , MostrarerrorComponent ],
+  imports: [FirmaComponent , CommonModule , MostrarerrorComponent,PantallaCargaComponent],
   templateUrl: './formulario.component.html',
   styleUrl: './formulario.component.css'
 })
@@ -29,7 +31,8 @@ export class FormularioComponent implements OnInit {
   clickfirma : WritableSignal<boolean> = signal(false) 
   firma : string ="";
   error : WritableSignal<number> = signal(2); 
-  mensajeerror : string = "Error desconocido intente mas tarde"
+  mensajeerror : string = "Error desconocido intente mas tarde";
+  cargando : boolean = false;
 
   
  
@@ -101,10 +104,12 @@ export class FormularioComponent implements OnInit {
       this.firmar();
     } 
     else{
-
       const contratoblob= this.generarHTMLBinario(); 
-
-      this.mandarprestamo.crearPrestamo(this.carrito.obtenercarrito(),this.usuario.usuario.carnet!,contratoblob).subscribe({
+      
+      this.cargando = true;
+      this.mandarprestamo.crearPrestamo(this.carrito.obtenercarrito(),this.usuario.usuario.carnet!,contratoblob)
+      .pipe(finalize(() => this.cargando = false))
+      .subscribe({
         next: (response) => {
           console.log('Préstamo creado exitosamente:', response);
           alert('Préstamo creado exitosamente');

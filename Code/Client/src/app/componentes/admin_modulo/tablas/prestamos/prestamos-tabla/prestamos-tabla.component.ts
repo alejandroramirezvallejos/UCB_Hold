@@ -6,21 +6,24 @@ import { Prestamos } from '../../../../../models/admin/Prestamos';
 import { PrestamosAPIService } from '../../../../../services/APIS/prestamo/prestamos-api.service';
 import { PrestamoAgrupados } from '../../../../../models/PrestamoAgrupados';
 import { VercontratoComponent } from '../vercontrato/vercontrato.component';
+import { PantallaCargaComponent } from '../../../../pantalla-carga/pantalla-carga.component';
+import { finalize } from 'rxjs';
 
 @Component({
   selector: 'app-prestamos-tabla',
   standalone: true,
-  imports: [CommonModule, FormsModule, ReactiveFormsModule , VercontratoComponent],
+  imports: [CommonModule, FormsModule, ReactiveFormsModule , VercontratoComponent, PantallaCargaComponent],
   templateUrl: './prestamos-tabla.component.html',
   styleUrls: ['./prestamos-tabla.component.css']
 })
 export class PrestamosTablaComponent implements OnInit {
 
   botoncrear: WritableSignal<boolean> = signal(false);
+  cargando : boolean = false;
 
   alertaeliminar: boolean = false;
-  prestamos: PrestamoAgrupados[] = [];
-  prestamoscopia: PrestamoAgrupados[] = [];
+  prestamos:  Map<number, PrestamoAgrupados>= new Map<number, PrestamoAgrupados>();
+  prestamoscopia: Map<number, PrestamoAgrupados> = new Map<number, PrestamoAgrupados>();
 
   vercontrato : WritableSignal<boolean> = signal(false);
 
@@ -54,32 +57,34 @@ export class PrestamosTablaComponent implements OnInit {
   }
 
   cargarPrestamos() {
-    this.prestamosapi.obtenerPrestamos().subscribe(
-      (data: Prestamos[]) => {
+    this.prestamosapi.obtenerPrestamos().subscribe({
+      next :(data: Prestamos[]) => {
         this.agruparPrestamos(data);
+        this.seleccionarEstado(this.estadoSeleccionado);
       },
-      (error) => {
+      error: (error) => {
         console.error('Error al cargar los préstamos:', error);
       }
-    );
+    });
   }
 
  agruparPrestamos(datos: Prestamos[]) {
-    this.prestamos = []; 
+    this.prestamos = new Map<number, PrestamoAgrupados>(); 
     
     if (datos.length === 0) return;
-
-    let prestamosarray: Prestamos[] = [];
     
-    for (let i = 0; i < datos.length; i++) {
-        prestamosarray.push(datos[i]); 
-        
-        if (i === datos.length - 1 || datos[i].Id !== datos[i + 1]?.Id) {
-            this.prestamos.push(new PrestamoAgrupados(prestamosarray));
-            prestamosarray = []; 
+   for (const prestamo of datos) {
+        if (prestamo.Id == null) continue;
+
+        if (!this.prestamos.has(prestamo.Id)) {
+            this.prestamos.set(prestamo.Id, new PrestamoAgrupados([prestamo]));
+        } 
+        else {
+            this.prestamos.get(prestamo.Id)!.insertarEquipo(prestamo);
         }
     }
-    this.prestamoscopia = [...this.prestamos]; 
+
+    this.prestamoscopia = new Map(this.prestamos);
 
 
 }
@@ -99,14 +104,18 @@ export class PrestamosTablaComponent implements OnInit {
   }
 
   confirmarEliminacion() {
-    this.prestamosapi.eliminarPrestamo(this.prestamoSeleccionado.Id).subscribe(
-      (response) => {
+    this.cargando=true; 
+    this.prestamosapi.eliminarPrestamo(this.prestamoSeleccionado.Id)
+    .pipe(finalize(() => this.cargando = false))
+    .subscribe({
+      next: (response) => {
         this.cargarPrestamos();
+
       },
-      (error) => {
+      error: (error) => {
         alert('Error al eliminar el préstamo: ' + error);
       }
-    );
+    });
     this.limpiarPrestamoSeleccionado();
     this.alertaeliminar = false;
   }
@@ -132,41 +141,42 @@ export class PrestamosTablaComponent implements OnInit {
   }
 
   aplicarFiltros() {
-    // Comenzar con la copia completa
-    let prestamosFiltrados = [...this.prestamoscopia];
+    // Convertir el Map a un array de [key, value]
+    let prestamosFiltrados = Array.from(this.prestamoscopia.entries());
 
     // Aplicar filtro de búsqueda si existe
     if (this.terminoBusqueda.trim() !== '') {
-      prestamosFiltrados = prestamosFiltrados.filter(prestamo =>
-        (prestamo.datosgrupo.NombreUsuario|| '').toLowerCase().includes(this.terminoBusqueda.toLowerCase()) ||
-        (prestamo.datosgrupo.ApellidoPaternoUsuario|| '').toLowerCase().includes(this.terminoBusqueda.toLowerCase()) ||
-        (prestamo.datosgrupo.CarnetUsuario|| '').toLowerCase().includes(this.terminoBusqueda.toLowerCase()) ||
-        (prestamo.datosgrupo.NombreGrupoEquipo || '').toLowerCase().includes(this.terminoBusqueda.toLowerCase()) ||
-        (prestamo.datosgrupo.CodigoImt || '').toLowerCase().includes(this.terminoBusqueda.toLowerCase()) ||
-        (prestamo.datosgrupo.EstadoPrestamo|| '').toLowerCase().includes(this.terminoBusqueda.toLowerCase())
-      );
+        prestamosFiltrados = prestamosFiltrados.filter(([_, prestamo]) =>
+            (prestamo.datosgrupo.NombreUsuario || '').toLowerCase().includes(this.terminoBusqueda.toLowerCase()) ||
+            (prestamo.datosgrupo.ApellidoPaternoUsuario || '').toLowerCase().includes(this.terminoBusqueda.toLowerCase()) ||
+            (prestamo.datosgrupo.CarnetUsuario || '').toLowerCase().includes(this.terminoBusqueda.toLowerCase()) ||
+            (prestamo.datosgrupo.NombreGrupoEquipo || '').toLowerCase().includes(this.terminoBusqueda.toLowerCase()) ||
+            (prestamo.datosgrupo.CodigoImt || '').toLowerCase().includes(this.terminoBusqueda.toLowerCase()) ||
+            (prestamo.datosgrupo.EstadoPrestamo || '').toLowerCase().includes(this.terminoBusqueda.toLowerCase())
+        );
     }
 
     // Aplicar filtro de estado si existe
     if (this.estadoSeleccionado !== '') {
-      prestamosFiltrados = prestamosFiltrados.filter(prestamo =>
-        (prestamo.datosgrupo.EstadoPrestamo || '').toLowerCase() === this.estadoSeleccionado.toLowerCase()
-      );
+        prestamosFiltrados = prestamosFiltrados.filter(([_, prestamo]) =>
+            (prestamo.datosgrupo.EstadoPrestamo || '').toLowerCase() === this.estadoSeleccionado.toLowerCase()
+        );
     }
 
-    this.prestamos = prestamosFiltrados;
+    // Reconstruir el Map con los resultados filtrados
+    this.prestamos = new Map<number, PrestamoAgrupados>(prestamosFiltrados);
   }
 
   limpiarFiltros() {
     this.terminoBusqueda = '';
     this.estadoSeleccionado = '';
-    this.prestamos = [...this.prestamoscopia];
-    this.showEstados = false;  }
+    this.prestamos = new Map(this.prestamoscopia);
+    this.showEstados = false;
+  }
 
-    
+  aprobarprestamo(key : number) {
 
-  aprobarprestamo(indice : number) {
-    this.prestamosapi.cambiarEstadoPrestamo(this.prestamos[indice].datosgrupo.Id, 'aprobado').subscribe({
+    this.prestamosapi.cambiarEstadoPrestamo(this.prestamos.get(key)!.datosgrupo.Id, 'aprobado').subscribe({
       next: (response) => {
         this.cargarPrestamos(); 
       },
@@ -177,9 +187,9 @@ export class PrestamosTablaComponent implements OnInit {
 
   }
 
-  rechazarprestamo(indice : number) {
-    
-    this.prestamosapi.cambiarEstadoPrestamo(this.prestamos[indice].datosgrupo.Id, 'rechazado').subscribe({
+  rechazarprestamo(key : number) {
+
+    this.prestamosapi.cambiarEstadoPrestamo(this.prestamos.get(key)!.datosgrupo.Id, 'rechazado').subscribe({
       next: (response) => {
         this.cargarPrestamos(); 
       },
@@ -191,8 +201,8 @@ export class PrestamosTablaComponent implements OnInit {
   }
 
   cambiarestadovercontrato(prestamo : Prestamos) {
-  this.prestamoSeleccionado = prestamo;
-  this.vercontrato.set(!this.vercontrato());
+    this.prestamoSeleccionado = prestamo;
+    this.vercontrato.set(!this.vercontrato());
   }
 
 
