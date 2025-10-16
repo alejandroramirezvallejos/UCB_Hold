@@ -102,3 +102,9 @@ coverage/
 *.temp
 *.swp
 *.swo
+
+##################################################
+# Exclusión explícita de artefactos problemáticos
+##################################################
+Code/Client/obj/
+Code/Client/obj/**/
