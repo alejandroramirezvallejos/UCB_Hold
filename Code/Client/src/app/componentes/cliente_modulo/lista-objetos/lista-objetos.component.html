@@ -1,83 +1,93 @@
 <body>
   <div class="page-wrapper">
     <div class="grid-container">
-      @for (item of productos[paginaActual]; track item.nombre) {
-      <div class="product-card">
-        <a [routerLink]="['/Objeto', item.id]" class="product-card__link">
-          <div class="product-card__image-wrapper">
-            <img
-              [src]="item.link"
-              alt="{{ item.nombre + ' ' + item.modelo + ' ' + item.marca }}"
-              class="product-card__image"
-            />
+      @if (productosFiltrados.length > 0) {
+        @for (item of productosActuales; track item.id) {
+          <div class="product-card">
+            <a [routerLink]="['/Objeto', item.id]" class="product-card__link">
+              <div class="product-card__image-wrapper">
+                <img
+                  [src]="item.link"
+                  alt="{{ item.nombre + ' ' + item.modelo + ' ' + item.marca }}"
+                  class="product-card__image"
+                />
+              </div>
+              <div class="product-card__info">
+                <h3 class="product-card__title">
+                  {{ item.nombre + " " + item.modelo + " " + item.marca }}
+                </h3>
+                <div class="product-card__meta">
+                  <span class="product-card__imt">IMT</span>
+                </div>
+              </div>
+            </a>
           </div>
-          <div class="product-card__info">
-            <h3 class="product-card__title">
-              {{ item.nombre + " " + item.modelo + " " + item.marca }}
-            </h3>
-            <div class="product-card__meta">
-              <span class="product-card__imt">IMT</span>
-            </div>
-          </div>
-        </a>
-      </div>
+        }
       }
     </div>
 
-    @if (productos.length === 0) {
-    <div class="no-results">
-      <div class="no-results-content">
-        <img
-          src="/assets/sad_line.png"
-          alt="Sin resultados"
-          class="no-results-icon"
-        />
-        <p class="no-results-text">Sin resultados</p>
+    @if (productosFiltrados.length === 0) {
+      <div class="no-results">
+        <div class="no-results-content">
+          <img
+            src="/assets/sad_line.png"
+            alt="Sin resultados"
+            class="no-results-icon"
+          />
+          <p class="no-results-text">Sin resultados</p>
+        </div>
       </div>
-    </div>
     }
-    <!-- paginacion -->
-    <div class="pagination">
-      <button
-        class="pagination__arrow-btn"
-        [class.pagination__arrow--disabled]="paginaActual === 0"
-        (click)="actualizarPagina(paginaActual - 1)">
-        <svg class="pagination__arrow-icon" viewBox="0 0 24 24">
-          <path d="M15.41 16.59L10.83 12l4.58-4.59L14 6l-6 6 6 6 1.41-1.41z"/>
-        </svg>
-      </button>
 
-      @if (paginaActual > 2) {
-        <button class="pagination__button" (click)="actualizarPagina(0)">1</button>
-        <span class="pagination__ellipsis">...</span>
-      }
-
-      @for (pagina of obtenerRangoPaginas(); track pagina) {
+    @if (totalPaginas > 1) {
+      <div class="pagination">
         <button
-          class="pagination__button"
-          [class.pagination__button--active]="pagina === paginaActual"
-          (click)="actualizarPagina(pagina)">
-          {{ pagina + 1 }}
+          class="pagination__arrow-btn"
+          [class.pagination__arrow--disabled]="!hayPaginasAnteriores"
+          (click)="actualizarPagina(paginaActual - 1)">
+          <svg class="pagination__arrow-icon" viewBox="0 0 24 24">
+            <path d="M15.41 16.59L10.83 12l4.58-4.59L14 6l-6 6 6 6 1.41-1.41z"/>
+          </svg>
         </button>
-      }
 
-      @if (paginaActual < productos.length - 3) {
-        <span class="pagination__ellipsis">...</span>
-        <button class="pagination__button" (click)="actualizarPagina(productos.length - 1)">
-          {{ productos.length }}
+        @if (paginaActual > 2) {
+          <button
+            class="pagination__button"
+            (click)="actualizarPagina(0)">
+            1
+          </button>
+          <span class="pagination__ellipsis">...</span>
+        }
+
+        @for (pagina of obtenerRangoPaginas(); track pagina) {
+          <button
+            class="pagination__button"
+            [class.pagination__button--active]="pagina === paginaActual"
+            (click)="actualizarPagina(pagina)">
+            {{ pagina + 1 }}
+          </button>
+        }
+
+        @if (paginaActual < totalPaginas - 3) {
+          <span class="pagination__ellipsis">...</span>
+          <button
+            class="pagination__button"
+            (click)="actualizarPagina(totalPaginas - 1)">
+            {{ totalPaginas }}
+          </button>
+        }
+
+        <button
+          class="pagination__arrow-btn"
+          [class.pagination__arrow--disabled]="!hayPaginasSiguientes"
+          (click)="actualizarPagina(paginaActual + 1)">
+          <svg class="pagination__arrow-icon" viewBox="0 0 24 24">
+            <path d="M8.59 16.59L13.17 12 8.59 7.41 10 6l6 6-6 6-1.41-1.41z"/>
+          </svg>
         </button>
-      }
+      </div>
+    }
 
-      <button
-        class="pagination__arrow-btn"
-        [class.pagination__arrow--disabled]="paginaActual === productos.length - 1"
-        (click)="actualizarPagina(paginaActual + 1)">
-        <svg class="pagination__arrow-icon" viewBox="0 0 24 24">
-          <path d="M8.59 16.59L13.17 12 8.59 7.41 10 6l6 6-6 6-1.41-1.41z"/>
-        </svg>
-      </button>
-    </div>
-    <!-- Footer -->
     <footer class="site-footer">
       <div class="footer-content">
         <p>© Copyright Universidad Católica Boliviana San Pablo 2025</p>
