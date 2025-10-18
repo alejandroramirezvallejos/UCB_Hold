@@ -5,13 +5,14 @@ import { Equipos } from '../../../../../models/admin/Equipos';
 import { EquiposCrearComponent } from '../equipos-crear/equipos-crear.component';
 import { EquiposEditarComponent } from '../equipos-editar/equipos-editar.component';
 import { EquipoService } from '../../../../../services/APIS/Equipo/equipo.service';
+import { AvisoEliminarComponent } from '../../../../pantallas_avisos/aviso-eliminar/aviso-eliminar.component';
 
 
 
 @Component({
   selector: 'app-equipos-tabla',
   standalone: true,
-  imports: [CommonModule, FormsModule, ReactiveFormsModule , EquiposCrearComponent , EquiposEditarComponent],
+  imports: [CommonModule, FormsModule, ReactiveFormsModule , EquiposCrearComponent , EquiposEditarComponent,AvisoEliminarComponent],
   templateUrl: './equipos-tabla.component.html',
   styleUrls: ['./equipos-tabla.component.css']
 })

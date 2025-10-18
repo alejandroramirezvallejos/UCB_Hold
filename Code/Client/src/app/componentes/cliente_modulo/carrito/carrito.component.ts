@@ -3,10 +3,11 @@ import { CarritoService } from '../../../services/carrito/carrito.service';
 import {Carrito } from '../../../models/carrito'
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
-import { MostrarerrorComponent } from '../../mostrarerror/mostrarerror.component';
+
 import { FormularioComponent } from '../formulario/formulario.component';
 import { Router } from '@angular/router';
 import { UsuarioService } from '../../../services/usuario/usuario.service';
+import { MostrarerrorComponent } from '../../pantallas_avisos/mostrarerror/mostrarerror.component';
 
 @Component({
   selector: 'app-carrito',

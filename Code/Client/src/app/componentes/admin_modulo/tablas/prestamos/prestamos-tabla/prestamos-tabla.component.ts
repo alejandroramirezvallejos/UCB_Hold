@@ -6,14 +6,16 @@ import { Prestamos } from '../../../../../models/admin/Prestamos';
 import { PrestamosAPIService } from '../../../../../services/APIS/prestamo/prestamos-api.service';
 import { PrestamoAgrupados } from '../../../../../models/PrestamoAgrupados';
 import { VercontratoComponent } from '../vercontrato/vercontrato.component';
-import { PantallaCargaComponent } from '../../../../pantalla-carga/pantalla-carga.component';
+
 import { finalize } from 'rxjs';
 import { VistaPrestamosComponent } from '../../../../vista-prestamos/vista-prestamos.component';
+import { PantallaCargaComponent } from '../../../../pantallas_avisos/pantalla-carga/pantalla-carga.component';
+import { AvisoEliminarComponent } from '../../../../pantallas_avisos/aviso-eliminar/aviso-eliminar.component';
 
 @Component({
   selector: 'app-prestamos-tabla',
   standalone: true,
-  imports: [CommonModule, FormsModule, ReactiveFormsModule , VercontratoComponent, PantallaCargaComponent , VistaPrestamosComponent],
+  imports: [CommonModule, FormsModule, ReactiveFormsModule , VercontratoComponent, PantallaCargaComponent , VistaPrestamosComponent , AvisoEliminarComponent],
   templateUrl: './prestamos-tabla.component.html',
   styleUrls: ['./prestamos-tabla.component.css']
 })

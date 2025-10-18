@@ -4,9 +4,10 @@ import { UsuarioService } from '../../../../services/usuario/usuario.service';
 import { PrestamosAPIService } from '../../../../services/APIS/prestamo/prestamos-api.service';
 import { Prestamos } from '../../../../models/admin/Prestamos';
 import { CommonModule } from '@angular/common';
-import { Aviso } from '../aviso/aviso.component';
+
 import { HistorialBase } from '../BASE/HistorialBase';
 import { VistaPrestamosComponent } from '../../../vista-prestamos/vista-prestamos.component';
+import { Aviso } from '../../../pantallas_avisos/aviso/aviso.component';
 
 @Component({
   selector: 'app-pendiente',

@@ -5,13 +5,14 @@ import { Accesorio } from '../../../../../models/admin/Accesorio';
 import { AccesoriosCrearComponent } from '../accesorios-crear/accesorios-crear.component';
 import { AccesoriosEditarComponent } from '../accesorios-editar/accesorios-editar.component';
 import { AccesoriosService } from '../../../../../services/APIS/Accesorio/accesorios.service';
+import { AvisoEliminarComponent } from '../../../../pantallas_avisos/aviso-eliminar/aviso-eliminar.component';
 
 
 
 @Component({
   selector: 'app-accesorios-tabla',
   standalone: true,
-  imports: [CommonModule, FormsModule, ReactiveFormsModule , AccesoriosCrearComponent , AccesoriosEditarComponent],
+  imports: [CommonModule, FormsModule, ReactiveFormsModule , AccesoriosCrearComponent , AccesoriosEditarComponent , AvisoEliminarComponent],
   templateUrl: './accesorios-tabla.component.html',
   styleUrls: ['./accesorios-tabla.component.css']
 })

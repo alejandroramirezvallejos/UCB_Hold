@@ -5,7 +5,7 @@ import { CommonModule, NgFor, NgIf } from '@angular/common';
 import { UsuarioService } from '../../../services/usuario/usuario.service';
 import { Router } from '@angular/router';
 import { UsuarioServiceAPI } from '../../../services/APIS/Usuario/usuario.service';
-import { MostrarerrorComponent } from '../../mostrarerror/mostrarerror.component';
+import { MostrarerrorComponent } from '../../pantallas_avisos/mostrarerror/mostrarerror.component';
 
 
 

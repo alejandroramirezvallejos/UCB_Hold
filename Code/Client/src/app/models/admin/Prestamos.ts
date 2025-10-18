@@ -16,6 +16,11 @@ export class Prestamos extends Basemodel{
     Observacion: string | null = null;
     EstadoPrestamo: string | null = null;
 
+    Ubicacion_Equipo : string | null = null;
+    Nombre_Gavetero : string | null = null;
+    Nombre_Mueble : string | null = null;
+    Ubicacion_Mueble : string | null = null;
+   
     IdContrato: number | null = null;
     FileId : number | null = null;
 
@@ -37,6 +42,11 @@ export class Prestamos extends Basemodel{
         this.EstadoPrestamo = null;
         this.IdContrato = null;
         this.FileId = null;
+        this.Ubicacion_Equipo = null;
+        this.Nombre_Gavetero = null;
+        this.Nombre_Mueble = null;
+        this.Ubicacion_Mueble = null;
+        
     }
 
 }

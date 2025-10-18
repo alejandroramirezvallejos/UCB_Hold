@@ -5,11 +5,12 @@ import { Categorias } from '../../../../../models/admin/Categorias';
 import { CategoriasCrearComponent } from '../categorias-crear/categorias-crear.component';
 import { CategoriasEditarComponent } from '../categorias-editar/categorias-editar.component';
 import { CategoriaService } from '../../../../../services/APIS/Categoria/categoria.service';
+import { AvisoEliminarComponent } from '../../../../pantallas_avisos/aviso-eliminar/aviso-eliminar.component';
 
 @Component({
   selector: 'app-categorias-tabla',
   standalone: true,
-  imports: [CommonModule, FormsModule, CategoriasCrearComponent, CategoriasEditarComponent],
+  imports: [CommonModule, FormsModule, CategoriasCrearComponent, CategoriasEditarComponent, AvisoEliminarComponent],
   templateUrl: './categorias-tabla.component.html',
   styleUrl: './categorias-tabla.component.css'
 })

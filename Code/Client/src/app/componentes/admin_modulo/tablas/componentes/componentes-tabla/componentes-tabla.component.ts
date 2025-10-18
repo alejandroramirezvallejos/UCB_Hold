@@ -5,11 +5,12 @@ import { Componente } from '../../../../../models/admin/Componente';
 import { ComponentesCrearComponent } from '../componentes-crear/componentes-crear.component';
 import { ComponentesEditarComponent } from '../componentes-editar/componentes-editar.component';
 import { ComponenteService } from '../../../../../services/APIS/Componente/componente.service';
+import { AvisoEliminarComponent } from '../../../../pantallas_avisos/aviso-eliminar/aviso-eliminar.component';
 
 @Component({
   selector: 'app-componentes-tabla',
   standalone: true,
-  imports: [CommonModule, FormsModule, ComponentesCrearComponent, ComponentesEditarComponent],
+  imports: [CommonModule, FormsModule, ComponentesCrearComponent, ComponentesEditarComponent , AvisoEliminarComponent],
   templateUrl: './componentes-tabla.component.html',
   styleUrl: './componentes-tabla.component.css'
 })

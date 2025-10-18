@@ -5,13 +5,14 @@ import { Gaveteros } from '../../../../../models/admin/Gaveteros';
 import { GaveterosCrearComponent } from '../gaveteros-crear/gaveteros-crear.component';
 import { GaveterosEditarComponent } from '../gaveteros-editar/gaveteros-editar.component';
 import { GaveteroService } from '../../../../../services/APIS/Gavetero/gavetero.service';
+import { AvisoEliminarComponent } from '../../../../pantallas_avisos/aviso-eliminar/aviso-eliminar.component';
 
 
 
 @Component({
   selector: 'app-gaveteros-tabla',
   standalone: true,
-  imports: [CommonModule, FormsModule, ReactiveFormsModule , GaveterosCrearComponent , GaveterosEditarComponent],
+  imports: [CommonModule, FormsModule, ReactiveFormsModule , GaveterosCrearComponent , GaveterosEditarComponent,AvisoEliminarComponent],
   templateUrl: './gaveteros-tabla.component.html',
   styleUrls: ['./gaveteros-tabla.component.css']
 })

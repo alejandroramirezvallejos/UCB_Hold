@@ -5,11 +5,12 @@ import { EmpresaMantenimiento } from '../../../../../models/admin/EmpresaManteni
 import { EmpresasMantenimientoCrearComponent } from '../empresas-mantenimiento-crear/empresas-mantenimiento-crear.component';
 import { EmpresasMantenimientoEditarComponent } from '../empresas-mantenimiento-editar/empresas-mantenimiento-editar.component';
 import { EmpresamantenimientoService } from '../../../../../services/APIS/EmpresaMantenimiento/empresamantenimiento.service';
+import { AvisoEliminarComponent } from '../../../../pantallas_avisos/aviso-eliminar/aviso-eliminar.component';
 
 @Component({
   selector: 'app-empresas-mantenimiento-tabla',
   standalone: true,
-  imports: [CommonModule, FormsModule, EmpresasMantenimientoCrearComponent, EmpresasMantenimientoEditarComponent],
+  imports: [CommonModule, FormsModule, EmpresasMantenimientoCrearComponent, EmpresasMantenimientoEditarComponent, AvisoEliminarComponent],
   templateUrl: './empresas-mantenimiento-tabla.component.html',
   styleUrl: './empresas-mantenimiento-tabla.component.css'
 })

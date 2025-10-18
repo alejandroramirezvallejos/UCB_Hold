@@ -72,13 +72,14 @@
 
   <!-- ALERTA DE ELIMINACIÓN -->
   @if(alertaeliminar){
-    <div class="alerta-eliminar">
-      <div class="modal-content">
-        <p>¿Estás seguro de que deseas eliminar esta carrera?</p>
-        <button class="btn btn-confirm" (click)="confirmarEliminacion()">Sí</button>
-        <button class="btn btn-cancel" (click)="cancelarEliminacion()">No</button>
-      </div>
-    </div>
+
+    <app-aviso-eliminar
+      [mensaje]="'¿Estás seguro de que deseas eliminar esta carrera?'"
+      (aceptar)="confirmarEliminacion()"
+      (cancelar)="cancelarEliminacion()"
+    ></app-aviso-eliminar>
+
+
   }
 </div>
 

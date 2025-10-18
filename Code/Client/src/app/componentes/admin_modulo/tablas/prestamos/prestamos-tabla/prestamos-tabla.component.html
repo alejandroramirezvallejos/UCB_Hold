@@ -143,7 +143,7 @@
                 <span class="nombre-equipo" title="{{prestamo.value.datosgrupo.NombreGrupoEquipo}}">
                   {{prestamo.value.datosgrupo.NombreGrupoEquipo}}
                 </span>
-                <small class="cantidad-equipos">{{ prestamo.value.equipos?.length || 0 }} equipos</small>
+                <small class="cantidad-equipos">{{ prestamo?.value?.equipos?.length ?? 0 }} equipos</small>
               </div>
             </td>
 
@@ -210,13 +210,15 @@
 
   <!-- ALERTA DE ELIMINACIÓN -->
   @if(alertaeliminar){
-    <div class="alerta-eliminar">
-      <div class="modal-content">
-        <p>¿Estás seguro de que deseas eliminar este préstamo?</p>
-        <button class="btn btn-confirm" (click)="confirmarEliminacion()">Sí</button>
-        <button class="btn btn-cancel" (click)="cancelarEliminacion()">No</button>
-      </div>
-    </div>
+    <app-aviso-eliminar
+      [mensaje]="'¿Estás seguro de que deseas eliminar este préstamo?'"
+      (aceptar)="confirmarEliminacion()"
+      (cancelar)="cancelarEliminacion()"
+    ></app-aviso-eliminar>
+
+
+    
+
   }
 </div>
 

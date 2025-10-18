@@ -4,9 +4,10 @@ import { Prestamos } from '../../../../models/admin/Prestamos';
 import { PrestamosAPIService } from '../../../../services/APIS/prestamo/prestamos-api.service';
 import { CommonModule, DatePipe } from '@angular/common';
 import { PrestamoAgrupados } from '../../../../models/PrestamoAgrupados';
-import { Aviso } from '../aviso/aviso.component';
+
 import { HistorialBase } from '../BASE/HistorialBase';
 import { VistaPrestamosComponent } from '../../../vista-prestamos/vista-prestamos.component';
+import { Aviso } from '../../../pantallas_avisos/aviso/aviso.component';
 
 @Component({
   selector: 'app-activo',

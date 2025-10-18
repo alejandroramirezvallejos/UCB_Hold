@@ -5,11 +5,12 @@ import { Carrera } from '../../../../../models/admin/Carreras';
 import { CarrerasCrearComponent } from '../carreras-crear/carreras-crear.component';
 import { CarrerasEditarComponent } from '../carreras-editar/carreras-editar.component';
 import { CarreraService } from '../../../../../services/APIS/Carrera/carrera.service';
+import { AvisoEliminarComponent } from '../../../../pantallas_avisos/aviso-eliminar/aviso-eliminar.component';
 
 @Component({
   selector: 'app-carreras-tabla',
   standalone: true,
-  imports: [CommonModule, FormsModule, CarrerasCrearComponent, CarrerasEditarComponent],
+  imports: [CommonModule, FormsModule, CarrerasCrearComponent, CarrerasEditarComponent , AvisoEliminarComponent],
   templateUrl: './carreras-tabla.component.html',
   styleUrl: './carreras-tabla.component.css'
 })

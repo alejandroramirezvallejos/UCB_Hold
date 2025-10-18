@@ -6,11 +6,12 @@ import { MantenimientosCrearComponent } from '../mantenimientos-crear/mantenimie
 import { MantenimientoService } from '../../../../../services/APIS/Mantenimiento/mantenimiento.service';
 import { MantenimientosAgrupados } from '../../../../../models/MantenimientosAgrupados';
 import { DetallesMantenimientoComponent } from './detalles-mantenimiento/detalles-mantenimiento.component';
+import { AvisoEliminarComponent } from '../../../../pantallas_avisos/aviso-eliminar/aviso-eliminar.component';
 
 @Component({
   selector: 'app-mantenimientos-tabla',
   standalone: true,
-  imports: [CommonModule, FormsModule, ReactiveFormsModule, MantenimientosCrearComponent , DetallesMantenimientoComponent],
+  imports: [CommonModule, FormsModule, ReactiveFormsModule, MantenimientosCrearComponent , DetallesMantenimientoComponent,AvisoEliminarComponent],
   templateUrl: './mantenimientos-tabla.component.html',
   styleUrl: './mantenimientos-tabla.component.css'
 })

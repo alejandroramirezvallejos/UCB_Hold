@@ -5,11 +5,12 @@ import { Muebles } from '../../../../../models/admin/Muebles';
 import { MueblesCrearComponent } from '../muebles-crear/muebles-crear.component';
 import { MueblesEditarComponent } from '../muebles-editar/muebles-editar.component';
 import { MuebleService } from '../../../../../services/APIS/Mueble/mueble.service';
+import { AvisoEliminarComponent } from '../../../../pantallas_avisos/aviso-eliminar/aviso-eliminar.component';
 
 @Component({
   selector: 'app-muebles-tabla',
   standalone: true,
-  imports: [CommonModule, FormsModule, ReactiveFormsModule, MueblesCrearComponent, MueblesEditarComponent],
+  imports: [CommonModule, FormsModule, ReactiveFormsModule, MueblesCrearComponent, MueblesEditarComponent,AvisoEliminarComponent],
   templateUrl: './muebles-tabla.component.html',
   styleUrl: './muebles-tabla.component.css'
 })

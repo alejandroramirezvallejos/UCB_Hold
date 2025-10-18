@@ -6,11 +6,12 @@ import { GruposEquiposCrearComponent } from '../grupos-equipos-crear/grupos-equi
 import { GruposEquiposEditarComponent } from '../grupos-equipos-editar/grupos-equipos-editar.component';
 import { GrupoequipoService } from '../../../../../services/APIS/GrupoEquipo/grupoequipo.service';
 import { CategoriaService } from '../../../../../services/APIS/Categoria/categoria.service';
+import { AvisoEliminarComponent } from '../../../../pantallas_avisos/aviso-eliminar/aviso-eliminar.component';
 
 @Component({
   selector: 'app-grupos-equipos-tabla',
   standalone: true,
-  imports: [CommonModule, FormsModule, ReactiveFormsModule, GruposEquiposCrearComponent, GruposEquiposEditarComponent],
+  imports: [CommonModule, FormsModule, ReactiveFormsModule, GruposEquiposCrearComponent, GruposEquiposEditarComponent,AvisoEliminarComponent],
   templateUrl: './grupos-equipos-tabla.component.html',
   styleUrl: './grupos-equipos-tabla.component.css'
 })

@@ -6,11 +6,12 @@ import { UsuariosCrearComponent } from '../usuarios-crear/usuarios-crear.compone
 import { UsuariosEditarComponent } from '../usuarios-editar/usuarios-editar.component';
 import { UsuarioServiceAPI } from '../../../../../services/APIS/Usuario/usuario.service';
 import { CarreraService } from '../../../../../services/APIS/Carrera/carrera.service';
+import { AvisoEliminarComponent } from '../../../../pantallas_avisos/aviso-eliminar/aviso-eliminar.component';
 
 @Component({
   selector: 'app-usuarios-tabla',
   standalone: true,
-  imports: [CommonModule, FormsModule, ReactiveFormsModule, UsuariosCrearComponent, UsuariosEditarComponent],
+  imports: [CommonModule, FormsModule, ReactiveFormsModule, UsuariosCrearComponent, UsuariosEditarComponent,AvisoEliminarComponent],
   templateUrl: './usuarios-tabla.component.html',
   styleUrls: ['./usuarios-tabla.component.css']
 })

@@ -7,12 +7,14 @@ import { CarritoService } from '../../../services/carrito/carrito.service';
 import {Carrito} from '../../../models/carrito'
 import jsPDF from 'jspdf';
 import html2canvas from 'html2canvas';
-import { MostrarerrorComponent } from '../../mostrarerror/mostrarerror.component';
+
 import { Router } from '@angular/router';
 import { UsuarioService } from '../../../services/usuario/usuario.service';
 import { PrestamosAPIService } from '../../../services/APIS/prestamo/prestamos-api.service';
-import { PantallaCargaComponent } from '../../pantalla-carga/pantalla-carga.component';
+
 import { finalize } from 'rxjs';
+import { PantallaCargaComponent } from '../../pantallas_avisos/pantalla-carga/pantalla-carga.component';
+import { MostrarerrorComponent } from '../../pantallas_avisos/mostrarerror/mostrarerror.component';
 
 
 

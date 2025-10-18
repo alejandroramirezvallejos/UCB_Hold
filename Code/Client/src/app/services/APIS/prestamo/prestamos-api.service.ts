@@ -13,27 +13,37 @@ export class PrestamosAPIService {
   private url = environment.apiUrl + '/api/Prestamo'; 
   constructor(private http : HttpClient) { }
 
-  
-  obtenerPrestamos() {
-    return this.http.get<any[]>(this.url).pipe(
-      map(data => data.map(item => ({
-          Id: item.Id,
+
+  private mapearPrestamo(item: any): Prestamos {
+    return {
+       Id: item.Id,
         CarnetUsuario: item.CarnetUsuario,
         NombreUsuario: item.NombreUsuario,
         ApellidoPaternoUsuario: item.ApellidoPaternoUsuario,
         TelefonoUsuario: item.TelefonoUsuario,
         NombreGrupoEquipo: item.NombreGrupoEquipo,
         CodigoImt: item.CodigoImt,
-        FechaSolicitud: item.FechaSolicitud,
-        FechaPrestamoEsperada: item.FechaPrestamoEsperada,
-        FechaPrestamo: item.FechaPrestamo,
-        FechaDevolucionEsperada: item.FechaDevolucionEsperada,
-        FechaDevolucion: item.FechaDevolucion,
-        Observacion: item.observacion,
+        FechaSolicitud: item.FechaSolicitud? new Date(item.FechaSolicitud) : null,
+        FechaPrestamoEsperada: item.FechaPrestamoEsperada? new Date(item.FechaPrestamoEsperada) : null,
+        FechaPrestamo: item.FechaPrestamo? new Date(item.FechaPrestamo) : null,
+        FechaDevolucionEsperada: item.FechaDevolucionEsperada? new Date(item.FechaDevolucionEsperada) : null,
+        FechaDevolucion: item.FechaDevolucion? new Date(item.FechaDevolucion) : null,
+        Observacion: item.Observacion,
         EstadoPrestamo: item.EstadoPrestamo,
         IdContrato: item.IdContrato,
-        FileId: item.FileId
-      })))
+        FileId: item.FileId,
+         Ubicacion_Equipo : item. Ubicacion_Equipo,
+        Nombre_Gavetero : item.Nombre_Gavetero,
+        Nombre_Mueble : item.Nombre_Mueble,
+        Ubicacion_Mueble : item.Ubicacion_Mueble
+
+    } as Prestamos;
+  }
+
+  
+  obtenerPrestamos() {
+    return this.http.get<any[]>(this.url).pipe(
+      map(data => data.map(item => this.mapearPrestamo(item)))
     );
   }
 
@@ -88,24 +98,7 @@ export class PrestamosAPIService {
   obtenerPrestamosPorUsuario(carnet: string , estadoPrestamo: string) {
     const APIurl = `${this.url}/historial?carnetUsuario=${carnet}&estadoPrestamo=${estadoPrestamo}`;
     return this.http.get<any[]>(APIurl).pipe(
-      map(data => data.map(item => ({
-        Id: item.Id,
-        CarnetUsuario: item.CarnetUsuario,
-        NombreUsuario: item.NombreUsuario,
-        ApellidoPaternoUsuario: item.ApellidoPaternoUsuario,
-        TelefonoUsuario: item.TelefonoUsuario,
-        NombreGrupoEquipo: item.NombreGrupoEquipo,
-        CodigoImt: item.CodigoImt,
-        FechaSolicitud: item.FechaSolicitud? new Date(item.FechaSolicitud) : null,
-        FechaPrestamoEsperada: item.FechaPrestamoEsperada? new Date(item.FechaPrestamoEsperada) : null,
-        FechaPrestamo: item.FechaPrestamo? new Date(item.FechaPrestamo) : null,
-        FechaDevolucionEsperada: item.FechaDevolucionEsperada? new Date(item.FechaDevolucionEsperada) : null,
-        FechaDevolucion: item.FechaDevolucion? new Date(item.FechaDevolucion) : null,
-        Observacion: item.Observacion,
-        EstadoPrestamo: item.EstadoPrestamo,
-        IdContrato: item.IdContrato,
-        FileId: item.FileId
-      })))
+       map(data => data.map(item => this.mapearPrestamo(item)))
     );
 
   }
