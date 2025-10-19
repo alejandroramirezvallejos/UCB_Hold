@@ -6,10 +6,11 @@ import { Prestamos } from '../../../../models/admin/Prestamos';
 import { CommonModule } from '@angular/common';
 import { HistorialBase } from '../BASE/HistorialBase';
 import { VistaPrestamosComponent } from '../../../vista-prestamos/vista-prestamos.component';
+import { MostrarerrorComponent } from '../../../pantallas_avisos/mostrarerror/mostrarerror.component';
 
 @Component({
   selector: 'app-cancelado',
-  imports: [CommonModule , VistaPrestamosComponent],
+  imports: [CommonModule , VistaPrestamosComponent, MostrarerrorComponent],
   templateUrl: './cancelado.component.html',
   styleUrl: './cancelado.component.css'
 })

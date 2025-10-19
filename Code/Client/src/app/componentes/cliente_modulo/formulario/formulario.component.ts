@@ -15,13 +15,14 @@ import { PrestamosAPIService } from '../../../services/APIS/prestamo/prestamos-a
 import { finalize } from 'rxjs';
 import { PantallaCargaComponent } from '../../pantallas_avisos/pantalla-carga/pantalla-carga.component';
 import { MostrarerrorComponent } from '../../pantallas_avisos/mostrarerror/mostrarerror.component';
+import { Aviso } from '../../pantallas_avisos/aviso/aviso.component';
 
 
 
 @Component({
   selector: 'app-formulario',
   standalone: true,
-  imports: [FirmaComponent , CommonModule , MostrarerrorComponent,PantallaCargaComponent],
+  imports: [FirmaComponent , CommonModule , MostrarerrorComponent,PantallaCargaComponent , Aviso ],
   templateUrl: './formulario.component.html',
   styleUrl: './formulario.component.css'
 })
@@ -32,9 +33,12 @@ export class FormularioComponent implements OnInit {
   contenidoHtml!: SafeHtml;
   clickfirma : WritableSignal<boolean> = signal(false) 
   firma : string ="";
-  error : WritableSignal<number> = signal(2); 
+  error : WritableSignal<boolean> = signal(false); 
   mensajeerror : string = "Error desconocido intente mas tarde";
   cargando : boolean = false;
+
+  aviso : WritableSignal<boolean> = signal (false);
+  mensajeaviso : string = "Aviso desconocido , si ve esto es un error , avise al soporte si puede o intente mas tarde";
 
   
  
@@ -78,7 +82,11 @@ export class FormularioComponent implements OnInit {
           });
           this.contenidoHtml = this.sanitizer.bypassSecurityTrustHtml(processedTemplate);
         },
-        error: (error) => console.error('Error al cargar el HTML: ', error)
+        error: (error) =>{ 
+          this.mensajeerror = "Error al cargar el contrato, intente mas tarde";
+          console.error('Error al cargar el HTML: ', error);  
+          this.error.set(true);
+        }
       });
   }
 
@@ -99,8 +107,8 @@ export class FormularioComponent implements OnInit {
   
   aceptar(){
     if(!this.carrito || Object.keys(this.carrito.obtenercarrito()).length===0){
-      this.error.set(1); 
       this.mensajeerror = "El carrito está vacío. Agregue elementos antes de continuar.";
+      this.error.set(true); 
     }
     else if(!this.firma || this.firma === ''){
       this.firmar();
@@ -122,7 +130,7 @@ export class FormularioComponent implements OnInit {
         error: (error) => {
         
           console.error('Error al crear préstamo:', error);
-          this.error.set(1);
+          this.error.set(true);
           this.mensajeerror = error.error.error+ " - " + error.error.mensaje;
         }
       })

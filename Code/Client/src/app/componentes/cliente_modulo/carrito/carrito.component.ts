@@ -19,7 +19,7 @@ import { MostrarerrorComponent } from '../../pantallas_avisos/mostrarerror/mostr
 export class CarritoComponent {
   private error : boolean = false;
   // 0 es falso 1 es true para errorboton
-  public errorboton : WritableSignal<number> = signal(2);
+  public errorboton : WritableSignal<boolean> = signal(false);
   public mensajeerror: string = "Datos insertados no validos"; 
   public botonEjecutado: boolean = false;
   public cantidades = Array.from({ length: 11 }, (_, i) => i);
@@ -84,13 +84,10 @@ export class CarritoComponent {
 
   clickboton() {
     if ( this.error ) {
-      this.errorboton.set(1);
+      this.errorboton.set(true);
     } 
     else {
-      
-      this.errorboton.set(0);
-      
-
+      this.validarformulario();
     }
   }
 

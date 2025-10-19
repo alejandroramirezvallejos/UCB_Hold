@@ -22,7 +22,7 @@
    <app-firma (firma)="guardarfirma($event)" [clickfirma]="clickfirma" ></app-firma>
 }
 
-@if (error()==1){
+@if (error()){
   <app-mostrarerror
   [error]="error"
   [mensaje]="mensajeerror"
@@ -32,4 +32,13 @@
 
 @if(cargando){
   <app-pantalla-carga></app-pantalla-carga>
+}
+
+@if(aviso()){
+  <app-aviso
+  [cerrar]="aviso"
+  [mensaje]="mensajeaviso"
+  
+  ></app-aviso>
+
 }

@@ -167,3 +167,17 @@
   </form>
 </div>
 
+@if(exito()){
+  <app-aviso-exito
+    [exito]="exito" 
+    [mensaje]="mensajeexito" 
+    (accion)="cerrar()"
+    ></app-aviso-exito>
+}
+
+@if(error()){
+  <app-mostrarerror
+    [error]="error"
+    [mensaje]="mensajeerror"
+    ></app-mostrarerror>
+}

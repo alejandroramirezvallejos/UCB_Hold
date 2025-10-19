@@ -98,8 +98,15 @@ export class PrestamosAPIService {
   obtenerPrestamosPorUsuario(carnet: string , estadoPrestamo: string) {
     const APIurl = `${this.url}/historial?carnetUsuario=${carnet}&estadoPrestamo=${estadoPrestamo}`;
     return this.http.get<any[]>(APIurl).pipe(
-       map(data => data.map(item => this.mapearPrestamo(item)))
-    );
+       map(data =>{ 
+
+         if (!data || !Array.isArray(data)) {
+         return [];
+       }
+        
+        return data.map(item => this.mapearPrestamo(item));
+  })
+);
 
   }
 

@@ -248,3 +248,19 @@
     </form>
   </div>
 </div>
+
+@if (error()){
+  <app-mostrarerror
+    [mensaje]="mensajeerror"
+    [error]="error"
+  ></app-mostrarerror>
+}
+
+
+@if (aviso()){
+  <app-aviso-exito
+    [mensaje]="mensajeaviso"
+    [exito]="aviso"
+    (accion)="irALogin()"
+  ></app-aviso-exito>
+}

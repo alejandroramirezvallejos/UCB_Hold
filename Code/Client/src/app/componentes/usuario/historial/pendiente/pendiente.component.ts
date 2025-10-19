@@ -8,10 +8,11 @@ import { CommonModule } from '@angular/common';
 import { HistorialBase } from '../BASE/HistorialBase';
 import { VistaPrestamosComponent } from '../../../vista-prestamos/vista-prestamos.component';
 import { Aviso } from '../../../pantallas_avisos/aviso/aviso.component';
+import { MostrarerrorComponent } from '../../../pantallas_avisos/mostrarerror/mostrarerror.component';
 
 @Component({
   selector: 'app-pendiente',
-  imports: [CommonModule , Aviso , VistaPrestamosComponent],
+  imports: [CommonModule , Aviso , VistaPrestamosComponent, MostrarerrorComponent],
   templateUrl: './pendiente.component.html',
   styleUrl: './pendiente.component.css'
 })
@@ -47,7 +48,9 @@ export class PendienteComponent extends HistorialBase {
         this.avisocancelar.set(false);
       }, 
       error: (error) => {
-        alert( error.error.error + ': ' + error.error.mensaje);
+        this.mensajeerror = "Error al cancelar el prestamo, intente mas tarde";
+        console.error( error.error.error + ': ' + error.error.mensaje);
+        this.error.set(true);
       }
     });
   }

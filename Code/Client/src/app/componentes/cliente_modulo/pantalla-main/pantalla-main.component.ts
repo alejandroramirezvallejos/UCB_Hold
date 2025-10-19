@@ -1,15 +1,16 @@
 import { CommonModule } from '@angular/common';
-import { Component } from '@angular/core';
+import { Component, signal, WritableSignal } from '@angular/core';
 import { ListaObjetosComponent } from '../lista-objetos/lista-objetos.component';
 import { FormsModule } from '@angular/forms';
 
 import { CategoriaService } from '../../../services/APIS/Categoria/categoria.service';
 import { Categorias } from '../../../models/admin/Categorias';
+import { MostrarerrorComponent } from '../../pantallas_avisos/mostrarerror/mostrarerror.component';
 
 @Component({
   selector: 'app-pantalla-main',
   standalone: true,
-  imports: [CommonModule, ListaObjetosComponent, FormsModule],
+  imports: [CommonModule, ListaObjetosComponent, FormsModule , MostrarerrorComponent],
   templateUrl: './pantalla-main.component.html',
   styleUrl: './pantalla-main.component.css',
 })
@@ -28,12 +29,19 @@ export class PantallaMainComponent {
     clear: false,
   };
 
+  error : WritableSignal<boolean> = signal(false);
+  mensajeerror : string = "";
+
   constructor(private categorias: CategoriaService) {}
 
   ngOnInit(): void {
     this.categorias.obtenercategorias().subscribe({
       next: (data) => (this.items = data),
-      error: (error) => alert('Error en componente:' + error),
+      error: (error) =>{
+        this.mensajeerror = "Error al cargar las categorias , intente mas tarde"; 
+        console.error('Error en componente:' + error)
+        this.error.set(true);
+      },
     });
   }
 

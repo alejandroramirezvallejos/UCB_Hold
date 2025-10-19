@@ -1,13 +1,14 @@
-import { Component, Input, OnChanges, SimpleChanges } from '@angular/core';
+import { Component, Input, OnChanges, signal, SimpleChanges, WritableSignal } from '@angular/core';
 import { RouterModule } from '@angular/router';
 import { GrupoequipoService } from '../../../services/APIS/GrupoEquipo/grupoequipo.service';
 import { GrupoEquipo } from '../../../models/grupo_equipo';
 import { Router } from '@angular/router';
+import { MostrarerrorComponent } from '../../pantallas_avisos/mostrarerror/mostrarerror.component';
 
 @Component({
   selector: 'app-lista-objetos',
   standalone: true,
-  imports: [RouterModule],
+  imports: [RouterModule , MostrarerrorComponent],
   templateUrl: './lista-objetos.component.html',
   styleUrl: './lista-objetos.component.css'
 })
@@ -21,6 +22,9 @@ export class ListaObjetosComponent implements OnChanges {
   cantidadObjetos: number = 20;
   paginaActual: number = 0;
   totalPaginas: number = 0;
+
+  error : WritableSignal<boolean> = signal(false);
+  mensajeerror : string = "";
 
   constructor(private servicio: GrupoequipoService) {}
 
@@ -40,7 +44,11 @@ export class ListaObjetosComponent implements OnChanges {
         this.todosLosProductos = data;
         this.filtrarProductos();
       },
-      error: (error) => console.error('Error en componente:', error)
+      error: (error) =>{ 
+        this.mensajeerror = "Error al cargar los productos, intente mas tarde";
+        console.error('Error en componente:', error)
+        this.error.set(true);
+      }
     });
   }
 

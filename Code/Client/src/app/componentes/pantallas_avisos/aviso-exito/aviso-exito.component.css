@@ -1,0 +1,210 @@
+:root {
+  --color-primary: #2563eb;
+  --color-secondary: #FFCF00;
+  --color-success: #10b981;
+  --color-info: #3b82f6;
+  --color-text: #334155;
+  --color-text-secondary: #64748b;
+  --color-border: #e2e8f0;
+  --color-background: #f8fafc;
+  --color-surface: #ffffff;
+}
+
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+  font-family: "Manrope", sans-serif;
+}
+
+/* Fondo con overlay como en aviso */
+:host {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  background: rgba(0, 0, 0, 0.5);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 1000;
+  animation: fadeIn 0.3s ease-in-out;
+}
+
+/* Contenedor principal */
+.container {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  background-color: #fff;
+  padding: 30px;
+  width: 400px;
+  max-width: 90vw;
+  max-height: 80vh;
+  border: 2px solid #10b981;
+  border-radius: 10px;
+  box-shadow: 0 6px 12px rgba(0, 0, 0, 0.3);
+  text-align: center;
+  animation: slideIn 0.3s ease-out;
+}
+
+/* Botón cerrar (X) */
+.cerrar {
+  position: absolute;
+  top: 10px;
+  right: 10px;
+  cursor: pointer;
+  font-size: 20px;
+  color: #7F7F7F;
+  font-weight: bold;
+  background: none;
+  border: none;
+  width: 30px;
+  height: 30px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: color 0.3s ease;
+}
+
+.cerrar:hover {
+  color: #10b981;
+}
+
+/* Título del aviso */
+h1 {
+  margin-top: 20px;
+  color: #10b981;
+  font-size: 1.5rem;
+  font-weight: 700;
+  margin-bottom: 15px;
+}
+
+/* Contenedor del mensaje con scroll */
+.mensaje-container {
+  max-height: 200px;
+  overflow-y: auto;
+  width: 100%;
+  margin: 15px 0 20px 0;
+  padding-right: 5px;
+}
+
+/* Mensaje */
+p {
+  font-size: 16px;
+  color: var(--color-text);
+  line-height: 1.5;
+  text-align: center;
+  padding: 0 5px;
+  margin: 0;
+}
+
+/* Estilo personalizado para la barra de scroll */
+.mensaje-container::-webkit-scrollbar {
+  width: 6px;
+}
+
+.mensaje-container::-webkit-scrollbar-track {
+  background: #f1f1f1;
+  border-radius: 3px;
+}
+
+.mensaje-container::-webkit-scrollbar-thumb {
+  background: #c1c1c1;
+  border-radius: 3px;
+}
+
+.mensaje-container::-webkit-scrollbar-thumb:hover {
+  background: #a1a1a1;
+}
+
+/* Contenedor de botones */
+.botones-container {
+  display: flex;
+  gap: 1rem;
+  justify-content: center;
+  width: 100%;
+}
+
+/* Botón Aceptar - estilo verde éxito */
+.aceptar {
+  background-color: #10b981;
+  border: none;
+  color: white;
+  padding: 0.75rem 1.5rem;
+  border-radius: 5px;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  min-width: 100px;
+  font-size: 0.9rem;
+  font-weight: 600;
+  border: 2px solid #10b981;
+}
+
+.aceptar:hover {
+  background-color: #059669;
+  border-color: #059669;
+  transform: translateY(-1px);
+  box-shadow: 0 4px 12px rgba(16, 185, 129, 0.4);
+}
+
+/* Animaciones */
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+@keyframes slideIn {
+  from {
+    transform: scale(0.8);
+    opacity: 0;
+  }
+  to {
+    transform: scale(1);
+    opacity: 1;
+  }
+}
+
+/* Responsive Design */
+@media (max-width: 480px) {
+  .container {
+    width: 90vw;
+    padding: 20px;
+    max-height: 70vh;
+  }
+  
+  h1 {
+    font-size: 1.3rem;
+    margin-top: 15px;
+    margin-bottom: 10px;
+  }
+  
+  .mensaje-container {
+    max-height: 150px;
+    margin: 10px 0 15px 0;
+  }
+  
+  p {
+    font-size: 14px;
+  }
+  
+  .aceptar {
+    width: 100%;
+    padding: 0.6rem 1rem;
+    font-size: 0.85rem;
+  }
+  
+  .cerrar {
+    top: 8px;
+    right: 8px;
+    width: 25px;
+    height: 25px;
+    font-size: 18px;
+  }
+}

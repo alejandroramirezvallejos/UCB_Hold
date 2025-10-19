@@ -21,13 +21,13 @@ export class IniciarSesionComponent {
   contrasena : string ="";
   loading: boolean = false;
   incorrecto : boolean = false;
-  errorraro : WritableSignal<number> = signal(0);
+  errorraro : WritableSignal<boolean> = signal(false);
   constructor(private usuario : UsuarioService , private router : Router , private usuarioapi : UsuarioServiceAPI ){};
 
   login(){
     this.loading = true;
-    this.usuarioapi.iniciarsesion(this.email, this.contrasena).subscribe(
-      (data) => {
+    this.usuarioapi.iniciarsesion(this.email, this.contrasena).subscribe({
+      next: (data) => {
         this.usuario.iniciarsesion(data);
         this.loading = false;
         this.incorrecto = false;
@@ -35,18 +35,18 @@ export class IniciarSesionComponent {
         this.router.navigate(["/home"]);
 
       },
-      (error) => {
+      error: (error) => {
         if(error.status === 400 || error.status === 401){
           this.incorrecto = true;
          
         }
         else{
-          this.errorraro.set(1); 
+          this.errorraro.set(true);
           
         }
         this.loading = false;
       }
-    );
+    });
   }
 
   registrarUsuario(){

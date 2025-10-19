@@ -1,17 +1,19 @@
 
-@if(mensaje.length<200 ){
-  <div class="container">
-    <div class="cerrar" (click)="clickx()">X</div>
-    <h1>Error </h1>
-    <p>{{mensaje}}</p>
-    <div class="volver-btn" (click)="clickx()">Volver</div>
-  </div>
-}
-@else{
-  <div class="container-big">
-  <div class="cerrar" (click)="clickx()">X</div>
-  <h1>Error </h1>
-  <div class="pbig">{{mensaje}}</div>
-  <div class="volver-btn" (click)="clickx()">Volver</div>
+<div class="overlay">
+  @if(mensaje.length<200 ){
+    <div class="container">
+      <div class="cerrar" (click)="clickx()">X</div>
+      <h1>Error </h1>
+      <p>{{mensaje}}</p>
+      <div class="volver-btn" (click)="clickx()">Volver</div>
+    </div>
+  }
+  @else{
+    <div class="container-big">
+      <div class="cerrar" (click)="clickx()">X</div>
+      <h1>Error </h1>
+      <div class="pbig">{{mensaje}}</div>
+      <div class="volver-btn" (click)="clickx()">Volver</div>
+    </div>
+  }
 </div>
-}

@@ -7,14 +7,13 @@ import { Component, input, Input, Signal, WritableSignal } from '@angular/core';
   styleUrl: './mostrarerror.component.css'
 })
 export class MostrarerrorComponent {
-  // error es un number por si se necesitan mas estados que 0 y 1 o falso y true 
-  // en este caso se usa  0 (false) 1 (true)  2(desactivado )
 
-  @Input() error! : WritableSignal<number>  ;
-  @Input() mensaje : string = "";
+
+  @Input() error! : WritableSignal<boolean>  ;
+  @Input() mensaje : string = "Error desconocido , intente mas tarde";
 
   clickx(){
-    this.error.set(2);
+    this.error.set(false);
   }
 
 }

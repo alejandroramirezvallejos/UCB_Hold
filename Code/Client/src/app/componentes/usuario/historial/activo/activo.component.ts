@@ -48,7 +48,9 @@ export class ActivoComponent extends HistorialBase {
         this.itemSeleccionado = null;
       }, 
       error: (error) => {
-        alert( error.error.error + ': ' + error.error.mensaje);
+        this.mensajeerror = "Error al finalizar el prestamo, intente mas tarde";
+        console.error( error.error.error + ': ' + error.error.mensaje);
+        this.error.set(true);
       }
     });
   }
