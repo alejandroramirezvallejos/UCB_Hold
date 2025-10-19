@@ -35,7 +35,7 @@ export class ActivoComponent extends HistorialBase {
 
   avisoDevolver(item : Prestamos) {
     this.itemSeleccionado = item;
-    this.aviso.set(!this.aviso());
+    this.aviso.set(true);
   }
 
   
@@ -44,7 +44,7 @@ export class ActivoComponent extends HistorialBase {
     this.prestamoApi.cambiarEstadoPrestamo(this.itemSeleccionado!.Id, 'finalizado').subscribe({
       next: (response) => {
         this.cargarDatos();
-        this.aviso.set(!this.aviso());
+
         this.itemSeleccionado = null;
       }, 
       error: (error) => {

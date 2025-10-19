@@ -18,7 +18,7 @@ import { MostrarerrorComponent } from '../../pantallas_avisos/mostrarerror/mostr
 })
 export class CarritoComponent {
   private error : boolean = false;
-  // 0 es falso 1 es true para errorboton
+
   public errorboton : WritableSignal<boolean> = signal(false);
   public mensajeerror: string = "Datos insertados no validos"; 
   public botonEjecutado: boolean = false;

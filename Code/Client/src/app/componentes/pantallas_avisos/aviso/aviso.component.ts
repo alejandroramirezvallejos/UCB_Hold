@@ -13,11 +13,12 @@ export class Aviso {
   @Output() aceptar : EventEmitter<void> = new EventEmitter<void>();
 
   click(){
-    this.cerrar.set(!this.cerrar());
+    this.cerrar.set(false);
   }
 
   onAceptar(){
     this.aceptar.emit();
+    this.cerrar.set(false);
   }
   
 

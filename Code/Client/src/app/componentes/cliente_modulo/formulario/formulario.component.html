@@ -38,7 +38,16 @@
   <app-aviso
   [cerrar]="aviso"
   [mensaje]="mensajeaviso"
-  
+  (aceptar)="confirmarprestamo()"
   ></app-aviso>
+
+}
+
+@if(avisoexito()){
+  <app-aviso-exito
+  [exito]="avisoexito"
+  [mensaje]="mensajeexito"
+  (accion)="irhome()"
+  ></app-aviso-exito>
 
 }

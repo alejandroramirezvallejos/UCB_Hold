@@ -16,13 +16,14 @@ import { finalize } from 'rxjs';
 import { PantallaCargaComponent } from '../../pantallas_avisos/pantalla-carga/pantalla-carga.component';
 import { MostrarerrorComponent } from '../../pantallas_avisos/mostrarerror/mostrarerror.component';
 import { Aviso } from '../../pantallas_avisos/aviso/aviso.component';
+import { AvisoExitoComponent } from '../../pantallas_avisos/aviso-exito/aviso-exito.component';
 
 
 
 @Component({
   selector: 'app-formulario',
   standalone: true,
-  imports: [FirmaComponent , CommonModule , MostrarerrorComponent,PantallaCargaComponent , Aviso ],
+  imports: [FirmaComponent , CommonModule , MostrarerrorComponent,PantallaCargaComponent , Aviso , AvisoExitoComponent ],
   templateUrl: './formulario.component.html',
   styleUrl: './formulario.component.css'
 })
@@ -39,6 +40,9 @@ export class FormularioComponent implements OnInit {
 
   aviso : WritableSignal<boolean> = signal (false);
   mensajeaviso : string = "Aviso desconocido , si ve esto es un error , avise al soporte si puede o intente mas tarde";
+
+  avisoexito : WritableSignal<boolean> = signal (false);
+  mensajeexito : string = "Aviso de exito desconocido , si ve esto es un error , avise al soporte si puede o intente mas tarde";
 
   
  
@@ -114,7 +118,14 @@ export class FormularioComponent implements OnInit {
       this.firmar();
     } 
     else{
-      const contratoblob= this.generarHTMLBinario(); 
+     this.aviso.set(true);
+    this.mensajeaviso = "¿Está seguro de confirmar el préstamo con los términos y condiciones establecidos en el contrato?";
+    }
+  }
+
+
+  confirmarprestamo(){
+    const contratoblob= this.generarHTMLBinario(); 
       
       this.cargando = true;
       this.mandarprestamo.crearPrestamo(this.carrito.obtenercarrito(),this.usuario.usuario.carnet!,contratoblob)
@@ -122,10 +133,11 @@ export class FormularioComponent implements OnInit {
       .subscribe({
         next: (response) => {
           console.log('Préstamo creado exitosamente:', response);
-          alert('Préstamo creado exitosamente');
+          this.mensajeexito = "El préstamo ha sido creado exitosamente.";
+          this.avisoexito.set(true);
           this.carrito.vaciarcarrito();
 
-          this.router.navigate(["/home"]);
+          
         },
         error: (error) => {
         
@@ -134,7 +146,10 @@ export class FormularioComponent implements OnInit {
           this.mensajeerror = error.error.error+ " - " + error.error.mensaje;
         }
       })
-    }
+  }
+
+  irhome(){
+    this.router.navigate(["/home"]);
   }
   
   

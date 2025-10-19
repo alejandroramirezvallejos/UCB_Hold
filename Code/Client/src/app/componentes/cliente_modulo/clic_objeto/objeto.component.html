@@ -38,17 +38,25 @@
       </a>
     }
     
-    
-    <button
-      (click)="addproductocarrito()"
-      class="boton-carrito"
-      [class.plomo]="addedToCart"
-      [disabled]="addedToCart"
-    >
-      {{ addedToCart ? "Agregado al carrito" : "Agregar al carrito" }}
-    </button>
+    @if(desabilitarboton==false){
+      <button
+        (click)="addproductocarrito()"
+        class="boton-carrito"
+        [class.plomo]="addedToCart"
+        [disabled]="addedToCart"
+      >
+        {{ addedToCart ? "Agregado al carrito" : "Agregar al carrito" }}
+      </button>
+    }
+
   </div>
 </div>
 
 }
 
+@if(error()){
+  <app-mostrarerror
+  [error]="error"
+  [mensaje]="mensajeerror"
+  ></app-mostrarerror>
+}
