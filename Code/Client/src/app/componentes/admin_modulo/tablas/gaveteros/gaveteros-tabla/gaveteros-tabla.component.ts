@@ -6,17 +6,19 @@ import { GaveterosCrearComponent } from '../gaveteros-crear/gaveteros-crear.comp
 import { GaveterosEditarComponent } from '../gaveteros-editar/gaveteros-editar.component';
 import { GaveteroService } from '../../../../../services/APIS/Gavetero/gavetero.service';
 import { AvisoEliminarComponent } from '../../../../pantallas_avisos/aviso-eliminar/aviso-eliminar.component';
+import { BaseTablaComponent } from '../../base/base';
+import { MostrarerrorComponent } from '../../../../pantallas_avisos/mostrarerror/mostrarerror.component';
 
 
 
 @Component({
   selector: 'app-gaveteros-tabla',
   standalone: true,
-  imports: [CommonModule, FormsModule, ReactiveFormsModule , GaveterosCrearComponent , GaveterosEditarComponent,AvisoEliminarComponent],
+  imports: [CommonModule, FormsModule, ReactiveFormsModule , GaveterosCrearComponent , GaveterosEditarComponent,AvisoEliminarComponent , MostrarerrorComponent],
   templateUrl: './gaveteros-tabla.component.html',
   styleUrls: ['./gaveteros-tabla.component.css']
 })
-export class GaveterosTablaComponent {
+export class GaveterosTablaComponent extends BaseTablaComponent {
 
   botoncrear : WritableSignal<boolean> = signal(false);
   botoneditar : WritableSignal<boolean> = signal(false);
@@ -30,7 +32,9 @@ export class GaveterosTablaComponent {
   terminoBusqueda: string = '';
 
 
-  constructor(private gaveterosapi : GaveteroService){}; 
+  constructor(private gaveterosapi : GaveteroService){
+    super();
+  }; 
 
 
 
@@ -52,15 +56,17 @@ export class GaveterosTablaComponent {
 
   cargarGaveteros() {
  
-    this.gaveterosapi.obtenerGaveteros().subscribe(
-      (data: Gaveteros[]) => {
+    this.gaveterosapi.obtenerGaveteros().subscribe({
+      next: (data: Gaveteros[]) => {
         this.gaveteros = data;
         this.gaveteroscopia = [...this.gaveteros]; 
       },
-      (error) => {
+      error: (error) => {
+        this.mensajeerror = "Error al cargar los gaveteros, intente mas tarde";
         console.error('Error al cargar los gaveteros:', error);
+        this.error.set(true);
       }
-    );
+    });
 
   }
 
@@ -96,16 +102,18 @@ eliminarGavetero(gavetero : Gaveteros) {
 }
 
 confirmarEliminacion() {
-  this.gaveterosapi.eliminarGavetero(this.gaveteroSeleccionado.Id).subscribe(
-    (response) => {
+  this.gaveterosapi.eliminarGavetero(this.gaveteroSeleccionado.Id).subscribe({
+    next: (response) => {
 
        this.cargarGaveteros(); 
 
     },
-    (error) => {
-      alert('Error al eliminar el gavetero: ' + error);
+    error: (error) => {
+      this.mensajeerror = "Error al eliminar el gavetero, intente mas tarde";
+      console.error('Error al eliminar el gavetero: ' + error);
+      this.error.set(true);
     }
-  );
+  });
   this.limpiarGaveteroSeleccionado();
   this.alertaeliminar = false;
 }

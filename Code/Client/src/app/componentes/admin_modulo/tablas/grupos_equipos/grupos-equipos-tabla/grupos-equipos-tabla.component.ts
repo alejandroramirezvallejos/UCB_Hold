@@ -7,15 +7,17 @@ import { GruposEquiposEditarComponent } from '../grupos-equipos-editar/grupos-eq
 import { GrupoequipoService } from '../../../../../services/APIS/GrupoEquipo/grupoequipo.service';
 import { CategoriaService } from '../../../../../services/APIS/Categoria/categoria.service';
 import { AvisoEliminarComponent } from '../../../../pantallas_avisos/aviso-eliminar/aviso-eliminar.component';
+import { BaseTablaComponent } from '../../base/base';
+import { MostrarerrorComponent } from '../../../../pantallas_avisos/mostrarerror/mostrarerror.component';
 
 @Component({
   selector: 'app-grupos-equipos-tabla',
   standalone: true,
-  imports: [CommonModule, FormsModule, ReactiveFormsModule, GruposEquiposCrearComponent, GruposEquiposEditarComponent,AvisoEliminarComponent],
+  imports: [CommonModule, FormsModule, ReactiveFormsModule, GruposEquiposCrearComponent, GruposEquiposEditarComponent,AvisoEliminarComponent , MostrarerrorComponent],
   templateUrl: './grupos-equipos-tabla.component.html',
   styleUrl: './grupos-equipos-tabla.component.css'
 })
-export class GruposEquiposTablaComponent implements OnInit {
+export class GruposEquiposTablaComponent extends BaseTablaComponent implements OnInit {
 
   botoncrear: WritableSignal<boolean> = signal(false);
   botoneditar: WritableSignal<boolean> = signal(false);
@@ -30,7 +32,9 @@ export class GruposEquiposTablaComponent implements OnInit {
 
   terminoBusqueda: string = '';
 
-  constructor(private grupoequipoapi: GrupoequipoService , private categoriasAPI : CategoriaService) { }
+  constructor(private grupoequipoapi: GrupoequipoService , private categoriasAPI : CategoriaService) { 
+    super();
+  }
 
   ngOnInit() {
     this.cargarGruposEquipos();
@@ -38,14 +42,16 @@ export class GruposEquiposTablaComponent implements OnInit {
   }
 
   obtenerCategorias() {
-    this.categoriasAPI.obtenercategorias().subscribe(
-      (data) => {
+    this.categoriasAPI.obtenercategorias().subscribe({
+      next : (data) => {
         this.categorias = data.map(categoria => categoria.Nombre);
       },
-      (error) => {
+      error: (error) => {
+        this.mensajeerror="Error al cargar las categorías, intente más tarde";
         console.error('Error al cargar las categorías:', error.error.mensaje);
+        this.error.set(true);
       }
-    );
+  });
   }
 
   limpiarGrupoEquipoSeleccionado() {
@@ -57,16 +63,18 @@ export class GruposEquiposTablaComponent implements OnInit {
   }
 
   cargarGruposEquipos() {
-    this.grupoequipoapi.getGrupoEquipo('','').subscribe(
-      (data: GrupoEquipo[]) => {
+    this.grupoequipoapi.getGrupoEquipo('','').subscribe({
+      next :(data: GrupoEquipo[]) => {
         this.gruposEquipos = data;
         this.gruposEquiposFiltrados = [...this.gruposEquipos];
         this.aplicarBusqueda();
       },
-      (error) => {
+      error: (error) => {
+        this.mensajeerror="Error al cargar los grupos de equipos, intente más tarde";
         console.error('Error al cargar los grupos de equipos:', error);
+        this.error.set(true);
       }
-    );
+    });
   }
 
   buscar() {
@@ -105,13 +113,15 @@ export class GruposEquiposTablaComponent implements OnInit {
   }
 
   confirmarEliminacion() {
-    this.grupoequipoapi.eliminarGrupoEquipo(this.grupoEquipoSeleccionado.id).subscribe(
-      (response) => {
+    this.grupoequipoapi.eliminarGrupoEquipo(this.grupoEquipoSeleccionado.id).subscribe({
+      next: (response) => {
         this.cargarGruposEquipos();
       },
-      (error) => {
-        alert('Error al eliminar el grupo de equipo: ' + error);
-      }
+      error: (error) => {
+        this.mensajeerror="Error al eliminar el grupo de equipo, intente más tarde";
+        console.error('Error al eliminar el grupo de equipo: ' + error);
+        this.error.set(true);
+      }}
     );
     this.limpiarGrupoEquipoSeleccionado();
     this.alertaeliminar = false;

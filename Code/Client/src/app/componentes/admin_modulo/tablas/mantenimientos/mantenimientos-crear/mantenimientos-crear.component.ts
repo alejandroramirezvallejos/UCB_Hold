@@ -6,15 +6,19 @@ import { ListaequipoComponent } from './listaequipo/listaequipo.component';
 import { MantenimientosServiceEquipos } from '../../../../../services/mantenimientoEquipos/mantenimientosEquipos.service';
 import { CommonModule } from '@angular/common';
 import { EmpresamantenimientoService } from '../../../../../services/APIS/EmpresaMantenimiento/empresamantenimiento.service';
+import { BaseTablaComponent } from '../../base/base';
+import { MostrarerrorComponent } from '../../../../pantallas_avisos/mostrarerror/mostrarerror.component';
+import { Aviso } from '../../../../pantallas_avisos/aviso/aviso.component';
+import { AvisoExitoComponent } from '../../../../pantallas_avisos/aviso-exito/aviso-exito.component';
 
 @Component({
   selector: 'app-mantenimientos-crear',
   standalone: true,
-  imports: [FormsModule , ListaequipoComponent, CommonModule],
+  imports: [FormsModule , ListaequipoComponent, CommonModule, MostrarerrorComponent , Aviso , AvisoExitoComponent],
   templateUrl: './mantenimientos-crear.component.html',
   styleUrl: './mantenimientos-crear.component.css'
 })
-export class MantenimientosCrearComponent {
+export class MantenimientosCrearComponent extends BaseTablaComponent{
 
   @Input() botoncrear: WritableSignal<boolean> = signal(true);
   @Output() Actualizar = new EventEmitter<void>();
@@ -33,7 +37,9 @@ export class MantenimientosCrearComponent {
         DescripcionEquipo : string ; 
         nombre : string }> = new Map();
 
-  constructor(private mantenimientoapi: MantenimientoService , private mantenimientoequipo : MantenimientosServiceEquipos  , private empresa : EmpresamantenimientoService) { }
+  constructor(private mantenimientoapi: MantenimientoService , private mantenimientoequipo : MantenimientosServiceEquipos  , private empresa : EmpresamantenimientoService) {
+    super();
+   }
 
 
   
@@ -86,8 +92,9 @@ export class MantenimientosCrearComponent {
 
       },
       error: (error) => {
+        this.mensajeerror = "Error al cargar las empresas de mantenimiento. Por favor, inténtelo de nuevo más tarde.";
         console.error('Error al obtener las empresas de mantenimiento:', error);
-        alert('Error al cargar las empresas de mantenimiento. Por favor, inténtelo de nuevo más tarde.');
+        this.error.set(true);
       }
     }
     );
@@ -106,6 +113,11 @@ export class MantenimientosCrearComponent {
     this.obtenermantenimientoSeleccionado();
   }
 
+  validarcreacion(){
+    this.mensajeaviso="¿Está seguro de que desea crear este mantenimiento?";
+    this.aviso.set(true);
+  }
+
   registrar() {
     // Convertir el objeto para que coincida con lo que espera el servicio
     const mantenimientoParaEnvio = {
@@ -116,15 +128,18 @@ export class MantenimientosCrearComponent {
       DescripcionMantenimiento: this.mantenimiento.Descripcion,
     };
 
-    this.mantenimientoapi.crearMantenimiento(mantenimientoParaEnvio , this.mantenimientoSeleccionado).subscribe(
-      response => {
+    this.mantenimientoapi.crearMantenimiento(mantenimientoParaEnvio , this.mantenimientoSeleccionado).subscribe({
+      next: (response) => {
         this.Actualizar.emit();
-        this.cerrar();
+        this.mensajeexito="Mantenimiento creado con éxito.";
+        this.exito.set(true);
       },
-      error => {
-        alert(error.error.error + ': ' + error.error.mensaje);
+      error: (error) => {
+        this.mensajeerror="Error al crear el mantenimiento. Por favor, inténtelo de nuevo más tarde.";
+        console.error(error.error.error + ': ' + error.error.mensaje);
+        this.error.set(true);
       }
-    );
+  });
   }
 
   cerrar() {

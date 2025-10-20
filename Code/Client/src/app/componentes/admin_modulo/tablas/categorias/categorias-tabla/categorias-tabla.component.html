@@ -97,3 +97,11 @@
   (actualizar)="cargarCategorias()"
   ></app-categorias-editar>
 }
+
+
+@if(error()){
+  <app-mostrarerror
+  [error]="error"
+  [mensaje]="mensajeerror"
+  ></app-mostrarerror>
+}

@@ -115,3 +115,12 @@
   (actualizar)="cargarComponentes()"
   ></app-componentes-editar>
 }
+
+
+
+@if(error()){
+  <app-mostrarerror
+  [error]="error"
+  [mensaje]="mensajeerror"
+  ></app-mostrarerror>
+}

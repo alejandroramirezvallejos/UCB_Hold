@@ -97,3 +97,10 @@
   (actualizar)="cargarCarreras()"
   ></app-carreras-editar>
 }
+
+@if(error()){
+  <app-mostrarerror
+  [error]="error"
+  [mensaje]="mensajeerror"
+  ></app-mostrarerror>
+}

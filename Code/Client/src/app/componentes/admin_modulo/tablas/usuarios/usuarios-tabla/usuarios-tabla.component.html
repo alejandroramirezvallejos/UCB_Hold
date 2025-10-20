@@ -141,3 +141,10 @@
   [carreras]="carreras"
   ></app-usuarios-editar>
 }
+
+@if(error()){
+  <app-mostrarerror
+  [error]="error"
+  [mensaje]="mensajeerror"
+  ></app-mostrarerror>
+}

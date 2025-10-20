@@ -119,3 +119,11 @@
   (actualizar)="cargarMuebles()"
   ></app-muebles-editar>
 }
+
+
+@if(error()){
+  <app-mostrarerror
+  [error]="error"
+  [mensaje]="mensajeerror"
+  ></app-mostrarerror>
+}

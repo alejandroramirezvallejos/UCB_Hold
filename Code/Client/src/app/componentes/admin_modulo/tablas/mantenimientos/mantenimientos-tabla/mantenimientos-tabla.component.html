@@ -116,3 +116,11 @@
   [mostrardetalles]="mostrardetalles"
   ></app-detalles-mantenimiento>
 }
+
+
+@if(error()){
+  <app-mostrarerror
+  [error]="error"
+  [mensaje]="mensajeerror"
+  ></app-mostrarerror>
+}

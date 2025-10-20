@@ -6,15 +6,17 @@ import { CarrerasCrearComponent } from '../carreras-crear/carreras-crear.compone
 import { CarrerasEditarComponent } from '../carreras-editar/carreras-editar.component';
 import { CarreraService } from '../../../../../services/APIS/Carrera/carrera.service';
 import { AvisoEliminarComponent } from '../../../../pantallas_avisos/aviso-eliminar/aviso-eliminar.component';
+import { BaseTablaComponent } from '../../base/base';
+import { MostrarerrorComponent } from '../../../../pantallas_avisos/mostrarerror/mostrarerror.component';
 
 @Component({
   selector: 'app-carreras-tabla',
   standalone: true,
-  imports: [CommonModule, FormsModule, CarrerasCrearComponent, CarrerasEditarComponent , AvisoEliminarComponent],
+  imports: [CommonModule, FormsModule, CarrerasCrearComponent, CarrerasEditarComponent , AvisoEliminarComponent , MostrarerrorComponent],
   templateUrl: './carreras-tabla.component.html',
   styleUrl: './carreras-tabla.component.css'
 })
-export class CarrerasTablaComponent  {
+export class CarrerasTablaComponent extends BaseTablaComponent {
 
   botoncrear: WritableSignal<boolean> = signal(false);
   botoneditar: WritableSignal<boolean> = signal(false);
@@ -29,7 +31,9 @@ export class CarrerasTablaComponent  {
 
  
 
-  constructor(private carreraService: CarreraService) {}
+  constructor(private carreraService: CarreraService) {
+    super();
+  }
 
   ngOnInit() {
     this.cargarCarreras();
@@ -53,7 +57,9 @@ export class CarrerasTablaComponent  {
         this.carrerascopia = [...this.carreras];
       },
       (error) => {
+        this.mensajeerror="Error al cargar las carreras , intente mas tarde";
         console.error('Error al cargar las carreras:', error);
+        this.error.set(true);
       }
     );
   }
@@ -92,7 +98,9 @@ export class CarrerasTablaComponent  {
           this.cargarCarreras();
         },
         (error) => {
-          alert('Error al eliminar la carrera: ' + error);
+          this.mensajeerror="Error al eliminar la carrera";
+          console.error('Error al eliminar la carrera: ' + error);
+          this.error.set(true);
         }
       );
     }

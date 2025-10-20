@@ -3,7 +3,7 @@
     <i class="fas fa-times"></i>
   </button>
   <h2>Editar Empresa de Mantenimiento</h2>
-  <form #form="ngForm" (ngSubmit)="confirmar()">    
+  <form #form="ngForm" (ngSubmit)="validaredicion()">    
     <div class="form-group">
       <label for="nombre">Nombre de la Empresa</label>
       <input 
@@ -91,3 +91,27 @@
     </div>
   </form>
 </div>
+
+
+@if(error()){
+  <app-mostrarerror
+  [error]="error"
+  [mensaje]="mensajeerror"
+  ></app-mostrarerror>
+}
+
+@if(aviso()){
+  <app-aviso
+  [cerrar]="aviso"
+  [mensaje]="mensajeaviso"
+  (aceptar)="confirmar()"
+  ></app-aviso>
+}
+
+@if(exito()){
+  <app-aviso-exito
+  [exito]="exito"
+  [mensaje]="mensajeexito"
+  (accion)="cerrar()"
+  ></app-aviso-exito>
+}

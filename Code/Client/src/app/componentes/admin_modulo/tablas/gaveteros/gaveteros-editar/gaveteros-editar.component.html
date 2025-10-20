@@ -3,7 +3,7 @@
     <i class="fas fa-times"></i>
   </button>
   <h2>Editar Gavetero</h2>
-  <form #form="ngForm" (ngSubmit)="confirmar()">
+  <form #form="ngForm" (ngSubmit)="validaredicion()">
     <div class="form-group">
       <label for="nombre">Nombre</label>
       <input 
@@ -97,3 +97,27 @@
     </div>
   </form>
 </div>
+
+
+@if(error()){
+  <app-mostrarerror
+  [error]="error"
+  [mensaje]="mensajeerror"
+  ></app-mostrarerror>
+}
+
+@if(aviso()){
+  <app-aviso
+  [cerrar]="aviso"
+  [mensaje]="mensajeaviso"
+  (aceptar)="confirmar()"
+  ></app-aviso>
+}
+
+@if(exito()){
+  <app-aviso-exito
+  [exito]="exito"
+  [mensaje]="mensajeexito"
+  (accion)="cerrar()"
+  ></app-aviso-exito>
+}

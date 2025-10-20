@@ -102,3 +102,11 @@
   (actualizar)="cargarEmpresas()"
   ></app-empresas-mantenimiento-editar>
 }
+
+
+@if(error()){
+  <app-mostrarerror
+  [error]="error"
+  [mensaje]="mensajeerror"
+  ></app-mostrarerror>
+}

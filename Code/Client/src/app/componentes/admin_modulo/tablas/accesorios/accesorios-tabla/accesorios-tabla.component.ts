@@ -6,17 +6,21 @@ import { AccesoriosCrearComponent } from '../accesorios-crear/accesorios-crear.c
 import { AccesoriosEditarComponent } from '../accesorios-editar/accesorios-editar.component';
 import { AccesoriosService } from '../../../../../services/APIS/Accesorio/accesorios.service';
 import { AvisoEliminarComponent } from '../../../../pantallas_avisos/aviso-eliminar/aviso-eliminar.component';
+import { BaseTablaComponent } from '../../base/base';
+import { MostrarerrorComponent } from '../../../../pantallas_avisos/mostrarerror/mostrarerror.component';
+import { AvisoExitoComponent } from '../../../../pantallas_avisos/aviso-exito/aviso-exito.component';
+import { Aviso } from '../../../../pantallas_avisos/aviso/aviso.component';
 
 
 
 @Component({
   selector: 'app-accesorios-tabla',
   standalone: true,
-  imports: [CommonModule, FormsModule, ReactiveFormsModule , AccesoriosCrearComponent , AccesoriosEditarComponent , AvisoEliminarComponent],
+  imports: [CommonModule, FormsModule, ReactiveFormsModule , AccesoriosCrearComponent , AccesoriosEditarComponent , AvisoEliminarComponent , MostrarerrorComponent , AvisoExitoComponent , Aviso],
   templateUrl: './accesorios-tabla.component.html',
   styleUrls: ['./accesorios-tabla.component.css']
 })
-export class AccesoriosTablaComponent {
+export class AccesoriosTablaComponent  extends BaseTablaComponent{
 
   botoncrear : WritableSignal<boolean> = signal(false);
   botoneditar : WritableSignal<boolean> = signal(false);
@@ -30,7 +34,9 @@ export class AccesoriosTablaComponent {
   terminoBusqueda: string = '';
 
 
-  constructor(private accesoriosapi : AccesoriosService){}; 
+  constructor(private accesoriosapi : AccesoriosService){
+    super();
+  }; 
 
 
 
@@ -52,15 +58,17 @@ export class AccesoriosTablaComponent {
 
   cargarAccesorios() {
  
-    this.accesoriosapi.obtenerAccesorios().subscribe(
-      (data: Accesorio[]) => {
+    this.accesoriosapi.obtenerAccesorios().subscribe({
+      next: (data: Accesorio[]) => {
         this.accesorios = data;
         this.accesorioscopia = [...this.accesorios]; 
       },
-      (error) => {
+      error: (error) => {
+        this.mensajeerror = 'Error al cargar los accesorios. Por favor, intente más tarde.';
         console.error('Error al cargar los accesorios:', error);
+        this.error.set(true);
       }
-    );
+    });
 
   }
 
@@ -100,16 +108,18 @@ eliminarAccesorio(accesorio : Accesorio) {
 }
 
 confirmarEliminacion() {
-  this.accesoriosapi.eliminarAccesorio(this.accesorioSeleccionado.Id).subscribe(
-    (response) => {
+  this.accesoriosapi.eliminarAccesorio(this.accesorioSeleccionado.Id).subscribe({
+    next: (response) => {
 
        this.cargarAccesorios(); 
 
     },
-    (error) => {
+    error: (error) => {
+      this.mensajeerror = 'Error al eliminar el accesorio. Por favor, intente más tarde.';
       alert('Error al eliminar el accesorio: ' + error);
+      this.error.set(true);
     }
-  );
+  });
   this.limpiarAccesorioSeleccionado();
   this.alertaeliminar = false;
 }

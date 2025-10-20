@@ -7,15 +7,17 @@ import { MantenimientoService } from '../../../../../services/APIS/Mantenimiento
 import { MantenimientosAgrupados } from '../../../../../models/MantenimientosAgrupados';
 import { DetallesMantenimientoComponent } from './detalles-mantenimiento/detalles-mantenimiento.component';
 import { AvisoEliminarComponent } from '../../../../pantallas_avisos/aviso-eliminar/aviso-eliminar.component';
+import { BaseTablaComponent } from '../../base/base';
+import { MostrarerrorComponent } from '../../../../pantallas_avisos/mostrarerror/mostrarerror.component';
 
 @Component({
   selector: 'app-mantenimientos-tabla',
   standalone: true,
-  imports: [CommonModule, FormsModule, ReactiveFormsModule, MantenimientosCrearComponent , DetallesMantenimientoComponent,AvisoEliminarComponent],
+  imports: [CommonModule, FormsModule, ReactiveFormsModule, MantenimientosCrearComponent , DetallesMantenimientoComponent,AvisoEliminarComponent, MostrarerrorComponent],
   templateUrl: './mantenimientos-tabla.component.html',
   styleUrl: './mantenimientos-tabla.component.css'
 })
-export class MantenimientosTablaComponent implements OnInit {
+export class MantenimientosTablaComponent extends BaseTablaComponent implements OnInit {
 
   botoncrear: WritableSignal<boolean> = signal(false);
 
@@ -32,7 +34,9 @@ export class MantenimientosTablaComponent implements OnInit {
   terminoBusqueda: string = '';
 
 
-  constructor(private mantenimientoapi: MantenimientoService) { }
+  constructor(private mantenimientoapi: MantenimientoService) { 
+    super();
+  }
 
   ngOnInit() {
     this.cargarMantenimientos();
@@ -52,7 +56,9 @@ export class MantenimientosTablaComponent implements OnInit {
         this.agruparMantenimientos(datos);
       },
       error: (error) => {
-        alert('Error al cargar los mantenimientos: ' + error.error.mensaje);
+        this.mensajeerror = "Error al cargar los mantenimientos, intente mas tarde";
+        console.error('Error al cargar los mantenimientos: ' + error.error.mensaje);
+        this.error.set(true);
       }
     });
   }
@@ -122,9 +128,11 @@ export class MantenimientosTablaComponent implements OnInit {
           this.cargarMantenimientos();
       },
       error: (error) => {
-         alert('Error al eliminar el mantenimiento: ' + error.error.mensaje);
-            this.limpiarMantenimientoSeleccionado();
-           this.alertaeliminar = false;
+          this.mensajeerror = "Error al eliminar el mantenimiento, intente mas tarde";
+          this.error.set(true);
+         console.error('Error al eliminar el mantenimiento: ' + error.error.mensaje);
+          this.limpiarMantenimientoSeleccionado();
+          this.alertaeliminar = false;
       }
     })
   
