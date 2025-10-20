@@ -6,15 +6,18 @@ import { EmpresasMantenimientoCrearComponent } from '../empresas-mantenimiento-c
 import { EmpresasMantenimientoEditarComponent } from '../empresas-mantenimiento-editar/empresas-mantenimiento-editar.component';
 import { EmpresamantenimientoService } from '../../../../../services/APIS/EmpresaMantenimiento/empresamantenimiento.service';
 import { AvisoEliminarComponent } from '../../../../pantallas_avisos/aviso-eliminar/aviso-eliminar.component';
+import { BaseTablaComponent } from '../../base/base';
+import { MostrarerrorComponent } from '../../../../pantallas_avisos/mostrarerror/mostrarerror.component';
+import { AvisoExitoComponent } from '../../../../pantallas_avisos/aviso-exito/aviso-exito.component';
 
 @Component({
   selector: 'app-empresas-mantenimiento-tabla',
   standalone: true,
-  imports: [CommonModule, FormsModule, EmpresasMantenimientoCrearComponent, EmpresasMantenimientoEditarComponent, AvisoEliminarComponent],
+  imports: [CommonModule, FormsModule, EmpresasMantenimientoCrearComponent, EmpresasMantenimientoEditarComponent, AvisoEliminarComponent , MostrarerrorComponent, AvisoExitoComponent],
   templateUrl: './empresas-mantenimiento-tabla.component.html',
   styleUrl: './empresas-mantenimiento-tabla.component.css'
 })
-export class EmpresasMantenimientoTablaComponent implements OnInit {
+export class EmpresasMantenimientoTablaComponent extends BaseTablaComponent implements OnInit {
 
   botoncrear: WritableSignal<boolean> = signal(false);
   botoneditar: WritableSignal<boolean> = signal(false);
@@ -29,7 +32,9 @@ export class EmpresasMantenimientoTablaComponent implements OnInit {
 
  
 
-  constructor(private empresaService: EmpresamantenimientoService) {}
+  constructor(private empresaService: EmpresamantenimientoService) {
+    super(); 
+  }
 
   ngOnInit() {
     this.cargarEmpresas();
@@ -49,7 +54,9 @@ export class EmpresasMantenimientoTablaComponent implements OnInit {
         this.empresascopia = [...this.empresas];
       },
       (error) => {
+        this.mensajeerror = 'Error al cargar las empresas de mantenimiento, intente más tarde.';
         console.error('Error al cargar las empresas de mantenimiento:', error);
+        this.error.set(true);
       }
     );
   }
@@ -85,14 +92,18 @@ export class EmpresasMantenimientoTablaComponent implements OnInit {
 
   confirmarEliminacion() {
     if (this.empresaSeleccionada.Id) {
-      this.empresaService.eliminarEmpresaMantenimiento(this.empresaSeleccionada.Id).subscribe(
-        (response) => {
+      this.empresaService.eliminarEmpresaMantenimiento(this.empresaSeleccionada.Id).subscribe({
+        next : (response) => {
           this.cargarEmpresas();
+          this.mensajeexito = 'Empresa de mantenimiento eliminada exitosamente.';
+          this.exito.set(true);
         },
-        (error) => {
-          alert('Error al eliminar la empresa de mantenimiento: ' + error);
+        error: (error) => {
+          this.mensajeerror = 'Error al eliminar la empresa de mantenimiento.';
+          console.error('Error al eliminar la empresa de mantenimiento: ' + error);
+          this.error.set(true);
         }
-      );
+      });
     }
     this.limpiarEmpresaSeleccionada();
     this.alertaeliminar = false;

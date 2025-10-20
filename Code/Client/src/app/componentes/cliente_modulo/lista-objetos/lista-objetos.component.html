@@ -95,3 +95,10 @@
     </footer>
   </div>
 </body>
+
+@if(error()){
+  <app-mostrarerror
+  [error]="error"
+  [mensaje]="mensajeerror"
+  ></app-mostrarerror>
+}

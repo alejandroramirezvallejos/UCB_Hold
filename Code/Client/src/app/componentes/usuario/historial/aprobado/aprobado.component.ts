@@ -53,7 +53,9 @@ export class AprobadoComponent extends HistorialBase {
         this.avisoaprobar.set(false);
       }, 
       error: (error) => {
-        alert( error.error.error + ': ' + error.error.mensaje);
+        this.mensajeerror = "Error al recoger el prestamo, intente mas tarde";
+        console.error( error.error.error + ': ' + error.error.mensaje);
+        this.error.set(true);
       }
     });
   }
@@ -66,7 +68,9 @@ export class AprobadoComponent extends HistorialBase {
         this.avisocancelar.set(false);
       }, 
       error: (error) => {
-        alert( error.error.error + ': ' + error.error.mensaje);
+        this.mensajeerror = "Error al cancelar el prestamo, intente mas tarde";
+        console.error( error.error.error + ': ' + error.error.mensaje);
+        this.error.set(true);
       }
     });
   }

@@ -1,29 +1,59 @@
 
 
+/* Overlay que bloquea toda la pantalla */
+.overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  background-color: rgba(0, 0, 0, 0.5); /* Fondo oscuro semitransparente */
+  z-index: 1000; /* Mismo z-index alto que aviso-eliminar */
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  animation: fadeIn 0.3s ease-in-out;
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
 .container {
-  position: fixed; /* Cambiamos a fixed */
-  top: 50%;
-  left: 50%;
-  transform: translate(-50%, -50%); /* Centrado perfecto */
-  z-index: 1000; /* Asegura que esté por encima de todo */
+  position: relative;
+  z-index: 1001; /* Por encima del overlay */
   display: flex;
   flex-direction: column;
   align-items: center;
   background-color: #fff;
   padding: 30px;
   width: 350px;
-  border: 2px solid #000000; /* Borde rojo más visible */
+  border: 2px solid #000000;
   border-radius: 10px;
-  box-shadow: 0 6px 12px rgba(0, 0, 0, 0.3); /* Sombra más pronunciada */
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
   text-align: center;
+  animation: slideIn 0.3s ease-out;
+}
+
+@keyframes slideIn {
+  from {
+    transform: scale(0.8);
+    opacity: 0;
+  }
+  to {
+    transform: scale(1);
+    opacity: 1;
+  }
 }
 
 .container-big {
-  position: fixed;
-  top: 50%;
-  left: 50%;
-  transform: translate(-50%, -50%);
-  z-index: 1000;
+  position: relative;
+  z-index: 1001; /* Por encima del overlay */
   display: flex;
   flex-direction: column;
   align-items: center;
@@ -35,10 +65,11 @@
   max-width: calc(100vw - 40px);
   border: 2px solid #000000;
   border-radius: 10px;
-  box-shadow: 0 6px 12px rgba(0, 0, 0, 0.3);
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
   text-align: center;
   max-height: 80vh;
   overflow: auto;
+  animation: slideIn 0.3s ease-out;
 }
 
 

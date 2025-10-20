@@ -141,3 +141,22 @@
   [carreras]="carreras"
   ></app-usuarios-editar>
 }
+
+@if(error()){
+  <app-mostrarerror
+  [error]="error"
+  [mensaje]="mensajeerror"
+  ></app-mostrarerror>
+}
+
+
+
+@if(exito()){
+  <app-aviso-exito
+  [exito]="exito"
+  [mensaje]="mensajeexito"
+  ></app-aviso-exito>
+}
+
+
+

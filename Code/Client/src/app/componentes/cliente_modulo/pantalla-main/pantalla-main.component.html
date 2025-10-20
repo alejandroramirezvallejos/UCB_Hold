@@ -77,3 +77,11 @@
   [categorias]="categoriasArray"
   [producto]="solicitud"
 ></app-lista-objetos>
+
+
+@if(error()){
+  <app-mostrarerror
+  [error]="error"
+  [mensaje]="mensajeerror"
+  ></app-mostrarerror>
+}

@@ -5,14 +5,16 @@ import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { MantenimientosServiceEquipos } from '../../../../../../services/mantenimientoEquipos/mantenimientosEquipos.service';
 import { FormularioDatosComponent } from './formulario-datos/formulario-datos.component';
+import { BaseTablaComponent } from '../../../base/base';
+import { MostrarerrorComponent } from '../../../../../pantallas_avisos/mostrarerror/mostrarerror.component';
 
 @Component({
   selector: 'app-listaequipo',
-  imports: [CommonModule , FormsModule, FormularioDatosComponent],
+  imports: [CommonModule , FormsModule, FormularioDatosComponent , MostrarerrorComponent],
   templateUrl: './listaequipo.component.html',
   styleUrl: './listaequipo.component.css'
 })
-export class ListaequipoComponent {
+export class ListaequipoComponent extends BaseTablaComponent {
 
   @Input() agregarequipo : WritableSignal<boolean> = signal(true);
 
@@ -25,7 +27,9 @@ export class ListaequipoComponent {
   agregarEquipoSeleccionado: WritableSignal<boolean> = signal(false);
 
 
-  constructor(private equiposapi : EquipoService ,public  mantenimientoequipos : MantenimientosServiceEquipos){}; 
+  constructor(private equiposapi : EquipoService ,public  mantenimientoequipos : MantenimientosServiceEquipos){
+    super();
+  }; 
 
 
   // ----
@@ -52,15 +56,17 @@ export class ListaequipoComponent {
 
   cargarEquipos() {
  
-    this.equiposapi.obtenerEquipos().subscribe(
-      (data: any[]) => {
+    this.equiposapi.obtenerEquipos().subscribe({
+      next: (data: any[]) => {
         this.equipos = data;
         this.equiposcopia = [...this.equipos]; 
       },
-      (error) => {
+      error: (error) => {
+        this.mensajeerror = "Error al cargar los equipos, intente mas tarde";
         console.error('Error al cargar los equipos:', error);
+        this.error.set(true);
       }
-    );
+    });
 
   }
 

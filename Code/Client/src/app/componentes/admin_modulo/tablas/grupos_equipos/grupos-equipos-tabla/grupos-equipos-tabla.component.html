@@ -117,3 +117,19 @@
   (actualizar)="cargarGruposEquipos()"
   ></app-grupos-equipos-editar>
 }
+
+
+@if(error()){
+  <app-mostrarerror
+  [error]="error"
+  [mensaje]="mensajeerror"
+  ></app-mostrarerror>
+}
+
+@if(exito()){
+  <app-aviso-exito
+  [exito]="exito"
+  [mensaje]="mensajeexito"
+  ></app-aviso-exito>
+}
+

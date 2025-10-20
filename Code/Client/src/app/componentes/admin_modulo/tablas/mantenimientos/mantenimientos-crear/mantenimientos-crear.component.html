@@ -97,7 +97,7 @@
 
 
     <div class="form-submit">
-      <button (click)="registrar()" type="submit" class="register-button" [disabled]="!form.valid || !validarFecha()">
+      <button (click)="validarcreacion()" type="submit" class="register-button" [disabled]="!form.valid || !validarFecha()">
         <span>Registrar Mantenimiento</span>
       </button>
     </div>
@@ -110,4 +110,27 @@
   [agregarequipo]="agregarequipo"
   >
   </app-listaequipo>
+}
+
+@if(error()){
+  <app-mostrarerror
+  [error]="error"
+  [mensaje]="mensajeerror"
+  ></app-mostrarerror>
+}
+
+@if(aviso()){
+  <app-aviso
+  [cerrar]="aviso"
+  [mensaje]="mensajeaviso"
+  (aceptar)="registrar()"
+  ></app-aviso>
+}
+
+@if(exito()){
+  <app-aviso-exito
+  [exito]="exito"
+  [mensaje]="mensajeexito"
+  (accion)="cerrar()"
+  ></app-aviso-exito>
 }

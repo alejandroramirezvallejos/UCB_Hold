@@ -6,10 +6,11 @@ import { Prestamos } from '../../../../models/admin/Prestamos';
 import { CommonModule } from '@angular/common';
 import { HistorialBase } from '../BASE/HistorialBase';
 import { VistaPrestamosComponent } from '../../../vista-prestamos/vista-prestamos.component';
+import { MostrarerrorComponent } from '../../../pantallas_avisos/mostrarerror/mostrarerror.component';
 
 @Component({
   selector: 'app-finalizado',
-  imports: [CommonModule , VistaPrestamosComponent],
+  imports: [CommonModule , VistaPrestamosComponent , MostrarerrorComponent],
   templateUrl: './finalizado.component.html',
   styleUrl: './finalizado.component.css'
 })

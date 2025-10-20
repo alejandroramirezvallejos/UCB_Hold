@@ -7,15 +7,18 @@ import { UsuariosEditarComponent } from '../usuarios-editar/usuarios-editar.comp
 import { UsuarioServiceAPI } from '../../../../../services/APIS/Usuario/usuario.service';
 import { CarreraService } from '../../../../../services/APIS/Carrera/carrera.service';
 import { AvisoEliminarComponent } from '../../../../pantallas_avisos/aviso-eliminar/aviso-eliminar.component';
+import { BaseTablaComponent } from '../../base/base';
+import { MostrarerrorComponent } from '../../../../pantallas_avisos/mostrarerror/mostrarerror.component';
+import { AvisoExitoComponent } from '../../../../pantallas_avisos/aviso-exito/aviso-exito.component';
 
 @Component({
   selector: 'app-usuarios-tabla',
   standalone: true,
-  imports: [CommonModule, FormsModule, ReactiveFormsModule, UsuariosCrearComponent, UsuariosEditarComponent,AvisoEliminarComponent],
+  imports: [CommonModule, FormsModule, ReactiveFormsModule, UsuariosCrearComponent, UsuariosEditarComponent,AvisoEliminarComponent, MostrarerrorComponent, AvisoExitoComponent],
   templateUrl: './usuarios-tabla.component.html',
   styleUrls: ['./usuarios-tabla.component.css']
 })
-export class UsuariosTablaComponent implements OnInit {
+export class UsuariosTablaComponent extends BaseTablaComponent implements OnInit {
 
   botoncrear: WritableSignal<boolean> = signal(false);
   botoneditar: WritableSignal<boolean> = signal(false);
@@ -30,7 +33,9 @@ export class UsuariosTablaComponent implements OnInit {
 
   terminoBusqueda: string = '';
 
-  constructor(private usuarioapi: UsuarioServiceAPI , private carrerasAPI : CarreraService) {}
+  constructor(private usuarioapi: UsuarioServiceAPI , private carrerasAPI : CarreraService) {
+    super();
+  }
 
 
   ngOnInit() {
@@ -43,28 +48,32 @@ export class UsuariosTablaComponent implements OnInit {
   }
 
   cargarCarreras() {
-    this.carrerasAPI.obtenerCarreras().subscribe(
-      (data: any[]) => {
+    this.carrerasAPI.obtenerCarreras().subscribe({
+      next:(data: any[]) => {
         this.carreras = data.map(carrera => carrera.nombre);
       },
-      (error) => {
+      error:(error) => {
+        this.mensajeerror = 'Error al cargar las carreras, intente más tarde.';
         console.error('Error al cargar las carreras:', error);
+        this.error.set(true);
       }
-    );
+    });
   }
 
 
 
   cargarUsuarios() {
-    this.usuarioapi.obtenerUsuarios().subscribe(
-      (data: any[]) => {
+    this.usuarioapi.obtenerUsuarios().subscribe({
+      next: (data: any[]) => {
         this.usuarios = data;
         this.usuarioscopia = [...this.usuarios]; // Guardar una copia para la búsqueda
       },
-      (error) => {
+      error: (error) => {
+        this.mensajeerror = 'Error al cargar los usuarios, intente más tarde.';
         console.error('Error al cargar los usuarios:', error);
+        this.error.set(true);
       }
-    );
+    });
   }
 
   actualizarTabla() {
@@ -108,19 +117,23 @@ export class UsuariosTablaComponent implements OnInit {
 
   confirmarEliminacion() {
     const usuarioAEliminar = this.usuarios[this.valoreliminar];
-    this.usuarioapi.eliminarUsuario(usuarioAEliminar.id || '').subscribe(
-      response => {
+    this.usuarioapi.eliminarUsuario(usuarioAEliminar.id || '').subscribe({
+      next: (response) => {
+        this.mensajeexito = 'Usuario eliminado exitosamente.';
+        this.exito.set(true);
         this.usuarios.splice(this.valoreliminar, 1);
         this.usuarioscopia = [...this.usuarios];
         this.alertaeliminar = false;
         this.valoreliminar = 0;
       },
-      error => {
-        alert('Error al eliminar usuario: ' + error);
+      error: (error) => {
+        this.mensajeerror='Error al eliminar el usuario, intente más tarde.';
+        console.error('Error al eliminar usuario: ' + error);
+        this.error.set(true);
         this.alertaeliminar = false;
         this.valoreliminar = 0;
       }
-    );
+    });
   }
 
   cancelarEliminacion() {

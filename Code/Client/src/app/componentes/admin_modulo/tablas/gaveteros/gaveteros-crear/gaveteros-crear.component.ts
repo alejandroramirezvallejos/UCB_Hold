@@ -3,15 +3,19 @@ import { FormsModule } from '@angular/forms';
 import { Gaveteros } from '../../../../../models/admin/Gaveteros';
 import { GaveteroService } from '../../../../../services/APIS/Gavetero/gavetero.service';
 import { MuebleService } from '../../../../../services/APIS/Mueble/mueble.service';
+import { BaseTablaComponent } from '../../base/base';
+import { MostrarerrorComponent } from '../../../../pantallas_avisos/mostrarerror/mostrarerror.component';
+import { Aviso } from '../../../../pantallas_avisos/aviso/aviso.component';
+import { AvisoExitoComponent } from '../../../../pantallas_avisos/aviso-exito/aviso-exito.component';
 
 @Component({
   selector: 'app-gaveteros-crear',
   standalone: true,
-  imports: [FormsModule],
+  imports: [FormsModule, MostrarerrorComponent , Aviso , AvisoExitoComponent],
   templateUrl: './gaveteros-crear.component.html',
   styleUrl: './gaveteros-crear.component.css'
 })
-export class GaveterosCrearComponent {
+export class GaveterosCrearComponent extends BaseTablaComponent{
 
   @Input() botoncrear: WritableSignal<boolean> = signal(true);
   @Output() Actualizar = new EventEmitter<void>();
@@ -20,7 +24,9 @@ export class GaveterosCrearComponent {
   gavetero : Gaveteros = new Gaveteros();
 
 
-  constructor(private gaveteroapi : GaveteroService , private mueblesAPI : MuebleService){}; 
+  constructor(private gaveteroapi : GaveteroService , private mueblesAPI : MuebleService){
+    super();
+  }; 
 
   ngOnInit(){
     this.cargarMuebles();
@@ -32,23 +38,33 @@ export class GaveterosCrearComponent {
         this.muebles = data.map(mueble => mueble.Nombre);
       },
       error: (error) => {
-        alert(error.error.error + ': ' + error.error.mensaje);
+        this.mensajeerror = "Error al cargar los muebles";
+        console.error(error.error.error + ': ' + error.error.mensaje);
+        this.error.set(true);
       }
     })
+  }
+
+  validarregistro(){
+    this.mensajeaviso = "¿Desea registrar el gavetero?";
+    this.aviso.set(true);
   }
 
 
   registrar(){
 
-    this.gaveteroapi.crearGavetero(this.gavetero).subscribe(
-      response => {
+    this.gaveteroapi.crearGavetero(this.gavetero).subscribe({
+      next : (response) => {
         this.Actualizar.emit(); 
-        this.cerrar();
+        this.mensajeexito = "Gavetero registrado con exito";
+        this.exito.set(true);
       },
-      error => {
-        alert(error.error.error + ': ' + error.error.mensaje);
+      error:  (error) => {
+        this.mensajeerror = "Error al registrar el gavetero";
+        console.error(error.error.error + ': ' + error.error.mensaje);
+        this.error.set(true);
       }
-    );
+  });
    
   }
 

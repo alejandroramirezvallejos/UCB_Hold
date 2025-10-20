@@ -11,15 +11,19 @@ import { finalize } from 'rxjs';
 import { VistaPrestamosComponent } from '../../../../vista-prestamos/vista-prestamos.component';
 import { PantallaCargaComponent } from '../../../../pantallas_avisos/pantalla-carga/pantalla-carga.component';
 import { AvisoEliminarComponent } from '../../../../pantallas_avisos/aviso-eliminar/aviso-eliminar.component';
+import { BaseTablaComponent } from '../../base/base';
+import { MostrarerrorComponent } from '../../../../pantallas_avisos/mostrarerror/mostrarerror.component';
+import { Aviso } from '../../../../pantallas_avisos/aviso/aviso.component';
+import { AvisoExitoComponent } from '../../../../pantallas_avisos/aviso-exito/aviso-exito.component';
 
 @Component({
   selector: 'app-prestamos-tabla',
   standalone: true,
-  imports: [CommonModule, FormsModule, ReactiveFormsModule , VercontratoComponent, PantallaCargaComponent , VistaPrestamosComponent , AvisoEliminarComponent],
+  imports: [CommonModule, FormsModule, ReactiveFormsModule , VercontratoComponent, PantallaCargaComponent , VistaPrestamosComponent , AvisoEliminarComponent , MostrarerrorComponent , Aviso ,AvisoExitoComponent ],
   templateUrl: './prestamos-tabla.component.html',
   styleUrls: ['./prestamos-tabla.component.css']
 })
-export class PrestamosTablaComponent implements OnInit {
+export class PrestamosTablaComponent extends BaseTablaComponent implements OnInit {
 
   botoncrear: WritableSignal<boolean> = signal(false);
   cargando : boolean = false;
@@ -31,6 +35,12 @@ export class PrestamosTablaComponent implements OnInit {
   vercontrato : WritableSignal<boolean> = signal(false);
 
   prestamoSeleccionado: Prestamos =  new Prestamos();
+  prestamoKeySeleccionado: number = 0;
+
+
+  avisorechazar : WritableSignal<boolean> = signal(false);
+  mensajeavisorechazar : string = "¿Está seguro de rechazar el préstamo seleccionado?";
+
 
   terminoBusqueda: string = '';
   
@@ -49,7 +59,9 @@ export class PrestamosTablaComponent implements OnInit {
   prestamosVista : Prestamos[] = [];
 
 
-  constructor(private prestamosapi: PrestamosAPIService ) {}
+  constructor(private prestamosapi: PrestamosAPIService ) {
+    super();
+  }
 
 
 
@@ -72,15 +84,20 @@ export class PrestamosTablaComponent implements OnInit {
         this.seleccionarEstado(this.estadoSeleccionado);
       },
       error: (error) => {
+        this.mensajeerror = 'Error al cargar los préstamos. Por favor, inténtelo de nuevo más tarde.';
         console.error('Error al cargar los préstamos:', error);
+        this.error.set(true);
       }
     });
   }
 
  agruparPrestamos(datos: Prestamos[]) {
-    this.prestamos = new Map<number, PrestamoAgrupados>(); 
+    this.prestamos.clear();
     
-    if (datos.length === 0) return;
+    if (datos.length === 0){
+      this.prestamoscopia = new Map(this.prestamos); 
+      return;
+    } 
     
    for (const prestamo of datos) {
         if (prestamo.Id == null) continue;
@@ -95,8 +112,7 @@ export class PrestamosTablaComponent implements OnInit {
 
     this.prestamoscopia = new Map(this.prestamos);
 
-
-}
+  }
 
 
 
@@ -106,7 +122,8 @@ export class PrestamosTablaComponent implements OnInit {
   }
 
 
-// --------------------- ELIMINACION -----------------------
+// --------------------- ELIMINACION ----------------------- // 
+
   eliminarPrestamo(prestamo: Prestamos) {
     this.prestamoSeleccionado = prestamo;
     this.alertaeliminar = true;
@@ -118,11 +135,16 @@ export class PrestamosTablaComponent implements OnInit {
     .pipe(finalize(() => this.cargando = false))
     .subscribe({
       next: (response) => {
+        this.mensajeexito = 'Préstamo eliminado con éxito.';
+        this.exito.set(true);
         this.cargarPrestamos();
+        
 
       },
       error: (error) => {
-        alert('Error al eliminar el préstamo: ' + error);
+        this.mensajeerror = 'Error al eliminar el préstamo. Por favor, inténtelo de nuevo más tarde.';
+        console.error('Error al eliminar el préstamo: ' + error);
+        this.error.set(true);
       }
     });
     this.limpiarPrestamoSeleccionado();
@@ -183,29 +205,57 @@ export class PrestamosTablaComponent implements OnInit {
     this.showEstados = false;
   }
 
+
+  validaraprobacion(key : number){
+    this.mensajeaviso = "¿Está seguro de aprobar el préstamo seleccionado?";
+    this.prestamoKeySeleccionado = key;
+    this.aviso.set(true);
+  }
+  
+ 
+
   aprobarprestamo(key : number) {
 
     this.prestamosapi.cambiarEstadoPrestamo(this.prestamos.get(key)!.datosgrupo.Id, 'aprobado').subscribe({
       next: (response) => {
+        this.mensajeexito = 'Préstamo aprobado con éxito.';
+        this.exito.set(true);
         this.cargarPrestamos(); 
       },
       error: (error) => {
-        alert(error.error.error + ':' + error.error.mensaje);
+        this.mensajeerror = 'Error al aprobar el préstamo. Por favor, inténtelo de nuevo más tarde.';
+        console.error(error.error.error + ':' + error.error.mensaje);
+        this.error.set(true);
       }
     });
+    this.prestamoKeySeleccionado = 0;
 
+  }
+
+
+  validarrechazo(key : number){
+    this.mensajeavisorechazar = "¿Está seguro de rechazar el préstamo seleccionado?";
+    this.prestamoKeySeleccionado = key;
+    this.avisorechazar.set(true);
   }
 
   rechazarprestamo(key : number) {
 
     this.prestamosapi.cambiarEstadoPrestamo(this.prestamos.get(key)!.datosgrupo.Id, 'rechazado').subscribe({
       next: (response) => {
+        this.mensajeexito = 'Préstamo rechazado con éxito.';
+        this.exito.set(true);
         this.cargarPrestamos(); 
+       
       },
       error: (error) => {
-        alert(error.error.error + ':' + error.error.mensaje);
+        this.mensajeerror = 'Error al rechazar el préstamo. Por favor, inténtelo de nuevo más tarde.';
+        console.error(error.error.error + ':' + error.error.mensaje);
+        this.error.set(true);
       }
     });
+
+    this.prestamoKeySeleccionado = 0;
 
   }
 

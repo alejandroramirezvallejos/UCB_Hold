@@ -12,6 +12,9 @@ prestamosVista : Prestamos[] = [];
 
 abrirVistaPrestamos : boolean = false;
 
+error : WritableSignal<boolean> = signal (false) ;
+mensajeerror : string = "" ;
+
 
 
 protected abstract estado : string ; 
@@ -26,7 +29,9 @@ cargarDatos() {
         this.agruparPrestamos(data);
       },
       error: (error) => {
-        alert( error.error.error + ': ' + error.error.mensaje);
+        this.mensajeerror = "Error al cargar los prestamos , intente mas tarde";
+        console.error( error.error.error + ': ' + error.error.mensaje);
+        this.error.set(true);
       }
 
     }); 

@@ -3,7 +3,7 @@
     <i class="fas fa-times"></i>
   </button>
   <h2>Registrar Usuario</h2>
-  <form #form="ngForm" (ngSubmit)="registrar()">
+  <form #form="ngForm" (ngSubmit)="validarcrear()">
     <div class="form-group">
       <label for="carnet">Carnet</label>
       <input 
@@ -190,3 +190,26 @@
   </form>
 </div>
 
+
+@if(error()){
+  <app-mostrarerror
+  [error]="error"
+  [mensaje]="mensajeerror"
+  ></app-mostrarerror>
+}
+
+@if(aviso()){
+  <app-aviso
+  [cerrar]="aviso"
+  [mensaje]="mensajeaviso"
+  (aceptar)="registrar()"
+  ></app-aviso>
+}
+
+@if(exito()){
+  <app-aviso-exito
+  [exito]="exito"
+  [mensaje]="mensajeexito"
+  (accion)="cerrar()"
+  ></app-aviso-exito>
+}

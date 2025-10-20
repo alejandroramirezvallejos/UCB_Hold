@@ -1,5 +1,5 @@
 <div class="form-container">
-  <button class="btn-close" (click)="cerrar()">
+  <button class="btn-close" (click)="validaredicion()">
     <i class="fas fa-times"></i>
   </button>
   <h2>Editar Grupo de Equipo</h2>
@@ -115,3 +115,27 @@
     </div>
   </form>
 </div>
+
+
+@if(error()){
+  <app-mostrarerror
+  [error]="error"
+  [mensaje]="mensajeerror"
+  ></app-mostrarerror>
+}
+
+@if(aviso()){
+  <app-aviso
+  [cerrar]="aviso"
+  [mensaje]="mensajeaviso"
+  (aceptar)="confirmar()"
+  ></app-aviso>
+}
+
+@if(exito()){
+  <app-aviso-exito
+  [exito]="exito"
+  [mensaje]="mensajeexito"
+  (accion)="cerrar()"
+  ></app-aviso-exito>
+}

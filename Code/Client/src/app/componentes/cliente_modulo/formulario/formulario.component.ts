@@ -15,13 +15,15 @@ import { PrestamosAPIService } from '../../../services/APIS/prestamo/prestamos-a
 import { finalize } from 'rxjs';
 import { PantallaCargaComponent } from '../../pantallas_avisos/pantalla-carga/pantalla-carga.component';
 import { MostrarerrorComponent } from '../../pantallas_avisos/mostrarerror/mostrarerror.component';
+import { Aviso } from '../../pantallas_avisos/aviso/aviso.component';
+import { AvisoExitoComponent } from '../../pantallas_avisos/aviso-exito/aviso-exito.component';
 
 
 
 @Component({
   selector: 'app-formulario',
   standalone: true,
-  imports: [FirmaComponent , CommonModule , MostrarerrorComponent,PantallaCargaComponent],
+  imports: [FirmaComponent , CommonModule , MostrarerrorComponent,PantallaCargaComponent , Aviso , AvisoExitoComponent ],
   templateUrl: './formulario.component.html',
   styleUrl: './formulario.component.css'
 })
@@ -32,9 +34,15 @@ export class FormularioComponent implements OnInit {
   contenidoHtml!: SafeHtml;
   clickfirma : WritableSignal<boolean> = signal(false) 
   firma : string ="";
-  error : WritableSignal<number> = signal(2); 
+  error : WritableSignal<boolean> = signal(false); 
   mensajeerror : string = "Error desconocido intente mas tarde";
   cargando : boolean = false;
+
+  aviso : WritableSignal<boolean> = signal (false);
+  mensajeaviso : string = "Aviso desconocido , si ve esto es un error , avise al soporte si puede o intente mas tarde";
+
+  avisoexito : WritableSignal<boolean> = signal (false);
+  mensajeexito : string = "Aviso de exito desconocido , si ve esto es un error , avise al soporte si puede o intente mas tarde";
 
   
  
@@ -78,7 +86,11 @@ export class FormularioComponent implements OnInit {
           });
           this.contenidoHtml = this.sanitizer.bypassSecurityTrustHtml(processedTemplate);
         },
-        error: (error) => console.error('Error al cargar el HTML: ', error)
+        error: (error) =>{ 
+          this.mensajeerror = "Error al cargar el contrato, intente mas tarde";
+          console.error('Error al cargar el HTML: ', error);  
+          this.error.set(true);
+        }
       });
   }
 
@@ -99,14 +111,21 @@ export class FormularioComponent implements OnInit {
   
   aceptar(){
     if(!this.carrito || Object.keys(this.carrito.obtenercarrito()).length===0){
-      this.error.set(1); 
       this.mensajeerror = "El carrito está vacío. Agregue elementos antes de continuar.";
+      this.error.set(true); 
     }
     else if(!this.firma || this.firma === ''){
       this.firmar();
     } 
     else{
-      const contratoblob= this.generarHTMLBinario(); 
+     this.aviso.set(true);
+    this.mensajeaviso = "¿Está seguro de confirmar el préstamo con los términos y condiciones establecidos en el contrato?";
+    }
+  }
+
+
+  confirmarprestamo(){
+    const contratoblob= this.generarHTMLBinario(); 
       
       this.cargando = true;
       this.mandarprestamo.crearPrestamo(this.carrito.obtenercarrito(),this.usuario.usuario.carnet!,contratoblob)
@@ -114,19 +133,23 @@ export class FormularioComponent implements OnInit {
       .subscribe({
         next: (response) => {
           console.log('Préstamo creado exitosamente:', response);
-          alert('Préstamo creado exitosamente');
+          this.mensajeexito = "El préstamo ha sido creado exitosamente.";
+          this.avisoexito.set(true);
           this.carrito.vaciarcarrito();
 
-          this.router.navigate(["/home"]);
+          
         },
         error: (error) => {
         
           console.error('Error al crear préstamo:', error);
-          this.error.set(1);
+          this.error.set(true);
           this.mensajeerror = error.error.error+ " - " + error.error.mensaje;
         }
       })
-    }
+  }
+
+  irhome(){
+    this.router.navigate(["/home"]);
   }
   
   

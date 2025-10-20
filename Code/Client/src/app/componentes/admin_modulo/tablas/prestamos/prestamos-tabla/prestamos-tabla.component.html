@@ -176,11 +176,11 @@
             </button>
             }     
             @else if (prestamo.value.datosgrupo.EstadoPrestamo=='pendiente') {
-                <button class="btn-action btn-accept" (click)="aprobarprestamo(prestamo.key)">
+                <button class="btn-action btn-accept" (click)="validaraprobacion(prestamo.key)">
                   <i class="fas fa-check"></i>
                   Aceptar
                 </button>
-                <button class="btn-action btn-reject" (click)="rechazarprestamo(prestamo.key)">
+                <button class="btn-action btn-reject" (click)="validarrechazo(prestamo.key)">
                   <i class="fas fa-times"></i>
                   Rechazar
                 </button>
@@ -241,4 +241,36 @@
     [prestamos]="prestamosVista"
     (cerrar)="cerrarVistaPrestamos()"
   ></app-vista-prestamos>
+}
+
+
+@if(error()){
+  <app-mostrarerror
+  [error]="error"
+  [mensaje]="mensajeerror"
+  ></app-mostrarerror>
+}
+
+@if(exito()){
+  <app-aviso-exito
+  [exito]="exito"
+  [mensaje]="mensajeexito"
+  ></app-aviso-exito>
+}
+
+@if(aviso()){
+  <app-aviso
+  [cerrar]="aviso"
+  [mensaje]="mensajeaviso"
+  (aceptar)="aprobarprestamo(prestamoKeySeleccionado)"
+  ></app-aviso>
+}
+
+
+@if(avisorechazar()){
+  <app-aviso
+  [cerrar]="avisorechazar"
+  [mensaje]="mensajeavisorechazar"
+  (aceptar)="rechazarprestamo(prestamoKeySeleccionado)"
+  ></app-aviso>
 }
