@@ -8,11 +8,12 @@ import { ComponenteService } from '../../../../../services/APIS/Componente/compo
 import { AvisoEliminarComponent } from '../../../../pantallas_avisos/aviso-eliminar/aviso-eliminar.component';
 import { BaseTablaComponent } from '../../base/base';
 import { MostrarerrorComponent } from '../../../../pantallas_avisos/mostrarerror/mostrarerror.component';
+import { AvisoExitoComponent } from '../../../../pantallas_avisos/aviso-exito/aviso-exito.component';
 
 @Component({
   selector: 'app-componentes-tabla',
   standalone: true,
-  imports: [CommonModule, FormsModule, ComponentesCrearComponent, ComponentesEditarComponent , AvisoEliminarComponent , MostrarerrorComponent],
+  imports: [CommonModule, FormsModule, ComponentesCrearComponent, ComponentesEditarComponent , AvisoEliminarComponent , MostrarerrorComponent , AvisoExitoComponent],
   templateUrl: './componentes-tabla.component.html',
   styleUrl: './componentes-tabla.component.css'
 })
@@ -96,6 +97,8 @@ export class ComponentesTablaComponent extends BaseTablaComponent implements OnI
       this.componenteService.eliminarComponente(this.componenteSeleccionado.Id).subscribe({
         next: (response) => {
           this.cargarComponentes();
+          this.mensajeexito = "Componente eliminado exitosamente";
+          this.exito.set(true);
         },
         error: (error) => {
           this.mensajeerror = "Error al eliminar el componente, intente más tarde";

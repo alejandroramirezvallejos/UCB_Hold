@@ -92,9 +92,12 @@ export class PrestamosTablaComponent extends BaseTablaComponent implements OnIni
   }
 
  agruparPrestamos(datos: Prestamos[]) {
-    this.prestamos = new Map<number, PrestamoAgrupados>(); 
+    this.prestamos.clear();
     
-    if (datos.length === 0) return;
+    if (datos.length === 0){
+      this.prestamoscopia = new Map(this.prestamos); 
+      return;
+    } 
     
    for (const prestamo of datos) {
         if (prestamo.Id == null) continue;
@@ -119,7 +122,8 @@ export class PrestamosTablaComponent extends BaseTablaComponent implements OnIni
   }
 
 
-// --------------------- ELIMINACION -----------------------
+// --------------------- ELIMINACION ----------------------- // 
+
   eliminarPrestamo(prestamo: Prestamos) {
     this.prestamoSeleccionado = prestamo;
     this.alertaeliminar = true;

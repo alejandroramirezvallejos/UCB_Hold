@@ -9,11 +9,12 @@ import { CategoriaService } from '../../../../../services/APIS/Categoria/categor
 import { AvisoEliminarComponent } from '../../../../pantallas_avisos/aviso-eliminar/aviso-eliminar.component';
 import { BaseTablaComponent } from '../../base/base';
 import { MostrarerrorComponent } from '../../../../pantallas_avisos/mostrarerror/mostrarerror.component';
+import { AvisoExitoComponent } from '../../../../pantallas_avisos/aviso-exito/aviso-exito.component';
 
 @Component({
   selector: 'app-grupos-equipos-tabla',
   standalone: true,
-  imports: [CommonModule, FormsModule, ReactiveFormsModule, GruposEquiposCrearComponent, GruposEquiposEditarComponent,AvisoEliminarComponent , MostrarerrorComponent],
+  imports: [CommonModule, FormsModule, ReactiveFormsModule, GruposEquiposCrearComponent, GruposEquiposEditarComponent,AvisoEliminarComponent , MostrarerrorComponent, AvisoExitoComponent],
   templateUrl: './grupos-equipos-tabla.component.html',
   styleUrl: './grupos-equipos-tabla.component.css'
 })
@@ -115,6 +116,8 @@ export class GruposEquiposTablaComponent extends BaseTablaComponent implements O
   confirmarEliminacion() {
     this.grupoequipoapi.eliminarGrupoEquipo(this.grupoEquipoSeleccionado.id).subscribe({
       next: (response) => {
+        this.mensajeexito="Grupo de equipo eliminado exitosamente";
+        this.exito.set(true);
         this.cargarGruposEquipos();
       },
       error: (error) => {

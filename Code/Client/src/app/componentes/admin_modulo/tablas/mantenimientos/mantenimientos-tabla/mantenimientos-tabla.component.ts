@@ -9,11 +9,12 @@ import { DetallesMantenimientoComponent } from './detalles-mantenimiento/detalle
 import { AvisoEliminarComponent } from '../../../../pantallas_avisos/aviso-eliminar/aviso-eliminar.component';
 import { BaseTablaComponent } from '../../base/base';
 import { MostrarerrorComponent } from '../../../../pantallas_avisos/mostrarerror/mostrarerror.component';
+import { AvisoExitoComponent } from '../../../../pantallas_avisos/aviso-exito/aviso-exito.component';
 
 @Component({
   selector: 'app-mantenimientos-tabla',
   standalone: true,
-  imports: [CommonModule, FormsModule, ReactiveFormsModule, MantenimientosCrearComponent , DetallesMantenimientoComponent,AvisoEliminarComponent, MostrarerrorComponent],
+  imports: [CommonModule, FormsModule, ReactiveFormsModule, MantenimientosCrearComponent , DetallesMantenimientoComponent,AvisoEliminarComponent, MostrarerrorComponent, AvisoExitoComponent],
   templateUrl: './mantenimientos-tabla.component.html',
   styleUrl: './mantenimientos-tabla.component.css'
 })
@@ -125,6 +126,8 @@ export class MantenimientosTablaComponent extends BaseTablaComponent implements 
       next: () => {
          this.limpiarMantenimientoSeleccionado();
           this.alertaeliminar = false;
+          this.mensajeexito = "Mantenimiento eliminado exitosamente";
+          this.exito.set(true);
           this.cargarMantenimientos();
       },
       error: (error) => {

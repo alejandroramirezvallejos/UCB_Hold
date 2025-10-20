@@ -16,7 +16,7 @@ import { Aviso } from '../../../../pantallas_avisos/aviso/aviso.component';
 @Component({
   selector: 'app-accesorios-tabla',
   standalone: true,
-  imports: [CommonModule, FormsModule, ReactiveFormsModule , AccesoriosCrearComponent , AccesoriosEditarComponent , AvisoEliminarComponent , MostrarerrorComponent , AvisoExitoComponent , Aviso],
+  imports: [CommonModule, FormsModule, ReactiveFormsModule , AccesoriosCrearComponent , AccesoriosEditarComponent , AvisoEliminarComponent , MostrarerrorComponent , AvisoExitoComponent , Aviso , AvisoExitoComponent],
   templateUrl: './accesorios-tabla.component.html',
   styleUrls: ['./accesorios-tabla.component.css']
 })
@@ -110,8 +110,9 @@ eliminarAccesorio(accesorio : Accesorio) {
 confirmarEliminacion() {
   this.accesoriosapi.eliminarAccesorio(this.accesorioSeleccionado.Id).subscribe({
     next: (response) => {
-
-       this.cargarAccesorios(); 
+      this.cargarAccesorios(); 
+      this.mensajeexito = 'Accesorio eliminado exitosamente.';
+      this.exito.set(true);
 
     },
     error: (error) => {

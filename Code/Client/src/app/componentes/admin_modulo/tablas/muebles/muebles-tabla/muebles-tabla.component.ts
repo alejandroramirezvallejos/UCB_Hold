@@ -8,11 +8,12 @@ import { MuebleService } from '../../../../../services/APIS/Mueble/mueble.servic
 import { AvisoEliminarComponent } from '../../../../pantallas_avisos/aviso-eliminar/aviso-eliminar.component';
 import { BaseTablaComponent } from '../../base/base';
 import { MostrarerrorComponent } from '../../../../pantallas_avisos/mostrarerror/mostrarerror.component';
+import { AvisoExitoComponent } from '../../../../pantallas_avisos/aviso-exito/aviso-exito.component';
 
 @Component({
   selector: 'app-muebles-tabla',
   standalone: true,
-  imports: [CommonModule, FormsModule, ReactiveFormsModule, MueblesCrearComponent, MueblesEditarComponent,AvisoEliminarComponent, MostrarerrorComponent],
+  imports: [CommonModule, FormsModule, ReactiveFormsModule, MueblesCrearComponent, MueblesEditarComponent,AvisoEliminarComponent, MostrarerrorComponent, AvisoExitoComponent],
   templateUrl: './muebles-tabla.component.html',
   styleUrl: './muebles-tabla.component.css'
 })
@@ -99,6 +100,8 @@ export class MueblesTablaComponent extends BaseTablaComponent implements OnInit 
   confirmarEliminacion() {
     this.muebleapi.eliminarMueble(this.muebleSeleccionado.Id).subscribe({
       next: (response) => {
+        this.mensajeexito = 'Mueble eliminado exitosamente.';
+        this.exito.set(true);
         this.cargarMuebles();
       },
       error: (error) => {

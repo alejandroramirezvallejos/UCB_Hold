@@ -8,11 +8,12 @@ import { EmpresamantenimientoService } from '../../../../../services/APIS/Empres
 import { AvisoEliminarComponent } from '../../../../pantallas_avisos/aviso-eliminar/aviso-eliminar.component';
 import { BaseTablaComponent } from '../../base/base';
 import { MostrarerrorComponent } from '../../../../pantallas_avisos/mostrarerror/mostrarerror.component';
+import { AvisoExitoComponent } from '../../../../pantallas_avisos/aviso-exito/aviso-exito.component';
 
 @Component({
   selector: 'app-empresas-mantenimiento-tabla',
   standalone: true,
-  imports: [CommonModule, FormsModule, EmpresasMantenimientoCrearComponent, EmpresasMantenimientoEditarComponent, AvisoEliminarComponent , MostrarerrorComponent],
+  imports: [CommonModule, FormsModule, EmpresasMantenimientoCrearComponent, EmpresasMantenimientoEditarComponent, AvisoEliminarComponent , MostrarerrorComponent, AvisoExitoComponent],
   templateUrl: './empresas-mantenimiento-tabla.component.html',
   styleUrl: './empresas-mantenimiento-tabla.component.css'
 })
@@ -94,6 +95,8 @@ export class EmpresasMantenimientoTablaComponent extends BaseTablaComponent impl
       this.empresaService.eliminarEmpresaMantenimiento(this.empresaSeleccionada.Id).subscribe({
         next : (response) => {
           this.cargarEmpresas();
+          this.mensajeexito = 'Empresa de mantenimiento eliminada exitosamente.';
+          this.exito.set(true);
         },
         error: (error) => {
           this.mensajeerror = 'Error al eliminar la empresa de mantenimiento.';

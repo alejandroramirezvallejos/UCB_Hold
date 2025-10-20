@@ -9,11 +9,12 @@ import { CarreraService } from '../../../../../services/APIS/Carrera/carrera.ser
 import { AvisoEliminarComponent } from '../../../../pantallas_avisos/aviso-eliminar/aviso-eliminar.component';
 import { BaseTablaComponent } from '../../base/base';
 import { MostrarerrorComponent } from '../../../../pantallas_avisos/mostrarerror/mostrarerror.component';
+import { AvisoExitoComponent } from '../../../../pantallas_avisos/aviso-exito/aviso-exito.component';
 
 @Component({
   selector: 'app-usuarios-tabla',
   standalone: true,
-  imports: [CommonModule, FormsModule, ReactiveFormsModule, UsuariosCrearComponent, UsuariosEditarComponent,AvisoEliminarComponent, MostrarerrorComponent],
+  imports: [CommonModule, FormsModule, ReactiveFormsModule, UsuariosCrearComponent, UsuariosEditarComponent,AvisoEliminarComponent, MostrarerrorComponent, AvisoExitoComponent],
   templateUrl: './usuarios-tabla.component.html',
   styleUrls: ['./usuarios-tabla.component.css']
 })
@@ -118,6 +119,8 @@ export class UsuariosTablaComponent extends BaseTablaComponent implements OnInit
     const usuarioAEliminar = this.usuarios[this.valoreliminar];
     this.usuarioapi.eliminarUsuario(usuarioAEliminar.id || '').subscribe({
       next: (response) => {
+        this.mensajeexito = 'Usuario eliminado exitosamente.';
+        this.exito.set(true);
         this.usuarios.splice(this.valoreliminar, 1);
         this.usuarioscopia = [...this.usuarios];
         this.alertaeliminar = false;

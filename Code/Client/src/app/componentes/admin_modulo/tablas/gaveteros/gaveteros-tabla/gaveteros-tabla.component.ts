@@ -8,13 +8,14 @@ import { GaveteroService } from '../../../../../services/APIS/Gavetero/gavetero.
 import { AvisoEliminarComponent } from '../../../../pantallas_avisos/aviso-eliminar/aviso-eliminar.component';
 import { BaseTablaComponent } from '../../base/base';
 import { MostrarerrorComponent } from '../../../../pantallas_avisos/mostrarerror/mostrarerror.component';
+import { AvisoExitoComponent } from '../../../../pantallas_avisos/aviso-exito/aviso-exito.component';
 
 
 
 @Component({
   selector: 'app-gaveteros-tabla',
   standalone: true,
-  imports: [CommonModule, FormsModule, ReactiveFormsModule , GaveterosCrearComponent , GaveterosEditarComponent,AvisoEliminarComponent , MostrarerrorComponent],
+  imports: [CommonModule, FormsModule, ReactiveFormsModule , GaveterosCrearComponent , GaveterosEditarComponent,AvisoEliminarComponent , MostrarerrorComponent, AvisoExitoComponent],
   templateUrl: './gaveteros-tabla.component.html',
   styleUrls: ['./gaveteros-tabla.component.css']
 })
@@ -104,7 +105,8 @@ eliminarGavetero(gavetero : Gaveteros) {
 confirmarEliminacion() {
   this.gaveterosapi.eliminarGavetero(this.gaveteroSeleccionado.Id).subscribe({
     next: (response) => {
-
+      this.mensajeexito = "Gavetero eliminado con exito";
+      this.exito.set(true);
        this.cargarGaveteros(); 
 
     },

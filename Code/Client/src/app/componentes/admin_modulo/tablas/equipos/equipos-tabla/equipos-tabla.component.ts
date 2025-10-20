@@ -8,13 +8,14 @@ import { EquipoService } from '../../../../../services/APIS/Equipo/equipo.servic
 import { AvisoEliminarComponent } from '../../../../pantallas_avisos/aviso-eliminar/aviso-eliminar.component';
 import { BaseTablaComponent } from '../../base/base';
 import { MostrarerrorComponent } from '../../../../pantallas_avisos/mostrarerror/mostrarerror.component';
+import { AvisoExitoComponent } from '../../../../pantallas_avisos/aviso-exito/aviso-exito.component';
 
 
 
 @Component({
   selector: 'app-equipos-tabla',
   standalone: true,
-  imports: [CommonModule, FormsModule, ReactiveFormsModule , EquiposCrearComponent , EquiposEditarComponent,AvisoEliminarComponent , MostrarerrorComponent],
+  imports: [CommonModule, FormsModule, ReactiveFormsModule , EquiposCrearComponent , EquiposEditarComponent,AvisoEliminarComponent , MostrarerrorComponent, AvisoExitoComponent],
   templateUrl: './equipos-tabla.component.html',
   styleUrls: ['./equipos-tabla.component.css']
 })
@@ -105,7 +106,8 @@ eliminarEquipo(equipo : any) {
 confirmarEliminacion() {
   this.equiposapi.eliminarEquipo(this.equipoSeleccionado.Id).subscribe({
     next:(response) => {
-
+      this.mensajeexito = "Equipo eliminado con éxito";
+      this.exito.set(true);
        this.cargarEquipos(); 
 
     },
