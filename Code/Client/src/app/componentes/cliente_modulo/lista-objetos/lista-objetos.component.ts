@@ -72,6 +72,10 @@ export class ListaObjetosComponent implements OnChanges {
       );
     }
 
+    productos = productos.filter(p => (p.Cantidad ?? 0) > 0);
+
+
+
     this.productosFiltrados = productos;
     this.productosPaginados = this.paginar(productos);
     this.totalPaginas = this.productosPaginados.length;
