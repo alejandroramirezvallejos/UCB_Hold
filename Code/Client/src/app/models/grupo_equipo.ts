@@ -7,6 +7,7 @@ export class GrupoEquipo {
   url_data_sheet?: string | null;
   marca?: string | null;
   link?: string | null;
+  Cantidad?: number | null;
 
   constructor() {
     this.id = 0;

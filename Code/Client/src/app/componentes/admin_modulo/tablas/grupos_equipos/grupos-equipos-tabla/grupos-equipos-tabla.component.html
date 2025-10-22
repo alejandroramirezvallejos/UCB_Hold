@@ -37,6 +37,12 @@
             Nombre 
           
           </th>
+
+          <th>
+            Cantidad
+          </th>
+
+
           <th >
             Modelo 
          
@@ -45,6 +51,8 @@
             Marca 
           
           </th>
+        
+
           <th >
             Categoría
           
@@ -59,6 +67,7 @@
         @for (grupoequipo of gruposEquiposFiltrados; track $index ; let i = $index) {
             <tr>
             <td>{{grupoequipo.nombre}}</td>
+            <td>{{grupoequipo.Cantidad}}</td>
             <td>{{grupoequipo.modelo}}</td>
             <td>{{grupoequipo.marca}}</td>
             <td>{{grupoequipo.nombreCategoria}}</td>

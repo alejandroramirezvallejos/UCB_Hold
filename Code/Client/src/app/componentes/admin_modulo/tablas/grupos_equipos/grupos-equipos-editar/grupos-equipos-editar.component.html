@@ -1,9 +1,9 @@
 <div class="form-container">
-  <button class="btn-close" (click)="validaredicion()">
+  <button class="btn-close" (click)="cerrar()">
     <i class="fas fa-times"></i>
   </button>
   <h2>Editar Grupo de Equipo</h2>
-  <form #form="ngForm" (ngSubmit)="confirmar()">
+  <form #form="ngForm" (ngSubmit)="validaredicion()">
     <div class="form-group">
       <label for="nombre">Nombre</label>
       <input 
