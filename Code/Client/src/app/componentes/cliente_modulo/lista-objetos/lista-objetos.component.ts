@@ -95,19 +95,29 @@ export class ListaObjetosComponent implements OnChanges {
   }
 
   obtenerRangoPaginas(): number[] {
-    const paginasAMostrar = 5;
-    const rangoMedio = Math.floor(paginasAMostrar / 2);
-
-    let inicio = Math.max(this.paginaActual - rangoMedio, 0);
-    let fin = Math.min(inicio + paginasAMostrar - 1, this.totalPaginas - 1);
-
-    // Ajustar el inicio si no hay suficientes páginas al final
-    if (fin - inicio + 1 < paginasAMostrar) {
-      inicio = Math.max(0, fin - paginasAMostrar + 1);
+    const maxBotones = 5;
+    
+    // Si hay menos páginas que el máximo, mostrar todas
+    if (this.totalPaginas <= maxBotones) {
+      return Array.from({ length: this.totalPaginas }, (_, i) => i);
     }
 
-    // Generar el rango de páginas
-    return Array.from({ length: fin - inicio + 1 }, (_, i) => inicio + i);
+    // Siempre mostrar exactamente 5 botones
+    const rangoMedio = Math.floor(maxBotones / 2);
+    let inicio = this.paginaActual - rangoMedio;
+    
+    // Ajustar si está muy cerca del inicio
+    if (inicio < 0) {
+      inicio = 0;
+    }
+    
+    // Ajustar si está muy cerca del final
+    if (inicio + maxBotones > this.totalPaginas) {
+      inicio = this.totalPaginas - maxBotones;
+    }
+
+    // Siempre retornar exactamente 5 botones
+    return Array.from({ length: maxBotones }, (_, i) => inicio + i);
   }
 
   actualizarPagina(pagina: number): void {

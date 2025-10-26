@@ -22,10 +22,14 @@ export class CarritoComponent {
   public errorboton : WritableSignal<boolean> = signal(false);
   public mensajeerror: string = "Datos insertados no validos"; 
   public botonEjecutado: boolean = false;
-  public cantidades = Array.from({ length: 11 }, (_, i) => i);
+  public cantidades = Array.from({ length: 10 }, (_, i) => i + 1);
 
   hoy : Date= new Date();
   hoystr : string = this.hoy.toISOString().split('T')[0];
+
+ 
+  fecha_inicio: string = '';
+  fecha_final: string = '';
 
   carrito: Carrito = {};
   constructor(private carritoS: CarritoService , private router : Router  , private usuario : UsuarioService) {
@@ -38,17 +42,14 @@ export class CarritoComponent {
       return new Date(year, month - 1, day);
     };
 
-  verificarfecha(item: any) {
-    if (!item.value.fecha_inicio || !item.value.fecha_final  ) {
-      this.error=true;
+  verificarfecha() {
+    if (!this.fecha_inicio || !this.fecha_final) {
+      this.error = true;
       return "";
     }
 
-  
- 
-  
-    const fechaInicio = this.parseDateLocal(item.value.fecha_inicio);
-    const fechaFinal = this.parseDateLocal(item.value.fecha_final);
+    const fechaInicio = this.parseDateLocal(this.fecha_inicio);
+    const fechaFinal = this.parseDateLocal(this.fecha_final);
     const hoyMasUnAnio = new Date(this.hoy);
     hoyMasUnAnio.setFullYear(this.hoy.getFullYear() + 1);
 
@@ -56,16 +57,15 @@ export class CarritoComponent {
       this.error = true;
       return "Error: La fecha de inicio no puede ser mayor a la fecha final";
     }
-    if( fechaInicio < this.hoy) {
+    if (fechaInicio < this.hoy) {
       this.error = true;
       return "Error: La fecha de inicio no puede ser menor a la fecha actual";
     }
-    if(hoyMasUnAnio  <fechaInicio ){
+    if (hoyMasUnAnio < fechaInicio) {
       this.error = true;
       return "Error: La fecha de inicio no puede ser mayor a un año desde la fecha actual";
     }
-  
-  
+
     this.error = false;
     return "";
   }
@@ -110,6 +110,16 @@ export class CarritoComponent {
     }
   }
 
+  botonDeshabilitado(): boolean {
+    if (this.carritovacio()) return true;
+    
+    if (!this.fecha_inicio || !this.fecha_final) return true;
+
+    if (this.verificarfecha() !== '') return true;
+    
+    return false;
+  }
+
   
 
 
@@ -119,15 +129,30 @@ export class CarritoComponent {
   }
 
   cambiarfechainicio(fecha: string) {
+    this.fecha_inicio = fecha;
+    // Sincronizar con todos los items del carrito
     Object.values(this.carrito).forEach((item) => {
       item.fecha_inicio = fecha;
     });
   }
 
   cambiarfechafinal(fecha: string) {
+    this.fecha_final = fecha;
+    // Sincronizar con todos los items del carrito
     Object.values(this.carrito).forEach((item) => {
       item.fecha_final = fecha;
     });
+  }
+
+  abrirCalendario(inputId: string): void {
+    const input = document.getElementById(inputId) as HTMLInputElement;
+    if (input) {
+      try {
+        input.showPicker(); // Puede fallar en navegadores viejos
+      } catch (error) {
+        input.focus(); // fallback: solo hacer focus
+      }
+    }
   }
 
 }
