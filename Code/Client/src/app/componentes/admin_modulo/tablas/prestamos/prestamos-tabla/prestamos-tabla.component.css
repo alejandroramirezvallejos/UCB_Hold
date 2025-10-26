@@ -446,7 +446,7 @@
   overflow-y: auto;
 }
 
-.estado-item-flotante {
+.estados-item-flotante {
   display: flex;
   align-items: center;
   gap: 0.75rem;
@@ -459,41 +459,41 @@
   background-color: #ffffff;
 }
 
-.estado-item-flotante:hover {
+.estados-item-flotante:hover {
   background-color: rgba(37, 99, 235, 0.05);
   color: var(--color-primary);
 }
 
-.estado-item-flotante.active {
+.estados-item-flotante.active {
   background-color: rgba(37, 99, 235, 0.15);
   color: var(--color-primary);
   border-left: 3px solid var(--color-primary);
   font-weight: 600;
 }
 
-.estado-item-flotante:first-child {
+.estados-item-flotante:first-child {
   border-radius: var(--radius) var(--radius) 0 0;
   font-weight: 600;
   background-color: rgba(248, 250, 252, 1);
 }
 
-.estado-item-flotante:last-child {
+.estados-item-flotante:last-child {
   border-bottom: none;
   border-radius: 0 0 var(--radius) var(--radius);
 }
 
-.estado-item-flotante:first-child:hover {
+.estados-item-flotante:first-child:hover {
   background-color: rgba(37, 99, 235, 0.1);
 }
 
-.estado-item-flotante:first-child.active {
+.estados-item-flotante:first-child.active {
   background-color: rgba(37, 99, 235, 0.15);
   color: var(--color-primary);
   border-left: 3px solid var(--color-primary);
   font-weight: 600;
 }
 
-.estado-item-flotante i {
+.estados-item-flotante i {
   font-size: 16px;
   width: 20px;
   text-align: center;
@@ -554,6 +554,20 @@
 }
 
 /* Estilos para los estados de préstamos */
+[class*="estado-"] {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 100px;   /* ancho fijo idéntico */
+  height: 30px;
+  box-sizing: border-box;
+  border-radius: 9999px;
+  font-size: 0.75rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.025em;
+}
+
 .estado-pendiente {
   background-color: #fef3c7;
   color: #92400e;
@@ -612,6 +626,17 @@
 .estado-cancelado {
   background-color: #fef2f2;
   color: #7f1d1d;
+  padding: 0.25rem 0.75rem;
+  border-radius: 9999px;
+  font-size: 0.75rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.025em;
+}
+
+.estado-atrasado {
+  background-color: #fff7ed; /* fondo naranja claro */
+  color: #b45309;            /* texto naranja oscuro */
   padding: 0.25rem 0.75rem;
   border-radius: 9999px;
   font-size: 0.75rem;

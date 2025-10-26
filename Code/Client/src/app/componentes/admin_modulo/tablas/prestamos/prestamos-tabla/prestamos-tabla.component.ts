@@ -47,7 +47,7 @@ export class PrestamosTablaComponent extends BaseTablaComponent implements OnIni
   // Propiedades para el filtro
   showEstados: boolean = false;
   estadoSeleccionado: string = '';
-  estadosDisponibles: string[] = ['pendiente', 'rechazado', 'aprobado', 'activo', 'finalizado', 'cancelado'];
+  estadosDisponibles: string[] = [ "atrasado", 'pendiente', 'rechazado', 'aprobado', 'activo', 'finalizado', 'cancelado'];
 
   hover = {
     filter: false
@@ -188,9 +188,10 @@ export class PrestamosTablaComponent extends BaseTablaComponent implements OnIni
     }
 
     // Aplicar filtro de estado si existe
-    if (this.estadoSeleccionado !== '') {
+     if (this.estadoSeleccionado !== '') {
+        const buscado = this.estadoSeleccionado.toLowerCase();
         prestamosFiltrados = prestamosFiltrados.filter(([_, prestamo]) =>
-            (prestamo.datosgrupo.EstadoPrestamo || '').toLowerCase() === this.estadoSeleccionado.toLowerCase()
+            this.getEstadoCalculado(prestamo).toLowerCase() === buscado
         );
     }
 
@@ -198,12 +199,34 @@ export class PrestamosTablaComponent extends BaseTablaComponent implements OnIni
     this.prestamos = new Map<number, PrestamoAgrupados>(prestamosFiltrados);
   }
 
+  
+
   limpiarFiltros() {
     this.terminoBusqueda = '';
     this.estadoSeleccionado = '';
     this.prestamos = new Map(this.prestamoscopia);
     this.showEstados = false;
   }
+
+  getEstadoCalculado(prestamo: PrestamoAgrupados): string {
+    const estadoOrig = (prestamo?.datosgrupo?.EstadoPrestamo || '').toLowerCase();
+    if (!prestamo?.datosgrupo) return estadoOrig;
+
+    const fechaStr = prestamo.datosgrupo.FechaDevolucionEsperada;
+
+    if (!fechaStr) return estadoOrig;
+
+    const fechaDev = new Date(fechaStr);
+
+    fechaDev.setHours(23, 59, 59, 999);
+    const hoy = new Date();
+
+    if ((estadoOrig === 'activo' || estadoOrig==="aprobado") && fechaDev < hoy) return 'atrasado';
+    return estadoOrig;
+  }
+
+
+
 
 
   validaraprobacion(key : number){
@@ -275,6 +298,8 @@ export class PrestamosTablaComponent extends BaseTablaComponent implements OnIni
     this.abrirVista = false;
     this.prestamosVista = [];
   }
+
+
 
 
 }
