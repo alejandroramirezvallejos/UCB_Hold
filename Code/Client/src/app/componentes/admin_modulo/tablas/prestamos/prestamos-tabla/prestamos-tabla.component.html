@@ -25,11 +25,11 @@
         @if (showEstados) {
           <div class="estados-panel-flotante">
             <div class="estados-grid-flotante">
-              <div class="estado-item-flotante" (click)="seleccionarEstado('')" [class.active]="estadoSeleccionado === ''">
+              <div class="estados-item-flotante" (click)="seleccionarEstado('')" [class.active]="estadoSeleccionado === ''">
                 <i class="fas fa-list"></i>
                 Todos los estados
               </div>              @for (estado of estadosDisponibles; track estado) {
-                <div class="estado-item-flotante" (click)="seleccionarEstado(estado)" [class.active]="estadoSeleccionado === estado">
+                <div class="estados-item-flotante" (click)="seleccionarEstado(estado)" [class.active]="estadoSeleccionado === estado">
                   @switch (estado.toLowerCase()) {
                     @case ('pendiente') {
                       <i class="fas fa-clock text-warning"></i>
@@ -82,7 +82,7 @@
           </button>
         }
       </div>
-        <!-- Filtro de estados -->
+      
         
     </div>
   </div>
@@ -151,8 +151,8 @@
             <td>{{prestamo.value.datosgrupo.FechaPrestamoEsperada | date:'dd/MM/yyyy'}}</td>
             <td>{{prestamo.value.datosgrupo.FechaDevolucionEsperada | date:'dd/MM/yyyy'}}</td>
             <td>
-              <span [class]="'estado-' + (prestamo.value.datosgrupo.EstadoPrestamo?.toLowerCase() || '')">
-                {{prestamo.value.datosgrupo.EstadoPrestamo}}
+              <span [class]="'estado-' + (getEstadoCalculado(prestamo.value) || '')">
+                {{ getEstadoCalculado(prestamo.value) | titlecase }}
               </span>
             </td>
             <td class="actions-column">
