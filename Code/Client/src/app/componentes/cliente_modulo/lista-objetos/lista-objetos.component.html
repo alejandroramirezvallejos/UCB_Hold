@@ -50,32 +50,16 @@
           </svg>
         </button>
 
-        @if (paginaActual > 2) {
-          <button
-            class="pagination__button"
-            (click)="actualizarPagina(0)">
-            1
-          </button>
-          <span class="pagination__ellipsis">...</span>
-        }
-
-        @for (pagina of obtenerRangoPaginas(); track pagina) {
-          <button
-            class="pagination__button"
-            [class.pagination__button--active]="pagina === paginaActual"
-            (click)="actualizarPagina(pagina)">
-            {{ pagina + 1 }}
-          </button>
-        }
-
-        @if (paginaActual < totalPaginas - 3) {
-          <span class="pagination__ellipsis">...</span>
-          <button
-            class="pagination__button"
-            (click)="actualizarPagina(totalPaginas - 1)">
-            {{ totalPaginas }}
-          </button>
-        }
+        <div class="pagination__numbers">
+          @for (pagina of obtenerRangoPaginas(); track pagina) {
+            <button
+              class="pagination__button"
+              [class.pagination__button--active]="pagina === paginaActual"
+              (click)="actualizarPagina(pagina)">
+              {{ pagina + 1 }}
+            </button>
+          }
+        </div>
 
         <button
           class="pagination__arrow-btn"

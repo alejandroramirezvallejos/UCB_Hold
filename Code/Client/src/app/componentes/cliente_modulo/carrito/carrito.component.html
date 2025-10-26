@@ -25,39 +25,51 @@
           <option *ngFor="let n of cantidades" [value]="n">{{ n }}</option>
         </select>
       </div>
-
-      <div class="dates-picker">
-        <div class="date-field">
-          <label for="fechaInicio_{{ item.key }}">Inicio</label>
-          <input
-            type="date"
-            id="fechaInicio_{{ item.key }}"
-            [(ngModel)]="item.value.fecha_inicio"
-            (ngModelChange)="cambiarfechainicio($event)"
-            [min]="hoystr"
-            [max]="fechamaxima(item.value.fecha_inicio)"
-          />
-        </div>
-        <div class="date-field">
-          <label for="fechaFin_{{ item.key }}">Fin</label>
-          <input
-            type="date"
-            id="fechaFin_{{ item.key }}"
-            [(ngModel)]="item.value.fecha_final"
-            (ngModelChange)="cambiarfechafinal($event)"
-            [min]="item.value.fecha_inicio"
-            [max]="fechamaxima(item.value.fecha_inicio)"
-          />
-        </div>
-      </div>
-
-      <div class="error">{{ verificarfecha(item) }}</div>
+      
+      <button (click)="cambiarcantidad(item.key, 0)" class="boton-eliminar" title="Eliminar del carrito">
+        <i class="fas fa-trash-alt"></i>
+      </button>
+    
     </li>
     }
   </ul>
 
+  <!-- Fechas globales para todo el préstamo (fuera del bucle) -->
+
+    <div class="dates-picker">
+      <div class="date-field">
+        <label for="fechaInicio" (click)="abrirCalendario('fechaInicio')">Fecha de Inicio</label>
+        <div class="input-wrapper" (click)="abrirCalendario('fechaInicio')">
+          <input
+            type="date"
+            id="fechaInicio"
+            [(ngModel)]="fecha_inicio"
+            (ngModelChange)="cambiarfechainicio($event)"
+            [min]="hoystr"
+            [max]="fechamaxima(fecha_inicio)"
+          />
+        </div>
+      </div>
+      <div class="date-field">
+        <label for="fechaFin" (click)="abrirCalendario('fechaFin')">Fecha de Fin</label>
+        <div class="input-wrapper" (click)="abrirCalendario('fechaFin')">
+          <input
+            type="date"
+            id="fechaFin"
+            [(ngModel)]="fecha_final"
+            (ngModelChange)="cambiarfechafinal($event)"
+            [min]="fecha_inicio"
+            [max]="fechamaxima(fecha_inicio)"
+          />
+        </div>
+      </div>
+    </div>
+
+
+  <div class="error">{{ verificarfecha() }}</div>
+
   <button (click)="clickboton()" class="boton-carrito"
-    [disabled]="carritovacio()"
+    [disabled]="botonDeshabilitado()"
   >
     Confirmar Solicitud
   </button>

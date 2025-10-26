@@ -213,10 +213,18 @@ body {
   font-family: "Manrope", sans-serif;
 }
 
+.pagination__numbers {
+  display: flex;
+  gap: 0.5rem;
+  min-width: 250px; /* Ancho fijo para 5 botones */
+  justify-content: center;
+}
+
 .pagination__button {
   min-width: 2.5rem;
+  width: 2.5rem; /* Ancho fijo para evitar movimientos */
   height: 2.5rem;
-  padding: 0 0.75rem;
+  padding: 0;
   border: 1px solid #e5e7eb;
   background: white;
   color: #4b5563;
@@ -228,6 +236,7 @@ body {
   display: flex;
   align-items: center;
   justify-content: center;
+  flex-shrink: 0; /* Evitar que se encojan */
 }
 
 .pagination__button:hover {
