@@ -5,7 +5,7 @@
   left: 0;
   top: 80px;
   width: 60px; /* initial width is set via class override */
-  height: 100vh;
+  height: calc(100vh - 80px); /* ocupar desde top hasta el final */
   display: flex;
   flex-direction: column;
   align-items: center;
@@ -59,8 +59,10 @@
   flex-direction: column;
   align-items: center;
   padding: 5px;
+  padding-bottom: 20px; /* espacio extra al final */
   gap: 2px;
   overflow-y: auto;
+  overflow-x: hidden; /* evitar scroll horizontal */
 }
 
 .item {
@@ -83,6 +85,56 @@
   background-color: rgba(255, 255, 255, 0.2);
 }
 
+/* Item structure: icon + text */
+.item {
+  width: 95%;
+  min-height: 40px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 6px 10px;
+  font-size: 15px;
+  color: #fff;
+  background-color: rgba(255, 255, 255, 0.1);
+  border-radius: 6px;
+  cursor: pointer;
+  transition: background 0.2s ease;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+/* Padding extra al último elemento */
+.item:last-child {
+  margin-bottom: 16px;
+}
+
+.item-icon {
+  flex: 0 0 32px;
+  height: 32px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  background: rgba(255, 255, 255, 0.15);
+  color: #fff;
+  border-radius: 6px;
+  font-weight: 700;
+  font-size: 16px;
+}
+
+/* Hide text in collapsed sidebar */
+.sidebarinactivo .item-text {
+  display: none;
+}
+
+/* Show text in expanded sidebar */
+.sidebaractivo .item-text {
+  display: inline-block;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  max-width: 160px;
+}
+
 /* Animations for sidebar content on toggle */
 @keyframes slideIn {
   from { opacity: 0; transform: translateX(-20px); }
@@ -102,4 +154,113 @@
 @keyframes collapse {
   from { width: 240px; }
   to   { width: 60px; }
+}
+
+/* RESPONSIVE: Mobile & Tablet */
+@media (max-width: 768px) {
+  .sidebarinactivo, .sidebaractivo {
+    top: auto;
+    bottom: 0;
+    left: 0;
+    width: 100%;
+    height: 70px;
+    flex-direction: row;
+    padding: 8px;
+    border-radius: 12px 12px 0 0;
+    box-shadow: 0 -2px 8px rgba(0, 0, 0, 0.15);
+  }
+
+  .boton {
+    position: absolute;
+    right: 12px;
+    top: 50%;
+    transform: translateY(-50%);
+    margin: 0;
+  }
+
+  .contenido {
+    flex-direction: row;
+    gap: 8px;
+    overflow-x: auto;
+    overflow-y: hidden;
+    padding: 0 8px;
+    padding-right: 16px; /* espacio extra a la derecha en mobile */
+    width: calc(100% - 60px);
+    align-items: center;
+    scrollbar-width: thin;
+  }
+
+  .contenido::-webkit-scrollbar {
+    height: 4px;
+  }
+
+  .contenido::-webkit-scrollbar-thumb {
+    background: rgba(255, 255, 255, 0.3);
+    border-radius: 2px;
+  }
+
+  .item {
+    min-width: fit-content;
+    width: auto;
+    padding: 8px 12px;
+    flex-shrink: 0;
+  }
+
+  /* Padding al último elemento en mobile horizontal */
+  .item:last-child {
+    margin-right: 12px;
+    margin-bottom: 0;
+  }
+
+  /* Always show text on mobile when expanded */
+  .sidebaractivo .item-text {
+    display: inline-block;
+    max-width: 120px;
+  }
+
+  /* Collapsed mobile: show only icons */
+  .sidebarinactivo .item {
+    width: 48px;
+    min-width: 48px;
+    padding: 8px;
+    justify-content: center;
+  }
+
+  .sidebarinactivo .item-text {
+    display: none;
+  }
+}
+
+/* Very small screens: compact mode */
+@media (max-width: 480px) {
+  .sidebarinactivo, .sidebaractivo {
+    height: 60px;
+    padding: 6px;
+  }
+
+  .contenido {
+    gap: 6px;
+    padding: 0 6px;
+  }
+
+  .item {
+    min-width: 44px;
+    padding: 6px 10px;
+  }
+
+  .item-icon {
+    width: 28px;
+    height: 28px;
+    font-size: 14px;
+  }
+
+  /* Padding al último elemento en very small screens */
+  .item:last-child {
+    margin-right: 8px;
+  }
+
+  /* On very small screens, show icons only unless expanded */
+  .sidebarinactivo .item-text {
+    display: none;
+  }
 }
