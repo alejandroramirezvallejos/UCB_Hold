@@ -90,6 +90,11 @@
   background: #fff;
   width: 60px;
   text-align: center;
+  font-family: "Manrope", sans-serif;
+}
+
+.cantidad-group select option {
+  text-align: center;
 }
 
 .boton-eliminar {
