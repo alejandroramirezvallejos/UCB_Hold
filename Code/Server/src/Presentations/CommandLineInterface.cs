@@ -1,5 +1,9 @@
 using IMT_Reservas.Server.Application.Interfaces;
+using IMT_Reservas.Server.Application.Services.Implementations;
+using IMT_Reservas.Server.Application.Services.Interfaces;
 using IMT_Reservas.Server.Infrastructure.MongoDb;
+using IMT_Reservas.Server.Infrastructure.Repositories.Implementations;
+using IMT_Reservas.Server.Infrastructure.Repositories.Interfaces;
 using Microsoft.AspNetCore.Mvc;
 using System.Collections.Generic;
 using System.Diagnostics;
@@ -87,7 +91,23 @@ public static class CommandLineInterface
             Console.WriteLine("Ejecutando pruebas...\n");
             Console.ResetColor();
 
-            var solutionDir = new DirectoryInfo(AppDomain.CurrentDomain.BaseDirectory).Parent.Parent.Parent.Parent;
+            var baseDir = AppDomain.CurrentDomain.BaseDirectory;
+            if (baseDir == null)
+            {
+                Console.ForegroundColor = ConsoleColor.Red;
+                Console.WriteLine("[ERROR] Base directory is null");
+                Console.ResetColor();
+                return;
+            }
+            var dir = new DirectoryInfo(baseDir);
+            if (dir.Parent?.Parent?.Parent?.Parent == null)
+            {
+                Console.ForegroundColor = ConsoleColor.Red;
+                Console.WriteLine("[ERROR] Cannot find solution directory");
+                Console.ResetColor();
+                return;
+            }
+            var solutionDir = dir.Parent.Parent.Parent.Parent;
             var testProject = Path.Combine(solutionDir.FullName, "Tests", "IMT_Reservas.Tests.csproj");
             var trxFile = Path.Combine(Path.GetTempPath(), Guid.NewGuid().ToString() + ".trx");
 
@@ -129,8 +149,8 @@ public static class CommandLineInterface
 
             var testDefinitions = doc.Descendants(ns + "UnitTest")
                 .ToDictionary(
-                    ut => ut.Attribute("id")?.Value,
-                    ut => ut.Descendants(ns + "TestMethod").FirstOrDefault()?.Attribute("className")?.Value
+                    ut => ut.Attribute("id")?.Value ?? string.Empty,
+                    ut => ut.Descendants(ns + "TestMethod").FirstOrDefault()?.Attribute("className")?.Value ?? string.Empty
                 );
 
             var unitTestResults = doc.Descendants(ns + "UnitTestResult");
@@ -239,6 +259,7 @@ public static class CommandLineInterface
         builder.Services.AddScoped<IUsuarioService, UsuarioService>();
         builder.Services.AddScoped<IComentarioService, ComentarioService>();
         builder.Services.AddScoped<INotificacionService, NotificacionService>();
+        builder.Services.AddScoped<ICarritoService, CarritoService>();
 
         builder.Services.AddScoped<IAccesorioRepository, AccesorioRepository>();
         builder.Services.AddScoped<ICarreraRepository, CarreraRepository>();
@@ -254,6 +275,7 @@ public static class CommandLineInterface
         builder.Services.AddScoped<IUsuarioRepository, UsuarioRepository>();
         builder.Services.AddScoped<IComentarioRepository, ComentarioRepository>();
         builder.Services.AddScoped<INotificacionRepository, NotificacionRepository>();
+        builder.Services.AddScoped<ICarritoRepository, CarritoRepository>();
 
         builder.Services.AddSingleton<MongoDB.Driver.IMongoClient>(sp =>
         {
