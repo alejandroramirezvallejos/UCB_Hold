@@ -1,0 +1,307 @@
+.calendario-container {
+  max-width: 500px;
+  margin: 0 auto;
+  padding: 0;
+  width: 100%;
+}
+
+.calendario-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 0;
+  padding: 1rem 1.5rem 0.75rem;
+  background: #fff;
+  border-radius: 12px 12px 0 0;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.04);
+  border-bottom: 1px solid #f5f5f5;
+}
+
+.calendario-header button {
+  background: transparent;
+  border: 1px solid #e0e0e0;
+  color: #6b7786;
+  font-size: 0.75rem;
+  width: 32px;
+  height: 32px;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.calendario-header button:hover {
+  background: #ffdd05;
+  border-color: #d0d0d0;
+  transform: none;
+}
+
+.calendario-header button i {
+  font-size: 0.7rem;
+}
+
+.calendario-header h3 {
+  margin: 0;
+  font-size: 0.95rem;
+  font-weight: 600;
+  color: #333;
+  font-family: "Manrope", sans-serif;
+  text-transform: capitalize;
+}
+
+.calendario-grid {
+  display: grid;
+  grid-template-columns: repeat(7, 1fr);
+  gap: 0.35rem;
+  background: white;
+  padding: 0.75rem 1rem 1rem;
+  border-radius: 0 0 12px 12px;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.04);
+  overflow: hidden;
+}
+
+.dia-semana {
+  text-align: center;
+  font-weight: 500;
+  padding: 0.4rem 0.1rem;
+  color: #888;
+  font-size: 0.65rem;
+  border-bottom: none;
+  font-family: "Manrope", sans-serif;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.dia-celda {
+  aspect-ratio: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  border: 1px solid #f0f0f0;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: all 0.15s ease;
+  position: relative;
+  background: #ffffff;
+  padding: 0.3rem;
+  min-height: 45px;
+  max-width: 100%;
+  overflow: hidden;
+}
+
+.dia-celda:hover {
+  background: #fffbf0;
+  border-color: #ffd814;
+  transform: none;
+}
+
+.dia-numero {
+  font-size: 0.85rem;
+  font-weight: 500;
+  color: #333;
+  font-family: "Manrope", sans-serif;
+}
+
+.cantidad-disponible {
+  font-size: 0.6rem;
+  color: #4caf50;
+  font-weight: bold;
+  margin-top: 0.15rem;
+  background: #e8f5e9;
+  padding: 1px 4px;
+  border-radius: 6px;
+  font-family: "Manrope", sans-serif;
+  white-space: nowrap;
+}
+
+.seleccion-info {
+  margin-top: 0;
+  padding: 1rem 1.5rem;
+  background: #fafafa;
+  border-radius: 0 0 12px 12px;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.04);
+  border-top: 1px solid #f0f0f0;
+  border-left: 3px solid #4caf50;
+}
+
+.seleccion-info p {
+  margin: 0.4rem 0;
+  font-size: 0.8rem;
+  color: #555;
+  font-family: "Manrope", sans-serif;
+}
+
+.seleccion-info strong {
+  margin-right: 0.4rem;
+  color: #333;
+  font-weight: 600;
+}
+
+/* Estados de disponibilidad */
+.dia-celda.disponible {
+  background: #e8f5e9;
+  border-color: #4caf50;
+}
+
+.dia-celda.disponible:hover {
+  background: #c8e6c9;
+  border-color: #388e3c;
+}
+
+.dia-celda.no-disponible {
+  background: #ffebee;
+  border-color: #f44336;
+  cursor: not-allowed;
+  opacity: 0.6;
+}
+
+.dia-celda.no-disponible:hover {
+  transform: none;
+  box-shadow: none;
+}
+
+.dia-celda.seleccionado {
+  background: #ffd814 !important;
+  border-color: #000 !important;
+}
+
+.dia-celda.en-rango {
+  background: #fff3cd;
+  border-color: #ffd814;
+}
+
+.dia-celda.mes-otro {
+  opacity: 0.3;
+  pointer-events: none;
+}
+
+.dia-celda.hoy {
+  border-color: #2196f3;
+  background: #e3f2fd;
+}
+.pildora-disponible {
+  font-size: 0.6rem;
+  color: #4caf50;
+  background: #e8f5e9;
+  padding: 0.15rem 0.35rem;
+  border-radius: 8px;
+  font-weight: 500;
+  white-space: nowrap;
+  margin-top: 0.2rem;
+  font-family: "Manrope", sans-serif;
+}
+
+.pildora-ocupada {
+  font-size: 0.6rem;
+  color: #d35400;
+  background: #fdebd0;
+  padding: 0.15rem 0.35rem;
+  border-radius: 8px;
+  font-weight: 500;
+  white-space: nowrap;
+  margin-top: 0.2rem;
+  font-family: "Manrope", sans-serif;
+}
+
+
+/* RESPONSIVE: Tablets y pantallas medianas */
+@media (max-width: 768px) {
+  .calendario-container {
+    max-width: 100%;
+    padding: 0;
+  }
+
+  .calendario-header {
+    padding: 0.75rem 1rem 0.6rem;
+  }
+
+  .calendario-header h3 {
+    font-size: 0.95rem;
+  }
+
+  .calendario-header button {
+    width: 32px;
+    height: 32px;
+    font-size: 0.9rem;
+  }
+
+  .calendario-grid {
+    gap: 0.3rem;
+    padding: 0.65rem 0.75rem 0.75rem;
+  }
+
+  .dia-celda {
+    padding: 0.25rem;
+    min-height: 42px;
+  }
+
+  .dia-numero {
+    font-size: 0.8rem;
+  }
+
+  .cantidad-disponible {
+    font-size: 0.58rem;
+  }
+
+  .seleccion-info {
+    padding: 0.75rem 1rem;
+  }
+
+  .seleccion-info p {
+    font-size: 0.8rem;
+  }
+}
+
+/* RESPONSIVE: Mobile pequeño */
+@media (max-width: 480px) {
+  .calendario-header {
+    padding: 0.6rem 0.75rem 0.5rem;
+  }
+
+  .calendario-header h3 {
+    font-size: 0.9rem;
+  }
+
+  .calendario-header button {
+    width: 30px;
+    height: 30px;
+    font-size: 0.85rem;
+  }
+
+  .calendario-grid {
+    gap: 0.25rem;
+    padding: 0.55rem 0.65rem 0.65rem;
+  }
+
+  .dia-semana {
+    font-size: 0.65rem;
+    padding: 0.35rem 0.05rem;
+  }
+
+  .dia-celda {
+    padding: 0.2rem;
+    min-height: 38px;
+    border-radius: 4px;
+  }
+
+  .dia-numero {
+    font-size: 0.75rem;
+  }
+
+  .cantidad-disponible {
+    font-size: 0.52rem;
+    padding: 1px 3px;
+  }
+
+  .seleccion-info {
+    padding: 0.65rem 0.75rem;
+  }
+
+  .seleccion-info p {
+    font-size: 0.75rem;
+    margin: 0.3rem 0;
+  }
+}

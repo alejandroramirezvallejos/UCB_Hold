@@ -78,7 +78,8 @@ export class ObjetoComponent {
       this.producto.link ?? '',
       this.producto.marca ?? '',
       this.producto.modelo ?? '',
-      20
+      20,
+      this.producto.Cantidad ?? 1
     );
 
     this.addedToCart = true;

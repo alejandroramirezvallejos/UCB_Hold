@@ -9,6 +9,7 @@ import { IniciarSesionComponent } from './componentes/usuario/iniciar-sesion/ini
 import { HistorialComponent } from './componentes/usuario/historial/historial.component';
 import { PerfilComponent } from './componentes/usuario/perfil/perfil.component';
 import { RegistrarUsuarioComponent } from './componentes/usuario/registrar-usuario/registrar-usuario.component';
+import { CalendarioComponent } from './componentes/cliente_modulo/carrito/calendario/calendario.component';
 
 
 
@@ -29,6 +30,7 @@ const routes: Routes = [
   { path: 'Historial', component: HistorialComponent },
   { path: 'Perfil', component: PerfilComponent },
   { path: 'Registrar-Usuario', component: RegistrarUsuarioComponent },
+   { path: 'pruebas', component: CalendarioComponent },
 
 
 
