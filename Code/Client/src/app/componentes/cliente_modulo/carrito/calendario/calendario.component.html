@@ -5,10 +5,15 @@
 <div class="calendario-container">
   
   <div class="calendario-header">
-    <button (click)="cambiarMes(-1)"> <i class="fas fa-chevron-left"></i>
+    <button 
+      (click)="cambiarMes(-1)" 
+      [disabled]="diaActual.getTime() > inicio.getTime()"
+      [class.invisible]="diaActual.getTime() > inicio.getTime()">
+      <i class="fas fa-chevron-left"></i>
     </button>
-    <h3>{{ mesActual | date: 'MMMM yyyy'| uppercase }}</h3>
-    <button (click)="cambiarMes(1)"> <i class="fas fa-chevron-right"></i>
+    <h3>{{ inicio | date: 'MMMM yyyy'| uppercase }}</h3>
+    <button (click)="cambiarMes(1)">
+      <i class="fas fa-chevron-right"></i>
     </button>
   </div>
 
@@ -23,13 +28,19 @@
 
 
         @for(dia of diasDelMes ;track $index){
+            @if(dia.getTime() < diaActual.getTime()){
+            <div class="dia-celda-pasado"></div>
+            }
+            @else{
             <div class="dia-celda">
-                
+           
                 <span class="dia-numero">{{ dia.getDate() }}</span>
-                <span class="pildora-ocupada">lleno</span>
+                <span class="pildora-disponible">libre</span>
 
 
-            </div>
+            </div> 
+            }
+        
         }
     </div>
 
