@@ -11,16 +11,18 @@ export class CalendarioComponent {
 
  diasDelMes: Date[] = [];
 
- mesActual: Date = new Date();
+ diaActual: Date = new Date();
+ inicio: Date = new Date();
 
   ngOnInit(): void { 
+    this.diaActual.setHours(0, 0, 0, 0);
     this.generarDiasDelMes();
   }
 
  generarDiasDelMes(): void {
-    const primerDia = new Date(this.mesActual.getFullYear(), this.mesActual.getMonth(), 1);
-    const ultimoDia = new Date(this.mesActual.getFullYear(), this.mesActual.getMonth() + 1, 0);
-    
+    const primerDia = new Date(this.inicio.getFullYear(), this.inicio.getMonth(), 1);
+    const ultimoDia = new Date(this.inicio.getFullYear(), this.inicio.getMonth() + 1, 0);
+
     this.diasDelMes = [];
     for (let d = new Date(primerDia); d <= ultimoDia; d.setDate(d.getDate() + 1)) {
       this.diasDelMes.push(new Date(d));
@@ -28,7 +30,7 @@ export class CalendarioComponent {
   }
 
   cambiarMes(valor : number){
-    this.mesActual = new Date(this.mesActual.getFullYear(), this.mesActual.getMonth() + valor, 1);
+    this.inicio = new Date(this.inicio.getFullYear(), this.inicio.getMonth() + valor, 1);
     this.generarDiasDelMes();
   }
 
