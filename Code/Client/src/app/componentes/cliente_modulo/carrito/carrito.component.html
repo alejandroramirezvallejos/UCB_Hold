@@ -22,7 +22,7 @@
           [ngModel]="item.value.cantidad"
           (ngModelChange)="cambiarcantidad(item.key, $event)"
         >
-          <option *ngFor="let n of cantidades" [value]="n">{{ n }}</option>
+          <option *ngFor="let n of generarCantidadesMax(item.value.cantidadMax)" [value]="n">{{ n }}</option>
         </select>
       </div>
       

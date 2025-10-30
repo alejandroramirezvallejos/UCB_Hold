@@ -10,6 +10,7 @@ export interface Carrito {
     precio : number;
     numero_serie_unico? : string[] ;  
     codigo_ucb_unico? : string[];
+    cantidadMax : number;
   };
 
 

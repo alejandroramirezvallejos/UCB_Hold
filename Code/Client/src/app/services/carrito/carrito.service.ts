@@ -14,7 +14,7 @@ export class CarritoService {
   constructor() {}
 
 
-  agregarproducto(id : number , nombre :string | null , link : string , marca : string , modelo : string ,precio : number) {
+  agregarproducto(id : number , nombre :string | null , link : string , marca : string , modelo : string ,precio : number , cantidadMax : number) {
     nombre = nombre 
     if (nombre == '' || nombre == undefined) {
       return; 
@@ -30,7 +30,7 @@ export class CarritoService {
 
    
     if (!this.carrito[id]) {
-      this.carrito[id] = { nombre,modelo,marca ,cantidad: 1 ,fecha_inicio : fechaISO ,fecha_final : null , imagen : link , precio};
+      this.carrito[id] = { nombre,modelo,marca ,cantidad: 1 ,fecha_inicio : fechaISO ,fecha_final : null , imagen : link , precio , cantidadMax : cantidadMax };
       this.cantidadtotal++;
     }
     else {

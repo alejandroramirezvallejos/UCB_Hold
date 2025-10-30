@@ -67,7 +67,7 @@ export class ListaObjetosComponent implements OnChanges {
       const busqueda = this.producto.toLowerCase();
       productos = productos.filter(p =>
         (p.nombre?.toLowerCase().includes(busqueda) ||
-         p.descripcion?.toLowerCase().includes(busqueda) ||
+          p.modelo?.toLowerCase().includes(busqueda) ||
          p.marca?.toLowerCase().includes(busqueda))
       );
     }

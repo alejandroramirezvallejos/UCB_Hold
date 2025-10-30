@@ -22,7 +22,7 @@ export class CarritoComponent {
   public errorboton : WritableSignal<boolean> = signal(false);
   public mensajeerror: string = "Datos insertados no validos"; 
   public botonEjecutado: boolean = false;
-  public cantidades = Array.from({ length: 10 }, (_, i) => i + 1);
+
 
   hoy : Date= new Date();
   hoystr : string = this.hoy.toISOString().split('T')[0];
@@ -32,6 +32,9 @@ export class CarritoComponent {
   fecha_final: string = '';
 
   carrito: Carrito = {};
+  
+
+
   constructor(private carritoS: CarritoService , private router : Router  , private usuario : UsuarioService) {
     this.carrito  = this.carritoS.obtenercarrito();
     this.hoy.setHours(0, 0, 0, 0);
@@ -122,7 +125,9 @@ export class CarritoComponent {
 
   
 
-
+  generarCantidadesMax(cantidad: number): number[] {
+    return Array.from({ length: cantidad }, (_, i) => i + 1);
+  }
 
   cambiarcantidad(key: string, n: number) {
     this.carritoS.editarcantidad(Number(key), n);
