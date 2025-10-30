@@ -23,7 +23,8 @@ public class CarritoRepository : ICarritoRepository
             lista.Add(new FechaNoDisponibleDto
             {
                 IdGrupoEquipo = Convert.ToInt32(fila["id_grupo_equipo"]),
-                FechaNoDisponible = Convert.ToDateTime(fila["fecha_no_disponible"])
+                FechaNoDisponible = Convert.ToDateTime(fila["fecha_no_disponible"]),
+                CantidadDisponible = Convert.ToInt32(fila["cantidad_disponible"])
             });
         }
         return lista;

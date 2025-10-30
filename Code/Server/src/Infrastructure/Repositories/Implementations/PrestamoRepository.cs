@@ -36,12 +36,14 @@ public class PrestamoRepository : IPrestamoRepository
             ["carnetUsuario"] = comando.CarnetUsuario ?? (object)DBNull.Value,
             ["idContrato"] = DBNull.Value
         };
+        /*
         const string sqlId = @"SELECT id_prestamo FROM public.prestamos 
                         WHERE fecha_prestamo_esperada = @fechaPrestamoEsperada
                         AND fecha_devolucion_esperada = @fechaDevolucionEsperada
                         AND carnet = @carnetUsuario
                         ORDER BY id_prestamo DESC
                         LIMIT 1";
+                        */
         var parametrosId = new Dictionary<string, object?> {
             ["fechaPrestamoEsperada"] = comando.FechaPrestamoEsperada ?? (object)DBNull.Value,
             ["fechaDevolucionEsperada"] = comando.FechaDevolucionEsperada ?? (object)DBNull.Value,
@@ -51,6 +53,7 @@ public class PrestamoRepository : IPrestamoRepository
         try
         {
             _ejecutarConsulta.EjecutarSpNR(sql, parametros);
+            /*
             var dt = _ejecutarConsulta.EjecutarFuncion(sqlId, parametrosId);
             if (dt != null && dt.Rows.Count > 0 && dt.Rows[0]["id_prestamo"] != DBNull.Value)
             {
@@ -69,6 +72,8 @@ public class PrestamoRepository : IPrestamoRepository
                 
                 return prestamoId;
             }
+            */
+            return 0;//corregir esto, solo de momento
             throw new Exception("Fallo crítico: No se pudo crear el préstamo y obtener el ID.");
         }
         catch (NpgsqlException ex) { throw new ErrorDataBase($"Error de base de datos al crear préstamo: {ex.Message}", ex.SqlState, null, ex); }
