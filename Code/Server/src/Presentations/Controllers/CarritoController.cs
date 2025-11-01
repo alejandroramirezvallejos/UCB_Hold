@@ -17,4 +17,11 @@ public class CarritoController : ControllerBase
         try { return Ok(_servicio.ObtenerFechasNoDisponibles(input)); }
         catch (Exception ex) { return BadRequest(new { error = ex.GetType().Name, mensaje = ex.Message }); }
     }
+
+    [HttpGet("disponibilidadEquipos")]
+    public IActionResult ObtenerDisponibilidadEquiposPorFechasYGrupos([FromQuery] ObtenerDisponibilidadEquiposComando input)
+    {
+        try { return Ok(_servicio.ObtenerDisponibilidadEquiposPorFechasYGrupos(input)); }
+        catch (Exception ex) { return BadRequest(new { error = ex.GetType().Name, mensaje = ex.Message }); }
+    }
 }

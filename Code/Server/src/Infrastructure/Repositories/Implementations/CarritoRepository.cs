@@ -29,4 +29,27 @@ public class CarritoRepository : ICarritoRepository
         }
         return lista;
     }
+
+    public IEnumerable<DisponibilidadEquipoDto> ObtenerDisponibilidadEquiposPorFechasYGrupos(DateTime fechaInicio, DateTime fechaFin, int[] arrayIds)
+    {
+        var query = "SELECT * FROM obtener_disponibilidad_equipos_por_fechas_y_id_grupos_equipos(@fechaInicio, @fechaFin, @arrayIds::integer[])";
+        var parameters = new Dictionary<string, object?> 
+        { 
+            ["fechaInicio"] = fechaInicio, 
+            ["fechaFin"] = fechaFin, 
+            ["arrayIds"] = arrayIds 
+        };
+        var dataTable = _executeQuery.EjecutarFuncion(query, parameters);
+        var lista = new List<DisponibilidadEquipoDto>(dataTable.Rows.Count);
+        foreach (DataRow fila in dataTable.Rows)
+        {
+            lista.Add(new DisponibilidadEquipoDto
+            {
+                Fecha = Convert.ToDateTime(fila["fecha"]),
+                IdGrupoEquipo = Convert.ToInt32(fila["id_grupo_equipo"]),
+                CantidadDisponible = Convert.ToInt64(fila["cantidad_disponible"])
+            });
+        }
+        return lista;
+    }
 }

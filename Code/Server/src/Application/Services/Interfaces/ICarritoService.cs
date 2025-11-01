@@ -6,4 +6,6 @@ namespace IMT_Reservas.Server.Application.Services.Interfaces;
 public interface ICarritoService
 {
     IEnumerable<FechaNoDisponibleDto> ObtenerFechasNoDisponibles(ObtenerFechasNoDisponiblesComando input);
+    IEnumerable<DisponibilidadEquipoDto> ObtenerDisponibilidadEquiposPorFechasYGrupos(ObtenerDisponibilidadEquiposComando input);
 }
+

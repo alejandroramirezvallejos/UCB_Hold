@@ -22,4 +22,18 @@ public class CarritoService : ICarritoService
 
         return _repository.ObtenerFechasNoDisponibles(input.FechaInicio, input.FechaFin, carritoDict);
     }
+
+    public IEnumerable<DisponibilidadEquipoDto> ObtenerDisponibilidadEquiposPorFechasYGrupos(ObtenerDisponibilidadEquiposComando input)
+    {
+        if (input == null)
+            throw new ArgumentNullException(nameof(input), "El comando no puede ser nulo.");
+
+        if (input.ArrayIds == null || input.ArrayIds.Length == 0)
+            throw new ArgumentException("El array de IDs no puede estar vacío.");
+
+        if (input.FechaFin < input.FechaInicio)
+            throw new ArgumentException("La fecha de fin no puede ser menor a la fecha de inicio.");
+
+        return _repository.ObtenerDisponibilidadEquiposPorFechasYGrupos(input.FechaInicio, input.FechaFin, input.ArrayIds);
+    }
 }
