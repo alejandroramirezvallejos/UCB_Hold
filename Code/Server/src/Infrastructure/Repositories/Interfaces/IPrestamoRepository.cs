@@ -1,8 +1,9 @@
 using System.Data;
+using IMT_Reservas.Server.Application.ResponseDTOs;
 
 public interface IPrestamoRepository
 {
-    int Crear(CrearPrestamoComando comando);
+    PrestamoConEquiposDto Crear(CrearPrestamoComando comando);
     void Eliminar(int id);
     DataTable ObtenerTodos();
     void ActualizarEstado(ActualizarEstadoPrestamoComando comando);

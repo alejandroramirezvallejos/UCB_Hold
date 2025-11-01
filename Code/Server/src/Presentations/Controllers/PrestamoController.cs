@@ -14,7 +14,7 @@ public class PrestamoController : ControllerBase
     [HttpPost]
     public IActionResult Crear([FromForm] CrearPrestamoComando input)
     {
-        try { servicio.CrearPrestamo(input); return Ok(new { mensaje = "Préstamo creado exitosamente" }); }
+        try { return Ok(servicio.CrearPrestamo(input)); }
         catch (ErrorCarnetUsuarioNoEncontrado ex) { return NotFound(new { error = ex.GetType().Name, mensaje = ex.Message }); }
         catch (ErrorNoEquiposDisponibles ex) { return Conflict(new { error = ex.GetType().Name, mensaje = ex.Message }); }
         catch (ErrorRegistroNoEncontrado ex) { return NotFound(new { error = ex.GetType().Name, mensaje = ex.Message }); }

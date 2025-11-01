@@ -292,18 +292,24 @@ public static class CommandLineInterface
         var app = builder.Build();
               
         app.UseDefaultFiles();
-        app.UseStaticFiles();
-
-        if (app.Environment.IsDevelopment())
-        {
-            app.UseSwagger();
-            app.UseSwaggerUI();
-        }
         app.UseHttpsRedirection();
         app.UseRouting();
         app.UseCors("AllowAll");
         app.UseAuthorization();
+
+        // ✅ SWAGGER DEBE IR ANTES QUE EL FALLBACK A ANGULAR
+        if (app.Environment.IsDevelopment())
+        {
+            app.UseSwagger();
+            app.UseSwaggerUI(c =>
+            {
+                c.SwaggerEndpoint("/swagger/v1/swagger.json", "IMT Reservas API v1");
+                c.RoutePrefix = "swagger"; // Accesible en /swagger
+            });
+        }
+
         app.MapControllers();
+        app.UseStaticFiles();
         app.MapFallbackToFile("/index.html");
 
         Task.Run(() => app.Run());

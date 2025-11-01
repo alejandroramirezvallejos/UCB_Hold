@@ -1,5 +1,6 @@
 using System.Data;
 using IMT_Reservas.Server.Shared.Common;
+using IMT_Reservas.Server.Application.ResponseDTOs;
 
 public class PrestamoService : BaseServicios, IPrestamoService
 {
@@ -9,12 +10,12 @@ public class PrestamoService : BaseServicios, IPrestamoService
     {
         _prestamoRepository = prestamoRepository;
     }
-    public virtual void CrearPrestamo(CrearPrestamoComando comando)
+    public virtual PrestamoConEquiposDto CrearPrestamo(CrearPrestamoComando comando)
     {
         ValidarEntradaCreacion(comando);
         try
         {
-            _prestamoRepository.Crear(comando);
+            return _prestamoRepository.Crear(comando);
         }
         catch (ErrorCarnetRequerido) { throw; }
         catch (ErrorIdInvalido) { throw; }

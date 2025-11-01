@@ -1,6 +1,8 @@
+using IMT_Reservas.Server.Application.ResponseDTOs;
+
 public interface IPrestamoService
 {
-    void CrearPrestamo(CrearPrestamoComando comando);
+    PrestamoConEquiposDto CrearPrestamo(CrearPrestamoComando comando);
     List<PrestamoDto>? ObtenerTodosPrestamos();
     List<PrestamoDto>? ObtenerPrestamosPorCarnetYEstadoPrestamo(string carnetUsuario, string estadoPrestamo);
     void EliminarPrestamo(EliminarPrestamoComando comando);
