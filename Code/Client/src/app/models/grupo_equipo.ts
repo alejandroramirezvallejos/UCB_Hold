@@ -8,6 +8,7 @@ export class GrupoEquipo {
   marca?: string | null;
   link?: string | null;
   Cantidad?: number | null;
+  CostoPromedio?: number | null;
 
   constructor() {
     this.id = 0;
@@ -18,6 +19,8 @@ export class GrupoEquipo {
     this.url_data_sheet = null;
     this.marca = null;
     this.link = null;
+    this.Cantidad = null;
+    this.CostoPromedio = null;
   }
   
 }
