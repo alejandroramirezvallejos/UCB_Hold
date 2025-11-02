@@ -40,7 +40,8 @@ export class GrupoequipoService {
         marca: item.Marca ,
         link: item.UrlImagen ,
         nombreCategoria: item.NombreCategoria ,
-        Cantidad: item.Cantidad
+        Cantidad: item.Cantidad,
+        CostoPromedio: item.CostoPromedio
       })))
     );
   }
@@ -59,7 +60,8 @@ export class GrupoequipoService {
         marca: ' '+item.Marca || '',
         link: item.UrlImagen ,
         nombreCategoria: item.NombreCategoria || '',
-        Cantidad: item.Cantidad || 0
+        Cantidad: item.Cantidad || 0,
+        CostoPromedio: item.CostoPromedio || 0
 
       })))
     );
@@ -76,7 +78,8 @@ export class GrupoequipoService {
         marca: ' ' + item.Marca || '',
         url_data_sheet: item.UrlDataSheet,
         link: item.UrlImagen,
-        Cantidad : item.Cantidad || 0
+        Cantidad : item.Cantidad || 0,
+        CostoPromedio : item.CostoPromedio || 0
       }))
     );
   }
