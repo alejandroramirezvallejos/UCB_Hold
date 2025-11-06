@@ -38,7 +38,7 @@ export class CarritoComponent {
 
 
   hoy : Date= new Date();
-  hoystr : string = this.hoy.toISOString().split('T')[0];
+  hoystr : string = this.toLocalISOString(this.hoy);
 
  
   fecha_inicio: string = '';
@@ -117,7 +117,7 @@ export class CarritoComponent {
 
   realizarPrestamo(){
     this.cargando = true;
-    this.Sprestamo.crearPrestamo(this.carrito , this.usuario.obtenercarnet() , new Blob()).subscribe({
+    this.Sprestamo.crearPrestamo(this.carrito , this.usuario.obtenercarnet() , null).subscribe({
       next: () => {
         this.carritoS.vaciarcarrito();
         this.exito.set(true);
@@ -164,7 +164,7 @@ export class CarritoComponent {
   }
 
   cambiarcantidad(key: string, n: number) {
-    this.carritoS.editarcantidad(Number(key), n);
+    this.carritoS.editarcantidad(Number(key), Number(n));
   }
 
   cambiarfechainicio(fecha: string) {
@@ -196,7 +196,11 @@ export class CarritoComponent {
 
 
 
-
+  public toLocalISOString(date: Date): string {
+    const offset = date.getTimezoneOffset();
+    const localDate = new Date(date.getTime() - offset * 60000);
+    return localDate.toISOString().split('T')[0];
+  }
 
 
 
