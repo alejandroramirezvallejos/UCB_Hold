@@ -37,17 +37,20 @@
         Ver ficha técnica
       </a>
     }
-    
-    @if(desabilitarboton==false){
-      <button
-        (click)="addproductocarrito()"
-        class="boton-carrito"
-        [class.plomo]="addedToCart"
-        [disabled]="addedToCart"
-      >
-        {{ addedToCart ? "Agregado al carrito" : "Agregar al carrito" }}
-      </button>
-    }
+
+    <div class ="seccion-compra">
+      <p>Cantidad disponible hoy : {{cantidadDisponible}}</p>
+      @if(desabilitarboton==false){
+        <button
+          (click)="addproductocarrito()"
+          class="boton-carrito"
+          [class.plomo]="addedToCart"
+          [disabled]="addedToCart"
+        >
+          {{ addedToCart ? "Agregado al carrito" : "Agregar al carrito" }}
+        </button>
+      }
+    </div>
 
   </div>
 </div>

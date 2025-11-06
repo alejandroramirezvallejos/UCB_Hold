@@ -6,6 +6,7 @@ import { GrupoequipoService } from '../../../services/APIS/GrupoEquipo/grupoequi
 import { GrupoEquipo } from '../../../models/grupo_equipo';
 import { CarritoService } from '../../../services/carrito/carrito.service';
 import { MostrarerrorComponent } from '../../pantallas_avisos/mostrarerror/mostrarerror.component';
+import { DisponibilidadService } from '../../../services/APIS/Disponibilidad/disponibilidad.service';
 
 
 
@@ -21,6 +22,8 @@ export class ObjetoComponent {
 
   producto: GrupoEquipo = new GrupoEquipo();
 
+  cantidadDisponible: number = 0;
+
   cargando: boolean = true;
 
    addedToCart = false;
@@ -30,7 +33,9 @@ export class ObjetoComponent {
 
   desabilitarboton: boolean = false;
 
-  constructor(private route: ActivatedRoute , private servicio : GrupoequipoService, private carrito : CarritoService) { }
+  constructor(private route: ActivatedRoute , private servicio : GrupoequipoService, private carrito : CarritoService, private Sdisponibilidad : DisponibilidadService
+    ,private SDisponibilidad : DisponibilidadService
+  ) { }
 
 
   ngOnInit(): void {
@@ -45,7 +50,8 @@ export class ObjetoComponent {
     this.servicio.getproducto(routeId).subscribe({
       next: (data) => {
         this.producto = data;
-        this.cargando = false;
+        this.obtenerDisponibilidad();
+
       },
       error: (error) => {
         this.desabilitarboton = true;
@@ -64,7 +70,29 @@ export class ObjetoComponent {
         this.error.set(true);
       }
     });
+
+
+   
+
   }
+
+
+  obtenerDisponibilidad(){
+    this.SDisponibilidad.obtenerDisponibilidad(new Date(), new Date() , [this.producto.id]).subscribe({
+      next: (data) => {
+        if(data.length > 0){
+          this.cantidadDisponible = data[0].CantidadDisponible;
+          this.cargando = false;
+        }
+      },
+      error: (error) => {
+        this.mensajeerror = "Error al obtener la disponibilidad del producto";
+        this.error.set(true);
+      }
+    });
+
+  }
+
 
 
   addproductocarrito() {
