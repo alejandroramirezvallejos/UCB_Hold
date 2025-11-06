@@ -21,8 +21,15 @@ export class DisponibilidadService {
     } as Disponibilidad;  
   }
 
+   private toLocalISOString(date: Date): string {
+    const offset = date.getTimezoneOffset();
+    const localDate = new Date(date.getTime() - offset * 60000);
+    return localDate.toISOString().split('Z')[0];
+  }
+
+
   obtenerDisponibilidad(fechaInicio : Date , fechaFin : Date , grupoEquipoIds : number[]){ 
-    var envio = this.url + '?FechaInicio=' + fechaInicio.toISOString().split('Z')[0] + '&FechaFin=' +  fechaFin.toISOString().split('Z')[0]+ '&ArrayIds=' + grupoEquipoIds.join(',');
+    var envio = this.url + '?FechaInicio=' + this.toLocalISOString(fechaInicio) + '&FechaFin=' + this.toLocalISOString(fechaFin) + '&ArrayIds=' + grupoEquipoIds.join(',');
     return this.http.get<any[]>(envio).pipe(
       map(data=> data.map(item => this.mapear(item)))
     );
