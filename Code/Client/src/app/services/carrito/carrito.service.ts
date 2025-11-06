@@ -33,7 +33,7 @@ export class CarritoService {
       this.carrito[id] = { nombre,modelo,marca ,cantidad: 1 ,fecha_inicio : fechaISO ,fecha_final : null , imagen : link , precio , cantidadMax : cantidadMax };
       this.cantidadtotal++;
     }
-    else {
+    else if(this.carrito[id].cantidad < this.carrito[id].cantidadMax) {
       this.carrito[id].cantidad += 1;
       this.cantidadtotal++; 
     }

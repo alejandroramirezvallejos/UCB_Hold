@@ -117,7 +117,7 @@ export class CarritoComponent {
 
   realizarPrestamo(){
     this.cargando = true;
-    this.Sprestamo.crearPrestamo(this.carrito , this.usuario.obtenercarnet() , new Blob()).subscribe({
+    this.Sprestamo.crearPrestamo(this.carrito , this.usuario.obtenercarnet() , null).subscribe({
       next: () => {
         this.carritoS.vaciarcarrito();
         this.exito.set(true);
@@ -164,7 +164,7 @@ export class CarritoComponent {
   }
 
   cambiarcantidad(key: string, n: number) {
-    this.carritoS.editarcantidad(Number(key), n);
+    this.carritoS.editarcantidad(Number(key), Number(n));
   }
 
   cambiarfechainicio(fecha: string) {
