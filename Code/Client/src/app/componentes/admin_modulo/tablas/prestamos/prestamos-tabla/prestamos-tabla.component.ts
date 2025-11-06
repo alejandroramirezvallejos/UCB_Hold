@@ -212,16 +212,24 @@ export class PrestamosTablaComponent extends BaseTablaComponent implements OnIni
     const estadoOrig = (prestamo?.datosgrupo?.EstadoPrestamo || '').toLowerCase();
     if (!prestamo?.datosgrupo) return estadoOrig;
 
-    const fechaStr = prestamo.datosgrupo.FechaDevolucionEsperada;
+    const fechaDev = prestamo.datosgrupo.FechaDevolucionEsperada;
 
-    if (!fechaStr) return estadoOrig;
+    if (!fechaDev) return estadoOrig;
 
-    const fechaDev = new Date(fechaStr);
+    // Trabajar con las fechas en UTC para comparación consistente
+    // Crear una copia de la fecha
+    const fechaDevCopy = new Date(fechaDev.getTime());
+    
+    // Establecer a fin de día en UTC (equivalente a 23:59:59 Bolivia)
+    fechaDevCopy.setUTCHours(23, 59, 59, 999);
+    
+    // Comparar con ahora en UTC
+    const ahora = new Date();
 
-    fechaDev.setHours(23, 59, 59, 999);
-    const hoy = new Date();
-
-    if ((estadoOrig === 'activo' || estadoOrig==="aprobado") && fechaDev < hoy) return 'atrasado';
+    if ((estadoOrig === 'activo' || estadoOrig === "aprobado") && fechaDevCopy < ahora) {
+      return 'atrasado';
+    }
+    
     return estadoOrig;
   }
 

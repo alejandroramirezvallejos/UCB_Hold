@@ -30,7 +30,6 @@ public class PrestamoService : BaseServicios, IPrestamoService
         base.ValidarEntradaCreacion(comando);
         if (comando is CrearPrestamoComando cmd)
         {
-            if (cmd.Contrato == null) throw new ErrorContratoNoNulo();
             if (string.IsNullOrWhiteSpace(cmd.CarnetUsuario)) throw new ErrorCarnetRequerido();
             if (cmd.GrupoEquipoId == null || cmd.GrupoEquipoId.Length == 0) throw new ErrorGrupoEquipoIdInvalido();
             if (cmd.GrupoEquipoId.Any(id => id <= 0)) throw new ErrorGrupoEquipoIdInvalido();
