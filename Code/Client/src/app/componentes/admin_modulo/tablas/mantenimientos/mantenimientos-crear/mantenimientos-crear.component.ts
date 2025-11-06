@@ -25,8 +25,7 @@ export class MantenimientosCrearComponent extends BaseTablaComponent{
 
   agregarequipo : WritableSignal<boolean> = signal(false);
 
-  fechaminima = new Date().toISOString().split('T')[0];
-
+  fechaminima = this.toLocalISOString(new Date());
   
 
   mantenimiento: Mantenimientos = new Mantenimientos();
@@ -145,4 +144,12 @@ export class MantenimientosCrearComponent extends BaseTablaComponent{
   cerrar() {
     this.botoncrear.set(false);
   }
+
+   toLocalISOString(date: Date): string {
+    const offset = date.getTimezoneOffset();
+    const localDate = new Date(date.getTime() - offset * 60000);
+    return localDate.toISOString().split('T')[0];
+  }
+
+
 }

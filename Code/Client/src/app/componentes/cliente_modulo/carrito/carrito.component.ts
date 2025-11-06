@@ -38,7 +38,7 @@ export class CarritoComponent {
 
 
   hoy : Date= new Date();
-  hoystr : string = this.hoy.toISOString().split('T')[0];
+  hoystr : string = this.toLocalISOString(this.hoy);
 
  
   fecha_inicio: string = '';
@@ -196,7 +196,11 @@ export class CarritoComponent {
 
 
 
-
+  public toLocalISOString(date: Date): string {
+    const offset = date.getTimezoneOffset();
+    const localDate = new Date(date.getTime() - offset * 60000);
+    return localDate.toISOString().split('T')[0];
+  }
 
 
 
