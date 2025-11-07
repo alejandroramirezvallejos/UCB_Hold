@@ -131,6 +131,8 @@ export class CarritoComponent {
         this.aviso.set(true);
     }
     else{
+        this.cambiarfechainicio(this.fechaInicioStr);
+        this.cambiarfechafinal(this.fechaFinalStr);
        this.router.navigate(['/Formulario']);
     }
   }

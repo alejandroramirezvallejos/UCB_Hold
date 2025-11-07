@@ -11,11 +11,22 @@ import { Carrito } from '../../../../models/carrito';
   styleUrls: ['./calendario.component.css']
 })
 export class CalendarioComponent {
-  @Input() carrito : Carrito = {};
+  @Input() set entradaCarrito(value: Carrito) {
+    if(Object.keys(value).length != Object.keys(this.carrito).length){
+      const keys : number[] = [];
+      for(let key in value){
+        keys.push(Number(key));
+      }
+       this.obtenerDisponibilidad(keys);
+    }
+    this.carrito = value;
+   
+  }
   @Input() fechaInicioSeleccionada: WritableSignal<Date | null> = signal(null);
   @Input() fechaFinSeleccionada: WritableSignal<Date | null> = signal(null);
   
-  
+  carrito: Carrito = {};
+
  disponibilidadPorFecha: Map<string,Map<number, number>> = new Map();
 
  diasDelMes: Date[] = [];
@@ -30,7 +41,6 @@ export class CalendarioComponent {
  constructor(private ApiDisponibilidad : DisponibilidadService){};
 
   ngOnInit(): void { 
-    this.obtenerDisponibilidad();
     this.diaActual.setHours(0, 0, 0, 0);
     this.inicio.setHours(0, 0, 0, 0);
     this.generarDiasDelMes();
@@ -51,8 +61,8 @@ export class CalendarioComponent {
     this.generarDiasDelMes();
   }
 
-  obtenerDisponibilidad(){
-    this.ApiDisponibilidad.obtenerDisponibilidad(new Date(), new Date(new Date().getFullYear() + 1, new Date().getMonth(), new Date().getDate()), [31]).subscribe({
+  obtenerDisponibilidad(keys : number[]){
+    this.ApiDisponibilidad.obtenerDisponibilidad(new Date(), new Date(new Date().getFullYear() + 1, new Date().getMonth(), new Date().getDate()), keys).subscribe({
       next: (data : Disponibilidad[]) => {
         this.disponibilidadPorFecha.clear();
         data.forEach(item => {
@@ -104,6 +114,25 @@ export class CalendarioComponent {
 
   obtenerFechaKey(date: Date): string {
     return this.toLocalISOString(date);
+  }
+
+
+// revisar 
+  estaOcupado(dia : Date): boolean {
+    const fechaKey = this.obtenerFechaKey(dia);
+    if(this.disponibilidadPorFecha.has(fechaKey)){
+      for(let key in this.carrito){
+         if( ( this.disponibilidadPorFecha.get(fechaKey)?.get(Number(key))  ?? 0 ) < this.carrito[key].cantidad ){
+          console.log("ocupado en fecha: " + fechaKey + " para el grupo de equipo: " + key);
+          return true; 
+         }
+      }
+      return false; 
+    }
+    else{
+        return true; 
+    }
+
   }
 
   private toLocalISOString(date: Date): string {
