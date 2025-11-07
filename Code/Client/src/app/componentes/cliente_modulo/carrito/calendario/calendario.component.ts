@@ -20,6 +20,8 @@ export class CalendarioComponent {
        this.obtenerDisponibilidad(keys);
     }
     this.carrito = value;
+    
+    this.validarSeleccion(); 
    
   }
   @Input() fechaInicioSeleccionada: WritableSignal<Date | null> = signal(null);
@@ -45,8 +47,11 @@ export class CalendarioComponent {
     this.inicio.setHours(0, 0, 0, 0);
     this.generarDiasDelMes();
 
-    console.log(this.disponibilidadPorFecha)
+  
   }
+
+
+  
 
  generarDiasDelMes(): void {
     const primerDia = new Date(this.inicio.getFullYear(), this.inicio.getMonth(), 1);
@@ -76,6 +81,7 @@ export class CalendarioComponent {
             this.disponibilidadPorFecha.get(fecha)!.set(item.IdGrupoEquipo, item.CantidadDisponible);
           }
         });
+  
 
       },
       error: (error) => {
@@ -102,9 +108,31 @@ export class CalendarioComponent {
         this.fechaFinSeleccionada.set(new Date(fecha));
       }
     }
+
+    this.validarSeleccion(); 
     
 
   }
+
+  validarSeleccion(){
+    if (!this.fechaInicioSeleccionada() || !this.fechaFinSeleccionada()) {
+      return ; 
+    }
+    else{
+      let dia = new Date(this.fechaInicioSeleccionada()!);
+        while (dia <= this.fechaFinSeleccionada()!) {
+          if (this.estaOcupado(new Date(dia))) {
+            this.fechaInicioSeleccionada.set(null);
+            this.fechaFinSeleccionada.set(null);
+            return;
+          }
+        dia.setDate(dia.getDate() + 1);
+        }
+    }
+  }
+
+
+
 
   esFechaSeleccionada(fecha: Date): boolean {
     if (!this.fechaInicioSeleccionada()) return false;
@@ -125,7 +153,6 @@ export class CalendarioComponent {
     if(this.disponibilidadPorFecha.has(fechaKey)){
       for(let key in this.carrito){
          if( ( this.disponibilidadPorFecha.get(fechaKey)?.get(Number(key))  ?? 0 ) < this.carrito[key].cantidad ){
-          console.log("ocupado en fecha: " + fechaKey + " para el grupo de equipo: " + key);
           return true; 
          }
       }

@@ -190,6 +190,8 @@ export class CarritoComponent {
 
   cambiarcantidad(key: string, n: number) {
     this.carritoS.editarcantidad(Number(key), Number(n));
+
+    this.carrito = { ...this.carritoS.obtenercarrito() };
   }
 
    cambiarfechainicio(fecha: string) {
