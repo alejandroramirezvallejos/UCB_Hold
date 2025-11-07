@@ -23,8 +23,8 @@ public class PrestamoRepository : IPrestamoRepository
     {
         const string sql = @"SELECT * FROM public.insertar_y_obtener_prestamo(
             @grupoEquipoId::integer[],
-            @fechaPrestamoEsperada::timestamp with time zone,
-            @fechaDevolucionEsperada::timestamp with time zone,
+            @fechaPrestamoEsperada::timestamp without time zone,
+            @fechaDevolucionEsperada::timestamp without time zone,
             @observacion,
             @carnetUsuario,
             @idContrato
