@@ -3,10 +3,11 @@ import { Component, Input, signal, WritableSignal } from '@angular/core';
 import { DisponibilidadService } from '../../../../services/APIS/Disponibilidad/disponibilidad.service';
 import { Disponibilidad } from '../../../../models/disponibilidad';
 import { Carrito } from '../../../../models/carrito';
+import { MostrarerrorComponent } from '../../../pantallas_avisos/mostrarerror/mostrarerror.component';
 
 @Component({
   selector: 'app-calendario',
-  imports: [CommonModule],
+  imports: [CommonModule , MostrarerrorComponent],
   templateUrl: './calendario.component.html',
   styleUrls: ['./calendario.component.css']
 })
@@ -36,6 +37,8 @@ export class CalendarioComponent {
  diaActual: Date = new Date();
  inicio: Date = new Date();
 
+ error : WritableSignal<boolean> = signal(false);
+ mensajeerror : string ="Error desconocido , intente mas tarde";
  
  
 
@@ -85,7 +88,8 @@ export class CalendarioComponent {
 
       },
       error: (error) => {
-        console.error('Error al obtener la disponibilidad:', error);
+        this.error.set(true);
+        this.mensajeerror = "Error al obtener la disponibilidad de los prestamos, intente mas tarde";
       }
     })
   }
