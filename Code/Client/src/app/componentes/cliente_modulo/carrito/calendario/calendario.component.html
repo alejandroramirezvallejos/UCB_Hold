@@ -29,7 +29,10 @@
             }
             @else{
               @if(estaOcupado(dia)){
-
+                <div class="dia-celda-ocupado">
+                  <span class="dia-numero">{{ dia.getDate() }}</span>
+                  <span class="pildora-ocupada"> Lleno </span>
+                </div> 
               }
               @else{
                 <div class="dia-celda" [class.dia-celda-seleccionado]="esFechaSeleccionada(dia)" (click)="selecionarFecha(dia)">
@@ -45,7 +48,7 @@
 
 </div>
 
-{{ carrito | json }}
+
 
 <p>Fecha Inicio: {{ fechaInicioSeleccionada() | date: 'shortDate' }}</p>
 <p>Fecha Fin: {{ fechaFinSeleccionada() | date: 'shortDate' }}</p>
