@@ -44,6 +44,8 @@ export class CalendarioComponent {
     this.diaActual.setHours(0, 0, 0, 0);
     this.inicio.setHours(0, 0, 0, 0);
     this.generarDiasDelMes();
+
+    console.log(this.disponibilidadPorFecha)
   }
 
  generarDiasDelMes(): void {
