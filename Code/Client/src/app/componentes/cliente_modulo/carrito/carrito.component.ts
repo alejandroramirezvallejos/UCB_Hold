@@ -12,11 +12,12 @@ import { Aviso } from '../../pantallas_avisos/aviso/aviso.component';
 import { PrestamosAPIService } from '../../../services/APIS/prestamo/prestamos-api.service';
 import { AvisoExitoComponent } from '../../pantallas_avisos/aviso-exito/aviso-exito.component';
 import { PantallaCargaComponent } from '../../pantallas_avisos/pantalla-carga/pantalla-carga.component';
+import { CalendarioComponent } from './calendario/calendario.component';
 
 @Component({
   selector: 'app-carrito',
   standalone: true ,
-  imports: [CommonModule,FormsModule , MostrarerrorComponent , Aviso , AvisoExitoComponent , PantallaCargaComponent],
+  imports: [CommonModule,FormsModule , MostrarerrorComponent , Aviso , AvisoExitoComponent , PantallaCargaComponent , CalendarioComponent],
   templateUrl: './carrito.component.html',
   styleUrl: './carrito.component.css'
 })
@@ -40,12 +41,13 @@ export class CarritoComponent {
   hoy : Date= new Date();
   hoystr : string = this.toLocalISOString(this.hoy);
 
- 
-  fecha_inicio: string = '';
-  fecha_final: string = '';
+
+  fecha_inicio: WritableSignal<Date | null> = signal(null);
+  fecha_final: WritableSignal<Date | null> = signal(null);
 
   carrito: Carrito = {};
   
+
 
 
   constructor(public carritoS: CarritoService , private router : Router  , private usuario : UsuarioService , private Sprestamo : PrestamosAPIService) {
@@ -60,14 +62,35 @@ export class CarritoComponent {
       return new Date(year, month - 1, day);
     };
 
+
+  get fechaInicioStr(): string {
+    const fecha = this.fecha_inicio();
+    return fecha ? this.toLocalISOString(fecha) : '';
+  }
+
+  set fechaInicioStr(value: string) {
+    this.fecha_inicio.set(value ? this.parseDateLocal(value) : null);
+  }
+
+  get fechaFinalStr(): string {
+    const fecha = this.fecha_final();
+    return fecha ? this.toLocalISOString(fecha) : '';
+  }
+
+  set fechaFinalStr(value: string) {
+    this.fecha_final.set(value ? this.parseDateLocal(value) : null);
+  }
+
+
   verificarfecha() {
-    if (!this.fecha_inicio || !this.fecha_final) {
+    const fechaInicio = this.fecha_inicio();
+    const fechaFinal = this.fecha_final();
+    if (!fechaInicio || !fechaFinal) {
       this.error = true;
       return "";
     }
 
-    const fechaInicio = this.parseDateLocal(this.fecha_inicio);
-    const fechaFinal = this.parseDateLocal(this.fecha_final);
+   
     const hoyMasUnAnio = new Date(this.hoy);
     hoyMasUnAnio.setFullYear(this.hoy.getFullYear() + 1);
 
@@ -88,14 +111,11 @@ export class CarritoComponent {
     return "";
   }
   
-  fechamaxima(fechaInicio: string | null): string {
-    if (!fechaInicio || fechaInicio==null) return '';
-  
+  fechamaxima(fechaInicio: Date | null): string {
+    if (!fechaInicio) return '';
     const fecha = new Date(fechaInicio);
     fecha.setFullYear(fecha.getFullYear() + 1);
-  
-
-    return fecha.toISOString().split('T')[0];
+    return this.toLocalISOString(fecha);
   }
 
 
@@ -150,7 +170,7 @@ export class CarritoComponent {
   botonDeshabilitado(): boolean {
     if (this.carritovacio()) return true;
     
-    if (!this.fecha_inicio || !this.fecha_final) return true;
+    if (!this.fecha_inicio() || !this.fecha_final()) return true;
 
     if (this.verificarfecha() !== '') return true;
     
@@ -167,8 +187,8 @@ export class CarritoComponent {
     this.carritoS.editarcantidad(Number(key), Number(n));
   }
 
-  cambiarfechainicio(fecha: string) {
-    this.fecha_inicio = fecha;
+   cambiarfechainicio(fecha: string) {
+    this.fecha_inicio.set(this.parseDateLocal(fecha));
     // Sincronizar con todos los items del carrito
     Object.values(this.carrito).forEach((item) => {
       item.fecha_inicio = fecha;
@@ -176,7 +196,7 @@ export class CarritoComponent {
   }
 
   cambiarfechafinal(fecha: string) {
-    this.fecha_final = fecha;
+    this.fecha_final.set(this.parseDateLocal(fecha));
     // Sincronizar con todos los items del carrito
     Object.values(this.carrito).forEach((item) => {
       item.fecha_final = fecha;

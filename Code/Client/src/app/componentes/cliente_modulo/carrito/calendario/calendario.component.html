@@ -1,10 +1,10 @@
+
 <div class="calendario-container">
   
   <div class="calendario-header">
     <button 
       (click)="cambiarMes(-1)" 
-      [disabled]="diaActual.getTime() > inicio.getTime()"
-      [class.invisible]="diaActual.getTime() > inicio.getTime()">
+      [disabled]="diaActual.getTime() >= inicio.getTime()">
       <i class="fas fa-chevron-left"></i>
     </button>
     <h3>{{ inicio | date: 'MMMM yyyy'| uppercase }}</h3>
@@ -28,12 +28,9 @@
             <div class="dia-celda-pasado"></div>
             }
             @else{
-            <div class="dia-celda">
-           
+            <div class="dia-celda" [class.dia-celda-seleccionado]="esFechaSeleccionada(dia)" (click)="selecionarFecha(dia)">
                 <span class="dia-numero">{{ dia.getDate() }}</span>
-                <span class="pildora-disponible">libre</span>
-
-
+                <span class="pildora-disponible">  {{ disponibilidadPorFecha.get(obtenerFechaKey(dia))?.get(31) ?? 0 }} </span>
             </div> 
             }
         
@@ -42,8 +39,5 @@
 
 </div>
 
-
-  <div class="seleccion-info">
-    <p><strong>Inicio:</strong> 15/11/2025</p>
-    <p><strong>Fin:</strong> 20/11/2025</p>
-  </div>
+<p>Fecha Inicio: {{ fechaInicioSeleccionada() | date: 'shortDate' }}</p>
+<p>Fecha Fin: {{ fechaFinSeleccionada() | date: 'shortDate' }}</p>
