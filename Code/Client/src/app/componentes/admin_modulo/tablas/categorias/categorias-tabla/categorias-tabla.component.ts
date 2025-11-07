@@ -61,15 +61,23 @@ export class CategoriasTablaComponent extends BaseTablaComponent {
       }
     );
   }
-
+  private normalizeText(text: string): string {
+    return text
+      .toLowerCase()
+      .normalize('NFD')  // Descompone caracteres con acentos
+      .replace(/[\u0300-\u036f]/g, '');  // Elimina diacríticos
+  }
+  
   buscar() {
     if (this.terminoBusqueda.trim() === '') {
       this.limpiarBusqueda();
       return;
     }
 
+    const busquedaNormalizada = this.normalizeText(this.terminoBusqueda);
+
     this.categorias = this.categoriascopia.filter(categoria =>
-      categoria.Nombre?.toLowerCase().includes(this.terminoBusqueda.toLowerCase())
+      this.normalizeText(categoria.Nombre || '').includes(busquedaNormalizada)
     );
   }
 

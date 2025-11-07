@@ -77,7 +77,13 @@ export class GruposEquiposTablaComponent extends BaseTablaComponent implements O
       }
     });
   }
-
+  private normalizeText(text: string): string {
+    return text
+      .toLowerCase()
+      .normalize('NFD')  // Descompone caracteres con acentos
+      .replace(/[\u0300-\u036f]/g, '');  // Elimina diacríticos
+  }
+  
   buscar() {
     this.aplicarBusqueda();
   }
@@ -87,14 +93,13 @@ export class GruposEquiposTablaComponent extends BaseTablaComponent implements O
       this.gruposEquiposFiltrados = [...this.gruposEquipos];
     } else {
       this.gruposEquiposFiltrados = this.gruposEquipos.filter(grupoequipo =>
-        (grupoequipo.nombre ||'').toLowerCase().includes(this.terminoBusqueda.toLowerCase()) ||
-        (grupoequipo.modelo || '').toLowerCase().includes(this.terminoBusqueda.toLowerCase()) ||
-        (grupoequipo.marca || '').toLowerCase().includes(this.terminoBusqueda.toLowerCase()) ||
-        (grupoequipo.nombreCategoria || '').toLowerCase().includes(this.terminoBusqueda.toLowerCase()) ||
-        (grupoequipo.descripcion || '').toLowerCase().includes(this.terminoBusqueda.toLowerCase())
+        this.normalizeText(grupoequipo.nombre || '').includes(this.normalizeText(this.terminoBusqueda)) ||
+        this.normalizeText(grupoequipo.modelo || '').includes(this.normalizeText(this.terminoBusqueda)) ||
+        this.normalizeText(grupoequipo.marca || '').includes(this.normalizeText(this.terminoBusqueda)) ||
+        this.normalizeText(grupoequipo.nombreCategoria || '').includes(this.normalizeText(this.terminoBusqueda))
+        
       );
     }
-    
   }
 
   limpiarBusqueda() {

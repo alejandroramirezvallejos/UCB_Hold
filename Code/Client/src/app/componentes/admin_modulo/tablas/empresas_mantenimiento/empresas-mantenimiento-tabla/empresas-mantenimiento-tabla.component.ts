@@ -60,19 +60,25 @@ export class EmpresasMantenimientoTablaComponent extends BaseTablaComponent impl
       }
     );
   }
-
+  private normalizeText(text: string): string {
+    return text
+      .toLowerCase()
+      .normalize('NFD')  // Descompone caracteres con acentos
+      .replace(/[\u0300-\u036f]/g, '');  // Elimina diacríticos
+  }
+  
   buscar() {
     if (this.terminoBusqueda.trim() === '') {
       this.limpiarBusqueda();
       return;
     }
 
+    const busquedaNormalizada = this.normalizeText(this.terminoBusqueda);
+
     this.empresas = this.empresascopia.filter(empresa =>
-      (empresa.NombreEmpresa|| '').toLowerCase().includes(this.terminoBusqueda.toLowerCase()) ||
-      (empresa.NombreResponsable|| '').toLowerCase().includes(this.terminoBusqueda.toLowerCase()) ||
-      (empresa.ApellidoResponsable || '').toLowerCase().includes(this.terminoBusqueda.toLowerCase()) ||
-      (empresa.Telefono || '').toLowerCase().includes(this.terminoBusqueda.toLowerCase()) ||
-      (empresa.Nit|| '').toLowerCase().includes(this.terminoBusqueda.toLowerCase())
+      this.normalizeText(empresa.NombreEmpresa || '').includes(busquedaNormalizada) ||
+      this.normalizeText(empresa.Telefono || '').includes(busquedaNormalizada) ||
+      this.normalizeText(empresa.Nit || '').includes(busquedaNormalizada)
     );
   }
 

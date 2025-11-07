@@ -86,27 +86,31 @@ export class MantenimientosTablaComponent extends BaseTablaComponent implements 
     this.mantenimientosFiltrados = [...this.mantenimientos];
   }
 
-
+  private normalizeText(text: string): string {
+    return text
+      .toLowerCase()
+      .normalize('NFD')  // Descompone caracteres con acentos
+      .replace(/[\u0300-\u036f]/g, '');  // Elimina diacríticos
+  }
+  
   buscar() {
     this.aplicarBusqueda();
   }
 
   aplicarBusqueda() {
-    if (this.terminoBusqueda.trim() === '') {
-      this.mantenimientosFiltrados = [...this.mantenimientos];
-    } else {
-      this.mantenimientosFiltrados = this.mantenimientos.filter(mantenimiento =>
-        (mantenimiento.datosgrupo.NombreEmpresaMantenimiento || '').toLowerCase().includes(this.terminoBusqueda.toLowerCase()) ||
-        (mantenimiento.datosgrupo.TipoMantenimiento || '').toLowerCase().includes(this.terminoBusqueda.toLowerCase()) ||
-        (mantenimiento.datosgrupo.NombreGrupoEquipo || '').toLowerCase().includes(this.terminoBusqueda.toLowerCase()) ||
-        (mantenimiento.datosgrupo.Descripcion || '').toLowerCase().includes(this.terminoBusqueda.toLowerCase()) ||
-        (mantenimiento.datosgrupo.DescripcionEquipo || '').toLowerCase().includes(this.terminoBusqueda.toLowerCase()) ||
-        String(mantenimiento.datosgrupo.CodigoImtEquipo || '').toLowerCase().includes(this.terminoBusqueda.toLowerCase()) ||
-        String(mantenimiento.datosgrupo.Costo || '').toLowerCase().includes(this.terminoBusqueda.toLowerCase())
-      );
-    }
-  
+  if (this.terminoBusqueda.trim() === '') {
+    this.mantenimientosFiltrados = [...this.mantenimientos];
+  } else {
+    const busquedaNormalizada = this.normalizeText(this.terminoBusqueda);
+
+    this.mantenimientosFiltrados = this.mantenimientos.filter(mantenimiento =>
+      this.normalizeText(mantenimiento.datosgrupo.NombreEmpresaMantenimiento || '').includes(busquedaNormalizada) ||
+      this.normalizeText(mantenimiento.datosgrupo.TipoMantenimiento || '').includes(busquedaNormalizada) ||
+      this.normalizeText(mantenimiento.datosgrupo.NombreGrupoEquipo || '').includes(busquedaNormalizada) ||
+      this.normalizeText(String(mantenimiento.datosgrupo.CodigoImtEquipo || '')).includes(busquedaNormalizada) 
+    );
   }
+}
 
   limpiarBusqueda() {
     this.terminoBusqueda = '';

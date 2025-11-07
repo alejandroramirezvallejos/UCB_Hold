@@ -61,6 +61,12 @@ export class MueblesTablaComponent extends BaseTablaComponent implements OnInit 
       }
     });
   }
+  private normalizeText(text: string): string {
+    return text
+      .toLowerCase()
+      .normalize('NFD')  // Descompone caracteres con acentos
+      .replace(/[\u0300-\u036f]/g, '');  // Elimina diacríticos
+  }
 
   buscar() {
     this.aplicarBusqueda();
@@ -70,15 +76,13 @@ export class MueblesTablaComponent extends BaseTablaComponent implements OnInit 
     if (this.terminoBusqueda.trim() === '') {
       this.mueblesFiltrados = [...this.muebles];
     } else {
+      const busquedaNormalizada = this.normalizeText(this.terminoBusqueda);
+
       this.mueblesFiltrados = this.muebles.filter(mueble =>
-        (mueble.Nombre || '').toLowerCase().includes(this.terminoBusqueda.toLowerCase()) ||
-        (mueble.Tipo || '').toLowerCase().includes(this.terminoBusqueda.toLowerCase()) ||
-        (mueble.Ubicacion || '').toLowerCase().includes(this.terminoBusqueda.toLowerCase()) ||
-        String(mueble.Costo || '').toLowerCase().includes(this.terminoBusqueda.toLowerCase()) ||
-        String(mueble.NumeroGaveteros || '').toLowerCase().includes(this.terminoBusqueda.toLowerCase())
+        this.normalizeText(mueble.Nombre || '').includes(busquedaNormalizada) ||
+        this.normalizeText(mueble.Tipo || '').includes(busquedaNormalizada)
       );
     }
-
   }
 
   limpiarBusqueda() {

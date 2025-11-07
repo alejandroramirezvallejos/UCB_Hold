@@ -70,17 +70,24 @@ export class GaveterosTablaComponent extends BaseTablaComponent {
     });
 
   }
-
+private normalizeText(text: string): string {
+    return text
+      .toLowerCase()
+      .normalize('NFD')  // Descompone caracteres con acentos
+      .replace(/[\u0300-\u036f]/g, '');  // Elimina diacríticos
+  }
 buscar(){
   if(this.terminoBusqueda.trim() === '') {
-    this.limpiarBusqueda(); 
-    return ; 
+    this.limpiarBusqueda();
+    return;
   }
 
+  const busquedaNormalizada = this.normalizeText(this.terminoBusqueda);
+
   this.gaveteros = this.gaveteroscopia.filter(gavetero =>
-    (gavetero.Nombre|| '').toLowerCase().includes(this.terminoBusqueda.toLowerCase()) ||
-    (gavetero.Tipo ||'').toLowerCase().includes(this.terminoBusqueda.toLowerCase()) ||
-    (gavetero.NombreMueble || '').toLowerCase().includes(this.terminoBusqueda.toLowerCase())
+    this.normalizeText(gavetero.Nombre || '').includes(busquedaNormalizada) ||
+    this.normalizeText(gavetero.Tipo || '').includes(busquedaNormalizada) ||
+    this.normalizeText(gavetero.NombreMueble || '').includes(busquedaNormalizada)
   );
 }
 

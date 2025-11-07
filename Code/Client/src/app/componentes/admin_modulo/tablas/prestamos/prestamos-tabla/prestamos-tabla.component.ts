@@ -171,21 +171,29 @@ export class PrestamosTablaComponent extends BaseTablaComponent implements OnIni
     this.aplicarFiltros();
   }
 
+  private normalizeText(text: string): string {
+    return text
+      .toLowerCase()
+      .normalize('NFD')  // Descompone caracteres con acentos
+      .replace(/[\u0300-\u036f]/g, '');  // Elimina diacríticos
+  }
+
   aplicarFiltros() {
     // Convertir el Map a un array de [key, value]
     let prestamosFiltrados = Array.from(this.prestamoscopia.entries());
 
     // Aplicar filtro de búsqueda si existe
     if (this.terminoBusqueda.trim() !== '') {
-        prestamosFiltrados = prestamosFiltrados.filter(([_, prestamo]) =>
-            (prestamo.datosgrupo.NombreUsuario || '').toLowerCase().includes(this.terminoBusqueda.toLowerCase()) ||
-            (prestamo.datosgrupo.ApellidoPaternoUsuario || '').toLowerCase().includes(this.terminoBusqueda.toLowerCase()) ||
-            (prestamo.datosgrupo.CarnetUsuario || '').toLowerCase().includes(this.terminoBusqueda.toLowerCase()) ||
-            (prestamo.datosgrupo.NombreGrupoEquipo || '').toLowerCase().includes(this.terminoBusqueda.toLowerCase()) ||
-            (prestamo.datosgrupo.CodigoImt || '').toLowerCase().includes(this.terminoBusqueda.toLowerCase()) ||
-            (prestamo.datosgrupo.EstadoPrestamo || '').toLowerCase().includes(this.terminoBusqueda.toLowerCase())
-        );
-    }
+    const busquedaNormalizada = this.normalizeText(this.terminoBusqueda);
+    
+    prestamosFiltrados = prestamosFiltrados.filter(([_, prestamo]) =>
+        this.normalizeText(prestamo.datosgrupo.NombreUsuario || '').includes(busquedaNormalizada) ||
+        this.normalizeText(prestamo.datosgrupo.ApellidoPaternoUsuario || '').includes(busquedaNormalizada) ||
+        this.normalizeText(prestamo.datosgrupo.CarnetUsuario || '').includes(busquedaNormalizada) ||
+        this.normalizeText(prestamo.datosgrupo.NombreGrupoEquipo || '').includes(busquedaNormalizada) ||
+        this.normalizeText(prestamo.datosgrupo.CodigoImt || '').includes(busquedaNormalizada) 
+    );
+}
 
     // Aplicar filtro de estado si existe
      if (this.estadoSeleccionado !== '') {

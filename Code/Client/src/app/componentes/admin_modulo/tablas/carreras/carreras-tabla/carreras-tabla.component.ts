@@ -64,16 +64,24 @@ export class CarrerasTablaComponent extends BaseTablaComponent {
       }
     });
   }
+  private normalizeText(text: string): string {
+    return text
+      .toLowerCase()
+      .normalize('NFD')  // Descompone caracteres con acentos
+      .replace(/[\u0300-\u036f]/g, '');  // Elimina diacríticos
+  }
 
   buscar() {
-    if (this.terminoBusqueda.trim() === '') {
-      this.limpiarBusqueda();
-      return;
-    }
+  if (this.terminoBusqueda.trim() === '') {
+    this.limpiarBusqueda();
+    return;
+  }
 
-    this.carreras = this.carrerascopia.filter(carrera =>
-      carrera.Nombre?.toLowerCase().includes(this.terminoBusqueda.toLowerCase())
-    );
+  const busquedaNormalizada = this.normalizeText(this.terminoBusqueda);
+
+  this.carreras = this.carrerascopia.filter(carrera =>
+    this.normalizeText(carrera.Nombre || '').includes(busquedaNormalizada)
+  );
   }
 
   limpiarBusqueda() {

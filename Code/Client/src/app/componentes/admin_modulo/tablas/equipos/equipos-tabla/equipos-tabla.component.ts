@@ -67,21 +67,29 @@ export class EquiposTablaComponent extends BaseTablaComponent{
     );
 
   }
-
+private normalizeText(text: string): string {
+    return text
+      .toLowerCase()
+      .normalize('NFD')  // Descompone caracteres con acentos
+      .replace(/[\u0300-\u036f]/g, '');  // Elimina diacríticos
+  }
+  
 buscar(){
   if(this.terminoBusqueda.trim() === '') {
-    this.limpiarBusqueda(); 
-    return ; 
+    this.limpiarBusqueda();
+    return;
   }
 
+  const busquedaNormalizada = this.normalizeText(this.terminoBusqueda);
+
   this.equipos = this.equiposcopia.filter(equipo =>
-    (equipo.Nombre|| '').toLowerCase().includes(this.terminoBusqueda.toLowerCase()) ||
-    (equipo.Modelo|| '').toLowerCase().includes(this.terminoBusqueda.toLowerCase()) ||
-    (equipo.Marca|| '').toLowerCase().includes(this.terminoBusqueda.toLowerCase()) ||
-    String(equipo.CodigoImt || '').toLowerCase().includes(this.terminoBusqueda.toLowerCase()) ||
-    (equipo.CodigoUcb|| '').toLowerCase().includes(this.terminoBusqueda.toLowerCase()) ||
-    (equipo.NumeroSerial|| '').toLowerCase().includes(this.terminoBusqueda.toLowerCase()) ||
-    (equipo.NombreGrupoEquipo|| '').toLowerCase().includes(this.terminoBusqueda.toLowerCase()) 
+    this.normalizeText(equipo.Nombre || '').includes(busquedaNormalizada) ||
+    this.normalizeText(equipo.Modelo || '').includes(busquedaNormalizada) ||
+    this.normalizeText(equipo.Marca || '').includes(busquedaNormalizada) ||
+    String(this.normalizeText(equipo.CodigoImt || '')).includes(busquedaNormalizada) ||
+    this.normalizeText(equipo.CodigoUcb || '').includes(busquedaNormalizada) ||
+    this.normalizeText(equipo.NumeroSerial || '').includes(busquedaNormalizada) ||
+    this.normalizeText(equipo.NombreGrupoEquipo || '').includes(busquedaNormalizada)
   );
 }
 

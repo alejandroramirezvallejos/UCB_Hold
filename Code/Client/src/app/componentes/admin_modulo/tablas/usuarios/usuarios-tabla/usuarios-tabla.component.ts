@@ -79,25 +79,32 @@ export class UsuariosTablaComponent extends BaseTablaComponent implements OnInit
   actualizarTabla() {
     this.cargarUsuarios();
   }
-  buscar() {
-    if (this.terminoBusqueda.trim() === '') {
-      this.limpiarBusqueda();
-      return;
-    }
 
-    this.usuarios = this.usuarios.filter(usuario =>
-      (usuario.carnet || '') .toLowerCase().includes(this.terminoBusqueda.toLowerCase()) ||
-      ((usuario.nombre || '').toLowerCase().includes(this.terminoBusqueda.toLowerCase())) ||
-      ((usuario.apellido_paterno || '').toLowerCase().includes(this.terminoBusqueda.toLowerCase())) ||
-      ((usuario.apellido_materno || '').toLowerCase().includes(this.terminoBusqueda.toLowerCase())) ||
-      ((usuario.correo || '').toLowerCase().includes(this.terminoBusqueda.toLowerCase())) ||
-      ((usuario.telefono || '').toLowerCase().includes(this.terminoBusqueda.toLowerCase())) ||
-      ((usuario.rol || '').toLowerCase().includes(this.terminoBusqueda.toLowerCase())) ||
-      ((usuario.carrera || '').toLowerCase().includes(this.terminoBusqueda.toLowerCase())) ||
-      ((usuario.nombre_referencia || '').toLowerCase().includes(this.terminoBusqueda.toLowerCase())) ||
-      ((usuario.telefono_referencia || '').toLowerCase().includes(this.terminoBusqueda.toLowerCase()))
-    );
+  private normalizeText(text: string): string {
+    return text
+      .toLowerCase()
+      .normalize('NFD')  // Descompone caracteres con acentos
+      .replace(/[\u0300-\u036f]/g, '');  // Elimina diacríticos
   }
+
+  buscar() {
+  if (this.terminoBusqueda.trim() === '') {
+    this.limpiarBusqueda();
+    return;
+  }
+
+  const busquedaNormalizada = this.normalizeText(this.terminoBusqueda);
+
+  this.usuarios = this.usuarios.filter(usuario =>
+    this.normalizeText(usuario.carnet || '').includes(busquedaNormalizada) ||
+    this.normalizeText(usuario.nombre || '').includes(busquedaNormalizada) ||
+    this.normalizeText(usuario.apellido_paterno || '').includes(busquedaNormalizada) ||
+    this.normalizeText(usuario.apellido_materno || '').includes(busquedaNormalizada) ||
+    this.normalizeText(usuario.correo || '').includes(busquedaNormalizada) ||
+    this.normalizeText(usuario.telefono || '').includes(busquedaNormalizada) ||
+    this.normalizeText(usuario.carrera || '').includes(busquedaNormalizada)
+  );
+}
 
   limpiarBusqueda() {
     this.terminoBusqueda = '';

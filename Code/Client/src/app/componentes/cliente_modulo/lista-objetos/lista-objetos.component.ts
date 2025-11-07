@@ -51,6 +51,13 @@ export class ListaObjetosComponent implements OnChanges {
       }
     });
   }
+  // Función auxiliar para normalizar texto (remover acentos y convertir a minúsculas)
+  private normalizeText(text: string): string {
+    return text
+      .toLowerCase()
+      .normalize('NFD')  // Descompone caracteres con acentos
+      .replace(/[\u0300-\u036f]/g, '');  // Elimina diacríticos (acentos, tildes, etc.)
+  }
 
   private filtrarProductos(): void {
     let productos = [...this.todosLosProductos];
@@ -64,11 +71,11 @@ export class ListaObjetosComponent implements OnChanges {
 
     // Filtrar por término de búsqueda
     if (this.producto) {
-      const busqueda = this.producto.toLowerCase();
+      const busquedaNormalizada = this.normalizeText(this.producto);
       productos = productos.filter(p =>
-        (p.nombre?.toLowerCase().includes(busqueda) ||
-          p.modelo?.toLowerCase().includes(busqueda) ||
-         p.marca?.toLowerCase().includes(busqueda))
+        this.normalizeText(p.nombre || '').includes(busquedaNormalizada) ||
+        this.normalizeText(p.modelo || '').includes(busquedaNormalizada) ||
+        this.normalizeText(p.marca || '').includes(busquedaNormalizada)
       );
     }
 

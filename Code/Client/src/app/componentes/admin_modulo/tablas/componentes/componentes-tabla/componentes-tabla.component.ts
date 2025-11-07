@@ -60,19 +60,27 @@ export class ComponentesTablaComponent extends BaseTablaComponent implements OnI
       }
     });
   }
-
+  private normalizeText(text: string): string {
+    return text
+      .toLowerCase()
+      .normalize('NFD')  // Descompone caracteres con acentos
+      .replace(/[\u0300-\u036f]/g, '');  // Elimina diacríticos
+  }
+  
   buscar() {
     if (this.terminoBusqueda.trim() === '') {
       this.limpiarBusqueda();
       return;
     }
 
+    const busquedaNormalizada = this.normalizeText(this.terminoBusqueda);
+
     this.componentes = this.componentescopia.filter(componente =>
-      (componente.Nombre|| '').toLowerCase().includes(this.terminoBusqueda.toLowerCase()) ||
-      (componente.Modelo|| '').toLowerCase().includes(this.terminoBusqueda.toLowerCase()) ||
-      (componente.Tipo|| '').toLowerCase().includes(this.terminoBusqueda.toLowerCase()) ||
-      String(componente.CodigoImtEquipo || '').toLowerCase().includes(this.terminoBusqueda.toLowerCase()) ||
-      (componente.NombreEquipo|| '').toLowerCase().includes(this.terminoBusqueda.toLowerCase())
+      this.normalizeText(componente.Nombre || '').includes(busquedaNormalizada) ||
+      this.normalizeText(componente.Modelo || '').includes(busquedaNormalizada) ||
+      this.normalizeText(componente.Tipo || '').includes(busquedaNormalizada) ||
+      this.normalizeText(String(componente.CodigoImtEquipo || '')).includes(busquedaNormalizada) ||
+      this.normalizeText(componente.NombreEquipo || '').includes(busquedaNormalizada)
     );
   }
 

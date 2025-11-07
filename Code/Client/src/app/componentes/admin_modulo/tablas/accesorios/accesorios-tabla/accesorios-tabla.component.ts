@@ -71,22 +71,28 @@ export class AccesoriosTablaComponent  extends BaseTablaComponent{
     });
 
   }
+private normalizeText(text: string): string {
+  return text
+    .toLowerCase()
+    .normalize('NFD')  // Descompone caracteres con acentos
+    .replace(/[\u0300-\u036f]/g, '');  // Elimina diacríticos
+}
 
-buscar(){
-  if(this.terminoBusqueda.trim() === '') {
+buscar() {
+  if (this.terminoBusqueda.trim() === '') {
     this.limpiarBusqueda(); 
-    return ; 
+    return; 
   }
 
+  const busquedaNormalizada = this.normalizeText(this.terminoBusqueda);
+
   this.accesorios = this.accesorioscopia.filter(accesorio =>
-    (accesorio.nombre || '').toLowerCase().includes(this.terminoBusqueda.toLowerCase() ) ||
-    (accesorio.modelo|| '').toLowerCase().includes(this.terminoBusqueda.toLowerCase()) ||
-    (accesorio.tipo|| '').toLowerCase().includes(this.terminoBusqueda.toLowerCase()) ||
-    String(accesorio.codigo_imt || '').toLowerCase().includes(this.terminoBusqueda.toLowerCase()) ||
-    (accesorio.nombreEquipoAsociado || '').toLowerCase().includes(this.terminoBusqueda.toLowerCase()) 
+    this.normalizeText(accesorio.nombre || '').includes(busquedaNormalizada) ||
+    this.normalizeText(accesorio.modelo || '').includes(busquedaNormalizada) ||
+    this.normalizeText(accesorio.tipo || '').includes(busquedaNormalizada) ||
+    this.normalizeText(String(accesorio.codigo_imt || '')).includes(busquedaNormalizada) ||
+    this.normalizeText(accesorio.nombreEquipoAsociado || '').includes(busquedaNormalizada)
   );
-
-
 }
 
 limpiarBusqueda(){
