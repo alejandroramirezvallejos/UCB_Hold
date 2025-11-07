@@ -12,6 +12,8 @@ import { Carrito } from '../../../../models/carrito';
 })
 export class CalendarioComponent {
   @Input() carrito : Carrito = {};
+  @Input() fechaInicioSeleccionada: WritableSignal<Date | null> = signal(null);
+  @Input() fechaFinSeleccionada: WritableSignal<Date | null> = signal(null);
   
   
  disponibilidadPorFecha: Map<string,Map<number, number>> = new Map();
@@ -21,8 +23,8 @@ export class CalendarioComponent {
  diaActual: Date = new Date();
  inicio: Date = new Date();
 
- fechaInicioSeleccionada: WritableSignal<Date | null> = signal(null);
- fechaFinSeleccionada: WritableSignal<Date | null> = signal(null);
+ 
+ 
 
 
  constructor(private ApiDisponibilidad : DisponibilidadService){};
@@ -88,6 +90,7 @@ export class CalendarioComponent {
         this.fechaFinSeleccionada.set(new Date(fecha));
       }
     }
+    
 
   }
 

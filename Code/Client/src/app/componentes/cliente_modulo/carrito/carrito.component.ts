@@ -137,6 +137,9 @@ export class CarritoComponent {
 
   realizarPrestamo(){
     this.cargando = true;
+    this.cambiarfechainicio(this.fechaInicioStr);
+    this.cambiarfechafinal(this.fechaFinalStr);
+    console.log('Carrito:', this.carrito);
     this.Sprestamo.crearPrestamo(this.carrito , this.usuario.obtenercarnet() , null).subscribe({
       next: () => {
         this.carritoS.vaciarcarrito();

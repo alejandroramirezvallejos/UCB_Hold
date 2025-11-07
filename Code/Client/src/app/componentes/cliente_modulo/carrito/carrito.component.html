@@ -37,7 +37,8 @@
 
   <app-calendario
   [carrito]="carrito"
-  
+  [fechaInicioSeleccionada]="fecha_inicio"
+  [fechaFinSeleccionada]="fecha_final"
   ></app-calendario>
 
   <!-- Fechas globales para todo el préstamo (fuera del bucle) -->
@@ -50,7 +51,6 @@
             type="date"
             id="fechaInicio"
             [(ngModel)]="fechaInicioStr"
-            (ngModelChange)="cambiarfechainicio($event)"
             [min]="hoystr"
             [max]="fechamaxima(fecha_inicio())"
           />
@@ -63,7 +63,6 @@
             type="date"
             id="fechaFin"
             [(ngModel)]="fechaFinalStr"
-            (ngModelChange)="cambiarfechafinal($event)"
             [min]="fechaInicioStr"
             [max]="fechamaxima(fecha_inicio())"
           />
