@@ -34,6 +34,13 @@
     }
   </ul>
 
+
+  <app-calendario
+  [carrito]="carrito"
+  [fechaInicioSeleccionada]="fecha_inicio"
+  [fechaFinSeleccionada]="fecha_final"
+  ></app-calendario>
+
   <!-- Fechas globales para todo el préstamo (fuera del bucle) -->
 
     <div class="dates-picker">
@@ -43,10 +50,9 @@
           <input
             type="date"
             id="fechaInicio"
-            [(ngModel)]="fecha_inicio"
-            (ngModelChange)="cambiarfechainicio($event)"
+            [(ngModel)]="fechaInicioStr"
             [min]="hoystr"
-            [max]="fechamaxima(fecha_inicio)"
+            [max]="fechamaxima(fecha_inicio())"
           />
         </div>
       </div>
@@ -56,10 +62,9 @@
           <input
             type="date"
             id="fechaFin"
-            [(ngModel)]="fecha_final"
-            (ngModelChange)="cambiarfechafinal($event)"
-            [min]="fecha_inicio"
-            [max]="fechamaxima(fecha_inicio)"
+            [(ngModel)]="fechaFinalStr"
+            [min]="fechaInicioStr"
+            [max]="fechamaxima(fecha_inicio())"
           />
         </div>
       </div>
