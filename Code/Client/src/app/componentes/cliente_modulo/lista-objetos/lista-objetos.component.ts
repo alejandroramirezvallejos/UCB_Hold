@@ -65,9 +65,16 @@ export class ListaObjetosComponent implements OnChanges {
 
     // Filtrar por categorías
     if (this.categorias.length > 0) {
-      productos = productos.filter(p =>
-        this.categorias.includes(p.nombreCategoria || '')
-      );
+      if(this.categorias.includes('sinCategoria')){
+        console.log('Filtrando sin categoría');
+        productos = productos.filter(p => p.nombreCategoria === null || p.nombreCategoria === ''  );
+      }
+      else{
+        productos = productos.filter(p =>
+          this.categorias.includes(p.nombreCategoria || '')
+        );
+      }
+    
     }
 
     // Filtrar por término de búsqueda
