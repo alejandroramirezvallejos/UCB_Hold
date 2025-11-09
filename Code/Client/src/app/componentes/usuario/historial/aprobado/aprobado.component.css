@@ -507,6 +507,10 @@
   font-size: 0.75rem;
 }
 
+.recoger:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
 
 
 
