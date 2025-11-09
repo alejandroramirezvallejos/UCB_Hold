@@ -67,7 +67,7 @@ export class PrestamosAPIService {
       formData.append('FechaPrestamoEsperada', carrito[grupoid[0]].fecha_inicio || '');
       formData.append('FechaDevolucionEsperada', carrito[grupoid[0]].fecha_final || '');
       formData.append('CarnetUsuario', carnet);
-      formData.append('Observacion', 'string');
+      formData.append('Observacion', '');
 
 
       if (contrato) {
