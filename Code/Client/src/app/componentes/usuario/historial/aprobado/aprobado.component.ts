@@ -32,7 +32,9 @@ export class AprobadoComponent extends HistorialBase {
     this.cargarDatos();
   }
 
- 
+ validarFechaRecogida(item: any): boolean {
+   return item.value.datosgrupo.FechaPrestamoEsperada && item.value.datosgrupo.FechaPrestamoEsperada > new Date();
+ }
 
   avisocancelarf(item : Prestamos) {
     this.avisocancelar.set(!this.avisocancelar());
