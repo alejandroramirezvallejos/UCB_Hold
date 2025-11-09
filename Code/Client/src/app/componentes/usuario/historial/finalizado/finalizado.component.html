@@ -27,8 +27,8 @@
           </div>
 
           <div class="fecha-item">
-            <span class="fecha-label">✅ Préstamo:</span>
-            <span class="fecha-valor">{{ item.value.datosgrupo.FechaPrestamo ? (item.value.datosgrupo.FechaPrestamo | date:'dd/MM/yyyy') : item.value.datosgrupo.EstadoPrestamo }}</span>
+            <span class="fecha-label">📦 Fecha de Recogida:</span>
+            <span class="fecha-valor">{{ item.value.datosgrupo.FechaPrestamoEsperada ? (item.value.datosgrupo.FechaPrestamoEsperada |  date:'dd/MM/yyyy':'America/La_Paz') : item.value.datosgrupo.FechaPrestamoEsperada }}</span>
           </div>
 
           <div class="fecha-item">
