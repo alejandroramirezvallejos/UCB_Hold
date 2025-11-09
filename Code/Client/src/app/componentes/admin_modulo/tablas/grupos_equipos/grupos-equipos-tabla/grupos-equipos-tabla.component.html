@@ -70,7 +70,7 @@
             <td>{{grupoequipo.Cantidad}}</td>
             <td>{{grupoequipo.modelo}}</td>
             <td>{{grupoequipo.marca}}</td>
-            <td>{{grupoequipo.nombreCategoria}}</td>
+            <td>{{grupoequipo.nombreCategoria || ''}}</td>
             <td>{{grupoequipo.descripcion}}</td>
             <td class="actions-column">
               <button class="btn-icon btn-delete" (click)="eliminarGrupoEquipo(grupoequipo)">

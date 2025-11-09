@@ -1,7 +1,8 @@
 import { Component, Input, OnChanges, signal, SimpleChanges, WritableSignal } from '@angular/core';
-import { RouterModule, ActivatedRoute, Router } from '@angular/router';
+import { RouterModule } from '@angular/router';
 import { GrupoequipoService } from '../../../services/APIS/GrupoEquipo/grupoequipo.service';
 import { GrupoEquipo } from '../../../models/grupo_equipo';
+import { Router } from '@angular/router';
 import { MostrarerrorComponent } from '../../pantallas_avisos/mostrarerror/mostrarerror.component';
 
 @Component({
@@ -25,16 +26,11 @@ export class ListaObjetosComponent implements OnChanges {
   error : WritableSignal<boolean> = signal(false);
   mensajeerror : string = "";
 
-  constructor(private servicio: GrupoequipoService, private route: ActivatedRoute, private router: Router) {}
+  constructor(private servicio: GrupoequipoService) {}
 
   ngOnInit(): void {
     this.cargarProductos();
     
-    // Leer página de query params
-    this.route.queryParams.subscribe(params => {
-      const page = +params['page'] || 0;
-      this.paginaActual = page;
-    });
   }
 
   ngOnChanges(changes: SimpleChanges): void {
@@ -69,9 +65,16 @@ export class ListaObjetosComponent implements OnChanges {
 
     // Filtrar por categorías
     if (this.categorias.length > 0) {
-      productos = productos.filter(p =>
-        this.categorias.includes(p.nombreCategoria || '')
-      );
+      if(this.categorias.includes('sinCategoria')){
+        console.log('Filtrando sin categoría');
+        productos = productos.filter(p => p.nombreCategoria === null || p.nombreCategoria === ''  );
+      }
+      else{
+        productos = productos.filter(p =>
+          this.categorias.includes(p.nombreCategoria || '')
+        );
+      }
+    
     }
 
     // Filtrar por término de búsqueda
@@ -95,13 +98,6 @@ export class ListaObjetosComponent implements OnChanges {
     // Asegurarse de que la página actual sea válida
     if (this.paginaActual >= this.totalPaginas) {
       this.paginaActual = Math.max(0, this.totalPaginas - 1);
-      
-      // Actualizar query params si cambió
-      this.router.navigate([], {
-        relativeTo: this.route,
-        queryParams: { page: this.paginaActual },
-        queryParamsHandling: 'merge'
-      });
     }
   }
 
@@ -143,12 +139,6 @@ export class ListaObjetosComponent implements OnChanges {
     if (pagina >= 0 && pagina < this.totalPaginas) {
       this.paginaActual = pagina;
       
-      // Actualizar query params en la URL
-      this.router.navigate([], {
-        relativeTo: this.route,
-        queryParams: { page: pagina },
-        queryParamsHandling: 'merge'
-      });
     }
   }
 

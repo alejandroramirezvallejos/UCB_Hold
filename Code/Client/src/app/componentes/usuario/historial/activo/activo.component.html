@@ -6,7 +6,7 @@
 
   <div class="prestamos-list">
     @for (item of (datos | keyvalue) ; track item.key) {
-      <div class="prestamo-item" (click)="AbrirVista(item.value.equipos)">        <!-- Header del préstamo -->
+      <div class="prestamo-item" >        <!-- Header del préstamo -->
         <div class="item-header">
           <div class="usuario-info">
             <h3 class="usuario-nombre">💻 {{ item.value.datosgrupo.NombreGrupoEquipo }}</h3>
@@ -37,9 +37,12 @@
           </div>
         </div>
 
-       
-        <button class="finalizado" (click)="$event.stopPropagation(); avisoDevolver(item.value.datosgrupo)"> DEVUELTO</button>
-        
+        <div class="botones">
+          <div class="botones-izquierda">
+            <button class="finalizado" (click)="$event.stopPropagation(); avisoDevolver(item.value.datosgrupo)"> DEVUELTO</button>
+          </div>
+            <button class="ver-detalles" (click)="AbrirVista(item.value.equipos)"> VER DETALLES</button>
+        </div>
 
 
       </div>

@@ -216,6 +216,58 @@
   cursor: default;
 }
 
+
+.botones {
+  display: flex;
+  justify-content: flex-end;
+  align-items: center;
+  margin-top: 1rem;
+  gap: 1rem;  /* Espacio mínimo entre botones */
+}
+
+/* Estilo para el botón ver-detalles (basado en finalizado) */
+.ver-detalles {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.375rem;
+  padding: 0.5rem 0.875rem;
+  border: none;
+  border-radius: 6px;
+  font-size: 0.75rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  min-width: 70px;
+  justify-content: center;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+  background-color: #5F6368;  /* Azul para diferenciar */
+  color: white;
+  border: 2px solid #3a3a3b;
+}
+
+.ver-detalles:hover {
+  background-color: #333;
+  border-color: #1d4ed8;
+  transform: translateY(-1px);
+  box-shadow: 0 4px 12px rgba(37, 99, 235, 0.4);
+}
+
+.ver-detalles:active {
+  transform: translateY(0);
+  box-shadow: 0 2px 6px rgba(37, 99, 235, 0.3);
+}
+
+.ver-detalles i {
+  font-size: 0.75rem;
+}
+
+.botones-izquierda {
+  display: flex;
+  align-items: center;
+}
+
+
+
 /* Responsive Design */
 @media (max-width: 768px) {
   .prestamos-container {
@@ -254,6 +306,26 @@
     gap: 0.25rem;
     text-align: left;
   }
+
+    .botones {
+    flex-direction: column;  /* En móviles, apila los botones verticalmente */
+    gap: 0.5rem;
+    align-items: stretch;
+  }
+  
+  .ver-detalles {
+    padding: 0.25rem 0.5rem;
+    font-size: 0.65rem;
+    min-width: 50px;
+    gap: 0.25rem;
+  }
+  
+  .ver-detalles i {
+    font-size: 0.65rem;
+  }
+
+
+
 }
 
 @media (max-width: 480px) {
@@ -269,6 +341,16 @@
     padding: 0.4rem 0.6rem;
   }
   
+   .ver-detalles {
+    padding: 0.25rem 0.5rem;
+    font-size: 0.65rem;
+    min-width: 50px;
+    gap: 0.25rem;
+  }
+  
+  .ver-detalles i {
+    font-size: 0.65rem;
+  }
   
 }
 

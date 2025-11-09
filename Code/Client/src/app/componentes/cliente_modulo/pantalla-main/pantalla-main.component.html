@@ -55,9 +55,9 @@
     <div class="categories-panel">
       <div class="categories-list">
         <div
-          class="no-category-item"
-          [class.selected]="estaCategoriaSeleccionada('')"
-          (click)="seleccionarcategoria('')">
+          class="category-item"
+          [class.selected]="estaCategoriaSeleccionada('sinCategoria')"
+          (click)="seleccionarcategoria('sinCategoria')">
           Sin categoría
         </div>
         @for (item of items; track item.Nombre) {
