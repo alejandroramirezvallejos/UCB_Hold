@@ -8,11 +8,12 @@ import { PrestamoAgrupados } from '../../../../models/PrestamoAgrupados';
 import { HistorialBase } from '../BASE/HistorialBase';
 import { VistaPrestamosComponent } from '../../../vista-prestamos/vista-prestamos.component';
 import { Aviso } from '../../../pantallas_avisos/aviso/aviso.component';
+import { AvisoExitoComponent } from '../../../pantallas_avisos/aviso-exito/aviso-exito.component';
 
 @Component({
   selector: 'app-aprobado',
   standalone: true,
-  imports: [CommonModule, Aviso , VistaPrestamosComponent],
+  imports: [CommonModule, Aviso , VistaPrestamosComponent, AvisoExitoComponent],
   templateUrl: './aprobado.component.html',
   styleUrl: './aprobado.component.css'
 })
@@ -53,6 +54,8 @@ export class AprobadoComponent extends HistorialBase {
         this.cargarDatos();
         this.itemSeleccionado = null;
         this.avisoaprobar.set(false);
+        this.mensajeexito = "Préstamo recogido con éxito , ahora pasa a Activo";
+        this.exito.set(true);
       }, 
       error: (error) => {
         this.mensajeerror = "Error al recoger el prestamo, intente mas tarde";
@@ -68,6 +71,8 @@ export class AprobadoComponent extends HistorialBase {
         this.cargarDatos();
         this.itemSeleccionado = null;
         this.avisocancelar.set(false);
+        this.mensajeexito = "Préstamo cancelado con éxito , ahora pasa a Cancelado";
+        this.exito.set(true);
       }, 
       error: (error) => {
         this.mensajeerror = "Error al cancelar el prestamo, intente mas tarde";

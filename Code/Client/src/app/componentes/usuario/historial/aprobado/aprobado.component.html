@@ -80,3 +80,11 @@
 @if(abrirVistaPrestamos){
   <app-vista-prestamos [prestamos]="prestamosVista" (cerrar)="cerrarVista()"></app-vista-prestamos>
 }
+
+
+@if(exito()){
+  <app-aviso-exito
+  [mensaje]="mensajeexito"
+  [exito]="exito"
+  ></app-aviso-exito>
+}

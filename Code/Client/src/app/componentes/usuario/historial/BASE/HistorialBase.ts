@@ -15,6 +15,8 @@ abrirVistaPrestamos : boolean = false;
 error : WritableSignal<boolean> = signal (false) ;
 mensajeerror : string = "" ;
 
+exito : WritableSignal<boolean> = signal (false) ;
+mensajeexito : string = "" ;
 
 
 protected abstract estado : string ; 

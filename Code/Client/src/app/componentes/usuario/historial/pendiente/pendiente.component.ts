@@ -9,10 +9,11 @@ import { HistorialBase } from '../BASE/HistorialBase';
 import { VistaPrestamosComponent } from '../../../vista-prestamos/vista-prestamos.component';
 import { Aviso } from '../../../pantallas_avisos/aviso/aviso.component';
 import { MostrarerrorComponent } from '../../../pantallas_avisos/mostrarerror/mostrarerror.component';
+import { AvisoExitoComponent } from '../../../pantallas_avisos/aviso-exito/aviso-exito.component';
 
 @Component({
   selector: 'app-pendiente',
-  imports: [CommonModule , Aviso , VistaPrestamosComponent, MostrarerrorComponent],
+  imports: [CommonModule , Aviso , VistaPrestamosComponent, MostrarerrorComponent, AvisoExitoComponent],
   templateUrl: './pendiente.component.html',
   styleUrl: './pendiente.component.css'
 })
@@ -46,6 +47,8 @@ export class PendienteComponent extends HistorialBase {
         this.cargarDatos();
         this.itemSeleccionado = null;
         this.avisocancelar.set(false);
+        this.mensajeexito = "Préstamo cancelado con éxito , ahora pasa a Cancelado";
+        this.exito.set(true);
       }, 
       error: (error) => {
         this.mensajeerror = "Error al cancelar el prestamo, intente mas tarde";
