@@ -8,10 +8,11 @@ import { PrestamoAgrupados } from '../../../../models/PrestamoAgrupados';
 import { HistorialBase } from '../BASE/HistorialBase';
 import { VistaPrestamosComponent } from '../../../vista-prestamos/vista-prestamos.component';
 import { Aviso } from '../../../pantallas_avisos/aviso/aviso.component';
+import { AvisoExitoComponent } from '../../../pantallas_avisos/aviso-exito/aviso-exito.component';
 
 @Component({
   selector: 'app-activo',
-  imports: [CommonModule, DatePipe , Aviso,VistaPrestamosComponent],
+  imports: [CommonModule, DatePipe , Aviso,VistaPrestamosComponent , AvisoExitoComponent],
   templateUrl: './activo.component.html',
   styleUrl: './activo.component.css'
 })
@@ -46,6 +47,9 @@ export class ActivoComponent extends HistorialBase {
         this.cargarDatos();
 
         this.itemSeleccionado = null;
+        
+        this.mensajeexito = "Préstamo devuelto con éxito , ahora pasa a Finalizado";
+        this.exito.set(true);
       }, 
       error: (error) => {
         this.mensajeerror = "Error al finalizar el prestamo, intente mas tarde";

@@ -77,3 +77,10 @@
   [mensaje]="mensajeerror"
   ></app-mostrarerror>
 }
+
+@if(exito()){
+  <app-aviso-exito
+  [mensaje]="mensajeexito"
+  [exito]="exito"
+  ></app-aviso-exito>
+}
