@@ -70,28 +70,43 @@ export class ListaequipoComponent extends BaseTablaComponent {
 
   }
 
-buscar(){
-  if(this.terminoBusqueda.trim() === '') {
-    this.limpiarBusqueda(); 
-    return ; 
+ // Función auxiliar para normalizar texto (remover acentos y convertir a minúsculas)
+  private normalizeText(text: string): string {
+    if (typeof text !== 'string') {
+      return String(text || '').toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g, '');
+    }
+    return text
+      .toLowerCase()
+      .normalize('NFD')  // Descompone caracteres con acentos
+      .replace(/[\u0300-\u036f]/g, '');  // Elimina diacríticos (acentos, tildes, etc.)
   }
 
-  this.equipos = this.equiposcopia.filter(equipo =>
-    equipo.Nombre?.toLowerCase().includes(this.terminoBusqueda.toLowerCase()) ||
-    equipo.Modelo?.toLowerCase().includes(this.terminoBusqueda.toLowerCase()) ||
-    equipo.Marca?.toLowerCase().includes(this.terminoBusqueda.toLowerCase()) ||
-    String(equipo.CodigoImt || '').toLowerCase().includes(this.terminoBusqueda.toLowerCase()) ||
-    equipo.CodigoUcb?.toLowerCase().includes(this.terminoBusqueda.toLowerCase()) ||
-    equipo.NumeroSerial?.toLowerCase().includes(this.terminoBusqueda.toLowerCase()) ||
-    equipo.NombreGrupoEquipo?.toLowerCase().includes(this.terminoBusqueda.toLowerCase()) 
-  );
-}
 
-limpiarBusqueda(){
-  this.terminoBusqueda = '';
-  this.equipos = [...this.equiposcopia]; 
-  
-}
+  buscar(){
+    if(this.terminoBusqueda.trim() === '') {
+      this.limpiarBusqueda(); 
+      return ; 
+    }
+
+    const busquedaNormalizada = this.normalizeText(this.terminoBusqueda);
+
+    this.equipos = this.equiposcopia.filter(equipo =>
+      this.normalizeText(equipo.Nombre).includes(busquedaNormalizada) ||
+      this.normalizeText(equipo.Modelo).includes(busquedaNormalizada) ||
+      this.normalizeText(equipo.Marca).includes(busquedaNormalizada) ||
+      this.normalizeText(String(equipo.CodigoImt || '')).includes(busquedaNormalizada) ||
+      this.normalizeText(equipo.CodigoUcb).includes(busquedaNormalizada) ||
+      this.normalizeText(equipo.NumeroSerial).includes(busquedaNormalizada) ||
+      this.normalizeText(equipo.NombreGrupoEquipo).includes(busquedaNormalizada)
+    );
+    
+  }
+
+  limpiarBusqueda(){
+    this.terminoBusqueda = '';
+    this.equipos = [...this.equiposcopia]; 
+    
+  }
 
 
 
