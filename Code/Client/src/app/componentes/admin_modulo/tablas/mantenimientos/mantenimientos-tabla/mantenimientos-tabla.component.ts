@@ -87,6 +87,9 @@ export class MantenimientosTablaComponent extends BaseTablaComponent implements 
   }
 
   private normalizeText(text: string): string {
+    if (typeof text !== 'string') {
+      return String(text || '').toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g, '');
+    }
     return text
       .toLowerCase()
       .normalize('NFD')  // Descompone caracteres con acentos
