@@ -9,15 +9,17 @@ import { AvisoEliminarComponent } from '../../../../pantallas_avisos/aviso-elimi
 import { BaseTablaComponent } from '../../base/base';
 import { MostrarerrorComponent } from '../../../../pantallas_avisos/mostrarerror/mostrarerror.component';
 import { AvisoExitoComponent } from '../../../../pantallas_avisos/aviso-exito/aviso-exito.component';
+import { BuscadorComponent } from '../../../buscador/buscador.component';
+import { Tabla } from '../../base/tabla';
 
 @Component({
   selector: 'app-componentes-tabla',
   standalone: true,
-  imports: [CommonModule, FormsModule, ComponentesCrearComponent, ComponentesEditarComponent , AvisoEliminarComponent , MostrarerrorComponent , AvisoExitoComponent],
+  imports: [CommonModule, FormsModule, ComponentesCrearComponent, ComponentesEditarComponent , AvisoEliminarComponent , MostrarerrorComponent , AvisoExitoComponent , BuscadorComponent],
   templateUrl: './componentes-tabla.component.html',
   styleUrl: './componentes-tabla.component.css'
 })
-export class ComponentesTablaComponent extends BaseTablaComponent implements OnInit  {
+export class ComponentesTablaComponent extends Tabla implements OnInit  {
 
   botoncrear: WritableSignal<boolean> = signal(false);
   botoneditar: WritableSignal<boolean> = signal(false);
@@ -28,7 +30,7 @@ export class ComponentesTablaComponent extends BaseTablaComponent implements OnI
 
   componenteSeleccionado: Componente = new Componente();
 
-  terminoBusqueda: string = '';
+  override columnas: string[] = ['Nombre','Modelo','Tipo','Código IMT del Equipo','Precio Referencia'];
 
   
   constructor(private componenteService: ComponenteService) {
@@ -60,35 +62,40 @@ export class ComponentesTablaComponent extends BaseTablaComponent implements OnI
       }
     });
   }
-  private normalizeText(text: string): string {
-    if (typeof text !== 'string') {
-      return String(text || '').toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g, '');
-    }
-    return text
-      .toLowerCase()
-      .normalize('NFD')  // Descompone caracteres con acentos
-      .replace(/[\u0300-\u036f]/g, '');  // Elimina diacríticos
-  }
+
   
-  buscar() {
-    if (this.terminoBusqueda.trim() === '') {
-      this.limpiarBusqueda();
-      return;
+  aplicarFiltros(event?: [string, string]) {
+   if (event && event[0].trim() !== '') {
+    const busquedaNormalizada = this.normalizeText(event[0]);
+    this.componentes = this.componentescopia.filter(componente => {
+      switch (event[1]) {
+        case 'Nombre':
+          return this.normalizeText(componente.Nombre || '').includes(busquedaNormalizada);
+        case 'Modelo':
+          return this.normalizeText(componente.Modelo || '').includes(busquedaNormalizada);
+        case 'Tipo':
+          return this.normalizeText(componente.Tipo || '').includes(busquedaNormalizada);
+        case 'Código IMT del Equipo':
+          return this.normalizeText(String(componente.CodigoImtEquipo || '')).includes(busquedaNormalizada);
+        case 'Precio Referencia':
+          return this.normalizeText(String(componente.PrecioReferencia || '')).includes(busquedaNormalizada);
+        default:  // 'Todas las columnas'
+          return this.normalizeText(componente.Nombre || '').includes(busquedaNormalizada) ||
+                 this.normalizeText(componente.Modelo || '').includes(busquedaNormalizada) ||
+                 this.normalizeText(componente.Tipo || '').includes(busquedaNormalizada) ||
+                 this.normalizeText(String(componente.CodigoImtEquipo || '')).includes(busquedaNormalizada) ||
+                 this.normalizeText(componente.NombreEquipo || '').includes(busquedaNormalizada) ||
+                 this.normalizeText(String(componente.PrecioReferencia || '')).includes(busquedaNormalizada);
+      }
+    });
+    } else {
+      // Si no hay búsqueda, restaurar la lista original
+      this.componentes = [...this.componentescopia];
     }
-
-    const busquedaNormalizada = this.normalizeText(this.terminoBusqueda);
-
-    this.componentes = this.componentescopia.filter(componente =>
-      this.normalizeText(componente.Nombre || '').includes(busquedaNormalizada) ||
-      this.normalizeText(componente.Modelo || '').includes(busquedaNormalizada) ||
-      this.normalizeText(componente.Tipo || '').includes(busquedaNormalizada) ||
-      this.normalizeText(String(componente.CodigoImtEquipo || '')).includes(busquedaNormalizada) ||
-      this.normalizeText(componente.NombreEquipo || '').includes(busquedaNormalizada)
-    );
   }
 
   limpiarBusqueda() {
-    this.terminoBusqueda = '';
+  
     this.componentes = [...this.componentescopia];
   }
 

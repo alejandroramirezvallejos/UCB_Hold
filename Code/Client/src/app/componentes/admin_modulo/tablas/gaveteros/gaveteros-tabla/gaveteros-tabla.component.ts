@@ -9,17 +9,19 @@ import { AvisoEliminarComponent } from '../../../../pantallas_avisos/aviso-elimi
 import { BaseTablaComponent } from '../../base/base';
 import { MostrarerrorComponent } from '../../../../pantallas_avisos/mostrarerror/mostrarerror.component';
 import { AvisoExitoComponent } from '../../../../pantallas_avisos/aviso-exito/aviso-exito.component';
+import { BuscadorComponent } from '../../../buscador/buscador.component';
+import { Tabla } from '../../base/tabla';
 
 
 
 @Component({
   selector: 'app-gaveteros-tabla',
   standalone: true,
-  imports: [CommonModule, FormsModule, ReactiveFormsModule , GaveterosCrearComponent , GaveterosEditarComponent,AvisoEliminarComponent , MostrarerrorComponent, AvisoExitoComponent],
+  imports: [CommonModule, FormsModule, ReactiveFormsModule , GaveterosCrearComponent , GaveterosEditarComponent,AvisoEliminarComponent , MostrarerrorComponent, AvisoExitoComponent , BuscadorComponent],
   templateUrl: './gaveteros-tabla.component.html',
   styleUrls: ['./gaveteros-tabla.component.css']
 })
-export class GaveterosTablaComponent extends BaseTablaComponent {
+export class GaveterosTablaComponent extends Tabla {
 
   botoncrear : WritableSignal<boolean> = signal(false);
   botoneditar : WritableSignal<boolean> = signal(false);
@@ -30,7 +32,7 @@ export class GaveterosTablaComponent extends BaseTablaComponent {
 
   gaveteroSeleccionado:  Gaveteros= new Gaveteros(); 
 
-  terminoBusqueda: string = '';
+  override columnas: string[] = ['Nombre','Tipo','Nombre Mueble','Longitud','Altura','Profundidad'];
 
 
   constructor(private gaveterosapi : GaveteroService){
@@ -70,32 +72,42 @@ export class GaveterosTablaComponent extends BaseTablaComponent {
     });
 
   }
-private normalizeText(text: string): string {
-    if (typeof text !== 'string') {
-      return String(text || '').toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g, '');
+
+
+  aplicarFiltros(event?: [string, string]){
+    if (event && event[0].trim() !== '') {
+      const busquedaNormalizada = this.normalizeText(event[0]);
+      this.gaveteros = this.gaveteroscopia.filter(gavetero => {
+        switch (event[1]) {
+          case 'Nombre':
+            return this.normalizeText(gavetero.Nombre || '').includes(busquedaNormalizada);
+          case 'Tipo':
+            return this.normalizeText(gavetero.Tipo || '').includes(busquedaNormalizada);
+          case 'Nombre Mueble':
+            return this.normalizeText(gavetero.NombreMueble || '').includes(busquedaNormalizada);
+          case 'Longitud':
+            return this.normalizeText(String(gavetero.Longitud || '')).includes(busquedaNormalizada);
+          case 'Altura':
+            return this.normalizeText(String(gavetero.Altura || '')).includes(busquedaNormalizada);
+          case 'Profundidad':
+            return this.normalizeText(String(gavetero.Profundidad || '')).includes(busquedaNormalizada);
+          default:  // 'Todas las columnas'
+            return this.normalizeText(gavetero.Nombre || '').includes(busquedaNormalizada) ||
+                  this.normalizeText(gavetero.Tipo || '').includes(busquedaNormalizada) ||
+                  this.normalizeText(gavetero.NombreMueble || '').includes(busquedaNormalizada) ||
+                  this.normalizeText(String(gavetero.Longitud || '')).includes(busquedaNormalizada) ||
+                  this.normalizeText(String(gavetero.Altura || '')).includes(busquedaNormalizada) ||
+                  this.normalizeText(String(gavetero.Profundidad || '')).includes(busquedaNormalizada);
+        }
+      });
+    } else {
+      // Crear una copia para evitar referencias
+      this.gaveteros = [...this.gaveteroscopia];
     }
-    return text
-      .toLowerCase()
-      .normalize('NFD')  // Descompone caracteres con acentos
-      .replace(/[\u0300-\u036f]/g, '');  // Elimina diacríticos
   }
-buscar(){
-  if(this.terminoBusqueda.trim() === '') {
-    this.limpiarBusqueda();
-    return;
-  }
-
-  const busquedaNormalizada = this.normalizeText(this.terminoBusqueda);
-
-  this.gaveteros = this.gaveteroscopia.filter(gavetero =>
-    this.normalizeText(gavetero.Nombre || '').includes(busquedaNormalizada) ||
-    this.normalizeText(gavetero.Tipo || '').includes(busquedaNormalizada) ||
-    this.normalizeText(gavetero.NombreMueble || '').includes(busquedaNormalizada)
-  );
-}
 
 limpiarBusqueda(){
-  this.terminoBusqueda = '';
+
   this.gaveteros = [...this.gaveteroscopia]; 
   
 }

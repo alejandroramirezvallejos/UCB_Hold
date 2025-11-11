@@ -9,15 +9,17 @@ import { AvisoEliminarComponent } from '../../../../pantallas_avisos/aviso-elimi
 import { BaseTablaComponent } from '../../base/base';
 import { MostrarerrorComponent } from '../../../../pantallas_avisos/mostrarerror/mostrarerror.component';
 import { AvisoExitoComponent } from '../../../../pantallas_avisos/aviso-exito/aviso-exito.component';
+import { Tabla } from '../../base/tabla';
+import { BuscadorComponent } from '../../../buscador/buscador.component';
 
 @Component({
   selector: 'app-empresas-mantenimiento-tabla',
   standalone: true,
-  imports: [CommonModule, FormsModule, EmpresasMantenimientoCrearComponent, EmpresasMantenimientoEditarComponent, AvisoEliminarComponent , MostrarerrorComponent, AvisoExitoComponent],
+  imports: [CommonModule, FormsModule, EmpresasMantenimientoCrearComponent, EmpresasMantenimientoEditarComponent, AvisoEliminarComponent , MostrarerrorComponent, AvisoExitoComponent, BuscadorComponent],
   templateUrl: './empresas-mantenimiento-tabla.component.html',
   styleUrl: './empresas-mantenimiento-tabla.component.css'
 })
-export class EmpresasMantenimientoTablaComponent extends BaseTablaComponent implements OnInit {
+export class EmpresasMantenimientoTablaComponent extends Tabla implements OnInit {
 
   botoncrear: WritableSignal<boolean> = signal(false);
   botoneditar: WritableSignal<boolean> = signal(false);
@@ -28,7 +30,7 @@ export class EmpresasMantenimientoTablaComponent extends BaseTablaComponent impl
 
   empresaSeleccionada: EmpresaMantenimiento = new EmpresaMantenimiento();
 
-  terminoBusqueda: string = '';
+  override columnas: string[] = ['Nombre Empresa','Responsable','Teléfono','NIT'];
 
  
 
@@ -60,34 +62,34 @@ export class EmpresasMantenimientoTablaComponent extends BaseTablaComponent impl
       }
     );
   }
-  private normalizeText(text: string): string {
-    if (typeof text !== 'string') {
-      return String(text || '').toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g, '');
+
+  aplicarFiltros(event?: [string, string]) {
+   if (event && event[0].trim() !== '') {
+    const busquedaNormalizada = this.normalizeText(event[0]);
+    this.empresas = this.empresascopia.filter(empresa => {
+      switch (event[1]) {
+        case 'Nombre Empresa':
+          return this.normalizeText(empresa.NombreEmpresa || '').includes(busquedaNormalizada);
+        case 'Responsable':
+          return this.normalizeText(empresa.NombreResponsable || '' + empresa.ApellidoResponsable || '').includes(busquedaNormalizada);  // Agrega si existe el campo
+        case 'Teléfono':
+          return this.normalizeText(empresa.Telefono || '').includes(busquedaNormalizada);
+        case 'NIT':
+          return this.normalizeText(empresa.Nit || '').includes(busquedaNormalizada);
+        default:  // 'Todas las columnas'
+          return this.normalizeText(empresa.NombreEmpresa || '').includes(busquedaNormalizada) ||
+                 this.normalizeText(empresa.NombreResponsable || '').includes(busquedaNormalizada) ||  // Agrega si existe
+                 this.normalizeText(empresa.Telefono || '').includes(busquedaNormalizada) ||
+                 this.normalizeText(empresa.Nit || '').includes(busquedaNormalizada);
+      }
+    });
+    } else {
+      this.empresas = [...this.empresascopia];
     }
-
-    return text
-      .toLowerCase()
-      .normalize('NFD')  // Descompone caracteres con acentos
-      .replace(/[\u0300-\u036f]/g, '');  // Elimina diacríticos
-  }
-  
-  buscar() {
-    if (this.terminoBusqueda.trim() === '') {
-      this.limpiarBusqueda();
-      return;
-    }
-
-    const busquedaNormalizada = this.normalizeText(this.terminoBusqueda);
-
-    this.empresas = this.empresascopia.filter(empresa =>
-      this.normalizeText(empresa.NombreEmpresa || '').includes(busquedaNormalizada) ||
-      this.normalizeText(empresa.Telefono || '').includes(busquedaNormalizada) ||
-      this.normalizeText(empresa.Nit || '').includes(busquedaNormalizada)
-    );
   }
 
   limpiarBusqueda() {
-    this.terminoBusqueda = '';
+   
     this.empresas = [...this.empresascopia];
   }
   editarEmpresaMantenimiento(empresa: EmpresaMantenimiento) {

@@ -9,15 +9,17 @@ import { AvisoEliminarComponent } from '../../../../pantallas_avisos/aviso-elimi
 import { BaseTablaComponent } from '../../base/base';
 import { MostrarerrorComponent } from '../../../../pantallas_avisos/mostrarerror/mostrarerror.component';
 import { AvisoExitoComponent } from '../../../../pantallas_avisos/aviso-exito/aviso-exito.component';
+import { Tabla } from '../../base/tabla';
+import { BuscadorComponent } from '../../../buscador/buscador.component';
 
 @Component({
   selector: 'app-categorias-tabla',
   standalone: true,
-  imports: [CommonModule, FormsModule, CategoriasCrearComponent, CategoriasEditarComponent, AvisoEliminarComponent , MostrarerrorComponent , AvisoExitoComponent],
+  imports: [CommonModule, FormsModule, CategoriasCrearComponent, CategoriasEditarComponent, AvisoEliminarComponent , MostrarerrorComponent , AvisoExitoComponent , BuscadorComponent],
   templateUrl: './categorias-tabla.component.html',
   styleUrl: './categorias-tabla.component.css'
 })
-export class CategoriasTablaComponent extends BaseTablaComponent {
+export class CategoriasTablaComponent extends Tabla {
 
   botoncrear: WritableSignal<boolean> = signal(false);
   botoneditar: WritableSignal<boolean> = signal(false);
@@ -28,7 +30,7 @@ export class CategoriasTablaComponent extends BaseTablaComponent {
 
   categoriaSeleccionada: Categorias = new Categorias();
 
-  terminoBusqueda: string = '';
+  override columnas: string[] = [' Nombre'];
 
   
 
@@ -61,23 +63,15 @@ export class CategoriasTablaComponent extends BaseTablaComponent {
       }
     );
   }
-  private normalizeText(text: string): string {
-    if (typeof text !== 'string') {
-      return String(text || '').toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g, '');
-    }
-    return text
-      .toLowerCase()
-      .normalize('NFD')  // Descompone caracteres con acentos
-      .replace(/[\u0300-\u036f]/g, '');  // Elimina diacríticos
-  }
+
   
-  buscar() {
-    if (this.terminoBusqueda.trim() === '') {
+  aplicarFiltros(event?: [string, string]) {
+    if (event && event[0].trim() === '') {
       this.limpiarBusqueda();
       return;
     }
 
-    const busquedaNormalizada = this.normalizeText(this.terminoBusqueda);
+    const busquedaNormalizada = this.normalizeText(event![0]);
 
     this.categorias = this.categoriascopia.filter(categoria =>
       this.normalizeText(categoria.Nombre || '').includes(busquedaNormalizada)
@@ -85,7 +79,7 @@ export class CategoriasTablaComponent extends BaseTablaComponent {
   }
 
   limpiarBusqueda() {
-    this.terminoBusqueda = '';
+
     this.categorias = [...this.categoriascopia];
   }
 

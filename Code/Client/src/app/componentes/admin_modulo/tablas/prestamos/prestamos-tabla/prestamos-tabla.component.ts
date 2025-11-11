@@ -11,19 +11,20 @@ import { finalize } from 'rxjs';
 import { VistaPrestamosComponent } from '../../../../vista-prestamos/vista-prestamos.component';
 import { PantallaCargaComponent } from '../../../../pantallas_avisos/pantalla-carga/pantalla-carga.component';
 import { AvisoEliminarComponent } from '../../../../pantallas_avisos/aviso-eliminar/aviso-eliminar.component';
-import { BaseTablaComponent } from '../../base/base';
 import { MostrarerrorComponent } from '../../../../pantallas_avisos/mostrarerror/mostrarerror.component';
 import { Aviso } from '../../../../pantallas_avisos/aviso/aviso.component';
 import { AvisoExitoComponent } from '../../../../pantallas_avisos/aviso-exito/aviso-exito.component';
+import { BuscadorComponent } from '../../../buscador/buscador.component';
+import { Tabla } from '../../base/tabla';
 
 @Component({
   selector: 'app-prestamos-tabla',
   standalone: true,
-  imports: [CommonModule, FormsModule, ReactiveFormsModule , VercontratoComponent, PantallaCargaComponent , VistaPrestamosComponent , AvisoEliminarComponent , MostrarerrorComponent , Aviso ,AvisoExitoComponent ],
+  imports: [CommonModule, FormsModule, ReactiveFormsModule , VercontratoComponent, PantallaCargaComponent , VistaPrestamosComponent , AvisoEliminarComponent , MostrarerrorComponent , Aviso ,AvisoExitoComponent , BuscadorComponent ],
   templateUrl: './prestamos-tabla.component.html',
   styleUrls: ['./prestamos-tabla.component.css']
 })
-export class PrestamosTablaComponent extends BaseTablaComponent implements OnInit {
+export class PrestamosTablaComponent extends Tabla implements OnInit {
 
   botoncrear: WritableSignal<boolean> = signal(false);
   cargando : boolean = false;
@@ -41,8 +42,9 @@ export class PrestamosTablaComponent extends BaseTablaComponent implements OnIni
   avisorechazar : WritableSignal<boolean> = signal(false);
   mensajeavisorechazar : string = "¿Está seguro de rechazar el préstamo seleccionado?";
 
+  override columnas: string[] = ['Usuario','Carnet','Teléfono','Equipos','Fecha Solicitud','Fecha Préstamo Esperada','Fecha Devolución Esperada'];
 
-  terminoBusqueda: string = '';
+
   
   // Propiedades para el filtro
   showEstados: boolean = false;
@@ -116,10 +118,6 @@ export class PrestamosTablaComponent extends BaseTablaComponent implements OnIni
 
 
 
-  limpiarBusqueda() {
-    this.terminoBusqueda = '';
-    this.aplicarFiltros();
-  }
 
 
 // --------------------- ELIMINACION ----------------------- // 
@@ -171,32 +169,43 @@ export class PrestamosTablaComponent extends BaseTablaComponent implements OnIni
     this.aplicarFiltros();
   }
 
-  private normalizeText(text: string): string {
-    if (typeof text !== 'string') {
-      return String(text || '').toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g, '');
-    }
-    return text
-      .toLowerCase()
-      .normalize('NFD')  // Descompone caracteres con acentos
-      .replace(/[\u0300-\u036f]/g, '');  // Elimina diacríticos
-  }
 
-  aplicarFiltros() {
+  aplicarFiltros(event?: [string, string]) {
     // Convertir el Map a un array de [key, value]
     let prestamosFiltrados = Array.from(this.prestamoscopia.entries());
 
     // Aplicar filtro de búsqueda si existe
-    if (this.terminoBusqueda.trim() !== '') {
-    const busquedaNormalizada = this.normalizeText(this.terminoBusqueda);
-    
-    prestamosFiltrados = prestamosFiltrados.filter(([_, prestamo]) =>
-        this.normalizeText(prestamo.datosgrupo.NombreUsuario || '').includes(busquedaNormalizada) ||
-        this.normalizeText(prestamo.datosgrupo.ApellidoPaternoUsuario || '').includes(busquedaNormalizada) ||
-        this.normalizeText(prestamo.datosgrupo.CarnetUsuario || '').includes(busquedaNormalizada) ||
-        this.normalizeText(prestamo.datosgrupo.NombreGrupoEquipo || '').includes(busquedaNormalizada) ||
-        this.normalizeText(prestamo.datosgrupo.CodigoImt || '').includes(busquedaNormalizada) 
-    );
-}
+    if (event && event[0].trim() !== '') {
+      const busquedaNormalizada = this.normalizeText(event[0]);
+      prestamosFiltrados = prestamosFiltrados.filter(([_, prestamo]) => {
+        switch (event[1]) {
+          case 'Usuario':
+            return this.normalizeText(prestamo.datosgrupo.NombreUsuario || '').includes(busquedaNormalizada) ||
+                  this.normalizeText(prestamo.datosgrupo.ApellidoPaternoUsuario || '').includes(busquedaNormalizada);
+          case 'Carnet':
+            return this.normalizeText(prestamo.datosgrupo.CarnetUsuario || '').includes(busquedaNormalizada);
+          case 'Teléfono':
+            return this.normalizeText(prestamo.datosgrupo.TelefonoUsuario || '').includes(busquedaNormalizada);
+          case 'Equipos':
+            return this.normalizeText(prestamo.datosgrupo.NombreGrupoEquipo || '').includes(busquedaNormalizada);
+          case 'Fecha Solicitud':
+            return this.normalizeText(this.formatDate(prestamo.datosgrupo.FechaSolicitud)).includes(busquedaNormalizada);
+          case 'Fecha Préstamo Esperada':
+              return this.normalizeText(this.formatDate(prestamo.datosgrupo.FechaPrestamoEsperada)).includes(busquedaNormalizada);
+          case 'Fecha Devolución Esperada':
+            return this.normalizeText(this.formatDate(prestamo.datosgrupo.FechaDevolucionEsperada)).includes(busquedaNormalizada);
+          default:  // 'Todas las columnas'
+           return this.normalizeText(prestamo.datosgrupo.NombreUsuario || '').includes(busquedaNormalizada) ||
+               this.normalizeText(prestamo.datosgrupo.ApellidoPaternoUsuario || '').includes(busquedaNormalizada) ||
+               this.normalizeText(prestamo.datosgrupo.CarnetUsuario || '').includes(busquedaNormalizada) ||
+               this.normalizeText(prestamo.datosgrupo.NombreGrupoEquipo || '').includes(busquedaNormalizada) ||
+               this.normalizeText(prestamo.datosgrupo.CodigoImt || '').includes(busquedaNormalizada) ||
+               this.normalizeText(this.formatDate(prestamo.datosgrupo.FechaSolicitud)).includes(busquedaNormalizada) ||
+               this.normalizeText(this.formatDate(prestamo.datosgrupo.FechaPrestamoEsperada)).includes(busquedaNormalizada) ||
+               this.normalizeText(this.formatDate(prestamo.datosgrupo.FechaDevolucionEsperada)).includes(busquedaNormalizada);
+        }
+      }); 
+    }
 
     // Aplicar filtro de estado si existe
      if (this.estadoSeleccionado !== '') {
@@ -213,7 +222,7 @@ export class PrestamosTablaComponent extends BaseTablaComponent implements OnIni
   
 
   limpiarFiltros() {
-    this.terminoBusqueda = '';
+
     this.estadoSeleccionado = '';
     this.prestamos = new Map(this.prestamoscopia);
     this.showEstados = false;
