@@ -11,53 +11,23 @@
   </div>
 
   <!-- BUSCADOR-->
-  <div class="search-container">
-    <div class="search-input-wrapper">
-      <i class="fas fa-search search-icon"></i>
-      <input 
-        type="text" 
-        [(ngModel)]="terminoBusqueda" 
-        (keydown.enter)="buscar()"
-        placeholder="Buscar mantenimientos..." 
-        class="search-input"
-      />
-      @if (terminoBusqueda) {
-        <button class="clear-search" (click)="limpiarBusqueda()">
-          <i class="fas fa-times"></i>
-        </button>
-      }
-    </div>
-  </div>
+  <app-buscador
+    [columnas]="columnas"
+    (terminoBusqueda)="aplicarFiltros($event)"
+  ></app-buscador>
+
 
   <!-- TABLA -->
   <div class="table-responsive">
     <table class="data-table">
       <thead>
         <tr>
-          <th >
-            Empresa 
-          
-          </th>
-          <th >
-            codigosIMT
-          </th>
-          <th >
-            Fecha Inicio
-          </th>
-          <th >
-            Fecha Fin
- 
-          </th>
-          <th >
-            Costo
-   
-          </th>
+          @for (columna of columnas; track columna) {
+            <th>{{ columna }}</th>
+          }
           <th >
             Tipo Y nombre  equipos
-           
-          </th>
-
-
+           </th>
           <th>Acciones</th>
         </tr>
       </thead>

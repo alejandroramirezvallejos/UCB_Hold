@@ -10,15 +10,17 @@ import { AvisoEliminarComponent } from '../../../../pantallas_avisos/aviso-elimi
 import { BaseTablaComponent } from '../../base/base';
 import { MostrarerrorComponent } from '../../../../pantallas_avisos/mostrarerror/mostrarerror.component';
 import { AvisoExitoComponent } from '../../../../pantallas_avisos/aviso-exito/aviso-exito.component';
+import { Tabla } from '../../base/tabla';
+import { BuscadorComponent } from '../../../buscador/buscador.component';
 
 @Component({
   selector: 'app-usuarios-tabla',
   standalone: true,
-  imports: [CommonModule, FormsModule, ReactiveFormsModule, UsuariosCrearComponent, UsuariosEditarComponent,AvisoEliminarComponent, MostrarerrorComponent, AvisoExitoComponent],
+  imports: [CommonModule, FormsModule, ReactiveFormsModule, UsuariosCrearComponent, UsuariosEditarComponent,AvisoEliminarComponent, MostrarerrorComponent, AvisoExitoComponent, BuscadorComponent],
   templateUrl: './usuarios-tabla.component.html',
   styleUrls: ['./usuarios-tabla.component.css']
 })
-export class UsuariosTablaComponent extends BaseTablaComponent implements OnInit {
+export class UsuariosTablaComponent extends Tabla implements OnInit {
 
   botoncrear: WritableSignal<boolean> = signal(false);
   botoneditar: WritableSignal<boolean> = signal(false);
@@ -31,7 +33,9 @@ export class UsuariosTablaComponent extends BaseTablaComponent implements OnInit
 
   usuarioSeleccionado: Usuario = new Usuario();
 
-  terminoBusqueda: string = '';
+  override columnas: string[] = ['Carnet','Nombre','Apellido Paterno','Apellido Materno','Correo','Teléfono','Rol','Carrera','Referencia','Tel. Referencia'];
+
+
 
   constructor(private usuarioapi: UsuarioServiceAPI , private carrerasAPI : CarreraService) {
     super();
@@ -80,37 +84,52 @@ export class UsuariosTablaComponent extends BaseTablaComponent implements OnInit
     this.cargarUsuarios();
   }
 
-  private normalizeText(text: string): string {
-    if (typeof text !== 'string') {
-      return String(text || '').toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g, '');
-    }
-    return text
-      .toLowerCase()
-      .normalize('NFD')  // Descompone caracteres con acentos
-      .replace(/[\u0300-\u036f]/g, '');  // Elimina diacríticos
+
+  aplicarFiltros(event?: [string, string]) {
+  if (event && event[0].trim() !== '') {
+    const busquedaNormalizada = this.normalizeText(event[0]);
+    this.usuarios = this.usuarioscopia.filter(usuario => {
+      switch (event[1]) {
+        case 'Carnet':
+          return this.normalizeText(usuario.carnet || '').includes(busquedaNormalizada);
+        case 'Nombre':
+          return this.normalizeText(usuario.nombre || '').includes(busquedaNormalizada);
+        case 'Apellido Paterno':
+          return this.normalizeText(usuario.apellido_paterno || '').includes(busquedaNormalizada);
+        case 'Apellido Materno':
+          return this.normalizeText(usuario.apellido_materno || '').includes(busquedaNormalizada);
+        case 'Correo':
+          return this.normalizeText(usuario.correo || '').includes(busquedaNormalizada);
+        case 'Teléfono':
+          return this.normalizeText(usuario.telefono || '').includes(busquedaNormalizada);
+        case 'Rol':
+          return this.normalizeText(usuario.rol || '').includes(busquedaNormalizada);
+        case 'Carrera':
+          return this.normalizeText(usuario.carrera || '').includes(busquedaNormalizada);
+        case 'Referencia':
+          return this.normalizeText(usuario.nombre_referencia || '').includes(busquedaNormalizada);
+        case 'Tel. Referencia':
+          return this.normalizeText(usuario.telefono_referencia || '').includes(busquedaNormalizada);
+        default:  // 'Todas las columnas'
+          return this.normalizeText(usuario.carnet || '').includes(busquedaNormalizada) ||
+                 this.normalizeText(usuario.nombre || '').includes(busquedaNormalizada) ||
+                 this.normalizeText(usuario.apellido_paterno || '').includes(busquedaNormalizada) ||
+                 this.normalizeText(usuario.apellido_materno || '').includes(busquedaNormalizada) ||
+                 this.normalizeText(usuario.correo || '').includes(busquedaNormalizada) ||
+                 this.normalizeText(usuario.telefono || '').includes(busquedaNormalizada) ||
+                 this.normalizeText(usuario.rol || '').includes(busquedaNormalizada) ||
+                 this.normalizeText(usuario.carrera || '').includes(busquedaNormalizada) ||
+                 this.normalizeText(usuario.nombre_referencia || '').includes(busquedaNormalizada) ||
+                 this.normalizeText(usuario.telefono_referencia || '').includes(busquedaNormalizada);
+      }
+    });
+  } else {
+    // Si no hay búsqueda, restaurar la lista original
+    this.usuarios = [...this.usuarioscopia];
   }
-
-  buscar() {
-  if (this.terminoBusqueda.trim() === '') {
-    this.limpiarBusqueda();
-    return;
   }
-
-  const busquedaNormalizada = this.normalizeText(this.terminoBusqueda);
-
-  this.usuarios = this.usuarios.filter(usuario =>
-    this.normalizeText(usuario.carnet || '').includes(busquedaNormalizada) ||
-    this.normalizeText(usuario.nombre || '').includes(busquedaNormalizada) ||
-    this.normalizeText(usuario.apellido_paterno || '').includes(busquedaNormalizada) ||
-    this.normalizeText(usuario.apellido_materno || '').includes(busquedaNormalizada) ||
-    this.normalizeText(usuario.correo || '').includes(busquedaNormalizada) ||
-    this.normalizeText(usuario.telefono || '').includes(busquedaNormalizada) ||
-    this.normalizeText(usuario.carrera || '').includes(busquedaNormalizada)
-  );
-}
 
   limpiarBusqueda() {
-    this.terminoBusqueda = '';
     this.usuarios = [...this.usuarioscopia];
   }
 

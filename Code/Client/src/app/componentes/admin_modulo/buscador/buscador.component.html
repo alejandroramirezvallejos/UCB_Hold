@@ -1,0 +1,44 @@
+
+<div class="search-and-filter-row">
+    <div class="search-input-wrapper">
+      <i class="fas fa-search search-icon"></i>      
+      <input 
+        type="text" 
+        [(ngModel)]="terminoBusquedaLocal" 
+        (keydown.enter)="buscar()"
+        placeholder="Buscar ..." 
+        class="search-input"
+      />
+      @if (terminoBusquedaLocal) {
+        <button class="clear-search" (click)="limpiarBusqueda()">
+          <i class="fas fa-times"></i>
+        </button>
+      }
+    </div>
+    
+    <div class="filter-container">
+    <button class="btn-filter" (click)="toggleColumnas()">
+        <i class="fas fa-columns"></i>
+        <span>{{ columnaSeleccionada || 'Columnas' }}</span>
+        <i class="fas fa-chevron-down"></i>
+    </button>
+    @if (mostrarColumnas) {
+        <div class="estados-panel-flotante">
+        <div class="estados-grid-flotante">
+            <div class="estados-item-flotante" (click)="seleccionarColumna('')" [class.active]="columnaSeleccionada === ''">
+            <i class="fas fa-list"></i>
+            Todas las columnas
+            </div>
+            @for (columna of columnas; track columna) {
+            <div class="estados-item-flotante" (click)="seleccionarColumna(columna)" [class.active]="columnaSeleccionada === columna">
+                <i class="fas fa-table"></i>  <!-- Icono genérico para columnas -->
+                {{ columna | titlecase }}
+            </div>
+            }
+        </div>
+        </div>
+    }
+    </div>
+
+    
+  </div>

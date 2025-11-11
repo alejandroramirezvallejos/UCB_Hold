@@ -9,15 +9,16 @@ import { AvisoEliminarComponent } from '../../../../pantallas_avisos/aviso-elimi
 import { BaseTablaComponent } from '../../base/base';
 import { MostrarerrorComponent } from '../../../../pantallas_avisos/mostrarerror/mostrarerror.component';
 import { AvisoExitoComponent } from '../../../../pantallas_avisos/aviso-exito/aviso-exito.component';
-
+import { BuscadorComponent } from '../../../buscador/buscador.component';
+import { Tabla } from '../../base/tabla';
 @Component({
   selector: 'app-muebles-tabla',
   standalone: true,
-  imports: [CommonModule, FormsModule, ReactiveFormsModule, MueblesCrearComponent, MueblesEditarComponent,AvisoEliminarComponent, MostrarerrorComponent, AvisoExitoComponent],
+  imports: [CommonModule, FormsModule, ReactiveFormsModule, MueblesCrearComponent, MueblesEditarComponent,AvisoEliminarComponent, MostrarerrorComponent, AvisoExitoComponent , BuscadorComponent],
   templateUrl: './muebles-tabla.component.html',
   styleUrl: './muebles-tabla.component.css'
 })
-export class MueblesTablaComponent extends BaseTablaComponent implements OnInit {
+export class MueblesTablaComponent extends Tabla implements OnInit {
 
   botoncrear: WritableSignal<boolean> = signal(false);
   botoneditar: WritableSignal<boolean> = signal(false);
@@ -28,7 +29,7 @@ export class MueblesTablaComponent extends BaseTablaComponent implements OnInit 
 
   muebleSeleccionado: Muebles = new Muebles() ;
 
-  terminoBusqueda: string = '';
+  override columnas: string[] = ['Nombre','Tipo','Ubicación','Costo','Gaveteros','Dimensiones'];
 
 
   constructor(private muebleapi: MuebleService) { 
@@ -52,7 +53,7 @@ export class MueblesTablaComponent extends BaseTablaComponent implements OnInit 
       next: (data: Muebles[]) => {
         this.muebles = data;
         this.mueblesFiltrados = [...this.muebles];
-        this.aplicarBusqueda();
+        this.aplicarFiltros();
       },
       error: (error) => {
         this.mensajeerror = 'Error al cargar los muebles. Intente más tarde.';
@@ -61,36 +62,49 @@ export class MueblesTablaComponent extends BaseTablaComponent implements OnInit 
       }
     });
   }
-  private normalizeText(text: string): string {
-    if (typeof text !== 'string') {
-      return String(text || '').toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g, '');
-    }
-    return text
-      .toLowerCase()
-      .normalize('NFD')  // Descompone caracteres con acentos
-      .replace(/[\u0300-\u036f]/g, '');  // Elimina diacríticos
-  }
+
 
   buscar() {
-    this.aplicarBusqueda();
+    this.aplicarFiltros();
   }
 
-  aplicarBusqueda() {
-    if (this.terminoBusqueda.trim() === '') {
-      this.mueblesFiltrados = [...this.muebles];
-    } else {
-      const busquedaNormalizada = this.normalizeText(this.terminoBusqueda);
+  aplicarFiltros(event?: [string, string]) {
+    if (event && event[0].trim() !== '') {
+    const busquedaNormalizada = this.normalizeText(event[0]);
+    this.mueblesFiltrados = this.muebles.filter(mueble => {
+        // Asumiendo que hay campos Longitud, Profundidad, Altura
+        const dimensiones = `${mueble.Longitud || ''}x${mueble.Profundidad || ''}x${mueble.Altura || ''}`;
 
-      this.mueblesFiltrados = this.muebles.filter(mueble =>
-        this.normalizeText(mueble.Nombre || '').includes(busquedaNormalizada) ||
-        this.normalizeText(mueble.Tipo || '').includes(busquedaNormalizada)
-      );
+      switch (event[1]) {
+        case 'Nombre':
+          return this.normalizeText(mueble.Nombre || '').includes(busquedaNormalizada);
+        case 'Tipo':
+          return this.normalizeText(mueble.Tipo || '').includes(busquedaNormalizada);
+        case 'Ubicación':
+          return this.normalizeText(mueble.Ubicacion || '').includes(busquedaNormalizada);
+        case 'Costo':
+          return this.normalizeText(String(mueble.Costo || '')).includes(busquedaNormalizada);
+        case 'Gaveteros':
+          return this.normalizeText(String(mueble.NumeroGaveteros || '')).includes(busquedaNormalizada);
+        case 'Dimensiones':
+          return this.normalizeText(dimensiones).includes(busquedaNormalizada);
+        default:  // 'Todas las columnas'
+          return this.normalizeText(mueble.Nombre || '').includes(busquedaNormalizada) ||
+                 this.normalizeText(mueble.Tipo || '').includes(busquedaNormalizada) ||
+                 this.normalizeText(mueble.Ubicacion || '').includes(busquedaNormalizada) ||
+                 this.normalizeText(String(mueble.Costo || '')).includes(busquedaNormalizada) ||
+                 this.normalizeText(String(mueble.NumeroGaveteros || '')).includes(busquedaNormalizada) ||
+                 this.normalizeText(dimensiones).includes(busquedaNormalizada);
+      }
+    });
+    } else {
+      // Crear una copia para evitar referencias
+      this.mueblesFiltrados = [...this.muebles];
     }
   }
 
   limpiarBusqueda() {
-    this.terminoBusqueda = '';
-    this.aplicarBusqueda();
+    this.aplicarFiltros();
   }
 
   editarMueble(mueble: Muebles) {

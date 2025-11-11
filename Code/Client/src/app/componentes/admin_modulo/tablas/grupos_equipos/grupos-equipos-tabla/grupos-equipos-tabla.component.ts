@@ -10,15 +10,17 @@ import { AvisoEliminarComponent } from '../../../../pantallas_avisos/aviso-elimi
 import { BaseTablaComponent } from '../../base/base';
 import { MostrarerrorComponent } from '../../../../pantallas_avisos/mostrarerror/mostrarerror.component';
 import { AvisoExitoComponent } from '../../../../pantallas_avisos/aviso-exito/aviso-exito.component';
+import { BuscadorComponent } from '../../../buscador/buscador.component';
+import { Tabla } from '../../base/tabla';
 
 @Component({
   selector: 'app-grupos-equipos-tabla',
   standalone: true,
-  imports: [CommonModule, FormsModule, ReactiveFormsModule, GruposEquiposCrearComponent, GruposEquiposEditarComponent,AvisoEliminarComponent , MostrarerrorComponent, AvisoExitoComponent],
+  imports: [CommonModule, FormsModule, ReactiveFormsModule, GruposEquiposCrearComponent, GruposEquiposEditarComponent,AvisoEliminarComponent , MostrarerrorComponent, AvisoExitoComponent, BuscadorComponent],
   templateUrl: './grupos-equipos-tabla.component.html',
   styleUrl: './grupos-equipos-tabla.component.css'
 })
-export class GruposEquiposTablaComponent extends BaseTablaComponent implements OnInit {
+export class GruposEquiposTablaComponent extends Tabla implements OnInit {
 
   botoncrear: WritableSignal<boolean> = signal(false);
   botoneditar: WritableSignal<boolean> = signal(false);
@@ -31,7 +33,7 @@ export class GruposEquiposTablaComponent extends BaseTablaComponent implements O
 
   grupoEquipoSeleccionado: GrupoEquipo = new GrupoEquipo();
 
-  terminoBusqueda: string = '';
+  override columnas: string[] = ['Nombre','Cantidad','Modelo','Marca','Categoría','Descripción'];
 
   constructor(private grupoequipoapi: GrupoequipoService , private categoriasAPI : CategoriaService) { 
     super();
@@ -68,7 +70,7 @@ export class GruposEquiposTablaComponent extends BaseTablaComponent implements O
       next :(data: GrupoEquipo[]) => {
         this.gruposEquipos = data;
         this.gruposEquiposFiltrados = [...this.gruposEquipos];
-        this.aplicarBusqueda();
+        this.aplicarFiltros();
       },
       error: (error) => {
         this.mensajeerror="Error al cargar los grupos de equipos, intente más tarde";
@@ -77,37 +79,47 @@ export class GruposEquiposTablaComponent extends BaseTablaComponent implements O
       }
     });
   }
-  private normalizeText(text: string): string {
-    if (typeof text !== 'string') {
-      return String(text || '').toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g, '');
-    }
-    return text
-      .toLowerCase()
-      .normalize('NFD')  // Descompone caracteres con acentos
-      .replace(/[\u0300-\u036f]/g, '');  // Elimina diacríticos
-  }
+
   
   buscar() {
-    this.aplicarBusqueda();
+    this.aplicarFiltros();
   }
 
-  aplicarBusqueda() {
-    if (this.terminoBusqueda.trim() === '') {
-      this.gruposEquiposFiltrados = [...this.gruposEquipos];
+  aplicarFiltros(event?: [string, string]) {
+    if (event && event[0].trim() !== '') {
+      const busquedaNormalizada = this.normalizeText(event[0]);
+      this.gruposEquiposFiltrados = this.gruposEquipos.filter(grupoequipo => {
+        switch (event[1]) {
+          case 'Nombre':
+            return this.normalizeText(grupoequipo.nombre || '').includes(busquedaNormalizada);
+          case 'Cantidad':
+            return this.normalizeText(String(grupoequipo.Cantidad || '')).includes(busquedaNormalizada);
+          case 'Modelo':
+            return this.normalizeText(grupoequipo.modelo || '').includes(busquedaNormalizada);
+          case 'Marca':
+            return this.normalizeText(grupoequipo.marca || '').includes(busquedaNormalizada);
+          case 'Categoría':
+            return this.normalizeText(grupoequipo.nombreCategoria || '').includes(busquedaNormalizada);
+          case 'Descripción':
+            return this.normalizeText(grupoequipo.descripcion || '').includes(busquedaNormalizada);
+          default:  // 'Todas las columnas'
+            return this.normalizeText(grupoequipo.nombre || '').includes(busquedaNormalizada) ||
+                  this.normalizeText(String(grupoequipo.Cantidad || '')).includes(busquedaNormalizada) ||
+                  this.normalizeText(grupoequipo.modelo || '').includes(busquedaNormalizada) ||
+                  this.normalizeText(grupoequipo.marca || '').includes(busquedaNormalizada) ||
+                  this.normalizeText(grupoequipo.nombreCategoria || '').includes(busquedaNormalizada) ||
+                  this.normalizeText(grupoequipo.descripcion || '').includes(busquedaNormalizada);
+        }
+      });
     } else {
-      this.gruposEquiposFiltrados = this.gruposEquipos.filter(grupoequipo =>
-        this.normalizeText(grupoequipo.nombre || '').includes(this.normalizeText(this.terminoBusqueda)) ||
-        this.normalizeText(grupoequipo.modelo || '').includes(this.normalizeText(this.terminoBusqueda)) ||
-        this.normalizeText(grupoequipo.marca || '').includes(this.normalizeText(this.terminoBusqueda)) ||
-        this.normalizeText(grupoequipo.nombreCategoria || '').includes(this.normalizeText(this.terminoBusqueda))
-        
-      );
+      // Crear una copia para evitar referencias
+      this.gruposEquiposFiltrados = [...this.gruposEquipos];
     }
   }
 
   limpiarBusqueda() {
-    this.terminoBusqueda = '';
-    this.aplicarBusqueda();
+
+    this.aplicarFiltros();
   }
 
   editarGrupoEquipo(grupoequipo: GrupoEquipo) {

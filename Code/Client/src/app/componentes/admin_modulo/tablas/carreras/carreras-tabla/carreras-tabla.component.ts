@@ -9,15 +9,17 @@ import { AvisoEliminarComponent } from '../../../../pantallas_avisos/aviso-elimi
 import { BaseTablaComponent } from '../../base/base';
 import { MostrarerrorComponent } from '../../../../pantallas_avisos/mostrarerror/mostrarerror.component';
 import { AvisoExitoComponent } from '../../../../pantallas_avisos/aviso-exito/aviso-exito.component';
+import { BuscadorComponent } from '../../../buscador/buscador.component';
+import { Tabla } from '../../base/tabla';
 
 @Component({
   selector: 'app-carreras-tabla',
   standalone: true,
-  imports: [CommonModule, FormsModule, CarrerasCrearComponent, CarrerasEditarComponent , AvisoEliminarComponent , MostrarerrorComponent , AvisoExitoComponent],
+  imports: [CommonModule, FormsModule, CarrerasCrearComponent, CarrerasEditarComponent , AvisoEliminarComponent , MostrarerrorComponent , AvisoExitoComponent , BuscadorComponent],
   templateUrl: './carreras-tabla.component.html',
   styleUrl: './carreras-tabla.component.css'
 })
-export class CarrerasTablaComponent extends BaseTablaComponent {
+export class CarrerasTablaComponent extends Tabla {
 
   botoncrear: WritableSignal<boolean> = signal(false);
   botoneditar: WritableSignal<boolean> = signal(false);
@@ -28,7 +30,8 @@ export class CarrerasTablaComponent extends BaseTablaComponent {
 
   carreraSeleccionada: Carrera = new Carrera();
 
-  terminoBusqueda: string = '';
+  override columnas: string[] = ['Nombre'];
+
 
  
 
@@ -64,31 +67,26 @@ export class CarrerasTablaComponent extends BaseTablaComponent {
       }
     });
   }
-  private normalizeText(text: string): string {
-    if (typeof text !== 'string') {
-      return String(text || '').toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g, '');
-    }
-    return text
-      .toLowerCase()
-      .normalize('NFD')  // Descompone caracteres con acentos
-      .replace(/[\u0300-\u036f]/g, '');  // Elimina diacríticos
-  }
 
-  buscar() {
-  if (this.terminoBusqueda.trim() === '') {
-    this.limpiarBusqueda();
-    return;
+  aplicarFiltros(event?: [string, string]) {
+    if (event && event[0].trim() !== '') {
+        const busquedaNormalizada = this.normalizeText(event[0]);
+        this.carreras = this.carrerascopia.filter(carrera => {
+          switch (event[1]) {
+            case 'Nombre':
+              return this.normalizeText(carrera.Nombre || '').includes(busquedaNormalizada);
+            default:  
+              return this.normalizeText(carrera.Nombre || '').includes(busquedaNormalizada);
+          }
+        });
+      } else {
+        this.carreras = [...this.carrerascopia];
+      }
   }
-
-  const busquedaNormalizada = this.normalizeText(this.terminoBusqueda);
-
-  this.carreras = this.carrerascopia.filter(carrera =>
-    this.normalizeText(carrera.Nombre || '').includes(busquedaNormalizada)
-  );
-  }
+  
 
   limpiarBusqueda() {
-    this.terminoBusqueda = '';
+   
     this.carreras = [...this.carrerascopia];
   }
 

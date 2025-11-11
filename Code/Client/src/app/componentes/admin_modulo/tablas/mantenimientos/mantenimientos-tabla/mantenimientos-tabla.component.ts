@@ -10,15 +10,17 @@ import { AvisoEliminarComponent } from '../../../../pantallas_avisos/aviso-elimi
 import { BaseTablaComponent } from '../../base/base';
 import { MostrarerrorComponent } from '../../../../pantallas_avisos/mostrarerror/mostrarerror.component';
 import { AvisoExitoComponent } from '../../../../pantallas_avisos/aviso-exito/aviso-exito.component';
+import { BuscadorComponent } from '../../../buscador/buscador.component';
+import { Tabla } from '../../base/tabla';
 
 @Component({
   selector: 'app-mantenimientos-tabla',
   standalone: true,
-  imports: [CommonModule, FormsModule, ReactiveFormsModule, MantenimientosCrearComponent , DetallesMantenimientoComponent,AvisoEliminarComponent, MostrarerrorComponent, AvisoExitoComponent],
+  imports: [CommonModule, FormsModule, ReactiveFormsModule, MantenimientosCrearComponent , DetallesMantenimientoComponent,AvisoEliminarComponent, MostrarerrorComponent, AvisoExitoComponent,BuscadorComponent],
   templateUrl: './mantenimientos-tabla.component.html',
   styleUrl: './mantenimientos-tabla.component.css'
 })
-export class MantenimientosTablaComponent extends BaseTablaComponent implements OnInit {
+export class MantenimientosTablaComponent extends Tabla implements OnInit {
 
   botoncrear: WritableSignal<boolean> = signal(false);
 
@@ -32,7 +34,7 @@ export class MantenimientosTablaComponent extends BaseTablaComponent implements 
 
   mantenimientoSeleccionado: Mantenimientos = new Mantenimientos();
 
-  terminoBusqueda: string = '';
+  override columnas: string[] = ['Empresa','codigosIMT','Fecha Inicio','Fecha Fin','Costo'];
 
 
   constructor(private mantenimientoapi: MantenimientoService) { 
@@ -86,38 +88,48 @@ export class MantenimientosTablaComponent extends BaseTablaComponent implements 
     this.mantenimientosFiltrados = [...this.mantenimientos];
   }
 
-  private normalizeText(text: string): string {
-    if (typeof text !== 'string') {
-      return String(text || '').toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g, '');
-    }
-    return text
-      .toLowerCase()
-      .normalize('NFD')  // Descompone caracteres con acentos
-      .replace(/[\u0300-\u036f]/g, '');  // Elimina diacríticos
-  }
+
   
   buscar() {
-    this.aplicarBusqueda();
+    this.aplicarFiltros();
   }
 
-  aplicarBusqueda() {
-  if (this.terminoBusqueda.trim() === '') {
-    this.mantenimientosFiltrados = [...this.mantenimientos];
-  } else {
-    const busquedaNormalizada = this.normalizeText(this.terminoBusqueda);
-
-    this.mantenimientosFiltrados = this.mantenimientos.filter(mantenimiento =>
-      this.normalizeText(mantenimiento.datosgrupo.NombreEmpresaMantenimiento || '').includes(busquedaNormalizada) ||
-      this.normalizeText(mantenimiento.datosgrupo.TipoMantenimiento || '').includes(busquedaNormalizada) ||
-      this.normalizeText(mantenimiento.datosgrupo.NombreGrupoEquipo || '').includes(busquedaNormalizada) ||
-      this.normalizeText(String(mantenimiento.datosgrupo.CodigoImtEquipo || '')).includes(busquedaNormalizada) 
-    );
+  aplicarFiltros(event?: [string, string]) {
+      if (event && event[0].trim() !== '') {
+        const busquedaNormalizada = this.normalizeText(event[0]);
+        this.mantenimientosFiltrados = this.mantenimientos.filter(mantenimiento => {
+          switch (event[1]) {
+            case 'Empresa':
+              return this.normalizeText(mantenimiento.datosgrupo.NombreEmpresaMantenimiento || '').includes(busquedaNormalizada);
+            case 'codigosIMT':
+              return this.normalizeText(String(mantenimiento.datosgrupo.CodigoImtEquipo || '')).includes(busquedaNormalizada);
+            case 'Fecha Inicio':
+               const fechaFormateada = this.formatDate(mantenimiento.datosgrupo.FechaMantenimiento);
+  console.log('Fecha formateada:', fechaFormateada, 'Búsqueda:', busquedaNormalizada);
+  return this.normalizeText(fechaFormateada).includes(busquedaNormalizada);
+              
+            case 'Fecha Fin':
+              return this.normalizeText(this.formatDate(mantenimiento.datosgrupo.FechaFinalDeMantenimiento)).includes(busquedaNormalizada);
+            case 'Costo':
+              return this.normalizeText(String(mantenimiento.datosgrupo.Costo || '')).includes(busquedaNormalizada);
+            default:  // 'Todas las columnas'
+              return this.normalizeText(mantenimiento.datosgrupo.NombreEmpresaMantenimiento || '').includes(busquedaNormalizada) ||
+                    this.normalizeText(mantenimiento.datosgrupo.TipoMantenimiento || '').includes(busquedaNormalizada) ||
+                    this.normalizeText(mantenimiento.datosgrupo.NombreGrupoEquipo || '').includes(busquedaNormalizada) ||
+                    this.normalizeText(String(mantenimiento.datosgrupo.CodigoImtEquipo || '')).includes(busquedaNormalizada) ||
+                    this.normalizeText(this.formatDate(mantenimiento.datosgrupo.FechaMantenimiento)).includes(busquedaNormalizada) ||
+                    this.normalizeText(this.formatDate(mantenimiento.datosgrupo.FechaFinalDeMantenimiento)).includes(busquedaNormalizada) ||
+                    this.normalizeText(String(mantenimiento.datosgrupo.Costo || '')).includes(busquedaNormalizada);
+          }
+        });
+      } else {
+        // Crear una copia para evitar referencias
+        this.mantenimientosFiltrados = [...this.mantenimientos];
+      }
   }
-}
 
   limpiarBusqueda() {
-    this.terminoBusqueda = '';
-    this.aplicarBusqueda();
+    this.aplicarFiltros();
   }
 
 

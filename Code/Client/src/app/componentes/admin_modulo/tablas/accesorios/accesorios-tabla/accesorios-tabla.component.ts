@@ -10,17 +10,19 @@ import { BaseTablaComponent } from '../../base/base';
 import { MostrarerrorComponent } from '../../../../pantallas_avisos/mostrarerror/mostrarerror.component';
 import { AvisoExitoComponent } from '../../../../pantallas_avisos/aviso-exito/aviso-exito.component';
 import { Aviso } from '../../../../pantallas_avisos/aviso/aviso.component';
+import { BuscadorComponent } from '../../../buscador/buscador.component';
+import { Tabla } from '../../base/tabla';
 
 
 
 @Component({
   selector: 'app-accesorios-tabla',
   standalone: true,
-  imports: [CommonModule, FormsModule, ReactiveFormsModule , AccesoriosCrearComponent , AccesoriosEditarComponent , AvisoEliminarComponent , MostrarerrorComponent , AvisoExitoComponent , Aviso , AvisoExitoComponent],
+  imports: [CommonModule, FormsModule, ReactiveFormsModule , AccesoriosCrearComponent , AccesoriosEditarComponent , AvisoEliminarComponent , MostrarerrorComponent , AvisoExitoComponent , Aviso , AvisoExitoComponent, BuscadorComponent],
   templateUrl: './accesorios-tabla.component.html',
   styleUrls: ['./accesorios-tabla.component.css']
 })
-export class AccesoriosTablaComponent  extends BaseTablaComponent{
+export class AccesoriosTablaComponent  extends Tabla{
 
   botoncrear : WritableSignal<boolean> = signal(false);
   botoneditar : WritableSignal<boolean> = signal(false);
@@ -31,8 +33,7 @@ export class AccesoriosTablaComponent  extends BaseTablaComponent{
 
   accesorioSeleccionado:  Accesorio= new Accesorio();
 
-  terminoBusqueda: string = '';
-
+  override columnas: string[] = ['Nombre','Modelo','Tipo','Código IMT del Equipo','Precio'];
 
   constructor(private accesoriosapi : AccesoriosService){
     super();
@@ -71,35 +72,39 @@ export class AccesoriosTablaComponent  extends BaseTablaComponent{
     });
 
   }
-private normalizeText(text: string): string {
-  if (typeof text !== 'string') {
-    return String(text || '').toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g, '');
+
+  aplicarFiltros(event?: [string, string]) {
+    if (event && event[0].trim() !== '') {
+      const busquedaNormalizada = this.normalizeText(event[0]);
+      this.accesorios = this.accesorioscopia.filter(accesorio => {
+        switch (event[1]) {
+          case 'Nombre':
+            return this.normalizeText(accesorio.nombre || '').includes(busquedaNormalizada);
+          case 'Modelo':
+            return this.normalizeText(accesorio.modelo || '').includes(busquedaNormalizada);
+          case 'Tipo':
+            return this.normalizeText(accesorio.tipo || '').includes(busquedaNormalizada);
+          case 'Código IMT del Equipo':
+            return this.normalizeText(String(accesorio.codigo_imt || '')).includes(busquedaNormalizada);
+          case 'Precio':
+            return this.normalizeText(String(accesorio.precio || '')).includes(busquedaNormalizada);
+          default:  // 'Todas las columnas'
+            return this.normalizeText(accesorio.nombre || '').includes(busquedaNormalizada) ||
+                  this.normalizeText(accesorio.modelo || '').includes(busquedaNormalizada) ||
+                  this.normalizeText(accesorio.tipo || '').includes(busquedaNormalizada) ||
+                  this.normalizeText(String(accesorio.codigo_imt || '')).includes(busquedaNormalizada) ||
+                  this.normalizeText(accesorio.nombreEquipoAsociado || '').includes(busquedaNormalizada) ||
+                  this.normalizeText(String(accesorio.precio || '')).includes(busquedaNormalizada);
+        }
+      });
+    } else {
+      // Crear una copia para evitar referencias
+      this.accesorios = [...this.accesorioscopia];
+    }
   }
-  return text
-    .toLowerCase()
-    .normalize('NFD')  // Descompone caracteres con acentos
-    .replace(/[\u0300-\u036f]/g, '');  // Elimina diacríticos
-}
-
-buscar() {
-  if (this.terminoBusqueda.trim() === '') {
-    this.limpiarBusqueda(); 
-    return; 
-  }
-
-  const busquedaNormalizada = this.normalizeText(this.terminoBusqueda);
-
-  this.accesorios = this.accesorioscopia.filter(accesorio =>
-    this.normalizeText(accesorio.nombre || '').includes(busquedaNormalizada) ||
-    this.normalizeText(accesorio.modelo || '').includes(busquedaNormalizada) ||
-    this.normalizeText(accesorio.tipo || '').includes(busquedaNormalizada) ||
-    this.normalizeText(String(accesorio.codigo_imt || '')).includes(busquedaNormalizada) ||
-    this.normalizeText(accesorio.nombreEquipoAsociado || '').includes(busquedaNormalizada)
-  );
-}
 
 limpiarBusqueda(){
-  this.terminoBusqueda = '';
+
   this.accesorios = [...this.accesorioscopia]; 
   
 }
