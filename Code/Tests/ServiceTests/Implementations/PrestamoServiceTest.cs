@@ -7,6 +7,7 @@ using MongoDB.Bson;
 using MongoDB.Driver;
 using MongoDB.Driver.GridFS;
 using System.IO;
+using IMT_Reservas.Server.Application.ResponseDTOs;
 
 namespace IMT_Reservas.Tests.ServiceTests
 {
@@ -40,10 +41,11 @@ namespace IMT_Reservas.Tests.ServiceTests
 
             var comando = new CrearPrestamoComando(new int[] { 1 }, DateTime.Now.AddDays(1), DateTime.Now.AddDays(2), "Obs", "12890061", mockFile.Object);
             var prestamoId = 123;
+            var prestamoDto = new PrestamoConEquiposDto { IdPrestamo = prestamoId, EquiposAsignados = new List<EquipoAsignadoDto>() };
             var fileId = ObjectId.GenerateNewId();
             var contratoId = ObjectId.GenerateNewId().ToString();
 
-            _prestamoRepositoryMock.Setup(r => r.Crear(comando)).Returns(prestamoId);
+            _prestamoRepositoryMock.Setup(r => r.Crear(comando)).Returns(prestamoDto);
 
             var mockContratosCollection = new Mock<IMongoCollection<Contrato>>();
             mockContratosCollection.Setup(c => c.InsertOneAsync(It.IsAny<Contrato>(), null, default))
@@ -116,10 +118,14 @@ namespace IMT_Reservas.Tests.ServiceTests
             prestamosDataTable.Columns.Add("observacion", typeof(string));
             prestamosDataTable.Columns.Add("estado_prestamo", typeof(string));
             prestamosDataTable.Columns.Add("id_contrato", typeof(string));
+            prestamosDataTable.Columns.Add("ubicacion_equipo", typeof(string));
+            prestamosDataTable.Columns.Add("nombre_gavetero", typeof(string));
+            prestamosDataTable.Columns.Add("nombre_mueble", typeof(string));
+            prestamosDataTable.Columns.Add("ubicacion_mueble", typeof(string));
             
-            prestamosDataTable.Rows.Add(5, "12890061", "Juan", "Perez", "777", "Laptop", "L01", new DateTime(2025, 4, 28), new DateTime(2025, 5, 9), new DateTime(2025, 5, 9), new DateTime(2025, 6, 14), DBNull.Value, "Para mi proyecto de grado", "pendiente", "contract1");
-            prestamosDataTable.Rows.Add(6, "12890061", "Ana", "Gomez", "888", "Proyector", "P02", new DateTime(2025, 4, 28), new DateTime(2026, 7, 3), new DateTime(2026, 7, 3), new DateTime(2026, 4, 3), DBNull.Value, "Para mi proyecto", "pendiente", "contract2");
-            prestamosDataTable.Rows.Add(8, "12890061", "Luis", "Castro", "999", "Tablet", "T03", new DateTime(2025, 4, 29), new DateTime(2029, 5, 4), new DateTime(2029, 5, 4), new DateTime(2029, 7, 6), DBNull.Value, "", "pendiente", "contract3");
+            prestamosDataTable.Rows.Add(5, "12890061", "Juan", "Perez", "777", "Laptop", "L01", new DateTime(2025, 4, 28), new DateTime(2025, 5, 9), new DateTime(2025, 5, 9), new DateTime(2025, 6, 14), DBNull.Value, "Para mi proyecto de grado", "pendiente", "contract1", "Lab 1", "G1", "M1", "Pasillo");
+            prestamosDataTable.Rows.Add(6, "12890061", "Ana", "Gomez", "888", "Proyector", "P02", new DateTime(2025, 4, 28), new DateTime(2026, 7, 3), new DateTime(2026, 7, 3), new DateTime(2026, 4, 3), DBNull.Value, "Para mi proyecto", "pendiente", "contract2", "Lab 2", "G2", "M2", "Pasillo");
+            prestamosDataTable.Rows.Add(8, "12890061", "Luis", "Castro", "999", "Tablet", "T03", new DateTime(2025, 4, 29), new DateTime(2029, 5, 4), new DateTime(2029, 5, 4), new DateTime(2029, 7, 6), DBNull.Value, "", "pendiente", "contract3", "Lab 3", "G3", "M3", "Pasillo");
 
 
             _prestamoRepositoryMock.Setup(r => r.ObtenerTodos()).Returns(prestamosDataTable);

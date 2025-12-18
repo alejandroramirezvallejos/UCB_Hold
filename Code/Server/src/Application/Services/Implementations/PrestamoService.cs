@@ -36,6 +36,7 @@ public class PrestamoService : BaseServicios, IPrestamoService
             if (cmd.FechaPrestamoEsperada == null) throw new ErrorFechaPrestamoEsperadaRequerida();
             if (cmd.FechaDevolucionEsperada == null) throw new ErrorFechaDevolucionEsperadaRequerida();
             if (cmd.FechaDevolucionEsperada < cmd.FechaPrestamoEsperada) throw new ErrorFechaPrestamoYFechaDevolucionInvalidas();
+            if (cmd.Contrato == null) throw new ErrorContratoNoNulo();
         }
     }
     protected override void InterpretarErrorCreacion<T>(T comando, Exception ex)

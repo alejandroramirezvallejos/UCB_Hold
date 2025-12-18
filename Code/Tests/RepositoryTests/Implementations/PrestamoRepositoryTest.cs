@@ -5,6 +5,7 @@ using Microsoft.AspNetCore.Http;
 using IMT_Reservas.Server.Infrastructure.MongoDb;
 using MongoDB.Driver;
 using MongoDB.Driver.GridFS;
+using IMT_Reservas.Server.Application.ResponseDTOs;
 
 namespace IMT_Reservas.Tests.RepositoryTests
 {
@@ -31,21 +32,28 @@ namespace IMT_Reservas.Tests.RepositoryTests
             var comando = new CrearPrestamoComando(new int[] { 1 }, System.DateTime.Now.AddDays(1), System.DateTime.Now.AddDays(2), "Obs", "12890061", null);
             var dt = new DataTable();
             dt.Columns.Add("id_prestamo", typeof(int));
-            dt.Rows.Add(123);
+            dt.Columns.Add("id_equipo", typeof(int));
+            dt.Columns.Add("codigo_imt", typeof(string));
+            dt.Columns.Add("codigo_serial", typeof(string));
+            dt.Columns.Add("nombre", typeof(string));
+            dt.Columns.Add("modelo", typeof(string));
+            dt.Columns.Add("marca", typeof(string));
+            dt.Columns.Add("id_grupo_equipo", typeof(int));
+            dt.Rows.Add(123, 1, "C01", "S01", "PC", "M1", "Dell", 1);
 
             _ejecutarConsultaMock.Setup(e => e.EjecutarFuncion(
-                It.Is<string>(s => s.Contains("SELECT id_prestamo")),
+                It.Is<string>(s => s.Contains("insertar_y_obtener_prestamo")),
                 It.IsAny<Dictionary<string, object?>>()))
                 .Returns(dt);
 
             var result = _prestamoRepositorio.Crear(comando);
 
             _ejecutarConsultaMock.Verify(e => e.EjecutarFuncion(
-                It.Is<string>(s => s.Contains("SELECT id_prestamo")),
+                It.Is<string>(s => s.Contains("insertar_y_obtener_prestamo")),
                 It.Is<Dictionary<string, object?>>(d => (string)d["carnetUsuario"] == comando.CarnetUsuario)
             ), Times.Once);
 
-            Assert.That(result, Is.EqualTo(123));
+            Assert.That(result.IdPrestamo, Is.EqualTo(123));
         }
 
         [Test]

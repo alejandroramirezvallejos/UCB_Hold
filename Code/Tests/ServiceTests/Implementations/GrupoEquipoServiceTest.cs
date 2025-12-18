@@ -44,7 +44,8 @@ namespace IMT_Reservas.Tests.ServiceTests
             gruposDataTable.Columns.Add("url_data_sheet_grupo_equipo", typeof(string));
             gruposDataTable.Columns.Add("url_imagen_grupo_equipo", typeof(string));
             gruposDataTable.Columns.Add("cantidad_grupo_equipo", typeof(int));
-            gruposDataTable.Rows.Add(1, "Proyectores", "Epson-100", "Epson", "desc", "cat", null, "img", 10);
+            gruposDataTable.Columns.Add("costo_promedio", typeof(decimal));
+            gruposDataTable.Rows.Add(1, "Proyectores", "Epson-100", "Epson", "desc", "cat", null, "img", 10, 100.50m);
 
             _grupoEquipoRepositoryMock.Setup(r => r.ObtenerTodos()).Returns(gruposDataTable);
 
