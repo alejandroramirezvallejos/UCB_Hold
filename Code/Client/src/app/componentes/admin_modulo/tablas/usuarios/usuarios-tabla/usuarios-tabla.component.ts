@@ -29,7 +29,7 @@ export class UsuariosTablaComponent extends Tabla implements OnInit {
   valoreliminar: number = 0;
   usuarios: Usuario[] = [];
   usuarioscopia: Usuario[] = [];
-  carreras: string[] = []; 
+  carreras: string[] = [];
 
   usuarioSeleccionado: Usuario = new Usuario();
 
@@ -48,6 +48,7 @@ export class UsuariosTablaComponent extends Tabla implements OnInit {
   }
 
   crearusuario() {
+    this.botoneditar.set(false);
     this.botoncrear.set(true);
   }
 
@@ -172,5 +173,5 @@ export class UsuariosTablaComponent extends Tabla implements OnInit {
 
 
 
- 
+
 }

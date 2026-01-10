@@ -37,7 +37,7 @@ export class AccesoriosTablaComponent  extends Tabla{
 
   constructor(private accesoriosapi : AccesoriosService){
     super();
-  }; 
+  };
 
 
 
@@ -54,15 +54,16 @@ export class AccesoriosTablaComponent  extends Tabla{
   }
 
   crearaccesorio() {
+    this.botoneditar.set(false);
     this.botoncrear.set(true);
   }
 
   cargarAccesorios() {
- 
+
     this.accesoriosapi.obtenerAccesorios().subscribe({
       next: (data: Accesorio[]) => {
         this.accesorios = data;
-        this.accesorioscopia = [...this.accesorios]; 
+        this.accesorioscopia = [...this.accesorios];
       },
       error: (error) => {
         this.mensajeerror = 'Error al cargar los accesorios. Por favor, intente más tarde.';
@@ -105,8 +106,8 @@ export class AccesoriosTablaComponent  extends Tabla{
 
 limpiarBusqueda(){
 
-  this.accesorios = [...this.accesorioscopia]; 
-  
+  this.accesorios = [...this.accesorioscopia];
+
 }
 
 editarAccesorio(accesorio : Accesorio) {
@@ -118,13 +119,13 @@ editarAccesorio(accesorio : Accesorio) {
 eliminarAccesorio(accesorio : Accesorio) {
   this.accesorioSeleccionado = accesorio;
   this.alertaeliminar = true;
- 
+
 }
 
 confirmarEliminacion() {
   this.accesoriosapi.eliminarAccesorio(this.accesorioSeleccionado.Id).subscribe({
     next: (response) => {
-      this.cargarAccesorios(); 
+      this.cargarAccesorios();
       this.mensajeexito = 'Accesorio eliminado exitosamente.';
       this.exito.set(true);
 
@@ -140,8 +141,8 @@ confirmarEliminacion() {
 }
 
 cancelarEliminacion(){
-  this.alertaeliminar = false; 
-  this.limpiarAccesorioSeleccionado(); 
+  this.alertaeliminar = false;
+  this.limpiarAccesorioSeleccionado();
 }
 
 

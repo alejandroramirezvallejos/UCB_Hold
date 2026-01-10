@@ -46,14 +46,15 @@
 }
 
 .form-content::-webkit-scrollbar {
-  width: 4px;
+  width: 6px;
 }
 .form-content::-webkit-scrollbar-thumb {
-  background-color: rgba(0, 0, 0, 0.2);
+  background-color: rgba(0, 0, 0, 0.3);
   border-radius: 10px;
 }
 .form-content::-webkit-scrollbar-track {
-  background: transparent;
+  background: rgba(0, 0, 0, 0.05);
+  border-radius: 10px;
   margin: 10px 0;
 }
 
@@ -64,22 +65,19 @@
   right: 1rem;
   background: none;
   border: none;
-  font-size: 1.2rem;
-  color: #64748b;
   cursor: pointer;
-  width: 1.5rem;
-  height: 1.5rem;
+  width: 1.75rem;
+  height: 1.75rem;
   display: flex;
   align-items: center;
   justify-content: center;
-  border-radius: 50%;
   transition: all 0.2s ease;
   z-index: 10;
+  padding: 0;
 }
 
 .btn-close:hover {
-  background-color: rgba(0, 0, 0, 0.1);
-  color: var(--text-color);
+  transform: scale(1.1);
 }
 
 .form-container h2 {

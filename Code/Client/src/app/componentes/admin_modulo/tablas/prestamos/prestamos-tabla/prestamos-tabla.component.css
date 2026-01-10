@@ -52,7 +52,26 @@
   background-color: white;
   border-radius: 12px;
   box-shadow: 0 1px 3px rgba(0,0,0,0.05);
-  overflow: hidden;
+  overflow-x: auto;
+  transform: scaleY(-1);
+}
+
+.table-responsive > * {
+  transform: scaleY(-1);
+}
+
+/* Scrollbar horizontal estilo menú - ahora aparece arriba */
+.table-responsive::-webkit-scrollbar {
+  height: 6px;
+}
+.table-responsive::-webkit-scrollbar-thumb {
+  background-color: rgba(0, 0, 0, 0.3);
+  border-radius: 10px;
+}
+.table-responsive::-webkit-scrollbar-track {
+  background: rgba(0, 0, 0, 0.05);
+  border-radius: 10px;
+  margin: 0 10px;
 }
 
 .prestamos-container {
@@ -812,20 +831,26 @@
   border-radius: 8px;
   height: 42px;
   box-sizing: border-box;
+  transition: all 0.2s ease;
 }
 
 .dropdown-header .current-value {
   font-size: 0.9rem;
   font-weight: 600;
-  color: #334155;
+  color: #6b7786;
   white-space: nowrap;
   display: flex;
   align-items: center;
   gap: 0.5rem;
 }
 
+.dropdown-header .current-value i {
+  color: #6b7786;
+}
+
 .dropdown-header:hover {
-  border-color: #2563eb;
+  border-color: #d1d5db;
+  background-color: #f8fafc;
 }
 
 .dropdown-arrow {

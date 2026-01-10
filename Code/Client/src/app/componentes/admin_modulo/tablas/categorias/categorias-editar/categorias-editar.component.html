@@ -1,17 +1,26 @@
 <div class="form-container">
   <button class="btn-close" (click)="cerrar()">
-    <i class="fas fa-times"></i>
+    <img
+      #closeIcon
+      src="/assets/x.png"
+      alt="Cerrar"
+      style="width:100%; height:100%; object-fit: contain;"
+      (mouseenter)="closeIcon.src = '/assets/x_color.png'"
+      (mouseleave)="closeIcon.src = '/assets/x.png'"
+    />
   </button>
-  <h2>Editar Categoría</h2>
-  <form #form="ngForm" (ngSubmit)="validaredicion()">
+
+  <div class="form-content">
+    <h2>Editar Categoría</h2>
+    <form #form="ngForm" (ngSubmit)="validaredicion()">
     <div class="form-group">
       <label for="nombre">Nombre</label>
-      <input 
-        type="text" 
-        id="nombre" 
-        name="nombre" 
+      <input
+        type="text"
+        id="nombre"
+        name="nombre"
         [(ngModel)]="categoria.Nombre"
-        required 
+        required
         maxlength="50"
         minlength="3"
         placeholder="Ingresa el nombre de la categoría"
@@ -25,6 +34,7 @@
       </button>
     </div>
   </form>
+  </div>
 </div>
 
 

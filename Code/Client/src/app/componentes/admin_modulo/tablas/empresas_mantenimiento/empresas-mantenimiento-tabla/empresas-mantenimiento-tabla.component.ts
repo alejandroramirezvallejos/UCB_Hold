@@ -32,10 +32,10 @@ export class EmpresasMantenimientoTablaComponent extends Tabla implements OnInit
 
   override columnas: string[] = ['Nombre Empresa','Responsable','Teléfono','NIT'];
 
- 
+
 
   constructor(private empresaService: EmpresamantenimientoService) {
-    super(); 
+    super();
   }
 
   ngOnInit() {
@@ -44,8 +44,9 @@ export class EmpresasMantenimientoTablaComponent extends Tabla implements OnInit
 
   limpiarEmpresaSeleccionada() {
     this.empresaSeleccionada = new EmpresaMantenimiento();
-  }  
+  }
   crearempresamantenimiento() {
+    this.botoneditar.set(false);
     this.botoncrear.set(true);
   }
 
@@ -89,7 +90,7 @@ export class EmpresasMantenimientoTablaComponent extends Tabla implements OnInit
   }
 
   limpiarBusqueda() {
-   
+
     this.empresas = [...this.empresascopia];
   }
   editarEmpresaMantenimiento(empresa: EmpresaMantenimiento) {

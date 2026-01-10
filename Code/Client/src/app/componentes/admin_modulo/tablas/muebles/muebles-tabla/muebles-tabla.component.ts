@@ -32,8 +32,8 @@ export class MueblesTablaComponent extends Tabla implements OnInit {
   override columnas: string[] = ['Nombre','Tipo','Ubicación','Costo','Gaveteros','Dimensiones'];
 
 
-  constructor(private muebleapi: MuebleService) { 
-    super(); 
+  constructor(private muebleapi: MuebleService) {
+    super();
   }
 
   ngOnInit() {
@@ -45,6 +45,7 @@ export class MueblesTablaComponent extends Tabla implements OnInit {
   }
 
   crearmueble() {
+    this.botoneditar.set(false);
     this.botoncrear.set(true);
   }
 
@@ -140,5 +141,5 @@ export class MueblesTablaComponent extends Tabla implements OnInit {
     this.limpiarMuebleSeleccionado();
   }
 
-  
+
 }

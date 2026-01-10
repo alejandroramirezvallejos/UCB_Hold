@@ -330,3 +330,17 @@ body {
   filter: brightness(1.2) sepia(0.2) hue-rotate(10deg);
   transition: opacity 0.2s, filter 0.2s;
 }
+
+/* Scrollbar estilo admin */
+::-webkit-scrollbar {
+    width: 6px;
+    height: 6px;
+}
+::-webkit-scrollbar-thumb {
+    background-color: rgba(0, 0, 0, 0.3);
+    border-radius: 10px;
+}
+::-webkit-scrollbar-track {
+    background: rgba(0, 0, 0, 0.05);
+    border-radius: 10px;
+}

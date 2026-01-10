@@ -16,17 +16,19 @@
 .botoncrear {
   display: flex;
   align-items: center;
-  gap: 0.5rem;
-  background-color: #9CA3AF; /* Lighter gray */
+  gap: 0.25rem;
+  background-color: #9CA3AF;
   color: white;
-  padding: 12px 25px;
+  padding: 6px 12px;
   border: none;
-  border-radius: 20px;
-  font-size: 16px;
+  border-radius: 16px;
+  font-size: 12px;
   font-weight: 600;
   cursor: pointer;
   transition: all 0.3s ease;
-  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  box-shadow: none;
+  white-space: nowrap;
+  height: 32px;
 }
 
 .botoncrear:hover {
@@ -42,7 +44,7 @@
 }
 
 .botoncrear i {
-  font-size: 16px;
+  font-size: 12px;
 }
 
 /* Contenedor principal */
@@ -155,6 +157,25 @@
   border-radius: var(--radius);
   box-shadow: var(--shadow-sm);
   margin-bottom: 1.5rem;
+  transform: scaleY(-1);
+}
+
+.table-responsive > * {
+  transform: scaleY(-1);
+}
+
+/* Scrollbar horizontal estilo menú */
+.table-responsive::-webkit-scrollbar {
+  height: 6px;
+}
+.table-responsive::-webkit-scrollbar-thumb {
+  background-color: rgba(0, 0, 0, 0.3);
+  border-radius: 10px;
+}
+.table-responsive::-webkit-scrollbar-track {
+  background: rgba(0, 0, 0, 0.05);
+  border-radius: 10px;
+  margin: 0 10px;
 }
 
 .data-table {

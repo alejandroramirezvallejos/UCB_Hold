@@ -29,13 +29,13 @@ export class GruposEquiposTablaComponent extends Tabla implements OnInit {
   gruposEquipos: GrupoEquipo[] = [];
   gruposEquiposFiltrados: GrupoEquipo[] = [];
 
-  categorias: string[] = []; 
+  categorias: string[] = [];
 
   grupoEquipoSeleccionado: GrupoEquipo = new GrupoEquipo();
 
   override columnas: string[] = ['Nombre','Cantidad','Modelo','Marca','Categoría','Descripción'];
 
-  constructor(private grupoequipoapi: GrupoequipoService , private categoriasAPI : CategoriaService) { 
+  constructor(private grupoequipoapi: GrupoequipoService , private categoriasAPI : CategoriaService) {
     super();
   }
 
@@ -62,6 +62,7 @@ export class GruposEquiposTablaComponent extends Tabla implements OnInit {
   }
 
   creargrupoequipo() {
+    this.botoneditar.set(false);
     this.botoncrear.set(true);
   }
 
@@ -80,7 +81,7 @@ export class GruposEquiposTablaComponent extends Tabla implements OnInit {
     });
   }
 
-  
+
   buscar() {
     this.aplicarFiltros();
   }

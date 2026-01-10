@@ -33,7 +33,7 @@ export class CarrerasTablaComponent extends Tabla {
   override columnas: string[] = ['Nombre'];
 
 
- 
+
 
   constructor(private carreraService: CarreraService) {
     super();
@@ -48,6 +48,7 @@ export class CarrerasTablaComponent extends Tabla {
   }
 
   crearCarrera() {
+    this.botoneditar.set(false);
     this.botoncrear.set(true);
   }
 
@@ -75,7 +76,7 @@ export class CarrerasTablaComponent extends Tabla {
           switch (event[1]) {
             case 'Nombre':
               return this.normalizeText(carrera.Nombre || '').includes(busquedaNormalizada);
-            default:  
+            default:
               return this.normalizeText(carrera.Nombre || '').includes(busquedaNormalizada);
           }
         });
@@ -83,10 +84,10 @@ export class CarrerasTablaComponent extends Tabla {
         this.carreras = [...this.carrerascopia];
       }
   }
-  
+
 
   limpiarBusqueda() {
-   
+
     this.carreras = [...this.carrerascopia];
   }
 
@@ -125,7 +126,7 @@ export class CarrerasTablaComponent extends Tabla {
     this.limpiarCarreraSeleccionada();
   }
 
- 
 
-  
+
+
 }
