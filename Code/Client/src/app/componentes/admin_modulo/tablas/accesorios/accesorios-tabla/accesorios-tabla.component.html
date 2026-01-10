@@ -5,16 +5,17 @@
       <h1>Accesorios</h1>
       <p class="subtitle">Gestión de accesorios para equipos de mecatrónica</p>
     </div>
-    <button class="botoncrear" (click)="crearaccesorio()">
-       Nuevo Accesorio
-    </button>
   </div>
 
   <!-- BUSCADOR-->
   <app-buscador
     [columnas]="columnas"
     (terminoBusqueda)="aplicarFiltros($event)"
-  ></app-buscador>
+  >
+    <button class="botoncrear boton-derecha" (click)="crearaccesorio()">
+       Nuevo Accesorio
+    </button>
+  </app-buscador>
 
 
   <!-- TABLA -->
@@ -42,10 +43,10 @@
               <button class="btn-icon btn-edit" (click)="editarAccesorio(accesorio)">
                 <i class="fas fa-pencil-alt"></i>
               </button>
-     
 
 
-            </td>        </tr>  
+
+            </td>        </tr>
         }
         @if (accesorios.length === 0) {
           <tr>

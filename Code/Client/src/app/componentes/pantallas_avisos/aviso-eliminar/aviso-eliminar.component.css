@@ -14,6 +14,7 @@
 }
 
 .modal-content {
+  position: relative; /* Ensure relative positioning for absolute close button */
   background-color: #ffffff !important;
   padding: 2rem;
   border-radius: 12px;
@@ -22,6 +23,7 @@
   animation: slideIn 0.3s ease-out;
   min-width: 400px;
   max-width: 90vw;
+  border: none;
 }
 
 .modal-content p {
@@ -37,40 +39,54 @@
   padding: 0.75rem 1.5rem;
   font-size: 0.9rem;
   font-weight: 600;
-  border-radius: 8px;
+  border-radius: 20px;
   transition: all 0.3s ease;
   min-width: 80px;
   cursor: pointer;
   border: none;
 }
 
-/* Botón de confirmación (Sí) */
+/* Botón de confirmación (Sí) - estilo como agregar a carrito */
 .btn-confirm {
-  background-color: #dc2626;
-  color: white;
-  border: 2px solid #dc2626;
+  background-color: #ffd814;
+  color: #6b7786;
 }
 
 .btn-confirm:hover {
-  background-color: #b91c1c;
-  border-color: #b91c1c;
-  transform: translateY(-1px);
-  box-shadow: 0 4px 12px rgba(220, 38, 38, 0.4);
+  transform: scale(1.05);
+  box-shadow: 0 4px 12px rgba(255, 216, 20, 0.5);
 }
 
 /* Botón de cancelación (No) */
 .btn-cancel {
-  background-color: #5F6368;
-  color: white;
-  border: 2px solid #5F6368;
+  background-color: #f0f0f0;
+  color: #6b7786;
 }
 
 .btn-cancel:hover {
-  background-color: #FFCF00;
-  color: #333;
-  border-color: #FFCF00;
-  transform: translateY(-1px);
-  box-shadow: 0 4px 12px rgba(255, 207, 0, 0.3);
+  background-color: #e0e0e0;
+}
+
+/* Botón cerrar (X) */
+.cerrar {
+  position: absolute;
+  top: 15px;
+  right: 15px;
+  cursor: pointer;
+  background: none;
+  border: none;
+  padding: 0;
+  width: 24px;
+  height: 24px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.cerrar img {
+  width: 100%;
+  height: 100%;
+  transition: opacity 0.2s;
 }
 
 /* Animaciones */

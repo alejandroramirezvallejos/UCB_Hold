@@ -1,101 +1,111 @@
 <div class="form-container">
   <button class="btn-close" (click)="cerrar()">
-    <i class="fas fa-times"></i>
+    <img
+      #closeIcon
+      src="/assets/x.png"
+      alt="Cerrar"
+      style="width:100%; height:100%;"
+      (mouseenter)="closeIcon.src = '/assets/x_color.png'"
+      (mouseleave)="closeIcon.src = '/assets/x.png'"
+    />
   </button>
-  <h2>Registrar Gavetero</h2>
-  <form #form="ngForm" (ngSubmit)="validarregistro()">
-    <div class="form-group">
-      <label for="nombre">Nombre</label>
-      <input 
-        type="text" 
-        id="nombre" 
-        name="nombre" 
-        [(ngModel)]="gavetero.Nombre"
-        required 
-        maxlength="50"
-        placeholder="Ingresa el nombre del gavetero"
+
+  <div class="form-content">
+    <h2>Registrar Gavetero</h2>
+    <form #form="ngForm" (ngSubmit)="validarregistro()">
+      <div class="form-group">
+        <label for="nombre">Nombre</label>
+        <input
+          type="text"
+          id="nombre"
+          name="nombre"
+          [(ngModel)]="gavetero.Nombre"
+          required
+          maxlength="50"
+          placeholder="Ingresa el nombre del gavetero"
+          class="form-input"
+        />
+      </div>
+
+      <div class="form-group">
+        <label for="tipo">Tipo</label>
+        <input
+          type="text"
+          id="tipo"
+          name="tipo"
+          [(ngModel)]="gavetero.Tipo"
+          required
+          maxlength="50"
+          placeholder="Tipo de gavetero"
+          class="form-input"
+        />
+      </div>
+
+      <div class="form-group">
+        <label for="nombre_mueble">Nombre Mueble</label>
+        <select
+        id="nombre_mueble"
+        name="nombre_mueble"
+        [(ngModel)]="gavetero.NombreMueble"
+        required
         class="form-input"
-      />
-    </div>
+        >
+        @for (item of muebles; track $index) {
+          <option [value]="item">{{ item }}</option>
+        }
 
-    <div class="form-group">
-      <label for="tipo">Tipo</label>
-      <input 
-        type="text" 
-        id="tipo" 
-        name="tipo" 
-        [(ngModel)]="gavetero.Tipo"
-        required 
-        maxlength="50"
-        placeholder="Tipo de gavetero"
-        class="form-input"
-      />
-    </div>
+      </select>
+      </div>
 
-    <div class="form-group">
-      <label for="nombre_mueble">Nombre Mueble</label>
-      <select 
-      id="nombre_mueble" 
-      name="nombre_mueble" 
-      [(ngModel)]="gavetero.NombreMueble"
-      required
-      class="form-input"
-      >
-      @for (item of muebles; track $index) {
-        <option [value]="item">{{ item }}</option>
-      }
-    
-    </select>
-    </div>
+      <div class="form-group">
+        <label for="longitud">Longitud</label>
+        <input
+          type="number"
+          id="longitud"
+          name="longitud"
+          [(ngModel)]="gavetero.Longitud"
+          max="10000"
+          step="0.01"
+          placeholder="0.00"
+          class="form-input"
+        />
+      </div>
 
-    <div class="form-group">
-      <label for="longitud">Longitud</label>
-      <input 
-        type="number" 
-        id="longitud" 
-        name="longitud" 
-        [(ngModel)]="gavetero.Longitud"
-        max="10000"
-        step="0.01"
-        placeholder="0.00"
-        class="form-input"
-      />
-    </div>
+      <div class="form-group">
+        <label for="profundidad">Profundidad</label>
+        <input
+          type="number"
+          id="profundidad"
+          name="profundidad"
+          [(ngModel)]="gavetero.Profundidad"
+          max="10000"
+          step="0.01"
+          placeholder="0.00"
+          class="form-input"
+        />
+      </div>
 
-    <div class="form-group">
-      <label for="profundidad">Profundidad</label>
-      <input 
-        type="number" 
-        id="profundidad" 
-        name="profundidad" 
-        [(ngModel)]="gavetero.Profundidad"
-        max="10000"
-        step="0.01"
-        placeholder="0.00"
-        class="form-input"
-      />
-    </div>
+      <div class="form-group">
+        <label for="altura">Altura</label>
+        <input
+          type="number"
+          id="altura"
+          name="altura"
+          [(ngModel)]="gavetero.Altura"
+          max="10000"
+          step="0.01"
+          placeholder="0.00"
+          class="form-input"
+        />
+      </div>
 
-    <div class="form-group">
-      <label for="altura">Altura</label>
-      <input 
-        type="number" 
-        id="altura" 
-        name="altura" 
-        [(ngModel)]="gavetero.Altura"
-        max="10000"
-        step="0.01"
-        placeholder="0.00"
-        class="form-input"
-      />
-    </div>
-
-    <div class="form-submit">
-      <button type="submit" class="register-button" [disabled]="!form.valid">
-        <span>Registrar Gavetero</span>
-      </button>
-    </div>
-  </form>
+      <div class="form-submit">
+        <button type="submit" class="register-button" [disabled]="!form.valid">
+          <span>Registrar Gavetero</span>
+        </button>
+      </div>
+    </form>
+  </div>
 </div>
 
 

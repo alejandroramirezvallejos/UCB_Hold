@@ -19,19 +19,40 @@ export class EditarComponent {
 
   exito : WritableSignal<boolean> = signal(false);
   mensajeexito : string = "";
-  
+
   error: WritableSignal<boolean> = signal(false);
   mensajeerror: string = "";
 
   carreras: string[] = [];
 
+  // Dropdown state
+  isOpen: boolean = false;
+  isHovered: boolean = false;
 
   contrasena: string = '';
 
   constructor(private usuarioApi: UsuarioServiceAPI , private carrerasAPI : CarreraService) {}
 
+  // Dropdown methods
+  toggleDropdown() {
+    this.isOpen = !this.isOpen;
+  }
+
+  selectCarrera(carrera: string) {
+    this.usuario.carrera = carrera;
+    this.isOpen = false;
+  }
+
+  onMouseEnter() {
+    this.isHovered = true;
+  }
+
+  onMouseLeave() {
+    this.isHovered = false;
+  }
+
   ngOnInit() {
-    this.cargarcarrera(); 
+    this.cargarcarrera();
   }
 
   cargarcarrera() {

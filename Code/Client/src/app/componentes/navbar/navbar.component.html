@@ -4,6 +4,41 @@
   aria-label="Main navigation"
 >
   <div class="left-section">
+    @if(showAdminSidebarToggle()) {
+    <button
+      type="button"
+      class="icon-button menu-button"
+      aria-label="Menú Admin"
+      (click)="toggleSidebar()"
+    >
+      <img
+        #menuIcon
+        src="/assets/menu_line.png"
+        alt="Menú Admin"
+        class="icon-image"
+        (mouseenter)="menuIcon.src = '/assets/menu_solid.png'"
+        (mouseleave)="menuIcon.src = '/assets/menu_line.png'"
+      />
+    </button>
+    }
+    @if(showBack()) {
+    <button
+      type="button"
+      class="icon-button back-button"
+      aria-label="Volver atrás"
+      (click)="goBack()"
+    >
+      <img
+        #backIcon
+        src="/assets/back_line.png"
+        alt="Icono de volver"
+        class="icon-image"
+        (mouseenter)="backIcon.src = '/assets/back_solid.png'"
+        (mouseleave)="backIcon.src = '/assets/back_line.png'"
+      />
+    </button>
+    }
+    @if(showHome()) {
     <button
       type="button"
       class="icon-button home-button"
@@ -19,14 +54,14 @@
         (mouseleave)="homeIcon.src = '/assets/home_line.png'"
       />
     </button>
+    }
   </div>
   <div class="logo-container">
     <img src="/assets/logo_universidad.png" alt="Logo UCB" class="logo-image" />
   </div>
   <div class="right-section">
 
-
-
+   @if(showCart()) {
     <button
       type="button"
       class="icon-button cart-button"
@@ -43,6 +78,9 @@
       />
       <span class="cart-count">{{ totalproductos() }}</span>
     </button>
+    }
+
+    @if(showProfile()) {
     <div class="user-menu">
        <button
         type="button"
@@ -60,6 +98,7 @@
         />
       </button>
     </div>
+    }
   </div>
 </nav>
 

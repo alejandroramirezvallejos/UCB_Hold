@@ -1,4 +1,4 @@
-import { Component, OnInit, signal, WritableSignal } from '@angular/core';
+import { Component, OnInit, signal, WritableSignal, ViewChild } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule, ReactiveFormsModule, FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { Prestamos } from '../../../../../models/admin/Prestamos';
@@ -26,6 +26,8 @@ import { Tabla } from '../../base/tabla';
 })
 export class PrestamosTablaComponent extends Tabla implements OnInit {
 
+  @ViewChild(BuscadorComponent) buscador!: BuscadorComponent;
+
   botoncrear: WritableSignal<boolean> = signal(false);
   cargando : boolean = false;
 
@@ -45,7 +47,7 @@ export class PrestamosTablaComponent extends Tabla implements OnInit {
   override columnas: string[] = ['Usuario','Carnet','Teléfono','Equipos','Fecha Solicitud','Fecha Préstamo Esperada','Fecha Devolución Esperada'];
 
 
-  
+
   // Propiedades para el filtro
   showEstados: boolean = false;
   estadoSeleccionado: string = '';
@@ -95,18 +97,18 @@ export class PrestamosTablaComponent extends Tabla implements OnInit {
 
  agruparPrestamos(datos: Prestamos[]) {
     this.prestamos.clear();
-    
+
     if (datos.length === 0){
-      this.prestamoscopia = new Map(this.prestamos); 
+      this.prestamoscopia = new Map(this.prestamos);
       return;
-    } 
-    
+    }
+
    for (const prestamo of datos) {
         if (prestamo.Id == null) continue;
 
         if (!this.prestamos.has(prestamo.Id)) {
             this.prestamos.set(prestamo.Id, new PrestamoAgrupados([prestamo]));
-        } 
+        }
         else {
             this.prestamos.get(prestamo.Id)!.insertarEquipo(prestamo);
         }
@@ -120,7 +122,7 @@ export class PrestamosTablaComponent extends Tabla implements OnInit {
 
 
 
-// --------------------- ELIMINACION ----------------------- // 
+// --------------------- ELIMINACION ----------------------- //
 
   eliminarPrestamo(prestamo: Prestamos) {
     this.prestamoSeleccionado = prestamo;
@@ -128,7 +130,7 @@ export class PrestamosTablaComponent extends Tabla implements OnInit {
   }
 
   confirmarEliminacion() {
-    this.cargando=true; 
+    this.cargando=true;
     this.prestamosapi.eliminarPrestamo(this.prestamoSeleccionado.Id)
     .pipe(finalize(() => this.cargando = false))
     .subscribe({
@@ -136,7 +138,7 @@ export class PrestamosTablaComponent extends Tabla implements OnInit {
         this.mensajeexito = 'Préstamo eliminado con éxito.';
         this.exito.set(true);
         this.cargarPrestamos();
-        
+
 
       },
       error: (error) => {
@@ -161,6 +163,15 @@ export class PrestamosTablaComponent extends Tabla implements OnInit {
 
   mostrarEstados() {
     this.showEstados = !this.showEstados;
+    if (this.showEstados && this.buscador) {
+      this.buscador.cerrarColumnas();
+    }
+  }
+
+  onBuscadorToggle(isOpen: boolean) {
+    if (isOpen) {
+      this.showEstados = false;
+    }
   }
 
   seleccionarEstado(estado: string) {
@@ -204,7 +215,7 @@ export class PrestamosTablaComponent extends Tabla implements OnInit {
                this.normalizeText(this.formatDate(prestamo.datosgrupo.FechaPrestamoEsperada)).includes(busquedaNormalizada) ||
                this.normalizeText(this.formatDate(prestamo.datosgrupo.FechaDevolucionEsperada)).includes(busquedaNormalizada);
         }
-      }); 
+      });
     }
 
     // Aplicar filtro de estado si existe
@@ -219,7 +230,7 @@ export class PrestamosTablaComponent extends Tabla implements OnInit {
     this.prestamos = new Map<number, PrestamoAgrupados>(prestamosFiltrados);
   }
 
-  
+
 
   limpiarFiltros() {
 
@@ -239,17 +250,17 @@ export class PrestamosTablaComponent extends Tabla implements OnInit {
     // Trabajar con las fechas en UTC para comparación consistente
     // Crear una copia de la fecha
     const fechaDevCopy = new Date(fechaDev.getTime());
-    
+
     // Establecer a fin de día en UTC (equivalente a 23:59:59 Bolivia)
     fechaDevCopy.setUTCHours(23, 59, 59, 999);
-    
+
     // Comparar con ahora en UTC
     const ahora = new Date();
 
     if ((estadoOrig === 'activo' || estadoOrig === "aprobado") && fechaDevCopy < ahora) {
       return 'atrasado';
     }
-    
+
     return estadoOrig;
   }
 
@@ -262,8 +273,8 @@ export class PrestamosTablaComponent extends Tabla implements OnInit {
     this.prestamoKeySeleccionado = key;
     this.aviso.set(true);
   }
-  
- 
+
+
 
   aprobarprestamo(key : number) {
 
@@ -271,7 +282,7 @@ export class PrestamosTablaComponent extends Tabla implements OnInit {
       next: (response) => {
         this.mensajeexito = 'Préstamo aprobado con éxito.';
         this.exito.set(true);
-        this.cargarPrestamos(); 
+        this.cargarPrestamos();
       },
       error: (error) => {
         this.mensajeerror = 'Error al aprobar el préstamo. Por favor, inténtelo de nuevo más tarde.';
@@ -296,8 +307,8 @@ export class PrestamosTablaComponent extends Tabla implements OnInit {
       next: (response) => {
         this.mensajeexito = 'Préstamo rechazado con éxito.';
         this.exito.set(true);
-        this.cargarPrestamos(); 
-       
+        this.cargarPrestamos();
+
       },
       error: (error) => {
         this.mensajeerror = 'Error al rechazar el préstamo. Por favor, inténtelo de nuevo más tarde.';

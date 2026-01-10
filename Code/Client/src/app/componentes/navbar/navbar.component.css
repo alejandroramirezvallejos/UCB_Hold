@@ -60,6 +60,11 @@
   height: 20px;
 }
 
+.back-button .icon-image {
+  width: 24px;
+  height: 24px;
+}
+
 .logo-container {
   position: absolute;
   left: 50%;

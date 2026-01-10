@@ -17,23 +17,23 @@
   display: flex;
   align-items: center;
   gap: 0.5rem;
-  background-color: #5F6368;
+  background-color: #9CA3AF; /* Lighter gray */
   color: white;
   padding: 12px 25px;
   border: none;
-  border-radius: 10px;
+  border-radius: 20px;
   font-size: 16px;
   font-weight: 600;
   cursor: pointer;
-  transition: background-color 0.3s ease, transform 0.2s ease;
-  box-shadow: 0 2px 4px rgba(95, 99, 104, 0.2);
+  transition: all 0.3s ease;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
 }
 
 .botoncrear:hover {
-  background-color: #FFCF00;
-  color: #333;
+  background-color: #ffd814;
+  color: #6b7786;
   transform: translateY(-1px);
-  box-shadow: 0 4px 8px rgba(255, 207, 0, 0.3);
+  box-shadow: 0 4px 12px rgba(255, 216, 20, 0.4);
 }
 
 .botoncrear:active {
@@ -47,7 +47,7 @@
 
 /* Contenedor principal */
 .mantenimientos-container {
-  padding: 1.5rem;
+  padding: 1.5rem 1.5rem 1.5rem 0;
   background-color: var(--color-background);
   min-height: 100vh;
   color: var(--color-text);
@@ -162,7 +162,7 @@
   border-collapse: collapse;
 }
 
-.data-table th, 
+.data-table th,
 .data-table td {
   padding: 1rem;
   text-align: left;
@@ -360,12 +360,12 @@
     min-width: 90vw;
     padding: 1.5rem;
   }
-  
+
   .modal-content p {
     font-size: 1rem;
     margin-bottom: 1.25rem;
   }
-  
+
   .modal-content .btn {
     margin: 0.25rem;
     width: calc(50% - 0.5rem);

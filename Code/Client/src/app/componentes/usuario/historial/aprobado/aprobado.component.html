@@ -1,8 +1,4 @@
 <div class="prestamos-container">
-  <div class="header-section">
-    <h1 class="title">Préstamos Aprobados</h1>
-    <p class="subtitle">Equipos actualmente Aprobados</p>
-  </div>
 
   <div class="prestamos-list">
     @for (item of (datos | keyvalue) ; track item.key) {
@@ -40,7 +36,7 @@
       <div class="botones">
         <div class="botones-izquierda">
           <button class="recoger" [disabled]="validarFechaRecogida(item)"
-           (click)="$event.stopPropagation(); avisorecogerf(item.value.datosgrupo)"> RECOGIDO</button>    
+           (click)="$event.stopPropagation(); avisorecogerf(item.value.datosgrupo)"> RECOGIDO</button>
           <button class="cancelar" (click)="$event.stopPropagation(); avisocancelarf(item.value.datosgrupo)"> CANCELAR</button>
         </div>
         <button class="ver-detalles" (click)="AbrirVista(item.value.equipos)"> VER DETALLES</button>

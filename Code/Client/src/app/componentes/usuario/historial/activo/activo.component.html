@@ -1,8 +1,4 @@
 <div class="prestamos-container">
-  <div class="header-section">
-    <h1 class="title">Préstamos Activos</h1>
-    <p class="subtitle">Equipos actualmente Activos</p>
-  </div>
 
   <div class="prestamos-list">
     @for (item of (datos | keyvalue) ; track item.key) {
@@ -59,7 +55,7 @@
 </div>
 
 @if(aviso()) {
-  <app-aviso 
+  <app-aviso
     [mensaje]="'Al apretar aceptar usted afirma que el equipo ha sido devuelto y se cerrará el préstamo.'"
     [cerrar]="aviso"
     (aceptar)="finalizado()">

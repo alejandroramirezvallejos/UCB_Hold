@@ -11,11 +11,13 @@ import { FormsModule } from '@angular/forms';
 export class BuscadorComponent {
   @Input()columnas!: string[];
   @Output() terminoBusqueda: EventEmitter<[string , string]> = new EventEmitter<[string , string]>();
+  @Output() onToggle: EventEmitter<boolean> = new EventEmitter<boolean>();
 
   terminoBusquedaLocal: string = '';
   columnaSeleccionada: string = '';
 
   mostrarColumnas : boolean = false;
+  isHovered: boolean = false;
 
   buscar() {
     this.terminoBusqueda.emit([this.terminoBusquedaLocal, this.columnaSeleccionada]);
@@ -29,6 +31,19 @@ export class BuscadorComponent {
 
   toggleColumnas() {
     this.mostrarColumnas = !this.mostrarColumnas;
+    this.onToggle.emit(this.mostrarColumnas);
+  }
+
+  cerrarColumnas() {
+    this.mostrarColumnas = false;
+  }
+
+  onMouseEnter() {
+    this.isHovered = true;
+  }
+
+  onMouseLeave() {
+    this.isHovered = false;
   }
 
   seleccionarColumna(columna: string) {

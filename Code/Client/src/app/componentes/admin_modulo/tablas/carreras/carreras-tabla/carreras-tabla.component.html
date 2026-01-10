@@ -5,16 +5,17 @@
       <h1>Carreras</h1>
       <p class="subtitle">Gestión de carreras universitarias</p>
     </div>
-    <button class="botoncrear" (click)="crearCarrera()">
-       Nueva Carrera
-    </button>
   </div>
 
   <!-- BUSCADOR-->
   <app-buscador
     [columnas]="columnas"
     (terminoBusqueda)="aplicarFiltros($event)"
-  ></app-buscador>
+  >
+    <button class="botoncrear boton-derecha" (click)="crearCarrera()">
+       Nueva Carrera
+    </button>
+  </app-buscador>
 
 
   <!-- TABLA -->
@@ -40,7 +41,7 @@
                 <i class="fas fa-pencil-alt"></i>
               </button>
             </td>
-          </tr>  
+          </tr>
         }
         @if (carreras.length === 0) {
           <tr>

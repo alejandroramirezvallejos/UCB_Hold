@@ -4,16 +4,18 @@
     <div class="header-title">
       <h1>Empresas de Mantenimiento</h1>
       <p class="subtitle">Gestión de empresas de mantenimiento para equipos</p>
-    </div>    <button class="botoncrear" (click)="crearempresamantenimiento()">
-       Nueva Empresa
-    </button>
+    </div>
   </div>
 
   <!-- BUSCADOR-->
   <app-buscador
     [columnas]="columnas"
     (terminoBusqueda)="aplicarFiltros($event)"
-  ></app-buscador>
+  >
+    <button class="botoncrear boton-derecha" (click)="crearempresamantenimiento()">
+       Nueva Empresa
+    </button>
+  </app-buscador>
 
 
   <!-- TABLA -->

@@ -4,70 +4,55 @@
     <div class="header-title">
       <h1>Préstamos</h1>
       <p class="subtitle">Gestión de préstamos de equipos de mecatrónica</p>
-    </div>   
-    <div class="filter-container">
-        <button 
-          class="btn-filter" 
-          (click)="mostrarEstados()"
-          (mouseenter)="hover.filter = true"
-          (mouseleave)="hover.filter = false"
-        >
-          <i class="fas fa-filter"></i>
-          @if (estadoSeleccionado) {
-            <span>{{ estadoSeleccionado }}</span>
-          } @else {
-            <span>Filtrar</span>
-          }
-          <i [class]="showEstados ? 'fas fa-chevron-up' : 'fas fa-chevron-down'"></i>
-        </button>
-        
-        <!-- Panel flotante que aparece al frente -->
-        @if (showEstados) {
-          <div class="estados-panel-flotante">
-            <div class="estados-grid-flotante">
-              <div class="estados-item-flotante" (click)="seleccionarEstado('')" [class.active]="estadoSeleccionado === ''">
-                <i class="fas fa-list"></i>
-                Todos los estados
-              </div>              @for (estado of estadosDisponibles; track estado) {
-                <div class="estados-item-flotante" (click)="seleccionarEstado(estado)" [class.active]="estadoSeleccionado === estado">
-                  @switch (estado.toLowerCase()) {
-                    @case ('pendiente') {
-                      <i class="fas fa-clock text-warning"></i>
-                    }
-                    @case ('aprobado') {
-                      <i class="fas fa-check-circle text-success"></i>
-                    }
-                    @case ('rechazado') {
-                      <i class="fas fa-times-circle text-danger"></i>
-                    }
-                    @case ('activo') {
-                      <i class="fas fa-play-circle text-primary"></i>
-                    }
-                    @case ('finalizado') {
-                      <i class="fas fa-check-double text-secondary"></i>
-                    }
-                    @case ('cancelado') {
-                      <i class="fas fa-ban text-danger"></i>
-                    }
-                    @default {
-                      <i class="fas fa-question-circle"></i>
-                    }
-                  }
-                  {{ estado | titlecase }}
-                </div>
-              }
-            </div>
-          </div>
-        }
-      </div> 
-
-
+    </div>
   </div>
   <!-- BUSCADOR-->
   <app-buscador
     [columnas]="columnas"
     (terminoBusqueda)="aplicarFiltros($event)"
-  ></app-buscador>
+    (onToggle)="onBuscadorToggle($event)"
+  >
+    <!-- Filtro de Estados (inyectado a la izquierda de columnas) -->
+    <div class="custom-dropdown">
+        <div class="dropdown-header"
+             (click)="mostrarEstados()"
+             (mouseenter)="hover.filter = true"
+             (mouseleave)="hover.filter = false">
+            <span class="current-value">
+              <i class="fas fa-filter" style="margin-right: 8px;"></i>
+              {{ estadoSeleccionado || 'Filtrar' }}
+            </span>
+            <img
+              [src]="hover.filter || showEstados ? '/assets/down_solid.png' : '/assets/down_line.png'"
+              alt="Desplegar"
+              class="dropdown-arrow"
+            >
+        </div>
+
+        @if (showEstados) {
+          <ul class="dropdown-list">
+            <li (click)="seleccionarEstado('')" [class.active]="estadoSeleccionado === ''">
+              <i class="fas fa-list"></i>
+              Todos los estados
+            </li>
+            @for (estado of estadosDisponibles; track estado) {
+              <li (click)="seleccionarEstado(estado)" [class.active]="estadoSeleccionado === estado">
+                  @switch (estado.toLowerCase()) {
+                    @case ('pendiente') { <i class="fas fa-clock text-warning"></i> }
+                    @case ('aprobado') { <i class="fas fa-check-circle text-success"></i> }
+                    @case ('rechazado') { <i class="fas fa-times-circle text-danger"></i> }
+                    @case ('activo') { <i class="fas fa-play-circle text-primary"></i> }
+                    @case ('finalizado') { <i class="fas fa-check-double text-secondary"></i> }
+                    @case ('cancelado') { <i class="fas fa-ban text-danger"></i> }
+                    @default { <i class="fas fa-question-circle"></i> }
+                  }
+                  {{ estado | titlecase }}
+              </li>
+            }
+          </ul>
+        }
+    </div>
+  </app-buscador>
 
   <!-- TABLA -->
   <div class="table-responsive">
@@ -109,7 +94,7 @@
               </span>
             </td>
             <td class="actions-column">
-           
+
               <button
                 class="btn-icon btn-view"
                 title="Ver detalles"
@@ -127,7 +112,7 @@
             <button class="btn-icon btn-delete" (click)="eliminarPrestamo(prestamo.value.datosgrupo)">
                 <i class="fas fa-trash-alt"></i>
             </button>
-            }     
+            }
             @else if (prestamo.value.datosgrupo.EstadoPrestamo=='pendiente') {
                 <button class="btn-action btn-accept" (click)="validaraprobacion(prestamo.key)">
                   <i class="fas fa-check"></i>
@@ -144,7 +129,7 @@
 
 
             </td>
-          </tr>  
+          </tr>
         }
         @if (prestamos.size === 0) {
           <tr>
@@ -170,7 +155,7 @@
     ></app-aviso-eliminar>
 
 
-    
+
 
   }
 </div>

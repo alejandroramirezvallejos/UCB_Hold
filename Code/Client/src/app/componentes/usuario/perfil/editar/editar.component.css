@@ -22,40 +22,71 @@
 
 .form-container {
   background: white;
-  padding: 2rem;
-  border-radius: 1rem;
+  padding: 2rem 0 2rem 0; /* Padding superior/inferior, 0 lateral para control interno */
+  border-radius: 20px;
   border: 1px solid #e1e5ea;
-  border-left: 4px solid var(--primary-color);
   box-shadow: 0 15px 25px rgba(0, 0, 0, 0.1);
   width: 100%;
   max-width: 500px;
-  max-height: 85vh;
-  overflow-y: auto;
+  max-height: 70vh;
+  overflow: hidden; /* Ocultar desbordamiento del contenedor principal */
   position: relative;
   animation: slideIn 0.3s ease-out;
+  display: flex;
+  flex-direction: column;
+}
+
+.scroll-content {
+  overflow-y: auto;
+  padding: 0 2rem; /* Padding lateral movido aquí */
+  padding-right: 1.5rem; /* Ajuste para scrollbar */
+  flex: 1;
+  scrollbar-width: thin;
+  scrollbar-color: rgba(0, 0, 0, 0.2) transparent;
+}
+
+/* Scrollbar estilizada aplicada a .scroll-content */
+.scroll-content::-webkit-scrollbar {
+  width: 4px;
+}
+
+.scroll-content::-webkit-scrollbar-track {
+  background: transparent;
+  margin-block: 5px;
+}
+
+.scroll-content::-webkit-scrollbar-thumb {
+  background-color: rgba(0, 0, 0, 0.2);
+  border-radius: 10px;
+}
+
+.scroll-content::-webkit-scrollbar-thumb:hover {
+  background-color: rgba(0, 0, 0, 0.3);
 }
 
 .btn-close {
   position: absolute;
   top: 1rem;
   right: 1rem;
+  z-index: 10; /* Asegurar que esté por encima */
   background: none;
   border: none;
-  font-size: 1.2rem;
-  color: #64748b;
+  padding: 0;
+  width: 24px;
+  height: 24px;
   cursor: pointer;
-  width: 1.5rem;
-  height: 1.5rem;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  border-radius: 50%;
-  transition: all 0.2s ease;
+  outline: none;
+}
+
+.btn-close img {
+  width: 100%;
+  height: 100%;
+  transition: opacity 0.2s;
 }
 
 .btn-close:hover {
-  background-color: rgba(0, 0, 0, 0.1);
-  color: var(--text-color);
+  background: none;
+  opacity: 0.8;
 }
 
 .form-container h2 {
@@ -118,37 +149,121 @@ textarea.form-input {
 }
 
 .register-button {
-  background-color: #5F6368;
-  color: rgb(255, 255, 255);
-  padding: 0.75rem;
+  background-color: #ffd814;
+  color: #6b7786;
+  padding: 0.75rem 2rem; /* Ajustar padding para que no sea ancho completo */
   border: none;
-  border-radius: 0.5rem;
+  border-radius: 20px;
   font-size: 1rem;
   font-weight: 500;
   cursor: pointer;
-  transition: background-color 0.2s;
-  display: flex;
+  transition: background-color 0.3s, transform 0.2s, box-shadow 0.3s;
+  display: inline-flex; /* Cambiar a inline-flex */
   align-items: center;
   justify-content: center;
   gap: 0.5rem;
-  width: 100%;
+  width: auto; /* Quitar ancho 100% */
+  box-shadow: 0 2px 8px rgba(255, 216, 20, 0.3);
+  min-width: 200px; /* Ancho mínimo razonable */
 }
 
 .register-button:hover:not(:disabled) {
-  background: #FFCF00;
-  color: #333;
-  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+  background: #ffd814;
+  color: #6b7786;
+  transform: scale(1.05);
+  box-shadow: 0 4px 12px rgba(255, 216, 20, 0.5);
 }
 
 .register-button:active:not(:disabled) {
-  background: #FFCF00;
-  transform: translateY(1px);
-  box-shadow: inset 0 3px 5px rgba(0, 0, 0, 0.125);
+  background: #ffd814;
+  transform: scale(1.05) translateY(0);
+  box-shadow: 0 2px 6px rgba(255, 216, 20, 0.3);
 }
 
 .register-button:disabled {
   opacity: 0.7;
   cursor: not-allowed;
+}
+
+/* Dropdown personalizado */
+.custom-dropdown {
+  position: relative;
+  width: 100%;
+  font-family: "Open Sans", sans-serif;
+}
+
+.dropdown-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  cursor: pointer;
+  user-select: none;
+  background-color: white; /* Match form input bg */
+}
+
+.dropdown-header .current-value {
+  font-size: 1rem;
+  font-weight: 400; /* Match input font weight */
+  color: #1f2937; /* Match text color */
+}
+
+.dropdown-header .current-value.placeholder {
+  color: #757575; /* Optional placeholder color */
+}
+
+.dropdown-arrow {
+  width: 16px; /* Ajustado para input */
+  height: 16px;
+  transition: transform 0.2s ease;
+}
+
+.dropdown-list {
+  position: absolute;
+  top: 100%;
+  left: 0;
+  right: 0;
+  max-height: 200px;
+  overflow-y: auto;
+  background: white;
+  border-radius: 12px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+  list-style: none;
+  padding: 0;
+  margin: 5px 0 0 0;
+  z-index: 100;
+  border: 1px solid #e2e8f0;
+  backdrop-filter: blur(10px);
+  background-color: rgba(255, 255, 255, 0.95);
+}
+
+.dropdown-list li {
+  padding: 0.75rem 1rem;
+  font-size: 1rem;
+  font-weight: 500;
+  color: #64748b;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  text-align: left;
+}
+
+.dropdown-list li:hover {
+  color: #FFCF00;
+  background-color: #f8fafc;
+}
+
+.dropdown-list li.selected {
+  color: #334155;
+  font-weight: 700;
+  background-color: #f1f5f9;
+}
+
+/* Scrollbar para la lista */
+.dropdown-list::-webkit-scrollbar {
+  width: 6px;
+}
+.dropdown-list::-webkit-scrollbar-thumb {
+  background-color: rgba(0, 0, 0, 0.2);
+  border-radius: 10px;
 }
 
 @keyframes fadeIn {
@@ -177,7 +292,7 @@ textarea.form-input {
     padding: 1.5rem;
     max-width: calc(100vw - 2rem);
   }
-  
+
   .form-container h2 {
     font-size: 1.4rem;
     padding-right: 1rem;
@@ -188,11 +303,11 @@ textarea.form-input {
   .form-container {
     padding: 1rem;
   }
-  
+
   .form-container h2 {
     font-size: 1.2rem;
   }
-  
+
   .form-group label {
     font-size: 0.85rem;
   }

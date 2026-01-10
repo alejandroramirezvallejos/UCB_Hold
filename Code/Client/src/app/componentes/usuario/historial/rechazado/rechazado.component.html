@@ -1,8 +1,4 @@
 <div class="prestamos-container">
-  <div class="header-section">
-    <h1 class="title">Préstamos Rechazados</h1>
-    <p class="subtitle">Equipos actualmente Rechazados</p>
-  </div>
 
   <div class="prestamos-list">
     @for (item of (datos | keyvalue) ; track item.key) {
@@ -10,7 +6,7 @@
         <div class="item-header">
           <div class="usuario-info">
             <h3 class="usuario-nombre">💻 {{ item.value.datosgrupo.NombreGrupoEquipo }}</h3>
-            <span class="cantidad-equipos">{{ item.value.equipos ? item.value.equipos.length : 0 }} equipos</span>           
+            <span class="cantidad-equipos">{{ item.value.equipos ? item.value.equipos.length : 0 }} equipos</span>
             <span class="usuario-carnet">{{ item.value.datosgrupo.NombreUsuario }} {{ item.value.datosgrupo.ApellidoPaternoUsuario }} - {{ item.value.datosgrupo.CarnetUsuario }}</span>
           </div>
           <div class="equipo-info">

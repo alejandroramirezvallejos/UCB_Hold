@@ -1,8 +1,4 @@
 <div class="prestamos-container">
-  <div class="header-section">
-    <h1 class="title">Préstamos Cancelados</h1>
-    <p class="subtitle">Equipos actualmente Cancelados</p>
-  </div>
 
   <div class="prestamos-list">
     @for (item of (datos | keyvalue) ; track item.key) {
@@ -40,7 +36,7 @@
       <div class="botones">
         <button class="ver-detalles" (click)="AbrirVista(item.value.equipos)"> VER DETALLES</button>
       </div>
-       
+
 
       </div>
     }

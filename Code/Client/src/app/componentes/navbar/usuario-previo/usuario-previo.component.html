@@ -7,13 +7,21 @@
         <div class="dropdown-item" (click)="seleccionar('historial')">
           <i class="fas fa-history"></i> Historial
         </div>
-        <div class="dropdown-item" (click)="seleccionar('admin')">
-          <i class="fas fa-user-shield"></i> Modo Admin
-        </div>
+
+        @if(isInAdminMode) {
+          <div class="dropdown-item" (click)="seleccionar('modousuario')">
+            <i class="fas fa-user"></i> Modo Usuario
+          </div>
+        } @else {
+          <div class="dropdown-item" (click)="seleccionar('admin')">
+            <i class="fas fa-user-shield"></i> Modo Admin
+          </div>
+        }
+
         <div class="dropdown-item" (click)="seleccionar('cerrar-sesion')">
           <i class="fas fa-sign-out-alt"></i> Cerrar Sesión
         </div>
-      
+
       </div>
  }
  @else if (sesion==true && rol=="usuario"){

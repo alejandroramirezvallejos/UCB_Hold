@@ -5,16 +5,17 @@
       <h1>Equipos</h1>
       <p class="subtitle">Gestión de equipos del laboratorio</p>
     </div>
-    <button class="botoncrear" (click)="crearequipo()">
-       Nuevo Equipo
-    </button>
   </div>
 
   <!-- BUSCADOR-->
   <app-buscador
     [columnas]="columnas"
     (terminoBusqueda)="aplicarFiltros($event)"
-  ></app-buscador>
+  >
+    <button class="botoncrear boton-derecha" (click)="crearequipo()">
+       Nuevo Equipo
+    </button>
+  </app-buscador>
 
 
   <!-- TABLA -->
@@ -41,10 +42,10 @@
               <button class="btn-icon btn-edit" (click)="editarEquipo(equipo)">
                 <i class="fas fa-pencil-alt"></i>
               </button>
-     
 
 
-            </td>        </tr>  
+
+            </td>        </tr>
         }
         @if (equipos.length === 0) {
           <tr>

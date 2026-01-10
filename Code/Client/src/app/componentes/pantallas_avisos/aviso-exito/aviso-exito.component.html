@@ -1,5 +1,13 @@
 <div class="container">
-  <div class="cerrar" (click)="cerrar()">X</div>
+  <button class="cerrar" (click)="cerrar()" aria-label="Cerrar">
+      <img
+        #closeIcon
+        src="/assets/x.png"
+        alt="Cerrar"
+        (mouseenter)="closeIcon.src = '/assets/x_color.png'"
+        (mouseleave)="closeIcon.src = '/assets/x.png'"
+      />
+  </button>
   <h1>¡Éxito!</h1>
   <div class="mensaje-container">
     <p>{{mensaje}}</p>
