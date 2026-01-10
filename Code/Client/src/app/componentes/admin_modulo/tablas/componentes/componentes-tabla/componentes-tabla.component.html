@@ -5,16 +5,17 @@
       <h1>Componentes</h1>
       <p class="subtitle">Gestión de componentes electrónicos</p>
     </div>
-    <button class="botoncrear" (click)="crearComponente()">
-       Nuevo Componente
-    </button>
   </div>
 
   <!-- BUSCADOR-->
   <app-buscador
     [columnas]="columnas"
     (terminoBusqueda)="aplicarFiltros($event)"
-  ></app-buscador>
+  >
+    <button class="botoncrear boton-derecha" (click)="crearComponente()">
+       Nuevo Componente
+    </button>
+  </app-buscador>
 
 
   <!-- TABLA -->
@@ -44,7 +45,7 @@
                 <i class="fas fa-pencil-alt"></i>
               </button>
             </td>
-          </tr>  
+          </tr>
         }
         @if (componentes.length === 0) {
           <tr>

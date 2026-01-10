@@ -1,107 +1,116 @@
-/* Updated sidebar styles for a modern, clean look */
-
-.sidebarinactivo, .sidebaractivo {
+.sidebar-menu {
   position: fixed;
-  left: 0;
-  top: 80px;
-  width: 60px; /* initial width is set via class override */
-  height: calc(100vh - 80px); /* ocupar desde top hasta el final */
+  left: 12rem; /* Aligned with navbar icon */
+  top: 70px;
+  width: 240px;
+  background: rgba(255, 255, 255, 0.95);
+  backdrop-filter: blur(10px);
+  border: 1px solid #e2e8f0;
+  border-radius: 12px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
   display: flex;
   flex-direction: column;
-  align-items: center;
-  padding-top: 20px;
+  z-index: 1100;
   overflow: hidden;
-  transition: width 0.3s ease, background 0.3s ease;
-  box-shadow: 2px 0 5px rgba(0, 0, 0, 0.1);
-  margin: 0;
-  border-radius: 0 8px 8px 0;
-  z-index: 999;
-}
-
-.sidebarinactivo {
-  width: 60px;
-  background: #5F6368;
-  animation: collapse 0.3s ease forwards;
-}
-
-.sidebaractivo {
-  width: 240px;
-  background: #5F6368;
-  animation: expand 0.3s ease forwards;
-}
-
-.boton {
-  flex-shrink: 0;
-  background-color: #FFCF00;
-  color: #5F6368;
-  border: none;
-  width: 36px;
-  height: 36px;
-  border-radius: 50%;
-  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
-  font-size: 18px;
-  margin: 5px 0;
-  cursor: pointer;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  transition: transform 0.2s ease, background 0.2s ease;
-}
-.boton:hover {
-  transform: scale(1.1);
-  background-color: #f0f0f0;
+  animation: slideInLeft 0.2s ease-out;
+  font-family: "Manrope", sans-serif;
+  max-height: calc(100vh - 100px);
 }
 
 .contenido {
-  flex: 1;
-  width: 100%;
   display: flex;
   flex-direction: column;
-  align-items: center;
-  padding: 5px;
-  padding-bottom: 20px; /* espacio extra al final */
-  gap: 2px;
+  width: 100%;
   overflow-y: auto;
-  overflow-x: hidden; /* evitar scroll horizontal */
+  height: 100%;
+  padding: 5px 0;
 }
 
 .item {
-  width: 95%;
-  min-height: 40px;
+  padding: 0.75rem 1rem;
+  font-size: 1rem;
+  color: #64748b;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  font-weight: 500;
   display: flex;
   align-items: center;
-  padding: 6px 10px;
-  font-size: 15px;
-  color: #fff;
-  background-color: rgba(255, 255, 255, 0.1);
-  border-radius: 6px;
-  cursor: pointer;
-  transition: background 0.2s ease;
-  word-wrap: break-word;
-  overflow-wrap: break-word;
-  line-height: 1.2;
-}
-.item:hover {
-  background-color: rgba(255, 255, 255, 0.2);
+  gap: 0.75rem;
+  border-left: 3px solid transparent;
 }
 
-/* Item structure: icon + text */
-.item {
-  width: 95%;
-  min-height: 40px;
+.item:hover,
+.item.active {
+  background-color: #f8fafc;
+  color: #FFCF00;
+  border-left-color: transparent;
+  font-weight: 700;
+  box-shadow: inset 2px 0 0 0 #FFCF00; /* Subtle colored line on left internal */
+}
+
+/* Icons in item */
+.item i {
+  width: 20px;
+  text-align: center;
+}
+
+/* Scrollbar styling */
+.contenido::-webkit-scrollbar {
+  width: 3px; /* Reduced to ~20% smaller than 4px */
+}
+.contenido::-webkit-scrollbar-thumb {
+  background-color: rgba(0, 0, 0, 0.2);
+  border-radius: 10px;
+}
+.contenido::-webkit-scrollbar-track {
+  background: transparent;
+  margin: 5px 0;
+}
+
+@keyframes slideInLeft {
+  from {
+    opacity: 0;
+    transform: translateY(-10px); /* Dropdown usually slides down or fades */
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+
+.contenido {
   display: flex;
-  align-items: center;
-  gap: 8px;
-  padding: 6px 10px;
-  font-size: 15px;
-  color: #fff;
-  background-color: rgba(255, 255, 255, 0.1);
-  border-radius: 6px;
-  cursor: pointer;
-  transition: background 0.2s ease;
-  white-space: nowrap;
-  overflow: hidden;
-  text-overflow: ellipsis;
+  flex-direction: column;
+  width: 100%;
+  overflow-y: auto; /* Scroll here */
+  height: 100%;
+  padding: 10px 0;
+}
+
+/* Scrollbar styling */
+.contenido::-webkit-scrollbar {
+  width: 6px;
+}
+.contenido::-webkit-scrollbar-thumb {
+  background-color: rgba(0, 0, 0, 0.2);
+  border-radius: 10px;
+}
+.contenido::-webkit-scrollbar-track {
+  background: transparent;
+  margin: 5px 0;
+}
+
+
+@keyframes slideInLeft {
+  from {
+    opacity: 0;
+    transform: translateX(-20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateX(0);
+  }
 }
 
 /* Padding extra al último elemento */

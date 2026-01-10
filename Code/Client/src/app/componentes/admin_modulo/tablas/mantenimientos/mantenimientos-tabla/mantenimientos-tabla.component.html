@@ -5,16 +5,17 @@
       <h1>Mantenimientos</h1>
       <p class="subtitle">Gestión de mantenimientos del laboratorio</p>
     </div>
-    <button class="botoncrear" (click)="crearmantenimiento()">
-       Nuevo Mantenimiento
-    </button>
   </div>
 
   <!-- BUSCADOR-->
   <app-buscador
     [columnas]="columnas"
     (terminoBusqueda)="aplicarFiltros($event)"
-  ></app-buscador>
+  >
+    <button class="botoncrear boton-derecha" (click)="crearmantenimiento()">
+       Nuevo Mantenimiento
+    </button>
+  </app-buscador>
 
 
   <!-- TABLA -->
@@ -45,7 +46,7 @@
                 <i class="fas fa-trash-alt"></i>
               </button>
             </td>
-          </tr>  
+          </tr>
         }
         @if (mantenimientosFiltrados.length === 0) {
           <tr>

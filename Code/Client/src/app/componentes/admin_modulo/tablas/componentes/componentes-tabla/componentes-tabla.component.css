@@ -16,24 +16,26 @@
 .botoncrear {
   display: flex;
   align-items: center;
-  gap: 0.5rem;
-  background-color: #5F6368;
+  gap: 0.25rem;
+  background-color: #9CA3AF;
   color: white;
-  padding: 12px 25px;
+  padding: 6px 12px;
   border: none;
-  border-radius: 10px;
-  font-size: 16px;
+  border-radius: 16px;
+  font-size: 12px;
   font-weight: 600;
   cursor: pointer;
-  transition: background-color 0.3s ease, transform 0.2s ease;
-  box-shadow: 0 2px 4px rgba(95, 99, 104, 0.2);
+  transition: all 0.3s ease;
+  box-shadow: none;
+  white-space: nowrap;
+  height: 32px;
 }
 
 .botoncrear:hover {
-  background-color: #FFCF00;
-  color: #333;
+  background-color: #ffd814;
+  color: #6b7786;
   transform: translateY(-1px);
-  box-shadow: 0 4px 8px rgba(255, 207, 0, 0.3);
+  box-shadow: 0 4px 12px rgba(255, 216, 20, 0.4);
 }
 
 .botoncrear:active {
@@ -42,11 +44,18 @@
 }
 
 .botoncrear i {
-  font-size: 16px;
+  font-size: 12px;
+}
+
+.table-responsive {
+  background-color: white;
+  border-radius: 12px;
+  box-shadow: 0 1px 3px rgba(0,0,0,0.05);
+  overflow: hidden;
 }
 
 .componentes-container {
-  padding: 1.5rem;
+  padding: 1.5rem 0 1.5rem 0;
   background-color: var(--color-background);
   min-height: 100vh;
   color: var(--color-text);
@@ -57,7 +66,7 @@
   display: flex;
   justify-content: space-between;
   align-items: center;
-  margin-bottom: 1.5rem;
+  margin-bottom: 0.5rem; /* Reduced */
 }
 
 .header-title h1 {
@@ -142,7 +151,7 @@
   border-collapse: collapse;
 }
 
-.data-table th, 
+.data-table th,
 .data-table td {
   padding: 1rem;
   text-align: left;
@@ -331,12 +340,12 @@
     min-width: 90vw;
     padding: 1.5rem;
   }
-  
+
   .modal-content p {
     font-size: 1rem;
     margin-bottom: 1.25rem;
   }
-  
+
   .modal-content .btn {
     margin: 0.25rem;
     width: calc(50% - 0.5rem);

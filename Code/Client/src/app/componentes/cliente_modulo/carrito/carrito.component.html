@@ -1,5 +1,6 @@
 @if(!carritovacio()){
   <div class="carrito-container">
+    @if(step === 1) {
     <ul class="capsule-list">
       @for(item of (carrito | keyvalue); track item.key) {
       <li class="capsule">
@@ -26,15 +27,21 @@
             <option *ngFor="let n of generarCantidadesMax(item.value.cantidadMax)" [value]="n">{{ n }}</option>
           </select>
         </div>
-        
+
         <button (click)="cambiarcantidad(item.key, 0)" class="boton-eliminar" title="Eliminar del carrito">
           <i class="fas fa-trash-alt"></i>
         </button>
-      
+
       </li>
       }
     </ul>
 
+    <div class="navigation-buttons">
+       <button (click)="nextStep()" class="boton-carrito">Siguiente</button>
+    </div>
+    }
+
+    @if(step === 2) {
 
     <app-calendario
     [entradaCarrito]="carrito"
@@ -46,26 +53,26 @@
 
       <div class="dates-picker">
         <div class="date-field">
-          <label for="fechaInicio" (click)="abrirCalendario('fechaInicio')">Fecha de Inicio</label>
-          <div class="input-wrapper" (click)="abrirCalendario('fechaInicio')">
+          <label for="fechaInicio">Fecha de Inicio</label>
+          <div class="input-wrapper">
             <input
-              type="date"
+              type="text"
               id="fechaInicio"
-              [(ngModel)]="fechaInicioStr"
-              [min]="hoystr"
-              [max]="fechamaxima(fecha_inicio())"
+              [ngModel]="fechaInicioStr"
+              readonly
+              placeholder="Seleccione en el calendario"
             />
           </div>
         </div>
         <div class="date-field">
-          <label for="fechaFin" (click)="abrirCalendario('fechaFin')">Fecha de Fin</label>
-          <div class="input-wrapper" (click)="abrirCalendario('fechaFin')">
+          <label for="fechaFin">Fecha de Fin</label>
+          <div class="input-wrapper">
             <input
-              type="date"
+              type="text"
               id="fechaFin"
-              [(ngModel)]="fechaFinalStr"
-              [min]="fechaInicioStr"
-              [max]="fechamaxima(fecha_inicio())"
+              [ngModel]="fechaFinalStr"
+              readonly
+              placeholder="Seleccione en el calendario"
             />
           </div>
         </div>
@@ -79,14 +86,15 @@
     >
       Confirmar Solicitud
     </button>
+    }
 
     @if(errorboton()){
     <app-mostrarerror
       [error]="errorboton"
       [mensaje]="mensajeerror"
     ></app-mostrarerror>
-    } 
-    
+    }
+
   </div>
 
 

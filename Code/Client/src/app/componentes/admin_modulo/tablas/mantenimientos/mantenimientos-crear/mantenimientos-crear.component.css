@@ -22,19 +22,39 @@
 
 .form-container {
   background: white;
-  padding: 2rem;
-  border-radius: 1rem;
+  padding: 2rem 0;
+  border-radius: 20px;
   border: 1px solid #e1e5ea;
-  border-left: 4px solid var(--primary-color);
   box-shadow: 0 15px 25px rgba(0, 0, 0, 0.1);
   width: 100%;
   max-width: 500px;
   max-height: 85vh;
-  overflow-y: auto;
+  overflow: hidden;
   position: relative;
+  display: flex;
+  flex-direction: column;
   animation: slideIn 0.3s ease-out;
 }
 
+.form-content {
+  overflow-y: auto;
+  padding: 0 2rem;
+  flex: 1;
+}
+
+.form-content::-webkit-scrollbar {
+  width: 4px;
+}
+.form-content::-webkit-scrollbar-thumb {
+  background-color: rgba(0, 0, 0, 0.2);
+  border-radius: 10px;
+}
+.form-content::-webkit-scrollbar-track {
+  background: transparent;
+  margin: 10px 0;
+}
+
+/* ... btn-close ... */
 .btn-close {
   position: absolute;
   top: 1rem;
@@ -51,6 +71,7 @@
   justify-content: center;
   border-radius: 50%;
   transition: all 0.2s ease;
+  z-index: 10;
 }
 
 .btn-close:hover {
@@ -100,9 +121,13 @@
   box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.1);
 }
 
-.form-input:invalid {
+.form-input.ng-invalid.ng-touched {
   border-color: #dc2626 !important;
   border-width: 2px !important;
+}
+
+.form-input.ng-invalid:not(.ng-touched) {
+  border-color: #e1e5ea !important;
 }
 
 textarea.form-input {
@@ -111,32 +136,76 @@ textarea.form-input {
   font-family: inherit;
 }
 
+.btn-agregar-equipo {
+  background-color: #9CA3AF;
+  color: white;
+  padding: 0.5rem 1rem;
+  border: none;
+  border-radius: 16px;
+  font-size: 0.9rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  margin-bottom: 1rem;
+  width: auto;
+  align-self: flex-start;
+}
+
+.btn-agregar-equipo:hover {
+  background-color: #ffd814;
+  color: #6b7786;
+  transform: translateY(-1px);
+}
+
+.equipo-pill {
+  background-color: #f8fafc;
+  border: 1px solid #e2e8f0;
+  border-radius: 12px;
+  padding: 0.5rem 1rem;
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  margin-bottom: 0.5rem;
+}
+
+.btn-remove {
+  background: none;
+  border: none;
+  cursor: pointer;
+  padding: 4px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
 .form-submit {
   margin-top: 1rem;
   text-align: center;
 }
 
 .register-button {
-  background-color: #5F6368;
-  color: rgb(255, 255, 255);
-  padding: 0.75rem;
+  background-color: #ffd814;
+  color: #6b7786;
+  padding: 0.75rem 2rem;
   border: none;
-  border-radius: 0.5rem;
+  border-radius: 20px;
   font-size: 1rem;
-  font-weight: 500;
+  font-weight: 600;
   cursor: pointer;
-  transition: background-color 0.2s;
-  display: flex;
+  transition: background-color 0.2s, transform 0.2s;
+  display: inline-flex;
   align-items: center;
   justify-content: center;
   gap: 0.5rem;
-  width: 100%;
+  width: auto;
+  margin: 0 auto;
+  min-width: 150px;
 }
 
 .register-button:hover:not(:disabled) {
-  background: #FFCF00;
-  color: #333;
+  background: #f7ca00;
   box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+  transform: translateY(-1px);
 }
 
 .register-button:active:not(:disabled) {
@@ -283,7 +352,7 @@ textarea.form-input {
     padding: 1.5rem;
     max-width: calc(100vw - 2rem);
   }
-  
+
   .form-container h2 {
     font-size: 1.4rem;
     padding-right: 1rem;
@@ -294,11 +363,11 @@ textarea.form-input {
   .form-container {
     padding: 1rem;
   }
-  
+
   .form-container h2 {
     font-size: 1.2rem;
   }
-  
+
   .form-group label {
     font-size: 0.85rem;
   }

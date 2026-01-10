@@ -5,16 +5,17 @@
       <h1>Usuarios</h1>
       <p class="subtitle">Gestión de usuarios del sistema</p>
     </div>
-    <button class="botoncrear" (click)="crearusuario()">
-       Nuevo Usuario
-    </button>
   </div>
 
   <!-- BUSCADOR-->
   <app-buscador
     [columnas]="columnas"
     (terminoBusqueda)="aplicarFiltros($event)"
-  ></app-buscador>
+  >
+    <button class="botoncrear boton-derecha" (click)="crearusuario()">
+       Nuevo Usuario
+    </button>
+  </app-buscador>
 
 
   <!-- TABLA -->
@@ -49,7 +50,7 @@
                 <i class="fas fa-pencil-alt"></i>
               </button>
             </td>
-        </tr>  
+        </tr>
         }
         @if (usuarios.length === 0) {
           <tr>

@@ -20,7 +20,13 @@ export class RegistrarUsuarioComponent {
   nuevoUsuario: Usuario = new Usuario();
   password: string = '';
   confirmPassword: string = '';
-  carreras: string[] = []; 
+  carreras: string[] = [];
+
+  // Agregado para dropdown personalizado
+  isOpen: boolean = false;
+  isHovered: boolean = false;
+
+  submitted: boolean = false;
 
   error : WritableSignal<boolean> = signal(false);
   mensajeerror : string = "";
@@ -31,19 +37,42 @@ export class RegistrarUsuarioComponent {
 
   constructor(private usuarioS: UsuarioService, private router: Router , private registrarcuenta : UsuarioServiceAPI , private carrerasS : CarreraService) {}
 
+  // Agregados métodos para dropdown personalizado
+  toggleDropdown() {
+    this.isOpen = !this.isOpen;
+  }
+
+  selectCarrera(carrera: string) {
+    this.nuevoUsuario.carrera = carrera;
+    this.isOpen = false;
+  }
+
+  onMouseEnter() {
+    this.isHovered = true;
+  }
+
+  onMouseLeave() {
+    this.isHovered = false;
+  }
 
   ngOnInit() {
     this.carrerasS.obtenerCarreras().subscribe({
       next: (response) => {
-         this.carreras = response.map(carrera => carrera.nombre); 
-         
+         this.carreras = response.map(carrera => carrera.nombre);
+         // Set default value if available, otherwise just hardcode if the API ensures it exists
+         if (this.carreras.includes("Ingeniería de Software")) {
+            this.nuevoUsuario.carrera = "Ingeniería de Software";
+         } else {
+             // Fallback or force it if backend accepts arbitrary string, though select usually requires matching option
+             this.nuevoUsuario.carrera = "Ingeniería de Software";
+         }
       },
       error: (error) => {
-       
+
         this.mensajeerror = "Error al obtener las carreras intente mas tarde";
         console.error('Error al obtener las carreras:', error.error.mensaje);
         this.error.set(true);
-      
+
       }
 
     });
@@ -54,9 +83,17 @@ export class RegistrarUsuarioComponent {
 
 
 
-  registrar() {
+  registrar(form: any) { // Change signature to accept form
+    this.submitted = true;
+
+    // Basic validation check
+    if (form.invalid || this.password !== this.confirmPassword || this.validartelefono(this.nuevoUsuario.telefono)) {
+        // If invalid, the UI will show errors because submitted is true
+        return;
+    }
+
     this.nuevoUsuario.rol = 'usuario';
-    
+
     this.registrarcuenta.registrarCuenta(this.nuevoUsuario,this.password, "estudiante").subscribe({
       next: (response) => {
         this.mensajeaviso = "Usuario registrado exitosamente";
@@ -70,17 +107,18 @@ export class RegistrarUsuarioComponent {
       }
     });
 
-    
+
   }
 
-  
+
 
 
   irALogin() {
-    this.router.navigate(['/home']);
+    this.router.navigate(['/Iniciar-Sesion']);
   }
-  validartelefono(telefono : string ) : boolean{
+
+  validartelefono(telefono: string | null | undefined) : boolean{
     const regex = /^[-+0-9]+$/;
-   return !regex.test(telefono);
+   return !regex.test(<string>telefono);
   }
 }

@@ -1,5 +1,6 @@
 import { CommonModule } from '@angular/common';
-import { Component, EventEmitter, Input, input, Output, signal, WritableSignal, ViewEncapsulation } from '@angular/core';
+import { Component, EventEmitter, Input, Output, ViewEncapsulation } from '@angular/core';
+import { SidebarService } from '../../services/sidebar.service';
 
 @Component({
   selector: 'app-sidebard',
@@ -10,18 +11,16 @@ import { Component, EventEmitter, Input, input, Output, signal, WritableSignal, 
 })
 export class SidebardComponent {
 
-  boton : WritableSignal<boolean> = signal(true);
-
   @Input() contenido : string[] = [];
 
   @Output() item :EventEmitter<string> = new EventEmitter<string>();
 
-  clickboton(){
-    this.boton.set(!this.boton());
-  }
+  @Input() activeItem: string = '';
+
+  constructor(public sidebarService: SidebarService) {}
 
   clickitem(item : string){
     this.item.emit(item);
-  } 
+  }
 
 }

@@ -5,16 +5,17 @@
       <h1>Gaveteros</h1>
       <p class="subtitle">Gestión de gaveteros del laboratorio</p>
     </div>
-    <button class="botoncrear" (click)="creargarvetero()">
-       Nuevo Gavetero
-    </button>
   </div>
 
   <!-- BUSCADOR-->
     <app-buscador
     [columnas]="columnas"
     (terminoBusqueda)="aplicarFiltros($event)"
-  ></app-buscador>
+  >
+    <button class="botoncrear boton-derecha" (click)="creargarvetero()">
+       Nuevo Gavetero
+    </button>
+  </app-buscador>
 
 
   <!-- TABLA -->
@@ -43,10 +44,10 @@
               <button class="btn-icon btn-edit" (click)="editarGavetero(gavetero)">
                 <i class="fas fa-pencil-alt"></i>
               </button>
-     
 
 
-            </td>        </tr>  
+
+            </td>        </tr>
         }
         @if (gaveteros.length === 0) {
           <tr>

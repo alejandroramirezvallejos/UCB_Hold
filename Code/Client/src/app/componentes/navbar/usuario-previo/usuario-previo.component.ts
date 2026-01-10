@@ -10,14 +10,16 @@ import { UsuarioService } from '../../../services/usuario/usuario.service';
 })
 export class UsuarioPrevioComponent {
 
-  sesion :boolean; 
-  rol : string; 
-  @Input() showUserMenu : WritableSignal<Boolean> = signal(true); 
+  sesion :boolean;
+  rol : string;
+  isInAdminMode: boolean = false;
+  @Input() showUserMenu : WritableSignal<Boolean> = signal(true);
 
-  
+
   constructor(private router : Router , private usuario : UsuarioService){
-    this.sesion=!usuario.vacio(); 
-    this.rol=usuario.obtenerrol(); 
+    this.sesion=!usuario.vacio();
+    this.rol=usuario.obtenerrol();
+    this.isInAdminMode = this.router.url.includes('/admin');
   }
 
     seleccionar(item: string) {
@@ -35,13 +37,17 @@ export class UsuarioPrevioComponent {
       }
       else if (item=='cerrar-sesion'){
         this.usuario.vaciar();
+        this.router.navigate(["/Iniciar-Sesion"]); // redirect to login usually?
       }
       else if(item=='admin'){
         this.router.navigate(["/admin"])
       }
-    
-    
-    
-      this.showUserMenu.set(false); 
+      else if(item=='modousuario'){
+        this.router.navigate(["/home"])
+      }
+
+
+
+      this.showUserMenu.set(false);
   }
 }

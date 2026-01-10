@@ -3,9 +3,14 @@
 
 <div class="form-container adaptativo">
     <button class="btn-close" (click)="cerrarVista()">
-        <i class="fas fa-times"></i>
+        <img
+          #closeIcon
+          src="/assets/x.png"
+          alt="Cerrar"
+          (mouseenter)="closeIcon.src = '/assets/x_color.png'"
+          (mouseleave)="closeIcon.src = '/assets/x.png'"
+        />
     </button>
-    <h2 class="titulo-minimo">Préstamos</h2>
 
     <div class="tabla-wrapper">
         <table class="vista-table">

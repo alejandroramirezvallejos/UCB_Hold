@@ -1,11 +1,10 @@
-import { Component, signal, Signal, WritableSignal } from '@angular/core';
+import { Component, signal, WritableSignal } from '@angular/core';
 import { CarritoService } from '../../../services/carrito/carrito.service';
 import {Carrito } from '../../../models/carrito'
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 
-import { FormularioComponent } from '../formulario/formulario.component';
-import { Router } from '@angular/router';
+import { Router, ActivatedRoute } from '@angular/router';
 import { UsuarioService } from '../../../services/usuario/usuario.service';
 import { MostrarerrorComponent } from '../../pantallas_avisos/mostrarerror/mostrarerror.component';
 import { Aviso } from '../../pantallas_avisos/aviso/aviso.component';
@@ -24,14 +23,16 @@ import { CalendarioComponent } from './calendario/calendario.component';
 export class CarritoComponent {
   private error : boolean = false;
 
+  public step: number = 1;
+
   public errorboton : WritableSignal<boolean> = signal(false);
-  public mensajeerror: string = "Datos insertados no validos"; 
+  public mensajeerror: string = "Datos insertados no validos";
 
   aviso : WritableSignal<boolean> = signal(false);
 
   exito : WritableSignal<boolean> = signal(false);
 
-  cargando : boolean = false; 
+  cargando : boolean = false;
 
 
 
@@ -46,17 +47,22 @@ export class CarritoComponent {
   fecha_final: WritableSignal<Date | null> = signal(null);
 
   carrito: Carrito = {};
-  
 
 
 
-  constructor(public carritoS: CarritoService , private router : Router  , private usuario : UsuarioService , private Sprestamo : PrestamosAPIService) {
+
+  constructor(public carritoS: CarritoService , private router : Router, private route: ActivatedRoute , private usuario : UsuarioService , private Sprestamo : PrestamosAPIService) {
     this.carrito  = this.carritoS.obtenercarrito();
     this.hoy.setHours(0, 0, 0, 0);
-  };
+
+    // Initialize step based on query params
+    this.route.queryParams.subscribe(params => {
+      this.step = params['step'] ? Number(params['step']) : 1;
+    });
+  }
 
 
- 
+
   private parseDateLocal = (dateString: string) => {
       const [year, month, day] = dateString.split('-').map(Number);
       return new Date(year, month - 1, day);
@@ -90,7 +96,7 @@ export class CarritoComponent {
       return "";
     }
 
-   
+
     const hoyMasUnAnio = new Date(this.hoy);
     hoyMasUnAnio.setFullYear(this.hoy.getFullYear() + 1);
 
@@ -110,7 +116,7 @@ export class CarritoComponent {
     this.error = false;
     return "";
   }
-  
+
   fechamaxima(fechaInicio: Date | null): string {
     if (!fechaInicio) return '';
     const fecha = new Date(fechaInicio);
@@ -118,12 +124,26 @@ export class CarritoComponent {
     return this.toLocalISOString(fecha);
   }
 
+  nextStep() {
+    this.router.navigate([], {
+      relativeTo: this.route,
+      queryParams: { step: 2 },
+      queryParamsHandling: 'merge'
+    });
+  }
 
+  prevStep() {
+     this.router.navigate([], {
+      relativeTo: this.route,
+      queryParams: { step: 1 },
+      queryParamsHandling: 'merge'
+    });
+  }
 
   clickboton() {
     if (this.error) {
       this.errorboton.set(true);
-    } 
+    }
     else if(this.usuario.vacio()){
         this.router.navigate(['/Iniciar-Sesion']);
     }
@@ -161,28 +181,28 @@ export class CarritoComponent {
     this.router.navigate(['/home']);
   }
 
- 
+
 
   carritovacio(){
     if (Object.keys(this.carrito).length==0){
-      return true; 
+      return true;
     }
     else{
-      return false; 
+      return false;
     }
   }
 
   botonDeshabilitado(): boolean {
     if (this.carritovacio()) return true;
-    
+
     if (!this.fecha_inicio() || !this.fecha_final()) return true;
 
     if (this.verificarfecha() !== '') return true;
-    
+
     return false;
   }
 
-  
+
 
   generarCantidadesMax(cantidad: number): number[] {
     return Array.from({ length: cantidad }, (_, i) => i + 1);

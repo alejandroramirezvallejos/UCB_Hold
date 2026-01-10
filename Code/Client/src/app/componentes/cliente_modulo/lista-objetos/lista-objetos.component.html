@@ -44,10 +44,16 @@
         <button
           class="pagination__arrow-btn"
           [class.pagination__arrow--disabled]="!hayPaginasAnteriores"
-          (click)="actualizarPagina(paginaActual - 1)">
-          <svg class="pagination__arrow-icon" viewBox="0 0 24 24">
-            <path d="M15.41 16.59L10.83 12l4.58-4.59L14 6l-6 6 6 6 1.41-1.41z"/>
-          </svg>
+          (click)="actualizarPagina(paginaActual - 1)"
+          aria-label="Página anterior">
+          <img
+            #prevIcon
+            src="/assets/back_line.png"
+            alt="Anterior"
+            class="pagination__arrow-img"
+            (mouseenter)="prevIcon.src = '/assets/back_solid.png'"
+            (mouseleave)="prevIcon.src = '/assets/back_line.png'"
+          />
         </button>
 
         <div class="pagination__numbers">
@@ -64,10 +70,16 @@
         <button
           class="pagination__arrow-btn"
           [class.pagination__arrow--disabled]="!hayPaginasSiguientes"
-          (click)="actualizarPagina(paginaActual + 1)">
-          <svg class="pagination__arrow-icon" viewBox="0 0 24 24">
-            <path d="M8.59 16.59L13.17 12 8.59 7.41 10 6l6 6-6 6-1.41-1.41z"/>
-          </svg>
+          (click)="actualizarPagina(paginaActual + 1)"
+          aria-label="Página siguiente">
+          <img
+            #nextIcon
+            src="/assets/forward_line.png"
+            alt="Siguiente"
+            class="pagination__arrow-img"
+            (mouseenter)="nextIcon.src = '/assets/forward_solid.png'"
+            (mouseleave)="nextIcon.src = '/assets/forward_line.png'"
+          />
         </button>
       </div>
     }

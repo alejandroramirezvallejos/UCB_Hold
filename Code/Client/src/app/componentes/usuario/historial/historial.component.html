@@ -1,8 +1,24 @@
 <div class="container">
-  <app-sidebard
-    [contenido]="contenido"
-    (item)="itemclick($event)"
-  ></app-sidebard>
+  <div class="custom-dropdown">
+    <div class="dropdown-header" (click)="toggleDropdown()" (mouseenter)="onMouseEnter()" (mouseleave)="onMouseLeave()">
+      <span class="current-value">Préstamos {{ item }}s</span>
+      <img
+        [src]="isHovered || isOpen ? '/assets/down_solid.png' : '/assets/down_line.png'"
+        alt="Desplegar"
+        class="dropdown-arrow"
+      >
+    </div>
+
+    @if(isOpen) {
+      <ul class="dropdown-list">
+        @for(estado of contenido; track $index) {
+          <li (click)="itemclick(estado)" [class.selected]="estado === item">
+            {{ estado }}
+          </li>
+        }
+      </ul>
+    }
+  </div>
 
   <div class="items-wrapper">
     @if(item=="Activo"){
@@ -23,6 +39,6 @@
     @else if(item=="Cancelado"){
       <app-cancelado></app-cancelado>
     }
-  
+
   </div>
 </div>

@@ -1,12 +1,14 @@
 // navbar.component.ts
-import { Component, Output, EventEmitter, signal, WritableSignal } from '@angular/core';
+import { Component, signal, WritableSignal } from '@angular/core';
 import { RouterModule } from '@angular/router';
 import { CarritoService } from '../../services/carrito/carrito.service';
-import { CommonModule } from '@angular/common';
+import { CommonModule, Location } from '@angular/common';
 
-import { Router } from '@angular/router';
+import { Router, NavigationEnd } from '@angular/router';
 import { UsuarioPrevioComponent } from './usuario-previo/usuario-previo.component';
 import { UsuarioService } from '../../services/usuario/usuario.service';
+import { filter } from 'rxjs';
+import { SidebarService } from '../../services/sidebar.service';
 
 @Component({
   selector: 'app-navbar',
@@ -18,11 +20,74 @@ import { UsuarioService } from '../../services/usuario/usuario.service';
 
 
 export class NavbarComponent {
- 
+
   showUserMenu : WritableSignal<boolean> = signal(false);
+  showAdminSidebarToggle: WritableSignal<boolean> = signal(false);
 
+  showHome: WritableSignal<boolean> = signal(true);
+  showBack: WritableSignal<boolean> = signal(true);
+  showCart: WritableSignal<boolean> = signal(true);
+  showProfile: WritableSignal<boolean> = signal(true);
 
-  constructor(private carrito : CarritoService , private router : Router , private usuario : UsuarioService) { }
+  constructor(private carrito : CarritoService , private router : Router , private usuario : UsuarioService, private location: Location, private sidebarService: SidebarService) {
+    this.router.events.pipe(
+      filter(event => event instanceof NavigationEnd)
+    ).subscribe((event: NavigationEnd) => {
+      this.updateButtonVisibility(event.urlAfterRedirects || event.url);
+    });
+  }
+
+  private updateButtonVisibility(url: string) {
+    // Normalize URL
+    const cleanUrl = url.split('?')[0];
+
+    if (cleanUrl.includes('/Iniciar-Sesion') || cleanUrl.includes('/Registrar-Usuario')) {
+      // Login / Register: Hide All
+      this.showHome.set(false);
+      this.showBack.set(false);
+      this.showCart.set(false);
+      this.showProfile.set(false);
+    } else if (cleanUrl.includes('/home')) {
+      // Home Page: No Home, No Back
+      this.showHome.set(false);
+      this.showBack.set(false);
+      this.showCart.set(true);
+      this.showProfile.set(true);
+    } else if (cleanUrl.includes('/Carrito') || cleanUrl.includes('/Objeto') || cleanUrl.includes('/Formulario')) {
+      // Cart / Object / Form: Show Back, Hide Home
+      this.showHome.set(false);
+      this.showBack.set(true);
+      this.showCart.set(true);
+      this.showProfile.set(true);
+    } else if (cleanUrl.includes('/Perfil') || cleanUrl.includes('/Historial')) {
+      // Profile: Show Home, Hide Back
+      this.showHome.set(true);
+      this.showBack.set(false);
+      this.showCart.set(true);
+      this.showProfile.set(true);
+    } else {
+      // Default: Show All
+      this.showHome.set(true);
+      this.showBack.set(true);
+      this.showCart.set(true);
+      this.showProfile.set(true);
+    }
+
+    // Logic for Admin role
+    if (this.usuario.obtenerrol() === 'administrador') {
+      this.showHome.set(false);
+      this.showBack.set(false);
+      this.showCart.set(false);
+      // Logic: If on admin route, show sidebar toggle
+      if (cleanUrl.includes('/admin')) {
+         this.showAdminSidebarToggle.set(true);
+      } else {
+         this.showAdminSidebarToggle.set(false);
+      }
+    } else {
+      this.showAdminSidebarToggle.set(false);
+    }
+  }
 
   botonhome() {
     if(this.usuario.vacio()==true){
@@ -33,7 +98,7 @@ export class NavbarComponent {
     }
 
 
-   
+
   }
 
 
@@ -42,12 +107,16 @@ export class NavbarComponent {
       this.showUserMenu.set(!this.showUserMenu());
   }
 
+  toggleSidebar() {
+    this.sidebarService.toggle();
+  }
+
   totalproductos(): number {
     return this.carrito.obtenertotal();
   }
 
   mostrarcarrito() {
-    if(this.usuario.vacio()==true){
+    if(this.usuario.vacio()){
       this.router.navigate(['/Iniciar-Sesion']);
     }
     else{
@@ -55,7 +124,9 @@ export class NavbarComponent {
     }
 
   }
-  
 
+  goBack() {
+    this.location.back();
+  }
 
 }
