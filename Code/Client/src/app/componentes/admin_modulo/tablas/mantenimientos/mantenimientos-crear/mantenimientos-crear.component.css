@@ -43,14 +43,15 @@
 }
 
 .form-content::-webkit-scrollbar {
-  width: 4px;
+  width: 6px;
 }
 .form-content::-webkit-scrollbar-thumb {
-  background-color: rgba(0, 0, 0, 0.2);
+  background-color: rgba(0, 0, 0, 0.3);
   border-radius: 10px;
 }
 .form-content::-webkit-scrollbar-track {
-  background: transparent;
+  background: rgba(0, 0, 0, 0.05);
+  border-radius: 10px;
   margin: 10px 0;
 }
 
@@ -61,22 +62,19 @@
   right: 1rem;
   background: none;
   border: none;
-  font-size: 1.2rem;
-  color: #64748b;
   cursor: pointer;
-  width: 1.5rem;
-  height: 1.5rem;
+  width: 1.75rem;
+  height: 1.75rem;
   display: flex;
   align-items: center;
   justify-content: center;
-  border-radius: 50%;
   transition: all 0.2s ease;
   z-index: 10;
+  padding: 0;
 }
 
 .btn-close:hover {
-  background-color: rgba(0, 0, 0, 0.1);
-  color: var(--text-color);
+  transform: scale(1.1);
 }
 
 .form-container h2 {
@@ -113,6 +111,38 @@
   font-size: 1rem;
   transition: border-color 0.2s;
   background-color: white !important;
+}
+
+/* Estilos modernos para inputs de fecha */
+input[type="date"].form-input {
+  appearance: none;
+  -webkit-appearance: none;
+  position: relative;
+  padding-right: 2.5rem;
+  cursor: pointer;
+  color: var(--text-color);
+}
+
+input[type="date"].form-input::-webkit-calendar-picker-indicator {
+  position: absolute;
+  right: 0.75rem;
+  top: 50%;
+  transform: translateY(-50%);
+  cursor: pointer;
+  opacity: 0.6;
+  transition: opacity 0.2s ease;
+  width: 20px;
+  height: 20px;
+  filter: invert(40%) sepia(10%) saturate(500%) hue-rotate(180deg);
+}
+
+input[type="date"].form-input:hover::-webkit-calendar-picker-indicator {
+  opacity: 1;
+  filter: invert(70%) sepia(80%) saturate(500%) hue-rotate(10deg) brightness(95%);
+}
+
+input[type="date"].form-input:focus::-webkit-calendar-picker-indicator {
+  filter: invert(25%) sepia(80%) saturate(1500%) hue-rotate(210deg) brightness(95%);
 }
 
 .form-input:focus {

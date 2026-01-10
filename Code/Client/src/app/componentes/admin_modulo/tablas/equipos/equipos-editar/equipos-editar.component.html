@@ -1,9 +1,18 @@
 <div class="form-container">
   <button class="btn-close" (click)="cerrar()">
-    <i class="fas fa-times"></i>
+    <img
+      #closeIcon
+      src="/assets/x.png"
+      alt="Cerrar"
+      style="width:100%; height:100%; object-fit: contain;"
+      (mouseenter)="closeIcon.src = '/assets/x_color.png'"
+      (mouseleave)="closeIcon.src = '/assets/x.png'"
+    />
   </button>
-  <h2>Editar Equipo</h2>
-  <form #form="ngForm" (ngSubmit)="validaredicion()">
+
+  <div class="form-content">
+    <h2>Editar Equipo</h2>
+    <form #form="ngForm" (ngSubmit)="validaredicion()">
 
 
      <div class="form-group">
@@ -22,19 +31,19 @@
         }
 
 
-      </select> 
+      </select>
     </div>
 
-   
+
 
     <div class="form-group">
       <label for="codigo_ucb">Código UCB</label>
-      <input 
-        type="text" 
-        id="codigo_ucb" 
-        name="codigo_ucb" 
+      <input
+        type="text"
+        id="codigo_ucb"
+        name="codigo_ucb"
         [(ngModel)]="equipo.CodigoUcb"
-        required 
+        required
         maxlength="20"
         placeholder="Código UCB del equipo"
         class="form-input"
@@ -43,12 +52,12 @@
 
     <div class="form-group">
       <label for="numero_serial">Número Serial</label>
-      <input 
-        type="text" 
-        id="numero_serial" 
-        name="numero_serial" 
+      <input
+        type="text"
+        id="numero_serial"
+        name="numero_serial"
         [(ngModel)]="equipo.NumeroSerial"
-        required 
+        required
         maxlength="50"
         placeholder="Número serial del equipo"
         class="form-input"
@@ -57,12 +66,12 @@
 
     <div class="form-group">
       <label for="estado_equipo">Estado Equipo</label>
-      <select 
-        type="text" 
-        id="estado_equipo" 
-        name="estado_equipo" 
+      <select
+        type="text"
+        id="estado_equipo"
+        name="estado_equipo"
         [(ngModel)]="equipo.EstadoEquipo"
-        required 
+        required
         placeholder="Estado del equipo"
         class="form-input"
       >
@@ -75,12 +84,12 @@
 
     <div class="form-group">
       <label for="ubicacion">Ubicación</label>
-      <input 
-        type="text" 
-        id="ubicacion" 
-        name="ubicacion" 
+      <input
+        type="text"
+        id="ubicacion"
+        name="ubicacion"
         [(ngModel)]="equipo.Ubicacion"
-        required 
+        required
         maxlength="200"
         placeholder="Ubicación del equipo"
         class="form-input"
@@ -89,9 +98,9 @@
 
      <div class="form-group">
       <label for="nombre_gavetero">Nombre Gavetero</label>
-      <select 
-      id="nombre_gavetero" 
-        name="nombre_gavetero" 
+      <select
+      id="nombre_gavetero"
+        name="nombre_gavetero"
         [(ngModel)]="equipo.NombreGavetero"
         required
         class="form-input"
@@ -104,10 +113,10 @@
 
     <div class="form-group">
       <label for="costo_referencia">Costo Referencia</label>
-      <input 
-        type="number" 
-        id="costo_referencia" 
-        name="costo_referencia" 
+      <input
+        type="number"
+        id="costo_referencia"
+        name="costo_referencia"
         [(ngModel)]="equipo.CostoReferencia"
         required
         max="999999999"
@@ -119,9 +128,9 @@
 
     <div class="form-group">
       <label for="descripcion">Descripción</label>
-      <textarea 
-        id="descripcion" 
-        name="descripcion" 
+      <textarea
+        id="descripcion"
+        name="descripcion"
         [(ngModel)]="equipo.Descripcion"
         rows="3"
         maxlength="200"
@@ -132,10 +141,10 @@
 
     <div class="form-group">
       <label for="tiempo_max_prestamo">Tiempo Máximo Préstamo</label>
-      <input 
-        type="number" 
-        id="tiempo_max_prestamo" 
-        name="tiempo_max_prestamo" 
+      <input
+        type="number"
+        id="tiempo_max_prestamo"
+        name="tiempo_max_prestamo"
         [(ngModel)]="equipo.TiempoMaximoPrestamo"
         max="365"
         placeholder="Tiempo en días"
@@ -145,12 +154,12 @@
 
     <div class="form-group">
       <label for="procedencia">Procedencia</label>
-      <input 
-        type="text" 
-        id="procedencia" 
-        name="procedencia" 
+      <input
+        type="text"
+        id="procedencia"
+        name="procedencia"
         [(ngModel)]="equipo.Procedencia"
-        required 
+        required
         maxlength="200"
         placeholder="Procedencia del equipo"
         class="form-input"
@@ -163,6 +172,7 @@
       </button>
     </div>
   </form>
+  </div>
 </div>
 
 

@@ -1,17 +1,26 @@
 <div class="form-container">
   <button class="btn-close" (click)="cerrar()">
-    <i class="fas fa-times"></i>
+    <img
+      #closeIcon
+      src="/assets/x.png"
+      alt="Cerrar"
+      style="width:100%; height:100%; object-fit: contain;"
+      (mouseenter)="closeIcon.src = '/assets/x_color.png'"
+      (mouseleave)="closeIcon.src = '/assets/x.png'"
+    />
   </button>
-  <h2>Editar Componente</h2>
-  <form #form="ngForm" (ngSubmit)="validaredicion()">
+
+  <div class="form-content">
+    <h2>Editar Componente</h2>
+    <form #form="ngForm" (ngSubmit)="validaredicion()">
     <div class="form-group">
       <label for="nombre">Nombre</label>
-      <input 
-        type="text" 
-        id="nombre" 
-        name="nombre" 
+      <input
+        type="text"
+        id="nombre"
+        name="nombre"
         [(ngModel)]="componente.Nombre"
-        required 
+        required
         maxlength="50"
         placeholder="Ingresa el nombre del componente"
         class="form-input"
@@ -20,12 +29,12 @@
 
     <div class="form-group">
       <label for="modelo">Modelo</label>
-      <input 
-        type="text" 
-        id="modelo" 
-        name="modelo" 
+      <input
+        type="text"
+        id="modelo"
+        name="modelo"
         [(ngModel)]="componente.Modelo"
-        required 
+        required
         maxlength="50"
         placeholder="Modelo del componente"
         class="form-input"
@@ -34,12 +43,12 @@
 
     <div class="form-group">
       <label for="tipo">Tipo</label>
-      <input 
-        type="text" 
-        id="tipo" 
-        name="tipo" 
+      <input
+        type="text"
+        id="tipo"
+        name="tipo"
         [(ngModel)]="componente.Tipo"
-        required 
+        required
         maxlength="50"
         placeholder="Tipo de componente"
         class="form-input"
@@ -48,18 +57,18 @@
 
     <div class="form-group">
       <label for="descripcion">Descripción</label>
-      <textarea 
-        id="descripcion" 
-        name="descripcion" 
+      <textarea
+        id="descripcion"
+        name="descripcion"
         [(ngModel)]="componente.Descripcion"
         rows="3"
         maxlength="200"
         placeholder="Describe las características del componente"
         class="form-input"
       ></textarea>
-    </div>   
-    
-    
+    </div>
+
+
    <div class="form-group">
       <label for="codigo_imt">Código IMT del Equipo</label>
       <select
@@ -69,20 +78,20 @@
         required
         class="form-input"
         >
-        
+
         @for (item of equipos; track $index) {
         <option [value]="item.CodigoImt">{{ item.NombreGrupoEquipo }} {{item.CodigoImt}}</option>
         }
 
-      </select> 
+      </select>
     </div>
 
     <div class="form-group">
       <label for="precio_referencia">Precio de Referencia</label>
-      <input 
-        type="number" 
-        id="precio_referencia" 
-        name="precio_referencia" 
+      <input
+        type="number"
+        id="precio_referencia"
+        name="precio_referencia"
         [(ngModel)]="componente.PrecioReferencia"
         step="0.01"
         max="999999999"
@@ -93,10 +102,10 @@
 
     <div class="form-group">
       <label for="url_data_sheet">URL Data Sheet</label>
-      <input 
-        type="url" 
-        id="url_data_sheet" 
-        name="url_data_sheet" 
+      <input
+        type="url"
+        id="url_data_sheet"
+        name="url_data_sheet"
         maxlength="200"
         pattern="https?://.+"
         [(ngModel)]="componente.UrlDataSheet"
@@ -111,6 +120,7 @@
       </button>
     </div>
   </form>
+  </div>
 </div>
 
 

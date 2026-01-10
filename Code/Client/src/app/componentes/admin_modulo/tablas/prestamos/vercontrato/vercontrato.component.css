@@ -27,48 +27,48 @@
 
 /* Header with close button */
 .modal-header {
-  background-color: #5a5b5c;
+  background-color: #6b7786;
   color: white;
   padding: 15px 20px;
   display: flex;
   justify-content: space-between;
   align-items: center;
-  border-radius: 8px 8px 0 0;
+  border-radius: 20px 20px 0 0;
 }
 
 .modal-title {
   font-size: 1.4rem;
-  font-weight: 500;
+  font-weight: 600;
   margin: 0;
+  font-family: 'Manrope', sans-serif;
 }
 
 .btn-close {
-  background: rgba(255, 255, 255, 0.2);
+  background: none;
   border: none;
-  border-radius: 4px;
-  width: 35px;
-  height: 35px;
+  width: 24px;
+  height: 24px;
   color: white;
   cursor: pointer;
   display: flex;
   align-items: center;
   justify-content: center;
-  transition: background-color 0.2s ease;
-  font-size: 1.1rem;
+  transition: transform 0.2s ease;
+  padding: 0;
 }
 
 .btn-close:hover {
-  background: rgba(255, 255, 255, 0.3);
+  transform: scale(1.1);
 }
 
 /* Modal container */
 .modal-container {
   background-color: white;
-  border-radius: 8px;
-  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
+  border-radius: 20px;
+  box-shadow: 0 15px 25px rgba(0, 0, 0, 0.2);
   width: 95%;
   max-width: 1200px;
-  max-height: 98vh;
+  max-height: 90vh;
   position: relative;
   overflow: hidden;
   animation: modalFadeIn 0.3s ease-out;
@@ -84,43 +84,59 @@
   background-color: white;
 }
 
+/* Scrollbar del contenido */
+.modal-content::-webkit-scrollbar {
+  width: 6px;
+}
+.modal-content::-webkit-scrollbar-thumb {
+  background-color: rgba(0, 0, 0, 0.3);
+  border-radius: 10px;
+}
+.modal-content::-webkit-scrollbar-track {
+  background: rgba(0, 0, 0, 0.05);
+  border-radius: 10px;
+  margin: 10px 0;
+}
+
 .contract-viewer {
   background: #f8f9fa;
-  border: 1px solid #dee2e6;
-  border-radius: 4px;
+  border: 1px solid #e2e8f0;
+  border-radius: 12px;
   padding: 0;
-  min-height: 600px;
+  min-height: 500px;
 }
 
 
 /* Modal footer */
 .modal-footer {
-  background-color: #f8f9fa;
+  background-color: #f8fafc;
   padding: 15px 20px;
-  border-top: 1px solid #dee2e6;
+  border-top: 1px solid #e2e8f0;
   display: flex;
   justify-content: center;
-  border-radius: 0 0 8px 8px;
+  border-radius: 0 0 20px 20px;
   flex-shrink: 0;
 }
 
 .btn-secondary {
-  background-color: #6c757d;
-  color: white;
+  background-color: #ffd814;
+  color: #6b7786;
   border: none;
-  padding: 10px 20px;
-  border-radius: 4px;
+  padding: 10px 24px;
+  border-radius: 20px;
   cursor: pointer;
   font-size: 0.95rem;
-  font-weight: 400;
-  transition: background-color 0.2s ease;
+  font-weight: 600;
+  transition: all 0.2s ease;
   display: flex;
   align-items: center;
   gap: 6px;
 }
 
 .btn-secondary:hover {
-  background-color: #5a6268;
+  background-color: #f7ca00;
+  transform: translateY(-1px);
+  box-shadow: 0 4px 12px rgba(255, 216, 20, 0.4);
 }
 
 /* Loading state */
@@ -164,19 +180,19 @@
     width: 95%;
     max-height: 95vh;
   }
-  
+
   .modal-header {
     padding: 15px;
   }
-  
+
   .modal-title {
     font-size: 1.3rem;
   }
-  
+
   .modal-content {
     padding: 20px;
   }
-  
+
   .modal-footer {
     padding: 15px 20px;
   }
@@ -186,19 +202,19 @@
   .modal-container {
     width: 98%;
   }
-  
+
   .modal-header {
     padding: 12px;
   }
-  
+
   .modal-title {
     font-size: 1.2rem;
   }
-  
+
   .modal-content {
     padding: 15px;
   }
-  
+
   .btn-secondary {
     padding: 10px 20px;
     font-size: 0.9rem;
@@ -229,7 +245,7 @@
   }
 ::ng-deep  .contrato-container strong {
     display: inline;
-    
+
     font-size: 16px;
     color: #2c3e50;
   }
@@ -240,7 +256,7 @@
       font-size: 14px;
       border-spacing: 0;
   }
-::ng-deep  .contrato-container table, 
+::ng-deep  .contrato-container table,
 ::ng-deep     .contrato-container td p {
       margin: 0;
       padding: 0;

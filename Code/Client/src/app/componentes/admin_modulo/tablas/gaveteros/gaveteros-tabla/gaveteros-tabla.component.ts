@@ -30,14 +30,14 @@ export class GaveterosTablaComponent extends Tabla {
   gaveteros : Gaveteros[] = [];
   gaveteroscopia: Gaveteros[] = [];
 
-  gaveteroSeleccionado:  Gaveteros= new Gaveteros(); 
+  gaveteroSeleccionado:  Gaveteros= new Gaveteros();
 
   override columnas: string[] = ['Nombre','Tipo','Nombre Mueble','Longitud','Altura','Profundidad'];
 
 
   constructor(private gaveterosapi : GaveteroService){
     super();
-  }; 
+  };
 
 
 
@@ -54,15 +54,16 @@ export class GaveterosTablaComponent extends Tabla {
 
 
   creargarvetero() {
+    this.botoneditar.set(false);
     this.botoncrear.set(true);
   }
 
   cargarGaveteros() {
- 
+
     this.gaveterosapi.obtenerGaveteros().subscribe({
       next: (data: Gaveteros[]) => {
         this.gaveteros = data;
-        this.gaveteroscopia = [...this.gaveteros]; 
+        this.gaveteroscopia = [...this.gaveteros];
       },
       error: (error) => {
         this.mensajeerror = "Error al cargar los gaveteros, intente mas tarde";
@@ -108,8 +109,8 @@ export class GaveterosTablaComponent extends Tabla {
 
 limpiarBusqueda(){
 
-  this.gaveteros = [...this.gaveteroscopia]; 
-  
+  this.gaveteros = [...this.gaveteroscopia];
+
 }
 
 editarGavetero(gavetero : Gaveteros) {
@@ -121,7 +122,7 @@ editarGavetero(gavetero : Gaveteros) {
 eliminarGavetero(gavetero : Gaveteros) {
   this.gaveteroSeleccionado = gavetero;
   this.alertaeliminar = true;
- 
+
 }
 
 confirmarEliminacion() {
@@ -129,7 +130,7 @@ confirmarEliminacion() {
     next: (response) => {
       this.mensajeexito = "Gavetero eliminado con exito";
       this.exito.set(true);
-       this.cargarGaveteros(); 
+       this.cargarGaveteros();
 
     },
     error: (error) => {
@@ -143,8 +144,8 @@ confirmarEliminacion() {
 }
 
 cancelarEliminacion(){
-  this.alertaeliminar = false; 
-  this.limpiarGaveteroSeleccionado(); 
+  this.alertaeliminar = false;
+  this.limpiarGaveteroSeleccionado();
 }
 
 

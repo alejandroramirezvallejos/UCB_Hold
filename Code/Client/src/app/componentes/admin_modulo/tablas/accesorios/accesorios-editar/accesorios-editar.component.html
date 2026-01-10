@@ -1,17 +1,26 @@
 <div class="form-container">
   <button class="btn-close" (click)="cerrar()">
-    <i class="fas fa-times"></i>
+    <img
+      #closeIcon
+      src="/assets/x.png"
+      alt="Cerrar"
+      style="width:100%; height:100%; object-fit: contain;"
+      (mouseenter)="closeIcon.src = '/assets/x_color.png'"
+      (mouseleave)="closeIcon.src = '/assets/x.png'"
+    />
   </button>
-  <h2>Editar Accesorio</h2>
-  <form #form="ngForm" (ngSubmit)="confirmaredicion()">
+
+  <div class="form-content">
+    <h2>Editar Accesorio</h2>
+    <form #form="ngForm" (ngSubmit)="confirmaredicion()">
     <div class="form-group">
       <label for="nombre">Nombre</label>
-      <input 
-        type="text" 
-        id="nombre" 
-        name="nombre" 
+      <input
+        type="text"
+        id="nombre"
+        name="nombre"
         [(ngModel)]="accesorio.nombre"
-        required 
+        required
         maxlength="25"
         placeholder="Ingresa el nombre del accesorio"
         class="form-input"
@@ -20,12 +29,12 @@
 
     <div class="form-group">
       <label for="modelo">Modelo</label>
-      <input 
-        type="text" 
-        id="modelo" 
-        name="modelo" 
+      <input
+        type="text"
+        id="modelo"
+        name="modelo"
         [(ngModel)]="accesorio.modelo"
-        required 
+        required
         maxlength="25"
         placeholder="Modelo del accesorio"
         class="form-input"
@@ -34,12 +43,12 @@
 
     <div class="form-group">
       <label for="tipo">Tipo</label>
-      <input 
-        type="text" 
-        id="tipo" 
-        name="tipo" 
+      <input
+        type="text"
+        id="tipo"
+        name="tipo"
         [(ngModel)]="accesorio.tipo"
-        required 
+        required
         maxlength="25"
         placeholder="Tipo de accesorio"
         class="form-input"
@@ -48,9 +57,9 @@
 
     <div class="form-group">
       <label for="descripcion">Descripción</label>
-      <textarea 
-        id="descripcion" 
-        name="descripcion" 
+      <textarea
+        id="descripcion"
+        name="descripcion"
         [(ngModel)]="accesorio.descripcion"
         rows="3"
         maxlength="100"
@@ -61,9 +70,9 @@
 
     <div class="form-group">
       <label for="codigo_imt">Código IMT</label>
-      <select 
-        id="codigo_imt" 
-        name="codigo_imt" 
+      <select
+        id="codigo_imt"
+        name="codigo_imt"
         [(ngModel)]="accesorio.codigo_imt"
         required
         class="form-input"
@@ -71,17 +80,17 @@
       @for (item of equipos; track $index) {
         <option [value]="item.CodigoImt"> {{ item.NombreGrupoEquipo }} {{item.Modelo}} {{item.Marca}} - {{ item.CodigoImt }}</option>
       }
-    
+
     </select>
     </div>
 
 
     <div class="form-group">
       <label for="precio">Precio</label>
-      <input 
-        type="number" 
-        id="precio" 
-        name="precio" 
+      <input
+        type="number"
+        id="precio"
+        name="precio"
         [(ngModel)]="accesorio.precio"
         step="0.01"
         max="999999999"
@@ -92,12 +101,12 @@
 
     <div class="form-group">
       <label for="url_data_sheet">URL Data Sheet</label>
-      <input 
-        type="url" 
-        id="url_data_sheet" 
-        name="url_data_sheet" 
+      <input
+        type="url"
+        id="url_data_sheet"
+        name="url_data_sheet"
         [(ngModel)]="accesorio.url_data_sheet"
-    
+
         maxlength="255"
         pattern="https?://.+"
         placeholder="https://ejemplo.com/datasheet.pdf"
@@ -111,6 +120,7 @@
       </button>
     </div>
   </form>
+  </div>
 </div>
 
 @if(error()){

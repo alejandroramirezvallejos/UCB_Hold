@@ -157,6 +157,25 @@
   border-radius: var(--radius);
   box-shadow: var(--shadow-sm);
   margin-bottom: 1.5rem;
+  transform: scaleY(-1);
+}
+
+.table-responsive > * {
+  transform: scaleY(-1);
+}
+
+/* Scrollbar horizontal estilo menú */
+.table-responsive::-webkit-scrollbar {
+  height: 6px;
+}
+.table-responsive::-webkit-scrollbar-thumb {
+  background-color: rgba(0, 0, 0, 0.3);
+  border-radius: 10px;
+}
+.table-responsive::-webkit-scrollbar-track {
+  background: rgba(0, 0, 0, 0.05);
+  border-radius: 10px;
+  margin: 0 10px;
 }
 
 .data-table {

@@ -1,17 +1,26 @@
 <div class="form-container">
   <button class="btn-close" (click)="cerrar()">
-    <i class="fas fa-times"></i>
+    <img
+      #closeIcon
+      src="/assets/x.png"
+      alt="Cerrar"
+      style="width:100%; height:100%; object-fit: contain;"
+      (mouseenter)="closeIcon.src = '/assets/x_color.png'"
+      (mouseleave)="closeIcon.src = '/assets/x.png'"
+    />
   </button>
-  <h2>Editar Grupo de Equipo</h2>
-  <form #form="ngForm" (ngSubmit)="validaredicion()">
+
+  <div class="form-content">
+    <h2>Editar Grupo de Equipo</h2>
+    <form #form="ngForm" (ngSubmit)="validaredicion()">
     <div class="form-group">
       <label for="nombre">Nombre</label>
-      <input 
-        type="text" 
-        id="nombre" 
-        name="nombre" 
+      <input
+        type="text"
+        id="nombre"
+        name="nombre"
         [(ngModel)]="grupoEquipo.nombre"
-        required 
+        required
         maxlength="50"
         placeholder="Ingresa el nombre del grupo de equipo"
         class="form-input"
@@ -20,10 +29,10 @@
 
     <div class="form-group">
       <label for="modelo">Modelo</label>
-      <input 
-        type="text" 
-        id="modelo" 
-        name="modelo" 
+      <input
+        type="text"
+        id="modelo"
+        name="modelo"
         [(ngModel)]="grupoEquipo.modelo"
         required
         maxlength="50"
@@ -34,10 +43,10 @@
 
     <div class="form-group">
       <label for="marca">Marca</label>
-      <input 
-        type="text" 
-        id="marca" 
-        name="marca" 
+      <input
+        type="text"
+        id="marca"
+        name="marca"
         [(ngModel)]="grupoEquipo.marca"
         required
         maxlength="50"
@@ -49,15 +58,13 @@
     <div class="form-group">
       <label for="nombreCategoria">Categoría</label>
       <select
-        type="text" 
-        id="nombreCategoria" 
+        id="nombreCategoria"
         name="nombreCategoria"
         required
         [(ngModel)]="grupoEquipo.nombreCategoria"
-        placeholder="Categoría del grupo de equipo"
         class="form-input"
-      
       >
+        <option value="" disabled>Selecciona una categoría</option>
         @for (item of categorias; track $index) {
           <option [value]="item">{{ item }}</option>
         }
@@ -67,9 +74,9 @@
 
     <div class="form-group">
       <label for="descripcion">Descripción</label>
-      <textarea 
-        id="descripcion" 
-        name="descripcion" 
+      <textarea
+        id="descripcion"
+        name="descripcion"
         [(ngModel)]="grupoEquipo.descripcion"
         rows="3"
         maxlength="200"
@@ -81,10 +88,10 @@
 
     <div class="form-group">
       <label for="url_data_sheet">URL Data Sheet</label>
-      <input 
-        type="url" 
-        id="url_data_sheet" 
-        name="url_data_sheet" 
+      <input
+        type="url"
+        id="url_data_sheet"
+        name="url_data_sheet"
         maxlength="200"
         pattern="https?://.+"
         [(ngModel)]="grupoEquipo.url_data_sheet"
@@ -95,10 +102,10 @@
 
     <div class="form-group">
       <label for="link">URL Imagen</label>
-      <input 
-        type="url" 
-        id="link" 
-        name="link" 
+      <input
+        type="url"
+        id="link"
+        name="link"
         [(ngModel)]="grupoEquipo.link"
         required
         maxlength="200"
@@ -114,6 +121,7 @@
       </button>
     </div>
   </form>
+  </div>
 </div>
 
 

@@ -85,6 +85,25 @@
     flex-direction: column;
 }
 
+/* Scrollbar estilo admin */
+.items-wrapper::-webkit-scrollbar {
+    width: 6px;
+}
+.items-wrapper::-webkit-scrollbar-thumb {
+    background-color: rgba(0, 0, 0, 0.3);
+    border-radius: 10px;
+}
+.items-wrapper::-webkit-scrollbar-track {
+    background: rgba(0, 0, 0, 0.05);
+    border-radius: 10px;
+    margin: 10px 0;
+}
+
+/* Scrollbar horizontal */
+.items-wrapper::-webkit-scrollbar:horizontal {
+    height: 6px;
+}
+
 /* Ajustes responsive */
 @media (max-width: 1200px) {
     .container {

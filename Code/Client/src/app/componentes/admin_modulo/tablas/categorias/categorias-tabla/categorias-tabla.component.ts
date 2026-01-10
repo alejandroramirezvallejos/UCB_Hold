@@ -32,7 +32,7 @@ export class CategoriasTablaComponent extends Tabla {
 
   override columnas: string[] = [' Nombre'];
 
-  
+
 
   constructor(private categoriaService: CategoriaService) {
     super();
@@ -47,13 +47,14 @@ export class CategoriasTablaComponent extends Tabla {
   }
 
   crearCategoria() {
+    this.botoneditar.set(false);
     this.botoncrear.set(true);
   }
 
   cargarCategorias() {
     this.categoriaService.obtenercategorias().subscribe(
       (data: any[]) => {
-        this.categorias = data; 
+        this.categorias = data;
         this.categoriascopia = [...this.categorias];
       },
       (error) => {
@@ -64,7 +65,7 @@ export class CategoriasTablaComponent extends Tabla {
     );
   }
 
-  
+
   aplicarFiltros(event?: [string, string]) {
     if (event && event[0].trim() === '') {
       this.limpiarBusqueda();

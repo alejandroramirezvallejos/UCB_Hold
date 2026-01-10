@@ -32,9 +32,9 @@ export class ComponentesTablaComponent extends Tabla implements OnInit  {
 
   override columnas: string[] = ['Nombre','Modelo','Tipo','Código IMT del Equipo','Precio Referencia'];
 
-  
+
   constructor(private componenteService: ComponenteService) {
-    super(); 
+    super();
   }
 
   ngOnInit() {
@@ -46,6 +46,7 @@ export class ComponentesTablaComponent extends Tabla implements OnInit  {
   }
 
   crearComponente() {
+    this.botoneditar.set(false);
     this.botoncrear.set(true);
   }
 
@@ -63,7 +64,7 @@ export class ComponentesTablaComponent extends Tabla implements OnInit  {
     });
   }
 
-  
+
   aplicarFiltros(event?: [string, string]) {
    if (event && event[0].trim() !== '') {
     const busquedaNormalizada = this.normalizeText(event[0]);
@@ -95,7 +96,7 @@ export class ComponentesTablaComponent extends Tabla implements OnInit  {
   }
 
   limpiarBusqueda() {
-  
+
     this.componentes = [...this.componentescopia];
   }
 

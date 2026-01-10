@@ -36,8 +36,8 @@ export class EquiposTablaComponent extends Tabla{
 
 
   constructor(private equiposapi : EquipoService){
-    super(); 
-  }; 
+    super();
+  };
 
 
 
@@ -53,14 +53,15 @@ export class EquiposTablaComponent extends Tabla{
 
 
   crearequipo() {
+    this.botoneditar.set(false);
     this.botoncrear.set(true);
   }
   cargarEquipos() {
- 
+
     this.equiposapi.obtenerEquipos().subscribe(
       (data: any[]) => {
         this.equipos = data;
-        this.equiposcopia = [...this.equipos]; 
+        this.equiposcopia = [...this.equipos];
       },
       (error) => {
         this.mensajeerror = "Error al cargar los equipos";
@@ -71,7 +72,7 @@ export class EquiposTablaComponent extends Tabla{
 
   }
 
-  
+
   aplicarFiltros(event?: [string, string]){
     if (event && event[0].trim() !== '') {
         const busquedaNormalizada = this.normalizeText(event[0]);
@@ -102,9 +103,9 @@ export class EquiposTablaComponent extends Tabla{
   }
 
 limpiarBusqueda(){
-  
-  this.equipos = [...this.equiposcopia]; 
-  
+
+  this.equipos = [...this.equiposcopia];
+
 }
 
 editarEquipo(equipo : any) {
@@ -116,7 +117,7 @@ editarEquipo(equipo : any) {
 eliminarEquipo(equipo : any) {
   this.equipoSeleccionado = equipo;
   this.alertaeliminar = true;
- 
+
 }
 
 confirmarEliminacion() {
@@ -124,7 +125,7 @@ confirmarEliminacion() {
     next:(response) => {
       this.mensajeexito = "Equipo eliminado con éxito";
       this.exito.set(true);
-       this.cargarEquipos(); 
+       this.cargarEquipos();
 
     },
     error: (error) => {
@@ -138,8 +139,8 @@ confirmarEliminacion() {
 }
 
 cancelarEliminacion(){
-  this.alertaeliminar = false; 
-  this.limpiarEquipoSeleccionado(); 
+  this.alertaeliminar = false;
+  this.limpiarEquipoSeleccionado();
 }
 
 
