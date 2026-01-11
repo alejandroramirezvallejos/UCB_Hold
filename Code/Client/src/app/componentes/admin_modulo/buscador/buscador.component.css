@@ -5,14 +5,12 @@
   width: 100%;
   padding-bottom: 2rem;
 }
-
 .search-input-wrapper {
   flex: 1;
   position: relative;
   max-width: 30rem;
   margin-right: 1.5rem;
 }
-
 .search-icon {
   position: absolute;
   left: 1rem;
@@ -20,7 +18,6 @@
   transform: translateY(-50%);
   color: #64748b;
 }
-
 .search-input {
   width: 100%;
   padding: 0.75rem 2.5rem;
@@ -29,13 +26,11 @@
   font-size: 0.875rem;
   transition: all 0.2s ease-in-out;
 }
-
 .search-input:focus {
   outline: none;
   border-color: #d1d5db;
   box-shadow: 0 0 0 3px rgba(107, 119, 134, 0.1);
 }
-
 .clear-search {
   position: absolute;
   right: 1rem;
@@ -51,11 +46,9 @@
   align-items: center;
   justify-content: center;
 }
-
 .clear-search:hover {
   background-color: rgba(0, 0, 0, 0.05);
 }
-
 .filter-container {
   position: relative;
   display: flex; /* Changed to flex to allow ng-content (state filter) + custom dropdown side by side */
@@ -63,14 +56,11 @@
   align-items: center;
   flex-shrink: 0;
 }
-
-/* Estilos para custom dropdown (copiado de historial/registrar) */
 .custom-dropdown {
   position: relative;
   min-width: 150px;
   font-family: "Open Sans", sans-serif;
 }
-
 .dropdown-header {
   display: flex;
   align-items: center;
@@ -86,28 +76,23 @@
   box-sizing: border-box;
   transition: all 0.2s ease;
 }
-
 .dropdown-header .current-value {
   font-size: 0.9rem;
   font-weight: 600;
   color: #6b7786;
   white-space: nowrap;
 }
-
 .dropdown-header .current-value i {
   color: #6b7786;
 }
-
 .dropdown-header:hover {
   border-color: #d1d5db;
   background-color: #f8fafc;
 }
-
 .dropdown-arrow {
   width: 16px;
   height: 16px;
 }
-
 .dropdown-list {
   position: absolute;
   top: 100%;
@@ -126,7 +111,6 @@
   backdrop-filter: blur(10px);
   background-color: rgba(255, 255, 255, 0.95);
 }
-
 .dropdown-list li {
   padding: 0.75rem 1rem;
   font-size: 0.9rem;
@@ -138,23 +122,19 @@
   align-items: center;
   gap: 0.5rem;
 }
-
 .dropdown-list li:hover {
   color: #FFCF00;
   background-color: #f8fafc;
 }
-
 .dropdown-list li.active {
   color: #334155;
   font-weight: 700;
   background-color: #f1f5f9;
 }
-
 .dropdown-list i {
   width: 16px;
   text-align: center;
 }
-
 .estados-panel-flotante {
   position: absolute;
   top: 100%;
@@ -170,7 +150,6 @@
   animation: fadeInDown 0.3s ease-out;
   backdrop-filter: blur(10px);
 }
-
 .estados-grid-flotante {
   display: grid;
   grid-template-columns: 1fr;
@@ -178,7 +157,6 @@
   max-height: 400px;
   overflow-y: auto;
 }
-
 .estados-item-flotante {
   display: flex;
   align-items: center;
@@ -191,47 +169,39 @@
   border-bottom: 1px solid rgba(226, 232, 240, 0.5);
   background-color: #ffffff;
 }
-
 .estados-item-flotante:hover {
   background-color: #fffbeb;
   color: #ffd814;
 }
-
 .estados-item-flotante.active {
   background-color: #fffbeb;
   color: #6b7786;
   border-left: 3px solid #ffd814;
   font-weight: 600;
 }
-
 .estados-item-flotante:first-child {
   border-radius: 0.5rem 0.5rem 0 0;
   font-weight: 600;
   background-color: rgba(248, 250, 252, 1);
 }
-
 .estados-item-flotante:last-child {
   border-bottom: none;
   border-radius: 0 0 0.5rem 0.5rem;
 }
-
 .estados-item-flotante:first-child:hover {
   background-color: rgba(37, 99, 235, 0.1);
 }
-
 .estados-item-flotante:first-child.active {
   background-color: rgba(37, 99, 235, 0.15);
   color: #2563eb;
   border-left: 3px solid #2563eb;
   font-weight: 600;
 }
-
 .estados-item-flotante i {
   font-size: 16px;
   width: 20px;
   text-align: center;
 }
-
 @keyframes fadeInDown {
   from {
     opacity: 0;
@@ -242,25 +212,19 @@
     transform: translateY(0);
   }
 }
-
-/* Responsive */
 @media (max-width: 768px) {
   .search-and-filter-row {
     gap: 1rem;
   }
-
   .search-input-wrapper {
     max-width: none;
   }
-
   .filter-container {
     flex-shrink: 0;
   }
-
   .btn-filter {
     min-width: 100px;
   }
-
   .estados-panel-flotante {
     right: 0;
     left: 0;
@@ -268,7 +232,6 @@
     max-width: none;
   }
 }
-
 @media (max-width: 480px) {
   .estados-item-flotante {
     padding: 10px 12px;

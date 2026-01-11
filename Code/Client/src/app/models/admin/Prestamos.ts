@@ -1,7 +1,5 @@
 import { Basemodel } from "../base/Basemodel";
-
 export class Prestamos extends Basemodel{
-
     CarnetUsuario: string | null = null;
     NombreUsuario: string | null = null;
     ApellidoPaternoUsuario: string | null = null;
@@ -15,16 +13,12 @@ export class Prestamos extends Basemodel{
     FechaDevolucion: Date | null = null;
     Observacion: string | null = null;
     EstadoPrestamo: string | null = null;
-
     Ubicacion_Equipo : string | null = null;
     Nombre_Gavetero : string | null = null;
     Nombre_Mueble : string | null = null;
     Ubicacion_Mueble : string | null = null;
-   
     IdContrato: number | null = null;
     FileId : number | null = null;
-
-    
     constructor(){
         super();
         this.CarnetUsuario = null;
@@ -46,7 +40,5 @@ export class Prestamos extends Basemodel{
         this.Nombre_Gavetero = null;
         this.Nombre_Mueble = null;
         this.Ubicacion_Mueble = null;
-        
     }
-
 }

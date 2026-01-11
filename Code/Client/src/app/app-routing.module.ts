@@ -11,18 +11,9 @@ import { PerfilComponent } from './componentes/usuario/perfil/perfil.component';
 import { RegistrarUsuarioComponent } from './componentes/usuario/registrar-usuario/registrar-usuario.component';
 import { CalendarioComponent } from './componentes/cliente_modulo/carrito/calendario/calendario.component';
 import { BuscadorComponent } from './componentes/admin_modulo/buscador/buscador.component';
-
-
-
-
-
 const routes: Routes = [
   { path: '', redirectTo: '/Iniciar-Sesion', pathMatch: 'full' },
-
-  // Ruta principal de administración
   { path: 'admin', component: AdministradorComponent },
-
-  // RUTAS GENERALES
   { path: 'home', component: PantallaMainComponent },
   { path: 'Objeto/:id', component: ObjetoComponent },
   { path: 'Carrito', component: CarritoComponent },
@@ -33,12 +24,7 @@ const routes: Routes = [
   { path: 'Perfil', component: PerfilComponent },
   { path: 'Registrar-Usuario', component: RegistrarUsuarioComponent },
    { path: 'pruebas', component: BuscadorComponent },
-
-
-
-
 ];
-
 @NgModule({
   imports: [RouterModule.forRoot(routes)],
   exports: [RouterModule]

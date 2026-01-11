@@ -11,7 +11,6 @@ import { MostrarerrorComponent } from '../../../../pantallas_avisos/mostrarerror
 import { AvisoExitoComponent } from '../../../../pantallas_avisos/aviso-exito/aviso-exito.component';
 import { Tabla } from '../../base/tabla';
 import { BuscadorComponent } from '../../../buscador/buscador.component';
-
 @Component({
   selector: 'app-categorias-tabla',
   standalone: true,
@@ -20,37 +19,26 @@ import { BuscadorComponent } from '../../../buscador/buscador.component';
   styleUrl: './categorias-tabla.component.css'
 })
 export class CategoriasTablaComponent extends Tabla {
-
   botoncrear: WritableSignal<boolean> = signal(false);
   botoneditar: WritableSignal<boolean> = signal(false);
-
   alertaeliminar: boolean = false;
   categorias: Categorias[] = [];
   categoriascopia: Categorias[] = [];
-
   categoriaSeleccionada: Categorias = new Categorias();
-
   override columnas: string[] = [' Nombre'];
-
-
-
   constructor(private categoriaService: CategoriaService) {
     super();
   }
-
   ngOnInit() {
     this.cargarCategorias();
   }
-
   limpiarCategoriaSeleccionada() {
     this.categoriaSeleccionada = new Categorias();
   }
-
   crearCategoria() {
     this.botoneditar.set(false);
     this.botoncrear.set(true);
   }
-
   cargarCategorias() {
     this.categoriaService.obtenercategorias().subscribe(
       (data: any[]) => {
@@ -64,37 +52,28 @@ export class CategoriasTablaComponent extends Tabla {
       }
     );
   }
-
-
   aplicarFiltros(event?: [string, string]) {
     if (event && event[0].trim() === '') {
       this.limpiarBusqueda();
       return;
     }
-
     const busquedaNormalizada = this.normalizeText(event![0]);
-
     this.categorias = this.categoriascopia.filter(categoria =>
       this.normalizeText(categoria.Nombre || '').includes(busquedaNormalizada)
     );
   }
-
   limpiarBusqueda() {
-
     this.categorias = [...this.categoriascopia];
   }
-
   editarCategoria(categoria: Categorias) {
     this.botoncrear.set(false);
     this.categoriaSeleccionada = { ...categoria };
     this.botoneditar.set(true);
   }
-
   eliminarCategoria(categoria: Categorias) {
     this.categoriaSeleccionada = categoria;
     this.alertaeliminar = true;
   }
-
   confirmarEliminacion() {
     if (this.categoriaSeleccionada.Id) {
       this.categoriaService.eliminarCategoria(this.categoriaSeleccionada.Id).subscribe({
@@ -113,12 +92,8 @@ export class CategoriasTablaComponent extends Tabla {
     this.limpiarCategoriaSeleccionada();
     this.alertaeliminar = false;
   }
-
   cancelarEliminacion() {
     this.alertaeliminar = false;
     this.limpiarCategoriaSeleccionada();
   }
-
-
-
 }

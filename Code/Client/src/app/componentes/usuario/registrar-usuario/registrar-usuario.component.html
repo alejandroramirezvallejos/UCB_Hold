@@ -1,14 +1,9 @@
-
 <div class="register-container">
-
   <div class="register-card">
     <h2 class="title">Crear Cuenta</h2>
-
     <form (ngSubmit)="registrar(registerForm)" class="register-form" #registerForm="ngForm">
-      <!-- Información personal -->
       <div class="form-section">
         <h3>Información Personal</h3>
-
         <div class="form-group">
           <label for="nombre">Nombre</label>
           <input
@@ -25,7 +20,6 @@
             <div class="error-message">El nombre es requerido</div>
           }
         </div>
-
         <div class="form-row">
           <div class="form-group">
             <label for="apellidoPaterno">Apellido paterno</label>
@@ -39,7 +33,6 @@
               class="form-input"
             >
           </div>
-
           <div class="form-group">
             <label for="apellidoMaterno">Apellido materno</label>
             <input
@@ -53,7 +46,6 @@
             >
           </div>
         </div>
-
         <div class="form-group">
           <label for="carnet">Carnet de identidad </label>
           <input
@@ -73,7 +65,6 @@
             <div class="error-message">El carnet es invalido</div>
           }
         </div>
-
         <div class="form-group">
           <label for="correo">Correo electrónico </label>
           <input
@@ -100,7 +91,6 @@
             </div>
           }
         </div>
-
         <div class="form-group">
           <label for="telefono">Teléfono</label>
           <input
@@ -118,10 +108,8 @@
             <div class="error-message"> El telefono es invalido</div>
           }
         </div>
-
       <div class="form-group">
         <label for="carrera">Elige tu carrera</label>
-
         <div class="custom-dropdown">
            <div class="dropdown-header form-input" (click)="toggleDropdown()" (mouseenter)="onMouseEnter()" (mouseleave)="onMouseLeave()">
               <span class="current-value" [class.placeholder]="!nuevoUsuario.carrera">{{ nuevoUsuario.carrera || 'Selecciona una carrera' }}</span>
@@ -131,7 +119,6 @@
                 class="dropdown-arrow"
               >
            </div>
-
            @if(isOpen) {
              <ul class="dropdown-list">
                @for(item of carreras; track $index) {
@@ -145,19 +132,10 @@
          @if(submitted && !nuevoUsuario.carrera) {
             <div class="error-message"> La carrera no seleccionada</div>
           }
-
       </div>
-
       </div>
-
-
-
-
-
-      <!-- Información de contacto de emergencia -->
       <div class="form-section">
         <h3>Contacto de Emergencia</h3>
-
         <div class="form-group">
           <label for="nombreReferencia">Nombre de referencia</label>
           <input
@@ -168,7 +146,6 @@
             class="form-input"
           >
         </div>
-
         <div class="form-group">
           <label for="telefonoReferencia">Teléfono de referencia</label>
           <input
@@ -181,7 +158,6 @@
             class="form-input"
           >
         </div>
-
         <div class="form-group">
           <label for="emailReferencia">Email de referencia</label>
           <input
@@ -193,11 +169,8 @@
           >
         </div>
       </div>
-
-      <!-- Contraseña -->
       <div class="form-section">
         <h3>Seguridad</h3>
-
         <div class="form-group">
           <label for="password">Contraseña</label>
           <input
@@ -221,7 +194,6 @@
             </div>
           }
         </div>
-
         <div class="form-group">
           <label for="confirmPassword">Confirmar contraseña </label>
           <input
@@ -243,14 +215,12 @@
           }
         </div>
       </div>
-
       <button
         type="submit"
         class="register-button"
       >
         <span>Crear Cuenta</span>
       </button>
-
       <div class="additional-options">
         <p class="login-link">
           ¿Ya tienes cuenta? <a (click)="irALogin()">Inicia sesión aquí</a>
@@ -259,15 +229,12 @@
     </form>
   </div>
 </div>
-
 @if (error()){
   <app-mostrarerror
     [mensaje]="mensajeerror"
     [error]="error"
   ></app-mostrarerror>
 }
-
-
 @if (aviso()){
   <app-aviso-exito
     [mensaje]="mensajeaviso"

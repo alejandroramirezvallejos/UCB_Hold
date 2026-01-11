@@ -1,5 +1,4 @@
 import { Basemodel } from "../base/Basemodel";
-
 export class Componente extends Basemodel {
   Nombre?: string | null;
   Modelo?: string | null;
@@ -9,7 +8,6 @@ export class Componente extends Basemodel {
   NombreEquipo?: string | null;
   CodigoImtEquipo?: number | null;
   UrlDataSheet?: string | null;
-
   constructor(){
     super();
     this.Nombre = null;
@@ -21,6 +19,4 @@ export class Componente extends Basemodel {
     this.CodigoImtEquipo = null;
     this.UrlDataSheet = null;
   }
-
-
 }

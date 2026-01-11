@@ -1,7 +1,6 @@
 import { Component, Input, signal, WritableSignal } from '@angular/core';
 import { Mantenimientos } from '../../../../../../models/admin/Mantenimientos';
 import { CommonModule } from '@angular/common';
-
 @Component({
   selector: 'app-detalles-mantenimiento',
   imports: [CommonModule],
@@ -11,10 +10,7 @@ import { CommonModule } from '@angular/common';
 export class DetallesMantenimientoComponent {
  @Input() mantenimientos :  Mantenimientos[] = [];
  @Input() mostrardetalles: WritableSignal<boolean> = signal(true);
-
-
   cerrarDetalles() {
     this.mostrardetalles.set(false);
   }
-
 }

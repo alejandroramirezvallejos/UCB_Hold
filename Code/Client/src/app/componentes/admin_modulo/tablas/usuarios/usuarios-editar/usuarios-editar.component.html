@@ -9,11 +9,9 @@
       (mouseleave)="closeIcon.src = '/assets/x.png'"
     />
   </button>
-
   <div class="form-content">
     <h2>Editar Usuario</h2>
     <form #form="ngForm" (ngSubmit)="validareditar()" >
-
     <div class="form-group">
       <label for="nombre">Nombre</label>
       <input
@@ -27,7 +25,6 @@
         class="form-input"
       />
     </div>
-
     <div class="form-group">
       <label for="apellido_paterno">Apellido Paterno</label>
       <input
@@ -41,7 +38,6 @@
         class="form-input"
       />
     </div>
-
     <div class="form-group">
       <label for="apellido_materno">Apellido Materno</label>
       <input
@@ -55,7 +51,6 @@
         class="form-input"
       />
     </div>
-
     <div class="form-group">
       <label for="correo">Correo Institucional</label>
       <input
@@ -76,7 +71,6 @@
           </div>
         }
     </div>
-
     <div class="form-group">
       <label for="contrasena">Contraseña</label>
       <input
@@ -89,7 +83,6 @@
         class="form-input"
       />
     </div>
-
     <div class="form-group">
       <label for="telefono">Teléfono</label>
       <input
@@ -104,7 +97,6 @@
         class="form-input"
       />
     </div>
-
     <div class="form-group">
       <label for="rol">Rol</label>
       <select
@@ -119,7 +111,6 @@
         <option value="estudiante">Estudiante</option>
       </select>
     </div>
-
     <div class="form-group">
       <label for="carrera">Carrera</label>
       <select
@@ -130,11 +121,9 @@
         class="form-input"
       >
        <option value="" disabled>Selecciona una carrera</option>
-
         @for (item of carreras; track $index) {
           <option [value]="item">{{ item }}</option>
         }
-
       </select>
     </div>
     <div class="form-group">
@@ -149,7 +138,6 @@
         class="form-input"
       />
     </div>
-
     <div class="form-group">
       <label for="telefono_referencia">Teléfono de Referencia</label>
       <input
@@ -163,7 +151,6 @@
         class="form-input"
       />
     </div>
-
     <div class="form-group">
       <label for="email_referencia">Email de Referencia</label>
       <input
@@ -177,7 +164,6 @@
         class="form-input"
       />
     </div>
-
     <div class="form-submit">
       <button type="submit" class="register-button" [disabled]="!form.valid">
         <span>Confirmar Cambios</span>
@@ -186,15 +172,12 @@
   </form>
   </div>
 </div>
-
-
 @if(error()){
   <app-mostrarerror
   [error]="error"
   [mensaje]="mensajeerror"
   ></app-mostrarerror>
 }
-
 @if(aviso()){
   <app-aviso
   [cerrar]="aviso"
@@ -202,7 +185,6 @@
   (aceptar)="confirmar()"
   ></app-aviso>
 }
-
 @if(exito()){
   <app-aviso-exito
   [exito]="exito"

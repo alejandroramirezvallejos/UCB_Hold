@@ -12,7 +12,6 @@ export class Usuario {
     nombre_referencia? : string | null;
     telefono_referencia? : string | null;
     email_referencia? : string | null;
-
     constructor(){
         this.id = '';
         this.carnet = null;
@@ -28,6 +27,4 @@ export class Usuario {
         this.telefono_referencia = null;
         this.email_referencia = null;
     }
-
 }
-

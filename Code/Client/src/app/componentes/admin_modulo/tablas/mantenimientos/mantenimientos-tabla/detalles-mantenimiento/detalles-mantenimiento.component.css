@@ -1,4 +1,3 @@
-/* Variables CSS básicas */
 :root {
   --color-text: #334155;
   --color-border: #e2e8f0;
@@ -8,8 +7,6 @@
   --radius: 0.5rem;
   --transition: all 0.2s ease-in-out;
 }
-
-/* Contenedor principal */
 .mantenimientos-container {
   position: fixed;
   top: 0;
@@ -23,8 +20,6 @@
   align-items: center;
   padding: 2rem;
 }
-
-/* Contenido del modal */
 .modal-content {
   background-color: #ffffff; /* Ventana blanca sólida */
   border-radius: var(--radius);
@@ -38,8 +33,6 @@
   position: relative;
   margin: 2rem;
 }
-
-/* Header del modal */
 .modal-header {
   display: flex;
   justify-content: space-between;
@@ -47,15 +40,12 @@
   padding: 1.5rem 2rem 1rem 2rem;
   border-bottom: 1px solid var(--color-border);
 }
-
 .modal-title {
   font-size: 1.5rem;
   font-weight: 600;
   color: var(--color-text);
   margin: 0;
 }
-
-/* Botón cerrar */
 .btn-close {
   background: none;
   border: none;
@@ -71,21 +61,16 @@
   justify-content: center;
   transition: var(--transition);
 }
-
 .btn-close:hover {
   background-color: #f3f4f6;
   color: #374151;
 }
-
-/* Tabla de datos */
 .table-responsive {
   overflow: auto;
   background-color: var(--color-surface);
   flex: 1;
   margin: 0 2rem;
 }
-
-/* Footer del modal */
 .modal-footer {
   display: flex;
   justify-content: flex-end;
@@ -93,8 +78,6 @@
   border-top: 1px solid var(--color-border);
   gap: 0.75rem;
 }
-
-/* Botones del footer */
 .btn {
   padding: 0.75rem 1.5rem;
   border: none;
@@ -104,21 +87,17 @@
   cursor: pointer;
   transition: var(--transition);
 }
-
 .btn-secondary {
   background-color: #6b7280;
   color: white;
 }
-
 .btn-secondary:hover {
   background-color: #4b5563;
 }
-
 .data-table {
   width: 100%;
   border-collapse: collapse;
 }
-
 .data-table th, 
 .data-table td {
   padding: 1rem;
@@ -126,30 +105,24 @@
   border-bottom: 1px solid var(--color-border);
   background-color: white;
 }
-
 .data-table th {
   font-weight: 600;
   background-color: #f8fafc;
   transition: var(--transition);
 }
-
 .data-table th:hover {
   background-color: #f1f5f9;
 }
-
 .data-table tbody tr {
   transition: var(--transition);
 }
-
 .data-table tbody tr:hover {
   background-color: rgba(37, 99, 235, 0.05);
 }
-
 .actions-column {
   width: 70px;
   text-align: center;
 }
-
 .precio-column {
   text-align: right;
 }

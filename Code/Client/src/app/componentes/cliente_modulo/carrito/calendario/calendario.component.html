@@ -1,6 +1,4 @@
-
 <div class="calendario-container">
-  
   <div class="calendario-header">
     <button 
       (click)="cambiarMes(-1)" 
@@ -12,7 +10,6 @@
       <i class="fas fa-chevron-right"></i>
     </button>
   </div>
-
     <div class="calendario-grid">
         <div class="dia-semana">Lun</div>
         <div class="dia-semana">Mar</div>
@@ -21,8 +18,6 @@
         <div class="dia-semana">Vie</div>
         <div class="dia-semana">Sáb</div>
         <div class="dia-semana">Dom</div>
-
-
         @for(dia of diasDelMes ;track $index){
             @if(dia.getTime() < diaActual.getTime()){
             <div class="dia-celda-pasado"></div>
@@ -40,15 +35,10 @@
                   <span class="pildora-disponible"> Libre </span>
                 </div> 
               }
-
             }
-        
         }
     </div>
-
 </div>
-
-
 @if(error()){
   <app-mostrarerror 
   [error]="error"

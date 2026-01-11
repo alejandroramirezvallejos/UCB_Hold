@@ -1,5 +1,4 @@
 import { Component, Input, signal, WritableSignal } from '@angular/core';
-
 @Component({
   selector: 'app-pantalla-carga',
   standalone  : true,
@@ -8,6 +7,4 @@ import { Component, Input, signal, WritableSignal } from '@angular/core';
   styleUrls: ['./pantalla-carga.component.css']
 })
 export class PantallaCargaComponent {
-  
-
 }

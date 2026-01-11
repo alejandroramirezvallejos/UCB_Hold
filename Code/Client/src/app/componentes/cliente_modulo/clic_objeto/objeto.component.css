@@ -2,7 +2,6 @@
   font-family: "Manrope";
   color: #8f9195;
 }
-
 .contenedor-objeto {
   display: grid;
   grid-template-columns: 1.5fr 2fr;
@@ -14,7 +13,6 @@
   border-radius: 8px;
   overflow: visible;
 }
-
 .seccion-imagen {
   display: flex;
   align-items: center;
@@ -23,7 +21,6 @@
   position: relative;
   overflow: visible;
 }
-
 .seccion-compra {
   display: flex;
   flex-direction: column;
@@ -31,15 +28,12 @@
   align-items: flex-start;
   margin-top: 1rem;
 }
-
 .seccion-compra p {
   font-size: 1rem;
   font-weight: 500;
   color: #6b7786;
   margin: 0;
 }
-
-
 .contenedor-imagen {
   width: 100%;
   padding-top: 100%;
@@ -48,12 +42,10 @@
   overflow: hidden;
   transition: box-shadow 0.3s ease, transform 0.3s ease;
 }
-
 .contenedor-imagen:hover .imagen-producto {
   transform: scale(1.05);
   box-shadow: 0 8px 20px rgba(0, 0, 0, 0.08);
 }
-
 .imagen-producto {
   position: absolute;
   top: 0;
@@ -64,27 +56,23 @@
   border-radius: 8px;
   transition: transform 0.3s ease, box-shadow 0.3s ease;
 }
-
 .seccion-detalles {
   display: flex;
   flex-direction: column;
   justify-content: center;
   gap: 0.5rem;
 }
-
 .nombre-objeto {
   font-size: 2rem;
   font-weight: 700;
   color: #6b7786;
   margin-bottom: 0;
 }
-
 .descripcion-objeto {
   font-size: 1.1rem;
   line-height: 1.6;
   color: #8f9195;
 }
-
 .boton-carrito {
   background-color: #ffd814;
   color: #6b7786;
@@ -96,11 +84,9 @@
   cursor: pointer;
   transition: background-color 0.3s;
 }
-
 .boton-carrito:hover {
   transform: scale(1.05);
 }
-
 .boton-carrito.plomo,
 .boton-carrito:disabled {
   color: #6b7786;
@@ -108,8 +94,6 @@
   cursor: default;
   transition: none;
 }
-
-
 .ficha-link {
   display: inline-block;
   margin: 0 0 0.6rem 0;
@@ -125,20 +109,16 @@
   opacity: 0.85;
   transition: opacity 0.12s;
 }
-
 .ficha-link:hover {
   opacity: 1;
   text-decoration-color: rgba(107,119,134,0.6);
 }
-
-
 .acciones {
   display: flex;
   align-items: center;
   gap: 0.75rem;
   justify-content: flex-start;
 }
-
 .ficha-link.debajo-texto {
   display: block;
   width: 100%;
@@ -149,15 +129,12 @@
   color: rgba(107,119,134,0.75);
   text-align: right;
 }
-
-
 @media (max-width: 992px) {
   .ficha-link.debajo-texto {
     text-align: left;
     width: 100%;
   }
 }
-
 @media (max-width: 992px) {
   .acciones {
     flex-direction: column-reverse;
@@ -169,7 +146,6 @@
     margin-bottom: 0.6rem;
   }
 }
-
 @media (max-width: 992px) {
   .contenedor-objeto {
     grid-template-columns: 1fr;
@@ -182,8 +158,6 @@
     justify-content: center;
   }
 }
-
-/* Scrollbar estilo admin */
 ::-webkit-scrollbar {
     width: 6px;
     height: 6px;

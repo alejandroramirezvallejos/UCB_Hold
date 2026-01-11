@@ -3,18 +3,12 @@ import { environment } from '../../../../environments/environment';
 import { HttpClient } from '@angular/common/http';
 import { map } from 'rxjs';
 import { Equipos } from '../../../models/admin/Equipos';
-
-
 @Injectable({
   providedIn: 'root'
 })
 export class EquipoService {
   private apiUrl = environment.apiUrl+ '/api/Equipo';
-
   constructor(private http: HttpClient) { }
-
-
-  
   crearEquipo(equipo: any) {
     const envio = {
       NombreGrupoEquipo: equipo.NombreGrupoEquipo,
@@ -29,13 +23,9 @@ export class EquipoService {
       TiempoMaximoPrestamo: equipo.TiempoMaximoPrestamo,
       NombreGavetero: equipo.NombreGavetero
     };
-
     return this.http.post<any>(this.apiUrl, envio);
   }
-
-
   obtenerEquipos(){
-    
     return this.http.get<any[]>(this.apiUrl).pipe(
       map(data => data.map(item => ({
         Id: item.Id,
@@ -52,13 +42,9 @@ export class EquipoService {
         Descripcion: item.Descripcion,
         TiempoMaximoPrestamo: item.TiempoMaximoPrestamo,
         Procedencia: item.Procedencia,
-
       })))
     );
-
-    
   }
-
   editarEquipo(equipo: Equipos) {
     const envio = {
       Id: equipo.Id,
@@ -76,13 +62,9 @@ export class EquipoService {
       TiempoMaximoPrestamo: equipo.TiempoMaximoPrestamo,
       NombreGavetero: equipo.NombreGavetero
     };
-
     return this.http.put<any>(this.apiUrl, envio);
   }
-
   eliminarEquipo(id: number) {
     return this.http.delete<any>(`${this.apiUrl}/${id}`);
   }
-
-
 }

@@ -1,10 +1,7 @@
-/* registrar-usuario.component.css */
 @import url('https://fonts.googleapis.com/css2?family=Open+Sans:wght@300;400;600;700&display=swap');
-
 :host {
   font-family: 'Open Sans', sans-serif;
 }
-
 :root {
   --primary-color: #1e3a8a;
   --primary-hover: #162d6b;
@@ -12,7 +9,6 @@
   --background-color: #f8fafc;
   --input-border: #e1e5ea;
 }
-
 .register-container {
   min-height: 100vh;
   display: flex;
@@ -20,9 +16,7 @@
   justify-content: center;
   background: #ffffff;
   padding: 4rem 2rem 2rem;
-
 }
-
 .register-card {
   background: white;
   padding: 2.5rem;
@@ -33,7 +27,6 @@
   width: 100%;
   max-width: 600px;
 }
-
 .title {
   text-align: center;
   color: var(--primary-color);
@@ -41,20 +34,17 @@
   font-size: 2rem;
   font-weight: 700;
 }
-
 .register-form {
   display: flex;
   flex-direction: column;
   gap: 1.5rem;
 }
-
 .form-section {
   border: none;
   border-radius: 0;
   padding: 0;
   background-color: transparent;
 }
-
 .form-section h3 {
   margin: 0 0 1rem 0;
   color: var(--primary-color);
@@ -63,24 +53,20 @@
   border-bottom: 2px solid var(--primary-color);
   padding-bottom: 0.5rem;
 }
-
 .form-row {
   display: grid;
   grid-template-columns: 1fr 1fr;
   gap: 1rem;
 }
-
 .form-group {
   display: flex;
   flex-direction: column;
   gap: 0.5rem;
 }
-
 .form-group label {
   font-weight: 500;
   color: var(--text-color);
 }
-
 .form-input {
   padding: 0.75rem;
   border: 2px solid var(--input-border);
@@ -89,17 +75,14 @@
   transition: border-color 0.2s;
   background-color: white;
 }
-
 .form-input:focus {
   outline: none;
   border-color: var(--primary-color);
   box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.1);
 }
-
 .form-input:invalid {
   border-color: #dc2626;
 }
-
 .error-message {
   color: #dc2626;
   font-size: 0.875rem;
@@ -108,7 +91,6 @@
   flex-direction: column;
   gap: 0.125rem;
 }
-
 .register-button {
   background-color: #ffd814;
   color: #6b7786;
@@ -126,23 +108,19 @@
   justify-content: center;
   gap: 0.5rem;
 }
-
 .register-button:hover:not(:disabled) {
   background-color: #f7ca00;
   box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
 }
-
 .register-button:active:not(:disabled) {
   background: #FFCF00;
   transform: translateY(1px);
   box-shadow: inset 0 3px 5px rgba(0, 0, 0, 0.125);
 }
-
 .register-button:disabled {
   opacity: 0.7;
   cursor: not-allowed;
 }
-
 .spinner {
   width: 24px;
   height: 24px;
@@ -151,24 +129,20 @@
   border-top-color: white;
   animation: spin 1s ease-in-out infinite;
 }
-
 @keyframes spin {
   to {
     transform: rotate(360deg);
   }
 }
-
 .additional-options {
   text-align: center;
   margin-top: 1rem;
 }
-
 .login-link {
   color: #64748b;
   font-size: 0.875rem;
   margin: 0;
 }
-
 .login-link a {
   color: var(--primary-color);
   text-decoration: none;
@@ -176,18 +150,14 @@
   cursor: pointer;
   transition: color 0.2s ease;
 }
-
 .login-link a:hover {
   text-decoration: underline;
 }
-
-/* Dropdown personalizado */
 .custom-dropdown {
   position: relative;
   width: 100%;
   font-family: "Open Sans", sans-serif;
 }
-
 .dropdown-header {
   display: flex;
   align-items: center;
@@ -196,23 +166,19 @@
   user-select: none;
   background-color: white; /* Match form input bg */
 }
-
 .dropdown-header .current-value {
   font-size: 1rem;
   font-weight: 400; /* Match input font weight */
   color: #1f2937; /* Match text color */
 }
-
 .dropdown-header .current-value.placeholder {
   color: #757575; /* Optional placeholder color */
 }
-
 .dropdown-arrow {
   width: 16px; /* Ajustado para input */
   height: 16px;
   transition: transform 0.2s ease;
 }
-
 .dropdown-list {
   position: absolute;
   top: 100%;
@@ -231,7 +197,6 @@
   backdrop-filter: blur(10px);
   background-color: rgba(255, 255, 255, 0.95);
 }
-
 .dropdown-list li {
   padding: 0.75rem 1rem;
   font-size: 1rem;
@@ -241,19 +206,15 @@
   transition: all 0.2s ease;
   text-align: left;
 }
-
 .dropdown-list li:hover {
   color: #FFCF00;
   background-color: #f8fafc;
 }
-
 .dropdown-list li.selected {
   color: #334155;
   font-weight: 700;
   background-color: #f1f5f9;
 }
-
-/* Scrollbar para la lista */
 .dropdown-list::-webkit-scrollbar {
   width: 6px;
 }
@@ -261,35 +222,27 @@
   background-color: rgba(0, 0, 0, 0.2);
   border-radius: 10px;
 }
-
-/* Responsive Design */
 @media (max-width: 768px) {
   .register-container {
     padding: 1rem;
   }
-
   .register-card {
     padding: 2rem 1.5rem;
   }
-
   .form-row {
     grid-template-columns: 1fr;
   }
-
   .title {
     font-size: 1.6rem;
   }
 }
-
 @media (max-width: 480px) {
   .register-card {
     padding: 1.5rem 1rem;
   }
-
   .title {
     font-size: 1.4rem;
   }
-
   .form-section {
     padding: 1rem;
   }

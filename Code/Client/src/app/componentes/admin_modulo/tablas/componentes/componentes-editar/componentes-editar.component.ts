@@ -8,7 +8,6 @@ import { BaseTablaComponent } from '../../base/base';
 import { AvisoExitoComponent } from '../../../../pantallas_avisos/aviso-exito/aviso-exito.component';
 import { Aviso } from '../../../../pantallas_avisos/aviso/aviso.component';
 import { MostrarerrorComponent } from '../../../../pantallas_avisos/mostrarerror/mostrarerror.component';
-
 @Component({
   selector: 'app-componentes-editar',
   standalone: true,
@@ -20,17 +19,13 @@ export class ComponentesEditarComponent extends BaseTablaComponent {
   @Input() botoneditar: WritableSignal<boolean> = signal(true);
   @Output() actualizar: EventEmitter<void> = new EventEmitter<void>();
   @Input() componente: Componente = new Componente();
-
   equipos : Equipos[] = [];
-
   constructor(private componenteService: ComponenteService, private equiposAPI : EquipoService) {
     super();
   }
-
    ngOnInit() {
     this.cargarEquipos();
   }
-
   cargarEquipos() {
     this.equiposAPI.obtenerEquipos().subscribe({
       next: (data: any[]) => {
@@ -43,13 +38,10 @@ export class ComponentesEditarComponent extends BaseTablaComponent {
       }
     })
   }
-
     validaredicion(){
       this.mensajeaviso="Estas seguro de editar este componente?";
       this.aviso.set(true);
     }
-
-
   confirmar() {
     this.componenteService.actualizarComponente(this.componente).subscribe({
       next: (response) => {
@@ -64,7 +56,6 @@ export class ComponentesEditarComponent extends BaseTablaComponent {
       }
     });
   }
-
   cerrar() {
     this.botoneditar.set(false);
   }

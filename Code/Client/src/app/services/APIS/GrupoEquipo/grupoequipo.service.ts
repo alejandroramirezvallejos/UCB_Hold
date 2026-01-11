@@ -3,17 +3,12 @@ import { environment } from '../../../../environments/environment';
 import { HttpClient } from '@angular/common/http';
 import { map, Observable } from 'rxjs';
 import { GrupoEquipo } from '../../../models/grupo_equipo';
-
 @Injectable({
   providedIn: 'root'
 })
 export class GrupoequipoService {
-
   private apiUrl = environment.apiUrl + '/api/GrupoEquipo';
-
   constructor(private http: HttpClient) { }
-
-
   crearGrupoEquipo(grupoEquipo: GrupoEquipo){
     const envio = {
       Nombre: grupoEquipo.nombre,
@@ -24,11 +19,8 @@ export class GrupoequipoService {
       UrlDataSheet: grupoEquipo.url_data_sheet,
       UrlImagen: grupoEquipo.link
     };
-
     return this.http.post<any>(this.apiUrl, envio);
-
   }
-
   obtenersinfiltroGruposEquipos() {
     return this.http.get<any[]>(this.apiUrl).pipe(
       map(data => data.map(item => ({
@@ -45,9 +37,6 @@ export class GrupoequipoService {
       })))
     );
   }
-
-
-
   getGrupoEquipo(categoria : string , producto : string): Observable<GrupoEquipo[]>  {
     var url : string   = this.apiUrl +'/buscar' + '?nombre=' + producto + '&categoria=' + categoria;
     return this.http.get<any[]>(url).pipe(
@@ -62,11 +51,9 @@ export class GrupoequipoService {
         nombreCategoria: item.NombreCategoria || '',
         Cantidad: item.Cantidad || 0,
         CostoPromedio: item.CostoPromedio || 0
-
       })))
     );
   }
-
   getproducto(id: string): Observable<GrupoEquipo> {
     const url = `${this.apiUrl}/${id}`;
     return this.http.get<any>(url).pipe(
@@ -83,8 +70,6 @@ export class GrupoequipoService {
       }))
     );
   }
-
-
   editarGrupoEquipo(grupoEquipo: GrupoEquipo) {
     const envio = {
       Id: grupoEquipo.id,
@@ -96,13 +81,9 @@ export class GrupoequipoService {
       UrlDataSheet: grupoEquipo.url_data_sheet,
       UrlImagen: grupoEquipo.link
     };
-
     return this.http.put<any>(this.apiUrl, envio);
   }
-
-
   eliminarGrupoEquipo(id: number) {
     return this.http.delete<any>(`${this.apiUrl}/${id}`);
   }
-
 }

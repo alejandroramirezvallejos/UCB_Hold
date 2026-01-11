@@ -1,13 +1,10 @@
 <div class="accesorios-container">
-  <!-- ESTO ES PARA EL TITULO Y EL BOTON CREAR -->
   <div class="table-header">
     <div class="header-title">
       <h1>Accesorios</h1>
       <p class="subtitle">Gestión de accesorios para equipos de mecatrónica</p>
     </div>
   </div>
-
-  <!-- BUSCADOR-->
   <app-buscador
     [columnas]="columnas"
     (terminoBusqueda)="aplicarFiltros($event)"
@@ -16,16 +13,12 @@
        Nuevo Accesorio
     </button>
   </app-buscador>
-
-
-  <!-- TABLA -->
   <div class="table-responsive">
     <table class="data-table">
       <thead>        <tr>
           @for (columna of columnas; track columna) {
             <th>{{ columna }}</th>
           }
-
           <th>Acciones</th>
         </tr>
       </thead>      <tbody>
@@ -43,9 +36,6 @@
               <button class="btn-icon btn-edit" (click)="editarAccesorio(accesorio)">
                 <i class="fas fa-pencil-alt"></i>
               </button>
-
-
-
             </td>        </tr>
         }
         @if (accesorios.length === 0) {
@@ -67,17 +57,14 @@
       (aceptar)="confirmarEliminacion()"
       (cancelar)="cancelarEliminacion()"
     ></app-aviso-eliminar>
-
   }
 </div>
-
 @if(botoncrear()){
   <app-accesorios-crear
   [botoncrear]="botoncrear"
   (Actualizar)="cargarAccesorios()"
   ></app-accesorios-crear>
 }
-
 @if(botoneditar()){
   <app-accesorios-editar
   [botoneditar]="botoneditar"
@@ -85,30 +72,24 @@
   (actualizar)="cargarAccesorios()"
   ></app-accesorios-editar>
 }
-
-
 @if(error()){
   <app-mostrarerror
   [error]="error"
   [mensaje]="mensajeerror"
   ></app-mostrarerror>
 }
-
 @if(exito()){
   <app-aviso-exito
   [exito]="exito"
   [mensaje]="mensajeexito"
   ></app-aviso-exito>
 }
-
 @if(aviso()){
   <app-aviso
   [cerrar]="aviso"
   [mensaje]="mensajeaviso"
   ></app-aviso>
 }
-
-
 @if(exito()){
   <app-aviso-exito
   [exito]="exito"

@@ -3,16 +3,12 @@ import { environment } from '../../../../environments/environment';
 import { HttpClient } from '@angular/common/http';
 import { Muebles } from '../../../models/admin/Muebles';
 import { map } from 'rxjs';
-
 @Injectable({
   providedIn: 'root'
 })
 export class MuebleService {
   private apiUrl = environment.apiUrl + '/api/Mueble'; 
-
   constructor(private http: HttpClient) { }
-
-
   crearMueble(mueble : Muebles){
     const enviar={
       Nombre: mueble.Nombre,
@@ -23,11 +19,8 @@ export class MuebleService {
       Profundidad: mueble.Profundidad,
       Altura: mueble.Altura
     };
-    
     return this.http.post(this.apiUrl, enviar);
   }
-
-
   obtenerMuebles() {
     return this.http.get<any[]>(this.apiUrl).pipe(
       map(data => data.map(item => ({
@@ -43,8 +36,6 @@ export class MuebleService {
       })))
     );
   }
-
-
   actualizarMueble(mueble: Muebles) {
     const enviar = {
       Id: mueble.Id,
@@ -56,14 +47,9 @@ export class MuebleService {
       Profundidad: mueble.Profundidad,
       Altura: mueble.Altura
     };
-
     return this.http.put(`${this.apiUrl}`, enviar);
   }
-
-
   eliminarMueble(id: number) {
     return this.http.delete(`${this.apiUrl}/${id}`);
   }
-
 }
- 

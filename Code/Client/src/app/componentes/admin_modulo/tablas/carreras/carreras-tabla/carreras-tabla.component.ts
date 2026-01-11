@@ -11,7 +11,6 @@ import { MostrarerrorComponent } from '../../../../pantallas_avisos/mostrarerror
 import { AvisoExitoComponent } from '../../../../pantallas_avisos/aviso-exito/aviso-exito.component';
 import { BuscadorComponent } from '../../../buscador/buscador.component';
 import { Tabla } from '../../base/tabla';
-
 @Component({
   selector: 'app-carreras-tabla',
   standalone: true,
@@ -20,38 +19,26 @@ import { Tabla } from '../../base/tabla';
   styleUrl: './carreras-tabla.component.css'
 })
 export class CarrerasTablaComponent extends Tabla {
-
   botoncrear: WritableSignal<boolean> = signal(false);
   botoneditar: WritableSignal<boolean> = signal(false);
-
   alertaeliminar: boolean = false;
   carreras: Carrera[] = [];
   carrerascopia: Carrera[] = [];
-
   carreraSeleccionada: Carrera = new Carrera();
-
   override columnas: string[] = ['Nombre'];
-
-
-
-
   constructor(private carreraService: CarreraService) {
     super();
   }
-
   ngOnInit() {
     this.cargarCarreras();
   }
-
   limpiarCarreraSeleccionada() {
     this.carreraSeleccionada = new Carrera();
   }
-
   crearCarrera() {
     this.botoneditar.set(false);
     this.botoncrear.set(true);
   }
-
   cargarCarreras() {
     this.carreraService.obtenerCarreras().subscribe({
       next: (data: any[]) => {
@@ -68,7 +55,6 @@ export class CarrerasTablaComponent extends Tabla {
       }
     });
   }
-
   aplicarFiltros(event?: [string, string]) {
     if (event && event[0].trim() !== '') {
         const busquedaNormalizada = this.normalizeText(event[0]);
@@ -84,24 +70,18 @@ export class CarrerasTablaComponent extends Tabla {
         this.carreras = [...this.carrerascopia];
       }
   }
-
-
   limpiarBusqueda() {
-
     this.carreras = [...this.carrerascopia];
   }
-
   editarCarrera(carrera: Carrera) {
     this.botoncrear.set(false);
     this.carreraSeleccionada = { ...carrera };
     this.botoneditar.set(true);
   }
-
   eliminarCarrera(carrera: Carrera) {
     this.carreraSeleccionada = carrera;
     this.alertaeliminar = true;
   }
-
   confirmarEliminacion() {
     if (this.carreraSeleccionada.Id) {
       this.carreraService.eliminarCarrera(this.carreraSeleccionada.Id).subscribe({
@@ -120,13 +100,8 @@ export class CarrerasTablaComponent extends Tabla {
     this.limpiarCarreraSeleccionada();
     this.alertaeliminar = false;
   }
-
   cancelarEliminacion() {
     this.alertaeliminar = false;
     this.limpiarCarreraSeleccionada();
   }
-
-
-
-
 }

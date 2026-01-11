@@ -1,13 +1,10 @@
 <div class="carreras-container">
-  <!-- ESTO ES PARA EL TITULO Y EL BOTON CREAR -->
   <div class="table-header">
     <div class="header-title">
       <h1>Carreras</h1>
       <p class="subtitle">Gestión de carreras universitarias</p>
     </div>
   </div>
-
-  <!-- BUSCADOR-->
   <app-buscador
     [columnas]="columnas"
     (terminoBusqueda)="aplicarFiltros($event)"
@@ -16,9 +13,6 @@
        Nueva Carrera
     </button>
   </app-buscador>
-
-
-  <!-- TABLA -->
   <div class="table-responsive">
     <table class="data-table">
       <thead>
@@ -57,27 +51,20 @@
       </tbody>
     </table>
   </div>
-
-  <!-- ALERTA DE ELIMINACIÓN -->
   @if(alertaeliminar){
-
     <app-aviso-eliminar
       [mensaje]="'¿Estás seguro de que deseas eliminar esta carrera?'"
       (aceptar)="confirmarEliminacion()"
       (cancelar)="cancelarEliminacion()"
     ></app-aviso-eliminar>
-
-
   }
 </div>
-
 @if(botoncrear()){
   <app-carreras-crear
   [botoncrear]="botoncrear"
   (Actualizar)="cargarCarreras()"
   ></app-carreras-crear>
 }
-
 @if(botoneditar()){
   <app-carreras-editar
   [botoneditar]="botoneditar"
@@ -85,14 +72,12 @@
   (actualizar)="cargarCarreras()"
   ></app-carreras-editar>
 }
-
 @if(error()){
   <app-mostrarerror
   [error]="error"
   [mensaje]="mensajeerror"
   ></app-mostrarerror>
 }
-
 @if(exito()){
   <app-aviso-exito
   [exito]="exito"

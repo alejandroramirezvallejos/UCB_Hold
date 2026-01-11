@@ -8,7 +8,6 @@ import { MostrarerrorComponent } from '../../../../pantallas_avisos/mostrarerror
 import { AvisoExitoComponent } from '../../../../pantallas_avisos/aviso-exito/aviso-exito.component';
 import { Aviso } from '../../../../pantallas_avisos/aviso/aviso.component';
 import { BaseTablaComponent } from '../../base/base';
-
 @Component({
   selector: 'app-accesorios-editar',
   imports: [FormsModule , MostrarerrorComponent , AvisoExitoComponent , Aviso],
@@ -19,19 +18,13 @@ export class AccesoriosEditarComponent extends BaseTablaComponent {
   @Input() botoneditar: WritableSignal<boolean> = signal(true);
   @Output() actualizar: EventEmitter<void> = new EventEmitter<void>();
   @Input() accesorio : Accesorio = new Accesorio();
-
-
    equipos : Equipos[] = [] ;  
-
   constructor(private accesorioapi: AccesoriosService , private equipoAPI : EquipoService) {
     super();
   }; 
-
-  
   ngOnInit(){
     this.cargarEquipos();
   }
-
   cargarEquipos(){
     this.equipoAPI.obtenerEquipos().subscribe({
       next: (data) => {
@@ -44,15 +37,11 @@ export class AccesoriosEditarComponent extends BaseTablaComponent {
       }
     })
   }
-
   confirmaredicion(){
     this.mensajeaviso="¿Está seguro que desea editar el accesorio?";
     this.aviso.set(true);
   }
-
-
   confirmar (){
- 
     this.accesorioapi.editarAccesorio(this.accesorio).subscribe({
       next : (response) => {
         this.actualizar.emit();
@@ -65,12 +54,8 @@ export class AccesoriosEditarComponent extends BaseTablaComponent {
         this.error.set(true);
       }
     });
-
-    
   }
-
   cerrar(){
     this.botoneditar.set(false);
   }
-
 }

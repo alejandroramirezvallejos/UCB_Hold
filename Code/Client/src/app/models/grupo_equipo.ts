@@ -9,7 +9,6 @@ export class GrupoEquipo {
   link?: string | null;
   Cantidad?: number | null;
   CostoPromedio?: number | null;
-
   constructor() {
     this.id = 0;
     this.nombre = null;
@@ -22,5 +21,4 @@ export class GrupoEquipo {
     this.Cantidad = null;
     this.CostoPromedio = null;
   }
-  
 }

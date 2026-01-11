@@ -12,9 +12,6 @@ import { AvisoExitoComponent } from '../../../../pantallas_avisos/aviso-exito/av
 import { Aviso } from '../../../../pantallas_avisos/aviso/aviso.component';
 import { BuscadorComponent } from '../../../buscador/buscador.component';
 import { Tabla } from '../../base/tabla';
-
-
-
 @Component({
   selector: 'app-accesorios-tabla',
   standalone: true,
@@ -23,43 +20,27 @@ import { Tabla } from '../../base/tabla';
   styleUrls: ['./accesorios-tabla.component.css']
 })
 export class AccesoriosTablaComponent  extends Tabla{
-
   botoncrear : WritableSignal<boolean> = signal(false);
   botoneditar : WritableSignal<boolean> = signal(false);
-
   alertaeliminar : boolean = false;
   accesorios : Accesorio[] = [];
   accesorioscopia: Accesorio[] = [];
-
   accesorioSeleccionado:  Accesorio= new Accesorio();
-
   override columnas: string[] = ['Nombre','Modelo','Tipo','Código IMT del Equipo','Precio'];
-
   constructor(private accesoriosapi : AccesoriosService){
     super();
   };
-
-
-
-
-
   ngOnInit(){
     this.cargarAccesorios();
   }
-
-
   limpiarAccesorioSeleccionado() {
     this.accesorioSeleccionado = new Accesorio();
-
   }
-
   crearaccesorio() {
     this.botoneditar.set(false);
     this.botoncrear.set(true);
   }
-
   cargarAccesorios() {
-
     this.accesoriosapi.obtenerAccesorios().subscribe({
       next: (data: Accesorio[]) => {
         this.accesorios = data;
@@ -71,9 +52,7 @@ export class AccesoriosTablaComponent  extends Tabla{
         this.error.set(true);
       }
     });
-
   }
-
   aplicarFiltros(event?: [string, string]) {
     if (event && event[0].trim() !== '') {
       const busquedaNormalizada = this.normalizeText(event[0]);
@@ -99,36 +78,27 @@ export class AccesoriosTablaComponent  extends Tabla{
         }
       });
     } else {
-      // Crear una copia para evitar referencias
       this.accesorios = [...this.accesorioscopia];
     }
   }
-
 limpiarBusqueda(){
-
   this.accesorios = [...this.accesorioscopia];
-
 }
-
 editarAccesorio(accesorio : Accesorio) {
   this.botoncrear.set(false);
   this.accesorioSeleccionado = { ...accesorio }; // Crear una copia del objeto
   this.botoneditar.set(true);
 }
-
 eliminarAccesorio(accesorio : Accesorio) {
   this.accesorioSeleccionado = accesorio;
   this.alertaeliminar = true;
-
 }
-
 confirmarEliminacion() {
   this.accesoriosapi.eliminarAccesorio(this.accesorioSeleccionado.Id).subscribe({
     next: (response) => {
       this.cargarAccesorios();
       this.mensajeexito = 'Accesorio eliminado exitosamente.';
       this.exito.set(true);
-
     },
     error: (error) => {
       this.mensajeerror = 'Error al eliminar el accesorio. Por favor, intente más tarde.';
@@ -139,17 +109,8 @@ confirmarEliminacion() {
   this.limpiarAccesorioSeleccionado();
   this.alertaeliminar = false;
 }
-
 cancelarEliminacion(){
   this.alertaeliminar = false;
   this.limpiarAccesorioSeleccionado();
 }
-
-
-
-
-
-
-
-
 }

@@ -25,7 +25,6 @@
         }
       }
     </div>
-
     @if (productosFiltrados.length === 0) {
       <div class="no-results">
         <div class="no-results-content">
@@ -38,7 +37,6 @@
         </div>
       </div>
     }
-
     @if (totalPaginas > 1) {
       <div class="pagination">
         <button
@@ -55,7 +53,6 @@
             (mouseleave)="prevIcon.src = '/assets/back_line.png'"
           />
         </button>
-
         <div class="pagination__numbers">
           @for (pagina of obtenerRangoPaginas(); track pagina) {
             <button
@@ -66,7 +63,6 @@
             </button>
           }
         </div>
-
         <button
           class="pagination__arrow-btn"
           [class.pagination__arrow--disabled]="!hayPaginasSiguientes"
@@ -83,7 +79,6 @@
         </button>
       </div>
     }
-
     <footer class="site-footer">
       <div class="footer-content">
         <p>© Copyright Universidad Católica Boliviana San Pablo 2025</p>
@@ -91,7 +86,6 @@
     </footer>
   </div>
 </body>
-
 @if(error()){
   <app-mostrarerror
   [error]="error"

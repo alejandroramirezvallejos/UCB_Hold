@@ -6,7 +6,6 @@ import { CanceladoComponent } from './cancelado/cancelado.component';
 import { FinalizadoComponent } from './finalizado/finalizado.component';
 import { PendienteComponent } from './pendiente/pendiente.component';
 import { RechazadoComponent } from './rechazado/rechazado.component';
-
 @Component({
   selector: 'app-historial',
   imports: [ActivoComponent , AprobadoComponent, CanceladoComponent , FinalizadoComponent , PendienteComponent , RechazadoComponent],
@@ -18,23 +17,17 @@ export class HistorialComponent {
   item : string = "Activo";
   isOpen: boolean = false;
   isHovered: boolean = false;
-
   constructor(private usuario : UsuarioService) {  }
-
-
   itemclick(item : string){
     this.item=item;
     this.isOpen = false;
   }
-
   toggleDropdown() {
     this.isOpen = !this.isOpen;
   }
-
   onMouseEnter() {
     this.isHovered = true;
   }
-
   onMouseLeave() {
     this.isHovered = false;
   }

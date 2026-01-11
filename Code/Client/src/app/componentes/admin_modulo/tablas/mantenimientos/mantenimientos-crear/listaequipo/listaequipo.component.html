@@ -1,12 +1,14 @@
 <div class="container">
-  <!-- BUSCADOR-->
   <div class="search-container">
+    <button class="btn-back" (click)="regresar()" (mouseenter)="backHover = true" (mouseleave)="backHover = false">
+      <img [src]="backHover ? '/assets/back_solid.png' : '/assets/back_line.png'" alt="Regresar" />
+    </button>
     <div class="search-input-wrapper">
-      <i class="fas fa-search search-icon"></i>      <input 
-        type="text" 
-        [(ngModel)]="terminoBusqueda" 
+      <i class="fas fa-search search-icon"></i>      <input
+        type="text"
+        [(ngModel)]="terminoBusqueda"
         (keydown.enter)="buscar()"
-        placeholder="Buscar equipos..." 
+        placeholder="Buscar equipos..."
         class="search-input"
       />
       @if (terminoBusqueda) {
@@ -15,27 +17,24 @@
         </button>
       }
     </div>
-
   </div>
-
-  <!-- TABLA -->
   <div class="table-responsive">
     <table class="data-table">
       <thead>        <tr>
           <th (click)="ordenarPor('Nombre')">
-            Nombre 
+            Nombre
             @if (sortColumn === 'Nombre') {
               <i [class]="sortDirection === 'asc' ? 'fas fa-sort-up' : 'fas fa-sort-down'"></i>
             }
           </th>
           <th (click)="ordenarPor('EstadoEquipo')">
-            EstadoEquipo 
+            EstadoEquipo
             @if (sortColumn === 'EstadoEquipo') {
               <i [class]="sortDirection === 'asc' ? 'fas fa-sort-up' : 'fas fa-sort-down'"></i>
             }
           </th>
           <th (click)="ordenarPor('Ubicacion')">
-            Ubicacion 
+            Ubicacion
             @if (sortColumn === 'Ubicacion') {
               <i [class]="sortDirection === 'asc' ? 'fas fa-sort-up' : 'fas fa-sort-down'"></i>
             }
@@ -47,7 +46,7 @@
             }
           </th>
           <th (click)="ordenarPor('CostoReferencia')">
-            Costo 
+            Costo
             @if (sortColumn === 'CostoReferencia') {
               <i [class]="sortDirection === 'asc' ? 'fas fa-sort-up' : 'fas fa-sort-down'"></i>
             }
@@ -57,7 +56,6 @@
       </thead>      <tbody>
         @for (equipo of equipos; track $index ; let i = $index) {
           @if(mantenimientoequipos.validarsiexitecodigo(equipo.CodigoImt)){
-
           }
           @else {
             <tr>
@@ -70,10 +68,7 @@
               <button class="btn-icon btn-add" (click)="agregarEquipo(equipo)">
                 <i class="fas fa-plus"></i>
               </button>
-     
-
-
-            </td>        </tr>  
+            </td>        </tr>
           }
         }
         @if (equipos.length === 0) {
@@ -90,16 +85,14 @@
       </tbody>
     </table>  </div>  <!-- ALERTA DE ELIMINACIÓN -->
 </div>
-
 @if(agregarEquipoSeleccionado()){
   <app-formulario-datos
   [agregarEquipoSeleccionado]="agregarEquipoSeleccionado"
   [equipo]="equipoSeleccionado"
+  [agregarequipo]="agregarequipo"
   >
-
   </app-formulario-datos>
 }
-
 @if(error()){
   <app-mostrarerror
   [error]="error"

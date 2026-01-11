@@ -12,7 +12,6 @@ import { MostrarerrorComponent } from '../../../../pantallas_avisos/mostrarerror
 import { AvisoExitoComponent } from '../../../../pantallas_avisos/aviso-exito/aviso-exito.component';
 import { BuscadorComponent } from '../../../buscador/buscador.component';
 import { Tabla } from '../../base/tabla';
-
 @Component({
   selector: 'app-mantenimientos-tabla',
   standalone: true,
@@ -21,38 +20,26 @@ import { Tabla } from '../../base/tabla';
   styleUrl: './mantenimientos-tabla.component.css'
 })
 export class MantenimientosTablaComponent extends Tabla implements OnInit {
-
   botoncrear: WritableSignal<boolean> = signal(false);
-
   mostrardetalles : WritableSignal<boolean> = signal(false);
   alertaeliminar: boolean = false;
   mantenimientos: MantenimientosAgrupados[] = [];
-  
   mantenimientoGruposeleccionado: Mantenimientos[] = [];
-
   mantenimientosFiltrados: MantenimientosAgrupados[] = [];
-
   mantenimientoSeleccionado: Mantenimientos = new Mantenimientos();
-
   override columnas: string[] = ['Empresa','codigosIMT','Fecha Inicio','Fecha Fin','Costo'];
-
-
   constructor(private mantenimientoapi: MantenimientoService) { 
     super();
   }
-
   ngOnInit() {
     this.cargarMantenimientos();
   }
-
   limpiarMantenimientoSeleccionado() {
     this.mantenimientoSeleccionado = new Mantenimientos();
   }
-
   crearmantenimiento() {
     this.botoncrear.set(true);
   }
-
   cargarMantenimientos() {
     this.mantenimientoapi.obtenerMantenimientos().subscribe({
       next: (datos) => {
@@ -65,35 +52,25 @@ export class MantenimientosTablaComponent extends Tabla implements OnInit {
       }
     });
   }
-
   agruparMantenimientos(datos : Mantenimientos[]) {
     this.mantenimientos = []; 
-
     if (datos.length === 0) {
       this.mantenimientosFiltrados = [];
      return;
     }
-
     let mantenimientosArray: Mantenimientos[] = [];
-
     for (let i = 0; i < datos.length; i++) {
       mantenimientosArray.push(datos[i]);
-
       if (i === datos.length - 1 || datos[i].Id !== datos[i + 1]?.Id) {
         this.mantenimientos.push(new MantenimientosAgrupados(mantenimientosArray));
         mantenimientosArray = [];
       }
     }
-
     this.mantenimientosFiltrados = [...this.mantenimientos];
   }
-
-
-  
   buscar() {
     this.aplicarFiltros();
   }
-
   aplicarFiltros(event?: [string, string]) {
       if (event && event[0].trim() !== '') {
         const busquedaNormalizada = this.normalizeText(event[0]);
@@ -107,7 +84,6 @@ export class MantenimientosTablaComponent extends Tabla implements OnInit {
                const fechaFormateada = this.formatDate(mantenimiento.datosgrupo.FechaMantenimiento);
   console.log('Fecha formateada:', fechaFormateada, 'Búsqueda:', busquedaNormalizada);
   return this.normalizeText(fechaFormateada).includes(busquedaNormalizada);
-              
             case 'Fecha Fin':
               return this.normalizeText(this.formatDate(mantenimiento.datosgrupo.FechaFinalDeMantenimiento)).includes(busquedaNormalizada);
             case 'Costo':
@@ -123,24 +99,17 @@ export class MantenimientosTablaComponent extends Tabla implements OnInit {
           }
         });
       } else {
-        // Crear una copia para evitar referencias
         this.mantenimientosFiltrados = [...this.mantenimientos];
       }
   }
-
   limpiarBusqueda() {
     this.aplicarFiltros();
   }
-
-
-
   eliminarMantenimiento(mantenimiento: MantenimientosAgrupados) {
     this.mantenimientoSeleccionado = mantenimiento.matenimientos[0]; 
     this.alertaeliminar = true;
   }
-
   confirmarEliminacion() {
- 
     this.mantenimientoapi.eliminarMantenimiento(this.mantenimientoSeleccionado.Id).subscribe({
       next: () => {
          this.limpiarMantenimientoSeleccionado();
@@ -157,24 +126,13 @@ export class MantenimientosTablaComponent extends Tabla implements OnInit {
           this.alertaeliminar = false;
       }
     })
-  
-
-    
   }
-
   cancelarEliminacion() {
     this.alertaeliminar = false;
     this.limpiarMantenimientoSeleccionado();
   }
-
-
-
   mostrarmantenimientosindividuales(mantenimientosgrupo : MantenimientosAgrupados){
     this.mantenimientoGruposeleccionado=mantenimientosgrupo.matenimientos; 
     this.mostrardetalles.set(true);
   }
-
-  
-
-
 }

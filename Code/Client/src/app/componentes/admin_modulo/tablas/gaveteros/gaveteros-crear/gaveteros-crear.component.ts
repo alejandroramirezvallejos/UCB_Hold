@@ -7,7 +7,6 @@ import { BaseTablaComponent } from '../../base/base';
 import { MostrarerrorComponent } from '../../../../pantallas_avisos/mostrarerror/mostrarerror.component';
 import { Aviso } from '../../../../pantallas_avisos/aviso/aviso.component';
 import { AvisoExitoComponent } from '../../../../pantallas_avisos/aviso-exito/aviso-exito.component';
-
 @Component({
   selector: 'app-gaveteros-crear',
   standalone: true,
@@ -16,22 +15,16 @@ import { AvisoExitoComponent } from '../../../../pantallas_avisos/aviso-exito/av
   styleUrl: './gaveteros-crear.component.css'
 })
 export class GaveterosCrearComponent extends BaseTablaComponent{
-
   @Input() botoncrear: WritableSignal<boolean> = signal(true);
   @Output() Actualizar = new EventEmitter<void>();
-
   muebles : string[] = [];
   gavetero : Gaveteros = new Gaveteros();
-
-
   constructor(private gaveteroapi : GaveteroService , private mueblesAPI : MuebleService){
     super();
   }; 
-
   ngOnInit(){
     this.cargarMuebles();
   }
-
   cargarMuebles(){
     this.mueblesAPI.obtenerMuebles().subscribe({
       next: (data) => {
@@ -44,15 +37,11 @@ export class GaveterosCrearComponent extends BaseTablaComponent{
       }
     })
   }
-
   validarregistro(){
     this.mensajeaviso = "¿Desea registrar el gavetero?";
     this.aviso.set(true);
   }
-
-
   registrar(){
-
     this.gaveteroapi.crearGavetero(this.gavetero).subscribe({
       next : (response) => {
         this.Actualizar.emit(); 
@@ -65,11 +54,8 @@ export class GaveterosCrearComponent extends BaseTablaComponent{
         this.error.set(true);
       }
   });
-   
   }
-
   cerrar(){
     this.botoncrear.set(false);
   }
-
 }

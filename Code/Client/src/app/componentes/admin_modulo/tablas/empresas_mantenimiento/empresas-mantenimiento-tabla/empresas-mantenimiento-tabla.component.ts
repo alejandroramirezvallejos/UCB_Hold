@@ -11,7 +11,6 @@ import { MostrarerrorComponent } from '../../../../pantallas_avisos/mostrarerror
 import { AvisoExitoComponent } from '../../../../pantallas_avisos/aviso-exito/aviso-exito.component';
 import { Tabla } from '../../base/tabla';
 import { BuscadorComponent } from '../../../buscador/buscador.component';
-
 @Component({
   selector: 'app-empresas-mantenimiento-tabla',
   standalone: true,
@@ -20,28 +19,19 @@ import { BuscadorComponent } from '../../../buscador/buscador.component';
   styleUrl: './empresas-mantenimiento-tabla.component.css'
 })
 export class EmpresasMantenimientoTablaComponent extends Tabla implements OnInit {
-
   botoncrear: WritableSignal<boolean> = signal(false);
   botoneditar: WritableSignal<boolean> = signal(false);
-
   alertaeliminar: boolean = false;
   empresas: EmpresaMantenimiento[] = [];
   empresascopia: EmpresaMantenimiento[] = [];
-
   empresaSeleccionada: EmpresaMantenimiento = new EmpresaMantenimiento();
-
   override columnas: string[] = ['Nombre Empresa','Responsable','Teléfono','NIT'];
-
-
-
   constructor(private empresaService: EmpresamantenimientoService) {
     super();
   }
-
   ngOnInit() {
     this.cargarEmpresas();
   }
-
   limpiarEmpresaSeleccionada() {
     this.empresaSeleccionada = new EmpresaMantenimiento();
   }
@@ -49,7 +39,6 @@ export class EmpresasMantenimientoTablaComponent extends Tabla implements OnInit
     this.botoneditar.set(false);
     this.botoncrear.set(true);
   }
-
   cargarEmpresas() {
     this.empresaService.obtenerEmpresaMantenimiento().subscribe(
       (data: EmpresaMantenimiento[]) => {
@@ -63,7 +52,6 @@ export class EmpresasMantenimientoTablaComponent extends Tabla implements OnInit
       }
     );
   }
-
   aplicarFiltros(event?: [string, string]) {
    if (event && event[0].trim() !== '') {
     const busquedaNormalizada = this.normalizeText(event[0]);
@@ -88,9 +76,7 @@ export class EmpresasMantenimientoTablaComponent extends Tabla implements OnInit
       this.empresas = [...this.empresascopia];
     }
   }
-
   limpiarBusqueda() {
-
     this.empresas = [...this.empresascopia];
   }
   editarEmpresaMantenimiento(empresa: EmpresaMantenimiento) {
@@ -102,7 +88,6 @@ export class EmpresasMantenimientoTablaComponent extends Tabla implements OnInit
     this.empresaSeleccionada = empresa;
     this.alertaeliminar = true;
   }
-
   confirmarEliminacion() {
     if (this.empresaSeleccionada.Id) {
       this.empresaService.eliminarEmpresaMantenimiento(this.empresaSeleccionada.Id).subscribe({
@@ -121,11 +106,8 @@ export class EmpresasMantenimientoTablaComponent extends Tabla implements OnInit
     this.limpiarEmpresaSeleccionada();
     this.alertaeliminar = false;
   }
-
   cancelarEliminacion() {
     this.alertaeliminar = false;
     this.limpiarEmpresaSeleccionada();
   }
-
-
 }

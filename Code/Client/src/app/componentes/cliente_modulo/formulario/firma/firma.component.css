@@ -1,4 +1,3 @@
-/* Fondo oscuro semi-transparente */
 .signature-overlay {
   position: fixed;
   top: 0;
@@ -11,8 +10,6 @@
   align-items: center;
   z-index: 1000;
 }
-
-/* Contenedor de la firma centrado */
 .signature-container {
   background-color: white;
   padding: 20px;
@@ -22,8 +19,6 @@
   width: 600px;
   position: relative;
 }
-
-/* Botón de cerrar */
 .close-button {
   position: absolute;
   color: black;
@@ -34,18 +29,14 @@
   font-size: 1.5em;
   cursor: pointer;
 }
-
-/* Resto de estilos se mantienen */
 .signature-pad {
   touch-action: none;
   width: 120%;
   height: 400px;
 }
-
 .buttons {
   margin-top: 15px;
 }
-
 button {
   margin: 0 5px;
   padding: 8px 16px;
@@ -55,17 +46,13 @@ button {
   border-radius: 4px;
   cursor: pointer;
 }
-
 button:hover {
   background-color: #FFDD05;
   color: black;
 }
-
 .signature-instructions{
   font-size: 0.9em;
   color: #555;
   margin-top: 10px;
   text-align: center;
 }
-
-

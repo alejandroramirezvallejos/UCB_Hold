@@ -9,7 +9,6 @@
       (mouseleave)="closeIcon.src = '/assets/x.png'"
     />
   </button>
-
   <div class="form-content">
     <h2>Editar Grupo de Equipo</h2>
     <form #form="ngForm" (ngSubmit)="validaredicion()">
@@ -26,7 +25,6 @@
         class="form-input"
       />
     </div>
-
     <div class="form-group">
       <label for="modelo">Modelo</label>
       <input
@@ -40,7 +38,6 @@
         class="form-input"
       />
     </div>
-
     <div class="form-group">
       <label for="marca">Marca</label>
       <input
@@ -54,7 +51,6 @@
         class="form-input"
       />
     </div>
-
     <div class="form-group">
       <label for="nombreCategoria">Categoría</label>
       <select
@@ -69,9 +65,7 @@
           <option [value]="item">{{ item }}</option>
         }
       </select>
-
     </div>
-
     <div class="form-group">
       <label for="descripcion">Descripción</label>
       <textarea
@@ -85,7 +79,6 @@
         class="form-input"
       ></textarea>
     </div>
-
     <div class="form-group">
       <label for="url_data_sheet">URL Data Sheet</label>
       <input
@@ -99,7 +92,6 @@
         class="form-input"
       />
     </div>
-
     <div class="form-group">
       <label for="link">URL Imagen</label>
       <input
@@ -114,7 +106,6 @@
         class="form-input"
       />
     </div>
-
     <div class="form-submit">
       <button type="submit" class="register-button" [disabled]="!form.valid">
         <span>Confirmar Cambios</span>
@@ -123,15 +114,12 @@
   </form>
   </div>
 </div>
-
-
 @if(error()){
   <app-mostrarerror
   [error]="error"
   [mensaje]="mensajeerror"
   ></app-mostrarerror>
 }
-
 @if(aviso()){
   <app-aviso
   [cerrar]="aviso"
@@ -139,7 +127,6 @@
   (aceptar)="confirmar()"
   ></app-aviso>
 }
-
 @if(exito()){
   <app-aviso-exito
   [exito]="exito"

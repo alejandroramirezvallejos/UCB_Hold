@@ -6,7 +6,6 @@ import { BaseTablaComponent } from '../../base/base';
 import { MostrarerrorComponent } from '../../../../pantallas_avisos/mostrarerror/mostrarerror.component';
 import { Aviso } from '../../../../pantallas_avisos/aviso/aviso.component';
 import { AvisoExitoComponent } from '../../../../pantallas_avisos/aviso-exito/aviso-exito.component';
-
 @Component({
   selector: 'app-empresas-mantenimiento-crear',
   standalone: true,
@@ -15,26 +14,17 @@ import { AvisoExitoComponent } from '../../../../pantallas_avisos/aviso-exito/av
   styleUrl: './empresas-mantenimiento-crear.component.css'
 })
 export class EmpresasMantenimientoCrearComponent  extends BaseTablaComponent{
-
   @Input() botoncrear: WritableSignal<boolean> = signal(true);
   @Output() Actualizar = new EventEmitter<void>();
-
-
   empresaMantenimiento : EmpresaMantenimiento = new EmpresaMantenimiento();
-
-
   constructor(private empresaMantenimientoapi : EmpresamantenimientoService){
     super(); 
   }; 
-
   validarregistro(){
     this.mensajeaviso="Esta seguro de crear este empresa?";
     this.aviso.set(true);
   }
-
-  
   registrar(){
-
     this.empresaMantenimientoapi.crearEmpresaMantenimiento(this.empresaMantenimiento).subscribe({
       next: () => {
         this.Actualizar.emit(); 
@@ -47,11 +37,8 @@ export class EmpresasMantenimientoCrearComponent  extends BaseTablaComponent{
         this.error.set(true);
       }
     });
-
   }
-
   cerrar(){
     this.botoncrear.set(false);
   }
-
 }

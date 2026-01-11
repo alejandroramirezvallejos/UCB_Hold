@@ -1,5 +1,4 @@
 import { Component, input, Input, Signal, WritableSignal } from '@angular/core';
-
 @Component({
   selector: 'app-mostrarerror',
   imports: [],
@@ -7,13 +6,9 @@ import { Component, input, Input, Signal, WritableSignal } from '@angular/core';
   styleUrl: './mostrarerror.component.css'
 })
 export class MostrarerrorComponent {
-
-
   @Input() error! : WritableSignal<boolean>  ;
   @Input() mensaje : string = "Error desconocido , intente mas tarde";
-
   clickx(){
     this.error.set(false);
   }
-
 }

@@ -7,7 +7,6 @@ export class Comentario {
     Contenido: string| null;
     Likes: number | null;
     FechaCreacion: string  | null;
-
     constructor() {
         this.Id = '';
         this.CarnetUsuario = null;
@@ -18,6 +17,4 @@ export class Comentario {
         this.Likes = null;
         this.FechaCreacion = null;
     }
-
-
 }

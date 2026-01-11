@@ -1,6 +1,4 @@
-/* empresas-mantenimiento-crear.component.css */
 @import url('https://fonts.googleapis.com/css2?family=Open+Sans:wght@300;400;600;700&display=swap');
-
 :host {
   font-family: 'Open Sans', sans-serif;
   position: fixed;
@@ -15,12 +13,10 @@
   z-index: 1000;
   animation: fadeIn 0.3s ease-in-out;
 }
-
 :root {
   --primary-color: #1e3a8a;
   --text-color: #1f2937;
 }
-
 .form-container {
   background: white;
   padding: 2rem 0;
@@ -36,13 +32,11 @@
   flex-direction: column;
   animation: slideIn 0.3s ease-out;
 }
-
 .form-content {
   overflow-y: auto;
   padding: 0 2rem;
   flex: 1;
 }
-
 .form-content::-webkit-scrollbar {
   width: 6px;
 }
@@ -55,7 +49,6 @@
   border-radius: 10px;
   margin: 10px 0;
 }
-
 .btn-close {
   position: absolute;
   top: 1rem;
@@ -72,11 +65,9 @@
   z-index: 10;
   padding: 0;
 }
-
 .btn-close:hover {
   transform: scale(1.1);
 }
-
 .form-container h2 {
   text-align: center;
   color: var(--primary-color);
@@ -85,25 +76,21 @@
   font-weight: 700;
   padding-right: 1.5rem;
 }
-
 .form-container form {
   display: flex;
   flex-direction: column;
   gap: 1rem;
 }
-
 .form-group {
   display: flex;
   flex-direction: column;
   gap: 0.5rem;
 }
-
 .form-group label {
   font-weight: 500;
   color: var(--text-color);
   font-size: 0.9rem;
 }
-
 .form-input {
   padding: 0.75rem;
   border: 2px solid #e1e5ea !important;
@@ -112,34 +99,28 @@
   transition: border-color 0.2s;
   background-color: white !important;
 }
-
 .form-input:focus {
   outline: none;
   border-color: var(--primary-color);
   box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.1);
 }
-
 .form-input.ng-invalid.ng-touched {
   border-color: #dc2626 !important;
   border-width: 2px !important;
 }
-
 .form-input.ng-invalid:not(.ng-touched) {
   border-color: #e1e5ea !important;
   box-shadow: none !important;
 }
-
 textarea.form-input {
   resize: vertical;
   min-height: 80px;
   font-family: inherit;
 }
-
 .form-submit {
   margin-top: 1rem;
   text-align: center;
 }
-
 .register-button {
   background-color: #ffd814;
   color: #6b7786;
@@ -158,29 +139,24 @@ textarea.form-input {
   margin: 0 auto;
   min-width: 150px;
 }
-
 .register-button:hover:not(:disabled) {
   background: #f7ca00;
   box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
   transform: translateY(-1px);
 }
-
 .register-button:active:not(:disabled) {
   background: #FFCF00;
   transform: translateY(1px);
   box-shadow: inset 0 3px 5px rgba(0, 0, 0, 0.125);
 }
-
 .register-button:disabled {
   opacity: 0.7;
   cursor: not-allowed;
 }
-
 @keyframes fadeIn {
   from { opacity: 0; }
   to { opacity: 1; }
 }
-
 @keyframes slideIn {
   from {
     transform: scale(0.8);
@@ -191,29 +167,24 @@ textarea.form-input {
     opacity: 1;
   }
 }
-
 @media (max-width: 768px) {
   .form-container {
     margin: 1rem;
     padding: 1.5rem;
     max-width: calc(100vw - 2rem);
   }
-
   .form-container h2 {
     font-size: 1.4rem;
     padding-right: 1rem;
   }
 }
-
 @media (max-width: 480px) {
   .form-container {
     padding: 1rem;
   }
-
   .form-container h2 {
     font-size: 1.2rem;
   }
-
   .form-group label {
     font-size: 0.85rem;
   }

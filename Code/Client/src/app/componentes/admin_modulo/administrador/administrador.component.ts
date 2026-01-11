@@ -14,7 +14,6 @@ import { MantenimientosTablaComponent } from '../tablas/mantenimientos/mantenimi
 import { MueblesTablaComponent } from '../tablas/muebles/muebles-tabla/muebles-tabla.component';
 import { PrestamosTablaComponent } from '../tablas/prestamos/prestamos-tabla/prestamos-tabla.component';
 import { UsuarioService } from '../../../services/usuario/usuario.service';
-
 @Component({
   selector: 'app-administrador',
   standalone: true,
@@ -24,17 +23,13 @@ import { UsuarioService } from '../../../services/usuario/usuario.service';
   templateUrl: './administrador.component.html',
   styleUrls: ['./administrador.component.css']
 })
-
 export class AdministradorComponent {
   tablas : string[] = ['Prestamos', 'Carreras', 'Usuarios', 'Categorias', 'Componentes', "Empresas de Mantenimiento",
      'Equipos', 'Gaveteros', 'Grupos de Equipos', 'Mantenimientos', 'Muebles',
       'Accesorios'];
-  
   item : string = 'Prestamos';
-
   constructor(public  router: Router , private usuario :UsuarioService) {
   }
-
   ngOnInit() {
     if(this.usuario.vacio()){
       this.router.navigate(['/Iniciar-Sesion']);
@@ -43,11 +38,7 @@ export class AdministradorComponent {
       this.router.navigate(['/home']);
     }
   }
-
   clickitem(item : string){
     this.item = item;
   }
-
-
-
 }

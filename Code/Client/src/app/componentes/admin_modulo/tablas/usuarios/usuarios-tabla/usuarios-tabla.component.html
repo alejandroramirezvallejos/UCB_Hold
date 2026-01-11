@@ -1,13 +1,10 @@
 <div class="accesorios-container">
-  <!-- ESTO ES PARA EL TITULO Y EL BOTON CREAR -->
   <div class="table-header">
     <div class="header-title">
       <h1>Usuarios</h1>
       <p class="subtitle">Gestión de usuarios del sistema</p>
     </div>
   </div>
-
-  <!-- BUSCADOR-->
   <app-buscador
     [columnas]="columnas"
     (terminoBusqueda)="aplicarFiltros($event)"
@@ -16,9 +13,6 @@
        Nuevo Usuario
     </button>
   </app-buscador>
-
-
-  <!-- TABLA -->
   <div class="table-responsive">
     <table class="data-table">
       <thead>
@@ -66,10 +60,7 @@
       </tbody>
     </table>
   </div>
-
-  <!-- ALERTA DE ELIMINACIÓN -->
   @if(alertaeliminar){
-
     <app-aviso-eliminar
       [mensaje]="'¿Estás seguro de que deseas eliminar este usuario?'"
       (aceptar)="confirmarEliminacion()"
@@ -77,7 +68,6 @@
     ></app-aviso-eliminar>
   }
 </div>
-
 @if(botoncrear()){
   <app-usuarios-crear
   [botoncrear]="botoncrear"
@@ -85,7 +75,6 @@
   [carreras]="carreras"
   ></app-usuarios-crear>
 }
-
 @if(botoneditar()){
   <app-usuarios-editar
   [botoneditar]="botoneditar"
@@ -94,22 +83,15 @@
   [carreras]="carreras"
   ></app-usuarios-editar>
 }
-
 @if(error()){
   <app-mostrarerror
   [error]="error"
   [mensaje]="mensajeerror"
   ></app-mostrarerror>
 }
-
-
-
 @if(exito()){
   <app-aviso-exito
   [exito]="exito"
   [mensaje]="mensajeexito"
   ></app-aviso-exito>
 }
-
-
-

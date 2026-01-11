@@ -7,7 +7,6 @@ import { MantenimientosServiceEquipos } from '../../../../../../services/manteni
 import { FormularioDatosComponent } from './formulario-datos/formulario-datos.component';
 import { BaseTablaComponent } from '../../../base/base';
 import { MostrarerrorComponent } from '../../../../../pantallas_avisos/mostrarerror/mostrarerror.component';
-
 @Component({
   selector: 'app-listaequipo',
   imports: [CommonModule , FormsModule, FormularioDatosComponent , MostrarerrorComponent],
@@ -15,51 +14,33 @@ import { MostrarerrorComponent } from '../../../../../pantallas_avisos/mostrarer
   styleUrl: './listaequipo.component.css'
 })
 export class ListaequipoComponent extends BaseTablaComponent {
-
-  @Input() agregarequipo : WritableSignal<boolean> = signal(true);
-
-  equipos : any[] = [];
+  @Input() agregarequipo: WritableSignal<boolean> = signal(true);
+  equipos: any[] = [];
   equiposcopia: any[] = [];
-
-  equipoSeleccionado:  Equipos= new Equipos(); 
-
+  equipoSeleccionado: Equipos = new Equipos();
   terminoBusqueda: string = '';
   agregarEquipoSeleccionado: WritableSignal<boolean> = signal(false);
-
-
-  constructor(private equiposapi : EquipoService ,public  mantenimientoequipos : MantenimientosServiceEquipos){
-    super();
-  }; 
-
-
-  // ----
+  backHover: boolean = false;
   sortColumn: string = 'Nombre';
-
   sortDirection: 'asc' | 'desc' = 'asc';
-
-
+  constructor(private equiposapi: EquipoService, public mantenimientoequipos: MantenimientosServiceEquipos) {
+    super();
+  }
   ngOnInit(){
     this.cargarEquipos();
   }
-
   agregarEquipo(equipo : Equipos) {
    this.equipoSeleccionado = equipo;
     this.agregarEquipoSeleccionado.set(true);
-
   }
-
-
   limpiarEquipoSeleccionado() {
     this.equipoSeleccionado = new Equipos();
   }
-
-
   cargarEquipos() {
- 
     this.equiposapi.obtenerEquipos().subscribe({
       next: (data: any[]) => {
         this.equipos = data;
-        this.equiposcopia = [...this.equipos]; 
+        this.equiposcopia = [...this.equipos];
       },
       error: (error) => {
         this.mensajeerror = "Error al cargar los equipos, intente mas tarde";
@@ -67,10 +48,7 @@ export class ListaequipoComponent extends BaseTablaComponent {
         this.error.set(true);
       }
     });
-
   }
-
- // Función auxiliar para normalizar texto (remover acentos y convertir a minúsculas)
   private normalizeText(text: string): string {
     if (typeof text !== 'string') {
       return String(text || '').toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g, '');
@@ -80,16 +58,12 @@ export class ListaequipoComponent extends BaseTablaComponent {
       .normalize('NFD')  // Descompone caracteres con acentos
       .replace(/[\u0300-\u036f]/g, '');  // Elimina diacríticos (acentos, tildes, etc.)
   }
-
-
   buscar(){
     if(this.terminoBusqueda.trim() === '') {
-      this.limpiarBusqueda(); 
-      return ; 
+      this.limpiarBusqueda();
+      return ;
     }
-
     const busquedaNormalizada = this.normalizeText(this.terminoBusqueda);
-
     this.equipos = this.equiposcopia.filter(equipo =>
       this.normalizeText(equipo.Nombre).includes(busquedaNormalizada) ||
       this.normalizeText(equipo.Modelo).includes(busquedaNormalizada) ||
@@ -99,28 +73,17 @@ export class ListaequipoComponent extends BaseTablaComponent {
       this.normalizeText(equipo.NumeroSerial).includes(busquedaNormalizada) ||
       this.normalizeText(equipo.NombreGrupoEquipo).includes(busquedaNormalizada)
     );
-    
   }
-
   limpiarBusqueda(){
     this.terminoBusqueda = '';
-    this.equipos = [...this.equiposcopia]; 
-    
+    this.equipos = [...this.equiposcopia];
   }
-
-
-
-// nose que hace
 aplicarOrdenamiento() {
   this.equipos.sort((a, b) => {
-    // Type assertion para acceso dinámico
     const valorA = (a as any)[this.sortColumn];
     const valorB = (b as any)[this.sortColumn];
-
-    // Convertir a minúsculas si son strings
     let compA = typeof valorA === 'string' ? valorA.toLowerCase() : valorA;
     let compB = typeof valorB === 'string' ? valorB.toLowerCase() : valorB;
-
     if (compA < compB) {
       return this.sortDirection === 'asc' ? -1 : 1;
     } else if (compA > compB) {
@@ -130,9 +93,6 @@ aplicarOrdenamiento() {
     }
   });
 }
-
-
-
 ordenarPor(columna: string) {
  if (this.sortColumn === columna) {
     this.sortDirection = this.sortDirection === 'asc' ? 'desc' : 'asc';
@@ -140,10 +100,9 @@ ordenarPor(columna: string) {
     this.sortColumn = columna;
     this.sortDirection = 'asc';
   }
-
   this.aplicarOrdenamiento();    // Aplicar el ordenamiento
-
 }
-
-
+regresar() {
+  this.agregarequipo.set(false);
+}
 }

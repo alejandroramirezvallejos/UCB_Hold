@@ -1,7 +1,6 @@
 import { Component, Input, signal, WritableSignal } from '@angular/core';
 import { Router } from '@angular/router';
 import { UsuarioService } from '../../../services/usuario/usuario.service';
-
 @Component({
   selector: 'app-usuario-previo',
   imports: [],
@@ -9,19 +8,15 @@ import { UsuarioService } from '../../../services/usuario/usuario.service';
   styleUrl: './usuario-previo.component.css'
 })
 export class UsuarioPrevioComponent {
-
   sesion :boolean;
   rol : string;
   isInAdminMode: boolean = false;
   @Input() showUserMenu : WritableSignal<Boolean> = signal(true);
-
-
   constructor(private router : Router , private usuario : UsuarioService){
     this.sesion=!usuario.vacio();
     this.rol=usuario.obtenerrol();
     this.isInAdminMode = this.router.url.includes('/admin');
   }
-
     seleccionar(item: string) {
       if(this.usuario.vacio()==true){
          this.router.navigate(["/Iniciar-Sesion"])
@@ -45,9 +40,6 @@ export class UsuarioPrevioComponent {
       else if(item=='modousuario'){
         this.router.navigate(["/home"])
       }
-
-
-
       this.showUserMenu.set(false);
   }
 }

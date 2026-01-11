@@ -11,7 +11,6 @@ import { MostrarerrorComponent } from '../../../../pantallas_avisos/mostrarerror
 import { AvisoExitoComponent } from '../../../../pantallas_avisos/aviso-exito/aviso-exito.component';
 import { BuscadorComponent } from '../../../buscador/buscador.component';
 import { Tabla } from '../../base/tabla';
-
 @Component({
   selector: 'app-componentes-tabla',
   standalone: true,
@@ -20,36 +19,26 @@ import { Tabla } from '../../base/tabla';
   styleUrl: './componentes-tabla.component.css'
 })
 export class ComponentesTablaComponent extends Tabla implements OnInit  {
-
   botoncrear: WritableSignal<boolean> = signal(false);
   botoneditar: WritableSignal<boolean> = signal(false);
-
   alertaeliminar: boolean = false;
   componentes: Componente[] = [];
   componentescopia: Componente[] = [];
-
   componenteSeleccionado: Componente = new Componente();
-
   override columnas: string[] = ['Nombre','Modelo','Tipo','Código IMT del Equipo','Precio Referencia'];
-
-
   constructor(private componenteService: ComponenteService) {
     super();
   }
-
   ngOnInit() {
     this.cargarComponentes();
   }
-
   limpiarComponenteSeleccionado() {
     this.componenteSeleccionado = new Componente();
   }
-
   crearComponente() {
     this.botoneditar.set(false);
     this.botoncrear.set(true);
   }
-
   cargarComponentes() {
     this.componenteService.obtenerComponentes().subscribe({
       next : (data: Componente[]) => {
@@ -63,8 +52,6 @@ export class ComponentesTablaComponent extends Tabla implements OnInit  {
       }
     });
   }
-
-
   aplicarFiltros(event?: [string, string]) {
    if (event && event[0].trim() !== '') {
     const busquedaNormalizada = this.normalizeText(event[0]);
@@ -90,27 +77,21 @@ export class ComponentesTablaComponent extends Tabla implements OnInit  {
       }
     });
     } else {
-      // Si no hay búsqueda, restaurar la lista original
       this.componentes = [...this.componentescopia];
     }
   }
-
   limpiarBusqueda() {
-
     this.componentes = [...this.componentescopia];
   }
-
   editarComponente(componente: Componente) {
     this.botoncrear.set(false);
     this.componenteSeleccionado = { ...componente };
     this.botoneditar.set(true);
   }
-
   eliminarComponente(componente: Componente) {
     this.componenteSeleccionado = componente;
     this.alertaeliminar = true;
   }
-
   confirmarEliminacion() {
     if (this.componenteSeleccionado.Id) {
       this.componenteService.eliminarComponente(this.componenteSeleccionado.Id).subscribe({
@@ -129,11 +110,8 @@ export class ComponentesTablaComponent extends Tabla implements OnInit  {
     this.limpiarComponenteSeleccionado();
     this.alertaeliminar = false;
   }
-
   cancelarEliminacion() {
     this.alertaeliminar = false;
     this.limpiarComponenteSeleccionado();
   }
-
-
 }

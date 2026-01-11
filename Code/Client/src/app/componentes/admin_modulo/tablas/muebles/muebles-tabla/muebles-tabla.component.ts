@@ -19,36 +19,26 @@ import { Tabla } from '../../base/tabla';
   styleUrl: './muebles-tabla.component.css'
 })
 export class MueblesTablaComponent extends Tabla implements OnInit {
-
   botoncrear: WritableSignal<boolean> = signal(false);
   botoneditar: WritableSignal<boolean> = signal(false);
-
   alertaeliminar: boolean = false;
   muebles: Muebles[] = [];
   mueblesFiltrados: Muebles[] = [];
-
   muebleSeleccionado: Muebles = new Muebles() ;
-
   override columnas: string[] = ['Nombre','Tipo','Ubicación','Costo','Gaveteros','Dimensiones'];
-
-
   constructor(private muebleapi: MuebleService) {
     super();
   }
-
   ngOnInit() {
     this.cargarMuebles();
   }
-
   limpiarMuebleSeleccionado() {
     this.muebleSeleccionado = new Muebles();
   }
-
   crearmueble() {
     this.botoneditar.set(false);
     this.botoncrear.set(true);
   }
-
   cargarMuebles() {
     this.muebleapi.obtenerMuebles().subscribe({
       next: (data: Muebles[]) => {
@@ -63,19 +53,14 @@ export class MueblesTablaComponent extends Tabla implements OnInit {
       }
     });
   }
-
-
   buscar() {
     this.aplicarFiltros();
   }
-
   aplicarFiltros(event?: [string, string]) {
     if (event && event[0].trim() !== '') {
     const busquedaNormalizada = this.normalizeText(event[0]);
     this.mueblesFiltrados = this.muebles.filter(mueble => {
-        // Asumiendo que hay campos Longitud, Profundidad, Altura
         const dimensiones = `${mueble.Longitud || ''}x${mueble.Profundidad || ''}x${mueble.Altura || ''}`;
-
       switch (event[1]) {
         case 'Nombre':
           return this.normalizeText(mueble.Nombre || '').includes(busquedaNormalizada);
@@ -99,26 +84,21 @@ export class MueblesTablaComponent extends Tabla implements OnInit {
       }
     });
     } else {
-      // Crear una copia para evitar referencias
       this.mueblesFiltrados = [...this.muebles];
     }
   }
-
   limpiarBusqueda() {
     this.aplicarFiltros();
   }
-
   editarMueble(mueble: Muebles) {
     this.botoncrear.set(false);
     this.muebleSeleccionado = { ...mueble };
     this.botoneditar.set(true);
   }
-
   eliminarMueble(mueble: Muebles) {
     this.muebleSeleccionado = mueble;
     this.alertaeliminar = true;
   }
-
   confirmarEliminacion() {
     this.muebleapi.eliminarMueble(this.muebleSeleccionado.Id).subscribe({
       next: (response) => {
@@ -135,11 +115,8 @@ export class MueblesTablaComponent extends Tabla implements OnInit {
     this.limpiarMuebleSeleccionado();
     this.alertaeliminar = false;
   }
-
   cancelarEliminacion() {
     this.alertaeliminar = false;
     this.limpiarMuebleSeleccionado();
   }
-
-
 }

@@ -1,4 +1,3 @@
-
 <div class="search-and-filter-row">
     <div class="search-input-wrapper">
       <i class="fas fa-search search-icon"></i>
@@ -15,10 +14,8 @@
         </button>
       }
     </div>
-
     <div class="filter-container" style="display: flex; align-items: center; gap: 1rem;">
       <ng-content></ng-content> <!-- Slot for external filters (e.g. State) to be placed to the left of columns -->
-
       <div class="custom-dropdown">
         <div class="dropdown-header"
              (click)="toggleColumnas()"
@@ -34,7 +31,6 @@
               class="dropdown-arrow"
             >
         </div>
-
         @if (mostrarColumnas) {
             <ul class="dropdown-list">
                 <li (click)="seleccionarColumna('')" [class.active]="columnaSeleccionada === ''">
@@ -50,9 +46,6 @@
             </ul>
         }
       </div>
-
       <ng-content select=".boton-derecha"></ng-content>
     </div>
-
-
   </div>

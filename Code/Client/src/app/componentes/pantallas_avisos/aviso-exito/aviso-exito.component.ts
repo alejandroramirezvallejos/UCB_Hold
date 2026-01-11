@@ -1,5 +1,4 @@
 import { Component, EventEmitter, Input, Output, WritableSignal } from '@angular/core';
-
 @Component({
   selector: 'app-aviso-exito',
   imports: [],
@@ -10,12 +9,8 @@ export class AvisoExitoComponent {
   @Input() mensaje: string = "Aviso informativo desconocido";
   @Input() exito!: WritableSignal<boolean>;
   @Output() accion = new EventEmitter<void>();
-
-
   cerrar(){
       this.accion.emit();
     this.exito.set(false);
-
   }
-
 }

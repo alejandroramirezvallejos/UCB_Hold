@@ -1,5 +1,4 @@
 import { Basemodel } from "../base/Basemodel";
-
 export class Accesorio  extends Basemodel{
   nombre: string | null;
   modelo: string | null;
@@ -9,7 +8,6 @@ export class Accesorio  extends Basemodel{
   precio?: number|null;
   url_data_sheet?: string|null;
   nombreEquipoAsociado?: string | null;
-
   constructor() {
     super();
     this.nombre = null;
@@ -21,5 +19,4 @@ export class Accesorio  extends Basemodel{
     this.url_data_sheet = null;
     this.nombreEquipoAsociado = null;
   }
-
 }

@@ -9,7 +9,6 @@ import { BaseTablaComponent } from '../../base/base';
 import { MostrarerrorComponent } from '../../../../pantallas_avisos/mostrarerror/mostrarerror.component';
 import { Aviso } from '../../../../pantallas_avisos/aviso/aviso.component';
 import { AvisoExitoComponent } from '../../../../pantallas_avisos/aviso-exito/aviso-exito.component';
-
 @Component({
   selector: 'app-equipos-editar',
   imports: [FormsModule , MostrarerrorComponent , Aviso , AvisoExitoComponent],
@@ -20,27 +19,20 @@ export class EquiposEditarComponent extends BaseTablaComponent{
   @Input() botoneditar: WritableSignal<boolean> = signal(true);
   @Output() actualizar: EventEmitter<void> = new EventEmitter<void>();
   @Input() equipo : Equipos = new Equipos();
-
-
   grupoequipo : GrupoEquipo[] = [];
   grupoequipoSeleccionado: GrupoEquipo | null = null;
   Gaveteros: string[] =[];
-
   constructor(private equipoapi: EquipoService ,  private grupoequipoAPI : GrupoequipoService , private gaveterosAPI : GaveteroService) {
     super(); 
   }; 
-
-   
   ngOnInit() {
     this.cargarGruposEquipos();
     this.cargarGaveteros();
   }
-
   cargarGaveteros() {
     this.gaveterosAPI.obtenerGaveteros().subscribe({
       next: (data) => {
         this.Gaveteros = data.map(gavetero => gavetero.Nombre!);
-
       },
       error: (error) => {
         this.mensajeerror = "Error al cargar gaveteros";
@@ -49,9 +41,6 @@ export class EquiposEditarComponent extends BaseTablaComponent{
       }
     });
   }
-
-
-
   cargarGruposEquipos() {
     this.grupoequipoAPI.obtenersinfiltroGruposEquipos().subscribe({
       next: (data) => {
@@ -64,21 +53,16 @@ export class EquiposEditarComponent extends BaseTablaComponent{
       }
     });
   }
-
   validaredicion(){
       this.mensajeaviso="¿Confirma que desea editar el equipo "+ this.equipo.NombreGrupoEquipo + " ?";
       this.aviso.set(true);
   }
-
-
   confirmar (){
       if (this.grupoequipoSeleccionado) {
         this.equipo.NombreGrupoEquipo = this.grupoequipoSeleccionado.nombre;
         this.equipo.Marca = this.grupoequipoSeleccionado.marca ?? null;
         this.equipo.Modelo = this.grupoequipoSeleccionado.modelo ?? null;
       }
-
- 
     this.equipoapi.editarEquipo(this.equipo).subscribe({
       next: () => {
         this.actualizar.emit();
@@ -92,9 +76,7 @@ export class EquiposEditarComponent extends BaseTablaComponent{
       }
         });
   }
-
   cerrar(){
     this.botoneditar.set(false);
   }
-
 }

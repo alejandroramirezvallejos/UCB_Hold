@@ -9,12 +9,10 @@
           src="{{ item.value.imagen || '' }}"
           alt="{{ item.value.nombre }}"
         />
-
         <div class="info-product">
           <h3 class="product-title">{{ item.value.nombre }}</h3>
           <p class="product-propietary">Propietario: IMT</p>
         </div>
-
         <div class="cantidad-group">
           <label class="label-cantidad" for="cantidad_{{ item.key }}"
             >Cantidad</label
@@ -27,30 +25,22 @@
             <option *ngFor="let n of generarCantidadesMax(item.value.cantidadMax)" [value]="n">{{ n }}</option>
           </select>
         </div>
-
         <button (click)="cambiarcantidad(item.key, 0)" class="boton-eliminar" title="Eliminar del carrito">
           <i class="fas fa-trash-alt"></i>
         </button>
-
       </li>
       }
     </ul>
-
     <div class="navigation-buttons">
        <button (click)="nextStep()" class="boton-carrito">Siguiente</button>
     </div>
     }
-
     @if(step === 2) {
-
     <app-calendario
     [entradaCarrito]="carrito"
     [fechaInicioSeleccionada]="fecha_inicio"
     [fechaFinSeleccionada]="fecha_final"
     ></app-calendario>
-
-    <!-- Fechas globales para todo el préstamo (fuera del bucle) -->
-
       <div class="dates-picker">
         <div class="date-field">
           <label for="fechaInicio">Fecha de Inicio</label>
@@ -77,28 +67,20 @@
           </div>
         </div>
       </div>
-
-
     <div class="error">{{ verificarfecha() }}</div>
-
     <button (click)="clickboton()" class="boton-carrito"
       [disabled]="botonDeshabilitado()"
     >
       Confirmar Solicitud
     </button>
     }
-
     @if(errorboton()){
     <app-mostrarerror
       [error]="errorboton"
       [mensaje]="mensajeerror"
     ></app-mostrarerror>
     }
-
   </div>
-
-
-
   @if(aviso()){
     <app-aviso
       [cerrar]="aviso"
@@ -106,7 +88,6 @@
       (aceptar)="realizarPrestamo()"
     ></app-aviso>
   }
-
   @if(exito()){
     <app-aviso-exito
       [exito]="exito"
@@ -114,7 +95,6 @@
       (accion)="redirigirHome()"
     ></app-aviso-exito>
   }
-
   @if(cargando){
     <app-pantalla-carga
   ></app-pantalla-carga>

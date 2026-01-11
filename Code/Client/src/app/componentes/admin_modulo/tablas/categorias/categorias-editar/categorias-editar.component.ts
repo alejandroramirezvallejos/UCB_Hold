@@ -6,7 +6,6 @@ import { BaseTablaComponent } from '../../base/base';
 import { MostrarerrorComponent } from '../../../../pantallas_avisos/mostrarerror/mostrarerror.component';
 import { AvisoExitoComponent } from '../../../../pantallas_avisos/aviso-exito/aviso-exito.component';
 import { Aviso } from '../../../../pantallas_avisos/aviso/aviso.component';
-
 @Component({
   selector: 'app-categorias-editar',
   standalone: true,
@@ -18,11 +17,9 @@ export class CategoriasEditarComponent  extends BaseTablaComponent{
   @Input() botoneditar: WritableSignal<boolean> = signal(true);
   @Output() actualizar: EventEmitter<void> = new EventEmitter<void>();
   @Input() categoria: Categorias = new Categorias();
-
   constructor(private categoriaService: CategoriaService) {
     super();
   }
-
   validaredicion(){
   if (!this.categoria.Nombre || this.categoria.Nombre.trim() === '') {
         this.mensajeerror = "Por favor ingrese el nombre de la categoría";
@@ -31,11 +28,8 @@ export class CategoriasEditarComponent  extends BaseTablaComponent{
       }
       this.mensajeaviso="¿Está seguro de que desea actualizar la categoría?";
       this.aviso.set(true);
-
   }
-
   confirmar() {
-   
     this.categoriaService.actualizarCategoria(this.categoria).subscribe({
       next: (response) => {
         this.actualizar.emit();
@@ -49,7 +43,6 @@ export class CategoriasEditarComponent  extends BaseTablaComponent{
       }
     });
   }
-
   cerrar() {
     this.botoneditar.set(false);
   }
