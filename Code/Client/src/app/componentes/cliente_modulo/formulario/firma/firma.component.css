@@ -13,7 +13,7 @@
 .signature-container {
   background-color: white;
   padding: 20px;
-  border-radius: 8px;
+  border-radius: 16px;
   box-shadow: 0 0 20px rgba(0, 0, 0, 0.3);
   max-width: 90%;
   width: 600px;
@@ -31,28 +31,46 @@
 }
 .signature-pad {
   touch-action: none;
-  width: 120%;
-  height: 400px;
+  width: 100%;
+  height: 300px;
+  border: 1px solid #e0e0e0;
+  border-radius: 12px;
+  background-color: #fff;
 }
 .buttons {
-  margin-top: 15px;
+  margin-top: 20px;
+  display: flex;
+  justify-content: center;
+  gap: 1.5rem;
 }
-button {
-  margin: 0 5px;
-  padding: 8px 16px;
-  background-color: #7F7F7F;
-  color: white;
+.buttons button {
+  margin: 0;
+  padding: 0.6rem 1.5rem;
   border: none;
-  border-radius: 4px;
+  border-radius: 50px;
   cursor: pointer;
+  font-size: 0.9rem;
+  font-weight: 600;
+  font-family: 'Manrope', sans-serif;
 }
-button:hover {
-  background-color: #FFDD05;
-  color: black;
+.buttons button:first-child {
+  background-color: #8f9195;
+  color: white;
 }
-.signature-instructions{
-  font-size: 0.9em;
+.buttons button:first-child:hover {
+  background-color: #8f9195;
+}
+.buttons button:last-child {
+  background-color: #FFCF00;
+  color: #5f6368;
+}
+.buttons button:last-child:hover {
+  background-color: #FFCF00;
+}
+.signature-instructions {
+  font-size: 1.1em;
   color: #555;
   margin-top: 10px;
+  margin-bottom: 15px;
   text-align: center;
 }
