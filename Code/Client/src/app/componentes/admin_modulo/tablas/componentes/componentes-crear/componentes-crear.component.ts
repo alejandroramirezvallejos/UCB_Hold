@@ -8,7 +8,6 @@ import { BaseTablaComponent } from '../../base/base';
 import { MostrarerrorComponent } from '../../../../pantallas_avisos/mostrarerror/mostrarerror.component';
 import { Aviso } from '../../../../pantallas_avisos/aviso/aviso.component';
 import { AvisoExitoComponent } from '../../../../pantallas_avisos/aviso-exito/aviso-exito.component';
-
 @Component({
   selector: 'app-componentes-crear',
   standalone: true,
@@ -17,22 +16,16 @@ import { AvisoExitoComponent } from '../../../../pantallas_avisos/aviso-exito/av
   styleUrl: './componentes-crear.component.css'
 })
 export class ComponentesCrearComponent extends BaseTablaComponent {
-
   @Input() botoncrear: WritableSignal<boolean> = signal(true);
   @Output() Actualizar = new EventEmitter<void>();
-
   equipos : Equipos[] = [];
-
   componente: Componente = new Componente() ;
-
   constructor(private componenteService: ComponenteService , private equiposAPI : EquipoService) {
     super();
   }
-
   ngOnInit() {
     this.cargarEquipos();
   }
-
   cargarEquipos() {
     this.equiposAPI.obtenerEquipos().subscribe({
       next: (data: any[]) => {
@@ -45,12 +38,10 @@ export class ComponentesCrearComponent extends BaseTablaComponent {
       }
     })
   }
-
   validarregistro(){
     this.mensajeaviso="Estas seguro de crear este componente?";
     this.aviso.set(true);
   }
-
   registrar() {
     this.componenteService.crearComponente(this.componente).subscribe({
       next: (response) => {
@@ -65,7 +56,6 @@ export class ComponentesCrearComponent extends BaseTablaComponent {
       }
     });
   }
-
   cerrar() {
     this.botoncrear.set(false);
   }

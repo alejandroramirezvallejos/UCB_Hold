@@ -10,12 +10,9 @@
     min-height: 100vh;
     box-sizing: border-box;
 }
-
 .container > *:not(app-sidebard) {
   width: 100%;
 }
-
-/* Ajustes responsive */
 @media (max-width: 1200px) {
     .container {
         padding-left: 1rem;

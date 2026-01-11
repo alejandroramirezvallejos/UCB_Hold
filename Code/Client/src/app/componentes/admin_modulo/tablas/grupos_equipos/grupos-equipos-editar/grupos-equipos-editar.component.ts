@@ -6,7 +6,6 @@ import { BaseTablaComponent } from '../../base/base';
 import { MostrarerrorComponent } from '../../../../pantallas_avisos/mostrarerror/mostrarerror.component';
 import { Aviso } from '../../../../pantallas_avisos/aviso/aviso.component';
 import { AvisoExitoComponent } from '../../../../pantallas_avisos/aviso-exito/aviso-exito.component';
-
 @Component({
   selector: 'app-grupos-equipos-editar',
   standalone: true,
@@ -20,20 +19,16 @@ export class GruposEquiposEditarComponent extends BaseTablaComponent implements 
   @Input() categorias: string[] = [];
   @Input() grupoequipo: GrupoEquipo = new GrupoEquipo();
   grupoEquipo: GrupoEquipo = { ...this.grupoequipo };
-
   constructor(private grupoEquipoapi: GrupoequipoService) {
     super();
    }
-
   ngOnChanges() {
     this.grupoEquipo = { ...this.grupoequipo };
   }
-
   validaredicion(){
     this.mensajeaviso="¿Desea guardar los cambios realizados al grupo de equipo?";
     this.aviso.set(true);
   }
-
   confirmar() {
     this.grupoEquipoapi.editarGrupoEquipo(this.grupoEquipo).subscribe({
       next: (response) => {
@@ -48,7 +43,6 @@ export class GruposEquiposEditarComponent extends BaseTablaComponent implements 
       }
     });
   }
-
   cerrar() {
     this.botoneditar.set(false);
   }

@@ -60,7 +60,6 @@
     <img src="/assets/logo_universidad.png" alt="Logo UCB" class="logo-image" />
   </div>
   <div class="right-section">
-
    @if(showCart()) {
     <button
       type="button"
@@ -79,7 +78,6 @@
       <span class="cart-count">{{ totalproductos() }}</span>
     </button>
     }
-
     @if(showProfile()) {
     <div class="user-menu">
        <button
@@ -101,13 +99,9 @@
     }
   </div>
 </nav>
-
-<!-- Espaciador para empujar el contenido hacia abajo -->
 <div class="navbar-spacer"></div>
-
 @if(showUserMenu()) {
   <app-usuario-previo
     [showUserMenu]="showUserMenu"
   ></app-usuario-previo>
 }
-

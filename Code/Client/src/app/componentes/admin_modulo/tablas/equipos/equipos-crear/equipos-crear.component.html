@@ -9,7 +9,6 @@
       (mouseleave)="closeIcon.src = '/assets/x.png'"
     />
   </button>
-
   <div class="form-content">
     <h2>Registrar Equipo</h2>
     <form #form="ngForm" (ngSubmit)="validarcreacion()">
@@ -28,7 +27,6 @@
           }
         </select>
       </div>
-
       <div class="form-group">
         <label for="ubicacion">Ubicación</label>
         <select
@@ -44,7 +42,6 @@
           }
         </select>
       </div>
-
       <div class="form-group">
         <label for="codigoImt">Código IMT</label>
         <input
@@ -58,7 +55,6 @@
           class="form-input"
         />
       </div>
-
       <div class="form-group">
         <label for="costoReferencia">Costo Referencia</label>
         <input
@@ -73,7 +69,6 @@
           class="form-input"
         />
       </div>
-
       <div class="form-submit">
         <button type="submit" class="register-button" [disabled]="!form.valid">
           <span>Registrar Equipo</span>
@@ -82,15 +77,12 @@
     </form>
   </div>
 </div>
-
-
 @if(error()){
   <app-mostrarerror
   [error]="error"
   [mensaje]="mensajeerror"
   ></app-mostrarerror>
 }
-
 @if(aviso()){
   <app-aviso
   [cerrar]="aviso"
@@ -98,7 +90,6 @@
   (aceptar)="registrar()"
   ></app-aviso>
 }
-
 @if(exito()){
   <app-aviso-exito
   [exito]="exito"

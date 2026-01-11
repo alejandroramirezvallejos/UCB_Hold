@@ -5,7 +5,6 @@ import { BaseTablaComponent } from '../../base/base';
 import { MostrarerrorComponent } from '../../../../pantallas_avisos/mostrarerror/mostrarerror.component';
 import { AvisoExitoComponent } from '../../../../pantallas_avisos/aviso-exito/aviso-exito.component';
 import { Aviso } from '../../../../pantallas_avisos/aviso/aviso.component';
-
 @Component({
   selector: 'app-carreras-crear',
   standalone: true,
@@ -14,30 +13,22 @@ import { Aviso } from '../../../../pantallas_avisos/aviso/aviso.component';
   styleUrl: './carreras-crear.component.css'
 })
 export class CarrerasCrearComponent extends BaseTablaComponent {
-
   @Input() botoncrear: WritableSignal<boolean> = signal(true);
   @Output() Actualizar = new EventEmitter<void>();
-
   nombreCarrera: string = '';
-
   constructor(private carreraService: CarreraService) {
     super();
   }
-
   validarregistro(){
      if (this.nombreCarrera.trim() === '') {
       this.mensajeerror= "El nombre de la carrera no puede estar vacío.";
       this.error.set(true);
       return;
     }
-
     this.mensajeaviso="¿Está seguro de que desea crear la carrera "+ this.nombreCarrera + "?";
     this.aviso.set(true);
-
   }
-
   registrar() {
-  
     this.carreraService.crearCarrera(this.nombreCarrera).subscribe({
       next : (response) => {
         this.Actualizar.emit();
@@ -51,7 +42,6 @@ export class CarrerasCrearComponent extends BaseTablaComponent {
       }
     });
   }
-
   cerrar() {
     this.nombreCarrera = '';
     this.botoncrear.set(false);

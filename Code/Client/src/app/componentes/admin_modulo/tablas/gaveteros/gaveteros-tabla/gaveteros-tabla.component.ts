@@ -11,9 +11,6 @@ import { MostrarerrorComponent } from '../../../../pantallas_avisos/mostrarerror
 import { AvisoExitoComponent } from '../../../../pantallas_avisos/aviso-exito/aviso-exito.component';
 import { BuscadorComponent } from '../../../buscador/buscador.component';
 import { Tabla } from '../../base/tabla';
-
-
-
 @Component({
   selector: 'app-gaveteros-tabla',
   standalone: true,
@@ -22,44 +19,27 @@ import { Tabla } from '../../base/tabla';
   styleUrls: ['./gaveteros-tabla.component.css']
 })
 export class GaveterosTablaComponent extends Tabla {
-
   botoncrear : WritableSignal<boolean> = signal(false);
   botoneditar : WritableSignal<boolean> = signal(false);
-
   alertaeliminar : boolean = false;
   gaveteros : Gaveteros[] = [];
   gaveteroscopia: Gaveteros[] = [];
-
   gaveteroSeleccionado:  Gaveteros= new Gaveteros();
-
   override columnas: string[] = ['Nombre','Tipo','Nombre Mueble','Longitud','Altura','Profundidad'];
-
-
   constructor(private gaveterosapi : GaveteroService){
     super();
   };
-
-
-
-
   ngOnInit(){
     this.cargarGaveteros();
   }
-
-
   limpiarGaveteroSeleccionado() {
     this.gaveteroSeleccionado = new Gaveteros();
   }
-
-
-
   creargarvetero() {
     this.botoneditar.set(false);
     this.botoncrear.set(true);
   }
-
   cargarGaveteros() {
-
     this.gaveterosapi.obtenerGaveteros().subscribe({
       next: (data: Gaveteros[]) => {
         this.gaveteros = data;
@@ -71,10 +51,7 @@ export class GaveterosTablaComponent extends Tabla {
         this.error.set(true);
       }
     });
-
   }
-
-
   aplicarFiltros(event?: [string, string]){
     if (event && event[0].trim() !== '') {
       const busquedaNormalizada = this.normalizeText(event[0]);
@@ -102,36 +79,27 @@ export class GaveterosTablaComponent extends Tabla {
         }
       });
     } else {
-      // Crear una copia para evitar referencias
       this.gaveteros = [...this.gaveteroscopia];
     }
   }
-
 limpiarBusqueda(){
-
   this.gaveteros = [...this.gaveteroscopia];
-
 }
-
 editarGavetero(gavetero : Gaveteros) {
   this.botoncrear.set(false);
   this.gaveteroSeleccionado = { ...gavetero }; // Crear una copia del objeto
   this.botoneditar.set(true);
 }
-
 eliminarGavetero(gavetero : Gaveteros) {
   this.gaveteroSeleccionado = gavetero;
   this.alertaeliminar = true;
-
 }
-
 confirmarEliminacion() {
   this.gaveterosapi.eliminarGavetero(this.gaveteroSeleccionado.Id).subscribe({
     next: (response) => {
       this.mensajeexito = "Gavetero eliminado con exito";
       this.exito.set(true);
        this.cargarGaveteros();
-
     },
     error: (error) => {
       this.mensajeerror = "Error al eliminar el gavetero, intente mas tarde";
@@ -142,12 +110,8 @@ confirmarEliminacion() {
   this.limpiarGaveteroSeleccionado();
   this.alertaeliminar = false;
 }
-
 cancelarEliminacion(){
   this.alertaeliminar = false;
   this.limpiarGaveteroSeleccionado();
 }
-
-
-
 }

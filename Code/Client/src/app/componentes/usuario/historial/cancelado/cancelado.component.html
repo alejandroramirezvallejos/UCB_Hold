@@ -1,5 +1,4 @@
 <div class="prestamos-container">
-
   <div class="prestamos-list">
     @for (item of (datos | keyvalue) ; track item.key) {
       <div class="prestamo-item">        <!-- Header del préstamo -->
@@ -14,33 +13,25 @@
            <span class="codigo-imt">Codigos IMTs : 📋 {{ item.value.datosgrupo.CodigoImt || 'N/A' }}</span>
           </div>
         </div>
-
-        <!-- Información de fechas -->
         <div class="fechas-info">
           <div class="fecha-item">
             <span class="fecha-label">📅 Solicitud:</span>
             <span class="fecha-valor">{{ item.value.datosgrupo.FechaSolicitud ? (item.value.datosgrupo.FechaSolicitud | date:'dd/MM/yyyy':'America/La_Paz') : 'N/A' }}</span>
           </div>
-
           <div class="fecha-item">
             <span class="fecha-label">📦 Fecha de Recogida:</span>
             <span class="fecha-valor">{{ item.value.datosgrupo.FechaPrestamoEsperada ? (item.value.datosgrupo.FechaPrestamoEsperada |  date:'dd/MM/yyyy':'America/La_Paz') : item.value.datosgrupo.FechaPrestamoEsperada }}</span>
           </div>
-
           <div class="fecha-item">
             <span class="fecha-label">⏰ Devolución Esperada:</span>
             <span class="fecha-valor">{{ item.value.datosgrupo.FechaDevolucionEsperada ? (item.value.datosgrupo.FechaDevolucionEsperada | date:'dd/MM/yyyy') : 'N/A' }}</span>
           </div>
         </div>
-
       <div class="botones">
         <button class="ver-detalles" (click)="AbrirVista(item.value.equipos)"> VER DETALLES</button>
       </div>
-
-
       </div>
     }
-
     @if (datos.size === 0) {
       <div class="empty-state">
         <div class="empty-icon">📥</div>
@@ -50,13 +41,9 @@
     }
   </div>
 </div>
-
-
 @if(abrirVistaPrestamos){
   <app-vista-prestamos [prestamos]="prestamosVista" (cerrar)="cerrarVista()"></app-vista-prestamos>
 }
-
-
 @if(error()){
   <app-mostrarerror
   [error]="error"

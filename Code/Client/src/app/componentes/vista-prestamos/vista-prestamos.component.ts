@@ -1,6 +1,5 @@
 import { Component, EventEmitter, Input, Output, signal, WritableSignal } from '@angular/core';
 import { Prestamos } from '../../models/admin/Prestamos';
-
 @Component({
   selector: 'app-vista-prestamos',
   imports: [],
@@ -10,10 +9,7 @@ import { Prestamos } from '../../models/admin/Prestamos';
 export class VistaPrestamosComponent {
   @Input() prestamos: Prestamos[] = [];
   @Output() cerrar : EventEmitter<void> = new EventEmitter<void>();
-
   cerrarVista(){
     this.cerrar.emit();
   }
-  
-
 }

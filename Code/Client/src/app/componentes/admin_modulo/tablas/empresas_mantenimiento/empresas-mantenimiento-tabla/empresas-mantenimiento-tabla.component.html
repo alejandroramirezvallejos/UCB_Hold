@@ -1,13 +1,10 @@
 <div class="empresas-mantenimiento-container">
-  <!-- ESTO ES PARA EL TITULO Y EL BOTON CREAR -->
   <div class="table-header">
     <div class="header-title">
       <h1>Empresas de Mantenimiento</h1>
       <p class="subtitle">Gestión de empresas de mantenimiento para equipos</p>
     </div>
   </div>
-
-  <!-- BUSCADOR-->
   <app-buscador
     [columnas]="columnas"
     (terminoBusqueda)="aplicarFiltros($event)"
@@ -16,9 +13,6 @@
        Nueva Empresa
     </button>
   </app-buscador>
-
-
-  <!-- TABLA -->
   <div class="table-responsive">
     <table class="data-table">
       <thead>        <tr>
@@ -55,23 +49,19 @@
         }
       </tbody>    </table>  </div>  <!-- ALERTA DE ELIMINACIÓN -->
   @if(alertaeliminar){
-
       <app-aviso-eliminar
       [mensaje]="'¿Estás seguro de que deseas eliminar esta empresa de mantenimiento?'"
       (aceptar)="confirmarEliminacion()"
       (cancelar)="cancelarEliminacion()"
     ></app-aviso-eliminar>
-
   }
 </div>
-
 @if (botoncrear()) {
   <app-empresas-mantenimiento-crear
   [botoncrear]="botoncrear"
   (Actualizar)="cargarEmpresas()"
   ></app-empresas-mantenimiento-crear>
 }
-
 @if (botoneditar()) {
   <app-empresas-mantenimiento-editar
   [botoneditar]="botoneditar"
@@ -79,15 +69,12 @@
   (actualizar)="cargarEmpresas()"
   ></app-empresas-mantenimiento-editar>
 }
-
-
 @if(error()){
   <app-mostrarerror
   [error]="error"
   [mensaje]="mensajeerror"
   ></app-mostrarerror>
 }
-
 @if(exito()){
   <app-aviso-exito
   [exito]="exito"

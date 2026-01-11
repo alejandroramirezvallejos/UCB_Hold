@@ -12,7 +12,6 @@ import { MostrarerrorComponent } from '../../../../pantallas_avisos/mostrarerror
 import { AvisoExitoComponent } from '../../../../pantallas_avisos/aviso-exito/aviso-exito.component';
 import { Tabla } from '../../base/tabla';
 import { BuscadorComponent } from '../../../buscador/buscador.component';
-
 @Component({
   selector: 'app-usuarios-tabla',
   standalone: true,
@@ -21,37 +20,26 @@ import { BuscadorComponent } from '../../../buscador/buscador.component';
   styleUrls: ['./usuarios-tabla.component.css']
 })
 export class UsuariosTablaComponent extends Tabla implements OnInit {
-
   botoncrear: WritableSignal<boolean> = signal(false);
   botoneditar: WritableSignal<boolean> = signal(false);
-
   alertaeliminar: boolean = false;
   valoreliminar: number = 0;
   usuarios: Usuario[] = [];
   usuarioscopia: Usuario[] = [];
   carreras: string[] = [];
-
   usuarioSeleccionado: Usuario = new Usuario();
-
   override columnas: string[] = ['Carnet','Nombre','Apellido Paterno','Apellido Materno','Correo','Teléfono','Rol','Carrera','Referencia','Tel. Referencia'];
-
-
-
   constructor(private usuarioapi: UsuarioServiceAPI , private carrerasAPI : CarreraService) {
     super();
   }
-
-
   ngOnInit() {
     this.cargarUsuarios();
     this.cargarCarreras();
   }
-
   crearusuario() {
     this.botoneditar.set(false);
     this.botoncrear.set(true);
   }
-
   cargarCarreras() {
     this.carrerasAPI.obtenerCarreras().subscribe({
       next:(data: any[]) => {
@@ -64,9 +52,6 @@ export class UsuariosTablaComponent extends Tabla implements OnInit {
       }
     });
   }
-
-
-
   cargarUsuarios() {
     this.usuarioapi.obtenerUsuarios().subscribe({
       next: (data: any[]) => {
@@ -80,12 +65,9 @@ export class UsuariosTablaComponent extends Tabla implements OnInit {
       }
     });
   }
-
   actualizarTabla() {
     this.cargarUsuarios();
   }
-
-
   aplicarFiltros(event?: [string, string]) {
   if (event && event[0].trim() !== '') {
     const busquedaNormalizada = this.normalizeText(event[0]);
@@ -125,26 +107,21 @@ export class UsuariosTablaComponent extends Tabla implements OnInit {
       }
     });
   } else {
-    // Si no hay búsqueda, restaurar la lista original
     this.usuarios = [...this.usuarioscopia];
   }
   }
-
   limpiarBusqueda() {
     this.usuarios = [...this.usuarioscopia];
   }
-
   editarUsuario(usuario: Usuario) {
     this.botoncrear.set(false);
     this.usuarioSeleccionado = usuario;
     this.botoneditar.set(true);
   }
-
   eliminarUsuario(i: number) {
     this.valoreliminar = i;
     this.alertaeliminar = true;
   }
-
   confirmarEliminacion() {
     const usuarioAEliminar = this.usuarios[this.valoreliminar];
     this.usuarioapi.eliminarUsuario(usuarioAEliminar.id || '').subscribe({
@@ -165,13 +142,8 @@ export class UsuariosTablaComponent extends Tabla implements OnInit {
       }
     });
   }
-
   cancelarEliminacion() {
     this.alertaeliminar = false;
     this.valoreliminar = 0;
   }
-
-
-
-
 }

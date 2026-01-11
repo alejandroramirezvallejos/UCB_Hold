@@ -7,7 +7,6 @@ import { BaseTablaComponent } from '../../base/base';
 import { MostrarerrorComponent } from '../../../../pantallas_avisos/mostrarerror/mostrarerror.component';
 import { Aviso } from '../../../../pantallas_avisos/aviso/aviso.component';
 import { AvisoExitoComponent } from '../../../../pantallas_avisos/aviso-exito/aviso-exito.component';
-
 @Component({
   selector: 'app-gaveteros-editar',
   imports: [FormsModule, MostrarerrorComponent , Aviso ,AvisoExitoComponent],
@@ -18,16 +17,11 @@ export class GaveterosEditarComponent extends BaseTablaComponent {
   @Input() botoneditar: WritableSignal<boolean> = signal(true);
   @Output() actualizar: EventEmitter<void> = new EventEmitter<void>();
   @Input() gavetero : Gaveteros =new Gaveteros();
-
   muebles : string[] = [];
-
   constructor(private gaveteroapi: GaveteroService, private mueblesAPI : MuebleService) {super(); }; 
-
-  
   ngOnInit(){
     this.cargarMuebles();
   }
-
   cargarMuebles(){
     this.mueblesAPI.obtenerMuebles().subscribe({
       next: (data) => {
@@ -40,15 +34,11 @@ export class GaveterosEditarComponent extends BaseTablaComponent {
       }
     })
   }
-
-
   validaredicion(){
     this.mensajeaviso="¿Desea confirmar la edición del gavetero?";
     this.aviso.set(true);
   }
-
   confirmar (){
- 
     this.gaveteroapi.editarGavetero(this.gavetero).subscribe({
       next: () => {
         this.actualizar.emit();
@@ -62,9 +52,7 @@ export class GaveterosEditarComponent extends BaseTablaComponent {
       }
     });
   }
-
   cerrar(){
     this.botoneditar.set(false);
   }
-
 }

@@ -12,7 +12,6 @@ import { MostrarerrorComponent } from '../../../../pantallas_avisos/mostrarerror
 import { AvisoExitoComponent } from '../../../../pantallas_avisos/aviso-exito/aviso-exito.component';
 import { BuscadorComponent } from '../../../buscador/buscador.component';
 import { Tabla } from '../../base/tabla';
-
 @Component({
   selector: 'app-grupos-equipos-tabla',
   standalone: true,
@@ -21,29 +20,21 @@ import { Tabla } from '../../base/tabla';
   styleUrl: './grupos-equipos-tabla.component.css'
 })
 export class GruposEquiposTablaComponent extends Tabla implements OnInit {
-
   botoncrear: WritableSignal<boolean> = signal(false);
   botoneditar: WritableSignal<boolean> = signal(false);
-
   alertaeliminar: boolean = false;
   gruposEquipos: GrupoEquipo[] = [];
   gruposEquiposFiltrados: GrupoEquipo[] = [];
-
   categorias: string[] = [];
-
   grupoEquipoSeleccionado: GrupoEquipo = new GrupoEquipo();
-
   override columnas: string[] = ['Nombre','Cantidad','Modelo','Marca','Categoría','Descripción'];
-
   constructor(private grupoequipoapi: GrupoequipoService , private categoriasAPI : CategoriaService) {
     super();
   }
-
   ngOnInit() {
     this.cargarGruposEquipos();
     this.obtenerCategorias();
   }
-
   obtenerCategorias() {
     this.categoriasAPI.obtenercategorias().subscribe({
       next : (data) => {
@@ -56,16 +47,13 @@ export class GruposEquiposTablaComponent extends Tabla implements OnInit {
       }
   });
   }
-
   limpiarGrupoEquipoSeleccionado() {
     this.grupoEquipoSeleccionado = new GrupoEquipo();
   }
-
   creargrupoequipo() {
     this.botoneditar.set(false);
     this.botoncrear.set(true);
   }
-
   cargarGruposEquipos() {
     this.grupoequipoapi.getGrupoEquipo('','').subscribe({
       next :(data: GrupoEquipo[]) => {
@@ -80,12 +68,9 @@ export class GruposEquiposTablaComponent extends Tabla implements OnInit {
       }
     });
   }
-
-
   buscar() {
     this.aplicarFiltros();
   }
-
   aplicarFiltros(event?: [string, string]) {
     if (event && event[0].trim() !== '') {
       const busquedaNormalizada = this.normalizeText(event[0]);
@@ -113,27 +98,21 @@ export class GruposEquiposTablaComponent extends Tabla implements OnInit {
         }
       });
     } else {
-      // Crear una copia para evitar referencias
       this.gruposEquiposFiltrados = [...this.gruposEquipos];
     }
   }
-
   limpiarBusqueda() {
-
     this.aplicarFiltros();
   }
-
   editarGrupoEquipo(grupoequipo: GrupoEquipo) {
     this.botoncrear.set(false);
     this.grupoEquipoSeleccionado = { ...grupoequipo };
     this.botoneditar.set(true);
   }
-
   eliminarGrupoEquipo(grupoequipo: GrupoEquipo) {
     this.grupoEquipoSeleccionado = grupoequipo;
     this.alertaeliminar = true;
   }
-
   confirmarEliminacion() {
     this.grupoequipoapi.eliminarGrupoEquipo(this.grupoEquipoSeleccionado.id).subscribe({
       next: (response) => {
@@ -150,11 +129,8 @@ export class GruposEquiposTablaComponent extends Tabla implements OnInit {
     this.limpiarGrupoEquipoSeleccionado();
     this.alertaeliminar = false;
   }
-
   cancelarEliminacion() {
     this.alertaeliminar = false;
     this.limpiarGrupoEquipoSeleccionado();
   }
-
-
 }

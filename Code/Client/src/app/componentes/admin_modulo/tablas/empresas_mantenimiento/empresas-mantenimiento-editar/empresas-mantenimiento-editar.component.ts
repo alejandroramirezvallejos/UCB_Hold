@@ -6,7 +6,6 @@ import { BaseTablaComponent } from '../../base/base';
 import { MostrarerrorComponent } from '../../../../pantallas_avisos/mostrarerror/mostrarerror.component';
 import { Aviso } from '../../../../pantallas_avisos/aviso/aviso.component';
 import { AvisoExitoComponent } from '../../../../pantallas_avisos/aviso-exito/aviso-exito.component';
-
 @Component({
   selector: 'app-empresas-mantenimiento-editar',
   imports: [FormsModule, MostrarerrorComponent , Aviso ,AvisoExitoComponent],
@@ -17,19 +16,14 @@ export class EmpresasMantenimientoEditarComponent extends BaseTablaComponent {
   @Input() botoneditar: WritableSignal<boolean> = signal(true);
   @Output() actualizar: EventEmitter<void> = new EventEmitter<void>();
   @Input() empresaMantenimiento : EmpresaMantenimiento =new EmpresaMantenimiento();
-
   constructor(private empresaMantenimientoapi: EmpresamantenimientoService) {
     super();
   }
-
   validaredicion(){
     this.mensajeaviso="¿Desea guardar los cambios realizados?";
     this.aviso.set(true);
-
   }
-
   confirmar() {
-
     this.empresaMantenimientoapi.actualizarEmpresaMantenimiento(this.empresaMantenimiento).subscribe({
       next: () => {
         this.actualizar.emit();
@@ -43,9 +37,7 @@ export class EmpresasMantenimientoEditarComponent extends BaseTablaComponent {
       }
     });
   }
-
   cerrar(){
     this.botoneditar.set(false);
   }
-
 }

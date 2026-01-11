@@ -8,7 +8,6 @@
         class="dropdown-arrow"
       >
     </div>
-
     @if(isOpen) {
       <ul class="dropdown-list">
         @for(estado of contenido; track $index) {
@@ -19,7 +18,6 @@
       </ul>
     }
   </div>
-
   <div class="items-wrapper">
     @if(item=="Activo"){
       <app-activo></app-activo>
@@ -39,6 +37,5 @@
     @else if(item=="Cancelado"){
       <app-cancelado></app-cancelado>
     }
-
   </div>
 </div>

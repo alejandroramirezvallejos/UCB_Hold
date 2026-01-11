@@ -1,13 +1,10 @@
 <div class="mantenimientos-container">
-  <!-- ESTO ES PARA EL TITULO Y EL BOTON CREAR -->
   <div class="table-header">
     <div class="header-title">
       <h1>Mantenimientos</h1>
       <p class="subtitle">Gestión de mantenimientos del laboratorio</p>
     </div>
   </div>
-
-  <!-- BUSCADOR-->
   <app-buscador
     [columnas]="columnas"
     (terminoBusqueda)="aplicarFiltros($event)"
@@ -16,9 +13,6 @@
        Nuevo Mantenimiento
     </button>
   </app-buscador>
-
-
-  <!-- TABLA -->
   <div class="table-responsive">
     <table class="data-table">
       <thead>
@@ -62,46 +56,35 @@
       </tbody>
     </table>
   </div>
-
-  <!-- ALERTA DE ELIMINACIÓN -->
   @if(alertaeliminar){
       <app-aviso-eliminar
       [mensaje]="'¿Estás seguro de que deseas eliminar este mantenimiento?'"
       (aceptar)="confirmarEliminacion()"
       (cancelar)="cancelarEliminacion()"
     ></app-aviso-eliminar>
-
   }
 </div>
-
 @if(botoncrear()){
   <app-mantenimientos-crear
   [botoncrear]="botoncrear"
   (Actualizar)="cargarMantenimientos()"
   ></app-mantenimientos-crear>
 }
-
 @if(mostrardetalles()){
   <app-detalles-mantenimiento
   [mantenimientos]="mantenimientoGruposeleccionado"
   [mostrardetalles]="mostrardetalles"
   ></app-detalles-mantenimiento>
 }
-
-
 @if(error()){
   <app-mostrarerror
   [error]="error"
   [mensaje]="mensajeerror"
   ></app-mostrarerror>
 }
-
-
 @if(exito()){
   <app-aviso-exito
   [exito]="exito"
   [mensaje]="mensajeexito"
   ></app-aviso-exito>
 }
-
-

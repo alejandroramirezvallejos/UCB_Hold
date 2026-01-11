@@ -1,13 +1,10 @@
 <div class="muebles-container">
-  <!-- ESTO ES PARA EL TITULO Y EL BOTON CREAR -->
   <div class="table-header">
     <div class="header-title">
       <h1>Muebles</h1>
       <p class="subtitle">Gestión de muebles del laboratorio</p>
     </div>
   </div>
-
-  <!-- BUSCADOR-->
   <app-buscador
     [columnas]="columnas"
     (terminoBusqueda)="aplicarFiltros($event)"
@@ -16,9 +13,6 @@
        Nuevo Mueble
     </button>
   </app-buscador>
-
-
-  <!-- TABLA -->
   <div class="table-responsive">
     <table class="data-table">
       <thead>
@@ -26,7 +20,6 @@
           @for(columna of columnas; track columna) {
             <th>{{ columna }}</th>
           }
-
           <th>Acciones</th>
         </tr>
       </thead>
@@ -63,27 +56,20 @@
       </tbody>
     </table>
   </div>
-
-  <!-- ALERTA DE ELIMINACIÓN -->
   @if(alertaeliminar){
-
     <app-aviso-eliminar
       [mensaje]="'¿Estás seguro de que deseas eliminar este mueble?'"
       (aceptar)="confirmarEliminacion()"
       (cancelar)="cancelarEliminacion()"
     ></app-aviso-eliminar>
-
-
   }
 </div>
-
 @if(botoncrear()){
   <app-muebles-crear
   [botoncrear]="botoncrear"
   (Actualizar)="cargarMuebles()"
   ></app-muebles-crear>
 }
-
 @if(botoneditar()){
   <app-muebles-editar
   [botoneditar]="botoneditar"
@@ -91,16 +77,12 @@
   (actualizar)="cargarMuebles()"
   ></app-muebles-editar>
 }
-
-
 @if(error()){
   <app-mostrarerror
   [error]="error"
   [mensaje]="mensajeerror"
   ></app-mostrarerror>
 }
-
-
 @if(exito()){
   <app-aviso-exito
   [exito]="exito"

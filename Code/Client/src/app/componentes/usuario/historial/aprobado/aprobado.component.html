@@ -1,5 +1,4 @@
 <div class="prestamos-container">
-
   <div class="prestamos-list">
     @for (item of (datos | keyvalue) ; track item.key) {
       <div class="prestamo-item" >        <!-- Header del préstamo -->
@@ -14,25 +13,20 @@
            <span class="codigo-imt">Codigos IMTs : 📋 {{ item.value.datosgrupo.CodigoImt || 'N/A' }}</span>
           </div>
         </div>
-
-        <!-- Información de fechas -->
         <div class="fechas-info">
           <div class="fecha-item">
             <span class="fecha-label">📅 Solicitud:</span>
             <span class="fecha-valor">{{ item.value.datosgrupo.FechaSolicitud ? (item.value.datosgrupo.FechaSolicitud | date:'dd/MM/yyyy':'America/La_Paz') : 'N/A' }}</span>
           </div>
-
           <div class="fecha-item">
             <span class="fecha-label">📦 Fecha de Recogida:</span>
             <span class="fecha-valor">{{ item.value.datosgrupo.FechaPrestamoEsperada ? (item.value.datosgrupo.FechaPrestamoEsperada |  date:'dd/MM/yyyy':'America/La_Paz') : item.value.datosgrupo.FechaPrestamoEsperada }}</span>
           </div>
-
           <div class="fecha-item">
             <span class="fecha-label">⏰ Devolución Esperada:</span>
             <span class="fecha-valor">{{ item.value.datosgrupo.FechaDevolucionEsperada ? (item.value.datosgrupo.FechaDevolucionEsperada | date:'dd/MM/yyyy') : 'N/A' }}</span>
           </div>
         </div>
-
       <div class="botones">
         <div class="botones-izquierda">
           <button class="recoger" [disabled]="validarFechaRecogida(item)"
@@ -41,10 +35,8 @@
         </div>
         <button class="ver-detalles" (click)="AbrirVista(item.value.equipos)"> VER DETALLES</button>
       </div>
-
       </div>
     }
-
     @if (datos.size === 0) {
       <div class="empty-state">
         <div class="empty-icon">📥</div>
@@ -54,7 +46,6 @@
     }
   </div>
 </div>
-
 @if (avisoaprobar()) {
   <app-aviso
   [mensaje]="'Al recoger el equipo usted afirma que el equipo se encuentra a su disposicion y cualquier problema que tenga con el equipo sera de su responsabilidad.'"
@@ -63,7 +54,6 @@
   >
   </app-aviso>
 }
-
 @if (avisocancelar()) {
   <app-aviso
   [mensaje]="'Desea cancelar el préstamo de este equipo? , tenga en cuenta que si lo hace, el equipo no podrá ser recogido o si ya fue recogido, debe ser devuelto .'"
@@ -72,12 +62,9 @@
   >
   </app-aviso>
 }
-
 @if(abrirVistaPrestamos){
   <app-vista-prestamos [prestamos]="prestamosVista" (cerrar)="cerrarVista()"></app-vista-prestamos>
 }
-
-
 @if(exito()){
   <app-aviso-exito
   [mensaje]="mensajeexito"

@@ -1,5 +1,4 @@
 import { Basemodel } from "../base/Basemodel";
-
 export class EmpresaMantenimiento extends Basemodel {
     NombreEmpresa?: string | null;
     NombreResponsable?: string | null;
@@ -7,7 +6,6 @@ export class EmpresaMantenimiento extends Basemodel {
     Telefono?: string | null;
     Nit?: string | null;
     Direccion?: string | null;
-
     constructor(){
         super();
         this.NombreEmpresa = null;
@@ -17,7 +15,4 @@ export class EmpresaMantenimiento extends Basemodel {
         this.Nit = null;
         this.Direccion = null;
     }
-
-
-    
 }

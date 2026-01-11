@@ -3,16 +3,11 @@ import { environment } from '../../../../environments/environment';
 import { HttpClient } from '@angular/common/http';
 import { Componente } from '../../../models/admin/Componente';
 import { map } from 'rxjs';
-
-
-
-
 @Injectable({
   providedIn: 'root'
 })
 export class ComponenteService {
   private apiUrl = environment.apiUrl + '/api/Componente';
-
   constructor(private http : HttpClient) { }
   crearComponente(componente: Componente) {
     const envio = {
@@ -24,12 +19,8 @@ export class ComponenteService {
       PrecioReferencia: componente.PrecioReferencia,
       UrlDataSheet: componente.UrlDataSheet
     }
-
     return this.http.post<any>(this.apiUrl, envio);
   }
-
-
-
   obtenerComponentes (){
     return this.http.get<any[]>(this.apiUrl).pipe(
       map(data => data.map(item => ({
@@ -44,10 +35,7 @@ export class ComponenteService {
         UrlDataSheet: item.UrlDataSheet
       })))
     );
-
-    
   }
-
   actualizarComponente(componente: Componente) {
     const envio = {
       Id: componente.Id,
@@ -59,13 +47,9 @@ export class ComponenteService {
       PrecioReferencia: componente.PrecioReferencia,
       UrlDataSheet: componente.UrlDataSheet
     };
-
     return this.http.put<any>(this.apiUrl, envio);
   }
-
   eliminarComponente(id: number) {
     return this.http.delete<any>(this.apiUrl + '/' + id);
   }
-
-
 }

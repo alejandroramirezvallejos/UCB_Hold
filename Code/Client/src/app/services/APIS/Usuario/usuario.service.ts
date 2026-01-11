@@ -3,15 +3,12 @@ import { environment } from '../../../../environments/environment';
 import { HttpClient } from '@angular/common/http';
 import { Usuario } from '../../../models/usuario';
 import { map } from 'rxjs';
-
 @Injectable({
   providedIn: 'root'
 })
 export class UsuarioServiceAPI {
  private apiUrl = environment.apiUrl + '/api/Usuario'; 
-
   constructor(private http : HttpClient) { }
-
   registrarCuenta(usuario : Usuario , contrasena : string , rol : string  | null){
     if(!rol) {
       rol = 'Estudiante';
@@ -30,12 +27,8 @@ export class UsuarioServiceAPI {
     NombreReferencia: usuario.nombre_referencia,
     EmailReferencia: usuario.email_referencia
     } 
-
     return this.http.post(this.apiUrl, envio)
-
   }
-
-
   iniciarsesion(correo: string, contraseña: string) {
     const api =  `${this.apiUrl + '/iniciarSesion'}?email=${correo}&contrasena=${contraseña}`;
     return this.http.get<any>(api).pipe(
@@ -54,7 +47,6 @@ export class UsuarioServiceAPI {
         email_referencia: item.EmailReferencia
       })));
   }
-
   actualizarUsuario(usuario: Usuario) {
     const envio = {
       Carnet: usuario.carnet,
@@ -68,12 +60,8 @@ export class UsuarioServiceAPI {
       NombreReferencia: usuario.nombre_referencia,
       EmailReferencia: usuario.email_referencia,
     };
-
     return this.http.put<Usuario>(`${this.apiUrl}`, envio);
-
   }
-
-
   obtenerUsuarios() {
     return this.http.get<any[]>(this.apiUrl).pipe(
       map(data => data.map(item => ({
@@ -90,13 +78,9 @@ export class UsuarioServiceAPI {
         email_referencia: item.EmailReferencia,
         carrera_Id: item.CarreraId,
         carrera: item.CarreraNombre,
-
-
-
       })))
     );
   }
-
   editarUsuario(usuario: Usuario , entrada: string) {
     let contrasena ;
     if(entrada === '') {
@@ -105,8 +89,6 @@ export class UsuarioServiceAPI {
     else{
       contrasena = entrada;
     }
-
-
     const envio = {
       Carnet: usuario.carnet,
       Nombre: usuario.nombre,
@@ -121,17 +103,9 @@ export class UsuarioServiceAPI {
       NombreReferencia: usuario.nombre_referencia,
       EmailReferencia: usuario.email_referencia
     };
-
     return this.http.put<Usuario>(`${this.apiUrl}`, envio);
   }
-
   eliminarUsuario(id: string) {
     return this.http.delete(`${this.apiUrl}/${id}`);
   }
-
-  
-    
-
-
- 
 }

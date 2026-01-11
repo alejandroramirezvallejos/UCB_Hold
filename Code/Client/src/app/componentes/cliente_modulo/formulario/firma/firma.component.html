@@ -1,5 +1,4 @@
 <div class="signature-overlay" *ngIf="clickfirma()">
-
   <div class="signature-container">
     <button class="close-button" (click)="close()">
       <img
@@ -11,13 +10,9 @@
         style="width: 24px; height: 24px;"
       />
     </button>
-
-
     <div class="signature-instructions">
      Firme en el espacio en blanco
-
     </div>
-
     <canvas #signatureCanvas class="signature-pad"></canvas>
     <div class="buttons">
       <button (click)="clearSignature()">Limpiar</button>

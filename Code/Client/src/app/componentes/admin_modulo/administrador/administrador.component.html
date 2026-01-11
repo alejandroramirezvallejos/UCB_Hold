@@ -1,12 +1,9 @@
-
-
 <div class="container">
   <app-sidebard
   [contenido]="tablas"
   [activeItem]="item"
   (item)="clickitem($event)"
 ></app-sidebard>
-
   @if(item=='Accesorios'){
     <app-accesorios-tabla></app-accesorios-tabla>
   }
@@ -46,6 +43,4 @@
   @else if (item=='Prestamos') {
     <app-prestamos-tabla></app-prestamos-tabla>
   }
-
-
 </div>

@@ -3,14 +3,12 @@ import { environment } from '../../../../environments/environment';
 import { HttpClient } from '@angular/common/http';
 import { map } from 'rxjs';
 import { Carrera } from '../../../models/admin/Carreras';
-
 @Injectable({
   providedIn: 'root'
 })
 export class CarreraService {
   private apiUrl = environment.apiUrl + '/api/Carrera'; 
   constructor(private http: HttpClient) { }
-
   obtenerCarreras() {
     return this.http.get<any[]>(this.apiUrl).pipe(
       map(data => data.map(item => ({
@@ -19,28 +17,20 @@ export class CarreraService {
       })))
     );
   }
-
   crearCarrera(carrera: string ) {
     const envio ={
       Nombre : carrera
     }
-
     return this.http.post<any>(this.apiUrl, envio);
   }
-
   actualizarCarrera(carrera : Carrera){
     const envio = {
       Id: carrera.Id,
       Nombre: carrera.Nombre
     };
-
     return this.http.put<any>(this.apiUrl, envio);
   }
-
   eliminarCarrera(id: number){
     return this.http.delete<any>(this.apiUrl + '/' + id); 
   }
-
-
-
 }

@@ -3,44 +3,45 @@
     <i class="fas fa-times"></i>
   </button>
   <h2>Agregar Equipo al Mantenimiento</h2>
-  <form #form="ngForm">
+  <form #form="ngForm" (ngSubmit)="agregarEquipo()">
     <div class="form-group">
       <label for="tipoMantenimiento">Tipo de Mantenimiento</label>
-      <select 
-        id="tipoMantenimiento" 
-        name="tipoMantenimiento" 
+      <select
+        #tipomantenimientoModel="ngModel"
+        id="tipoMantenimiento"
+        name="tipoMantenimiento"
         [(ngModel)]="tipomantenimiento"
-        required 
+        required
         class="form-input"
+        [class.ng-invalid]="tipomantenimientoModel.invalid && submitted"
+        [class.ng-touched]="submitted"
       >
         <option value="" disabled>Selecciona el tipo de mantenimiento</option>
         <option value="preventivo">Preventivo</option>
         <option value="correctivo">Correctivo</option>
       </select>
     </div>
-
     <div class="form-group">
       <label for="descripcion">Descripción del Mantenimiento</label>
-      <textarea 
-        id="descripcion" 
-        name="descripcion" 
+      <textarea
+        #descripcionModel="ngModel"
+        id="descripcion"
+        name="descripcion"
         [(ngModel)]="descripcion"
         required
         rows="4"
         placeholder="Describe el mantenimiento a realizar en este equipo"
         class="form-input"
+        [class.ng-invalid]="descripcionModel.invalid && submitted"
+        [class.ng-touched]="submitted"
       ></textarea>
     </div>
-
     <div class="form-submit">
-      <button 
-        (click)="agregarEquipo()" 
-        type="submit" 
-        class="register-button" 
-        [disabled]="!form.valid"
+      <button
+        type="submit"
+        class="register-button"
       >
-        <i class="fas fa-plus"></i>
-        <span>Agregar Equipo</span>
+        Agregar Equipo
       </button>
     </div>
   </form>

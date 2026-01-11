@@ -1,13 +1,10 @@
 <div class="gaveteros-container">
-  <!-- ESTO ES PARA EL TITULO Y EL BOTON CREAR -->
   <div class="table-header">
     <div class="header-title">
       <h1>Gaveteros</h1>
       <p class="subtitle">Gestión de gaveteros del laboratorio</p>
     </div>
   </div>
-
-  <!-- BUSCADOR-->
     <app-buscador
     [columnas]="columnas"
     (terminoBusqueda)="aplicarFiltros($event)"
@@ -16,16 +13,12 @@
        Nuevo Gavetero
     </button>
   </app-buscador>
-
-
-  <!-- TABLA -->
   <div class="table-responsive">
     <table class="data-table">
       <thead>        <tr>
           @for(columna of columnas; track columna) {
             <th>{{ columna }}</th>
           }
-
           <th>Acciones</th>
         </tr>
       </thead>      <tbody>
@@ -44,9 +37,6 @@
               <button class="btn-icon btn-edit" (click)="editarGavetero(gavetero)">
                 <i class="fas fa-pencil-alt"></i>
               </button>
-
-
-
             </td>        </tr>
         }
         @if (gaveteros.length === 0) {
@@ -63,23 +53,19 @@
       </tbody>
     </table>  </div>  <!-- ALERTA DE ELIMINACIÓN -->
   @if(alertaeliminar){
-
       <app-aviso-eliminar
       [mensaje]="'¿Estás seguro de que deseas eliminar este gavetero?'"
       (aceptar)="confirmarEliminacion()"
       (cancelar)="cancelarEliminacion()"
     ></app-aviso-eliminar>
-
   }
 </div>
-
 @if(botoncrear()){
   <app-gaveteros-crear
   [botoncrear]="botoncrear"
   (Actualizar)="cargarGaveteros()"
   ></app-gaveteros-crear>
 }
-
 @if(botoneditar()){
   <app-gaveteros-editar
   [botoneditar]="botoneditar"
@@ -87,20 +73,15 @@
   (actualizar)="cargarGaveteros()"
   ></app-gaveteros-editar>
 }
-
-
 @if(error()){
   <app-mostrarerror
   [error]="error"
   [mensaje]="mensajeerror"
   ></app-mostrarerror>
 }
-
-
 @if(exito()){
   <app-aviso-exito
   [exito]="exito"
   [mensaje]="mensajeexito"
   ></app-aviso-exito>
 }
-

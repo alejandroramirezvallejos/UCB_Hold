@@ -6,7 +6,6 @@ import { BaseTablaComponent } from '../../base/base';
 import { MostrarerrorComponent } from '../../../../pantallas_avisos/mostrarerror/mostrarerror.component';
 import { Aviso } from '../../../../pantallas_avisos/aviso/aviso.component';
 import { AvisoExitoComponent } from '../../../../pantallas_avisos/aviso-exito/aviso-exito.component';
-
 @Component({
   selector: 'app-grupos-equipos-crear',
   standalone: true,
@@ -15,22 +14,17 @@ import { AvisoExitoComponent } from '../../../../pantallas_avisos/aviso-exito/av
   styleUrl: './grupos-equipos-crear.component.css'
 })
 export class GruposEquiposCrearComponent extends BaseTablaComponent {
-
   @Input() botoncrear: WritableSignal<boolean> = signal(true);
   @Input() categorias: string[] = [];
   @Output() Actualizar = new EventEmitter<void>();
-
   grupoEquipo: GrupoEquipo = new GrupoEquipo();
-
   constructor(private grupoEquipoapi: GrupoequipoService) { 
     super(); 
   }
-
   validarregistro(){
     this.mensajeaviso="Desea registrar el nuevo grupo de equipo?";
     this.aviso.set(false);
   }
-
   registrar() {
     this.grupoEquipoapi.crearGrupoEquipo(this.grupoEquipo).subscribe({
       next: (response) => {
@@ -45,7 +39,6 @@ export class GruposEquiposCrearComponent extends BaseTablaComponent {
       }
     });
   }
-
   cerrar() {
     this.botoncrear.set(false);
   }

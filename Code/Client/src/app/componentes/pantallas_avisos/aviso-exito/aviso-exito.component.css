@@ -9,15 +9,12 @@
   --color-background: #f8fafc;
   --color-surface: #ffffff;
 }
-
 * {
   box-sizing: border-box;
   margin: 0;
   padding: 0;
   font-family: "Manrope", sans-serif;
 }
-
-/* Fondo con overlay como en aviso */
 :host {
   position: fixed;
   top: 0;
@@ -31,8 +28,6 @@
   z-index: 1000;
   animation: fadeIn 0.3s ease-in-out;
 }
-
-/* Contenedor principal */
 .container {
   position: relative;
   display: flex;
@@ -49,8 +44,6 @@
   text-align: center;
   animation: slideIn 0.3s ease-out;
 }
-
-/* Botón cerrar (X) */
 .cerrar {
   position: absolute;
   top: 15px;
@@ -65,14 +58,11 @@
   align-items: center;
   justify-content: center;
 }
-
 .cerrar img {
   width: 100%;
   height: 100%;
   transition: opacity 0.2s;
 }
-
-/* Título del aviso */
 h1 {
   margin-top: 20px;
   color: #10b981;
@@ -80,8 +70,6 @@ h1 {
   font-weight: 700;
   margin-bottom: 15px;
 }
-
-/* Contenedor del mensaje con scroll */
 .mensaje-container {
   max-height: 200px;
   overflow-y: auto;
@@ -89,8 +77,6 @@ h1 {
   margin: 15px 0 20px 0;
   padding-right: 5px;
 }
-
-/* Mensaje */
 p {
   font-size: 16px;
   color: var(--color-text);
@@ -99,35 +85,26 @@ p {
   padding: 0 5px;
   margin: 0;
 }
-
-/* Estilo personalizado para la barra de scroll */
 .mensaje-container::-webkit-scrollbar {
   width: 6px;
 }
-
 .mensaje-container::-webkit-scrollbar-track {
   background: #f1f1f1;
   border-radius: 3px;
 }
-
 .mensaje-container::-webkit-scrollbar-thumb {
   background: #c1c1c1;
   border-radius: 3px;
 }
-
 .mensaje-container::-webkit-scrollbar-thumb:hover {
   background: #a1a1a1;
 }
-
-/* Contenedor de botones */
 .botones-container {
   display: flex;
   gap: 1rem;
   justify-content: center;
   width: 100%;
 }
-
-/* Botón Aceptar - estilo como agregar a carrito */
 .aceptar {
   background-color: #ffd814;
   border: none;
@@ -140,13 +117,10 @@ p {
   font-size: 0.9rem;
   font-weight: 600;
 }
-
 .aceptar:hover {
   transform: scale(1.05);
   box-shadow: 0 4px 12px rgba(255, 216, 20, 0.5);
 }
-
-/* Animaciones */
 @keyframes fadeIn {
   from {
     opacity: 0;
@@ -155,7 +129,6 @@ p {
     opacity: 1;
   }
 }
-
 @keyframes slideIn {
   from {
     transform: scale(0.8);
@@ -166,36 +139,29 @@ p {
     opacity: 1;
   }
 }
-
-/* Responsive Design */
 @media (max-width: 480px) {
   .container {
     width: 90vw;
     padding: 20px;
     max-height: 70vh;
   }
-
   h1 {
     font-size: 1.3rem;
     margin-top: 15px;
     margin-bottom: 10px;
   }
-
   .mensaje-container {
     max-height: 150px;
     margin: 10px 0 15px 0;
   }
-
   p {
     font-size: 14px;
   }
-
   .aceptar {
     width: 100%;
     padding: 0.6rem 1rem;
     font-size: 0.85rem;
   }
-
   .cerrar {
     top: 8px;
     right: 8px;

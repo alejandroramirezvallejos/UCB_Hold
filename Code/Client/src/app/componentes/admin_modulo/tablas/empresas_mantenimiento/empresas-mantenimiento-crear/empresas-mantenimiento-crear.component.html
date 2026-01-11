@@ -9,7 +9,6 @@
       (mouseleave)="closeIcon.src = '/assets/x.png'"
     />
   </button>
-
   <div class="form-content">
     <h2>Registrar Empresa</h2>
     <form #form="ngForm" (ngSubmit)="validarregistro()">
@@ -26,7 +25,6 @@
           class="form-input"
         />
       </div>
-
       <div class="form-group">
         <label for="nombreResponsable">Nombre Responsable</label>
         <input
@@ -40,7 +38,6 @@
           class="form-input"
         />
       </div>
-
       <div class="form-group">
         <label for="apellidoResponsable">Apellido Responsable</label>
         <input
@@ -54,7 +51,6 @@
           class="form-input"
         />
       </div>
-
       <div class="form-group">
         <label for="telefono">Teléfono</label>
         <input
@@ -68,7 +64,6 @@
           class="form-input"
         />
       </div>
-
       <div class="form-group">
         <label for="nit">NIT</label>
         <input
@@ -82,7 +77,6 @@
           class="form-input"
         />
       </div>
-
       <div class="form-submit">
         <button type="submit" class="register-button" [disabled]="!form.valid">
           <span>Registrar Empresa</span>
@@ -91,15 +85,12 @@
     </form>
   </div>
 </div>
-
-
 @if(error()){
   <app-mostrarerror
   [error]="error"
   [mensaje]="mensajeerror"
   ></app-mostrarerror>
 }
-
 @if(aviso()){
   <app-aviso
   [cerrar]="aviso"
@@ -107,7 +98,6 @@
   (aceptar)="registrar()"
   ></app-aviso>
 }
-
 @if(exito()){
   <app-aviso-exito
   [exito]="exito"

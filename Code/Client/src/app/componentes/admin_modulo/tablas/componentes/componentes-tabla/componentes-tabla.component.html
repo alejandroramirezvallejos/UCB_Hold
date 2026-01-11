@@ -1,13 +1,10 @@
 <div class="componentes-container">
-  <!-- ESTO ES PARA EL TITULO Y EL BOTON CREAR -->
   <div class="table-header">
     <div class="header-title">
       <h1>Componentes</h1>
       <p class="subtitle">Gestión de componentes electrónicos</p>
     </div>
   </div>
-
-  <!-- BUSCADOR-->
   <app-buscador
     [columnas]="columnas"
     (terminoBusqueda)="aplicarFiltros($event)"
@@ -16,9 +13,6 @@
        Nuevo Componente
     </button>
   </app-buscador>
-
-
-  <!-- TABLA -->
   <div class="table-responsive">
     <table class="data-table">
       <thead>
@@ -61,25 +55,20 @@
       </tbody>
     </table>
   </div>
-
-  <!-- ALERTA DE ELIMINACIÓN -->
   @if(alertaeliminar){
     <app-aviso-eliminar
       [mensaje]="'¿Estás seguro de que deseas eliminar este componente?'"
       (aceptar)="confirmarEliminacion()"
       (cancelar)="cancelarEliminacion()"
     ></app-aviso-eliminar>
-
   }
 </div>
-
 @if(botoncrear()){
   <app-componentes-crear
   [botoncrear]="botoncrear"
   (Actualizar)="cargarComponentes()"
   ></app-componentes-crear>
 }
-
 @if(botoneditar()){
   <app-componentes-editar
   [botoneditar]="botoneditar"
@@ -87,21 +76,15 @@
   (actualizar)="cargarComponentes()"
   ></app-componentes-editar>
 }
-
-
-
 @if(error()){
   <app-mostrarerror
   [error]="error"
   [mensaje]="mensajeerror"
   ></app-mostrarerror>
 }
-
 @if(exito()){
   <app-aviso-exito
   [exito]="exito"
   [mensaje]="mensajeexito"
   ></app-aviso-exito>
 }
-
-

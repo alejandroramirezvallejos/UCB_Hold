@@ -1,5 +1,4 @@
 @if(cargando){
-
 }
 @else{
 <div class="contenedor-objeto">
@@ -17,15 +16,11 @@
       </ng-template>
     </div>
   </div>
-  
-
   <div class="seccion-detalles">
     <h2 class="nombre-objeto">
       {{ producto.nombre + " " + producto.modelo + " " + producto.marca }}
     </h2>
     <p class="descripcion-objeto">{{ producto.descripcion }}</p>
-    
-
     @if(producto.url_data_sheet){
        <a
         class="ficha-link debajo-texto"
@@ -37,7 +32,6 @@
         Ver ficha técnica
       </a>
     }
-
     <div class ="seccion-compra">
       <p>Cantidad disponible hoy : {{cantidadDisponible}}</p>
       @if(desabilitarboton==false){
@@ -51,12 +45,9 @@
         </button>
       }
     </div>
-
   </div>
 </div>
-
 }
-
 @if(error()){
   <app-mostrarerror
   [error]="error"

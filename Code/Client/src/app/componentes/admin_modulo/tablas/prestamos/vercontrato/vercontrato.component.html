@@ -1,6 +1,5 @@
 <div class="modal-overlay">
   <div class="modal-container">
-    <!-- Close button in top right corner -->
     <button class="btn-close" (click)="cerrar()" type="button">
       <img
         #closeIcon
@@ -11,19 +10,14 @@
         (mouseleave)="closeIcon.src = '/assets/x.png'"
       />
     </button>
-
-    <!-- Header with title -->
     <div class="modal-header">
       <h2 class="modal-title">Contrato</h2>
     </div>
-
-    <!-- Modal content -->
     <div class="modal-content">
       <div class="contract-viewer">
         <div class="contract-content" *ngIf="contratoContent; else loading"
            [innerHTML]="contratoContent">
         </div>
-
         <ng-template #loading>
           <div class="loading">
             <div class="spinner"></div>
@@ -34,10 +28,6 @@
     </div>
   </div>
 </div>
-
-
-
-
 @if(error()){
   <app-mostrarerror
   [error]="error"

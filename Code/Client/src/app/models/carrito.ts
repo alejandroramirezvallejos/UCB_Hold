@@ -12,6 +12,4 @@ export interface Carrito {
     codigo_ucb_unico? : string[];
     cantidadMax : number;
   };
-
-
 }

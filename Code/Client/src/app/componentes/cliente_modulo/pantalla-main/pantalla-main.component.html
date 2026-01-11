@@ -1,5 +1,4 @@
 <div class="container-search">
-  <!-- 1. El buscador -->
   <div
     class="search-input"
     [class.open]="showCategories"
@@ -13,7 +12,6 @@
       [src]="
         hover.search ? '/assets/search_solid.png' : '/assets/search_line.png'
       " />
-
     <textarea
       [(ngModel)]="solicitud"
       placeholder="Buscar..."
@@ -21,7 +19,6 @@
       (keydown.enter)="$event.preventDefault()"
       (focus)="showCategories = false"
     ></textarea>
-
      @if(solicitud.length > 0) {
         <img
           class="icon clear-icon"
@@ -35,7 +32,6 @@
           "
         />
       }
-
     <img
       class="icon category-icon"
       src="/assets/categories_line.png"
@@ -50,7 +46,6 @@
       "
     />
   </div>
-
   @if (showCategories) {
     <div class="categories-panel">
       <div class="categories-list">
@@ -72,13 +67,10 @@
     </div>
   }
 </div>
-
 <app-lista-objetos
   [categorias]="categoriasArray"
   [producto]="solicitud"
 ></app-lista-objetos>
-
-
 @if(error()){
   <app-mostrarerror
   [error]="error"

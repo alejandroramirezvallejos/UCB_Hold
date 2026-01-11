@@ -9,7 +9,6 @@
       (mouseleave)="closeIcon.src = '/assets/x.png'"
     />
   </button>
-
   <div class="form-content">
     <h2>Editar Accesorio</h2>
     <form #form="ngForm" (ngSubmit)="confirmaredicion()">
@@ -26,7 +25,6 @@
         class="form-input"
       />
     </div>
-
     <div class="form-group">
       <label for="modelo">Modelo</label>
       <input
@@ -40,7 +38,6 @@
         class="form-input"
       />
     </div>
-
     <div class="form-group">
       <label for="tipo">Tipo</label>
       <input
@@ -54,7 +51,6 @@
         class="form-input"
       />
     </div>
-
     <div class="form-group">
       <label for="descripcion">Descripción</label>
       <textarea
@@ -67,7 +63,6 @@
         class="form-input"
       ></textarea>
     </div>
-
     <div class="form-group">
       <label for="codigo_imt">Código IMT</label>
       <select
@@ -80,11 +75,8 @@
       @for (item of equipos; track $index) {
         <option [value]="item.CodigoImt"> {{ item.NombreGrupoEquipo }} {{item.Modelo}} {{item.Marca}} - {{ item.CodigoImt }}</option>
       }
-
     </select>
     </div>
-
-
     <div class="form-group">
       <label for="precio">Precio</label>
       <input
@@ -98,7 +90,6 @@
         class="form-input"
       />
     </div>
-
     <div class="form-group">
       <label for="url_data_sheet">URL Data Sheet</label>
       <input
@@ -106,14 +97,12 @@
         id="url_data_sheet"
         name="url_data_sheet"
         [(ngModel)]="accesorio.url_data_sheet"
-
         maxlength="255"
         pattern="https?://.+"
         placeholder="https://ejemplo.com/datasheet.pdf"
         class="form-input"
       />
     </div>
-
     <div class="form-submit">
       <button type="submit" class="register-button" [disabled]="!form.valid">
         <span>Confirmar Cambios</span>
@@ -122,14 +111,12 @@
   </form>
   </div>
 </div>
-
 @if(error()){
   <app-mostrarerror
   [error]="error"
   [mensaje]="mensajeerror"
   ></app-mostrarerror>
 }
-
 @if(aviso()){
   <app-aviso
   [cerrar]="aviso"
@@ -137,7 +124,6 @@
   (aceptar)="confirmar()"
   ></app-aviso>
 }
-
 @if(exito()){
   <app-aviso-exito
   [exito]="exito"

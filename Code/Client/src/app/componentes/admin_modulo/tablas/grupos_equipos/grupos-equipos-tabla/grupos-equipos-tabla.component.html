@@ -1,13 +1,10 @@
 <div class="grupos-equipos-container">
-  <!-- ESTO ES PARA EL TITULO Y EL BOTON CREAR -->
   <div class="table-header">
     <div class="header-title">
       <h1>Grupos de Equipos</h1>
       <p class="subtitle">Gestión de grupos de equipos del laboratorio</p>
     </div>
   </div>
-
-  <!-- BUSCADOR-->
   <app-buscador
     [columnas]="columnas"
     (terminoBusqueda)="aplicarFiltros($event)"
@@ -16,9 +13,6 @@
        Nuevo Grupo de Equipo
     </button>
   </app-buscador>
-
-
-  <!-- TABLA -->
   <div class="table-responsive">
     <table class="data-table">
       <thead>
@@ -44,9 +38,6 @@
               <button class="btn-icon btn-edit" (click)="editarGrupoEquipo(grupoequipo)">
                 <i class="fas fa-pencil-alt"></i>
               </button>
-
-
-
             </td>        </tr>
         }
         @if (gruposEquiposFiltrados.length === 0) {
@@ -63,26 +54,20 @@
       </tbody>
     </table>  </div>  <!-- ALERTA DE ELIMINACIÓN -->
   @if(alertaeliminar){
-
       <app-aviso-eliminar
       [mensaje]="'¿Estás seguro de que deseas eliminar este grupo de equipo?'"
       (aceptar)="confirmarEliminacion()"
       (cancelar)="cancelarEliminacion()"
     ></app-aviso-eliminar>
-
-
   }
 </div>
-
 @if(botoncrear()){
   <app-grupos-equipos-crear
   [botoncrear]="botoncrear"
   [categorias]="categorias"
   (Actualizar)="cargarGruposEquipos()"
-
   ></app-grupos-equipos-crear>
 }
-
 @if(botoneditar()){
   <app-grupos-equipos-editar
   [botoneditar]="botoneditar"
@@ -91,19 +76,15 @@
   (actualizar)="cargarGruposEquipos()"
   ></app-grupos-equipos-editar>
 }
-
-
 @if(error()){
   <app-mostrarerror
   [error]="error"
   [mensaje]="mensajeerror"
   ></app-mostrarerror>
 }
-
 @if(exito()){
   <app-aviso-exito
   [exito]="exito"
   [mensaje]="mensajeexito"
   ></app-aviso-exito>
 }
-

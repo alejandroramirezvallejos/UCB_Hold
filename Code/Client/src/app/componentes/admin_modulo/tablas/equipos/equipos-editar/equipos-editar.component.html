@@ -9,12 +9,9 @@
       (mouseleave)="closeIcon.src = '/assets/x.png'"
     />
   </button>
-
   <div class="form-content">
     <h2>Editar Equipo</h2>
     <form #form="ngForm" (ngSubmit)="validaredicion()">
-
-
      <div class="form-group">
       <label for="grupo_equipo">Grupo Equipo</label>
       <select
@@ -29,13 +26,8 @@
         @for (item of grupoequipo; track $index) {
         <option [ngValue]="item">{{ item.nombre }} {{ item.modelo }} {{ item.marca }}</option>
         }
-
-
       </select>
     </div>
-
-
-
     <div class="form-group">
       <label for="codigo_ucb">Código UCB</label>
       <input
@@ -49,7 +41,6 @@
         class="form-input"
       />
     </div>
-
     <div class="form-group">
       <label for="numero_serial">Número Serial</label>
       <input
@@ -63,7 +54,6 @@
         class="form-input"
       />
     </div>
-
     <div class="form-group">
       <label for="estado_equipo">Estado Equipo</label>
       <select
@@ -78,10 +68,8 @@
         <option value="operativo">Operativo</option>
         <option value="parcialmente_operativo">Parcialmente Operativo</option>
         <option value="inoperativo">Inoperativo</option>
-
     </select>
     </div>
-
     <div class="form-group">
       <label for="ubicacion">Ubicación</label>
       <input
@@ -95,7 +83,6 @@
         class="form-input"
       />
     </div>
-
      <div class="form-group">
       <label for="nombre_gavetero">Nombre Gavetero</label>
       <select
@@ -110,7 +97,6 @@
       }
       </select>
     </div>
-
     <div class="form-group">
       <label for="costo_referencia">Costo Referencia</label>
       <input
@@ -125,7 +111,6 @@
         class="form-input"
       />
     </div>
-
     <div class="form-group">
       <label for="descripcion">Descripción</label>
       <textarea
@@ -138,7 +123,6 @@
         class="form-input"
       ></textarea>
     </div>
-
     <div class="form-group">
       <label for="tiempo_max_prestamo">Tiempo Máximo Préstamo</label>
       <input
@@ -151,7 +135,6 @@
         class="form-input"
       />
     </div>
-
     <div class="form-group">
       <label for="procedencia">Procedencia</label>
       <input
@@ -165,7 +148,6 @@
         class="form-input"
       />
     </div>
-
     <div class="form-submit">
       <button type="submit" class="register-button" [disabled]="!form.valid">
         <span>Confirmar Cambios</span>
@@ -174,15 +156,12 @@
   </form>
   </div>
 </div>
-
-
 @if(error()){
   <app-mostrarerror
   [error]="error"
   [mensaje]="mensajeerror"
   ></app-mostrarerror>
 }
-
 @if(aviso()){
   <app-aviso
   [cerrar]="aviso"
@@ -190,7 +169,6 @@
   (aceptar)="confirmar()"
   ></app-aviso>
 }
-
 @if(exito()){
   <app-aviso-exito
   [exito]="exito"

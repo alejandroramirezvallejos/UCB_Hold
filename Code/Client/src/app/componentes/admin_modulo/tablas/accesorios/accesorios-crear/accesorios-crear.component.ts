@@ -8,7 +8,6 @@ import { MostrarerrorComponent } from '../../../../pantallas_avisos/mostrarerror
 import { BaseTablaComponent } from '../../base/base';
 import { Aviso } from '../../../../pantallas_avisos/aviso/aviso.component';
 import { AvisoExitoComponent } from '../../../../pantallas_avisos/aviso-exito/aviso-exito.component';
-
 @Component({
   selector: 'app-accesorios-crear',
   standalone: true,
@@ -17,24 +16,16 @@ import { AvisoExitoComponent } from '../../../../pantallas_avisos/aviso-exito/av
   styleUrl: './accesorios-crear.component.css'
 })
 export class AccesoriosCrearComponent extends BaseTablaComponent {
-
   @Input() botoncrear: WritableSignal<boolean> = signal(true);
   @Output() Actualizar = new EventEmitter<void>();
-
   equipos : Equipos[] = [] ;  
-
   accesorio : Accesorio = new Accesorio();
-
-
   constructor(private accesorioapi : AccesoriosService , private equipoAPI : EquipoService){
     super();
   }; 
-
-
   ngOnInit(){
     this.cargarEquipos();
   }
-
   cargarEquipos(){
     this.equipoAPI.obtenerEquipos().subscribe({
       next: (data) => {
@@ -47,11 +38,7 @@ export class AccesoriosCrearComponent extends BaseTablaComponent {
       }
     })
   }
-
-
- 
   registrar(){
-
     this.accesorioapi.crearAccesorio(this.accesorio).subscribe({
       next: (response )=> {
           this.Actualizar.emit(); 
@@ -64,18 +51,12 @@ export class AccesoriosCrearComponent extends BaseTablaComponent {
         this.error.set(true);
       }
     });
-   
   }
-
-
-
   confirmarcreacion(){
     this.mensajeaviso="¿Está seguro que desea crear este accesorio?";
     this.aviso.set(true);
   }
-
   cerrar(){
     this.botoncrear.set(false);
   }
-
 }

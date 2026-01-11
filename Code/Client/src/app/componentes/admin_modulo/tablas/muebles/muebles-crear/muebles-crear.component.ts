@@ -6,7 +6,6 @@ import { BaseTablaComponent } from '../../base/base';
 import { MostrarerrorComponent } from '../../../../pantallas_avisos/mostrarerror/mostrarerror.component';
 import { Aviso } from '../../../../pantallas_avisos/aviso/aviso.component';
 import { AvisoExitoComponent } from '../../../../pantallas_avisos/aviso-exito/aviso-exito.component';
-
 @Component({
   selector: 'app-muebles-crear',
   standalone: true,
@@ -15,21 +14,16 @@ import { AvisoExitoComponent } from '../../../../pantallas_avisos/aviso-exito/av
   styleUrl: './muebles-crear.component.css'
 })
 export class MueblesCrearComponent extends BaseTablaComponent{
-
   @Input() botoncrear: WritableSignal<boolean> = signal(true);
   @Output() Actualizar = new EventEmitter<void>();
-
   mueble: Muebles = new Muebles();
-
   constructor(private muebleapi: MuebleService) { 
     super();
   }
-
   validarcreacion(){
     this.mensajeaviso="¿Desea crear el mueble "+ this.mueble.Nombre+"?";
     this.aviso.set(true);
   }
-
   registrar() {
     this.muebleapi.crearMueble(this.mueble).subscribe({
       next: (response) => {
@@ -44,7 +38,6 @@ export class MueblesCrearComponent extends BaseTablaComponent{
       }
     });
   }
-
   cerrar() {
     this.botoncrear.set(false);
   }

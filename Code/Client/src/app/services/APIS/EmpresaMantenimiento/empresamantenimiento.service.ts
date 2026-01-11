@@ -3,16 +3,12 @@ import { HttpClient } from '@angular/common/http';
 import { environment } from '../../../../environments/environment';
 import { EmpresaMantenimiento } from '../../../models/admin/EmpresaMantenimiento';
 import { map } from 'rxjs';
-
-
-
 @Injectable({
   providedIn: 'root'
 })
 export class EmpresamantenimientoService {
   private apiUrl = environment.apiUrl + '/api/EmpresaMantenimiento';
   constructor(private http: HttpClient) { }
-
   crearEmpresaMantenimiento(empresa: EmpresaMantenimiento) {
     const envio = {
       NombreEmpresa: empresa.NombreEmpresa,
@@ -22,14 +18,9 @@ export class EmpresamantenimientoService {
       Nit: empresa.Nit,
       Direccion: empresa.Direccion
     };
-
     return this.http.post<any>(this.apiUrl, envio);
-
   }
-
-
   obtenerEmpresaMantenimiento(){
-
     return this.http.get<any[]>(this.apiUrl).pipe(
       map(data => data.map(item => ({
         Id : item.Id,
@@ -41,9 +32,7 @@ export class EmpresamantenimientoService {
         Direccion: item.Direccion
       })))
     );
-
   }
-
   actualizarEmpresaMantenimiento(empresa: EmpresaMantenimiento) {
     const envio = {
       Id: empresa.Id,
@@ -54,13 +43,9 @@ export class EmpresamantenimientoService {
       Nit: empresa.Nit,
       Direccion: empresa.Direccion
     };
-
     return this.http.put<any>(this.apiUrl, envio);
   }
-
   eliminarEmpresaMantenimiento(id: number) {
     return this.http.delete<any>(`${this.apiUrl}/${id}`);
   }
-
-
 }

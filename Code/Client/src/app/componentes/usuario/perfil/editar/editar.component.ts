@@ -6,7 +6,6 @@ import { FormsModule } from '@angular/forms';
 import { CarreraService } from '../../../../services/APIS/Carrera/carrera.service';
 import { AvisoExitoComponent } from '../../../pantallas_avisos/aviso-exito/aviso-exito.component';
 import { MostrarerrorComponent } from '../../../pantallas_avisos/mostrarerror/mostrarerror.component';
-
 @Component({
   selector: 'app-editar',
   imports: [CommonModule,FormsModule,AvisoExitoComponent , MostrarerrorComponent],
@@ -16,45 +15,31 @@ import { MostrarerrorComponent } from '../../../pantallas_avisos/mostrarerror/mo
 export class EditarComponent {
   @Input() botoneditar: WritableSignal<boolean> = signal(true);
   @Input() usuario: Usuario = new Usuario();
-
   exito : WritableSignal<boolean> = signal(false);
   mensajeexito : string = "";
-
   error: WritableSignal<boolean> = signal(false);
   mensajeerror: string = "";
-
   carreras: string[] = [];
-
-  // Dropdown state
   isOpen: boolean = false;
   isHovered: boolean = false;
-
   contrasena: string = '';
-
   constructor(private usuarioApi: UsuarioServiceAPI , private carrerasAPI : CarreraService) {}
-
-  // Dropdown methods
   toggleDropdown() {
     this.isOpen = !this.isOpen;
   }
-
   selectCarrera(carrera: string) {
     this.usuario.carrera = carrera;
     this.isOpen = false;
   }
-
   onMouseEnter() {
     this.isHovered = true;
   }
-
   onMouseLeave() {
     this.isHovered = false;
   }
-
   ngOnInit() {
     this.cargarcarrera();
   }
-
   cargarcarrera() {
     this.carrerasAPI.obtenerCarreras().subscribe({
         next: (data) => {
@@ -67,9 +52,6 @@ export class EditarComponent {
         }
       });
   }
-
-
-
   confirmar() {
     this.usuarioApi.editarUsuario(this.usuario, this.contrasena).subscribe({
         next: (data) => {
@@ -84,7 +66,6 @@ export class EditarComponent {
     }
     );
   }
-
   cerrar() {
     this.botoneditar.set(false);
   }

@@ -11,9 +11,6 @@ import { MostrarerrorComponent } from '../../../../pantallas_avisos/mostrarerror
 import { AvisoExitoComponent } from '../../../../pantallas_avisos/aviso-exito/aviso-exito.component';
 import { BuscadorComponent } from '../../../buscador/buscador.component';
 import { Tabla } from '../../base/tabla';
-
-
-
 @Component({
   selector: 'app-equipos-tabla',
   standalone: true,
@@ -22,42 +19,27 @@ import { Tabla } from '../../base/tabla';
   styleUrls: ['./equipos-tabla.component.css']
 })
 export class EquiposTablaComponent extends Tabla{
-
   botoncrear : WritableSignal<boolean> = signal(false);
   botoneditar : WritableSignal<boolean> = signal(false);
   alertaeliminar : boolean = false;
   equipos : any[] = [];
   equiposcopia: any[] = [];
-
   equipoSeleccionado:  Equipos= new Equipos();
-
   override columnas: string[] = ['Nombre','EstadoEquipo','Ubicacion','Código IMT','Costo'];
-
-
-
   constructor(private equiposapi : EquipoService){
     super();
   };
-
-
-
   ngOnInit(){
     this.cargarEquipos();
   }
-
-
   limpiarEquipoSeleccionado() {
     this.equipoSeleccionado = new Equipos();
   }
-
-
-
   crearequipo() {
     this.botoneditar.set(false);
     this.botoncrear.set(true);
   }
   cargarEquipos() {
-
     this.equiposapi.obtenerEquipos().subscribe(
       (data: any[]) => {
         this.equipos = data;
@@ -69,10 +51,7 @@ export class EquiposTablaComponent extends Tabla{
         this.error.set(true);
       }
     );
-
   }
-
-
   aplicarFiltros(event?: [string, string]){
     if (event && event[0].trim() !== '') {
         const busquedaNormalizada = this.normalizeText(event[0]);
@@ -97,36 +76,27 @@ export class EquiposTablaComponent extends Tabla{
           }
         });
       } else {
-        // Crear una copia para evitar referencias
         this.equipos = [...this.equiposcopia];
       }
   }
-
 limpiarBusqueda(){
-
   this.equipos = [...this.equiposcopia];
-
 }
-
 editarEquipo(equipo : any) {
   this.botoncrear.set(false);
   this.equipoSeleccionado = { ...equipo }; // Crear una copia del objeto
   this.botoneditar.set(true);
 }
-
 eliminarEquipo(equipo : any) {
   this.equipoSeleccionado = equipo;
   this.alertaeliminar = true;
-
 }
-
 confirmarEliminacion() {
   this.equiposapi.eliminarEquipo(this.equipoSeleccionado.Id).subscribe({
     next:(response) => {
       this.mensajeexito = "Equipo eliminado con éxito";
       this.exito.set(true);
        this.cargarEquipos();
-
     },
     error: (error) => {
       this.mensajeerror = "Error al eliminar el equipo";
@@ -137,17 +107,8 @@ confirmarEliminacion() {
   this.limpiarEquipoSeleccionado();
   this.alertaeliminar = false;
 }
-
 cancelarEliminacion(){
   this.alertaeliminar = false;
   this.limpiarEquipoSeleccionado();
 }
-
-
-
-
-
-
-
-
 }

@@ -10,7 +10,6 @@ import { BaseTablaComponent } from '../../base/base';
 import { MostrarerrorComponent } from '../../../../pantallas_avisos/mostrarerror/mostrarerror.component';
 import { Aviso } from '../../../../pantallas_avisos/aviso/aviso.component';
 import { AvisoExitoComponent } from '../../../../pantallas_avisos/aviso-exito/aviso-exito.component';
-
 @Component({
   selector: 'app-equipos-crear',
   standalone: true,
@@ -19,32 +18,23 @@ import { AvisoExitoComponent } from '../../../../pantallas_avisos/aviso-exito/av
   styleUrl: './equipos-crear.component.css'
 })
 export class EquiposCrearComponent extends BaseTablaComponent {
-
   @Input() botoncrear: WritableSignal<boolean> = signal(true);
   @Output() Actualizar = new EventEmitter<void>();
-
   grupoequipo : GrupoEquipo[] = [];
   equipo : Equipos = new Equipos();
-
   grupoequipoSeleccionado: GrupoEquipo | null = null;
-  
   Gaveteros: string[] =[];
-
   constructor(private equipoapi : EquipoService , private grupoequipoAPI : GrupoequipoService , private gaveterosAPI : GaveteroService){
     super();
   }; 
-
-  
   ngOnInit() {
     this.cargarGruposEquipos();
     this.cargarGaveteros();
   }
-
   cargarGaveteros() {
     this.gaveterosAPI.obtenerGaveteros().subscribe({
       next: (data) => {
         this.Gaveteros = data.map(gavetero => gavetero.Nombre!);
-
       },
       error: (error) => {
         this.mensajeerror= "Error al cargar los gaveteros. Intente mas tarde";
@@ -53,9 +43,6 @@ export class EquiposCrearComponent extends BaseTablaComponent {
       }
     });
   }
-
-
-
   cargarGruposEquipos() {
     this.grupoequipoAPI.obtenersinfiltroGruposEquipos().subscribe({
       next: (data) => {
@@ -68,29 +55,20 @@ export class EquiposCrearComponent extends BaseTablaComponent {
       }
     });
   }
-
-
   validarcreacion(){
     if (!this.grupoequipoSeleccionado) {
       this.mensajeerror = "Debe seleccionar un grupo de equipo.";
       this.error.set(true);
       return;
     }
-
     this.mensajeaviso= "Esta seguro de crear el equipo?";
     this.aviso.set(true);
-
   }
-
-
   registrar(){
-    
     this.equipo.NombreGrupoEquipo = this.grupoequipoSeleccionado!.nombre;
     this.equipo.Marca = this.grupoequipoSeleccionado!.marca ?? null  ;
     this.equipo.Modelo = this.grupoequipoSeleccionado!.modelo ?? null;
-
     console.log('Equipo a enviar:', this.equipo);
-
     this.equipoapi.crearEquipo(this.equipo).subscribe({
       next: () => {
         this.Actualizar.emit();
@@ -104,11 +82,8 @@ export class EquiposCrearComponent extends BaseTablaComponent {
         this.error.set(true);
       }
        });
-   
   }
-
   cerrar(){
     this.botoncrear.set(false);
   }
-
 }
