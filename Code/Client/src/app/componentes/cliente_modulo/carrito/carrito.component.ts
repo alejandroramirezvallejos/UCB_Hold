@@ -6,15 +6,11 @@ import { FormsModule } from '@angular/forms';
 import { Router, ActivatedRoute } from '@angular/router';
 import { UsuarioService } from '../../../services/usuario/usuario.service';
 import { MostrarerrorComponent } from '../../pantallas_avisos/mostrarerror/mostrarerror.component';
-import { Aviso } from '../../pantallas_avisos/aviso/aviso.component';
-import { PrestamosAPIService } from '../../../services/APIS/prestamo/prestamos-api.service';
-import { AvisoExitoComponent } from '../../pantallas_avisos/aviso-exito/aviso-exito.component';
-import { PantallaCargaComponent } from '../../pantallas_avisos/pantalla-carga/pantalla-carga.component';
 import { CalendarioComponent } from './calendario/calendario.component';
 @Component({
   selector: 'app-carrito',
   standalone: true ,
-  imports: [CommonModule,FormsModule , MostrarerrorComponent , Aviso , AvisoExitoComponent , PantallaCargaComponent , CalendarioComponent],
+  imports: [CommonModule,FormsModule , MostrarerrorComponent , CalendarioComponent],
   templateUrl: './carrito.component.html',
   styleUrl: './carrito.component.css'
 })
@@ -23,16 +19,12 @@ export class CarritoComponent {
   public step: number = 1;
   public errorboton : WritableSignal<boolean> = signal(false);
   public mensajeerror: string = "Datos insertados no validos";
-  aviso : WritableSignal<boolean> = signal(false);
-  exito : WritableSignal<boolean> = signal(false);
-  cargando : boolean = false;
-  public readonly precioMax : number = 2000;
   hoy : Date= new Date();
   hoystr : string = this.toLocalISOString(this.hoy);
   fecha_inicio: WritableSignal<Date | null> = signal(null);
   fecha_final: WritableSignal<Date | null> = signal(null);
   carrito: Carrito = {};
-  constructor(public carritoS: CarritoService , private router : Router, private route: ActivatedRoute , private usuario : UsuarioService , private Sprestamo : PrestamosAPIService) {
+  constructor(public carritoS: CarritoService , private router : Router, private route: ActivatedRoute , private usuario : UsuarioService) {
     this.carrito  = this.carritoS.obtenercarrito();
     this.hoy.setHours(0, 0, 0, 0);
     this.route.queryParams.subscribe(params => {
@@ -108,36 +100,11 @@ export class CarritoComponent {
     else if(this.usuario.vacio()){
         this.router.navigate(['/Iniciar-Sesion']);
     }
-    else if(this.carritoS.preciototal()<this.precioMax) {
-        this.aviso.set(true);
-    }
     else{
         this.cambiarfechainicio(this.fechaInicioStr);
         this.cambiarfechafinal(this.fechaFinalStr);
        this.router.navigate(['/Formulario']);
     }
-  }
-  realizarPrestamo(){
-    this.cargando = true;
-    this.cambiarfechainicio(this.fechaInicioStr);
-    this.cambiarfechafinal(this.fechaFinalStr);
-    console.log('Carrito:', this.carrito);
-    this.Sprestamo.crearPrestamo(this.carrito , this.usuario.obtenercarnet() , null).subscribe({
-      next: () => {
-        this.carritoS.vaciarcarrito();
-        this.exito.set(true);
-        this.cargando = false;
-      }
-      , error: (err) => {
-        this.errorboton.set(true);
-        this.mensajeerror = "Error al realizar el prestamo intente nuevamente mas tarde" ;
-        console.error('Error al crear el prestamo:', err);
-        this.cargando = false;
-      }
-    })
-  }
-  redirigirHome(){
-    this.router.navigate(['/home']);
   }
   carritovacio(){
     if (Object.keys(this.carrito).length==0){
