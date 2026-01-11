@@ -7,6 +7,12 @@
   box-shadow: 0 4px 12px rgba(0,0,0,0.1);
   font-family: 'Segoe UI', sans-serif;
 }
+
+.profile-container h2 {
+  text-align: center;
+  color: #000;
+  margin-bottom: 1.5rem;
+}
 .avatar-container {
   display: flex;
   justify-content: center;

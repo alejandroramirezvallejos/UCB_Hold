@@ -53,6 +53,8 @@ export class NavbarComponent {
       this.showBack.set(false);
       this.showCart.set(true);
       this.showProfile.set(true);
+      // Rastrear que estamos en modo usuario
+      this.previousAdminRoute = false;
     } else if (cleanUrl.includes('/Carrito') || cleanUrl.includes('/Objeto') || cleanUrl.includes('/Formulario')) {
       // Cart / Object / Form: Show Back, Hide Home
       this.showHome.set(false);
@@ -75,29 +77,44 @@ export class NavbarComponent {
 
     // Logic for Admin role
     if (this.usuario.obtenerrol() === 'administrador') {
-      this.showHome.set(false);
-      this.showBack.set(false);
-      this.showCart.set(false);
+        // Allow home button for admin too, but keep back button hidden usually?
+        // The user only asked for Home button behavior.
+        // Actually the code previously hid home for admin.
+        // "en perfil deberia aparecer en el navbar el icono de home"
+        // If I simply remove the line "this.showHome.set(false);" from the admin block, it will respect the previous logic (set to true for profile).
+
+       this.showBack.set(false);
+       this.showCart.set(false);
       // Logic: If on admin route, show sidebar toggle
       if (cleanUrl.includes('/admin')) {
+         this.showHome.set(false); // Hide home on admin dashboard itself
          this.showAdminSidebarToggle.set(true);
+         // Rastrear que estamos en modo admin
+         this.previousAdminRoute = true;
       } else {
+         // e.g. Profile
          this.showAdminSidebarToggle.set(false);
+         // Ensure home is shown if not in admin route explicitly (e.g. profile)
+         // The previous logic already set showHome.
       }
     } else {
       this.showAdminSidebarToggle.set(false);
     }
   }
 
+  private previousAdminRoute: boolean = false;
+
   botonhome() {
-    if(this.usuario.vacio()==true){
+    if (this.usuario.vacio()) {
       this.router.navigate(['/Iniciar-Sesion']);
+    } else {
+        // Navegar según el contexto previo (si estaba en modo admin o modo usuario)
+        if (this.previousAdminRoute) {
+            this.router.navigate(['/admin']);
+        } else {
+            this.router.navigate(['/home']);
+        }
     }
-    else{
-       this.router.navigate(['/home']);
-    }
-
-
 
   }
 

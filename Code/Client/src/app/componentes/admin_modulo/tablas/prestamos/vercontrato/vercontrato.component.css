@@ -25,15 +25,16 @@
   }
 }
 
-/* Header with close button */
+/* Header with title */
 .modal-header {
-  background-color: #6b7786;
-  color: white;
+  background-color: white;
+  color: #000;
   padding: 15px 20px;
   display: flex;
-  justify-content: space-between;
+  justify-content: center;
   align-items: center;
   border-radius: 20px 20px 0 0;
+  border-bottom: 1px solid #e2e8f0;
 }
 
 .modal-title {
@@ -41,20 +42,25 @@
   font-weight: 600;
   margin: 0;
   font-family: 'Manrope', sans-serif;
+  color: #000;
+  text-align: center;
 }
 
 .btn-close {
   background: none;
   border: none;
-  width: 24px;
-  height: 24px;
-  color: white;
+  width: 20px;
+  height: 20px;
   cursor: pointer;
   display: flex;
   align-items: center;
   justify-content: center;
   transition: transform 0.2s ease;
   padding: 0;
+  position: absolute;
+  right: 20px;
+  top: 20px;
+  z-index: 10;
 }
 
 .btn-close:hover {
@@ -229,17 +235,17 @@
       max-width: 800px;
       margin: 0 auto;
       background-color: #f9f9f9;
-      color: #333;
+      color: #000;
       padding: 20px;
   }
  ::ng-deep .contrato-container h1 {
       text-align: center;
       font-size: 24px;
-      color: #2c3e50;
+      color: #000;
       margin-bottom: 20px;
       text-transform: uppercase;
   } ::ng-deep .contrato-container p {
-      text-align: justify;
+      text-align: center;
       margin-bottom: 16px;
       font-size: 16px;
   }
@@ -247,7 +253,7 @@
     display: inline;
 
     font-size: 16px;
-    color: #2c3e50;
+    color: #000;
   }
 ::ng-deep  .contrato-container table {
       width: 100%;

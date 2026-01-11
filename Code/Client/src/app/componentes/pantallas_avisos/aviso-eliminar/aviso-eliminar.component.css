@@ -16,12 +16,12 @@
 .modal-content {
   position: relative; /* Ensure relative positioning for absolute close button */
   background-color: #ffffff !important;
-  padding: 2rem;
+  padding: 3rem;
   border-radius: 12px;
   box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
   text-align: center;
   animation: slideIn 0.3s ease-out;
-  min-width: 400px;
+  min-width: 500px;
   max-width: 90vw;
   border: none;
 }
@@ -70,7 +70,7 @@
 /* Botón cerrar (X) */
 .cerrar {
   position: absolute;
-  top: 15px;
+  top: 10px;
   right: 15px;
   cursor: pointer;
   background: none;

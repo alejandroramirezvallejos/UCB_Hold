@@ -79,11 +79,11 @@
 
 .form-container h2 {
   text-align: center;
-  color: var(--primary-color);
+  color: #000;
   margin-bottom: 1.5rem;
   font-size: 1.6rem;
   font-weight: 700;
-  padding-right: 1.5rem;
+  padding: 0 2rem 0 2rem;
 }
 
 .form-container form {
