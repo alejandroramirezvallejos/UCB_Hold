@@ -1,18 +1,20 @@
 <div class="modal-overlay">
   <div class="modal-container">
-    <!-- Header with close button -->
+    <!-- Close button in top right corner -->
+    <button class="btn-close" (click)="cerrar()" type="button">
+      <img
+        #closeIcon
+        src="/assets/x.png"
+        alt="Cerrar"
+        style="width:100%; height:100%; object-fit: contain;"
+        (mouseenter)="closeIcon.src = '/assets/x_solid.png'"
+        (mouseleave)="closeIcon.src = '/assets/x.png'"
+      />
+    </button>
+
+    <!-- Header with title -->
     <div class="modal-header">
-      <h2 class="modal-title">Ver Contrato</h2>
-      <button class="btn-close" (click)="cerrar()" type="button">
-        <img
-          #closeIcon
-          src="/assets/x.png"
-          alt="Cerrar"
-          style="width:100%; height:100%; object-fit: contain; filter: brightness(0) invert(1);"
-          (mouseenter)="closeIcon.style.filter = 'brightness(0) invert(1) drop-shadow(0 0 2px rgba(255,255,255,0.5))'"
-          (mouseleave)="closeIcon.style.filter = 'brightness(0) invert(1)'"
-        />
-      </button>
+      <h2 class="modal-title">Contrato</h2>
     </div>
 
     <!-- Modal content -->
@@ -29,13 +31,6 @@
           </div>
         </ng-template>
       </div>
-    </div>
-
-    <!-- Footer with close button -->
-    <div class="modal-footer">
-      <button class="btn-secondary" (click)="cerrar()" type="button">
-        Cerrar
-      </button>
     </div>
   </div>
 </div>

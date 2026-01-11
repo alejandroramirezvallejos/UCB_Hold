@@ -45,24 +45,19 @@
   scrollbar-color: rgba(0, 0, 0, 0.2) transparent;
 }
 
-/* Scrollbar estilizada aplicada a .scroll-content */
+/* Scrollbar styling - igual al menú lateral admin */
 .scroll-content::-webkit-scrollbar {
   width: 4px;
 }
-
-.scroll-content::-webkit-scrollbar-track {
-  background: transparent;
-  margin-block: 5px;
-}
-
 .scroll-content::-webkit-scrollbar-thumb {
   background-color: rgba(0, 0, 0, 0.2);
   border-radius: 10px;
 }
-
-.scroll-content::-webkit-scrollbar-thumb:hover {
-  background-color: rgba(0, 0, 0, 0.3);
+.scroll-content::-webkit-scrollbar-track {
+  background: transparent;
+  margin: 20px 0;
 }
+
 
 .btn-close {
   position: absolute;
@@ -91,11 +86,11 @@
 
 .form-container h2 {
   text-align: center;
-  color: var(--primary-color);
+  color: #000;
   margin-bottom: 1.5rem;
   font-size: 1.6rem;
   font-weight: 700;
-  padding-right: 1.5rem;
+  padding: 0 2rem 0 2rem;
 }
 
 .form-container form {

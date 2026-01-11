@@ -1,7 +1,7 @@
-gabl.search-and-filter-row {
+.search-and-filter-row {
   display: flex;
   align-items: center;
-  gap: 5rem;
+  gap: 4rem;
   width: 100%;
   padding-bottom: 2rem;
 }
@@ -10,6 +10,7 @@ gabl.search-and-filter-row {
   flex: 1;
   position: relative;
   max-width: 30rem;
+  margin-right: 1.5rem;
 }
 
 .search-icon {
@@ -120,7 +121,8 @@ gabl.search-and-filter-row {
   margin: 5px 0 0 0;
   z-index: 1000;
   border: 1px solid #e2e8f0;
-  overflow: hidden;
+  overflow-y: auto;
+  max-height: 200px;
   backdrop-filter: blur(10px);
   background-color: rgba(255, 255, 255, 0.95);
 }
