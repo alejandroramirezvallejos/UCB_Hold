@@ -57,7 +57,10 @@
     }
   </div>
   <div class="logo-container">
-    <img src="/assets/logo_universidad.png" alt="Logo UCB" class="logo-image" />
+    <img   #logoIcon (click)="botonhome()" src="/assets/logo_universidad.png" alt="Logo UCB"   class="logo-image" 
+    (mouseenter)="logoIcon.style.cursor = 'pointer'"
+    (mouseleave)="logoIcon.style.cursor = 'default'"
+    />
   </div>
   <div class="right-section">
    @if(showCart()) {
