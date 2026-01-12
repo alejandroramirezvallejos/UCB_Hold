@@ -66,7 +66,7 @@ export class RegistrarUsuarioComponent {
     this.registrarcuenta.registrarCuenta(this.nuevoUsuario,this.password, "estudiante").subscribe({
       next: (response) => {
         this.mensajeaviso = "Usuario registrado exitosamente";
-        this.usuarioS.usuario = this.nuevoUsuario;
+        this.usuarioS.iniciarsesion(this.nuevoUsuario);
         this.aviso.set(true);
       },
       error: (error) => {

@@ -16,7 +16,7 @@ protected abstract estado : string ;
 constructor(protected prestamoApi: PrestamosAPIService, protected usuario: UsuarioService) {};
 cargarDatos() {
     if(this.usuario.vacio()==false){
-     this.prestamoApi.obtenerPrestamosPorUsuario(this.usuario.usuario.id! , this.estado).subscribe({
+     this.prestamoApi.obtenerPrestamosPorUsuario(this.usuario.obtenerDatosUsuario().id! , this.estado).subscribe({
       next: (data) => {
         this.agruparPrestamos(data);
       },

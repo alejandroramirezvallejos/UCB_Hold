@@ -55,8 +55,8 @@ export class FormularioComponent implements OnInit {
             dia : new Date().getDate().toString() ,
             mesliteral : new Intl.DateTimeFormat('es-ES', { month: 'long' }).format(new Date()),
             año: new Date().getFullYear().toString(),
-            usuario:  this.usuario.usuario.nombre!,
-            usuario_ci : this.usuario.usuario.carnet!,
+            usuario:  this.usuario.obtenerDatosUsuario().nombre!,
+            usuario_ci : this.usuario.obtenerDatosUsuario().carnet!,
             tablaprimera: this.primeradelobjeto(this.carrito.obtenercarrito()),
             fechaMaxima : String(diffDias),
             precio : this.carrito.preciototal().toString(),
@@ -102,7 +102,7 @@ export class FormularioComponent implements OnInit {
   confirmarprestamo(){
     const contratoblob= this.generarHTMLBinario(); 
       this.cargando = true;
-      this.mandarprestamo.crearPrestamo(this.carrito.obtenercarrito(),this.usuario.usuario.carnet!,contratoblob)
+      this.mandarprestamo.crearPrestamo(this.carrito.obtenercarrito(),this.usuario.obtenerDatosUsuario().carnet!,contratoblob)
       .pipe(finalize(() => this.cargando = false))
       .subscribe({
         next: (response) => {
