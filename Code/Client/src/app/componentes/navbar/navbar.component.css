@@ -64,7 +64,13 @@
 .logo-image {
   width: 58px;
   height: auto;
+   cursor: pointer;
 }
+.logo-image:hover::after {
+  content: "Ir al home";
+}
+
+
 .cart-button {
   position: relative;
 }
