@@ -1,29 +1,61 @@
 import { NgModule } from '@angular/core';
 import { RouterModule, Routes } from '@angular/router';
-import { PantallaMainComponent } from './componentes/cliente_modulo/pantalla-main/pantalla-main.component'; 
-import { ObjetoComponent } from './componentes/cliente_modulo/clic_objeto/objeto.component';
-import { CarritoComponent } from './componentes/cliente_modulo/carrito/carrito.component';
-import { AdministradorComponent } from './componentes/admin_modulo/administrador/administrador.component';
-import { FormularioComponent } from './componentes/cliente_modulo/formulario/formulario.component';
 import { IniciarSesionComponent } from './componentes/usuario/iniciar-sesion/iniciar-sesion.component';
-import { HistorialComponent } from './componentes/usuario/historial/historial.component';
-import { PerfilComponent } from './componentes/usuario/perfil/perfil.component';
-import { RegistrarUsuarioComponent } from './componentes/usuario/registrar-usuario/registrar-usuario.component';
-import { CalendarioComponent } from './componentes/cliente_modulo/carrito/calendario/calendario.component';
-import { BuscadorComponent } from './componentes/admin_modulo/buscador/buscador.component';
+
 const routes: Routes = [
   { path: '', redirectTo: '/Iniciar-Sesion', pathMatch: 'full' },
-  { path: 'admin', component: AdministradorComponent },
-  { path: 'home', component: PantallaMainComponent },
-  { path: 'Objeto/:id', component: ObjetoComponent },
-  { path: 'Carrito', component: CarritoComponent },
-  { path: 'ConfirmarReserva', component: CarritoComponent },
-  { path: 'Formulario', component: FormularioComponent },
   { path: 'Iniciar-Sesion', component: IniciarSesionComponent },
-  { path: 'Historial', component: HistorialComponent },
-  { path: 'Perfil', component: PerfilComponent },
-  { path: 'Registrar-Usuario', component: RegistrarUsuarioComponent },
-   { path: 'pruebas', component: BuscadorComponent },
+  // Lazy loading - solo carga cuando el usuario navega a estas rutas
+  { 
+    path: 'admin', 
+    loadComponent: () => import('./componentes/admin_modulo/administrador/administrador.component')
+      .then(m => m.AdministradorComponent) 
+  },
+  { 
+    path: 'home', 
+    loadComponent: () => import('./componentes/cliente_modulo/pantalla-main/pantalla-main.component')
+      .then(m => m.PantallaMainComponent) 
+  },
+  { 
+    path: 'Objeto/:id', 
+    loadComponent: () => import('./componentes/cliente_modulo/clic_objeto/objeto.component')
+      .then(m => m.ObjetoComponent) 
+  },
+  { 
+    path: 'Carrito', 
+    loadComponent: () => import('./componentes/cliente_modulo/carrito/carrito.component')
+      .then(m => m.CarritoComponent) 
+  },
+  { 
+    path: 'ConfirmarReserva', 
+    loadComponent: () => import('./componentes/cliente_modulo/carrito/carrito.component')
+      .then(m => m.CarritoComponent) 
+  },
+  { 
+    path: 'Formulario', 
+    loadComponent: () => import('./componentes/cliente_modulo/formulario/formulario.component')
+      .then(m => m.FormularioComponent) 
+  },
+  { 
+    path: 'Historial', 
+    loadComponent: () => import('./componentes/usuario/historial/historial.component')
+      .then(m => m.HistorialComponent) 
+  },
+  { 
+    path: 'Perfil', 
+    loadComponent: () => import('./componentes/usuario/perfil/perfil.component')
+      .then(m => m.PerfilComponent) 
+  },
+  { 
+    path: 'Registrar-Usuario', 
+    loadComponent: () => import('./componentes/usuario/registrar-usuario/registrar-usuario.component')
+      .then(m => m.RegistrarUsuarioComponent) 
+  },
+  { 
+    path: 'pruebas', 
+    loadComponent: () => import('./componentes/admin_modulo/buscador/buscador.component')
+      .then(m => m.BuscadorComponent) 
+  },
 ];
 @NgModule({
   imports: [RouterModule.forRoot(routes)],
