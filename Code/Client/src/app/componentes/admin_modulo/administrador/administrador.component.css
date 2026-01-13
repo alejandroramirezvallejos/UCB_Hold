@@ -3,7 +3,7 @@
     flex-direction: column;
     align-items: flex-start;
     justify-content: flex-start;
-    padding-top: 60px; /* Reduced from 80px to move content more up */
+    padding-top: 60px;
     padding-left: 12rem;
     padding-right: 12rem;
     width: 100%;
@@ -15,7 +15,26 @@
 }
 @media (max-width: 1200px) {
     .container {
+        padding-left: 2rem;
+        padding-right: 2rem;
+    }
+}
+
+/* ===== RESPONSIVE ADMIN MÓVIL ===== */
+@media (max-width: 768px) {
+    .container {
+        padding-top: 70px;
         padding-left: 1rem;
         padding-right: 1rem;
+        padding-bottom: 80px; /* Espacio para sidebar inferior */
+    }
+}
+
+@media (max-width: 480px) {
+    .container {
+        padding-top: 65px;
+        padding-left: 0.75rem;
+        padding-right: 0.75rem;
+        padding-bottom: 70px;
     }
 }

@@ -1,42 +1,56 @@
-import { Injectable } from '@angular/core';
+import { Injectable, signal, WritableSignal } from '@angular/core';
 import { Usuario } from '../../models/usuario';
 @Injectable({
   providedIn: 'root'
 })
 export class UsuarioService {
-   usuario: Usuario;
+  private usuarioSignal: WritableSignal<Usuario> = signal(new Usuario());
+
   constructor() {
-    this.usuario = new Usuario();
   }
-  iniciarsesion(usuario : Usuario ) {
-    this.usuario = usuario;
+
+
+  iniciarsesion(usuario: Usuario) {
+    this.usuarioSignal.set(usuario);
   }
-  vacio() : boolean{
-    if(!this.usuario.nombre || this.usuario.nombre.trim() ==="" || this.usuario.nombre==""){
-      return  true;
+  
+
+  vacio(): boolean {
+    const u = this.usuarioSignal();
+    if (!u.nombre || u.nombre.trim() === "" || u.nombre === "") {
+      return true;
     }
     return false;
   }
-  vaciar(){
-    this.usuario = new Usuario();
+
+  vaciar() {
+    this.usuarioSignal.set(new Usuario());
   }
+
+
   obtenerDatosUsuario() {
-    return this.usuario;
+    return this.usuarioSignal();
   }
-  obtenerrol(){
-    if(this.usuario.rol=="administrador"){
-      return "administrador"
-    }
-    else{
-      return "usuario"
+  
+
+  obtenerrol() {
+    const u = this.usuarioSignal();
+    if (u.rol == "administrador") {
+      return "administrador";
+    } else {
+      return "usuario";
     }
   }
-  obtenercarnet(){
-    if(this.usuario.carnet){
-      return this.usuario.carnet;
-    }
-    else{
+
+
+  obtenercarnet() {
+    const u = this.usuarioSignal();
+    if (u.carnet) {
+      return u.carnet;
+    } else {
       return "";
     }
   }
+
+
 }

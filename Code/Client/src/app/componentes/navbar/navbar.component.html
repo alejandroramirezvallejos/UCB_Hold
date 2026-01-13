@@ -12,12 +12,9 @@
       (click)="toggleSidebar()"
     >
       <img
-        #menuIcon
         src="/assets/menu_line.png"
         alt="Menú Admin"
-        class="icon-image"
-        (mouseenter)="menuIcon.src = '/assets/menu_solid.png'"
-        (mouseleave)="menuIcon.src = '/assets/menu_line.png'"
+        class="icon-image menu-icon"
       />
     </button>
     }
@@ -29,12 +26,9 @@
       (click)="goBack()"
     >
       <img
-        #backIcon
         src="/assets/back_line.png"
         alt="Icono de volver"
-        class="icon-image"
-        (mouseenter)="backIcon.src = '/assets/back_solid.png'"
-        (mouseleave)="backIcon.src = '/assets/back_line.png'"
+        class="icon-image back-icon"
       />
     </button>
     }
@@ -46,21 +40,15 @@
       (click)="botonhome()"
     >
       <img
-        #homeIcon
         src="/assets/home_line.png"
         alt="Icono de inicio"
-        class="icon-image"
-        (mouseenter)="homeIcon.src = '/assets/home_solid.png'"
-        (mouseleave)="homeIcon.src = '/assets/home_line.png'"
+        class="icon-image home-icon"
       />
     </button>
     }
   </div>
   <div class="logo-container">
-    <img   #logoIcon (click)="botonhome()" src="/assets/logo_universidad.png" alt="Logo UCB"   class="logo-image" 
-    (mouseenter)="logoIcon.style.cursor = 'pointer'"
-    (mouseleave)="logoIcon.style.cursor = 'default'"
-    />
+    <img (click)="botonhome()" src="/assets/logo_universidad.png" alt="Logo UCB" class="logo-image" title="Ir al home" />
   </div>
   <div class="right-section">
    @if(showCart()) {
@@ -71,12 +59,9 @@
       (click)="mostrarcarrito()"
     >
       <img
-        #cartIcon
         src="/assets/shopping_card_line.png"
         alt="Icono de carrito"
-        class="icon-image"
-        (mouseenter)="cartIcon.src = '/assets/shopping_card_solid.png'"
-        (mouseleave)="cartIcon.src = '/assets/shopping_card_line.png'"
+        class="icon-image cart-icon"
       />
       <span class="cart-count">{{ totalproductos() }}</span>
     </button>
@@ -90,12 +75,9 @@
         (click)="toggleUserMenu()"
       >
         <img
-          #userIcon
           src="/assets/profile_line.png"
           alt="Icono de usuario"
-          class="icon-image"
-          (mouseenter)="userIcon.src = '/assets/profile_solid.png'"
-          (mouseleave)="userIcon.src = '/assets/profile_line.png'"
+          class="icon-image user-icon"
         />
       </button>
     </div>

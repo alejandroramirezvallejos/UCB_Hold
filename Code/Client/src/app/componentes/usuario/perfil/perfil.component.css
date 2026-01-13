@@ -156,3 +156,65 @@ button[type="button"]:hover {
     background: rgba(0, 0, 0, 0.05);
     border-radius: 10px;
 }
+
+/* ===== RESPONSIVE MÓVIL ===== */
+@media (max-width: 768px) {
+  .profile-container {
+    margin: 3rem 1rem 1.5rem;
+    padding: 1.5rem;
+    max-width: none;
+  }
+  .profile-container h2 {
+    font-size: 1.25rem;
+    margin-bottom: 1rem;
+  }
+  .avatar {
+    width: 60px;
+    height: 60px;
+  }
+  input, select {
+    padding: 0.45rem 0.6rem;
+    font-size: 0.9rem;
+  }
+  label {
+    font-size: 0.9rem;
+  }
+  .buttons {
+    flex-direction: column;
+    gap: 0.75rem;
+  }
+  button {
+    width: 100%;
+    padding: 0.55rem 1rem;
+    font-size: 0.9rem;
+  }
+}
+
+@media (max-width: 480px) {
+  .profile-container {
+    margin: 2.5rem 0.75rem 1rem;
+    padding: 1rem;
+  }
+  .profile-container h2 {
+    font-size: 1.1rem;
+  }
+  .avatar {
+    width: 50px;
+    height: 50px;
+  }
+  input, select {
+    padding: 0.4rem 0.5rem;
+    font-size: 0.85rem;
+  }
+  label {
+    font-size: 0.85rem;
+  }
+  .display-data .form-group {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+  .display-data .form-group label {
+    margin-right: 0;
+    margin-bottom: 0.25rem;
+  }
+}

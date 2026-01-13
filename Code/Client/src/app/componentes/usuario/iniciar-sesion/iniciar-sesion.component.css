@@ -148,6 +148,55 @@ label {
 }
 .forgot-password-link a:hover {
   text-decoration: underline;
+}
+
+/* ===== RESPONSIVE MÓVIL ===== */
+@media (max-width: 768px) {
+  .login-container {
+    padding: 6rem 1rem 1rem;
+  }
+  .login-card {
+    padding: 1.5rem;
+    border-radius: 0.75rem;
+  }
+  .title {
+    font-size: 1.5rem;
+    margin-bottom: 1.5rem;
+  }
+  .login-form {
+    gap: 1rem;
+  }
+  .form-input {
+    padding: 0.65rem;
+    font-size: 0.9rem;
+  }
+  .login-button {
+    width: 100%;
+    max-width: 200px;
+  }
+}
+
+@media (max-width: 480px) {
+  .login-container {
+    padding: 5rem 0.75rem 1rem;
+  }
+  .login-card {
+    padding: 1.25rem;
+  }
+  .title {
+    font-size: 1.25rem;
+    margin-bottom: 1rem;
+  }
+  .form-input {
+    padding: 0.6rem;
+    font-size: 0.85rem;
+  }
+  label {
+    font-size: 0.9rem;
+  }
+  .error-message {
+    font-size: 0.75rem;
+  }
   color: #162d6b;
 }
 @keyframes spin {

@@ -1,6 +1,37 @@
 body {
     font-family: 'Open Sans', sans-serif;
+    margin: 0;
+    padding: 0;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
 }
+
+/* ===== OPTIMIZACIONES MÓVIL GLOBALES ===== */
+* {
+    -webkit-tap-highlight-color: transparent;
+    box-sizing: border-box;
+}
+
+html {
+    scroll-behavior: smooth;
+    -webkit-text-size-adjust: 100%;
+}
+
+/* Prevenir zoom en inputs en iOS */
+@media (max-width: 768px) {
+    input, select, textarea {
+        font-size: 16px !important;
+    }
+}
+
+/* Mejorar touch targets en móvil */
+@media (max-width: 768px) {
+    button, a, .icon-button {
+        min-height: 44px;
+        min-width: 44px;
+    }
+}
+
 ::-webkit-scrollbar {
     width: 6px;
     height: 6px;
@@ -12,4 +43,12 @@ body {
 ::-webkit-scrollbar-track {
     background: rgba(0, 0, 0, 0.05);
     border-radius: 10px;
+}
+
+/* Ocultar scrollbar en móvil para mejor UX */
+@media (max-width: 768px) {
+    ::-webkit-scrollbar {
+        width: 3px;
+        height: 3px;
+    }
 }
