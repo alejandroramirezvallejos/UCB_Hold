@@ -170,10 +170,10 @@
 }
 .botones {
   display: flex;
-  justify-content: flex-end;
+  justify-content: space-between;
   align-items: center;
   margin-top: 1rem;
-  gap: 1rem;  /* Espacio mínimo entre botones */
+  gap: 0.5rem;
 }
 .ver-detalles {
   display: inline-flex;
@@ -294,8 +294,8 @@
     margin-top: 0.75rem;
   }
   .ver-detalles {
-    flex: 1;
-    padding: 0.5rem 1rem;
+    width: 100%;
+    padding: 0.6rem 1rem;
     font-size: 0.8rem;
     min-width: auto;
   }
@@ -327,7 +327,7 @@
     font-size: 0.75rem;
   }
   .ver-detalles {
-    padding: 0.4rem 0.75rem;
+    padding: 0.5rem 0.75rem;
     font-size: 0.75rem;
   }
 }
