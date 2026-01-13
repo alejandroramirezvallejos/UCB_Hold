@@ -34,9 +34,19 @@
   font-size: 0.95rem;
   transition: background 0.3s;
 }
-.categories-btn:hover {
+
+/* Feedback táctil */
+.categories-btn:active {
   background: #000;
 }
+
+/* Hover solo con mouse */
+@media (hover: hover) and (pointer: fine) {
+  .categories-btn:hover {
+    background: #000;
+  }
+}
+
 .categories-panel {
   position: absolute;
   top: 100%;
@@ -82,10 +92,21 @@
 .categories-list .no-category-item {
   background: #f5f5f5;
 }
-.categories-list .no-category-item:hover,
-.categories-list .category-item:hover {
-  background: rgba(143, 145, 149, 0.2);
+
+/* Efecto active para feedback táctil */
+.categories-list .no-category-item:active,
+.categories-list .category-item:active {
+  background: rgba(143, 145, 149, 0.3);
 }
+
+/* Hover solo en dispositivos con mouse */
+@media (hover: hover) and (pointer: fine) {
+  .categories-list .no-category-item:hover,
+  .categories-list .category-item:hover {
+    background: rgba(143, 145, 149, 0.2);
+  }
+}
+
 .no-category-item {
   background: #f5f5f5;
 }
@@ -133,9 +154,19 @@
   transition: transform 0.2s;
   opacity: 0.6;
 }
-.icon:hover {
+
+/* Feedback táctil para móvil */
+.icon:active {
   transform: scale(1.1);
   opacity: 1;
+}
+
+/* Hover solo en dispositivos con mouse */
+@media (hover: hover) and (pointer: fine) {
+  .icon:hover {
+    transform: scale(1.1);
+    opacity: 1;
+  }
 }
 .icon.search-icon {
   margin-left: 4px;
@@ -152,4 +183,53 @@
 .categories-list .no-category-item.selected {
   background-color: #ffcf00;
   color: #5f6368;
+}
+
+/* ===== RESPONSIVE MÓVIL ===== */
+@media (max-width: 768px) {
+  .container-search {
+    width: 90%;
+    max-width: none;
+    margin: 20px auto 20px;
+  }
+  .search-input textarea {
+    font-size: 0.9rem;
+  }
+  .categories-list {
+    gap: 8px;
+    padding: 16px 12px 8px;
+  }
+  .categories-list .no-category-item,
+  .categories-list .category-item {
+    font-size: 0.85rem;
+    padding: 5px 12px;
+  }
+  .icon {
+    width: 18px;
+    height: 18px;
+  }
+}
+
+@media (max-width: 480px) {
+  .container-search {
+    width: 95%;
+    margin: 15px auto 15px;
+  }
+  .search-input {
+    padding: 4px 12px;
+  }
+  .search-input textarea {
+    font-size: 0.85rem;
+    padding: 6px;
+  }
+  .categories-list .no-category-item,
+  .categories-list .category-item {
+    font-size: 0.8rem;
+    padding: 4px 10px;
+  }
+  .icon {
+    width: 16px;
+    height: 16px;
+    margin: 0 4px;
+  }
 }
