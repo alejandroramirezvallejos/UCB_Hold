@@ -264,76 +264,125 @@
 }
 @media (max-width: 768px) {
   .prestamos-container {
-    padding: 0.75rem;
-    margin-top: 1rem;
+    padding: 0;
+    margin-top: 0.5rem;
   }
-  .title {
-    font-size: 1.5rem;
-  }
-  .subtitle {
-    font-size: 0.9rem;
+  .prestamos-list {
+    gap: 0.75rem;
   }
   .prestamo-item {
-    padding: 0.75rem;
+    padding: 1rem;
+    margin: 0;
+    border-radius: 16px;
+    border-left-width: 4px;
   }
   .item-header {
     flex-direction: column;
     gap: 0.5rem;
-    align-items: stretch;
+    align-items: flex-start;
+    padding-bottom: 0.5rem;
+    margin-bottom: 0.75rem;
+  }
+  .usuario-info {
+    min-width: auto;
+    width: 100%;
+  }
+  .usuario-nombre {
+    font-size: 1.1rem;
+    max-width: 100%;
+  }
+  .cantidad-equipos {
+    font-size: 0.75rem;
+    margin-top: 0.2rem;
+  }
+  .usuario-carnet {
+    font-size: 0.8rem;
+    padding: 0.2rem 0.6rem;
+    margin-top: 0.3rem;
   }
   .equipo-info {
     text-align: left;
+    width: 100%;
+    padding-top: 0.25rem;
+    border-top: 1px dashed var(--color-border);
+  }
+  .codigo-imt {
+    font-size: 0.75rem;
+    max-width: 100%;
   }
   .fechas-info {
     grid-template-columns: 1fr;
     gap: 0.5rem;
+    margin-bottom: 0.75rem;
   }
   .fecha-item {
-    flex-direction: column;
-    gap: 0.25rem;
-    text-align: left;
-  }
-    .botones {
-    flex-direction: column;  /* En móviles, apila los botones verticalmente */
+    flex-direction: row;
+    justify-content: space-between;
+    padding: 0.5rem 0.75rem;
     gap: 0.5rem;
-    align-items: stretch;
+  }
+  .fecha-label {
+    font-size: 0.8rem;
+    white-space: nowrap;
+  }
+  .fecha-valor {
+    font-size: 0.8rem;
+    padding: 0.15rem 0.4rem;
+  }
+  .botones {
+    flex-direction: row;
+    gap: 0.5rem;
+    margin-top: 0.75rem;
+  }
+  .botones-izquierda {
+    display: flex;
+    flex: 0 0 auto;
+  }
+  .cancelar {
+    padding: 0.6rem 1rem;
+    font-size: 0.75rem;
+    min-width: auto;
+    margin: 0;
   }
   .ver-detalles {
-    padding: 0.25rem 0.5rem;
-    font-size: 0.65rem;
-    min-width: 50px;
-    gap: 0.25rem;
-  }
-  .ver-detalles i {
-    font-size: 0.65rem;
+    flex: 1;
+    padding: 0.6rem 1rem;
+    font-size: 0.8rem;
+    min-width: auto;
   }
 }
+
 @media (max-width: 480px) {
   .prestamo-item {
-    padding: 0.5rem;
+    padding: 0.875rem;
   }
   .usuario-nombre {
     font-size: 1rem;
   }
+  .cantidad-equipos {
+    font-size: 0.7rem;
+  }
+  .usuario-carnet {
+    font-size: 0.75rem;
+  }
+  .codigo-imt {
+    font-size: 0.7rem;
+  }
   .fecha-item {
     padding: 0.4rem 0.6rem;
   }
+  .fecha-label {
+    font-size: 0.75rem;
+  }
+  .fecha-valor {
+    font-size: 0.75rem;
+  }
   .cancelar {
-    padding: 0.25rem 0.5rem;
-    font-size: 0.65rem;
-    min-width: 50px;
-    gap: 0.25rem;
+    padding: 0.5rem 0.75rem;
+    font-size: 0.7rem;
   }
-  .cancelar i {
-    font-size: 0.65rem;
-  }
-   .ver-detalles {
-    padding: 0.25rem 0.5rem;
-    font-size: 0.65rem;
-    min-width: 50px;
-    gap: 0.25rem;
-  }
-  .ver-detalles i {
-    font-size: 0.65rem;
+  .ver-detalles {
+    padding: 0.5rem 0.75rem;
+    font-size: 0.75rem;
   }
 }

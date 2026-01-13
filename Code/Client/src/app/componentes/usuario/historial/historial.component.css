@@ -97,11 +97,37 @@
     }
 }
 @media (max-width: 768px) {
+    .container {
+        padding-top: 2rem;
+        padding-left: 1rem;
+        padding-right: 1rem;
+        align-items: center;
+    }
     .custom-dropdown {
-        width: 90%;
-        max-width: 300px;
+        width: 100%;
+        max-width: none;
     }
     .dropdown-header {
-        justify-content: center;
+        justify-content: flex-start;
+    }
+    .current-value {
+        font-size: 1.25rem;
+    }
+    .items-wrapper {
+        max-width: 100%;
+    }
+}
+@media (max-width: 480px) {
+    .container {
+        padding-top: 1.5rem;
+        padding-left: 0.5rem;
+        padding-right: 0.5rem;
+    }
+    .current-value {
+        font-size: 1.1rem;
+    }
+    .dropdown-arrow {
+        width: 20px;
+        height: 20px;
     }
 }
