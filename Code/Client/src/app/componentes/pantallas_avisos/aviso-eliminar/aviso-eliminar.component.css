@@ -108,3 +108,24 @@
     min-width: auto;
   }
 }
+@media (max-width: 360px) {
+  .modal-content {
+    min-width: 92vw;
+    padding: 1.2rem;
+  }
+  .modal-content p {
+    font-size: 0.9rem;
+  }
+  .modal-content .btn {
+    width: 100%;
+    margin: 0.25rem 0;
+    padding: 0.6rem 1rem;
+    font-size: 0.8rem;
+  }
+  .cerrar {
+    top: 6px;
+    right: 8px;
+    width: 20px;
+    height: 20px;
+  }
+}

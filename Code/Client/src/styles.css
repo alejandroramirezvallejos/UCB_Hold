@@ -32,6 +32,13 @@ html {
     }
 }
 
+@media (max-width: 360px) {
+    button, a, .icon-button {
+        min-height: 40px;
+        min-width: 40px;
+    }
+}
+
 ::-webkit-scrollbar {
     width: 6px;
     height: 6px;

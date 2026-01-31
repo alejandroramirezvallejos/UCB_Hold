@@ -36,3 +36,7 @@
 	.loading-overlay .spinner { width: 32px; height: 32px; border-width: 3px; }
 	.loading-overlay p { font-size: 0.875rem; padding: 8px 20px; }
 }
+@media (max-width: 360px) {
+	.loading-overlay .spinner { width: 28px; height: 28px; border-width: 3px; margin-bottom: 12px; }
+	.loading-overlay p { font-size: 0.8rem; padding: 6px 16px; }
+}

@@ -7,7 +7,7 @@ import { map } from 'rxjs';
   providedIn: 'root'
 })
 export class UsuarioServiceAPI {
- private apiUrl = environment.apiUrl + '/api/Usuario'; 
+ private apiUrl = environment.apiUrl + '/api/Usuario';
   constructor(private http : HttpClient) { }
   registrarCuenta(usuario : Usuario , contrasena : string , rol : string  | null){
     if(!rol) {
@@ -26,12 +26,13 @@ export class UsuarioServiceAPI {
     TelefonoReferencia: usuario.telefono_referencia,
     NombreReferencia: usuario.nombre_referencia,
     EmailReferencia: usuario.email_referencia
-    } 
+    }
     return this.http.post(this.apiUrl, envio)
   }
   iniciarsesion(correo: string, contraseña: string) {
-    const api =  `${this.apiUrl + '/iniciarSesion'}?email=${correo}&contrasena=${contraseña}`;
-    return this.http.get<any>(api).pipe(
+    const api = `${this.apiUrl}/iniciarSesion`;
+    const body = { email: correo, contrasena: contraseña };
+    return this.http.post<any>(api, body).pipe(
       map(item=>({
         id : item.Carnet,
         carnet: item.Carnet,

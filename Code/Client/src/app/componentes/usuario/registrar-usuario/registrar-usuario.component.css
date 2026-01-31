@@ -280,3 +280,37 @@
     font-size: 0.9rem;
   }
 }
+@media (max-width: 360px) {
+  .register-container {
+    padding: 2rem 0.5rem 0.75rem;
+  }
+  .register-card {
+    padding: 1rem 0.85rem;
+    border-radius: 0.75rem;
+  }
+  .title {
+    font-size: 1.1rem;
+  }
+  .register-form {
+    gap: 1rem;
+  }
+  .form-section h3 {
+    font-size: 0.85rem;
+  }
+  .form-input {
+    padding: 0.55rem;
+    font-size: 0.8rem;
+  }
+  .register-button {
+    width: 100%;
+    max-width: 180px;
+    font-size: 0.85rem;
+  }
+  .dropdown-header .current-value {
+    font-size: 0.85rem;
+  }
+  .dropdown-list li {
+    padding: 0.55rem 0.75rem;
+    font-size: 0.85rem;
+  }
+}

@@ -67,9 +67,10 @@ namespace IMT_Reservas.Tests.ControllerTests
         {
             string email = "fernando.terrazas@ucb.edu.bo";
             string contrasena = "123456";
+            IniciarSesionUsuarioConsulta consulta = new IniciarSesionUsuarioConsulta(email, contrasena);
             UsuarioDto usuarioEsperado = new UsuarioDto { Email = email, Nombre = "FERRR" };
             _usuarioServiceMock.Setup(s => s.IniciarSesionUsuario(It.Is<IniciarSesionUsuarioConsulta>(c => c.Email == email && c.Contrasena == contrasena))).Returns(usuarioEsperado);
-            IActionResult resultadoAccion = _usuariosController.IniciarSesion(email, contrasena);
+            IActionResult resultadoAccion = _usuariosController.IniciarSesion(consulta);
             Assert.That(resultadoAccion, Is.InstanceOf<OkObjectResult>());
             OkObjectResult okObjectResult = (OkObjectResult)resultadoAccion;
             Assert.That(((UsuarioDto)okObjectResult.Value).Email, Is.EqualTo(usuarioEsperado.Email));
@@ -80,8 +81,9 @@ namespace IMT_Reservas.Tests.ControllerTests
         {
             string email = "fernando.terrazas@ucb.edu.bo";
             string contrasena = "wrongpass";
+            IniciarSesionUsuarioConsulta consulta = new IniciarSesionUsuarioConsulta(email, contrasena);
             _usuarioServiceMock.Setup(s => s.IniciarSesionUsuario(It.IsAny<IniciarSesionUsuarioConsulta>())).Returns((UsuarioDto)null);
-            IActionResult resultadoAccion = _usuariosController.IniciarSesion(email, contrasena);
+            IActionResult resultadoAccion = _usuariosController.IniciarSesion(consulta);
             Assert.That(resultadoAccion, Is.InstanceOf<OkObjectResult>());
             OkObjectResult okObjectResult = (OkObjectResult)resultadoAccion;
             Assert.That(okObjectResult.Value, Is.Null);

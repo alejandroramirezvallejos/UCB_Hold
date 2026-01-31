@@ -218,3 +218,28 @@ button[type="button"]:hover {
     margin-bottom: 0.25rem;
   }
 }
+
+@media (max-width: 360px) {
+  .profile-container {
+    margin: 2rem 0.5rem 0.75rem;
+    padding: 0.85rem;
+  }
+  .profile-container h2 {
+    font-size: 1rem;
+  }
+  .avatar {
+    width: 44px;
+    height: 44px;
+  }
+  input, select {
+    padding: 0.35rem 0.45rem;
+    font-size: 0.8rem;
+  }
+  label {
+    font-size: 0.8rem;
+  }
+  button {
+    padding: 0.5rem 0.9rem;
+    font-size: 0.85rem;
+  }
+}

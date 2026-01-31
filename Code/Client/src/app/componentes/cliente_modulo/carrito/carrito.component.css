@@ -251,7 +251,7 @@
     padding-right: 0;
     gap: 0.75rem;
     grid-template-columns: 50px 1fr 52px;
-    grid-template-rows: auto auto; /* definir 2 filas explícitas */
+    grid-template-rows: auto auto;
     align-items: stretch;
   }
   .product-img {
@@ -306,55 +306,51 @@
     font-size: 2rem;
   }
 }
-.carrito-vacio {
-  background: #fff;
-  border: 1px solid rgba(0, 0, 0, 0.1);
-  box-shadow: 0 3px 6px rgba(0, 0, 0, 0.1);
-  border-radius: 12px;
-  padding: 2rem;
-  text-align: center;
-  font-size: 1.1rem;
-  color: #6b7786;
-  font-weight: 500;
-  max-width: 500px;
-  width: 100%;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  gap: 1rem;
-}
-.carrito-vacio i {
-  font-size: 3rem;
-  color: #000000;
-  opacity: 0.7;
-}
-.carrito-vacio p {
-  margin: 0;
-  font-family: "Manrope", sans-serif;
-}
-.navigation-buttons {
-  display: flex;
-  justify-content: center;
-  width: 100%;
-  margin-top: 1rem;
-}
-.back-button {
-  background: none;
-  border: none;
-  cursor: pointer;
-  font-size: 1rem;
-  color: #6b7786;
-  display: flex;
-  align-items: center;
-  gap: 0.5rem;
-  align-self: flex-start;
-  margin-bottom: 1rem;
-  font-family: inherit;
-  font-weight: 600;
-  transition: color 0.2s ease;
-}
-.back-button:hover {
-  color: #000;
+@media (max-width: 360px) {
+  .carrito-container {
+    margin-top: 3.5rem;
+    gap: 0.75rem;
+    padding: 0 0.75rem 70px;
+  }
+  .capsule {
+    padding: 0.6rem;
+    padding-right: 0;
+    gap: 0.6rem;
+    grid-template-columns: 46px 1fr 48px;
+  }
+  .product-img {
+    width: 46px;
+    height: 46px;
+  }
+  .product-title {
+    font-size: 0.9rem;
+  }
+  .product-propietary {
+    font-size: 0.75rem;
+  }
+  .label-cantidad {
+    font-size: 0.7rem;
+  }
+  .cantidad-group select {
+    width: 52px;
+    font-size: 0.85rem;
+  }
+  .boton-eliminar {
+    width: 48px;
+    font-size: 1rem;
+    margin: -0.6rem 0;
+  }
+  .boton-carrito {
+    width: 100%;
+    max-width: 260px;
+    font-size: 0.85rem;
+  }
+  .date-field label {
+    font-size: 0.8rem;
+  }
+  .date-field input {
+    font-size: 0.8rem;
+  }
 }
 ::-webkit-scrollbar {
     width: 6px;

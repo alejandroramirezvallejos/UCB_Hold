@@ -14,14 +14,14 @@
   width: 100vw;
   height: 100vh;
   z-index: 1000;
-  background-color: rgba(0, 0, 0, 0.5); /* Fondo semi-transparente negro */
+  background-color: rgba(0, 0, 0, 0.5);
   display: flex;
   justify-content: center;
   align-items: center;
   padding: 2rem;
 }
 .modal-content {
-  background-color: #ffffff; /* Ventana blanca sólida */
+  background-color: #ffffff;
   border-radius: var(--radius);
   box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25);
   width: 90vw;
@@ -98,7 +98,7 @@
   width: 100%;
   border-collapse: collapse;
 }
-.data-table th, 
+.data-table th,
 .data-table td {
   padding: 1rem;
   text-align: left;
@@ -125,4 +125,40 @@
 }
 .precio-column {
   text-align: right;
+}
+@media (max-width: 360px) {
+  .mantenimientos-container {
+    padding: 0.75rem;
+  }
+  .modal-content {
+    width: 95vw;
+    height: 75vh;
+    margin: 0.5rem;
+  }
+  .modal-header {
+    padding: 1rem;
+  }
+  .modal-title {
+    font-size: 1.1rem;
+  }
+  .btn-close {
+    width: 32px;
+    height: 32px;
+    font-size: 1.2rem;
+  }
+  .table-responsive {
+    margin: 0 1rem;
+  }
+  .data-table th,
+  .data-table td {
+    padding: 0.6rem;
+    font-size: 0.8rem;
+  }
+  .modal-footer {
+    padding: 0.75rem 1rem 1rem 1rem;
+  }
+  .btn {
+    padding: 0.6rem 1rem;
+    font-size: 0.8rem;
+  }
 }

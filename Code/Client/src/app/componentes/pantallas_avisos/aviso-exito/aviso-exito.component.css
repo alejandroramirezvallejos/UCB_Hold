@@ -170,3 +170,33 @@ p {
     font-size: 18px;
   }
 }
+@media (max-width: 360px) {
+  .container {
+    width: 92vw;
+    padding: 16px;
+    max-height: 65vh;
+  }
+  h1 {
+    font-size: 1.15rem;
+    margin-top: 12px;
+    margin-bottom: 8px;
+  }
+  .mensaje-container {
+    max-height: 130px;
+    margin: 8px 0 12px 0;
+  }
+  p {
+    font-size: 13px;
+  }
+  .aceptar {
+    width: 100%;
+    padding: 0.55rem 0.9rem;
+    font-size: 0.8rem;
+  }
+  .cerrar {
+    top: 6px;
+    right: 6px;
+    width: 22px;
+    height: 22px;
+  }
+}

@@ -8,7 +8,7 @@ import { Prestamos } from '../../../models/admin/Prestamos';
   providedIn: 'root'
 })
 export class PrestamosAPIService {
-  private url = environment.apiUrl + '/api/Prestamo'; 
+  private url = environment.apiUrl + '/api/Prestamo';
   constructor(private http : HttpClient) { }
   private mapearPrestamo(item: any): Prestamos {
     return {
@@ -75,7 +75,7 @@ export class PrestamosAPIService {
   obtenerPrestamosPorUsuario(carnet: string , estadoPrestamo: string) {
     const APIurl = `${this.url}/historial?carnetUsuario=${carnet}&estadoPrestamo=${estadoPrestamo}`;
     return this.http.get<any[]>(APIurl).pipe(
-       map(data =>{ 
+       map(data =>{
          if (!data || !Array.isArray(data)) {
          return [];
        }
@@ -87,9 +87,18 @@ export class PrestamosAPIService {
     const APIurl = `${this.url}/contrato/${id}`;
     return this.http.get<string[]>(APIurl).pipe(
       map(response => {
-        const base64String = response[0];
-        const htmlContent = decodeURIComponent(escape(atob(base64String)));
-        return htmlContent;
+        if (!response || !Array.isArray(response) || response.length === 0) return '';
+        const base64String = response[0] || '';
+        if (!base64String) return '';
+        try {
+          const raw = atob(base64String);
+          const htmlContent = decodeURIComponent(escape(raw));
+          const cleaned = htmlContent.replace(/undefined(,\s*undefined)?/g, '').replace(/\[\[\s*\w+\s*\]\]/g, '');
+          return cleaned;
+        } catch (e) {
+          console.error('Error decoding contrato base64', e);
+          return '';
+        }
       })
     )
   }
