@@ -60,3 +60,38 @@ node_modules/
 
 # Visual Studio
 .vs/
+
+# Sensitive configuration files - DO NOT COMMIT
+appsettings.Development.json
+appsettings.Production.json
+**/secrets.json
+**/*.local.json
+
+# 🔒 SECURITY - Never commit these
+*.pem
+*.key
+*.pfx
+*.p12
+*.crt
+*.cer
+.env
+.env.*
+!.env.example
+**/appsettings.*.json
+!**/appsettings.json
+
+# User Secrets
+secrets/
+
+# SSL/TLS certificates
+**/https/*.pem
+**/https/*.key
+
+# Database files
+*.db
+*.sqlite
+*.sqlite3
+
+# Logs that might contain sensitive info
+logs/
+*.log

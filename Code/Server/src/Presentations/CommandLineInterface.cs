@@ -4,6 +4,7 @@ using IMT_Reservas.Server.Application.Services.Interfaces;
 using IMT_Reservas.Server.Infrastructure.MongoDb;
 using IMT_Reservas.Server.Infrastructure.Repositories.Implementations;
 using IMT_Reservas.Server.Infrastructure.Repositories.Interfaces;
+using IMT_Reservas.Server.Presentations.Middleware;
 using Microsoft.AspNetCore.Mvc;
 using System.Collections.Generic;
 using System.Diagnostics;
@@ -230,9 +231,15 @@ public static class CommandLineInterface
         {
             options.AddPolicy("AllowAll", policy =>
             {
-                policy.AllowAnyOrigin()
+                policy.WithOrigins(
+                        "https://localhost:4200",
+                        "http://localhost:4200",
+                        "https://localhost:7216",
+                        "http://localhost:5190"
+                      )
                       .AllowAnyMethod()
-                      .AllowAnyHeader();
+                      .AllowAnyHeader()
+                      .AllowCredentials();
             });
         });
 
@@ -279,7 +286,8 @@ public static class CommandLineInterface
 
         builder.Services.AddSingleton<MongoDB.Driver.IMongoClient>(sp =>
         {
-            var connectionString = builder.Configuration.GetConnectionString("MongoDb") ?? "mongodb://localhost:27018";
+            var connectionString = builder.Configuration.GetConnectionString("MongoDb") 
+                ?? throw new InvalidOperationException("La cadena de conexión 'MongoDb' no está configurada. Configure User Secrets con: dotnet user-secrets set \"ConnectionStrings:MongoDb\" \"mongodb://localhost:27018\"");
             return new MongoDB.Driver.MongoClient(connectionString);
         });
         builder.Services.AddScoped<MongoDB.Driver.GridFS.IGridFSBucket>(sp =>
@@ -290,6 +298,18 @@ public static class CommandLineInterface
         });
 
         var app = builder.Build();
+        
+        app.UseGlobalExceptionMiddleware();
+        
+        app.Use(async (context, next) =>
+        {
+            context.Response.Headers.Append("X-Content-Type-Options", "nosniff");
+            context.Response.Headers.Append("X-Frame-Options", "DENY");
+            context.Response.Headers.Append("X-XSS-Protection", "1; mode=block");
+            context.Response.Headers.Append("Referrer-Policy", "strict-origin-when-cross-origin");
+            context.Response.Headers.Append("Content-Security-Policy", "default-src 'self'; script-src 'self' 'unsafe-inline'; style-src 'self' 'unsafe-inline'; img-src 'self' data: blob:;");
+            await next();
+        });
               
         app.UseDefaultFiles();
         app.UseHttpsRedirection();
@@ -297,14 +317,14 @@ public static class CommandLineInterface
         app.UseCors("AllowAll");
         app.UseAuthorization();
 
-        // ✅ SWAGGER DEBE IR ANTES QUE EL FALLBACK A ANGULAR
+        // ✅ SWAGGER SOLO EN DESARROLLO
         if (app.Environment.IsDevelopment())
         {
             app.UseSwagger();
             app.UseSwaggerUI(c =>
             {
                 c.SwaggerEndpoint("/swagger/v1/swagger.json", "IMT Reservas API v1");
-                c.RoutePrefix = "swagger"; // Accesible en /swagger
+                c.RoutePrefix = "swagger";
             });
         }
 

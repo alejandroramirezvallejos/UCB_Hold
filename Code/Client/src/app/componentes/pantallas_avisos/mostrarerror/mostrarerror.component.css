@@ -115,3 +115,30 @@ p {
   transform: scale(1.05);
   box-shadow: 0 4px 12px rgba(255, 216, 20, 0.5);
 }
+@media (max-width: 360px) {
+  .container,
+  .container-big {
+    padding: 18px;
+    width: calc(100vw - 24px);
+  }
+  h1 {
+    font-size: 1.1rem;
+    margin-top: 12px;
+  }
+  p,
+  .pbig {
+    font-size: 13px;
+    margin: 10px 0;
+  }
+  .volver-btn {
+    width: 100%;
+    padding: 0.6rem 1rem;
+    font-size: 0.8rem;
+  }
+  .cerrar {
+    top: 8px;
+    right: 8px;
+    width: 20px;
+    height: 20px;
+  }
+}

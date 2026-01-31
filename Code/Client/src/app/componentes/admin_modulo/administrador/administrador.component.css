@@ -38,3 +38,12 @@
         padding-bottom: 70px;
     }
 }
+
+@media (max-width: 360px) {
+    .container {
+        padding-top: 58px;
+        padding-left: 0.5rem;
+        padding-right: 0.5rem;
+        padding-bottom: 60px;
+    }
+}

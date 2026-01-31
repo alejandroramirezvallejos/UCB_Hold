@@ -17,16 +17,21 @@ export class VercontratoComponent extends BaseTablaComponent {
     super();
    };
   ngOnInit() {
-    this.cargarcontrato(); 
+    this.cargarcontrato();
   }
   cargarcontrato(){
     this.prestamo.obtenercontratoPrestamo(this.idprestamo).subscribe({
       next: (data) => {
+        if (!data || typeof data !== 'string' || data.trim() === '') {
+          this.mensajeerror = 'El contrato no está disponible.';
+          this.error.set(true);
+          return;
+        }
         this.contratoContent = data;
       },
       error: (error) => {
         this.mensajeerror="No se pudo cargar el contrato del prestamo.";
-        console.error(error.error.error + ': ' + error.error.mensaje);
+        console.error(error);
         this.error.set(true);
       }
     });

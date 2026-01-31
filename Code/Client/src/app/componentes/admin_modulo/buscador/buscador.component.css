@@ -277,3 +277,43 @@
     font-size: 13px;
   }
 }
+
+@media (max-width: 360px) {
+  .search-and-filter-row {
+    gap: 0.4rem;
+  }
+  .search-input {
+    padding: 0.55rem 2rem;
+    font-size: 0.75rem;
+  }
+  .search-icon {
+    left: 0.75rem;
+  }
+  .clear-search {
+    right: 0.75rem;
+  }
+  .filter-container {
+    gap: 0.4rem;
+  }
+  .custom-dropdown {
+    min-width: 90px;
+  }
+  .dropdown-header {
+    height: 36px;
+    padding: 0.3rem 0.5rem;
+  }
+  .dropdown-header .current-value {
+    font-size: 0.75rem;
+  }
+  .dropdown-list li {
+    padding: 0.5rem 0.7rem;
+    font-size: 0.75rem;
+  }
+  .estados-panel-flotante {
+    min-width: 240px;
+  }
+  .estados-item-flotante {
+    padding: 8px 10px;
+    font-size: 12px;
+  }
+}

@@ -233,3 +233,31 @@
     margin: 0 4px;
   }
 }
+
+@media (max-width: 360px) {
+  .container-search {
+    width: 100%;
+    margin: 12px auto 12px;
+  }
+  .search-input {
+    padding: 4px 10px;
+  }
+  .search-input textarea {
+    font-size: 0.8rem;
+    padding: 5px;
+  }
+  .categories-list {
+    gap: 6px;
+    padding: 12px 10px 8px;
+  }
+  .categories-list .no-category-item,
+  .categories-list .category-item {
+    font-size: 0.75rem;
+    padding: 4px 8px;
+  }
+  .icon {
+    width: 15px;
+    height: 15px;
+    margin: 0 3px;
+  }
+}

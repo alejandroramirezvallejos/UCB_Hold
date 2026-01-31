@@ -164,6 +164,32 @@
 		height: 1.5rem;
 	}
 }
+@media (max-width: 360px) {
+	.form-container.adaptativo {
+		max-width: calc(100vw - 0.4rem);
+		margin: 0.2rem;
+		padding: 0.45rem;
+		padding-top: 2rem;
+	}
+	.tabla-wrapper {
+		max-height: 52vh;
+	}
+	.vista-table {
+		font-size: 0.75rem;
+	}
+	.vista-table thead th {
+		padding: 0.35rem 0.25rem;
+		font-size: 0.65rem;
+	}
+	.vista-table tbody td {
+		padding: 0.35rem 0.25rem;
+		font-size: 0.7rem;
+	}
+	.btn-close {
+		width: 1.35rem;
+		height: 1.35rem;
+	}
+}
 .btn-close {
 	position: absolute;
 	top: 1rem;

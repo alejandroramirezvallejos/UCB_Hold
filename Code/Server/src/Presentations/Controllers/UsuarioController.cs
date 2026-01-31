@@ -46,10 +46,10 @@ public class UsuarioController : ControllerBase
         catch (Exception ex) { return StatusCode(500, new { error = ex.GetType().Name, mensaje = ex.Message }); }
     }
 
-    [HttpGet("iniciarSesion")]
-    public IActionResult IniciarSesion([FromQuery] string email, [FromQuery] string contrasena)
+    [HttpPost("iniciarSesion")]
+    public IActionResult IniciarSesion([FromBody] IniciarSesionUsuarioConsulta consulta)
     {
-        try { var consulta = new IniciarSesionUsuarioConsulta(email, contrasena); var usuario = servicio.IniciarSesionUsuario(consulta); return Ok(usuario); }
-        catch (Exception ex) { return StatusCode(500, new { error = ex.GetType().Name, mensaje = ex.Message }); }
+        try { var usuario = servicio.IniciarSesionUsuario(consulta); return Ok(usuario); }
+        catch (Exception ex) { return StatusCode(500, new { error = "Error interno", mensaje = "Error al procesar la solicitud" }); }
     }
 }

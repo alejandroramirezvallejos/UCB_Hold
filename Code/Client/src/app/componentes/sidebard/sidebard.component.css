@@ -167,3 +167,18 @@
     font-size: 0.85rem;
   }
 }
+
+@media (max-width: 360px) {
+  .sidebar-menu {
+    width: 140px;
+    left: 4px;
+    top: 48px;
+  }
+  .item {
+    padding: 7px 10px;
+    font-size: 0.8rem;
+  }
+  .sidebaractivo .item-text {
+    max-width: 110px;
+  }
+}

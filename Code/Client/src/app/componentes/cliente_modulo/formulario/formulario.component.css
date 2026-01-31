@@ -233,3 +233,34 @@
     font-size: 11px;
   }
 }
+
+@media (max-width: 360px) {
+  .contrato-container {
+    margin: 0.4rem;
+    padding: 0.85rem;
+  }
+  .botones-container {
+    gap: 0.75rem;
+    padding-top: 1rem;
+  }
+  .boton {
+    padding: 0.55rem 0.85rem;
+    font-size: 0.8rem;
+  }
+  ::ng-deep .contrato-container {
+    padding: 12px;
+  }
+  ::ng-deep .contrato-container h1 {
+    font-size: 15px;
+  }
+  ::ng-deep .contrato-container p {
+    font-size: 12px;
+  }
+  ::ng-deep .contrato-container td {
+    padding: 2px 3px;
+    font-size: 10px;
+  }
+  ::ng-deep .contrato-container .signature img {
+    max-width: 130px;
+  }
+}
