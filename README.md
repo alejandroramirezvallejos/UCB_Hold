@@ -534,13 +534,74 @@ private bool NotificacionYaExiste(string carnet, string titulo, string contenido
 }
 ```
 
-## 9. ⬇️ Instalar
+## 9.  Guía de Configuración Exhaustiva para macOS (Entorno de Desarrollo)
 
-npm install signature_pad
+Esta sección documenta el proceso completo para levantar el entorno local en arquitecturas macOS (Intel o Apple Silicon), cubriendo la configuración de infraestructura, variables de entorno y la resolución de problemas de permisos y rutas experimentados durante el desarrollo.
 
-npm install jspdf
+### 9.1. Prerrequisitos de Software
+Instala las siguientes herramientas antes de iniciar:
+* **Docker Desktop:** [Descargar](https://www.docker.com/products/docker-desktop/)
+* **.NET 8 SDK:** [Descargar](https://dotnet.microsoft.com/download)
+* **MongoDB Compass:** [Descargar](https://www.mongodb.com/try/download/compass)
 
-npm install html2canvas
+> **⚠️ NOTA CRÍTICA - Motor de Docker:** Si al ejecutar comandos de Docker recibes el error `failed to connect to the docker API`, asegúrate de que la aplicación **Docker Desktop** esté abierta y el ícono de la ballena en la barra de menú esté estático. El motor no corre como servicio de fondo automático en macOS si la app está cerrada.
+
+---
+
+### 9.2. Variables de Entorno (User Secrets)
+Utilizamos `user-secrets` para manejar credenciales locales sin exponerlas en el repositorio. Ejecuta los siguientes comandos desde el directorio `Server`:
+
+```bash
+cd Server
+dotnet user-secrets init
+
+# Configuración de PostgreSQL
+dotnet user-secrets set "ConnectionStrings:DefaultConnection" "Host=localhost;Port=5432;Database=IMT_Reservas;Username=TU_USUARIO;Password=TU_CONTRASENA"
+
+# Configuración de MongoDB
+dotnet user-secrets set "ConnectionStrings:MongoDb" "mongodb://localhost:27018"
+dotnet user-secrets set "MongoDbSettings:ConnectionString" "mongodb://localhost:27018"
+dotnet user-secrets set "MongoDbSettings:DatabaseName" "UCB_Hold"
+```
+
+---
+
+### 9.3. Infraestructura NoSQL (Docker)
+Levantamos el contenedor de MongoDB mapeando el puerto externo **27018** para evitar conflictos con servicios locales.
+
+```bash
+docker run -d \
+  --name ucbhold \
+  -p 27018:27017 \
+  -v ucbhold-data:/data/db \
+  mongo
+```
+* **Puerto:** Acceso desde la app mediante `localhost:27018`.
+* **Persistencia:** El volumen `ucbhold-data` mantiene los datos aunque se borre el contenedor.
+
+---
+
+### 9.4. Instalación Manual de MongoDB Database Tools
+Para importar datos (`mongorestore`), macOS requiere una instalación manual de las herramientas de base de datos.
+
+1.  **Descarga:** Obtén el ZIP desde [MongoDB Database Tools](https://www.mongodb.com/try/download/database-tools) (Versión macOS arm64).
+2.  **Ubicación:** Descomprime y mueve la carpeta a un directorio permanente (ej: `~/mongo-tools`).
+3.  **Configuración del PATH:** Para solucionar el error `command not found: mongorestore`, agrega los binarios a tu perfil de Zsh:
+    * Ejecuta: `nano ~/.zshrc`
+    * Agrega al final: `export PATH="$PATH:/Users/tu_usuario/ruta/a/mongo-tools/bin"`
+    * Guarda (`Ctrl+O`, `Enter`) y sal (`Ctrl+X`).
+    * Refresca con: `source ~/.zshrc`
+
+> **⚠️ SEGURIDAD DE MACOS:** Al ejecutar `mongorestore` por primera vez, Apple lo bloqueará. Ve a **Ajustes del Sistema > Privacidad y Seguridad > Seguridad** y selecciona **"Permitir de todos modos"**.
+
+---
+
+### 9.5. Restauración de la Base de Datos Inicial
+Importa la estructura y datos desde la carpeta del repositorio. Si la base de datos `UCB_Hold` no existe, el comando la creará automáticamente:
+
+```bash
+mongorestore --uri "mongodb://localhost:27018" --db UCB_Hold "/Users/terrazasllanosfernando/Desktop/EquiposMecatronica/Codigo/UCB_Hold/DataBase/NoSQL"
+```
 
 ---
 

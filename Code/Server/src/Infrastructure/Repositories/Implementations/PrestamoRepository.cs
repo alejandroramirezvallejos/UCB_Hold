@@ -68,7 +68,7 @@ public class PrestamoRepository : IPrestamoRepository
                 });
             }
             
-            /*// Manejar contrato si existe
+           // Manejar el contrato si existe
             if (comando.Contrato != null && idPrestamo.HasValue)
             {
                 var fileName = comando.Contrato.FileName;
@@ -77,7 +77,7 @@ public class PrestamoRepository : IPrestamoRepository
                 var contrato = new Contrato { PrestamoId = idPrestamo.Value, FileId = fileId.ToString() };
                 _mongoDbContext.Contratos.InsertOneAsync(contrato, null, default).GetAwaiter().GetResult();
                 ActualizarIdContrato(idPrestamo.Value, contrato.FileId);
-            }*/
+            }
             
             return new PrestamoConEquiposDto
             {
