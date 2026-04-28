@@ -1,5 +1,6 @@
-﻿using System.Net;
+using System.Net;
 using System.Text.Json;
+using IMT_Reservas.Server.Shared.Common;
 
 namespace IMT_Reservas.Server.Presentations.Middleware;
 
@@ -33,52 +34,40 @@ public class GlobalExceptionMiddleware
     {
         context.Response.ContentType = "application/json";
         
-        var response = new ErrorResponse();
-        
-        switch (exception)
+        int statusCode = (int)HttpStatusCode.BadRequest; // Default to 400
+
+        if (exception is ErrorRegistroNoEncontrado || exception is ErrorCarnetUsuarioNoEncontrado || exception is ErrorCarreraNoEncontrada || exception is ErrorCategoriaNoEncontrada || exception is ErrorCodigoImtNoEncontrado || exception is ErrorEmpresaMantenimientoNoEncontrada || exception is ErrorGaveteroNoEncontrado || exception is ErrorGrupoEquipoNoEncontrado || exception is ErrorMuebleNoEncontrado)
         {
-            case ErrorRegistroNoEncontrado:
-                context.Response.StatusCode = (int)HttpStatusCode.NotFound;
-                response.Error = "No encontrado";
-                response.Mensaje = exception.Message;
-                break;
-            case ErrorRegistroYaExiste:
-                context.Response.StatusCode = (int)HttpStatusCode.Conflict;
-                response.Error = "Conflicto";
-                response.Mensaje = exception.Message;
-                break;
-            case ErrorRegistroEnUso:
-                context.Response.StatusCode = (int)HttpStatusCode.Conflict;
-                response.Error = "Recurso en uso";
-                response.Mensaje = exception.Message;
-                break;
-            case ErrorDataBase:
-                context.Response.StatusCode = (int)HttpStatusCode.InternalServerError;
-                response.Error = "Error de datos";
-                
-                response.Mensaje = _environment.IsDevelopment() 
-                    ? exception.Message 
-                    : "Error al procesar la solicitud";
-                break;
-            default:
-                context.Response.StatusCode = (int)HttpStatusCode.InternalServerError;
-                response.Error = "Error interno";
-                
-                response.Mensaje = _environment.IsDevelopment() 
-                    ? exception.Message 
-                    : "Ha ocurrido un error inesperado";
-                break;
+            statusCode = (int)HttpStatusCode.NotFound;
         }
+        else if (exception is ErrorRegistroYaExiste || exception is ErrorRegistroEnUso || exception is ErrorNoEquiposDisponibles)
+        {
+            statusCode = (int)HttpStatusCode.Conflict;
+        }
+        else if (exception is ErrorUsuarioNoAutorizado)
+        {
+            statusCode = (int)HttpStatusCode.Unauthorized;
+        }
+        else if (exception is ErrorDataBase || exception.Message.Contains("Error General Servidor") || exception.InnerException?.Message.Contains("Error General Servidor") == true)
+        {
+            statusCode = (int)HttpStatusCode.InternalServerError;
+        }
+        else if (!(exception is DomainException) && !(exception is ArgumentException) && !(exception is ArgumentNullException))
+        {
+            statusCode = (int)HttpStatusCode.InternalServerError;
+        }
+
+        context.Response.StatusCode = statusCode;
+
+        var response = new 
+        { 
+            error = exception.GetType().Name, 
+            mensaje = exception.Message 
+        };
 
         var options = new JsonSerializerOptions { PropertyNamingPolicy = null };
         return context.Response.WriteAsync(JsonSerializer.Serialize(response, options));
     }
-}
-
-public class ErrorResponse
-{
-    public string Error { get; set; } = string.Empty;
-    public string Mensaje { get; set; } = string.Empty;
 }
 
 public static class GlobalExceptionMiddlewareExtensions

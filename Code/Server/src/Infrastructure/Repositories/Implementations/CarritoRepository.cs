@@ -1,12 +1,11 @@
 using IMT_Reservas.Server.Application.ResponseDTOs;
-using IMT_Reservas.Server.Infrastructure.Repositories.Interfaces;
 using IMT_Reservas.Server.Shared.Common;
 using System.Data;
 using System.Text.Json;
 
 namespace IMT_Reservas.Server.Infrastructure.Repositories.Implementations;
 
-public class CarritoRepository : ICarritoRepository
+public class CarritoRepository
 {
     private readonly IExecuteQuery _executeQuery;
     public CarritoRepository(IExecuteQuery executeQuery) => _executeQuery = executeQuery;

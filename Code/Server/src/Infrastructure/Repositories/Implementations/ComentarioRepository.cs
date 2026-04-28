@@ -3,7 +3,7 @@ using MongoDB.Driver;
 using MongoDB.Bson;
 using IMT_Reservas.Server.Infrastructure.MongoDb;
 
-public class ComentarioRepository : IComentarioRepository
+public class ComentarioRepository
 {
     private readonly IMongoCollection<BsonDocument> _coleccion;
     public ComentarioRepository(MongoDbContexto contexto) => _coleccion = contexto.BaseDeDatos.GetCollection<BsonDocument>("comentarios");

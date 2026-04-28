@@ -1,18 +1,29 @@
 using System.Data;
 using IMT_Reservas.Server.Shared.Common;
-public class MantenimientoService : BaseServicios, IMantenimientoService
+public class MantenimientoService : BaseServicios,
+    ICrearServicio<CrearMantenimientoComando>,
+    IEliminarServicio<EliminarMantenimientoComando>,
+    IObtenerTodosServicio<MantenimientoDto>
 {
-    private readonly IMantenimientoRepository _mantenimientoRepository;
-    public MantenimientoService(IMantenimientoRepository mantenimientoRepository)
+    private readonly ICrearRepository<CrearMantenimientoComando> _crearRepository;
+    private readonly IEliminarRepository<EliminarMantenimientoComando> _eliminarRepository;
+    private readonly IObtenerTodosRepository<CrearMantenimientoComando, DataTable> _obtenerTodosRepository;
+
+    public MantenimientoService(
+        ICrearRepository<CrearMantenimientoComando> crearRepository,
+        IEliminarRepository<EliminarMantenimientoComando> eliminarRepository,
+        IObtenerTodosRepository<CrearMantenimientoComando, DataTable> obtenerTodosRepository)
     {
-        _mantenimientoRepository = mantenimientoRepository;
+        _crearRepository = crearRepository;
+        _eliminarRepository = eliminarRepository;
+        _obtenerTodosRepository = obtenerTodosRepository;
     }
-    public virtual void CrearMantenimiento(CrearMantenimientoComando comando)
+    public virtual void Crear(CrearMantenimientoComando comando)
     {
         try
         {
             ValidarEntradaCreacion(comando);
-            _mantenimientoRepository.Crear(comando);
+            _crearRepository.Crear(comando);
         }
         catch (ErrorNombreRequerido) { throw; }
         catch (ErrorValorNegativo) { throw; }
@@ -57,12 +68,12 @@ public class MantenimientoService : BaseServicios, IMantenimientoService
         if (ex is ErrorRepository errorRepo) throw new Exception($"Error del repositorio al crear mantenimiento: {errorRepo.Message}", errorRepo);
         throw ex ?? new Exception("Error desconocido en creación");
     }
-    public virtual void EliminarMantenimiento(EliminarMantenimientoComando comando)
+    public virtual void Eliminar(EliminarMantenimientoComando comando)
     {
         try
         {
             ValidarEntradaEliminacion(comando);
-            _mantenimientoRepository.Eliminar(comando.Id);
+            _eliminarRepository.Eliminar(comando);
         }
         catch (ErrorIdInvalido) { throw; }        catch (Exception ex)
         {
@@ -91,11 +102,11 @@ public class MantenimientoService : BaseServicios, IMantenimientoService
         }
         if (ex is ErrorRepository errorRepo) throw new Exception($"Error del repositorio al eliminar mantenimiento: {errorRepo.Message}", errorRepo);
         throw ex ?? new Exception("Error desconocido en eliminación");
-    }    public virtual List<MantenimientoDto>? ObtenerTodosMantenimientos()
+    }    public virtual List<MantenimientoDto>? ObtenerTodos()
     {
         try
         {
-            DataTable resultado = _mantenimientoRepository.ObtenerTodos();
+            DataTable resultado = _obtenerTodosRepository.ObtenerTodos();
             var lista = new List<MantenimientoDto>(resultado.Rows.Count);
             foreach (DataRow fila in resultado.Rows) 
             {

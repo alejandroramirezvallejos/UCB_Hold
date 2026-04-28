@@ -1,19 +1,34 @@
 using System.Data;
 using IMT_Reservas.Server.Shared.Common;
 
-public class EmpresaMantenimientoService : BaseServicios, IEmpresaMantenimientoService
+public class EmpresaMantenimientoService : BaseServicios,
+    ICrearServicio<CrearEmpresaMantenimientoComando>,
+    IActualizarServicio<ActualizarEmpresaMantenimientoComando>,
+    IEliminarServicio<EliminarEmpresaMantenimientoComando>,
+    IObtenerTodosServicio<EmpresaMantenimientoDto>
 {
-    private readonly IEmpresaMantenimientoRepository _empresaMantenimientoRepository;
-    public EmpresaMantenimientoService(IEmpresaMantenimientoRepository empresaMantenimientoRepository)
+    private readonly ICrearRepository<CrearEmpresaMantenimientoComando> _crearRepository;
+    private readonly IActualizarRepository<ActualizarEmpresaMantenimientoComando> _actualizarRepository;
+    private readonly IEliminarRepository<EliminarEmpresaMantenimientoComando> _eliminarRepository;
+    private readonly IObtenerTodosRepository<CrearEmpresaMantenimientoComando, DataTable> _obtenerTodosRepository;
+
+    public EmpresaMantenimientoService(
+        ICrearRepository<CrearEmpresaMantenimientoComando> crearRepository,
+        IActualizarRepository<ActualizarEmpresaMantenimientoComando> actualizarRepository,
+        IEliminarRepository<EliminarEmpresaMantenimientoComando> eliminarRepository,
+        IObtenerTodosRepository<CrearEmpresaMantenimientoComando, DataTable> obtenerTodosRepository)
     {
-        _empresaMantenimientoRepository = empresaMantenimientoRepository;
+        _crearRepository = crearRepository;
+        _actualizarRepository = actualizarRepository;
+        _eliminarRepository = eliminarRepository;
+        _obtenerTodosRepository = obtenerTodosRepository;
     }
-    public virtual void CrearEmpresaMantenimiento(CrearEmpresaMantenimientoComando comando)
+    public virtual void Crear(CrearEmpresaMantenimientoComando comando)
     {
         try
         {
             ValidarEntradaCreacion(comando);
-            _empresaMantenimientoRepository.Crear(comando);
+            _crearRepository.Crear(comando);
         }
         catch (ErrorNombreRequerido) { throw; }
         catch (ErrorLongitudInvalida) { throw; }        catch (Exception ex)
@@ -48,11 +63,11 @@ public class EmpresaMantenimientoService : BaseServicios, IEmpresaMantenimientoS
         if (ex is ErrorRepository errorRepo)
             throw new Exception($"Error del repositorio al crear empresa de mantenimiento: {errorRepo.Message}", errorRepo);
         throw ex ?? new Exception("Error desconocido en creación");
-    }    public virtual List<EmpresaMantenimientoDto>? ObtenerTodasEmpresasMantenimiento()
+    }    public virtual List<EmpresaMantenimientoDto>? ObtenerTodos()
     {
         try
         {
-            DataTable resultado = _empresaMantenimientoRepository.ObtenerTodos();
+            DataTable resultado = _obtenerTodosRepository.ObtenerTodos();
             var lista = new List<EmpresaMantenimientoDto>(resultado.Rows.Count);
             foreach (DataRow fila in resultado.Rows)
             {
@@ -63,12 +78,12 @@ public class EmpresaMantenimientoService : BaseServicios, IEmpresaMantenimientoS
         }
         catch { throw; }
     }
-    public virtual void ActualizarEmpresaMantenimiento(ActualizarEmpresaMantenimientoComando comando)
+    public virtual void Actualizar(ActualizarEmpresaMantenimientoComando comando)
     {
         try
         {
             ValidarEntradaActualizacion(comando);
-            _empresaMantenimientoRepository.Actualizar(comando);
+            _actualizarRepository.Actualizar(comando);
         }
         catch (ErrorIdInvalido) { throw; }
         catch (ErrorNombreRequerido) { throw; }
@@ -86,12 +101,12 @@ public class EmpresaMantenimientoService : BaseServicios, IEmpresaMantenimientoS
             throw new ErrorLongitudInvalida("nombre de la empresa", 255);
     }
 
-    public virtual void EliminarEmpresaMantenimiento(EliminarEmpresaMantenimientoComando comando)
+    public virtual void Eliminar(EliminarEmpresaMantenimientoComando comando)
     {
         try
         {
             ValidarEntradaEliminacion(comando);
-            _empresaMantenimientoRepository.Eliminar(comando.Id);
+            _eliminarRepository.Eliminar(comando);
         }
         catch (ErrorIdInvalido) { throw; }        catch (Exception ex)
         {

@@ -6,7 +6,9 @@ using MongoDB.Driver.GridFS;
 using Microsoft.AspNetCore.Http;
 using IMT_Reservas.Server.Application.ResponseDTOs;
 
-public class PrestamoRepository : IPrestamoRepository
+public class PrestamoRepository :
+    IEliminarRepository<EliminarPrestamoComando>,
+    IObtenerTodosRepository<CrearPrestamoComando, DataTable>
 {
     private readonly IExecuteQuery _ejecutarConsulta;
     private readonly MongoDbContexto _mongoDbContext;
@@ -89,10 +91,10 @@ public class PrestamoRepository : IPrestamoRepository
         catch (Exception ex) { throw new ErrorRepository($"Error del repositorio al crear préstamo: {ex.Message}", ex); }
     }
     
-    public void Eliminar(int id)
+    public void Eliminar(EliminarPrestamoComando comando)
     {
         const string sql = @"CALL public.eliminar_prestamo(@id)";
-        var parametros = new Dictionary<string, object?> { ["id"] = id };
+        var parametros = new Dictionary<string, object?> { ["id"] = comando.Id };
         try { _ejecutarConsulta.EjecutarSpNR(sql, parametros); }
         catch (NpgsqlException ex) { throw new ErrorDataBase($"Error de base de datos al eliminar préstamo: {ex.Message}", ex.SqlState, null, ex); }
         catch (Exception ex) { throw new ErrorRepository($"Error del repositorio al eliminar préstamo: {ex.Message}", ex); }

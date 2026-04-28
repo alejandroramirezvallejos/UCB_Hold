@@ -1,7 +1,11 @@
 using System.Data;
 using Npgsql;
 
-public class EquipoRepository : IEquipoRepository
+public class EquipoRepository :
+    ICrearRepository<CrearEquipoComando>,
+    IActualizarRepository<ActualizarEquipoComando>,
+    IEliminarRepository<EliminarEquipoComando>,
+    IObtenerTodosRepository<CrearEquipoComando, DataTable>
 {
     private readonly IExecuteQuery _ejecutarConsulta;
     public EquipoRepository(IExecuteQuery ejecutarConsulta) => _ejecutarConsulta = ejecutarConsulta;
@@ -49,10 +53,10 @@ public class EquipoRepository : IEquipoRepository
         catch (NpgsqlException ex) { throw new ErrorDataBase($"Error de base de datos al actualizar equipo: {ex.Message}", ex.SqlState, null, ex); }
         catch (Exception ex) { throw new ErrorRepository($"Error del repositorio al actualizar equipo: {ex.Message}", ex); }
     }
-    public void Eliminar(int id)
+    public void Eliminar(EliminarEquipoComando comando)
     {
         const string sql = @"CALL public.eliminar_equipo(@id)";
-        var parametros = new Dictionary<string, object?> { ["id"] = id };
+        var parametros = new Dictionary<string, object?> { ["id"] = comando.Id };
         try { _ejecutarConsulta.EjecutarSpNR(sql, parametros); }
         catch (NpgsqlException ex) { throw new ErrorDataBase($"Error de base de datos al eliminar equipo: {ex.Message}", ex.SqlState, null, ex); }
         catch (Exception ex) { throw new ErrorRepository($"Error del repositorio al eliminar equipo: {ex.Message}", ex); }

@@ -1,16 +1,35 @@
 using System.Data;
 using IMT_Reservas.Server.Shared.Common;
 
-public class ComponenteService : BaseServicios, IComponenteService
+public class ComponenteService : BaseServicios,
+    ICrearServicio<CrearComponenteComando>,
+    IActualizarServicio<ActualizarComponenteComando>,
+    IEliminarServicio<EliminarComponenteComando>,
+    IObtenerTodosServicio<ComponenteDto>
 {
-    private readonly IComponenteRepository _componenteRepository;
-    public ComponenteService(IComponenteRepository componenteRepository) => _componenteRepository = componenteRepository;
-    public virtual void CrearComponente(CrearComponenteComando comando)
+    private readonly ICrearRepository<CrearComponenteComando> _crearRepository;
+    private readonly IActualizarRepository<ActualizarComponenteComando> _actualizarRepository;
+    private readonly IEliminarRepository<EliminarComponenteComando> _eliminarRepository;
+    private readonly IObtenerTodosRepository<CrearComponenteComando, DataTable> _obtenerTodosRepository;
+
+    public ComponenteService(
+        ICrearRepository<CrearComponenteComando> crearRepository,
+        IActualizarRepository<ActualizarComponenteComando> actualizarRepository,
+        IEliminarRepository<EliminarComponenteComando> eliminarRepository,
+        IObtenerTodosRepository<CrearComponenteComando, DataTable> obtenerTodosRepository)
+    {
+        _crearRepository = crearRepository;
+        _actualizarRepository = actualizarRepository;
+        _eliminarRepository = eliminarRepository;
+        _obtenerTodosRepository = obtenerTodosRepository;
+    }
+
+    public virtual void Crear(CrearComponenteComando comando)
     {
         try
         {
             ValidarEntradaCreacion(comando);
-            _componenteRepository.Crear(comando);
+            _crearRepository.Crear(comando);
         }        catch (ErrorNombreRequerido) { throw; }
         catch (ErrorLongitudInvalida) { throw; }
         catch (ErrorIdInvalido) { throw; }
@@ -51,11 +70,11 @@ public class ComponenteService : BaseServicios, IComponenteService
             if (componenteComando.CodigoIMT <= 0) throw new ErrorCodigoImtRequerido();
             if (componenteComando.PrecioReferencia.HasValue && componenteComando.PrecioReferencia.Value < 0) throw new ErrorValorNegativo("precio de referencia");
         }
-    }    public virtual List<ComponenteDto>? ObtenerTodosComponentes()
+    }    public virtual List<ComponenteDto>? ObtenerTodos()
     {
         try
         {
-            DataTable resultado = _componenteRepository.ObtenerTodos();
+            DataTable resultado = _obtenerTodosRepository.ObtenerTodos();
             var lista = new List<ComponenteDto>(resultado.Rows.Count);
             foreach (DataRow fila in resultado.Rows)
             {
@@ -66,12 +85,12 @@ public class ComponenteService : BaseServicios, IComponenteService
         }
         catch { throw; }
     }
-    public virtual void ActualizarComponente(ActualizarComponenteComando comando)
+    public virtual void Actualizar(ActualizarComponenteComando comando)
     {
         try
         {
             ValidarEntradaActualizacion(comando);
-            _componenteRepository.Actualizar(comando);
+            _actualizarRepository.Actualizar(comando);
         }
         catch (ErrorIdInvalido) { throw; }
         catch (ErrorNombreRequerido) { throw; }
@@ -107,12 +126,12 @@ public class ComponenteService : BaseServicios, IComponenteService
         if (comando.PrecioReferencia.HasValue && comando.PrecioReferencia.Value < 0) throw new ErrorValorNegativo("precio de referencia");
     }
 
-    public virtual void EliminarComponente(EliminarComponenteComando comando)
+    public virtual void Eliminar(EliminarComponenteComando comando)
     {
         try
         {
             ValidarEntradaEliminacion(comando);
-            _componenteRepository.Eliminar(comando.Id);
+            _eliminarRepository.Eliminar(comando);
         }
         catch (ErrorIdInvalido) { throw; }        catch (Exception ex)
         {

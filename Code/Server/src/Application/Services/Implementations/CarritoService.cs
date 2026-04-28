@@ -1,16 +1,15 @@
 using IMT_Reservas.Server.Application.ResponseDTOs;
 using IMT_Reservas.Server.Application.RequestDTOs.Carrito;
-using IMT_Reservas.Server.Application.Services.Interfaces;
-using IMT_Reservas.Server.Infrastructure.Repositories.Interfaces;
 using IMT_Reservas.Server.Shared.Common;
 using System.Text.Json;
+using IMT_Reservas.Server.Infrastructure.Repositories.Implementations;
 
 namespace IMT_Reservas.Server.Application.Services.Implementations;
 
-public class CarritoService : ICarritoService
+public class CarritoService
 {
-    private readonly ICarritoRepository _repository;
-    public CarritoService(ICarritoRepository repository) => _repository = repository;
+    private readonly CarritoRepository _repository;
+    public CarritoService(CarritoRepository repository) => _repository = repository;
 
     public IEnumerable<FechaNoDisponibleDto> ObtenerFechasNoDisponibles(ObtenerFechasNoDisponiblesComando input)
     {

@@ -1,20 +1,21 @@
 ﻿using System.Data;
 using System.Linq;
-using IMT_Reservas.Server.Application.Interfaces;
 using IMT_Reservas.Server.Shared.Common;
 
-public class ComentarioService : BaseServicios, IComentarioService
+public class ComentarioService : BaseServicios,
+    ICrearServicio<CrearComentarioComando>,
+    IEliminarServicio<EliminarComentarioComando>
 {
-    private readonly IComentarioRepository _comentarioRepository;
-    private readonly IUsuarioRepository _usuarioRepository;
+    private readonly ComentarioRepository _comentarioRepository;
+    private readonly UsuarioRepository _usuarioRepository;
     
-    public ComentarioService(IComentarioRepository comentarioRepository, IUsuarioRepository usuarioRepository)
+    public ComentarioService(ComentarioRepository comentarioRepository, UsuarioRepository usuarioRepository)
     {
         _comentarioRepository = comentarioRepository;
         _usuarioRepository = usuarioRepository;
     }
 
-    public void CrearComentario(CrearComentarioComando comando)
+    public void Crear(CrearComentarioComando comando)
     {
         ValidarEntradaCreacion(comando);
         _comentarioRepository.Crear(comando);
@@ -82,7 +83,7 @@ public class ComentarioService : BaseServicios, IComentarioService
         return lista;
     }
 
-    public void EliminarComentario(EliminarComentarioComando comando)
+    public void Eliminar(EliminarComentarioComando comando)
     {
         ValidarEntradaEliminacion(comando);
         _comentarioRepository.Eliminar(comando);

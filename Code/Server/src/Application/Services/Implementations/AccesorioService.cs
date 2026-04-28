@@ -1,17 +1,35 @@
 using System.Data;
-using IMT_Reservas.Server.Application.Interfaces;
 using IMT_Reservas.Server.Shared.Common;
 
-public class AccesorioService : BaseServicios, IAccesorioService
+public class AccesorioService : BaseServicios,
+    ICrearServicio<CrearAccesorioComando>,
+    IActualizarServicio<ActualizarAccesorioComando>,
+    IEliminarServicio<EliminarAccesorioComando>,
+    IObtenerTodosServicio<AccesorioDto>
 {
-    private readonly IAccesorioRepository _accesorioRepository;
-    public AccesorioService(IAccesorioRepository accesorioRepository) => _accesorioRepository = accesorioRepository;
-    public virtual void CrearAccesorio(CrearAccesorioComando comando)
+    private readonly ICrearRepository<CrearAccesorioComando> _crearRepository;
+    private readonly IActualizarRepository<ActualizarAccesorioComando> _actualizarRepository;
+    private readonly IEliminarRepository<EliminarAccesorioComando> _eliminarRepository;
+    private readonly IObtenerTodosRepository<CrearAccesorioComando, DataTable> _obtenerTodosRepository;
+
+    public AccesorioService(
+        ICrearRepository<CrearAccesorioComando> crearRepository,
+        IActualizarRepository<ActualizarAccesorioComando> actualizarRepository,
+        IEliminarRepository<EliminarAccesorioComando> eliminarRepository,
+        IObtenerTodosRepository<CrearAccesorioComando, DataTable> obtenerTodosRepository)
+    {
+        _crearRepository = crearRepository;
+        _actualizarRepository = actualizarRepository;
+        _eliminarRepository = eliminarRepository;
+        _obtenerTodosRepository = obtenerTodosRepository;
+    }
+
+    public virtual void Crear(CrearAccesorioComando comando)
     {
         try
         {
             ValidarEntradaCreacion(comando);
-            _accesorioRepository.Crear(comando);
+            _crearRepository.Crear(comando);
         }
         catch (ErrorNombreRequerido) { throw; }
         catch (ErrorModeloRequerido) { throw; }
@@ -54,11 +72,11 @@ public class AccesorioService : BaseServicios, IAccesorioService
             if (accesorioComando.Precio.HasValue && accesorioComando.Precio.Value <= 0) throw new ErrorValorNegativo("precio");
         }
     }
-    public virtual List<AccesorioDto>? ObtenerTodosAccesorios()
+    public virtual List<AccesorioDto>? ObtenerTodos()
     {
         try
         {
-            DataTable dt = _accesorioRepository.ObtenerTodos();
+            DataTable dt = _obtenerTodosRepository.ObtenerTodos();
             var lista = new List<AccesorioDto>(dt.Rows.Count);            
             foreach (DataRow row in dt.Rows)
             {
@@ -70,12 +88,12 @@ public class AccesorioService : BaseServicios, IAccesorioService
         }
         catch { throw; }
     }
-    public virtual void ActualizarAccesorio(ActualizarAccesorioComando comando)
+    public virtual void Actualizar(ActualizarAccesorioComando comando)
     {
         try
         {
             ValidarEntradaActualizacion(comando);
-            _accesorioRepository.Actualizar(comando);
+            _actualizarRepository.Actualizar(comando);
         }
         catch (ErrorIdInvalido) { throw; }
         catch (ErrorNombreRequerido) { throw; }
@@ -112,12 +130,12 @@ public class AccesorioService : BaseServicios, IAccesorioService
         if (comando.CodigoIMT <= 0) throw new ErrorCodigoImtInvalido();
         if (comando.Precio.HasValue && comando.Precio.Value < 0) throw new ErrorValorNegativo("precio");
     }
-    public virtual void EliminarAccesorio(EliminarAccesorioComando comando)
+    public virtual void Eliminar(EliminarAccesorioComando comando)
     {
         try
         {
             ValidarEntradaEliminacion(comando);
-            _accesorioRepository.Eliminar(comando.Id);
+            _eliminarRepository.Eliminar(comando);
         }
         catch (ErrorIdInvalido) { throw; }
         catch (Exception ex)

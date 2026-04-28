@@ -1,6 +1,10 @@
 using System.Data;
 using Npgsql;
-public class ComponenteRepository : IComponenteRepository
+public class ComponenteRepository :
+    ICrearRepository<CrearComponenteComando>,
+    IActualizarRepository<ActualizarComponenteComando>,
+    IEliminarRepository<EliminarComponenteComando>,
+    IObtenerTodosRepository<CrearComponenteComando, DataTable>
 {
     private readonly IExecuteQuery _ejecutarConsulta;
     public ComponenteRepository(IExecuteQuery ejecutarConsulta) => _ejecutarConsulta = ejecutarConsulta;
@@ -39,10 +43,10 @@ public class ComponenteRepository : IComponenteRepository
         catch (NpgsqlException ex) { throw new ErrorDataBase($"Error de base de datos al actualizar componente: {ex.Message}", ex.SqlState, null, ex); }
         catch (Exception ex) { throw new ErrorRepository($"Error en repositorio al actualizar componente: {ex.Message}", "actualizar", "componente", ex); }
     }
-    public void Eliminar(int id)
+    public void Eliminar(EliminarComponenteComando comando)
     {
         const string sql = @"CALL public.eliminar_componente(@id)";
-        var parametros = new Dictionary<string, object?> { ["id"] = id };
+        var parametros = new Dictionary<string, object?> { ["id"] = comando.Id };
         try { _ejecutarConsulta.EjecutarSpNR(sql, parametros); }
         catch (NpgsqlException ex) { throw new ErrorDataBase($"Error de base de datos al eliminar componente: {ex.Message}", ex.SqlState, null, ex); }
         catch (Exception ex) { throw new ErrorRepository($"Error en repositorio al eliminar componente: {ex.Message}", "eliminar", "componente", ex); }

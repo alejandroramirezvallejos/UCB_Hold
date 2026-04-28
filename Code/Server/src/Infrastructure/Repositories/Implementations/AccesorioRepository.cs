@@ -1,7 +1,11 @@
 using System.Data;
 using Npgsql;
 
-public class AccesorioRepository : IAccesorioRepository
+public class AccesorioRepository :
+    ICrearRepository<CrearAccesorioComando>,
+    IActualizarRepository<ActualizarAccesorioComando>,
+    IEliminarRepository<EliminarAccesorioComando>,
+    IObtenerTodosRepository<CrearAccesorioComando, DataTable>
 {
     private readonly IExecuteQuery _ejecutarConsulta;
     public AccesorioRepository(IExecuteQuery ejecutarConsulta) => _ejecutarConsulta = ejecutarConsulta;
@@ -45,10 +49,10 @@ public class AccesorioRepository : IAccesorioRepository
         catch (NpgsqlException ex) { throw new ErrorDataBase($"Error de base de datos al actualizar accesorio: {ex.Message}", ex.SqlState, null, ex); }
         catch (Exception ex) { throw new ErrorRepository($"Error en repositorio al actualizar accesorio: {ex.Message}", "actualizar", "accesorio", ex); }
     }
-    public void Eliminar(int id)
+    public void Eliminar(EliminarAccesorioComando comando)
     {
         const string sql = @"CALL public.eliminar_accesorio(@id)";
-        var parametros = new Dictionary<string, object?> { ["id"] = id };
+        var parametros = new Dictionary<string, object?> { ["id"] = comando.Id };
         try { _ejecutarConsulta.EjecutarSpNR(sql, parametros); }
         catch (NpgsqlException ex) { throw new ErrorDataBase($"Error de base de datos al eliminar accesorio: {ex.Message}", ex.SqlState, null, ex); }
         catch (Exception ex) { throw new ErrorRepository($"Error en repositorio al eliminar accesorio: {ex.Message}", "eliminar", "accesorio", ex); }

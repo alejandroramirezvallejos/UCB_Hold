@@ -1,19 +1,34 @@
 using System.Data;
 using IMT_Reservas.Server.Shared.Common;
 
-public class GaveteroService : BaseServicios, IGaveteroService
+public class GaveteroService : BaseServicios,
+    ICrearServicio<CrearGaveteroComando>,
+    IActualizarServicio<ActualizarGaveteroComando>,
+    IEliminarServicio<EliminarGaveteroComando>,
+    IObtenerTodosServicio<GaveteroDto>
 {
-    private readonly IGaveteroRepository _gaveteroRepository;
-    public GaveteroService(IGaveteroRepository gaveteroRepository)
+    private readonly ICrearRepository<CrearGaveteroComando> _crearRepository;
+    private readonly IActualizarRepository<ActualizarGaveteroComando> _actualizarRepository;
+    private readonly IEliminarRepository<EliminarGaveteroComando> _eliminarRepository;
+    private readonly IObtenerTodosRepository<CrearGaveteroComando, DataTable> _obtenerTodosRepository;
+
+    public GaveteroService(
+        ICrearRepository<CrearGaveteroComando> crearRepository,
+        IActualizarRepository<ActualizarGaveteroComando> actualizarRepository,
+        IEliminarRepository<EliminarGaveteroComando> eliminarRepository,
+        IObtenerTodosRepository<CrearGaveteroComando, DataTable> obtenerTodosRepository)
     {
-        _gaveteroRepository = gaveteroRepository;
+        _crearRepository = crearRepository;
+        _actualizarRepository = actualizarRepository;
+        _eliminarRepository = eliminarRepository;
+        _obtenerTodosRepository = obtenerTodosRepository;
     }
-    public virtual void CrearGavetero(CrearGaveteroComando comando)
+    public virtual void Crear(CrearGaveteroComando comando)
     {
         try
         {
             ValidarEntradaCreacion(comando);
-            _gaveteroRepository.Crear(comando);
+            _crearRepository.Crear(comando);
         }
         catch (ErrorNombreRequerido) { throw; }
         catch (ErrorValorNegativo) { throw; }        catch (Exception ex)
@@ -50,12 +65,12 @@ public class GaveteroService : BaseServicios, IGaveteroService
         if (ex is ErrorRepository errorRepo) throw new Exception($"Error del repositorio al crear gavetero: {errorRepo.Message}", errorRepo);
         throw ex ?? new Exception("Error desconocido en creación");
     }
-    public virtual void ActualizarGavetero(ActualizarGaveteroComando comando)
+    public virtual void Actualizar(ActualizarGaveteroComando comando)
     {
         try
         {
             ValidarEntradaActualizacion(comando);
-            _gaveteroRepository.Actualizar(comando);
+            _actualizarRepository.Actualizar(comando);
         }
         catch (ErrorIdInvalido) { throw; }
         catch (ErrorNombreRequerido) { throw; }
@@ -76,12 +91,12 @@ public class GaveteroService : BaseServicios, IGaveteroService
         if (comando.Altura.HasValue && comando.Altura <= 0) throw new ErrorValorNegativo("altura");
     }
 
-    public virtual void EliminarGavetero(EliminarGaveteroComando comando)
+    public virtual void Eliminar(EliminarGaveteroComando comando)
     {
         try
         {
             ValidarEntradaEliminacion(comando);
-            _gaveteroRepository.Eliminar(comando.Id);
+            _eliminarRepository.Eliminar(comando);
         }
         catch (ErrorIdInvalido) { throw; }        catch (Exception ex)
         {
@@ -125,11 +140,11 @@ public class GaveteroService : BaseServicios, IGaveteroService
         }
         if (ex is ErrorRepository errorRepo) throw new Exception($"Error del repositorio al actualizar gavetero: {errorRepo.Message}", errorRepo);
         throw ex ?? new Exception("Error desconocido en actualización");
-    }public virtual List<GaveteroDto>? ObtenerTodosGaveteros()
+    }public virtual List<GaveteroDto>? ObtenerTodos()
     {
         try
         {
-            DataTable resultado = _gaveteroRepository.ObtenerTodos();
+            DataTable resultado = _obtenerTodosRepository.ObtenerTodos();
             var lista = new List<GaveteroDto>(resultado.Rows.Count);
             foreach (DataRow fila in resultado.Rows)
             {

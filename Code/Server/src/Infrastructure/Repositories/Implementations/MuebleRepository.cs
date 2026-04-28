@@ -1,7 +1,11 @@
 using System.Data;
 using Npgsql;
 
-public class MuebleRepository : IMuebleRepository
+public class MuebleRepository :
+    ICrearRepository<CrearMuebleComando>,
+    IActualizarRepository<ActualizarMuebleComando>,
+    IEliminarRepository<EliminarMuebleComando>,
+    IObtenerTodosRepository<CrearMuebleComando, DataTable>
 {
     private readonly IExecuteQuery _ejecutarConsulta;
     public MuebleRepository(IExecuteQuery ejecutarConsulta) => _ejecutarConsulta = ejecutarConsulta;
@@ -43,10 +47,10 @@ public class MuebleRepository : IMuebleRepository
         catch (Exception ex) { throw new ErrorRepository($"Error del repositorio al actualizar mueble: {ex.Message}", ex); }
     }
 
-    public void Eliminar(int id)
+    public void Eliminar(EliminarMuebleComando comando)
     {
         const string sql = @"CALL public.eliminar_mueble(@id)";
-        var parametros = new Dictionary<string, object?> { ["id"] = id };
+        var parametros = new Dictionary<string, object?> { ["id"] = comando.Id };
         try { _ejecutarConsulta.EjecutarSpNR(sql, parametros); }
         catch (NpgsqlException ex) { throw new ErrorDataBase($"Error de base de datos al eliminar mueble: {ex.Message}", ex.SqlState, null, ex); }
         catch (Exception ex) { throw new ErrorRepository($"Error del repositorio al eliminar mueble: {ex.Message}", ex); }

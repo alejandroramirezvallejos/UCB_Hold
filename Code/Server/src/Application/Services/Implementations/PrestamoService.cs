@@ -2,15 +2,18 @@ using System.Data;
 using IMT_Reservas.Server.Shared.Common;
 using IMT_Reservas.Server.Application.ResponseDTOs;
 
-public class PrestamoService : BaseServicios, IPrestamoService
+public class PrestamoService : BaseServicios,
+    ICrearServicioResultado<CrearPrestamoComando, PrestamoConEquiposDto>,
+    IEliminarServicio<EliminarPrestamoComando>,
+    IObtenerTodosServicio<PrestamoDto>
 {
-    private readonly IPrestamoRepository _prestamoRepository;
+    private readonly PrestamoRepository _prestamoRepository;
     
-    public PrestamoService(IPrestamoRepository prestamoRepository)
+    public PrestamoService(PrestamoRepository prestamoRepository)
     {
         _prestamoRepository = prestamoRepository;
     }
-    public virtual PrestamoConEquiposDto CrearPrestamo(CrearPrestamoComando comando)
+    public virtual PrestamoConEquiposDto Crear(CrearPrestamoComando comando)
     {
         ValidarEntradaCreacion(comando);
         try
@@ -65,12 +68,12 @@ public class PrestamoService : BaseServicios, IPrestamoService
         if (ex is ErrorRepository errorRepo) throw new Exception($"Error del repositorio al crear préstamo: {errorRepo.Message}", errorRepo);
         throw new Exception($"Error inesperado al crear préstamo: {ex.Message}", ex);
     }   
-    public virtual void EliminarPrestamo(EliminarPrestamoComando comando)
+    public virtual void Eliminar(EliminarPrestamoComando comando)
     {
         try
         {
             ValidarEntradaEliminacion(comando);
-            _prestamoRepository.Eliminar(comando.Id);
+            _prestamoRepository.Eliminar(comando);
         }
         catch (ErrorIdInvalido) { throw; }
         catch (Exception ex)
@@ -99,7 +102,7 @@ public class PrestamoService : BaseServicios, IPrestamoService
         }
         if (ex is ErrorRepository errorRepo) throw new Exception($"Error del repositorio al eliminar préstamo: {errorRepo.Message}", errorRepo);
     } 
-    public virtual List<PrestamoDto>? ObtenerTodosPrestamos()
+    public virtual List<PrestamoDto>? ObtenerTodos()
     {
         try
         {

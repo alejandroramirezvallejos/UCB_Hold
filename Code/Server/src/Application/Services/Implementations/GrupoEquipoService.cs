@@ -1,14 +1,18 @@
 using System.Data;
 using IMT_Reservas.Server.Shared.Common;
 
-public class GrupoEquipoService : BaseServicios, IGrupoEquipoService
+public class GrupoEquipoService : BaseServicios,
+    ICrearServicio<CrearGrupoEquipoComando>,
+    IActualizarServicio<ActualizarGrupoEquipoComando>,
+    IEliminarServicio<EliminarGrupoEquipoComando>,
+    IObtenerTodosServicio<GrupoEquipoDto>
 {
-    private readonly IGrupoEquipoRepository _grupoEquipoRepository;
-    public GrupoEquipoService(IGrupoEquipoRepository grupoEquipoRepository)
+    private readonly GrupoEquipoRepository _grupoEquipoRepository;
+    public GrupoEquipoService(GrupoEquipoRepository grupoEquipoRepository)
     {
         _grupoEquipoRepository = grupoEquipoRepository;
     }
-    public virtual void CrearGrupoEquipo(CrearGrupoEquipoComando comando)
+    public virtual void Crear(CrearGrupoEquipoComando comando)
     {
         try
         {
@@ -70,7 +74,7 @@ public class GrupoEquipoService : BaseServicios, IGrupoEquipoService
         }
         catch { throw; }
     }    
-    public virtual List<GrupoEquipoDto>? ObtenerTodosGruposEquipos()
+    public virtual List<GrupoEquipoDto>? ObtenerTodos()
     {
         try
         {
@@ -100,7 +104,7 @@ public class GrupoEquipoService : BaseServicios, IGrupoEquipoService
         }
         catch { throw; }
     }
-    public virtual void ActualizarGrupoEquipo(ActualizarGrupoEquipoComando comando)
+    public virtual void Actualizar(ActualizarGrupoEquipoComando comando)
     {
         try
         {
@@ -125,12 +129,12 @@ public class GrupoEquipoService : BaseServicios, IGrupoEquipoService
         if (!string.IsNullOrWhiteSpace(comando.Descripcion) && comando.Descripcion.Length > 255) throw new ErrorLongitudInvalida("descripcion grupo equipo", 255);
         if (!string.IsNullOrWhiteSpace(comando.NombreCategoria) && comando.NombreCategoria.Length > 255) throw new ErrorLongitudInvalida("nombre categoria grupo equipo", 255);
     }
-    public virtual void EliminarGrupoEquipo(EliminarGrupoEquipoComando comando)
+    public virtual void Eliminar(EliminarGrupoEquipoComando comando)
     {
         try
         {
             ValidarEntradaEliminacion(comando);
-            _grupoEquipoRepository.Eliminar(comando.Id);
+            _grupoEquipoRepository.Eliminar(comando);
         }
         catch (ErrorIdInvalido) { throw; }        catch (Exception ex)
         {

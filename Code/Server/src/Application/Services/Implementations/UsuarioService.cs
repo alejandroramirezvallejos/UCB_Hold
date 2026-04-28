@@ -1,11 +1,15 @@
 using System.Data;
-public class UsuarioService : BaseServicios, IUsuarioService
+public class UsuarioService : BaseServicios,
+    ICrearServicio<CrearUsuarioComando>,
+    IActualizarServicio<ActualizarUsuarioComando>,
+    IEliminarServicio<EliminarUsuarioComando>,
+    IObtenerTodosServicio<UsuarioDto>
 {
-    private readonly IUsuarioRepository _usuarioRepository;
-    public UsuarioService(IUsuarioRepository usuarioRepository)
+    private readonly UsuarioRepository _usuarioRepository;
+    public UsuarioService(UsuarioRepository usuarioRepository)
     {
         _usuarioRepository = usuarioRepository;
-    }    public void CrearUsuario(CrearUsuarioComando comando)
+    }    public void Crear(CrearUsuarioComando comando)
     {
         try
         {
@@ -65,7 +69,7 @@ public class UsuarioService : BaseServicios, IUsuarioService
             throw new Exception($"Error inesperado de base de datos al crear usuario: {errorDb.Message}", errorDb);
         }
         if (ex is ErrorRepository errorRepo) throw new Exception($"Error del repositorio al crear usuario: {errorRepo.Message}", errorRepo);
-    }    public List<UsuarioDto>? ObtenerTodosUsuarios()
+    }    public List<UsuarioDto>? ObtenerTodos()
     {
         try
         {
@@ -80,7 +84,7 @@ public class UsuarioService : BaseServicios, IUsuarioService
         }
         catch { throw; }
     }
-    public void ActualizarUsuario(ActualizarUsuarioComando comando)
+    public void Actualizar(ActualizarUsuarioComando comando)
     {
         try
         {
@@ -121,12 +125,12 @@ public class UsuarioService : BaseServicios, IUsuarioService
         if (!string.IsNullOrWhiteSpace(comando.Contrasena) && comando.Contrasena.Length < 6) throw new ErrorLongitudInvalida("contraseña", 6, 100);
         if (!string.IsNullOrWhiteSpace(comando.Telefono) && comando.Telefono.Length > 20) throw new ErrorLongitudInvalida("telefono", 20);
         if(comando.Rol != "administrador" && comando.Rol != "estudiante") throw new ErrorRolInvalido();
-    }    public void EliminarUsuario(EliminarUsuarioComando comando)
+    }    public void Eliminar(EliminarUsuarioComando comando)
     {
         try
         {
             ValidarEntradaEliminacion(comando);
-            _usuarioRepository.Eliminar(comando.Carnet);
+            _usuarioRepository.Eliminar(comando);
         }
         catch (ErrorCarnetInvalido) { throw; }
         catch (Exception ex)

@@ -1,7 +1,11 @@
 using System.Data;
 using Npgsql;
 
-public class UsuarioRepository : IUsuarioRepository
+public class UsuarioRepository :
+    ICrearRepository<CrearUsuarioComando>,
+    IActualizarRepository<ActualizarUsuarioComando>,
+    IEliminarRepository<EliminarUsuarioComando>,
+    IObtenerTodosRepository<CrearUsuarioComando, DataTable>
 {
     private readonly IExecuteQuery _ejecutarConsulta;
     public UsuarioRepository(IExecuteQuery ejecutarConsulta) => _ejecutarConsulta = ejecutarConsulta;
@@ -49,10 +53,10 @@ public class UsuarioRepository : IUsuarioRepository
         catch (NpgsqlException ex) { throw new ErrorDataBase($"Error de base de datos al actualizar usuario: {ex.Message}", ex.SqlState, null, ex); }
         catch (Exception ex) { throw new ErrorRepository($"Error en repositorio al actualizar usuario: {ex.Message}", "actualizar", "usuario", ex); }
     }
-    public void Eliminar(string carnet)
+    public void Eliminar(EliminarUsuarioComando comando)
     {
         const string sql = @"CALL public.eliminar_usuario(@carnet)";
-        var parametros = new Dictionary<string, object?> { ["carnet"] = carnet };
+        var parametros = new Dictionary<string, object?> { ["carnet"] = comando.Carnet };
         try { _ejecutarConsulta.EjecutarSpNR(sql, parametros); }
         catch (NpgsqlException ex) { throw new ErrorDataBase($"Error de base de datos al eliminar usuario: {ex.Message}", ex.SqlState, null, ex); }
         catch (Exception ex) { throw new ErrorRepository($"Error en repositorio al eliminar usuario: {ex.Message}", "eliminar", "usuario", ex); }

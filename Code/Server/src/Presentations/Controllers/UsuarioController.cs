@@ -1,4 +1,3 @@
-using IMT_Reservas.Server.Application.Interfaces;
 using Microsoft.AspNetCore.Mvc;
 using IMT_Reservas.Server.Shared.Common;
 
@@ -8,48 +7,42 @@ namespace API.Controllers;
 [Route("api/[controller]")]
 public class UsuarioController : ControllerBase
 {
-    private readonly IUsuarioService servicio;
-    public UsuarioController(IUsuarioService servicio) => this.servicio = servicio;
+    private readonly UsuarioService servicio;
+    public UsuarioController(UsuarioService servicio) => this.servicio = servicio;
 
     [HttpPost]
     public IActionResult Crear([FromBody] CrearUsuarioComando comando)
     {
-        try { servicio.CrearUsuario(comando); return Ok(new { mensaje = "Usuario creado exitosamente" }); }
-        catch (Exception ex) { return StatusCode(500, new { error = ex.GetType().Name, mensaje = ex.Message }); }
+        servicio.Crear(comando); return Ok(new { mensaje = "Usuario creado exitosamente" });
     }
 
     [HttpGet]
     public IActionResult ObtenerTodos()
     {
-        try { return Ok(servicio.ObtenerTodosUsuarios()); }
-        catch (Exception ex) { return StatusCode(500, new { error = ex.GetType().Name, mensaje = ex.Message }); }
+        return Ok(servicio.ObtenerTodos());
     }
 
     [HttpPut]
     public IActionResult Actualizar([FromBody] ActualizarUsuarioComando comando)
     {
-        try { servicio.ActualizarUsuario(comando); return Ok(new { mensaje = "Usuario actualizado exitosamente" }); }
-        catch (Exception ex) { return StatusCode(500, new { error = ex.GetType().Name, mensaje = ex.Message }); }
+        servicio.Actualizar(comando); return Ok(new { mensaje = "Usuario actualizado exitosamente" });
     }
 
     [HttpDelete("{carnet}")]
     public IActionResult Eliminar(string carnet)
     {
-        try { servicio.EliminarUsuario(new EliminarUsuarioComando(carnet)); return Ok(new { mensaje = "Usuario eliminado exitosamente" }); }
-        catch (Exception ex) { return StatusCode(500, new { error = ex.GetType().Name, mensaje = ex.Message }); }
+        servicio.Eliminar(new EliminarUsuarioComando(carnet)); return Ok(new { mensaje = "Usuario eliminado exitosamente" });
     }
 
     [HttpGet("{carnet}")]
     public IActionResult ObtenerPorCarnet(string carnet)
     {
-        try { var usuarios = servicio.ObtenerTodosUsuarios(); var usuario = usuarios?.FirstOrDefault(u => u.Carnet == carnet); if (usuario == null) return NotFound(); return Ok(usuario); }
-        catch (Exception ex) { return StatusCode(500, new { error = ex.GetType().Name, mensaje = ex.Message }); }
+        var usuarios = servicio.ObtenerTodos(); var usuario = usuarios?.FirstOrDefault(u => u.Carnet == carnet); if (usuario == null) return NotFound(); return Ok(usuario);
     }
 
     [HttpPost("iniciarSesion")]
     public IActionResult IniciarSesion([FromBody] IniciarSesionUsuarioConsulta consulta)
     {
-        try { var usuario = servicio.IniciarSesionUsuario(consulta); return Ok(usuario); }
-        catch (Exception ex) { return StatusCode(500, new { error = "Error interno", mensaje = "Error al procesar la solicitud" }); }
+        var usuario = servicio.IniciarSesionUsuario(consulta); return Ok(usuario);
     }
 }

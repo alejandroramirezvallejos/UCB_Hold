@@ -1,7 +1,11 @@
 using System.Data;
 using Npgsql;
 
-public class CategoriaRepository : ICategoriaRepository
+public class CategoriaRepository :
+    ICrearRepository<CrearCategoriaComando>,
+    IActualizarRepository<ActualizarCategoriaComando>,
+    IEliminarRepository<EliminarCategoriaComando>,
+    IObtenerTodosRepository<CrearCategoriaComando, DataTable>
 {
     private readonly IExecuteQuery _ejecutarConsulta;
     public CategoriaRepository(IExecuteQuery ejecutarConsulta) => _ejecutarConsulta = ejecutarConsulta;
@@ -30,10 +34,10 @@ public class CategoriaRepository : ICategoriaRepository
         catch (NpgsqlException ex) { throw new ErrorDataBase($"Error de base de datos al actualizar categoría: {ex.Message}", ex.SqlState, null, ex); }
         catch (Exception ex) { throw new ErrorRepository($"Error en repositorio al actualizar categoría: {ex.Message}", "actualizar", "categoría", ex); }
     }
-    public void Eliminar(int id)
+    public void Eliminar(EliminarCategoriaComando comando)
     {
         const string sql = @"CALL public.eliminar_categoria(@id)";
-        var parametros = new Dictionary<string, object?> { ["id"] = id };
+        var parametros = new Dictionary<string, object?> { ["id"] = comando.Id };
         try { _ejecutarConsulta.EjecutarSpNR(sql, parametros); }
         catch (NpgsqlException ex) { throw new ErrorDataBase($"Error de base de datos al eliminar categoría: {ex.Message}", ex.SqlState, null, ex); }
         catch (Exception ex) { throw new ErrorRepository($"Error en repositorio al eliminar categoría: {ex.Message}", "eliminar", "categoría", ex); }

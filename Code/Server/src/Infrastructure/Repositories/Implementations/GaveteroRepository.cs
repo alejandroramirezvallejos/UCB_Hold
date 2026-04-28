@@ -1,7 +1,11 @@
 using System.Data;
 using Npgsql;
 
-public class GaveteroRepository : IGaveteroRepository
+public class GaveteroRepository :
+    ICrearRepository<CrearGaveteroComando>,
+    IActualizarRepository<ActualizarGaveteroComando>,
+    IEliminarRepository<EliminarGaveteroComando>,
+    IObtenerTodosRepository<CrearGaveteroComando, DataTable>
 {
     private readonly IExecuteQuery _ejecutarConsulta;
     public GaveteroRepository(IExecuteQuery ejecutarConsulta) => _ejecutarConsulta = ejecutarConsulta;
@@ -38,10 +42,10 @@ public class GaveteroRepository : IGaveteroRepository
         catch (NpgsqlException ex) { throw new ErrorDataBase($"Error de base de datos al actualizar gavetero: {ex.Message}", ex.SqlState, null, ex); }
         catch (Exception ex) { throw new ErrorRepository($"Error del repositorio al actualizar gavetero: {ex.Message}", ex); }
     }
-    public void Eliminar(int id)
+    public void Eliminar(EliminarGaveteroComando comando)
     {
         const string sql = @"CALL public.eliminar_gavetero(@id)";
-        var parametros = new Dictionary<string, object?> { ["id"] = id };
+        var parametros = new Dictionary<string, object?> { ["id"] = comando.Id };
         try { _ejecutarConsulta.EjecutarSpNR(sql, parametros); }
         catch (NpgsqlException ex) { throw new ErrorDataBase($"Error de base de datos al eliminar gavetero: {ex.Message}", ex.SqlState, null, ex); }
         catch (Exception ex) { throw new ErrorRepository($"Error del repositorio al eliminar gavetero: {ex.Message}", ex); }

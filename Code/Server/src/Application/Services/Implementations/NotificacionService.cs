@@ -1,17 +1,18 @@
 ﻿using System.Data;
-using IMT_Reservas.Server.Application.Interfaces;
 using IMT_Reservas.Server.Shared.Common;
 
-public class NotificacionService : BaseServicios, INotificacionService
+public class NotificacionService : BaseServicios,
+    ICrearServicio<CrearNotificacionComando>,
+    IEliminarServicio<EliminarNotificacionComando>
 {
-    private readonly INotificacionRepository _notificacionRepository;
-    private readonly IPrestamoRepository _prestamoRepository;
-    public NotificacionService(INotificacionRepository notificacionRepository, IPrestamoRepository prestamoRepository)
+    private readonly NotificacionRepository _notificacionRepository;
+    private readonly PrestamoRepository _prestamoRepository;
+    public NotificacionService(NotificacionRepository notificacionRepository, PrestamoRepository prestamoRepository)
     {
         _notificacionRepository = notificacionRepository;
         _prestamoRepository = prestamoRepository;
     }    
-    public void CrearNotificacion(CrearNotificacionComando comando)
+    public void Crear(CrearNotificacionComando comando)
     {
         ValidarEntradaCreacion(comando);
         _notificacionRepository.Crear(comando);
@@ -20,7 +21,7 @@ public class NotificacionService : BaseServicios, INotificacionService
     {
         base.ValidarEntradaCreacion(comando);
     }
-    public void EliminarNotificacion(EliminarNotificacionComando comando)
+    public void Eliminar(EliminarNotificacionComando comando)
     {
         ValidarEntradaEliminacion(comando);
         _notificacionRepository.Eliminar(comando);

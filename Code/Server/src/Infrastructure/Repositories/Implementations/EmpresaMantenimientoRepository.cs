@@ -1,7 +1,11 @@
 using System.Data;
 using Npgsql;
 
-public class EmpresaMantenimientoRepository : IEmpresaMantenimientoRepository
+public class EmpresaMantenimientoRepository :
+    ICrearRepository<CrearEmpresaMantenimientoComando>,
+    IActualizarRepository<ActualizarEmpresaMantenimientoComando>,
+    IEliminarRepository<EliminarEmpresaMantenimientoComando>,
+    IObtenerTodosRepository<CrearEmpresaMantenimientoComando, DataTable>
 {
     private readonly IExecuteQuery _ejecutarConsulta;
     public EmpresaMantenimientoRepository(IExecuteQuery ejecutarConsulta) => _ejecutarConsulta = ejecutarConsulta;
@@ -38,10 +42,10 @@ public class EmpresaMantenimientoRepository : IEmpresaMantenimientoRepository
         catch (NpgsqlException ex) { throw new ErrorDataBase($"Error de base de datos al actualizar empresa de mantenimiento: {ex.Message}", ex.SqlState, null, ex); }
         catch (Exception ex) { throw new ErrorRepository($"Error del repositorio al actualizar empresa de mantenimiento: {ex.Message}", ex); }
     }
-    public void Eliminar(int id)
+    public void Eliminar(EliminarEmpresaMantenimientoComando comando)
     {
         const string sql = @"CALL public.eliminar_empresas_mantenimiento(@id)";
-        var parametros = new Dictionary<string, object?> { ["id"] = id };
+        var parametros = new Dictionary<string, object?> { ["id"] = comando.Id };
         try { _ejecutarConsulta.EjecutarSpNR(sql, parametros); }
         catch (NpgsqlException ex) { throw new ErrorDataBase($"Error de base de datos al eliminar empresa de mantenimiento: {ex.Message}", ex.SqlState, null, ex); }
         catch (Exception ex) { throw new ErrorRepository($"Error del repositorio al eliminar empresa de mantenimiento: {ex.Message}", ex); }

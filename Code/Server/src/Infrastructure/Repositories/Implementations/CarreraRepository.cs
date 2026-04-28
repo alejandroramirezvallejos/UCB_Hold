@@ -1,7 +1,11 @@
 using System.Data;
 using Npgsql;
 
-public class CarreraRepository : ICarreraRepository
+public class CarreraRepository :
+    ICrearRepository<CrearCarreraComando>,
+    IActualizarRepository<ActualizarCarreraComando>,
+    IEliminarRepository<EliminarCarreraComando>,
+    IObtenerTodosRepository<CrearCarreraComando, DataTable>
 {
     private readonly IExecuteQuery _ejecutarConsulta;
     public CarreraRepository(IExecuteQuery ejecutarConsulta) => _ejecutarConsulta = ejecutarConsulta;
@@ -15,10 +19,10 @@ public class CarreraRepository : ICarreraRepository
         catch (Exception ex) { throw new ErrorRepository($"Error en repositorio al crear carrera: {ex.Message}", "crear", "carrera", ex); }
     }
 
-    public void Eliminar(int id)
+    public void Eliminar(EliminarCarreraComando comando)
     {
         const string sql = "CALL public.eliminar_carrera(@id)";
-        var parametros = new Dictionary<string, object?> { ["id"] = id };
+        var parametros = new Dictionary<string, object?> { ["id"] = comando.Id };
         try { _ejecutarConsulta.EjecutarSpNR(sql, parametros); }
         catch (NpgsqlException ex) { throw new ErrorDataBase($"Error de base de datos al eliminar carrera: {ex.Message}", ex.SqlState, null, ex); }
         catch (Exception ex) { throw new ErrorRepository($"Error en repositorio al eliminar carrera: {ex.Message}", "eliminar", "carrera", ex); }
@@ -37,7 +41,7 @@ public class CarreraRepository : ICarreraRepository
         catch (Exception ex) { throw new ErrorRepository($"Error en repositorio al actualizar carrera: {ex.Message}", "actualizar", "carrera", ex); }
     }
 
-    public DataTable ObtenerTodas()
+    public DataTable ObtenerTodos()
     {
         const string sql = "SELECT * from public.obtener_carreras()";
         try { return _ejecutarConsulta.EjecutarFuncion(sql, new Dictionary<string, object?>()); }

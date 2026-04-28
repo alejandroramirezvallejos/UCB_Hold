@@ -1,16 +1,35 @@
 using System.Data;
 using IMT_Reservas.Server.Shared.Common;
 
-public class CategoriaService : BaseServicios, ICategoriaService
+public class CategoriaService : BaseServicios,
+    ICrearServicio<CrearCategoriaComando>,
+    IActualizarServicio<ActualizarCategoriaComando>,
+    IEliminarServicio<EliminarCategoriaComando>,
+    IObtenerTodosServicio<CategoriaDto>
 {
-    private readonly ICategoriaRepository _categoriaRepository;
-    public CategoriaService(ICategoriaRepository categoriaRepository) => _categoriaRepository = categoriaRepository;
-    public virtual void CrearCategoria(CrearCategoriaComando comando)
+    private readonly ICrearRepository<CrearCategoriaComando> _crearRepository;
+    private readonly IActualizarRepository<ActualizarCategoriaComando> _actualizarRepository;
+    private readonly IEliminarRepository<EliminarCategoriaComando> _eliminarRepository;
+    private readonly IObtenerTodosRepository<CrearCategoriaComando, DataTable> _obtenerTodosRepository;
+
+    public CategoriaService(
+        ICrearRepository<CrearCategoriaComando> crearRepository,
+        IActualizarRepository<ActualizarCategoriaComando> actualizarRepository,
+        IEliminarRepository<EliminarCategoriaComando> eliminarRepository,
+        IObtenerTodosRepository<CrearCategoriaComando, DataTable> obtenerTodosRepository)
+    {
+        _crearRepository = crearRepository;
+        _actualizarRepository = actualizarRepository;
+        _eliminarRepository = eliminarRepository;
+        _obtenerTodosRepository = obtenerTodosRepository;
+    }
+
+    public virtual void Crear(CrearCategoriaComando comando)
     {
         try
         {
             ValidarEntradaCreacion(comando);
-            _categoriaRepository.Crear(comando);
+            _crearRepository.Crear(comando);
         }
         catch (ErrorNombreRequerido) { throw; }
         catch (ErrorLongitudInvalida) { throw; }
@@ -45,11 +64,11 @@ public class CategoriaService : BaseServicios, ICategoriaService
             if (categoriaComando.Nombre.Length > 255) throw new ErrorLongitudInvalida("nombre de la categoría", 255);
         }
     }
-    public virtual List<CategoriaDto>? ObtenerTodasCategorias()
+    public virtual List<CategoriaDto>? ObtenerTodos()
     {
         try
         {
-            DataTable resultado = _categoriaRepository.ObtenerTodos();
+            DataTable resultado = _obtenerTodosRepository.ObtenerTodos();
             var lista = new List<CategoriaDto>(resultado.Rows.Count);            foreach (DataRow fila in resultado.Rows)
             {
                 var baseDto = MapearFilaADto(fila);
@@ -60,12 +79,12 @@ public class CategoriaService : BaseServicios, ICategoriaService
         }
         catch { throw; }
     }
-    public virtual void ActualizarCategoria(ActualizarCategoriaComando comando)
+    public virtual void Actualizar(ActualizarCategoriaComando comando)
     {
         try
         {
             ValidarEntradaActualizacion(comando);
-            _categoriaRepository.Actualizar(comando);
+            _actualizarRepository.Actualizar(comando);
         }        catch (ErrorIdInvalido) { throw; }
         catch (ErrorNombreRequerido) { throw; }
         catch (ErrorLongitudInvalida) { throw; }
@@ -96,12 +115,12 @@ public class CategoriaService : BaseServicios, ICategoriaService
         if (string.IsNullOrWhiteSpace(comando.Nombre)) throw new ErrorNombreRequerido();
         if (comando.Nombre.Length > 255) throw new ErrorLongitudInvalida("nombre de la categoría", 255);
     }
-    public virtual void EliminarCategoria(EliminarCategoriaComando comando)
+    public virtual void Eliminar(EliminarCategoriaComando comando)
     {
         try
         {
             ValidarEntradaEliminacion(comando);
-            _categoriaRepository.Eliminar(comando.Id);
+            _eliminarRepository.Eliminar(comando);
         }        catch (ErrorIdInvalido) { throw; }
         catch (Exception ex)
         {

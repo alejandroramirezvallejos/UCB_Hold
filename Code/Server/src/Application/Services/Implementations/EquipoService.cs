@@ -1,15 +1,35 @@
 using System.Data;
 using IMT_Reservas.Server.Shared.Common;
 
-public class EquipoService : BaseServicios, IEquipoService
+public class EquipoService : BaseServicios,
+    ICrearServicio<CrearEquipoComando>,
+    IActualizarServicio<ActualizarEquipoComando>,
+    IEliminarServicio<EliminarEquipoComando>,
+    IObtenerTodosServicio<EquipoDto>
 {
-    private readonly IEquipoRepository _equipoRepository;
-    public EquipoService(IEquipoRepository equipoRepository) => _equipoRepository = equipoRepository;    public void CrearEquipo(CrearEquipoComando comando)
+    private readonly ICrearRepository<CrearEquipoComando> _crearRepository;
+    private readonly IActualizarRepository<ActualizarEquipoComando> _actualizarRepository;
+    private readonly IEliminarRepository<EliminarEquipoComando> _eliminarRepository;
+    private readonly IObtenerTodosRepository<CrearEquipoComando, DataTable> _obtenerTodosRepository;
+
+    public EquipoService(
+        ICrearRepository<CrearEquipoComando> crearRepository,
+        IActualizarRepository<ActualizarEquipoComando> actualizarRepository,
+        IEliminarRepository<EliminarEquipoComando> eliminarRepository,
+        IObtenerTodosRepository<CrearEquipoComando, DataTable> obtenerTodosRepository)
+    {
+        _crearRepository = crearRepository;
+        _actualizarRepository = actualizarRepository;
+        _eliminarRepository = eliminarRepository;
+        _obtenerTodosRepository = obtenerTodosRepository;
+    }
+
+    public void Crear(CrearEquipoComando comando)
     {
         try
         {
             ValidarEntradaCreacion(comando);
-            _equipoRepository.Crear(comando);
+            _crearRepository.Crear(comando);
         }
         catch (ErrorNombreRequerido) { throw; }
         catch (ErrorValorNegativo) { throw; }
@@ -48,12 +68,12 @@ public class EquipoService : BaseServicios, IEquipoService
         if (ex is ErrorRepository errorRepo) throw new Exception($"Error del repositorio al crear equipo: {errorRepo.Message}", errorRepo);
         throw ex ?? new Exception("Error desconocido en creación");
     }
-    public void ActualizarEquipo(ActualizarEquipoComando comando)
+    public void Actualizar(ActualizarEquipoComando comando)
     {
         try
         {
             ValidarEntradaActualizacion(comando);
-            _equipoRepository.Actualizar(comando);
+            _actualizarRepository.Actualizar(comando);
         }
         catch (ErrorIdInvalido) { throw; }
         catch (ErrorValorNegativo) { throw; }
@@ -81,12 +101,12 @@ public class EquipoService : BaseServicios, IEquipoService
         if (comando.CostoReferencia.HasValue && comando.CostoReferencia < 0) throw new ErrorValorNegativo("costo de referencia");
         if (comando.TiempoMaximoPrestamo.HasValue && comando.TiempoMaximoPrestamo <= 0) throw new ErrorValorNegativo("Tiempo máximo de préstamo");
     }
-    public void EliminarEquipo(EliminarEquipoComando comando)
+    public void Eliminar(EliminarEquipoComando comando)
     {
         try
         {
             ValidarEntradaEliminacion(comando);
-            _equipoRepository.Eliminar(comando.Id);
+            _eliminarRepository.Eliminar(comando);
         }
         catch (ErrorIdInvalido) { throw; }        catch (Exception ex)
         {
@@ -115,11 +135,11 @@ public class EquipoService : BaseServicios, IEquipoService
         if (ex is ErrorRepository errorRepo) throw new Exception($"Error del repositorio al eliminar equipo: {errorRepo.Message}", errorRepo);
         throw ex ?? new Exception("Error desconocido en eliminación");
     }    
-    public List<EquipoDto>? ObtenerTodosEquipos()
+    public List<EquipoDto>? ObtenerTodos()
     {
         try
         {
-            DataTable resultado = _equipoRepository.ObtenerTodos();
+            DataTable resultado = _obtenerTodosRepository.ObtenerTodos();
             var lista = new List<EquipoDto>(resultado.Rows.Count);
             foreach (DataRow fila in resultado.Rows)
             {

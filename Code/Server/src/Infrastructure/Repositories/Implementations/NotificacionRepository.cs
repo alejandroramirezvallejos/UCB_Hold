@@ -3,7 +3,7 @@ using MongoDB.Driver;
 using MongoDB.Bson;
 using IMT_Reservas.Server.Infrastructure.MongoDb;
 
-public class NotificacionRepository : INotificacionRepository
+public class NotificacionRepository
 {
     private readonly IMongoCollection<BsonDocument> _coleccion;
     public NotificacionRepository(MongoDbContexto contexto) => _coleccion = contexto.BaseDeDatos.GetCollection<BsonDocument>("notificaciones");

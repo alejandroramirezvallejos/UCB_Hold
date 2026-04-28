@@ -1,17 +1,33 @@
 using System.Data;
 using IMT_Reservas.Server.Shared.Common;
-public class MuebleService : BaseServicios, IMuebleService
+public class MuebleService : BaseServicios,
+    ICrearServicio<CrearMuebleComando>,
+    IActualizarServicio<ActualizarMuebleComando>,
+    IEliminarServicio<EliminarMuebleComando>,
+    IObtenerTodosServicio<MuebleDto>
 {
-    private readonly IMuebleRepository _muebleRepository;    public MuebleService(IMuebleRepository muebleRepository)
+    private readonly ICrearRepository<CrearMuebleComando> _crearRepository;
+    private readonly IActualizarRepository<ActualizarMuebleComando> _actualizarRepository;
+    private readonly IEliminarRepository<EliminarMuebleComando> _eliminarRepository;
+    private readonly IObtenerTodosRepository<CrearMuebleComando, DataTable> _obtenerTodosRepository;
+
+    public MuebleService(
+        ICrearRepository<CrearMuebleComando> crearRepository,
+        IActualizarRepository<ActualizarMuebleComando> actualizarRepository,
+        IEliminarRepository<EliminarMuebleComando> eliminarRepository,
+        IObtenerTodosRepository<CrearMuebleComando, DataTable> obtenerTodosRepository)
     {
-        _muebleRepository = muebleRepository;
+        _crearRepository = crearRepository;
+        _actualizarRepository = actualizarRepository;
+        _eliminarRepository = eliminarRepository;
+        _obtenerTodosRepository = obtenerTodosRepository;
     }
-    public virtual void CrearMueble(CrearMuebleComando comando)
+    public virtual void Crear(CrearMuebleComando comando)
     {
         try
         {
             ValidarEntradaCreacion(comando);
-            _muebleRepository.Crear(comando);
+            _crearRepository.Crear(comando);
         }
         catch (ErrorNombreRequerido) { throw; }
         catch (ErrorValorNegativo) { throw; }
@@ -45,12 +61,12 @@ public class MuebleService : BaseServicios, IMuebleService
         }
         if (ex is ErrorRepository errorRepo) throw new Exception($"Error del repositorio al crear mueble: {errorRepo.Message}", errorRepo);
     }
-    public virtual void ActualizarMueble(ActualizarMuebleComando comando)
+    public virtual void Actualizar(ActualizarMuebleComando comando)
     {
         try
         {
             ValidarEntradaActualizacion(comando);
-            _muebleRepository.Actualizar(comando);
+            _actualizarRepository.Actualizar(comando);
         }
         catch (ErrorIdInvalido) { throw; }
         catch (ErrorNombreRequerido) { throw; }
@@ -78,12 +94,12 @@ public class MuebleService : BaseServicios, IMuebleService
         if (comando.Profundidad.HasValue && comando.Profundidad <= 0) throw new ErrorValorNegativo("profundidad");
         if (comando.Altura.HasValue && comando.Altura <= 0) throw new ErrorValorNegativo("altura");
     }
-    public virtual void EliminarMueble(EliminarMuebleComando comando)
+    public virtual void Eliminar(EliminarMuebleComando comando)
     {
         try
         {
             ValidarEntradaEliminacion(comando);
-            _muebleRepository.Eliminar(comando.Id);
+            _eliminarRepository.Eliminar(comando);
         }
         catch (ErrorIdInvalido) { throw; }
         catch (Exception ex)
@@ -111,11 +127,11 @@ public class MuebleService : BaseServicios, IMuebleService
             throw new Exception($"Error inesperado de base de datos al eliminar mueble: {errorDb.Message}", errorDb);
         }        if (ex is ErrorRepository errorRepo) throw new Exception($"Error del repositorio al eliminar mueble: {errorRepo.Message}", errorRepo);
     }
-    public virtual List<MuebleDto>? ObtenerTodosMuebles()
+    public virtual List<MuebleDto>? ObtenerTodos()
     {
         try
         {
-            DataTable resultado = _muebleRepository.ObtenerTodos();
+            DataTable resultado = _obtenerTodosRepository.ObtenerTodos();
             var lista = new List<MuebleDto>(resultado.Rows.Count);
             foreach (DataRow fila in resultado.Rows)
             {

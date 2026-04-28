@@ -1,5 +1,4 @@
-﻿using IMT_Reservas.Server.Application.Interfaces;
-using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Mvc;
 
 namespace API.Controllers;
 
@@ -7,35 +6,31 @@ namespace API.Controllers;
 [Route("api/[controller]")]
 public class NotificacionController : ControllerBase
 {
-    private readonly INotificacionService servicio;
-    public NotificacionController(INotificacionService servicio) => this.servicio = servicio;
+    private readonly NotificacionService servicio;
+    public NotificacionController(NotificacionService servicio) => this.servicio = servicio;
 
     [HttpPost]
     public IActionResult Crear([FromBody] CrearNotificacionComando comando)
     {
-        try { servicio.CrearNotificacion(comando); return Ok(new { mensaje = "Notificación creada exitosamente" }); }
-        catch (Exception ex) { return StatusCode(500, new { error = ex.GetType().Name, mensaje = ex.Message }); }
+        servicio.Crear(comando); return Ok(new { mensaje = "Notificación creada exitosamente" });
     }
 
     [HttpGet("{carnetUsuario}")]
     public IActionResult ObtenerPorUsuario(string carnetUsuario)
     {
-        try { var consulta = new ObtenerNotificacionPorCarnetUsuarioConsulta(carnetUsuario); return Ok(servicio.ObtenerNotificacionesPorUsuario(consulta)); }
-        catch (Exception ex) { return StatusCode(500, new { error = ex.GetType().Name, mensaje = ex.Message }); }
+        var consulta = new ObtenerNotificacionPorCarnetUsuarioConsulta(carnetUsuario); return Ok(servicio.ObtenerNotificacionesPorUsuario(consulta));
     }
 
     [HttpDelete("{id}")]
     public IActionResult Eliminar(string id)
     {
-        try { servicio.EliminarNotificacion(new EliminarNotificacionComando(id)); return NoContent(); }
-        catch (Exception ex) { return StatusCode(500, new { error = ex.GetType().Name, mensaje = ex.Message }); }
+        servicio.Eliminar(new EliminarNotificacionComando(id)); return NoContent();
     }
 
     [HttpPost("{id}/leida")]
     public IActionResult MarcarComoLeida(string id)
     {
-        try { servicio.MarcarNotificacionComoLeida(new MarcarComoLeidoComando(id)); return Ok(new { mensaje = "Notificación marcada como leída" }); }
-        catch (Exception ex) { return StatusCode(500, new { error = ex.GetType().Name, mensaje = ex.Message }); }
+        servicio.MarcarNotificacionComoLeida(new MarcarComoLeidoComando(id)); return Ok(new { mensaje = "Notificación marcada como leída" });
     }
 
     [HttpGet("{carnetUsuario}/tiene-no-leidas")]
@@ -56,22 +51,19 @@ public class NotificacionController : ControllerBase
     [HttpPost("enviar-retrasos")]
     public IActionResult EnviarRetrasos()
     {
-        try { servicio.EnviarNotificacionesRetraso(); return Ok(new { mensaje = "Notificaciones de retraso enviadas" }); }
-        catch (Exception ex) { return StatusCode(500, new { error = ex.GetType().Name, mensaje = ex.Message }); }
+        servicio.EnviarNotificacionesRetraso(); return Ok(new { mensaje = "Notificaciones de retraso enviadas" });
     }
 
     [HttpPost("enviar-penalizaciones")]
     public IActionResult EnviarPenalizaciones()
     {
-        try { servicio.EnviarPenalizaciones(); return Ok(new { mensaje = "Penalizaciones enviadas" }); }
-        catch (Exception ex) { return StatusCode(500, new { error = ex.GetType().Name, mensaje = ex.Message }); }
+        servicio.EnviarPenalizaciones(); return Ok(new { mensaje = "Penalizaciones enviadas" });
     }
 
     [HttpPost("enviar-estado-prestamo")]
     public IActionResult EnviarEstadoPrestamo()
     {
-        try { servicio.EnviarEstadoDelPrestamo(); return Ok(new { mensaje = "Notificaciones de estado de préstamo enviadas" }); }
-        catch (Exception ex) { return StatusCode(500, new { error = ex.GetType().Name, mensaje = ex.Message }); }
+        servicio.EnviarEstadoDelPrestamo(); return Ok(new { mensaje = "Notificaciones de estado de préstamo enviadas" });
     }
 
 }

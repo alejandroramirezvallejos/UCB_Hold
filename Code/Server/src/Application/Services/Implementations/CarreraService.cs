@@ -1,16 +1,35 @@
 using System.Data;
 using IMT_Reservas.Server.Shared.Common;
 
-public class CarreraService : BaseServicios, ICarreraService
+public class CarreraService : BaseServicios,
+    ICrearServicio<CrearCarreraComando>,
+    IActualizarServicio<ActualizarCarreraComando>,
+    IEliminarServicio<EliminarCarreraComando>,
+    IObtenerTodosServicio<CarreraDto>
 {
-    private readonly ICarreraRepository _carreraRepository;
-    public CarreraService(ICarreraRepository carreraRepository) => _carreraRepository = carreraRepository;
-    public virtual void CrearCarrera(CrearCarreraComando comando)
+    private readonly ICrearRepository<CrearCarreraComando> _crearRepository;
+    private readonly IActualizarRepository<ActualizarCarreraComando> _actualizarRepository;
+    private readonly IEliminarRepository<EliminarCarreraComando> _eliminarRepository;
+    private readonly IObtenerTodosRepository<CrearCarreraComando, DataTable> _obtenerTodosRepository;
+
+    public CarreraService(
+        ICrearRepository<CrearCarreraComando> crearRepository,
+        IActualizarRepository<ActualizarCarreraComando> actualizarRepository,
+        IEliminarRepository<EliminarCarreraComando> eliminarRepository,
+        IObtenerTodosRepository<CrearCarreraComando, DataTable> obtenerTodosRepository)
+    {
+        _crearRepository = crearRepository;
+        _actualizarRepository = actualizarRepository;
+        _eliminarRepository = eliminarRepository;
+        _obtenerTodosRepository = obtenerTodosRepository;
+    }
+
+    public virtual void Crear(CrearCarreraComando comando)
     {
         try
         {
             ValidarEntradaCreacion(comando);
-            _carreraRepository.Crear(comando);
+            _crearRepository.Crear(comando);
         }        catch (ErrorNombreRequerido) { throw; }
         catch (ErrorLongitudInvalida) { throw; }
         catch (Exception ex)
@@ -44,11 +63,11 @@ public class CarreraService : BaseServicios, ICarreraService
             if (carreraComando.Nombre.Length > 256) throw new ErrorLongitudInvalida("nombre de la carrera", 255);
         }
     }
-    public virtual List<CarreraDto>? ObtenerTodasCarreras()
+    public virtual List<CarreraDto>? ObtenerTodos()
     {
         try
         {
-            DataTable resultado = _carreraRepository.ObtenerTodas();
+            DataTable resultado = _obtenerTodosRepository.ObtenerTodos();
             var lista = new List<CarreraDto>(resultado.Rows.Count);
             foreach (DataRow fila in resultado.Rows)
             {
@@ -60,12 +79,12 @@ public class CarreraService : BaseServicios, ICarreraService
         }
         catch { throw; }
     }
-    public virtual void ActualizarCarrera(ActualizarCarreraComando comando)
+    public virtual void Actualizar(ActualizarCarreraComando comando)
     {
         try
         {
             ValidarEntradaActualizacion(comando);
-            _carreraRepository.Actualizar(comando);
+            _actualizarRepository.Actualizar(comando);
         }        catch (ErrorIdInvalido) { throw; }
         catch (ErrorNombreRequerido) { throw; }
         catch (ErrorLongitudInvalida) { throw; }
@@ -96,12 +115,12 @@ public class CarreraService : BaseServicios, ICarreraService
         if (string.IsNullOrWhiteSpace(comando.Nombre)) throw new ErrorNombreRequerido();
         if (comando.Nombre.Length > 255) throw new ErrorLongitudInvalida("nombre de la carrera", 255);
     }
-    public virtual void EliminarCarrera(EliminarCarreraComando comando)
+    public virtual void Eliminar(EliminarCarreraComando comando)
     {
         try
         {
             ValidarEntradaEliminacion(comando);
-            _carreraRepository.Eliminar(comando.Id);        
+            _eliminarRepository.Eliminar(comando);        
             }
         catch (Exception ex)
         {

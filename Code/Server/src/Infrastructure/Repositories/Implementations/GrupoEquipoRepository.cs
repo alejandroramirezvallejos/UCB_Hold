@@ -1,7 +1,12 @@
 using System.Data;
 using Npgsql;
 
-public class GrupoEquipoRepository : IGrupoEquipoRepository
+public class GrupoEquipoRepository :
+    ICrearRepository<CrearGrupoEquipoComando>,
+    IActualizarRepository<ActualizarGrupoEquipoComando>,
+    IEliminarRepository<EliminarGrupoEquipoComando>,
+    IObtenerTodosRepository<CrearGrupoEquipoComando, DataTable>,
+    IObtenerPorIdRepository<int, CrearGrupoEquipoComando, DataTable?>
 {
     private readonly IExecuteQuery _ejecutarConsulta;
     public GrupoEquipoRepository(IExecuteQuery ejecutarConsulta) => _ejecutarConsulta = ejecutarConsulta;
@@ -63,10 +68,10 @@ public class GrupoEquipoRepository : IGrupoEquipoRepository
         catch (NpgsqlException ex) { throw new ErrorDataBase($"Error de base de datos al actualizar grupo de equipo: {ex.Message}", ex.SqlState, null, ex); }
         catch (Exception ex) { throw new ErrorRepository($"Error del repositorio al actualizar grupo de equipo: {ex.Message}", ex); }
     }
-    public void Eliminar(int id)
+    public void Eliminar(EliminarGrupoEquipoComando comando)
     {
         const string sql = @"CALL public.eliminar_grupo_equipo(@id)";
-        var parametros = new Dictionary<string, object?> { ["id"] = id };
+        var parametros = new Dictionary<string, object?> { ["id"] = comando.Id };
         try { _ejecutarConsulta.EjecutarSpNR(sql, parametros); }
         catch (NpgsqlException ex) { throw new ErrorDataBase($"Error de base de datos al eliminar grupo de equipo: {ex.Message}", ex.SqlState, null, ex); }
         catch (Exception ex) { throw new ErrorRepository($"Error del repositorio al eliminar grupo de equipo: {ex.Message}", ex); }

@@ -1,7 +1,10 @@
 using System.Data;
 using Npgsql;
 
-public class MantenimientoRepository : IMantenimientoRepository
+public class MantenimientoRepository :
+    ICrearRepository<CrearMantenimientoComando>,
+    IEliminarRepository<EliminarMantenimientoComando>,
+    IObtenerTodosRepository<CrearMantenimientoComando, DataTable>
 {
     private readonly IExecuteQuery _ejecutarConsulta;
     public MantenimientoRepository(IExecuteQuery ejecutarConsulta) => _ejecutarConsulta = ejecutarConsulta;
@@ -23,10 +26,10 @@ public class MantenimientoRepository : IMantenimientoRepository
         catch (NpgsqlException ex) { throw new ErrorDataBase($"Error de base de datos al crear mantenimiento: {ex.Message}", ex.SqlState, null, ex); }
         catch (Exception ex) { throw new ErrorRepository($"Error del repositorio al crear mantenimiento: {ex.Message}", ex); }
     }
-    public void Eliminar(int id)
+    public void Eliminar(EliminarMantenimientoComando comando)
     {
         const string sql = @"CALL public.eliminar_mantenimiento(@id)";
-        var parametros = new Dictionary<string, object?> { ["id"] = id };
+        var parametros = new Dictionary<string, object?> { ["id"] = comando.Id };
         try { _ejecutarConsulta.EjecutarSpNR(sql, parametros); }
         catch (NpgsqlException ex) { throw new ErrorDataBase($"Error de base de datos al eliminar mantenimiento: {ex.Message}", ex.SqlState, null, ex); }
         catch (Exception ex) { throw new ErrorRepository($"Error del repositorio al eliminar mantenimiento: {ex.Message}", ex); }
