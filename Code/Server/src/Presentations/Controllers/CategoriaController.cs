@@ -13,7 +13,7 @@ public class CategoriaController : ControllerBase
     [HttpPost]
     public IActionResult Crear([FromBody] CrearCategoriaComando input)
     {
-        servicio.Crear(input); return Created();
+        servicio.Crear(input); return Created("", new { mensaje = "Categoría creada exitosamente" });
     }
 
     [HttpGet]

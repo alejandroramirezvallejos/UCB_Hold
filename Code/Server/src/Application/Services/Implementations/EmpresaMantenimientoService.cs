@@ -7,35 +7,28 @@ public class EmpresaMantenimientoService : BaseServicios,
     IEliminarServicio<EliminarEmpresaMantenimientoComando>,
     IObtenerTodosServicio<EmpresaMantenimientoDto>
 {
-    private readonly ICrearRepository<CrearEmpresaMantenimientoComando> _crearRepository;
-    private readonly IActualizarRepository<ActualizarEmpresaMantenimientoComando> _actualizarRepository;
-    private readonly IEliminarRepository<EliminarEmpresaMantenimientoComando> _eliminarRepository;
-    private readonly IObtenerTodosRepository<CrearEmpresaMantenimientoComando, DataTable> _obtenerTodosRepository;
+    private readonly EmpresaMantenimientoRepository _empresaRepository;
 
-    public EmpresaMantenimientoService(
-        ICrearRepository<CrearEmpresaMantenimientoComando> crearRepository,
-        IActualizarRepository<ActualizarEmpresaMantenimientoComando> actualizarRepository,
-        IEliminarRepository<EliminarEmpresaMantenimientoComando> eliminarRepository,
-        IObtenerTodosRepository<CrearEmpresaMantenimientoComando, DataTable> obtenerTodosRepository)
+    public EmpresaMantenimientoService(EmpresaMantenimientoRepository empresaRepository)
     {
-        _crearRepository = crearRepository;
-        _actualizarRepository = actualizarRepository;
-        _eliminarRepository = eliminarRepository;
-        _obtenerTodosRepository = obtenerTodosRepository;
+        _empresaRepository = empresaRepository;
     }
+
     public virtual void Crear(CrearEmpresaMantenimientoComando comando)
     {
-        try
-        {
-            ValidarEntradaCreacion(comando);
-            _crearRepository.Crear(comando);
-        }
-        catch (ErrorNombreRequerido) { throw; }
-        catch (ErrorLongitudInvalida) { throw; }        catch (Exception ex)
-        {
-            InterpretarErrorCreacion(comando, ex);
-        }
-    }    
+        ValidarEntradaCreacion(comando);
+
+        // Intentar reactivar si existe una empresa eliminada lógicamente con ese nombre
+        if (_empresaRepository.ReactivarEliminadaPorNombre(comando.NombreEmpresa!))
+            return;
+
+        // Verificar si ya existe una empresa activa con ese nombre
+        if (_empresaRepository.ExisteActivaPorNombre(comando.NombreEmpresa!))
+            throw new ErrorRegistroYaExiste();
+
+        _empresaRepository.Crear(comando);
+    }
+    
     protected override void ValidarEntradaCreacion<T>(T comando)
     {
         base.ValidarEntradaCreacion(comando); // Validación base (null check)
@@ -48,26 +41,12 @@ public class EmpresaMantenimientoService : BaseServicios,
             if (!string.IsNullOrWhiteSpace(empresaComando.Telefono) && empresaComando.Telefono.Length > 20) throw new ErrorLongitudInvalida("telefono", 20);
         }
     }
-    
-    protected override void InterpretarErrorCreacion<T>(T comando, Exception ex)
-    {
-        if (ex is ErrorDataBase errorDb)
-        {
-            var mensaje = errorDb.Message?.ToLower() ?? "";
-            if (errorDb.SqlState == "23505" || mensaje.Contains("ya existe una empresa de mantenimiento con esos datos"))
-                throw new ErrorRegistroYaExiste();
-            if (mensaje.Contains("error al insertar empresa de mantenimiento"))
-                throw new Exception($"Error inesperado al insertar empresa de mantenimiento: {errorDb.Message}", errorDb);
-            throw new Exception($"Error inesperado de base de datos al crear empresa de mantenimiento: {errorDb.Message}", errorDb);
-        }
-        if (ex is ErrorRepository errorRepo)
-            throw new Exception($"Error del repositorio al crear empresa de mantenimiento: {errorRepo.Message}", errorRepo);
-        throw ex ?? new Exception("Error desconocido en creación");
-    }    public virtual List<EmpresaMantenimientoDto>? ObtenerTodos()
+
+    public virtual List<EmpresaMantenimientoDto>? ObtenerTodos()
     {
         try
         {
-            DataTable resultado = _obtenerTodosRepository.ObtenerTodos();
+            DataTable resultado = _empresaRepository.ObtenerTodos();
             var lista = new List<EmpresaMantenimientoDto>(resultado.Rows.Count);
             foreach (DataRow fila in resultado.Rows)
             {
@@ -78,19 +57,23 @@ public class EmpresaMantenimientoService : BaseServicios,
         }
         catch { throw; }
     }
+    
     public virtual void Actualizar(ActualizarEmpresaMantenimientoComando comando)
     {
-        try
+        ValidarEntradaActualizacion(comando);
+
+        // Verificar que la empresa exista y esté activa
+        if (!_empresaRepository.ExisteActivaPorId(comando.Id))
+            throw new ErrorRegistroNoEncontrado();
+
+        // Verificar duplicados si se está cambiando el nombre
+        if (!string.IsNullOrWhiteSpace(comando.NombreEmpresa))
         {
-            ValidarEntradaActualizacion(comando);
-            _actualizarRepository.Actualizar(comando);
+            if (_empresaRepository.ExisteActivaPorNombreExcluyendoId(comando.NombreEmpresa, comando.Id))
+                throw new ErrorRegistroYaExiste();
         }
-        catch (ErrorIdInvalido) { throw; }
-        catch (ErrorNombreRequerido) { throw; }
-        catch (ErrorLongitudInvalida) { throw; }        catch (Exception ex)
-        {
-            InterpretarErrorActualizacion(comando, ex);
-        }
+
+        _empresaRepository.Actualizar(comando);
     }
 
     private void ValidarEntradaActualizacion(ActualizarEmpresaMantenimientoComando comando)
@@ -103,16 +86,15 @@ public class EmpresaMantenimientoService : BaseServicios,
 
     public virtual void Eliminar(EliminarEmpresaMantenimientoComando comando)
     {
-        try
-        {
-            ValidarEntradaEliminacion(comando);
-            _eliminarRepository.Eliminar(comando);
-        }
-        catch (ErrorIdInvalido) { throw; }        catch (Exception ex)
-        {
-            InterpretarErrorEliminacion(comando, ex);
-        }
-    }    
+        ValidarEntradaEliminacion(comando);
+
+        // Verificar que la empresa exista y esté activa
+        if (!_empresaRepository.ExisteActivaPorId(comando.Id))
+            throw new ErrorRegistroNoEncontrado();
+
+        _empresaRepository.Eliminar(comando);
+    }
+    
     protected override void ValidarEntradaEliminacion<T>(T comando)
     {
         base.ValidarEntradaEliminacion(comando); // Validación base (null check)
@@ -123,39 +105,7 @@ public class EmpresaMantenimientoService : BaseServicios,
             if (empresaComando.Id <= 0) throw new ErrorIdInvalido("empresa de mantenimiento");
         }
     }
-    
-    protected override void InterpretarErrorEliminacion<T>(T comando, Exception ex)
-    {
-        if (ex is ErrorDataBase errorDb)
-        {
-            var mensaje = errorDb.Message?.ToLower() ?? "";
-            if (mensaje.Contains("no se encontró un registro activo en empresas_mantenimiento con id"))
-                throw new ErrorRegistroNoEncontrado();
-            if (mensaje.Contains("error al eliminar lógicamente empresas_mantenimiento"))
-                throw new Exception($"Error inesperado al eliminar empresa de mantenimiento: {errorDb.Message}", errorDb);
-            throw new Exception($"Error inesperado de base de datos al eliminar empresa de mantenimiento: {errorDb.Message}", errorDb);
-        }
-        if (ex is ErrorRepository errorRepo)
-            throw new Exception($"Error del repositorio al eliminar empresa de mantenimiento: {errorRepo.Message}", errorRepo);        throw ex ?? new Exception("Error desconocido en eliminación");
-    }
-    
-    private void InterpretarErrorActualizacion<T>(T comando, Exception ex)
-    {
-        if (ex is ErrorDataBase errorDb)
-        {
-            var mensaje = errorDb.Message?.ToLower() ?? "";
-            if (mensaje.Contains("no se encontró una empresa de mantenimiento activa con id"))
-                throw new ErrorRegistroNoEncontrado();
-            if (errorDb.SqlState == "23505" || mensaje.Contains("error de violación de unicidad"))
-                throw new ErrorRegistroYaExiste();
-            if (mensaje.Contains("error inesperado al actualizar la empresa de mantenimiento"))
-                throw new Exception($"Error inesperado al actualizar empresa de mantenimiento: {errorDb.Message}", errorDb);
-            throw new Exception($"Error inesperado de base de datos al actualizar empresa de mantenimiento: {errorDb.Message}", errorDb);
-        }
-        if (ex is ErrorRepository errorRepo)
-            throw new Exception($"Error del repositorio al actualizar empresa de mantenimiento: {errorRepo.Message}", errorRepo);
-        throw ex ?? new Exception("Error desconocido en actualización");
-    }
+
     protected override BaseDto MapearFilaADto(DataRow fila)
     {
         return new EmpresaMantenimientoDto

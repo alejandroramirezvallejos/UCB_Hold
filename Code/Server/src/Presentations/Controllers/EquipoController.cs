@@ -13,7 +13,7 @@ public class EquipoController : ControllerBase
     [HttpPost]
     public IActionResult Crear([FromBody] CrearEquipoComando input)
     {
-        servicio.Crear(input); return Created();
+        servicio.Crear(input); return Created("", new { mensaje = "Equipo creado exitosamente" });
     }
 
     [HttpGet]

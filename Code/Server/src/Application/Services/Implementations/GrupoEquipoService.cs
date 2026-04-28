@@ -14,18 +14,20 @@ public class GrupoEquipoService : BaseServicios,
     }
     public virtual void Crear(CrearGrupoEquipoComando comando)
     {
-        try
-        {
-            ValidarEntradaCreacion(comando);
-            _grupoEquipoRepository.Crear(comando);
-        }
-        catch (ErrorNombreRequerido) { throw; }
-        catch (ErrorModeloRequerido) { throw; }
-        catch (ErrorCampoRequerido) { throw; }        catch (Exception ex)
-        {
-            InterpretarErrorCreacion(comando, ex);
-        }
-    }    
+        ValidarEntradaCreacion(comando);
+
+        // Resolver FK: nombre de categoría → id_categoria
+        var idCategoria = _grupoEquipoRepository.ObtenerCategoriaIdPorNombre(comando.NombreCategoria!);
+        if (idCategoria == null)
+            throw new ErrorCategoriaNoEncontrada();
+
+        // Verificar duplicados por combinación nombre+modelo+marca
+        if (_grupoEquipoRepository.ExisteDuplicadoPorNombreModeloMarca(comando.Nombre!, comando.Modelo!, comando.Marca!))
+            throw new ErrorRegistroYaExiste();
+
+        _grupoEquipoRepository.Crear(idCategoria.Value, comando);
+    }
+    
     protected override void ValidarEntradaCreacion<T>(T comando)
     {
         base.ValidarEntradaCreacion(comando); // Validación base (null check)
@@ -42,22 +44,6 @@ public class GrupoEquipoService : BaseServicios,
         }
     }
     
-    protected override void InterpretarErrorCreacion<T>(T comando, Exception ex)
-    {
-        if (ex is ErrorDataBase errorDb)
-        {
-            var mensaje = errorDb.Message?.ToLower() ?? "";
-            if (mensaje.Contains("no se encontró la categoría con nombre")) throw new ErrorCategoriaNoEncontrada();
-            if (mensaje.Contains("ya existe un grupo de equipos con nombre")) throw new ErrorRegistroYaExiste();
-            if (errorDb.SqlState == "23505" || mensaje.Contains("violación de unicidad al intentar insertar grupo de equipos")) throw new ErrorRegistroYaExiste();
-            if (mensaje.Contains("error al insertar grupo de equipos")) throw new Exception($"Error inesperado al insertar grupo de equipos: {errorDb.Message}", errorDb);
-            throw new Exception($"Error inesperado de base de datos al crear grupo de equipos: {errorDb.Message}", errorDb);
-        }
-        if (ex is ErrorRepository errorRepo) throw new Exception($"Error del repositorio al crear grupo de equipos: {errorRepo.Message}", errorRepo);
-        throw ex ?? new Exception("Error desconocido en creación");
-    }
-    
-    
     public virtual GrupoEquipoDto? ObtenerGrupoEquipoPorId(ObtenerGrupoEquipoPorIdConsulta consulta)
     {
         try
@@ -73,7 +59,8 @@ public class GrupoEquipoService : BaseServicios,
             return null;
         }
         catch { throw; }
-    }    
+    }
+    
     public virtual List<GrupoEquipoDto>? ObtenerTodos()
     {
         try
@@ -88,7 +75,8 @@ public class GrupoEquipoService : BaseServicios,
             return lista;
         }
         catch { throw; }
-    }   
+    }
+    
     public virtual List<GrupoEquipoDto>? ObtenerGrupoEquipoPorNombreYCategoria(ObtenerGrupoEquipoPorNombreYCategoriaConsulta consulta)
     {
         try
@@ -106,18 +94,42 @@ public class GrupoEquipoService : BaseServicios,
     }
     public virtual void Actualizar(ActualizarGrupoEquipoComando comando)
     {
-        try
+        ValidarEntradaActualizacion(comando);
+
+        // Verificar que el grupo exista y esté activo
+        if (!_grupoEquipoRepository.ExisteActivoPorId(comando.Id))
+            throw new ErrorRegistroNoEncontrado();
+
+        int? idCategoria = null;
+
+        // Resolver FK de categoría si se está cambiando
+        if (!string.IsNullOrWhiteSpace(comando.NombreCategoria))
         {
-            ValidarEntradaActualizacion(comando);
-            _grupoEquipoRepository.Actualizar(comando);
+            idCategoria = _grupoEquipoRepository.ObtenerCategoriaIdPorNombre(comando.NombreCategoria);
+            if (idCategoria == null)
+                throw new ErrorCategoriaNoEncontrada();
         }
-        catch (ErrorIdInvalido) { throw; }
-        catch (ErrorNombreRequerido) { throw; }
-        catch (ErrorModeloRequerido) { throw; }
-        catch (ErrorCampoRequerido) { throw; }        catch (Exception ex)
+
+        // Verificar duplicados si se cambiaron nombre, modelo o marca
+        if (!string.IsNullOrWhiteSpace(comando.Nombre) || !string.IsNullOrWhiteSpace(comando.Modelo) || !string.IsNullOrWhiteSpace(comando.Marca))
         {
-            InterpretarErrorActualizacion(comando, ex);
+            // Obtener datos actuales para rellenar los que no se están cambiando
+            var actual = _grupoEquipoRepository.ObtenerPorId(comando.Id);
+            if (actual != null && actual.Rows.Count > 0)
+            {
+                var nombreFinal = !string.IsNullOrWhiteSpace(comando.Nombre) ? comando.Nombre : actual.Rows[0]["nombre_grupo_equipo"]?.ToString();
+                var modeloFinal = !string.IsNullOrWhiteSpace(comando.Modelo) ? comando.Modelo : actual.Rows[0]["modelo_grupo_equipo"]?.ToString();
+                var marcaFinal = !string.IsNullOrWhiteSpace(comando.Marca) ? comando.Marca : actual.Rows[0]["marca_grupo_equipo"]?.ToString();
+
+                if (nombreFinal != null && modeloFinal != null && marcaFinal != null)
+                {
+                    if (_grupoEquipoRepository.ExisteDuplicadoPorNombreModeloMarcaExcluyendoId(nombreFinal, modeloFinal, marcaFinal, comando.Id))
+                        throw new ErrorRegistroYaExiste();
+                }
+            }
         }
+
+        _grupoEquipoRepository.Actualizar(idCategoria, comando);
     }
     private void ValidarEntradaActualizacion(ActualizarGrupoEquipoComando comando)
     {
@@ -131,16 +143,15 @@ public class GrupoEquipoService : BaseServicios,
     }
     public virtual void Eliminar(EliminarGrupoEquipoComando comando)
     {
-        try
-        {
-            ValidarEntradaEliminacion(comando);
-            _grupoEquipoRepository.Eliminar(comando);
-        }
-        catch (ErrorIdInvalido) { throw; }        catch (Exception ex)
-        {
-            InterpretarErrorEliminacion(comando, ex);
-        }
-    }    
+        ValidarEntradaEliminacion(comando);
+
+        // Verificar que el grupo exista y esté activo
+        if (!_grupoEquipoRepository.ExisteActivoPorId(comando.Id))
+            throw new ErrorRegistroNoEncontrado();
+
+        _grupoEquipoRepository.Eliminar(comando);
+    }
+    
     protected override void ValidarEntradaEliminacion<T>(T comando)
     {
         base.ValidarEntradaEliminacion(comando); // Validación base (null check)
@@ -151,34 +162,7 @@ public class GrupoEquipoService : BaseServicios,
             if (grupoComando.Id <= 0) throw new ErrorIdInvalido("grupo de equipos");
         }
     }
-    
-    protected override void InterpretarErrorEliminacion<T>(T comando, Exception ex)
-    {
-        if (ex is ErrorDataBase errorDb)
-        {
-            var mensaje = errorDb.Message?.ToLower() ?? "";
-            if (mensaje.Contains("no se encontró un grupo de equipos activo con id")) throw new ErrorRegistroNoEncontrado();
-            if (mensaje.Contains("error al eliminar lógicamente el grupo de equipos")) throw new Exception($"Error inesperado al eliminar grupo de equipos: {errorDb.Message}", errorDb);
-            throw new Exception($"Error inesperado de base de datos al eliminar grupo de equipos: {errorDb.Message}", errorDb);
-        }
-        if (ex is ErrorRepository errorRepo) throw new Exception($"Error del repositorio al eliminar grupo de equipos: {errorRepo.Message}", errorRepo);        throw ex ?? new Exception("Error desconocido en eliminación");
-    }
-    
-    private void InterpretarErrorActualizacion<T>(T comando, Exception ex)
-    {
-        if (ex is ErrorDataBase errorDb)
-        {
-            var mensaje = errorDb.Message?.ToLower() ?? "";
-            if (mensaje.Contains("no se encontró un grupo de equipos activo con id")) throw new ErrorRegistroNoEncontrado();
-            if (mensaje.Contains("no se encontró la categoría activa con nombre")) throw new ErrorCategoriaNoEncontrada();
-            if (mensaje.Contains("ya existe otro grupo de equipos activo con la combinación")) throw new ErrorRegistroYaExiste();
-            if (errorDb.SqlState == "23505" || mensaje.Contains("la combinación nombre") || mensaje.Contains("ya está en uso")) throw new ErrorRegistroYaExiste();
-            if (mensaje.Contains("error inesperado al actualizar el grupo de equipos")) throw new Exception($"Error inesperado al actualizar grupo de equipos: {errorDb.Message}", errorDb);
-            throw new Exception($"Error inesperado de base de datos al actualizar grupo de equipos: {errorDb.Message}", errorDb);
-        }
-        if (ex is ErrorRepository errorRepo) throw new Exception($"Error del repositorio al actualizar grupo de equipos: {errorRepo.Message}", errorRepo);
-        throw ex ?? new Exception("Error desconocido en actualización");
-    }
+
     protected override BaseDto MapearFilaADto(DataRow fila)
     {
         return new GrupoEquipoDto

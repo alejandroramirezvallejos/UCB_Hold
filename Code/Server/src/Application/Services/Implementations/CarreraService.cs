@@ -7,49 +7,33 @@ public class CarreraService : BaseServicios,
     IEliminarServicio<EliminarCarreraComando>,
     IObtenerTodosServicio<CarreraDto>
 {
-    private readonly ICrearRepository<CrearCarreraComando> _crearRepository;
-    private readonly IActualizarRepository<ActualizarCarreraComando> _actualizarRepository;
-    private readonly IEliminarRepository<EliminarCarreraComando> _eliminarRepository;
-    private readonly IObtenerTodosRepository<CrearCarreraComando, DataTable> _obtenerTodosRepository;
+    private readonly CarreraRepository _carreraRepository;
 
-    public CarreraService(
-        ICrearRepository<CrearCarreraComando> crearRepository,
-        IActualizarRepository<ActualizarCarreraComando> actualizarRepository,
-        IEliminarRepository<EliminarCarreraComando> eliminarRepository,
-        IObtenerTodosRepository<CrearCarreraComando, DataTable> obtenerTodosRepository)
+    public CarreraService(CarreraRepository carreraRepository)
     {
-        _crearRepository = crearRepository;
-        _actualizarRepository = actualizarRepository;
-        _eliminarRepository = eliminarRepository;
-        _obtenerTodosRepository = obtenerTodosRepository;
+        _carreraRepository = carreraRepository;
     }
 
     public virtual void Crear(CrearCarreraComando comando)
     {
-        try
-        {
-            ValidarEntradaCreacion(comando);
-            _crearRepository.Crear(comando);
-        }        catch (ErrorNombreRequerido) { throw; }
-        catch (ErrorLongitudInvalida) { throw; }
-        catch (Exception ex)
-        {
-            InterpretarErrorCreacion(comando, ex);
-        }
-    }
-    
-    protected override void InterpretarErrorCreacion<T>(T comando, Exception ex)
-    {
-        if (ex is ErrorDataBase errorDb)
-        {
-            var mensaje = errorDb.Message?.ToLower() ?? "";
-            if (mensaje.Contains("el nombre de la carrera no puede estar vacío")) throw new ErrorNombreRequerido();
-            if (errorDb.SqlState == "23505" || mensaje.Contains("ya existe una carrera con el nombre")) throw new ErrorRegistroYaExiste();
-            if (mensaje.Contains("error al insertar carrera")) throw new Exception($"Error inesperado al insertar carrera: {errorDb.Message}", errorDb);
-            throw new Exception($"Error inesperado de base de datos al crear carrera: {errorDb.Message}", errorDb);
-        }
-        if (ex is ErrorRepository errorRepo) throw new Exception($"Error del repositorio al crear carrera: {errorRepo.Message}", errorRepo);
-        throw ex ?? new Exception("Error desconocido en creación");
+        ValidarEntradaCreacion(comando);
+
+        var nombreTrimmed = comando.Nombre!.Trim();
+
+        if (string.IsNullOrWhiteSpace(nombreTrimmed))
+            throw new ErrorNombreRequerido();
+
+        // Intentar reactivar si existe una carrera eliminada lógicamente con ese nombre
+        if (_carreraRepository.ReactivarEliminadaPorNombre(nombreTrimmed))
+            return;
+
+        // Verificar si ya existe una carrera activa con ese nombre
+        if (_carreraRepository.ExisteActivaPorNombre(nombreTrimmed))
+            throw new ErrorRegistroYaExiste();
+
+        // Insertar nueva carrera (usar record con nombre trimmed)
+        var comandoFinal = new CrearCarreraComando(nombreTrimmed);
+        _carreraRepository.Crear(comandoFinal);
     }
     
     protected override void ValidarEntradaCreacion<T>(T comando)
@@ -67,7 +51,7 @@ public class CarreraService : BaseServicios,
     {
         try
         {
-            DataTable resultado = _obtenerTodosRepository.ObtenerTodos();
+            DataTable resultado = _carreraRepository.ObtenerTodos();
             var lista = new List<CarreraDto>(resultado.Rows.Count);
             foreach (DataRow fila in resultado.Rows)
             {
@@ -81,33 +65,36 @@ public class CarreraService : BaseServicios,
     }
     public virtual void Actualizar(ActualizarCarreraComando comando)
     {
-        try
+        ValidarEntradaActualizacion(comando);
+
+        // Verificar que la carrera exista y esté activa
+        if (!_carreraRepository.ExisteActivaPorId(comando.Id))
+            throw new ErrorRegistroNoEncontrado();
+
+        var nombreNuevo = comando.Nombre?.Trim();
+
+        if (nombreNuevo != null)
         {
-            ValidarEntradaActualizacion(comando);
-            _actualizarRepository.Actualizar(comando);
-        }        catch (ErrorIdInvalido) { throw; }
-        catch (ErrorNombreRequerido) { throw; }
-        catch (ErrorLongitudInvalida) { throw; }
-        catch (Exception ex)
-        {
-            InterpretarErrorActualizacion(comando, ex);
+            if (string.IsNullOrWhiteSpace(nombreNuevo))
+                throw new ErrorNombreRequerido();
+
+            // Verificar si ya existe otra carrera activa con ese nombre (diferente al ID actual)
+            if (_carreraRepository.ExisteActivaPorNombreExcluyendoId(nombreNuevo, comando.Id))
+                throw new ErrorRegistroYaExiste();
+
+            // Si existe una carrera eliminada con el mismo nombre, reactivarla y eliminar lógicamente la actual
+            if (_carreraRepository.ReactivarEliminadaPorNombre(nombreNuevo))
+            {
+                _carreraRepository.EliminarLogicamentePorId(comando.Id);
+                return;
+            }
         }
+
+        // Actualización normal
+        var comandoFinal = new ActualizarCarreraComando(comando.Id, nombreNuevo);
+        _carreraRepository.Actualizar(comandoFinal);
     }
     
-    private void InterpretarErrorActualizacion<T>(T comando, Exception ex)
-    {
-        if (ex is ErrorDataBase errorDb)
-        {
-            var mensaje = errorDb.Message?.ToLower() ?? "";
-            if (mensaje.Contains("no se encontró una carrera activa con el id")) throw new ErrorRegistroNoEncontrado();
-            if (mensaje.Contains("el nuevo nombre de la carrera no puede estar vacío")) throw new ErrorNombreRequerido();
-            if (mensaje.Contains("el id de la carrera debe ser un número positivo")) throw new ErrorIdInvalido("carrera");
-            if (mensaje.Contains("ya existe otra carrera con el nombre")) throw new ErrorRegistroYaExiste();
-            throw new Exception($"Error inesperado de base de datos al actualizar carrera: {errorDb.Message}", errorDb);
-        }
-        if (ex is ErrorRepository errorRepo) throw new Exception($"Error del repositorio al actualizar carrera: {errorRepo.Message}", errorRepo);
-        throw ex;
-    }
     private void ValidarEntradaActualizacion(ActualizarCarreraComando comando)
     {
         if (comando == null) throw new ArgumentNullException(nameof(comando));
@@ -117,28 +104,13 @@ public class CarreraService : BaseServicios,
     }
     public virtual void Eliminar(EliminarCarreraComando comando)
     {
-        try
-        {
-            ValidarEntradaEliminacion(comando);
-            _eliminarRepository.Eliminar(comando);        
-            }
-        catch (Exception ex)
-        {
-            InterpretarErrorEliminacion(comando, ex);
-        }
-    }
-    
-    protected override void InterpretarErrorEliminacion<T>(T comando, Exception ex)
-    {
-        if (ex is ErrorDataBase errorDb)
-        {
-            var mensaje = errorDb.Message?.ToLower() ?? "";
-            if (mensaje.Contains("no se encontró una carrera activa con id")) throw new ErrorRegistroNoEncontrado();
-            if (mensaje.Contains("error al eliminar lógicamente la carrera")) throw new Exception($"Error inesperado al eliminar carrera: {errorDb.Message}", errorDb);
-            throw new Exception($"Error inesperado de base de datos al eliminar carrera: {errorDb.Message}", errorDb);
-        }
-        if (ex is ErrorRepository errorRepo) throw new Exception($"Error del repositorio al eliminar carrera: {errorRepo.Message}", errorRepo);
-        throw ex ?? new Exception("Error desconocido en eliminación");
+        ValidarEntradaEliminacion(comando);
+
+        // Verificar que la carrera exista y esté activa
+        if (!_carreraRepository.ExisteActivaPorId(comando.Id))
+            throw new ErrorRegistroNoEncontrado();
+
+        _carreraRepository.Eliminar(comando);
     }
     
     protected override void ValidarEntradaEliminacion<T>(T comando)

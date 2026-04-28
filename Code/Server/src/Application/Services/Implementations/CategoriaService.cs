@@ -7,50 +7,33 @@ public class CategoriaService : BaseServicios,
     IEliminarServicio<EliminarCategoriaComando>,
     IObtenerTodosServicio<CategoriaDto>
 {
-    private readonly ICrearRepository<CrearCategoriaComando> _crearRepository;
-    private readonly IActualizarRepository<ActualizarCategoriaComando> _actualizarRepository;
-    private readonly IEliminarRepository<EliminarCategoriaComando> _eliminarRepository;
-    private readonly IObtenerTodosRepository<CrearCategoriaComando, DataTable> _obtenerTodosRepository;
+    private readonly CategoriaRepository _categoriaRepository;
 
-    public CategoriaService(
-        ICrearRepository<CrearCategoriaComando> crearRepository,
-        IActualizarRepository<ActualizarCategoriaComando> actualizarRepository,
-        IEliminarRepository<EliminarCategoriaComando> eliminarRepository,
-        IObtenerTodosRepository<CrearCategoriaComando, DataTable> obtenerTodosRepository)
+    public CategoriaService(CategoriaRepository categoriaRepository)
     {
-        _crearRepository = crearRepository;
-        _actualizarRepository = actualizarRepository;
-        _eliminarRepository = eliminarRepository;
-        _obtenerTodosRepository = obtenerTodosRepository;
+        _categoriaRepository = categoriaRepository;
     }
 
     public virtual void Crear(CrearCategoriaComando comando)
     {
-        try
-        {
-            ValidarEntradaCreacion(comando);
-            _crearRepository.Crear(comando);
-        }
-        catch (ErrorNombreRequerido) { throw; }
-        catch (ErrorLongitudInvalida) { throw; }
-        catch (Exception ex)
-        {
-            InterpretarErrorCreacion(comando, ex);
-        }
-    }
-    
-    protected override void InterpretarErrorCreacion<T>(T comando, Exception ex)
-    {
-        if (ex is ErrorDataBase errorDb)
-        {
-            var mensaje = errorDb.Message?.ToLower() ?? "";
-            if (mensaje.Contains("el nombre de la categoría no puede estar vacío")) throw new ErrorNombreRequerido();
-            if (errorDb.SqlState == "23505" || mensaje.Contains("ya existe una categoría con el nombre")) throw new ErrorRegistroYaExiste();
-            if (mensaje.Contains("error al insertar categoría")) throw new Exception($"Error inesperado al insertar categoría: {errorDb.Message}", errorDb);
-            throw new Exception($"Error inesperado de base de datos al crear categoría: {errorDb.Message}", errorDb);
-        }
-        if (ex is ErrorRepository errorRepo) throw new Exception($"Error del repositorio al crear categoría: {errorRepo.Message}", errorRepo);
-        throw ex ?? new Exception("Error desconocido en creación");
+        ValidarEntradaCreacion(comando);
+
+        var nombreTrimmed = comando.Nombre!.Trim();
+
+        if (string.IsNullOrWhiteSpace(nombreTrimmed))
+            throw new ErrorNombreRequerido();
+
+        // Intentar reactivar si existe una categoría eliminada lógicamente
+        if (_categoriaRepository.ReactivarEliminadaPorNombre(nombreTrimmed))
+            return;
+
+        // Verificar si ya existe una categoría activa con ese nombre
+        if (_categoriaRepository.ExisteActivaPorNombre(nombreTrimmed))
+            throw new ErrorRegistroYaExiste();
+
+        // Insertar nueva categoría (crear nuevo record con nombre trimmed)
+        var comandoFinal = new CrearCategoriaComando(nombreTrimmed);
+        _categoriaRepository.Crear(comandoFinal);
     }
     
     protected override void ValidarEntradaCreacion<T>(T comando)
@@ -68,8 +51,9 @@ public class CategoriaService : BaseServicios,
     {
         try
         {
-            DataTable resultado = _obtenerTodosRepository.ObtenerTodos();
-            var lista = new List<CategoriaDto>(resultado.Rows.Count);            foreach (DataRow fila in resultado.Rows)
+            DataTable resultado = _categoriaRepository.ObtenerTodos();
+            var lista = new List<CategoriaDto>(resultado.Rows.Count);
+            foreach (DataRow fila in resultado.Rows)
             {
                 var baseDto = MapearFilaADto(fila);
                 if (baseDto is CategoriaDto categoria)
@@ -81,33 +65,36 @@ public class CategoriaService : BaseServicios,
     }
     public virtual void Actualizar(ActualizarCategoriaComando comando)
     {
-        try
+        ValidarEntradaActualizacion(comando);
+
+        // Verificar que la categoría exista y esté activa
+        if (!_categoriaRepository.ExisteActivaPorId(comando.Id))
+            throw new ErrorRegistroNoEncontrado();
+
+        var nombreNuevo = comando.Nombre?.Trim();
+
+        if (nombreNuevo != null)
         {
-            ValidarEntradaActualizacion(comando);
-            _actualizarRepository.Actualizar(comando);
-        }        catch (ErrorIdInvalido) { throw; }
-        catch (ErrorNombreRequerido) { throw; }
-        catch (ErrorLongitudInvalida) { throw; }
-        catch (Exception ex)
-        {
-            InterpretarErrorActualizacion(comando, ex);
+            if (string.IsNullOrWhiteSpace(nombreNuevo))
+                throw new ErrorNombreRequerido();
+
+            // Verificar si ya existe otra categoría activa con ese nombre
+            if (_categoriaRepository.ExisteActivaPorNombreExcluyendoId(nombreNuevo, comando.Id))
+                throw new ErrorRegistroYaExiste();
+
+            // Si existe una categoría eliminada con el mismo nombre, reactivarla y eliminar la actual
+            if (_categoriaRepository.ReactivarEliminadaPorNombre(nombreNuevo))
+            {
+                _categoriaRepository.EliminarLogicamentePorId(comando.Id);
+                return;
+            }
         }
+
+        // Actualización normal
+        var comandoFinal = new ActualizarCategoriaComando(comando.Id, nombreNuevo);
+        _categoriaRepository.Actualizar(comandoFinal);
     }
     
-    private void InterpretarErrorActualizacion<T>(T comando, Exception ex)
-    {
-        if (ex is ErrorDataBase errorDb)
-        {
-            var mensaje = errorDb.Message?.ToLower() ?? "";
-            if (mensaje.Contains("no se encontró una categoría activa con id")) throw new ErrorRegistroNoEncontrado();
-            if (mensaje.Contains("el nuevo nombre de la categoría no puede estar vacío")) throw new ErrorNombreRequerido();
-            if (errorDb.SqlState == "23505" || mensaje.Contains("ya existe otra categoría con el nombre")) throw new ErrorRegistroYaExiste();
-            if (mensaje.Contains("error inesperado al actualizar la categoría")) throw new Exception($"Error inesperado al actualizar categoría: {errorDb.Message}", errorDb);
-            throw new Exception($"Error inesperado de base de datos al actualizar categoría: {errorDb.Message}", errorDb);
-        }
-        if (ex is ErrorRepository errorRepo) throw new Exception($"Error del repositorio al actualizar categoría: {errorRepo.Message}", errorRepo);
-        throw ex;
-    }
     private void ValidarEntradaActualizacion(ActualizarCategoriaComando comando)
     {
         if (comando == null) throw new ArgumentNullException(nameof(comando));
@@ -117,28 +104,13 @@ public class CategoriaService : BaseServicios,
     }
     public virtual void Eliminar(EliminarCategoriaComando comando)
     {
-        try
-        {
-            ValidarEntradaEliminacion(comando);
-            _eliminarRepository.Eliminar(comando);
-        }        catch (ErrorIdInvalido) { throw; }
-        catch (Exception ex)
-        {
-            InterpretarErrorEliminacion(comando, ex);
-        }
-    }
-    
-    protected override void InterpretarErrorEliminacion<T>(T comando, Exception ex)
-    {
-        if (ex is ErrorDataBase errorDb)
-        {
-            var mensaje = errorDb.Message?.ToLower() ?? "";
-            if (mensaje.Contains("no se encontró una categoría activa con id")) throw new ErrorRegistroNoEncontrado();
-            if (mensaje.Contains("error al eliminar lógicamente la categoría")) throw new Exception($"Error inesperado al eliminar categoría: {errorDb.Message}", errorDb);
-            throw new Exception($"Error inesperado de base de datos al eliminar categoría: {errorDb.Message}", errorDb);
-        }
-        if (ex is ErrorRepository errorRepo) throw new Exception($"Error del repositorio al eliminar categoría: {errorRepo.Message}", errorRepo);
-        throw ex ?? new Exception("Error desconocido en eliminación");
+        ValidarEntradaEliminacion(comando);
+
+        // Verificar que la categoría exista y esté activa
+        if (!_categoriaRepository.ExisteActivaPorId(comando.Id))
+            throw new ErrorRegistroNoEncontrado();
+
+        _categoriaRepository.Eliminar(comando);
     }
     
     protected override void ValidarEntradaEliminacion<T>(T comando)

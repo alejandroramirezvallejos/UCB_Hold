@@ -13,7 +13,7 @@ public class MuebleController : ControllerBase
     [HttpPost]
     public IActionResult Crear([FromBody] CrearMuebleComando input)
     {
-        servicio.Crear(input); return Created();
+        servicio.Crear(input); return Created("", new { mensaje = "Mueble creado exitosamente" });
     }
 
     [HttpGet]

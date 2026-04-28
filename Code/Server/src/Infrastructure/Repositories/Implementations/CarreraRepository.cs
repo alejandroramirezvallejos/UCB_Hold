@@ -12,7 +12,7 @@ public class CarreraRepository :
 
     public void Crear(CrearCarreraComando comando)
     {
-        const string sql = "CALL public.insertar_carrera(@nombre)";
+        const string sql = @"INSERT INTO public.carreras (nombre, estado_eliminado) VALUES (@nombre, FALSE)";
         var parametros = new Dictionary<string, object?> { ["nombre"] = comando.Nombre };
         try { _ejecutarConsulta.EjecutarSpNR(sql, parametros); }
         catch (NpgsqlException ex) { throw new ErrorDataBase($"Error de base de datos al crear carrera: {ex.Message}", ex.SqlState, null, ex); }
@@ -21,7 +21,7 @@ public class CarreraRepository :
 
     public void Eliminar(EliminarCarreraComando comando)
     {
-        const string sql = "CALL public.eliminar_carrera(@id)";
+        const string sql = @"UPDATE public.carreras SET estado_eliminado = TRUE WHERE id_carrera = @id";
         var parametros = new Dictionary<string, object?> { ["id"] = comando.Id };
         try { _ejecutarConsulta.EjecutarSpNR(sql, parametros); }
         catch (NpgsqlException ex) { throw new ErrorDataBase($"Error de base de datos al eliminar carrera: {ex.Message}", ex.SqlState, null, ex); }
@@ -30,7 +30,7 @@ public class CarreraRepository :
 
     public void Actualizar(ActualizarCarreraComando comando)
     {
-        const string sql = "CALL public.actualizar_carrera(@id,@nombre)";
+        const string sql = @"UPDATE public.carreras SET nombre = COALESCE(@nombre, nombre) WHERE id_carrera = @id AND estado_eliminado = FALSE";
         var parametros = new Dictionary<string, object?>
         {
             ["id"] = comando.Id,
@@ -43,9 +43,57 @@ public class CarreraRepository :
 
     public DataTable ObtenerTodos()
     {
-        const string sql = "SELECT * from public.obtener_carreras()";
+        const string sql = @"SELECT c.id_carrera, c.nombre AS nombre_carrera FROM public.carreras AS c WHERE c.estado_eliminado = FALSE";
         try { return _ejecutarConsulta.EjecutarFuncion(sql, new Dictionary<string, object?>()); }
         catch (NpgsqlException ex) { throw new ErrorDataBase($"Error de base de datos al obtener carreras: {ex.Message}", ex.SqlState, null, ex); }
         catch (Exception ex) { throw new ErrorRepository($"Error en repositorio al obtener carreras: {ex.Message}", "obtener", "carreras", ex); }
+    }
+
+    // --- Métodos auxiliares para la lógica de negocio en el servicio ---
+
+    public bool ExisteActivaPorId(int id)
+    {
+        const string sql = @"SELECT EXISTS(SELECT 1 FROM public.carreras WHERE id_carrera = @id AND estado_eliminado = FALSE)";
+        var parametros = new Dictionary<string, object?> { ["id"] = id };
+        var dt = _ejecutarConsulta.EjecutarFuncion(sql, parametros);
+        return dt.Rows.Count > 0 && Convert.ToBoolean(dt.Rows[0][0]);
+    }
+
+    public bool ExisteActivaPorNombre(string nombre)
+    {
+        const string sql = @"SELECT EXISTS(SELECT 1 FROM public.carreras WHERE nombre = @nombre AND estado_eliminado = FALSE)";
+        var parametros = new Dictionary<string, object?> { ["nombre"] = nombre };
+        var dt = _ejecutarConsulta.EjecutarFuncion(sql, parametros);
+        return dt.Rows.Count > 0 && Convert.ToBoolean(dt.Rows[0][0]);
+    }
+
+    public bool ExisteActivaPorNombreExcluyendoId(string nombre, int idExcluir)
+    {
+        const string sql = @"SELECT EXISTS(SELECT 1 FROM public.carreras WHERE nombre = @nombre AND estado_eliminado = FALSE AND id_carrera <> @idExcluir)";
+        var parametros = new Dictionary<string, object?> { ["nombre"] = nombre, ["idExcluir"] = idExcluir };
+        var dt = _ejecutarConsulta.EjecutarFuncion(sql, parametros);
+        return dt.Rows.Count > 0 && Convert.ToBoolean(dt.Rows[0][0]);
+    }
+
+    public bool ReactivarEliminadaPorNombre(string nombre)
+    {
+        const string sql = @"UPDATE public.carreras SET estado_eliminado = FALSE WHERE nombre = @nombre AND estado_eliminado = TRUE";
+        var parametros = new Dictionary<string, object?> { ["nombre"] = nombre };
+        try 
+        { 
+            _ejecutarConsulta.EjecutarSpNR(sql, parametros);
+            // Verificar si se actualizó alguna fila
+            var checkSql = @"SELECT EXISTS(SELECT 1 FROM public.carreras WHERE nombre = @nombre AND estado_eliminado = FALSE)";
+            var dt = _ejecutarConsulta.EjecutarFuncion(checkSql, parametros);
+            return dt.Rows.Count > 0 && Convert.ToBoolean(dt.Rows[0][0]);
+        }
+        catch { return false; }
+    }
+
+    public void EliminarLogicamentePorId(int id)
+    {
+        const string sql = @"UPDATE public.carreras SET estado_eliminado = TRUE WHERE id_carrera = @id";
+        var parametros = new Dictionary<string, object?> { ["id"] = id };
+        _ejecutarConsulta.EjecutarSpNR(sql, parametros);
     }
 }

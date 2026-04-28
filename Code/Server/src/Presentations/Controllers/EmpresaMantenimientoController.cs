@@ -13,7 +13,7 @@ public class EmpresaMantenimientoController : ControllerBase
     [HttpPost]
     public IActionResult Crear([FromBody] CrearEmpresaMantenimientoComando input)
     {
-        servicio.Crear(input); return Created();
+        servicio.Crear(input); return Created("", new { mensaje = "Empresa de mantenimiento creada exitosamente" });
     }
 
     [HttpGet]

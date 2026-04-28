@@ -9,9 +9,11 @@ public class UsuarioRepository :
 {
     private readonly IExecuteQuery _ejecutarConsulta;
     public UsuarioRepository(IExecuteQuery ejecutarConsulta) => _ejecutarConsulta = ejecutarConsulta;
-    public void Crear(CrearUsuarioComando comando)
+    
+    public void Crear(int idCarrera, CrearUsuarioComando comando)
     {
-        const string sql = @"CALL public.insertar_usuario(@carnet,@nombre,@apellidoPaterno,@apellidoMaterno,@rol::tipo_usuario,@email,@contrasena,@carrera,@telefono,@telefonoReferencia,@nombreReferencia,@emailReferencia)";
+        const string sql = @"INSERT INTO public.usuarios (carnet, nombre, apellido_paterno, apellido_materno, rol, email, contrasena, id_carrera, telefono, telefono_referencia, nombre_referencia, email_referencia, estado_eliminado)
+                             VALUES (@carnet, @nombre, @apellidoPaterno, @apellidoMaterno, @rol::tipo_usuario, @email, @contrasena, @idCarrera, @telefono, @telefonoReferencia, @nombreReferencia, @emailReferencia, FALSE)";
         var parametros = new Dictionary<string, object?>
         {
             ["carnet"] = comando.Carnet,
@@ -21,7 +23,7 @@ public class UsuarioRepository :
             ["rol"] = comando.Rol,
             ["email"] = comando.Email,
             ["contrasena"] = comando.Contrasena,
-            ["carrera"] = comando.NombreCarrera ?? (object)DBNull.Value,
+            ["idCarrera"] = idCarrera,
             ["telefono"] = comando.Telefono ?? (object)DBNull.Value,
             ["telefonoReferencia"] = comando.TelefonoReferencia ?? (object)DBNull.Value,
             ["nombreReferencia"] = comando.NombreReferencia ?? (object)DBNull.Value,
@@ -31,9 +33,27 @@ public class UsuarioRepository :
         catch (NpgsqlException ex) { throw new ErrorDataBase($"Error de base de datos al crear usuario: {ex.Message}", ex.SqlState, null, ex); }
         catch (Exception ex) { throw new ErrorRepository($"Error en repositorio al crear usuario: {ex.Message}", "crear", "usuario", ex); }
     }
-    public void Actualizar(ActualizarUsuarioComando comando)
+
+    public void Crear(CrearUsuarioComando comando)
     {
-        const string sql = @"CALL public.actualizar_usuario(@carnet,@nombre,@apellidoPaterno,@apellidoMaterno,@email,@contrasena,@rol::tipo_usuario,@carrera,@telefono,@telefonoReferencia,@nombreReferencia,@emailReferencia)";
+        throw new InvalidOperationException("Use Crear(int idCarrera, CrearUsuarioComando comando) en su lugar.");
+    }
+
+    public void Actualizar(int? idCarrera, ActualizarUsuarioComando comando)
+    {
+        const string sql = @"UPDATE public.usuarios SET
+            nombre = COALESCE(@nombre, nombre),
+            apellido_paterno = COALESCE(@apellidoPaterno, apellido_paterno),
+            apellido_materno = COALESCE(@apellidoMaterno, apellido_materno),
+            email = COALESCE(@email, email),
+            contrasena = COALESCE(@contrasena, contrasena),
+            rol = COALESCE(@rol::tipo_usuario, rol),
+            id_carrera = COALESCE(@idCarrera, id_carrera),
+            telefono = COALESCE(@telefono, telefono),
+            telefono_referencia = COALESCE(@telefonoReferencia, telefono_referencia),
+            nombre_referencia = COALESCE(@nombreReferencia, nombre_referencia),
+            email_referencia = COALESCE(@emailReferencia, email_referencia)
+            WHERE carnet = @carnet AND estado_eliminado = FALSE";
         var parametros = new Dictionary<string, object?>
         {
             ["carnet"] = comando.Carnet,
@@ -43,7 +63,7 @@ public class UsuarioRepository :
             ["email"] = string.IsNullOrEmpty(comando.Email) ? (object)DBNull.Value : comando.Email,
             ["contrasena"] = string.IsNullOrEmpty(comando.Contrasena) ? (object)DBNull.Value : comando.Contrasena,
             ["rol"] = string.IsNullOrEmpty(comando.Rol) ? (object)DBNull.Value : comando.Rol,
-            ["carrera"] = string.IsNullOrEmpty(comando.NombreCarrera) ? (object)DBNull.Value : comando.NombreCarrera,
+            ["idCarrera"] = idCarrera ?? (object)DBNull.Value,
             ["telefono"] = string.IsNullOrEmpty(comando.Telefono) ? (object)DBNull.Value : comando.Telefono,
             ["telefonoReferencia"] = string.IsNullOrEmpty(comando.TelefonoReferencia) ? (object)DBNull.Value : comando.TelefonoReferencia,
             ["nombreReferencia"] = string.IsNullOrEmpty(comando.NombreReferencia) ? (object)DBNull.Value : comando.NombreReferencia,
@@ -53,24 +73,42 @@ public class UsuarioRepository :
         catch (NpgsqlException ex) { throw new ErrorDataBase($"Error de base de datos al actualizar usuario: {ex.Message}", ex.SqlState, null, ex); }
         catch (Exception ex) { throw new ErrorRepository($"Error en repositorio al actualizar usuario: {ex.Message}", "actualizar", "usuario", ex); }
     }
+
+    public void Actualizar(ActualizarUsuarioComando comando)
+    {
+        Actualizar(null, comando);
+    }
+
     public void Eliminar(EliminarUsuarioComando comando)
     {
-        const string sql = @"CALL public.eliminar_usuario(@carnet)";
+        const string sql = @"UPDATE public.usuarios SET estado_eliminado = TRUE WHERE carnet = @carnet";
         var parametros = new Dictionary<string, object?> { ["carnet"] = comando.Carnet };
         try { _ejecutarConsulta.EjecutarSpNR(sql, parametros); }
         catch (NpgsqlException ex) { throw new ErrorDataBase($"Error de base de datos al eliminar usuario: {ex.Message}", ex.SqlState, null, ex); }
         catch (Exception ex) { throw new ErrorRepository($"Error en repositorio al eliminar usuario: {ex.Message}", "eliminar", "usuario", ex); }
     }
+
     public DataTable ObtenerTodos()
     {
-        const string sql = @"SELECT * from public.obtener_usuarios()";
+        const string sql = @"SELECT u.carnet, u.nombre, u.apellido_paterno, u.apellido_materno,
+            c.nombre AS carrera, u.rol, u.email, u.telefono,
+            u.telefono_referencia, u.nombre_referencia, u.email_referencia
+            FROM public.usuarios AS u
+            INNER JOIN public.carreras AS c ON u.id_carrera = c.id_carrera
+            WHERE u.estado_eliminado = FALSE";
         try { return _ejecutarConsulta.EjecutarFuncion(sql, new Dictionary<string, object?>()); }
         catch (NpgsqlException ex) { throw new ErrorDataBase($"Error de base de datos al obtener usuarios: {ex.Message}", ex.SqlState, null, ex); }
         catch (Exception ex) { throw new ErrorRepository($"Error del repositorio al obtener usuarios: {ex.Message}", ex); }
     }
+
     public DataTable? ObtenerPorEmailYContrasena(string email, string contrasena)
     {
-        const string sql = @"SELECT * from public.obtener_usuario_iniciar_sesion(@email,@contrasena)";
+        const string sql = @"SELECT u.carnet, u.nombre, u.apellido_paterno, u.apellido_materno,
+            c.nombre AS carrera, u.rol, u.email, u.telefono,
+            u.telefono_referencia, u.nombre_referencia, u.email_referencia
+            FROM public.usuarios AS u
+            INNER JOIN public.carreras AS c ON u.id_carrera = c.id_carrera
+            WHERE u.email = @email AND u.contrasena = @contrasena AND u.estado_eliminado = FALSE";
         var parametros = new Dictionary<string, object?>
         {
             ["email"] = email,
@@ -94,5 +132,24 @@ public class UsuarioRepository :
         try { return _ejecutarConsulta.EjecutarFuncion(sql, parametros); }
         catch (NpgsqlException ex) { throw new ErrorDataBase($"Error de base de datos al obtener usuarios por carnets: {ex.Message}", ex.SqlState, null, ex); }
         catch (Exception ex) { throw new ErrorRepository($"Error del repositorio al obtener usuarios por carnets: {ex.Message}", ex); }
+    }
+
+    // --- Métodos auxiliares ---
+
+    public bool ExisteActivoPorCarnet(string carnet)
+    {
+        const string sql = @"SELECT EXISTS(SELECT 1 FROM public.usuarios WHERE carnet = @carnet AND estado_eliminado = FALSE)";
+        var parametros = new Dictionary<string, object?> { ["carnet"] = carnet };
+        var dt = _ejecutarConsulta.EjecutarFuncion(sql, parametros);
+        return dt.Rows.Count > 0 && Convert.ToBoolean(dt.Rows[0][0]);
+    }
+
+    public int? ObtenerCarreraIdPorNombre(string nombreCarrera)
+    {
+        const string sql = @"SELECT id_carrera FROM public.carreras WHERE nombre = @nombre AND estado_eliminado = FALSE LIMIT 1";
+        var parametros = new Dictionary<string, object?> { ["nombre"] = nombreCarrera };
+        var dt = _ejecutarConsulta.EjecutarFuncion(sql, parametros);
+        if (dt.Rows.Count == 0) return null;
+        return Convert.ToInt32(dt.Rows[0][0]);
     }
 }

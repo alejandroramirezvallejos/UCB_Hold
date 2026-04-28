@@ -14,7 +14,7 @@ public class GaveteroController : ControllerBase
     public IActionResult Crear([FromBody] CrearGaveteroComando input)
     {
         servicio.Crear(input); 
-        return Created(); 
+        return Created("", new { mensaje = "Gavetero creado exitosamente" }); 
     }
 
     [HttpGet]

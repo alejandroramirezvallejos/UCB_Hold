@@ -14,7 +14,7 @@ public class MantenimientoController : ControllerBase
     public IActionResult Crear([FromBody] CrearMantenimientoComando input)
     {
         servicio.Crear(input); 
-        return Created(); 
+        return Created("", new { mensaje = "Mantenimiento creado exitosamente" }); 
     }
 
     [HttpGet]

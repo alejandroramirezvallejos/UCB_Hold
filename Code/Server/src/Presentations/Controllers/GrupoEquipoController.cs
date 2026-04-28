@@ -13,7 +13,7 @@ public class GrupoEquipoController : ControllerBase
     [HttpPost]
     public IActionResult Crear([FromBody] CrearGrupoEquipoComando input)
     {
-        servicio.Crear(input); return Created();
+        servicio.Crear(input); return Created("", new { mensaje = "Grupo de equipo creado exitosamente" });
     }
 
     [HttpGet]

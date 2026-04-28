@@ -7,35 +7,35 @@ public class GaveteroService : BaseServicios,
     IEliminarServicio<EliminarGaveteroComando>,
     IObtenerTodosServicio<GaveteroDto>
 {
-    private readonly ICrearRepository<CrearGaveteroComando> _crearRepository;
-    private readonly IActualizarRepository<ActualizarGaveteroComando> _actualizarRepository;
-    private readonly IEliminarRepository<EliminarGaveteroComando> _eliminarRepository;
-    private readonly IObtenerTodosRepository<CrearGaveteroComando, DataTable> _obtenerTodosRepository;
+    private readonly GaveteroRepository _gaveteroRepository;
+    private readonly MuebleRepository _muebleRepository;
 
-    public GaveteroService(
-        ICrearRepository<CrearGaveteroComando> crearRepository,
-        IActualizarRepository<ActualizarGaveteroComando> actualizarRepository,
-        IEliminarRepository<EliminarGaveteroComando> eliminarRepository,
-        IObtenerTodosRepository<CrearGaveteroComando, DataTable> obtenerTodosRepository)
+    public GaveteroService(GaveteroRepository gaveteroRepository, MuebleRepository muebleRepository)
     {
-        _crearRepository = crearRepository;
-        _actualizarRepository = actualizarRepository;
-        _eliminarRepository = eliminarRepository;
-        _obtenerTodosRepository = obtenerTodosRepository;
+        _gaveteroRepository = gaveteroRepository;
+        _muebleRepository = muebleRepository;
     }
+
     public virtual void Crear(CrearGaveteroComando comando)
     {
-        try
-        {
-            ValidarEntradaCreacion(comando);
-            _crearRepository.Crear(comando);
-        }
-        catch (ErrorNombreRequerido) { throw; }
-        catch (ErrorValorNegativo) { throw; }        catch (Exception ex)
-        {
-            InterpretarErrorCreacion(comando, ex);
-        }
-    }    
+        ValidarEntradaCreacion(comando);
+
+        // Resolver FK: nombre del mueble → id_mueble
+        var idMueble = _gaveteroRepository.ObtenerMuebleIdPorNombre(comando.NombreMueble!);
+        if (idMueble == null)
+            throw new ErrorMuebleNoEncontrado();
+
+        // Verificar si ya existe un gavetero activo con ese nombre
+        if (_gaveteroRepository.ExisteActivoPorNombre(comando.Nombre!))
+            throw new ErrorRegistroYaExiste();
+
+        // Insertar gavetero
+        _gaveteroRepository.Crear(idMueble.Value, comando);
+
+        // Trigger logic: incrementar numero_gaveteros del mueble
+        _muebleRepository.ActualizarNumeroGaveteros(idMueble.Value, 1);
+    }
+    
     protected override void ValidarEntradaCreacion<T>(T comando)
     {
         base.ValidarEntradaCreacion(comando); // Validación base (null check)
@@ -50,33 +50,43 @@ public class GaveteroService : BaseServicios,
             if (gaveteroComando.Altura.HasValue && gaveteroComando.Altura <= 0) throw new ErrorValorNegativo("altura");
         }
     }
-    
-    protected override void InterpretarErrorCreacion<T>(T comando, Exception ex)
-    {
-        if (ex is ErrorDataBase errorDb)
-        {
-            var mensaje = errorDb.Message?.ToLower() ?? "";
-            if (mensaje.Contains("no se encontró el mueble con nombre")) throw new ErrorMuebleNoEncontrado();
-            if (mensaje.Contains("ya existe un gavetero con nombre")) throw new ErrorRegistroYaExiste();
-            if (errorDb.SqlState == "23505" || mensaje.Contains("violación de unicidad al intentar insertar gavetero")) throw new ErrorRegistroYaExiste();
-            if (mensaje.Contains("error al insertar gavetero")) throw new Exception($"Error inesperado al insertar gavetero: {errorDb.Message}", errorDb);
-            throw new Exception($"Error inesperado de base de datos al crear gavetero: {errorDb.Message}", errorDb);
-        }
-        if (ex is ErrorRepository errorRepo) throw new Exception($"Error del repositorio al crear gavetero: {errorRepo.Message}", errorRepo);
-        throw ex ?? new Exception("Error desconocido en creación");
-    }
+
     public virtual void Actualizar(ActualizarGaveteroComando comando)
     {
-        try
+        ValidarEntradaActualizacion(comando);
+
+        // Verificar que el gavetero exista y esté activo
+        if (!_gaveteroRepository.ExisteActivoPorId(comando.Id))
+            throw new ErrorRegistroNoEncontrado();
+
+        // Verificar duplicados de nombre
+        if (!string.IsNullOrWhiteSpace(comando.Nombre))
         {
-            ValidarEntradaActualizacion(comando);
-            _actualizarRepository.Actualizar(comando);
+            if (_gaveteroRepository.ExisteActivoPorNombreExcluyendoId(comando.Nombre, comando.Id))
+                throw new ErrorRegistroYaExiste();
         }
-        catch (ErrorIdInvalido) { throw; }
-        catch (ErrorNombreRequerido) { throw; }
-        catch (ErrorValorNegativo) { throw; }        catch (Exception ex)
+
+        int? nuevoIdMueble = null;
+        int? viejoIdMueble = null;
+
+        // Resolver FK del mueble si se está cambiando
+        if (!string.IsNullOrWhiteSpace(comando.NombreMueble))
         {
-            InterpretarErrorActualizacion(comando, ex);
+            nuevoIdMueble = _gaveteroRepository.ObtenerMuebleIdPorNombre(comando.NombreMueble);
+            if (nuevoIdMueble == null)
+                throw new ErrorMuebleNoEncontrado();
+
+            // Obtener el mueble actual del gavetero para trigger logic
+            viejoIdMueble = _gaveteroRepository.ObtenerMuebleIdPorGaveteroId(comando.Id);
+        }
+
+        _gaveteroRepository.Actualizar(nuevoIdMueble, comando);
+
+        // Trigger logic: si cambió de mueble, ajustar conteos
+        if (nuevoIdMueble.HasValue && viejoIdMueble.HasValue && nuevoIdMueble.Value != viejoIdMueble.Value)
+        {
+            _muebleRepository.ActualizarNumeroGaveteros(viejoIdMueble.Value, -1);
+            _muebleRepository.ActualizarNumeroGaveteros(nuevoIdMueble.Value, 1);
         }
     }
     
@@ -93,16 +103,22 @@ public class GaveteroService : BaseServicios,
 
     public virtual void Eliminar(EliminarGaveteroComando comando)
     {
-        try
-        {
-            ValidarEntradaEliminacion(comando);
-            _eliminarRepository.Eliminar(comando);
-        }
-        catch (ErrorIdInvalido) { throw; }        catch (Exception ex)
-        {
-            InterpretarErrorEliminacion(comando, ex);
-        }
-    }    
+        ValidarEntradaEliminacion(comando);
+
+        // Verificar que el gavetero exista y esté activo
+        if (!_gaveteroRepository.ExisteActivoPorId(comando.Id))
+            throw new ErrorRegistroNoEncontrado();
+
+        // Obtener el mueble actual para trigger logic
+        var idMueble = _gaveteroRepository.ObtenerMuebleIdPorGaveteroId(comando.Id);
+
+        _gaveteroRepository.Eliminar(comando);
+
+        // Trigger logic: decrementar numero_gaveteros del mueble
+        if (idMueble.HasValue)
+            _muebleRepository.ActualizarNumeroGaveteros(idMueble.Value, -1);
+    }
+    
     protected override void ValidarEntradaEliminacion<T>(T comando)
     {
         base.ValidarEntradaEliminacion(comando); // Validación base (null check)
@@ -113,38 +129,12 @@ public class GaveteroService : BaseServicios,
             if (gaveteroComando.Id <= 0) throw new ErrorIdInvalido("gavetero");
         }
     }
-    
-    protected override void InterpretarErrorEliminacion<T>(T comando, Exception ex)
-    {
-        if (ex is ErrorDataBase errorDb)
-        {
-            var mensaje = errorDb.Message?.ToLower() ?? "";
-            if (mensaje.Contains("no se encontró un gavetero activo con id")) throw new ErrorRegistroNoEncontrado();
-            if (mensaje.Contains("error al eliminar lógicamente el gavetero")) throw new Exception($"Error inesperado al eliminar gavetero: {errorDb.Message}", errorDb);
-            throw new Exception($"Error inesperado de base de datos al eliminar gavetero: {errorDb.Message}", errorDb);
-        }
-        if (ex is ErrorRepository errorRepo) throw new Exception($"Error del repositorio al eliminar gavetero: {errorRepo.Message}", errorRepo);        throw ex ?? new Exception("Error desconocido en eliminación");
-    }
-    
-    private void InterpretarErrorActualizacion<T>(T comando, Exception ex)
-    {
-        if (ex is ErrorDataBase errorDb)
-        {
-            var mensaje = errorDb.Message?.ToLower() ?? "";
-            if (mensaje.Contains("no se encontró un gavetero activo con id")) throw new ErrorRegistroNoEncontrado();
-            if (mensaje.Contains("no se encontró el mueble activo con nombre")) throw new ErrorMuebleNoEncontrado();
-            if (mensaje.Contains("ya existe otro gavetero activo con el nombre")) throw new ErrorRegistroYaExiste();
-            if (errorDb.SqlState == "23505" || mensaje.Contains("violación de unicidad")) throw new ErrorRegistroYaExiste();
-            if (mensaje.Contains("error inesperado al actualizar el gavetero")) throw new Exception($"Error inesperado al actualizar gavetero: {errorDb.Message}", errorDb);
-            throw new Exception($"Error inesperado de base de datos al actualizar gavetero: {errorDb.Message}", errorDb);
-        }
-        if (ex is ErrorRepository errorRepo) throw new Exception($"Error del repositorio al actualizar gavetero: {errorRepo.Message}", errorRepo);
-        throw ex ?? new Exception("Error desconocido en actualización");
-    }public virtual List<GaveteroDto>? ObtenerTodos()
+
+    public virtual List<GaveteroDto>? ObtenerTodos()
     {
         try
         {
-            DataTable resultado = _obtenerTodosRepository.ObtenerTodos();
+            DataTable resultado = _gaveteroRepository.ObtenerTodos();
             var lista = new List<GaveteroDto>(resultado.Rows.Count);
             foreach (DataRow fila in resultado.Rows)
             {
@@ -154,7 +144,8 @@ public class GaveteroService : BaseServicios,
             return lista;
         }
         catch { throw; }
-    }    
+    }
+    
     protected override BaseDto MapearFilaADto(DataRow fila)
     {
         return new GaveteroDto

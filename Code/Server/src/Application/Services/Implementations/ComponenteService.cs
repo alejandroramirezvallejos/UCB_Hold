@@ -7,53 +7,23 @@ public class ComponenteService : BaseServicios,
     IEliminarServicio<EliminarComponenteComando>,
     IObtenerTodosServicio<ComponenteDto>
 {
-    private readonly ICrearRepository<CrearComponenteComando> _crearRepository;
-    private readonly IActualizarRepository<ActualizarComponenteComando> _actualizarRepository;
-    private readonly IEliminarRepository<EliminarComponenteComando> _eliminarRepository;
-    private readonly IObtenerTodosRepository<CrearComponenteComando, DataTable> _obtenerTodosRepository;
+    private readonly ComponenteRepository _componenteRepository;
 
-    public ComponenteService(
-        ICrearRepository<CrearComponenteComando> crearRepository,
-        IActualizarRepository<ActualizarComponenteComando> actualizarRepository,
-        IEliminarRepository<EliminarComponenteComando> eliminarRepository,
-        IObtenerTodosRepository<CrearComponenteComando, DataTable> obtenerTodosRepository)
+    public ComponenteService(ComponenteRepository componenteRepository)
     {
-        _crearRepository = crearRepository;
-        _actualizarRepository = actualizarRepository;
-        _eliminarRepository = eliminarRepository;
-        _obtenerTodosRepository = obtenerTodosRepository;
+        _componenteRepository = componenteRepository;
     }
 
     public virtual void Crear(CrearComponenteComando comando)
     {
-        try
-        {
-            ValidarEntradaCreacion(comando);
-            _crearRepository.Crear(comando);
-        }        catch (ErrorNombreRequerido) { throw; }
-        catch (ErrorLongitudInvalida) { throw; }
-        catch (ErrorIdInvalido) { throw; }
-        catch (ErrorModeloRequerido) { throw; }
-        catch (ErrorCodigoImtRequerido) { throw; }
-        catch (ErrorValorNegativo) { throw; }
-        catch (Exception ex)
-        {
-            InterpretarErrorCreacion(comando, ex);
-        }
-    }
-    
-    protected override void InterpretarErrorCreacion<T>(T comando, Exception ex)
-    {
-        if (ex is ErrorDataBase errorDb)
-        {
-            var mensaje = errorDb.Message?.ToLower() ?? "";
-            if (mensaje.Contains("no se encontró el equipo con código imt")) throw new ErrorCodigoImtNoEncontrado();
-            if (errorDb.SqlState == "23505" || mensaje.Contains("ya existe un componente con esos datos")) throw new ErrorRegistroYaExiste();
-            if (mensaje.Contains("error al insertar componente")) throw new Exception($"Error inesperado al insertar componente: {errorDb.Message}", errorDb);
-            throw new Exception($"Error inesperado de base de datos al crear componente: {errorDb.Message}", errorDb);
-        }
-        if (ex is ErrorRepository errorRepo) throw new Exception($"Error del repositorio al crear componente: {errorRepo.Message}", errorRepo);
-        throw ex ?? new Exception("Error desconocido en creación");
+        ValidarEntradaCreacion(comando);
+
+        // Resolver FK: código IMT → id_equipo
+        var idEquipo = _componenteRepository.ObtenerEquipoIdPorCodigoImt(comando.CodigoIMT!.Value);
+        if (idEquipo == null)
+            throw new ErrorCodigoImtNoEncontrado();
+
+        _componenteRepository.Crear(idEquipo.Value, comando);
     }
     
     protected override void ValidarEntradaCreacion<T>(T comando)
@@ -70,11 +40,13 @@ public class ComponenteService : BaseServicios,
             if (componenteComando.CodigoIMT <= 0) throw new ErrorCodigoImtRequerido();
             if (componenteComando.PrecioReferencia.HasValue && componenteComando.PrecioReferencia.Value < 0) throw new ErrorValorNegativo("precio de referencia");
         }
-    }    public virtual List<ComponenteDto>? ObtenerTodos()
+    }
+    
+    public virtual List<ComponenteDto>? ObtenerTodos()
     {
         try
         {
-            DataTable resultado = _obtenerTodosRepository.ObtenerTodos();
+            DataTable resultado = _componenteRepository.ObtenerTodos();
             var lista = new List<ComponenteDto>(resultado.Rows.Count);
             foreach (DataRow fila in resultado.Rows)
             {
@@ -87,34 +59,22 @@ public class ComponenteService : BaseServicios,
     }
     public virtual void Actualizar(ActualizarComponenteComando comando)
     {
-        try
+        ValidarEntradaActualizacion(comando);
+
+        // Verificar que el componente exista y esté activo
+        if (!_componenteRepository.ExisteActivoPorId(comando.Id))
+            throw new ErrorRegistroNoEncontrado();
+
+        // Resolver FK: código IMT → id_equipo (si se proporcionó)
+        int? idEquipo = null;
+        if (comando.CodigoIMT.HasValue && comando.CodigoIMT.Value > 0)
         {
-            ValidarEntradaActualizacion(comando);
-            _actualizarRepository.Actualizar(comando);
+            idEquipo = _componenteRepository.ObtenerEquipoIdPorCodigoImt(comando.CodigoIMT.Value);
+            if (idEquipo == null)
+                throw new ErrorCodigoImtNoEncontrado();
         }
-        catch (ErrorIdInvalido) { throw; }
-        catch (ErrorNombreRequerido) { throw; }
-        catch (ErrorLongitudInvalida) { throw; }
-        catch (ErrorModeloRequerido) { throw; }
-        catch (ErrorCodigoImtRequerido) { throw; }
-        catch (ErrorValorNegativo) { throw; }        catch (Exception ex)
-        {
-            InterpretarErrorActualizacion(comando, ex);
-        }
-    }
-    public void InterpretarErrorActualizacion(ActualizarComponenteComando comando, Exception ex)
-    {
-       if (ex is ErrorDataBase errorDb)
-       {
-           var mensaje = errorDb.Message?.ToLower() ?? "";
-           if (mensaje.Contains("no se encontró un componente activo con id")) throw new ErrorRegistroNoEncontrado();
-           if (mensaje.Contains("no se encontró un equipo activo con código imt")) throw new ErrorCodigoImtNoEncontrado();
-           if (errorDb.SqlState == "23505" || mensaje.Contains("error de violación de unicidad")) throw new ErrorRegistroYaExiste();
-           if (mensaje.Contains("error inesperado al actualizar el componente")) throw new Exception($"Error inesperado al actualizar componente: {errorDb.Message}", errorDb);
-           throw new Exception($"Error inesperado de base de datos al actualizar componente: {errorDb.Message}", errorDb);
-       }
-       if (ex is ErrorRepository errorRepo) throw new Exception($"Error del repositorio al actualizar componente: {errorRepo.Message}", errorRepo);
-       throw ex ?? new Exception("Error desconocido en actualización");
+
+        _componenteRepository.Actualizar(idEquipo, comando);
     }
 
     private void ValidarEntradaActualizacion(ActualizarComponenteComando comando)
@@ -128,16 +88,15 @@ public class ComponenteService : BaseServicios,
 
     public virtual void Eliminar(EliminarComponenteComando comando)
     {
-        try
-        {
-            ValidarEntradaEliminacion(comando);
-            _eliminarRepository.Eliminar(comando);
-        }
-        catch (ErrorIdInvalido) { throw; }        catch (Exception ex)
-        {
-            InterpretarErrorEliminacion(comando, ex);
-        }
-    }    
+        ValidarEntradaEliminacion(comando);
+
+        // Verificar que el componente exista y esté activo
+        if (!_componenteRepository.ExisteActivoPorId(comando.Id))
+            throw new ErrorRegistroNoEncontrado();
+
+        _componenteRepository.Eliminar(comando);
+    }
+    
     protected override void ValidarEntradaEliminacion<T>(T comando)
     {
         base.ValidarEntradaEliminacion(comando); // Validación base (null check)
@@ -148,19 +107,7 @@ public class ComponenteService : BaseServicios,
             if (componenteComando.Id <= 0) throw new ErrorIdInvalido("componente");
         }
     }
-    
-    protected override void InterpretarErrorEliminacion<T>(T comando, Exception ex)
-    {
-        if (ex is ErrorDataBase errorDb)
-        {
-            var mensaje = errorDb.Message?.ToLower() ?? "";
-            if (mensaje.Contains("no se encontró un componente activo con id")) throw new ErrorRegistroNoEncontrado();
-            if (mensaje.Contains("error al eliminar lógicamente el componente")) throw new Exception($"Error inesperado al eliminar componente: {errorDb.Message}", errorDb);
-            throw new Exception($"Error inesperado de base de datos al eliminar componente: {errorDb.Message}", errorDb);
-        }
-        if (ex is ErrorRepository errorRepo) throw new Exception($"Error del repositorio al eliminar componente: {errorRepo.Message}", errorRepo);
-        throw ex ?? new Exception("Error desconocido en eliminación");
-    }
+
     protected override BaseDto MapearFilaADto(DataRow fila) => new ComponenteDto
     {
         Id = Convert.ToInt32(fila["id_componente"]),

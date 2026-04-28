@@ -16,18 +16,67 @@ public class PrestamoService : BaseServicios,
     public virtual PrestamoConEquiposDto Crear(CrearPrestamoComando comando)
     {
         ValidarEntradaCreacion(comando);
-        try
+
+        // Verificar que el usuario exista
+        if (!_prestamoRepository.ExisteUsuarioActivoPorCarnet(comando.CarnetUsuario!))
+            throw new ErrorCarnetUsuarioNoEncontrado();
+
+        // Verificar que todos los grupos existan y buscar equipos disponibles
+        var equipoIds = new List<int>();
+        var equiposInfo = new List<EquipoAsignadoDto>();
+
+        foreach (var grupoId in comando.GrupoEquipoId!)
         {
-            return _prestamoRepository.Crear(comando);
+            if (!_prestamoRepository.ExisteGrupoEquipoActivoPorId(grupoId))
+                throw new ErrorRegistroNoEncontrado();
+
+            var idEquipo = _prestamoRepository.ObtenerEquipoDisponiblePorGrupo(
+                grupoId, comando.FechaPrestamoEsperada!.Value, comando.FechaDevolucionEsperada!.Value);
+            if (idEquipo == null)
+                throw new ErrorNoEquiposDisponibles();
+
+            equipoIds.Add(idEquipo.Value);
+
+            // Obtener info del equipo para la respuesta
+            var equipoDt = _prestamoRepository.ObtenerEquipoPorId(idEquipo.Value);
+            if (equipoDt.Rows.Count > 0)
+            {
+                var fila = equipoDt.Rows[0];
+                equiposInfo.Add(new EquipoAsignadoDto
+                {
+                    IdEquipo = Convert.ToInt32(fila["id_equipo"]),
+                    CodigoImt = fila["codigo_imt"] == DBNull.Value ? null : fila["codigo_imt"].ToString(),
+                    CodigoSerial = fila["codigo_serial"] == DBNull.Value ? null : fila["codigo_serial"].ToString(),
+                    Nombre = fila["nombre"] == DBNull.Value ? null : fila["nombre"].ToString(),
+                    Modelo = fila["modelo"] == DBNull.Value ? null : fila["modelo"].ToString(),
+                    Marca = fila["marca"] == DBNull.Value ? null : fila["marca"].ToString(),
+                    IdGrupoEquipo = Convert.ToInt32(fila["id_grupo_equipo"])
+                });
+            }
         }
-        catch (ErrorCarnetRequerido) { throw; }
-        catch (ErrorIdInvalido) { throw; }
-        catch (ErrorGrupoEquipoIdInvalido) { throw; }
-        catch (ErrorFechaPrestamoYFechaDevolucionInvalidas) { throw; }
-        catch (ErrorCarnetUsuarioNoEncontrado) { throw; }
-        catch (ErrorNoEquiposDisponibles) { throw; }
-        catch (Exception ex) { InterpretarErrorCreacion(comando, ex); throw; }
+
+        // Crear el préstamo
+        var idPrestamo = _prestamoRepository.CrearPrestamo(comando);
+
+        // Crear detalles
+        foreach (var idEquipo in equipoIds)
+        {
+            _prestamoRepository.CrearDetallePrestamo(idPrestamo, idEquipo);
+        }
+
+        // Guardar contrato si existe
+        if (comando.Contrato != null)
+        {
+            _prestamoRepository.GuardarContrato(idPrestamo, comando.Contrato);
+        }
+
+        return new PrestamoConEquiposDto
+        {
+            IdPrestamo = idPrestamo,
+            EquiposAsignados = equiposInfo
+        };
     }
+
     protected override void ValidarEntradaCreacion<T>(T comando)
     {
         base.ValidarEntradaCreacion(comando);
@@ -42,45 +91,16 @@ public class PrestamoService : BaseServicios,
             if (cmd.Contrato == null) throw new ErrorContratoNoNulo();
         }
     }
-    protected override void InterpretarErrorCreacion<T>(T comando, Exception ex)
-    {
-        base.InterpretarErrorCreacion(comando, ex);
-        var errorMessage = ex.Message?.ToLower() ?? "";
-        if (errorMessage.Contains("error al crear préstamo general: conflicto de llave única")) throw new ErrorRegistroYaExiste();
-        if (errorMessage.Contains("error inesperado") && errorMessage.Contains("al crear el préstamo general")) throw new Exception($"Error inesperado al crear el préstamo general: {ex.Message}", ex);
-        if (errorMessage.Contains("fallo crítico: no se pudo obtener el id del préstamo general creado")) throw new Exception("Fallo crítico: No se pudo crear el préstamo", ex);
-        if (errorMessage.Contains("grupo id") && errorMessage.Contains("no existe o está eliminado")) throw new ErrorRegistroNoEncontrado();
-        if (errorMessage.Contains("no se encontró equipo disponible") && errorMessage.Contains("para el grupo id")) throw new ErrorNoEquiposDisponibles();
-        if (errorMessage.Contains("conflicto de llave única al crear detalle")) throw new ErrorRegistroYaExiste();
-        if (errorMessage.Contains("violación de restricción check al crear detalle")) throw new Exception($"Error de validación al crear detalle del préstamo: {ex.Message}", ex);
-        if (errorMessage.Contains("violación de llave foránea al crear detalle")) throw new ErrorReferenciaInvalida("equipo o préstamo");
-        if (errorMessage.Contains("error inesperado") && errorMessage.Contains("al crear detalle")) throw new Exception($"Error inesperado al crear detalle del préstamo: {ex.Message}", ex);
-        if (ex is ErrorDataBase errorDb)
-        {
-            if (errorDb.SqlState == "23503")
-            {
-                if (errorMessage.Contains("carnet") || errorMessage.Contains("usuarios")) throw new ErrorCarnetUsuarioNoEncontrado();
-                throw new ErrorReferenciaInvalida("referencia de base de datos");
-            }
-            if (errorDb.SqlState == "23505") throw new ErrorRegistroYaExiste();
-            throw new Exception($"Error inesperado de base de datos al crear préstamo: {errorDb.Message}", errorDb);
-        }
-        if (ex is ErrorRepository errorRepo) throw new Exception($"Error del repositorio al crear préstamo: {errorRepo.Message}", errorRepo);
-        throw new Exception($"Error inesperado al crear préstamo: {ex.Message}", ex);
-    }   
+
     public virtual void Eliminar(EliminarPrestamoComando comando)
     {
-        try
-        {
-            ValidarEntradaEliminacion(comando);
-            _prestamoRepository.Eliminar(comando);
-        }
-        catch (ErrorIdInvalido) { throw; }
-        catch (Exception ex)
-        {
-            InterpretarErrorEliminacion(comando, ex);
-            throw;
-        }
+        ValidarEntradaEliminacion(comando);
+
+        // Verificar que el préstamo exista y esté activo
+        if (!_prestamoRepository.ExisteActivoPorId(comando.Id))
+            throw new ErrorRegistroNoEncontrado();
+
+        _prestamoRepository.Eliminar(comando);
     }
     protected override void ValidarEntradaEliminacion<T>(T comando)
     {
@@ -90,18 +110,7 @@ public class PrestamoService : BaseServicios,
             if (cmd.Id <= 0) throw new ErrorIdInvalido("préstamo");
         }
     }
-    protected override void InterpretarErrorEliminacion<T>(T comando, Exception ex)
-    {
-        base.InterpretarErrorEliminacion(comando, ex);
-        if (ex is ErrorDataBase errorDb)
-        {
-            var mensaje = errorDb.Message?.ToLower() ?? "";
-            if (mensaje.Contains("no se encontró un préstamo activo con id")) throw new ErrorRegistroNoEncontrado();
-            if (mensaje.Contains("error al eliminar lógicamente el préstamo")) throw new Exception($"Error inesperado al eliminar préstamo: {errorDb.Message}", errorDb);
-            throw new Exception($"Error inesperado de base de datos al eliminar préstamo: {errorDb.Message}", errorDb);
-        }
-        if (ex is ErrorRepository errorRepo) throw new Exception($"Error del repositorio al eliminar préstamo: {errorRepo.Message}", errorRepo);
-    } 
+
     public virtual List<PrestamoDto>? ObtenerTodos()
     {
         try
@@ -119,26 +128,13 @@ public class PrestamoService : BaseServicios,
     }
     public virtual void ActualizarEstadoPrestamo(ActualizarEstadoPrestamoComando comando)
     {
-        try
-        {
-            ValidarEntradaActualizacionEstado(comando);
-            _prestamoRepository.ActualizarEstado(comando);
-        }
-        catch (ErrorIdInvalido) { throw; }
-        catch (ErrorEstadoPrestamoInvalido) { throw; }
-        catch (ErrorEstadoPrestamoRequerido) { throw; }
-        catch (Exception ex)
-        {
-            if (ex is ErrorDataBase errorDb)
-            {
-                var mensaje = errorDb.Message?.ToLower() ?? "";
-                if (mensaje.Contains("no existe préstamo")) throw new ErrorRegistroNoEncontrado();
-                if (mensaje.Contains("error al actualizar el estado del préstamo")) throw new Exception($"Error inesperado al actualizar estado del préstamo: {errorDb.Message}", errorDb);
-                throw new Exception($"Error inesperado de base de datos al actualizar estado del préstamo: {errorDb.Message}", errorDb);
-            }
-            if (ex is ErrorRepository errorRepo) throw new Exception($"Error del repositorio al actualizar estado del préstamo: {errorRepo.Message}", errorRepo);
-            throw;
-        }
+        ValidarEntradaActualizacionEstado(comando);
+
+        // Verificar que el préstamo exista
+        if (!_prestamoRepository.ExisteActivoPorId(comando.Id!.Value))
+            throw new ErrorRegistroNoEncontrado();
+
+        _prestamoRepository.ActualizarEstado(comando);
     }
     private void ValidarEntradaActualizacionEstado(ActualizarEstadoPrestamoComando comando)
     {

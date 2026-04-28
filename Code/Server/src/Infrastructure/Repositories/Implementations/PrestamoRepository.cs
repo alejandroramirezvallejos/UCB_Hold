@@ -20,80 +20,104 @@ public class PrestamoRepository :
         _mongoDbContext = mongoDbContext;
         _gridFsBucket = gridFsBucket;
     }
-    
-    public PrestamoConEquiposDto Crear(CrearPrestamoComando comando)
+
+    public int CrearPrestamo(CrearPrestamoComando comando)
     {
-        const string sql = @"SELECT * FROM public.insertar_y_obtener_prestamo(
-            @grupoEquipoId::integer[],
-            @fechaPrestamoEsperada::timestamp without time zone,
-            @fechaDevolucionEsperada::timestamp without time zone,
-            @observacion,
-            @carnetUsuario,
-            @idContrato
-        )";
-        
+        const string sql = @"INSERT INTO public.prestamos (fecha_prestamo_esperada, fecha_devolucion_esperada, observacion, carnet, estado_eliminado)
+                             VALUES (@fechaPrestamoEsperada, @fechaDevolucionEsperada, @observacion, @carnetUsuario, FALSE)
+                             RETURNING id_prestamo";
         var parametros = new Dictionary<string, object?>
         {
-            ["grupoEquipoId"] = comando.GrupoEquipoId ?? (object)DBNull.Value,
-            ["fechaPrestamoEsperada"] = comando.FechaPrestamoEsperada.HasValue ? (object)comando.FechaPrestamoEsperada.Value : DBNull.Value,
-            ["fechaDevolucionEsperada"] = comando.FechaDevolucionEsperada.HasValue ? (object)comando.FechaDevolucionEsperada.Value : DBNull.Value,
+            ["fechaPrestamoEsperada"] = comando.FechaPrestamoEsperada!.Value,
+            ["fechaDevolucionEsperada"] = comando.FechaDevolucionEsperada!.Value,
             ["observacion"] = comando.Observacion ?? (object)DBNull.Value,
-            ["carnetUsuario"] = comando.CarnetUsuario ?? (object)DBNull.Value,
-            ["idContrato"] = DBNull.Value
+            ["carnetUsuario"] = comando.CarnetUsuario!
         };
-        
         try
         {
-            var dataTable = _ejecutarConsulta.EjecutarFuncion(sql, parametros);
-            
-            if (dataTable == null || dataTable.Rows.Count == 0)
-                throw new Exception("La función no retornó resultados.");
-            
-            // Agrupar resultados por id_prestamo
-            int? idPrestamo = null;
-            var equipos = new List<EquipoAsignadoDto>();
-            
-            foreach (DataRow fila in dataTable.Rows)
-            {
-                if (idPrestamo == null)
-                    idPrestamo = Convert.ToInt32(fila["id_prestamo"]);
-                
-                equipos.Add(new EquipoAsignadoDto
-                {
-                    IdEquipo = Convert.ToInt32(fila["id_equipo"]),
-                    CodigoImt = fila["codigo_imt"] == DBNull.Value ? null : fila["codigo_imt"].ToString(),
-                    CodigoSerial = fila["codigo_serial"] == DBNull.Value ? null : fila["codigo_serial"].ToString(),
-                    Nombre = fila["nombre"] == DBNull.Value ? null : fila["nombre"].ToString(),
-                    Modelo = fila["modelo"] == DBNull.Value ? null : fila["modelo"].ToString(),
-                    Marca = fila["marca"] == DBNull.Value ? null : fila["marca"].ToString(),
-                    IdGrupoEquipo = Convert.ToInt32(fila["id_grupo_equipo"])
-                });
-            }
-            
-           // Manejar el contrato si existe
-            if (comando.Contrato != null && idPrestamo.HasValue)
-            {
-                var fileName = comando.Contrato.FileName;
-                using var stream = comando.Contrato.OpenReadStream();
-                var fileId = _gridFsBucket.UploadFromStreamAsync(fileName, stream, null, default).GetAwaiter().GetResult();
-                var contrato = new Contrato { PrestamoId = idPrestamo.Value, FileId = fileId.ToString() };
-                _mongoDbContext.Contratos.InsertOneAsync(contrato, null, default).GetAwaiter().GetResult();
-                ActualizarIdContrato(idPrestamo.Value, contrato.FileId);
-            }
-            
-            return new PrestamoConEquiposDto
-            {
-                IdPrestamo = idPrestamo ?? 0,
-                EquiposAsignados = equipos
-            };
+            var dt = _ejecutarConsulta.EjecutarFuncion(sql, parametros);
+            return Convert.ToInt32(dt.Rows[0][0]);
         }
         catch (NpgsqlException ex) { throw new ErrorDataBase($"Error de base de datos al crear préstamo: {ex.Message}", ex.SqlState, null, ex); }
         catch (Exception ex) { throw new ErrorRepository($"Error del repositorio al crear préstamo: {ex.Message}", ex); }
     }
-    
+
+    public void CrearDetallePrestamo(int idPrestamo, int idEquipo)
+    {
+        const string sql = @"INSERT INTO public.detalles_prestamos (id_prestamo, id_equipo, estado_eliminado)
+                             VALUES (@idPrestamo, @idEquipo, FALSE)";
+        var parametros = new Dictionary<string, object?>
+        {
+            ["idPrestamo"] = idPrestamo,
+            ["idEquipo"] = idEquipo
+        };
+        try { _ejecutarConsulta.EjecutarSpNR(sql, parametros); }
+        catch (NpgsqlException ex) { throw new ErrorDataBase($"Error de base de datos al crear detalle préstamo: {ex.Message}", ex.SqlState, null, ex); }
+        catch (Exception ex) { throw new ErrorRepository($"Error del repositorio al crear detalle préstamo: {ex.Message}", ex); }
+    }
+
+    public int? ObtenerEquipoDisponiblePorGrupo(int idGrupoEquipo, DateTime fechaPrestamoEsperada, DateTime fechaDevolucionEsperada)
+    {
+        // Buscar un equipo operativo del grupo que NO tenga préstamos activos/pendientes/aprobados que se solapen con las fechas solicitadas
+        const string sql = @"SELECT e.id_equipo 
+            FROM public.equipos AS e
+            WHERE e.id_grupo_equipo = @idGrupoEquipo 
+            AND e.estado_eliminado = FALSE 
+            AND e.estado_equipo = 'operativo'
+            AND e.id_equipo NOT IN (
+                SELECT dp.id_equipo 
+                FROM public.detalles_prestamos AS dp
+                INNER JOIN public.prestamos AS p ON dp.id_prestamo = p.id_prestamo
+                WHERE p.estado_eliminado = FALSE 
+                AND dp.estado_eliminado = FALSE
+                AND p.estado_prestamo IN ('pendiente', 'aprobado', 'activo')
+                AND p.fecha_prestamo_esperada < @fechaDevolucionEsperada
+                AND p.fecha_devolucion_esperada > @fechaPrestamoEsperada
+            )
+            LIMIT 1";
+        var parametros = new Dictionary<string, object?>
+        {
+            ["idGrupoEquipo"] = idGrupoEquipo,
+            ["fechaPrestamoEsperada"] = fechaPrestamoEsperada,
+            ["fechaDevolucionEsperada"] = fechaDevolucionEsperada
+        };
+        var dt = _ejecutarConsulta.EjecutarFuncion(sql, parametros);
+        if (dt.Rows.Count == 0) return null;
+        return Convert.ToInt32(dt.Rows[0][0]);
+    }
+
+    public DataTable ObtenerEquipoPorId(int idEquipo)
+    {
+        const string sql = @"SELECT e.id_equipo, e.codigo_imt, e.numero_serial AS codigo_serial, 
+            ge.nombre, ge.modelo, ge.marca, e.id_grupo_equipo
+            FROM public.equipos AS e
+            INNER JOIN public.grupos_equipos AS ge ON e.id_grupo_equipo = ge.id_grupo_equipo
+            WHERE e.id_equipo = @idEquipo AND e.estado_eliminado = FALSE";
+        var parametros = new Dictionary<string, object?> { ["idEquipo"] = idEquipo };
+        return _ejecutarConsulta.EjecutarFuncion(sql, parametros);
+    }
+
+    public void GuardarContrato(int idPrestamo, IFormFile contrato)
+    {
+        var fileName = contrato.FileName;
+        using var stream = contrato.OpenReadStream();
+        var fileId = _gridFsBucket.UploadFromStreamAsync(fileName, stream, null, default).GetAwaiter().GetResult();
+        var contratoDoc = new Contrato { PrestamoId = idPrestamo, FileId = fileId.ToString() };
+        _mongoDbContext.Contratos.InsertOneAsync(contratoDoc, null, default).GetAwaiter().GetResult();
+        ActualizarIdContrato(idPrestamo, contratoDoc.FileId);
+    }
+
     public void Eliminar(EliminarPrestamoComando comando)
     {
-        const string sql = @"CALL public.eliminar_prestamo(@id)";
+        // Eliminar detalles primero
+        const string sqlDetalles = @"UPDATE public.detalles_prestamos SET estado_eliminado = TRUE WHERE id_prestamo = @id";
+        var parametrosDetalles = new Dictionary<string, object?> { ["id"] = comando.Id };
+        try { _ejecutarConsulta.EjecutarSpNR(sqlDetalles, parametrosDetalles); }
+        catch (NpgsqlException ex) { throw new ErrorDataBase($"Error de base de datos al eliminar detalles préstamo: {ex.Message}", ex.SqlState, null, ex); }
+        catch (Exception ex) { throw new ErrorRepository($"Error del repositorio al eliminar detalles préstamo: {ex.Message}", ex); }
+
+        // Eliminar préstamo
+        const string sql = @"UPDATE public.prestamos SET estado_eliminado = TRUE WHERE id_prestamo = @id";
         var parametros = new Dictionary<string, object?> { ["id"] = comando.Id };
         try { _ejecutarConsulta.EjecutarSpNR(sql, parametros); }
         catch (NpgsqlException ex) { throw new ErrorDataBase($"Error de base de datos al eliminar préstamo: {ex.Message}", ex.SqlState, null, ex); }
@@ -102,7 +126,20 @@ public class PrestamoRepository :
     
     public DataTable ObtenerTodos()
     {
-        const string sql = @"SELECT * from public.obtener_prestamos()";
+        const string sql = @"SELECT p.id_prestamo, u.carnet, u.nombre, u.apellido_paterno, u.telefono,
+            ge.nombre AS nombre_grupo_equipo, CAST(e.codigo_imt AS TEXT) AS codigo_imt,
+            p.fecha_solicitud, p.fecha_prestamo_esperada, p.fecha_prestamo,
+            p.fecha_devolucion_esperada, p.fecha_devolucion, p.observacion,
+            p.estado_prestamo, e.ubicacion AS ubicacion_equipo,
+            g.nombre AS nombre_gavetero, m.nombre AS nombre_mueble, m.ubicacion AS ubicacion_mueble
+            FROM public.prestamos AS p
+            INNER JOIN public.usuarios AS u ON p.carnet = u.carnet
+            INNER JOIN public.detalles_prestamos AS dp ON p.id_prestamo = dp.id_prestamo
+            INNER JOIN public.equipos AS e ON dp.id_equipo = e.id_equipo
+            INNER JOIN public.grupos_equipos AS ge ON e.id_grupo_equipo = ge.id_grupo_equipo
+            LEFT JOIN public.gaveteros AS g ON e.id_gavetero = g.id_gavetero
+            LEFT JOIN public.muebles AS m ON g.id_mueble = m.id_mueble
+            WHERE p.estado_eliminado = FALSE AND dp.estado_eliminado = FALSE";
         try { return _ejecutarConsulta.EjecutarFuncion(sql, new Dictionary<string, object?>()); }
         catch (NpgsqlException ex) { throw new ErrorDataBase($"Error de base de datos al obtener préstamos: {ex.Message}", ex.SqlState, null, ex); }
         catch (Exception ex) { throw new ErrorRepository($"Error del repositorio al obtener préstamos: {ex.Message}", ex); }
@@ -110,7 +147,21 @@ public class PrestamoRepository :
     
     public DataTable ObtenerPorCarnetYEstadoPrestamo(string carnetUsuario, string estadoPrestamo)
     {
-        const string sql = @"SELECT * from public.obtener_prestamos_por_carnet_y_estado_prestamo(@carnetUsuario,@estadoPrestamo::estado_prestamo)";
+        const string sql = @"SELECT p.id_prestamo, u.carnet, u.nombre, u.apellido_paterno, u.telefono,
+            ge.nombre AS nombre_grupo_equipo, CAST(e.codigo_imt AS TEXT) AS codigo_imt,
+            p.fecha_solicitud, p.fecha_prestamo_esperada, p.fecha_prestamo,
+            p.fecha_devolucion_esperada, p.fecha_devolucion, p.observacion,
+            p.estado_prestamo, e.ubicacion AS ubicacion_equipo,
+            g.nombre AS nombre_gavetero, m.nombre AS nombre_mueble, m.ubicacion AS ubicacion_mueble
+            FROM public.prestamos AS p
+            INNER JOIN public.usuarios AS u ON p.carnet = u.carnet
+            INNER JOIN public.detalles_prestamos AS dp ON p.id_prestamo = dp.id_prestamo
+            INNER JOIN public.equipos AS e ON dp.id_equipo = e.id_equipo
+            INNER JOIN public.grupos_equipos AS ge ON e.id_grupo_equipo = ge.id_grupo_equipo
+            LEFT JOIN public.gaveteros AS g ON e.id_gavetero = g.id_gavetero
+            LEFT JOIN public.muebles AS m ON g.id_mueble = m.id_mueble
+            WHERE p.estado_eliminado = FALSE AND dp.estado_eliminado = FALSE
+            AND p.carnet = @carnetUsuario AND p.estado_prestamo = @estadoPrestamo::estado_prestamo";
         var parametros = new Dictionary<string, object?>
         {
             ["carnetUsuario"] = carnetUsuario ?? (object)DBNull.Value,
@@ -123,7 +174,7 @@ public class PrestamoRepository :
     
     public void ActualizarEstado(ActualizarEstadoPrestamoComando comando)
     {
-        const string sql = @"CALL public.actualizar_estado_prestamo(@idPrestamo,@estadoPrestamo::estado_prestamo)";
+        const string sql = @"UPDATE public.prestamos SET estado_prestamo = @estadoPrestamo::estado_prestamo WHERE id_prestamo = @idPrestamo AND estado_eliminado = FALSE";
         var parametros = new Dictionary<string, object?>
         {
             ["idPrestamo"] = comando.Id,
@@ -163,6 +214,30 @@ public class PrestamoRepository :
         }
         return dataChunks;
     }
+
+    // --- Métodos auxiliares ---
+
+    public bool ExisteActivoPorId(int id)
+    {
+        const string sql = @"SELECT EXISTS(SELECT 1 FROM public.prestamos WHERE id_prestamo = @id AND estado_eliminado = FALSE)";
+        var parametros = new Dictionary<string, object?> { ["id"] = id };
+        var dt = _ejecutarConsulta.EjecutarFuncion(sql, parametros);
+        return dt.Rows.Count > 0 && Convert.ToBoolean(dt.Rows[0][0]);
+    }
+
+    public bool ExisteGrupoEquipoActivoPorId(int id)
+    {
+        const string sql = @"SELECT EXISTS(SELECT 1 FROM public.grupos_equipos WHERE id_grupo_equipo = @id AND estado_eliminado = FALSE)";
+        var parametros = new Dictionary<string, object?> { ["id"] = id };
+        var dt = _ejecutarConsulta.EjecutarFuncion(sql, parametros);
+        return dt.Rows.Count > 0 && Convert.ToBoolean(dt.Rows[0][0]);
+    }
+
+    public bool ExisteUsuarioActivoPorCarnet(string carnet)
+    {
+        const string sql = @"SELECT EXISTS(SELECT 1 FROM public.usuarios WHERE carnet = @carnet AND estado_eliminado = FALSE)";
+        var parametros = new Dictionary<string, object?> { ["carnet"] = carnet };
+        var dt = _ejecutarConsulta.EjecutarFuncion(sql, parametros);
+        return dt.Rows.Count > 0 && Convert.ToBoolean(dt.Rows[0][0]);
+    }
 }
-
-

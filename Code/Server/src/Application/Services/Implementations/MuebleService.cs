@@ -6,36 +6,17 @@ public class MuebleService : BaseServicios,
     IEliminarServicio<EliminarMuebleComando>,
     IObtenerTodosServicio<MuebleDto>
 {
-    private readonly ICrearRepository<CrearMuebleComando> _crearRepository;
-    private readonly IActualizarRepository<ActualizarMuebleComando> _actualizarRepository;
-    private readonly IEliminarRepository<EliminarMuebleComando> _eliminarRepository;
-    private readonly IObtenerTodosRepository<CrearMuebleComando, DataTable> _obtenerTodosRepository;
+    private readonly MuebleRepository _muebleRepository;
 
-    public MuebleService(
-        ICrearRepository<CrearMuebleComando> crearRepository,
-        IActualizarRepository<ActualizarMuebleComando> actualizarRepository,
-        IEliminarRepository<EliminarMuebleComando> eliminarRepository,
-        IObtenerTodosRepository<CrearMuebleComando, DataTable> obtenerTodosRepository)
+    public MuebleService(MuebleRepository muebleRepository)
     {
-        _crearRepository = crearRepository;
-        _actualizarRepository = actualizarRepository;
-        _eliminarRepository = eliminarRepository;
-        _obtenerTodosRepository = obtenerTodosRepository;
+        _muebleRepository = muebleRepository;
     }
+
     public virtual void Crear(CrearMuebleComando comando)
     {
-        try
-        {
-            ValidarEntradaCreacion(comando);
-            _crearRepository.Crear(comando);
-        }
-        catch (ErrorNombreRequerido) { throw; }
-        catch (ErrorValorNegativo) { throw; }
-        catch (Exception ex)
-        {
-            InterpretarErrorCreacion(comando, ex);
-            throw;
-        }
+        ValidarEntradaCreacion(comando);
+        _muebleRepository.Crear(comando);
     }
     protected override void ValidarEntradaCreacion<T>(T comando)
     {
@@ -49,42 +30,17 @@ public class MuebleService : BaseServicios,
             if (cmd.Altura.HasValue && cmd.Altura <= 0) throw new ErrorValorNegativo("altura");
         }
     }
-    protected override void InterpretarErrorCreacion<T>(T comando, Exception ex)
-    {
-        base.InterpretarErrorCreacion(comando, ex);
-        if (ex is ErrorDataBase errorDb)
-        {
-            var mensaje = errorDb.Message?.ToLower() ?? "";
-            if (errorDb.SqlState == "23505" || mensaje.Contains("ya existe un mueble con el mismo nombre")) throw new ErrorRegistroYaExiste();
-            if (mensaje.Contains("error al insertar mueble")) throw new Exception($"Error inesperado al insertar mueble: {errorDb.Message}", errorDb);
-            throw new Exception($"Error inesperado de base de datos al crear mueble: {errorDb.Message}", errorDb);
-        }
-        if (ex is ErrorRepository errorRepo) throw new Exception($"Error del repositorio al crear mueble: {errorRepo.Message}", errorRepo);
-    }
     public virtual void Actualizar(ActualizarMuebleComando comando)
     {
-        try
-        {
-            ValidarEntradaActualizacion(comando);
-            _actualizarRepository.Actualizar(comando);
-        }
-        catch (ErrorIdInvalido) { throw; }
-        catch (ErrorNombreRequerido) { throw; }
-        catch (ErrorValorNegativo) { throw; }
-        catch (Exception ex)
-        {
-            if (ex is ErrorDataBase errorDb)
-            {
-                var mensaje = errorDb.Message?.ToLower() ?? "";
-                if (mensaje.Contains("no se encontró un mueble activo con id")) throw new ErrorRegistroNoEncontrado();
-                if (errorDb.SqlState == "23505" || mensaje.Contains("ya existe un mueble con el nombre")) throw new ErrorRegistroYaExiste();
-                if (mensaje.Contains("error inesperado al actualizar mueble")) throw new Exception($"Error inesperado al actualizar mueble: {errorDb.Message}", errorDb);
-                throw new Exception($"Error inesperado de base de datos al actualizar mueble: {errorDb.Message}", errorDb);
-            }
-            if (ex is ErrorRepository errorRepo) throw new Exception($"Error del repositorio al actualizar mueble: {errorRepo.Message}", errorRepo);
-            throw;
-        }
-    }    private void ValidarEntradaActualizacion(ActualizarMuebleComando comando)
+        ValidarEntradaActualizacion(comando);
+
+        // Verificar que el mueble exista y esté activo
+        if (!_muebleRepository.ExisteActivoPorId(comando.Id))
+            throw new ErrorRegistroNoEncontrado();
+
+        _muebleRepository.Actualizar(comando);
+    }
+    private void ValidarEntradaActualizacion(ActualizarMuebleComando comando)
     {
         if (comando == null) throw new ArgumentNullException(nameof(comando));
         if (comando.Id <= 0) throw new ErrorIdInvalido("mueble");
@@ -96,17 +52,13 @@ public class MuebleService : BaseServicios,
     }
     public virtual void Eliminar(EliminarMuebleComando comando)
     {
-        try
-        {
-            ValidarEntradaEliminacion(comando);
-            _eliminarRepository.Eliminar(comando);
-        }
-        catch (ErrorIdInvalido) { throw; }
-        catch (Exception ex)
-        {
-            InterpretarErrorEliminacion(comando, ex);
-            throw;
-        }
+        ValidarEntradaEliminacion(comando);
+
+        // Verificar que el mueble exista y esté activo
+        if (!_muebleRepository.ExisteActivoPorId(comando.Id))
+            throw new ErrorRegistroNoEncontrado();
+
+        _muebleRepository.Eliminar(comando);
     }
     protected override void ValidarEntradaEliminacion<T>(T comando)
     {
@@ -116,22 +68,11 @@ public class MuebleService : BaseServicios,
             if (cmd.Id <= 0) throw new ErrorIdInvalido("mueble");
         }
     }
-    protected override void InterpretarErrorEliminacion<T>(T comando, Exception ex)
-    {
-        base.InterpretarErrorEliminacion(comando, ex);
-        if (ex is ErrorDataBase errorDb)
-        {
-            var mensaje = errorDb.Message?.ToLower() ?? "";
-            if (mensaje.Contains("no se encontró un mueble activo con id")) throw new ErrorRegistroNoEncontrado();
-            if (mensaje.Contains("error al eliminar lógicamente el mueble")) throw new Exception($"Error inesperado al eliminar mueble: {errorDb.Message}", errorDb);
-            throw new Exception($"Error inesperado de base de datos al eliminar mueble: {errorDb.Message}", errorDb);
-        }        if (ex is ErrorRepository errorRepo) throw new Exception($"Error del repositorio al eliminar mueble: {errorRepo.Message}", errorRepo);
-    }
     public virtual List<MuebleDto>? ObtenerTodos()
     {
         try
         {
-            DataTable resultado = _obtenerTodosRepository.ObtenerTodos();
+            DataTable resultado = _muebleRepository.ObtenerTodos();
             var lista = new List<MuebleDto>(resultado.Rows.Count);
             foreach (DataRow fila in resultado.Rows)
             {
