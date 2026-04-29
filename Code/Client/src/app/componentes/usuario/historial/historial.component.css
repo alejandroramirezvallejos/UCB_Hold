@@ -1,101 +1,126 @@
 .container {
     display: flex;
     flex-direction: column;
-    align-items: flex-start; /* Alineación a la izquierda */
-    padding-top: 4rem; /* Más abajo */
-    padding-left: 12rem; /* Margen izquierdo alineado */
+    padding-top: 4rem;
+    padding-left: 12rem; /* Margen para respetar el menú lateral */
+    padding-right: 2rem;
     width: 100%;
     min-height: 100vh;
     box-sizing: border-box;
     background-color: #ffffff;
 }
+
 .custom-dropdown {
     position: relative;
     margin-bottom: 1.5rem;
     font-family: "Manrope", sans-serif;
+    align-self: flex-start; /* Fuerza al título a irse a la izquierda */
     min-width: 200px;
 }
+
 .dropdown-header {
     display: flex;
     align-items: center;
     gap: 0.5rem;
     cursor: pointer;
-    padding: 0.5rem 0; /* Ajuste para alinear con el borde exacto */
+    padding: 0.5rem 0;
+    /* Ajuste para alinear con el borde exacto */
     user-select: none;
 }
+
 .current-value {
     font-size: 1.5rem;
     font-weight: 700;
     color: #000;
 }
+
 .dropdown-arrow {
     width: 24px;
     height: 24px;
     transition: transform 0.2s ease;
 }
+
 .dropdown-list {
     position: absolute;
     top: 100%;
     left: 0;
-    right: 0; /* Ancho completo del contenedor padre */
-    min-width: 180px; /* Ancho mínimo para la lista */
+    right: 0;
+    /* Ancho completo del contenedor padre */
+    min-width: 180px;
+    /* Ancho mínimo para la lista */
     background: white;
-    border-radius: 12px; /* Bordes redondeados completos */
-    box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+    border-radius: 12px;
+    /* Bordes redondeados completos */
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
     list-style: none;
     padding: 0;
-    margin: 5px 0 0 0; /* Un pequeño margen superior */
+    margin: 5px 0 0 0;
+    /* Un pequeño margen superior */
     z-index: 100;
     border: 1px solid #e2e8f0;
     overflow: hidden;
     backdrop-filter: blur(10px);
     background-color: rgba(255, 255, 255, 0.95);
 }
+
 .dropdown-list li {
     padding: 0.75rem 1rem;
     font-size: 1rem;
     font-weight: 500;
-    color: #64748b; /* Gris */
+    color: #64748b;
+    /* Gris */
     cursor: pointer;
     transition: all 0.2s ease;
     text-align: left;
 }
+
 .dropdown-list li:hover {
-    color: #FFCF00; /* Amarillo */
+    color: #FFCF00;
+    /* Amarillo */
     background-color: #f8fafc;
 }
+
 .dropdown-list li.selected {
     color: #334155;
     font-weight: 700;
     background-color: #f1f5f9;
 }
+
 .items-wrapper {
     width: 100%;
-    max-width: 900px; /* Restringir ancho de las tarjetas */
+    max-width: 900px;
+    /* Restringir ancho de las tarjetas */
     display: flex;
     flex-direction: column;
+    align-self: center; /* Centra únicamente la lista de préstamos/tarjetas */
 }
+
 .items-wrapper::-webkit-scrollbar {
     width: 6px;
 }
+
 .items-wrapper::-webkit-scrollbar-thumb {
     background-color: rgba(0, 0, 0, 0.3);
     border-radius: 10px;
 }
+
 .items-wrapper::-webkit-scrollbar-track {
     background: rgba(0, 0, 0, 0.05);
     border-radius: 10px;
     margin: 10px 0;
 }
+
 .items-wrapper::-webkit-scrollbar:horizontal {
     height: 6px;
 }
+
 @media (max-width: 1200px) {
     .container {
         padding-left: 2rem;
         padding-right: 2rem;
     }
 }
+
 @media (max-width: 768px) {
     .container {
         padding-top: 2rem;
@@ -103,43 +128,53 @@
         padding-right: 1rem;
         align-items: center;
     }
+
     .custom-dropdown {
         width: 100%;
         max-width: none;
     }
+
     .dropdown-header {
         justify-content: flex-start;
     }
+
     .current-value {
         font-size: 1.25rem;
     }
+
     .items-wrapper {
         max-width: 100%;
     }
 }
+
 @media (max-width: 480px) {
     .container {
         padding-top: 1.5rem;
         padding-left: 0.5rem;
         padding-right: 0.5rem;
     }
+
     .current-value {
         font-size: 1.1rem;
     }
+
     .dropdown-arrow {
         width: 20px;
         height: 20px;
     }
 }
+
 @media (max-width: 360px) {
     .container {
         padding-top: 1.25rem;
         padding-left: 0.4rem;
         padding-right: 0.4rem;
     }
+
     .current-value {
         font-size: 1rem;
     }
+
     .dropdown-list li {
         padding: 0.6rem 0.75rem;
         font-size: 0.9rem;
