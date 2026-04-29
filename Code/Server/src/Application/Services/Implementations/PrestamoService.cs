@@ -145,7 +145,7 @@ public class PrestamoService : BaseServicios,
             comando.EstadoPrestamo != "finalizado" && comando.EstadoPrestamo != "cancelado" &&
             comando.EstadoPrestamo != "aprobado" && comando.EstadoPrestamo != "activo")
             throw new ErrorEstadoPrestamoInvalido();
-    }   
+    }
     public virtual List<PrestamoDto>? ObtenerPrestamosPorCarnetYEstadoPrestamo(string carnetUsuario, string estadoPrestamo)
     {
         try
