@@ -17,7 +17,7 @@ export class ListaObjetosComponent implements OnChanges {
   private todosLosProductos: GrupoEquipo[] = [];
   productosFiltrados: GrupoEquipo[] = [];
   productosPaginados: GrupoEquipo[][] = [];
-  cantidadObjetos: number = 20;
+  cantidadObjetos: number = 21;
   paginaActual: number = 0;
   totalPaginas: number = 0;
   error : WritableSignal<boolean> = signal(false);
