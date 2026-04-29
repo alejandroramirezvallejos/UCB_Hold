@@ -23,7 +23,7 @@ export class GruposEquiposCrearComponent extends BaseTablaComponent {
   }
   validarregistro(){
     this.mensajeaviso="Desea registrar el nuevo grupo de equipo?";
-    this.aviso.set(false);
+    this.aviso.set(true);
   }
   registrar() {
     this.grupoEquipoapi.crearGrupoEquipo(this.grupoEquipo).subscribe({

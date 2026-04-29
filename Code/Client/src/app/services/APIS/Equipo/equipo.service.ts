@@ -21,7 +21,8 @@ export class EquipoService {
       Procedencia: equipo.Procedencia,
       CostoReferencia: equipo.CostoReferencia,
       TiempoMaximoPrestamo: equipo.TiempoMaximoPrestamo,
-      NombreGavetero: equipo.NombreGavetero
+      NombreGavetero: equipo.NombreGavetero,
+      EstadoEquipo: equipo.EstadoEquipo
     };
     return this.http.post<any>(this.apiUrl, envio);
   }

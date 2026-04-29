@@ -65,6 +65,18 @@
         />
       </div>
       <div class="form-group">
+        <label for="direccion">Dirección</label>
+        <input
+          type="text"
+          id="direccion"
+          name="direccion"
+          [(ngModel)]="empresaMantenimiento.Direccion"
+          maxlength="100"
+          placeholder="Dirección de la empresa"
+          class="form-input"
+        />
+      </div>
+      <div class="form-group">
         <label for="nit">NIT</label>
         <input
           type="text"

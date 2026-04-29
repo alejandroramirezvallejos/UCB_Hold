@@ -12,69 +12,146 @@
   <div class="form-content">
     <h2>Registrar Equipo</h2>
     <form #form="ngForm" (ngSubmit)="validarcreacion()">
-      <div class="form-group">
-        <label for="nombreGrupoEquipo">Grupo Equipo</label>
-        <select
-          id="nombreGrupoEquipo"
-          name="nombreGrupoEquipo"
-          [(ngModel)]="grupoequipoSeleccionado"
-          required
-          class="form-input"
+     <div class="form-group">
+      <label for="grupo_equipo">Grupo Equipo</label>
+      <select
+        id="grupo_equipo"
+        name="grupo_equipo"
+        [(ngModel)]="grupoequipoSeleccionado"
+        required
+        class="form-input"
         >
-          <option [ngValue]="null" disabled>Seleccione un grupo de equipo</option>
-          @for (item of grupoequipo; track $index) {
-            <option [ngValue]="item">{{ item.nombre }} {{ item.modelo }} {{ item.marca }}</option>
-          }
-        </select>
-      </div>
-      <div class="form-group">
-        <label for="ubicacion">Ubicación</label>
-        <select
-          id="ubicacion"
-          name="ubicacion"
-          [(ngModel)]="equipo.Ubicacion"
-          required
-          class="form-input"
-        >
-          <option value="" disabled selected>Seleccione un gavetero</option>
-          @for (item of Gaveteros; track $index) {
-            <option [value]="item">{{ item }}</option>
-          }
-        </select>
-      </div>
-      <div class="form-group">
-        <label for="codigoImt">Código IMT</label>
-        <input
-          type="text"
-          id="codigoImt"
-          name="codigoImt"
-          [(ngModel)]="equipo.CodigoImt"
-          required
-          maxlength="50"
-          placeholder="Código IMT del equipo"
-          class="form-input"
-        />
-      </div>
-      <div class="form-group">
-        <label for="costoReferencia">Costo Referencia</label>
-        <input
-          type="number"
-          id="costoReferencia"
-          name="costoReferencia"
-          [(ngModel)]="equipo.CostoReferencia"
-          required
-          min="0"
-          step="0.01"
-          placeholder="0.00"
-          class="form-input"
-        />
-      </div>
-      <div class="form-submit">
-        <button type="submit" class="register-button" [disabled]="!form.valid">
-          <span>Registrar Equipo</span>
-        </button>
-      </div>
-    </form>
+        <option [ngValue]="null" disabled>Seleccione un grupo de equipo</option>
+        @for (item of grupoequipo; track $index) {
+        <option [ngValue]="item">{{ item.nombre }} {{ item.modelo }} {{ item.marca }}</option>
+        }
+      </select>
+    </div>
+    <div class="form-group">
+      <label for="codigo_ucb">Código UCB</label>
+      <input
+        type="text"
+        id="codigo_ucb"
+        name="codigo_ucb"
+        [(ngModel)]="equipo.CodigoUcb"
+        required
+        maxlength="20"
+        placeholder="Código UCB del equipo"
+        class="form-input"
+      />
+    </div>
+    <div class="form-group">
+      <label for="numero_serial">Número Serial</label>
+      <input
+        type="text"
+        id="numero_serial"
+        name="numero_serial"
+        [(ngModel)]="equipo.NumeroSerial"
+        required
+        maxlength="50"
+        placeholder="Número serial del equipo"
+        class="form-input"
+      />
+    </div>
+    <div class="form-group">
+      <label for="estado_equipo">Estado Equipo</label>
+      <select
+        type="text"
+        id="estado_equipo"
+        name="estado_equipo"
+        [(ngModel)]="equipo.EstadoEquipo"
+        required
+        class="form-input"
+      >
+        <option value="operativo">Operativo</option>
+        <option value="parcialmente_operativo">Parcialmente Operativo</option>
+        <option value="inoperativo">Inoperativo</option>
+    </select>
+    </div>
+    <div class="form-group">
+      <label for="ubicacion">Ubicación</label>
+      <input
+        type="text"
+        id="ubicacion"
+        name="ubicacion"
+        [(ngModel)]="equipo.Ubicacion"
+        required
+        maxlength="200"
+        placeholder="Ubicación del equipo"
+        class="form-input"
+      />
+    </div>
+     <div class="form-group">
+      <label for="nombre_gavetero">Nombre Gavetero</label>
+      <select
+      id="nombre_gavetero"
+        name="nombre_gavetero"
+        [(ngModel)]="equipo.NombreGavetero"
+        required
+        class="form-input"
+      >
+      @for (item of Gaveteros; track $index) {
+        <option [value]="item"> {{item}}</option>
+      }
+      </select>
+    </div>
+    <div class="form-group">
+      <label for="costo_referencia">Costo Referencia</label>
+      <input
+        type="number"
+        id="costo_referencia"
+        name="costo_referencia"
+        [(ngModel)]="equipo.CostoReferencia"
+        required
+        max="999999999"
+        step="0.01"
+        placeholder="0.00"
+        class="form-input"
+      />
+    </div>
+    <div class="form-group">
+      <label for="descripcion">Descripción</label>
+      <textarea
+        id="descripcion"
+        name="descripcion"
+        [(ngModel)]="equipo.Descripcion"
+        rows="3"
+        maxlength="200"
+        placeholder="Describe las características del equipo"
+        class="form-input"
+      ></textarea>
+    </div>
+    <div class="form-group">
+      <label for="tiempo_max_prestamo">Tiempo Máximo Préstamo</label>
+      <input
+        type="number"
+        id="tiempo_max_prestamo"
+        name="tiempo_max_prestamo"
+        [(ngModel)]="equipo.TiempoMaximoPrestamo"
+        max="365"
+        placeholder="Tiempo en días"
+        class="form-input"
+      />
+    </div>
+    <div class="form-group">
+      <label for="procedencia">Procedencia</label>
+      <input
+        type="text"
+        id="procedencia"
+        name="procedencia"
+        [(ngModel)]="equipo.Procedencia"
+        required
+        maxlength="200"
+        placeholder="Procedencia del equipo"
+        class="form-input"
+      />
+    </div>
+    <div class="form-submit">
+      <button type="submit" class="register-button" [disabled]="!form.valid">
+        <span>Registrar Equipo</span>
+      </button>
+    </div>
+  </form>
   </div>
 </div>
 @if(error()){

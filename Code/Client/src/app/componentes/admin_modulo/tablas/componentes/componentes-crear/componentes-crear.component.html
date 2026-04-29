@@ -53,16 +53,17 @@
       </div>
       <div class="form-group">
         <label for="codigo_imt">Codigo Imt Equipo</label>
-        <input
-          type="text"
+        <select
           id="codigo_imt"
           name="codigo_imt"
           [(ngModel)]="componente.CodigoImtEquipo"
           required
-          maxlength="50"
-          placeholder="Código IMT del componente"
           class="form-input"
-        />
+        >
+        @for (item of equipos; track $index) {
+          <option [value]="item.CodigoImt">{{ item.NombreGrupoEquipo }} {{item.CodigoImt}}</option>
+        }
+        </select>
       </div>
       <div class="form-group">
         <label for="precio">Precio Referencia</label>
@@ -88,6 +89,19 @@
           placeholder="Descripción del componente"
           class="form-input"
         ></textarea>
+      </div>
+      <div class="form-group">
+        <label for="url_data_sheet">URL Data Sheet</label>
+        <input
+          type="url"
+          id="url_data_sheet"
+          name="url_data_sheet"
+          maxlength="200"
+          pattern="https?://.+"
+          [(ngModel)]="componente.UrlDataSheet"
+          placeholder="https://ejemplo.com/datasheet.pdf"
+          class="form-input"
+        />
       </div>
       <div class="form-submit">
         <button type="submit" class="register-button" [disabled]="!form.valid">

@@ -63,6 +63,46 @@
           class="form-input"
         ></textarea>
       </div>
+      <div class="form-group">
+        <label for="codigo_imt">Código IMT</label>
+        <select
+          id="codigo_imt"
+          name="codigo_imt"
+          [(ngModel)]="accesorio.codigo_imt"
+          required
+          class="form-input"
+        >
+        @for (item of equipos; track $index) {
+          <option [value]="item.CodigoImt"> {{ item.NombreGrupoEquipo }} {{item.Modelo}} {{item.Marca}} - {{ item.CodigoImt }}</option>
+        }
+      </select>
+      </div>
+      <div class="form-group">
+        <label for="precio">Precio</label>
+        <input
+          type="number"
+          id="precio"
+          name="precio"
+          [(ngModel)]="accesorio.precio"
+          step="0.01"
+          max="999999999"
+          placeholder="0.00"
+          class="form-input"
+        />
+      </div>
+      <div class="form-group">
+        <label for="url_data_sheet">URL Data Sheet</label>
+        <input
+          type="url"
+          id="url_data_sheet"
+          name="url_data_sheet"
+          [(ngModel)]="accesorio.url_data_sheet"
+          maxlength="255"
+          pattern="https?://.+"
+          placeholder="https://ejemplo.com/datasheet.pdf"
+          class="form-input"
+        />
+      </div>
       <div class="form-submit">
         <button type="submit" class="register-button" [disabled]="!form.valid">
           <span>Crear Accesorio</span>
