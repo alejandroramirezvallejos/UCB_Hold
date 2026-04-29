@@ -59,21 +59,37 @@ public class PrestamoRepository :
     public int? ObtenerEquipoDisponiblePorGrupo(int idGrupoEquipo, DateTime fechaPrestamoEsperada, DateTime fechaDevolucionEsperada)
     {
         // Buscar un equipo operativo del grupo que NO tenga préstamos activos/pendientes/aprobados que se solapen con las fechas solicitadas
-        const string sql = @"SELECT e.id_equipo 
-            FROM public.equipos AS e
-            WHERE e.id_grupo_equipo = @idGrupoEquipo 
-            AND e.estado_eliminado = FALSE 
-            AND e.estado_equipo = 'operativo'
-            AND e.id_equipo NOT IN (
-                SELECT dp.id_equipo 
-                FROM public.detalles_prestamos AS dp
-                INNER JOIN public.prestamos AS p ON dp.id_prestamo = p.id_prestamo
-                WHERE p.estado_eliminado = FALSE 
-                AND dp.estado_eliminado = FALSE
-                AND p.estado_prestamo IN ('pendiente', 'aprobado', 'activo')
-                AND p.fecha_prestamo_esperada < @fechaDevolucionEsperada
-                AND p.fecha_devolucion_esperada > @fechaPrestamoEsperada
+        const string sql = @"WITH equipos_operativos AS (
+                SELECT e.id_equipo
+                FROM public.equipos e
+                WHERE e.id_grupo_equipo = @idGrupoEquipo
+                  AND e.estado_eliminado = FALSE
+                  AND e.estado_equipo = 'operativo'
+            ),
+            equipos_en_prestamo AS (
+                SELECT dp.id_equipo
+                FROM public.detalles_prestamos dp
+                JOIN public.prestamos p ON dp.id_prestamo = p.id_prestamo
+                WHERE p.estado_eliminado = FALSE
+                  AND dp.estado_eliminado = FALSE
+                  AND p.estado_prestamo IN ('pendiente', 'aprobado', 'activo')
+                  AND p.fecha_prestamo_esperada < @fechaDevolucionEsperada
+                  AND p.fecha_devolucion_esperada > @fechaPrestamoEsperada
+            ),
+            equipos_en_mantenimiento AS (
+                SELECT dm.id_equipo
+                FROM public.detalles_mantenimientos dm
+                JOIN public.mantenimientos m ON dm.id_mantenimiento = m.id_mantenimiento
+                WHERE m.estado_eliminado = FALSE
+                  AND dm.estado_eliminado = FALSE
+                  AND m.fecha_mantenimiento < @fechaDevolucionEsperada
+                  AND m.fecha_final_mantenimiento > @fechaPrestamoEsperada
             )
+            SELECT id_equipo FROM equipos_operativos
+            EXCEPT
+            SELECT id_equipo FROM equipos_en_prestamo
+            EXCEPT
+            SELECT id_equipo FROM equipos_en_mantenimiento
             LIMIT 1";
         var parametros = new Dictionary<string, object?>
         {

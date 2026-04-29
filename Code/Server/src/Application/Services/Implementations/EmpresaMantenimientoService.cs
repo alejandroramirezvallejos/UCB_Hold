@@ -71,6 +71,13 @@ public class EmpresaMantenimientoService : BaseServicios,
         {
             if (_empresaRepository.ExisteActivaPorNombreExcluyendoId(comando.NombreEmpresa, comando.Id))
                 throw new ErrorRegistroYaExiste();
+
+            // Reactivar si existe eliminada lógicamente con ese nombre (como en el SP)
+            if (_empresaRepository.ReactivarEliminadaPorNombre(comando.NombreEmpresa))
+            {
+                _empresaRepository.EliminarLogicamentePorId(comando.Id);
+                return;
+            }
         }
 
         _empresaRepository.Actualizar(comando);
