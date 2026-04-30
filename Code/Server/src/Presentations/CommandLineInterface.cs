@@ -283,7 +283,7 @@ public static class CommandLineInterface
 
         builder.Services.AddSingleton<MongoDB.Driver.IMongoClient>(sp =>
         {
-            var connectionString = builder.Configuration.GetConnectionString("MongoDb") 
+            var connectionString = builder.Configuration.GetConnectionString("MongoDb")
                 ?? throw new InvalidOperationException("La cadena de conexión 'MongoDb' no está configurada. Configure User Secrets con: dotnet user-secrets set \"ConnectionStrings:MongoDb\" \"mongodb://localhost:27018\"");
             return new MongoDB.Driver.MongoClient(connectionString);
         });
@@ -295,9 +295,9 @@ public static class CommandLineInterface
         });
 
         var app = builder.Build();
-        
+
         app.UseGlobalExceptionMiddleware();
-        
+
         app.Use(async (context, next) =>
         {
             context.Response.Headers.Append("X-Content-Type-Options", "nosniff");
@@ -307,7 +307,7 @@ public static class CommandLineInterface
             context.Response.Headers.Append("Content-Security-Policy", "default-src 'self'; script-src 'self' 'unsafe-inline'; style-src 'self' 'unsafe-inline'; img-src 'self' data: blob:;");
             await next();
         });
-              
+
         app.UseDefaultFiles();
         app.UseHttpsRedirection();
         app.UseRouting();

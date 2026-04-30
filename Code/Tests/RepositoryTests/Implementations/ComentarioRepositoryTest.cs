@@ -33,6 +33,9 @@ namespace IMT_Reservas.Tests.RepositoryTests
             _databaseMock.Setup(db => db.GetCollection<BsonDocument>("comentarios", null)).Returns(_collectionMock.Object);
             _contextoMock.Setup(c => c.BaseDeDatos).Returns(_databaseMock.Object);
 
+            _collectionMock.Setup(c => c.DocumentSerializer).Returns(BsonSerializer.SerializerRegistry.GetSerializer<BsonDocument>());
+            _collectionMock.Setup(c => c.Settings).Returns(new MongoCollectionSettings());
+
             _comentarioRepository = new ComentarioRepository(_contextoMock.Object);
         }
 
@@ -74,8 +77,9 @@ namespace IMT_Reservas.Tests.RepositoryTests
             
             _collectionMock.Setup(c => c.CountDocuments(It.IsAny<FilterDefinition<BsonDocument>>(), It.IsAny<CountOptions>(), default)).Returns(0L);
 
-            var ex = Assert.Throws<ErrorDataBase>(() => _comentarioRepository.Eliminar(comando));
-            Assert.That(ex.Message, Is.EqualTo("No se encontró el comentario"));
+            var result = _comentarioRepository.Eliminar(comando);
+            Assert.That(result.Status, Is.EqualTo(ResultStatus.NotFound));
+            Assert.That(result.Errors.ElementAt(0), Is.EqualTo("No se encontró el comentario"));
         }
 
         [Test]
@@ -111,8 +115,9 @@ namespace IMT_Reservas.Tests.RepositoryTests
 
             _collectionMock.Setup(c => c.CountDocuments(It.IsAny<FilterDefinition<BsonDocument>>(), It.IsAny<CountOptions>(), default)).Returns(0L);
 
-            var ex = Assert.Throws<ErrorDataBase>(() => _comentarioRepository.AgregarLike(comando));
-            Assert.That(ex.Message, Is.EqualTo("No se encontró el comentario"));
+            var result = _comentarioRepository.AgregarLike(comando);
+            Assert.That(result.Status, Is.EqualTo(ResultStatus.NotFound));
+            Assert.That(result.Errors.ElementAt(0), Is.EqualTo("No se encontró el comentario"));
         }
 
         [Test]
@@ -137,9 +142,6 @@ namespace IMT_Reservas.Tests.RepositoryTests
             cursorMock.Setup(_ => _.Current).Returns(documentos);
             cursorMock.SetupSequence(_ => _.MoveNext(It.IsAny<CancellationToken>())).Returns(true).Returns(false);
 
-            _collectionMock.Setup(c => c.DocumentSerializer).Returns(BsonSerializer.SerializerRegistry.GetSerializer<BsonDocument>());
-            _collectionMock.Setup(c => c.Settings).Returns(new MongoCollectionSettings());
-
             _collectionMock.Setup(c => c.Aggregate(It.IsAny<PipelineDefinition<BsonDocument, BsonDocument>>(), It.IsAny<AggregateOptions>(), default))
                 .Returns(cursorMock.Object);
 
@@ -159,6 +161,7 @@ namespace IMT_Reservas.Tests.RepositoryTests
 
             _collectionMock.Setup(c => c.InsertOne(It.IsAny<BsonDocument>(), null, default)).Throws(exception);
             _collectionMock.Setup(c => c.CountDocuments(It.IsAny<FilterDefinition<BsonDocument>>(), It.IsAny<CountOptions>(), default)).Throws(exception);
+            _collectionMock.Setup(c => c.Aggregate(It.IsAny<PipelineDefinition<BsonDocument, BsonDocument>>(), It.IsAny<AggregateOptions>(), default)).Throws(exception);
 
             Assert.Throws<Exception>(() => _comentarioRepository.Crear(new CrearComentarioComando("1", 1, "test")));
             Assert.Throws<Exception>(() => _comentarioRepository.Eliminar(new EliminarComentarioComando(objectId)));
@@ -188,8 +191,15 @@ namespace IMT_Reservas.Tests.RepositoryTests
         {
             var comando = new QuitarLikeComentarioComando("000000000000000000000000", "2");
             _collectionMock.Setup(c => c.CountDocuments(It.IsAny<FilterDefinition<BsonDocument>>(), It.IsAny<CountOptions>(), default)).Returns(0L);
-            var ex = Assert.Throws<ErrorDataBase>(() => _comentarioRepository.QuitarLike(comando));
-            Assert.That(ex.Message, Is.EqualTo("No se encontró el comentario"));
+            var result = _comentarioRepository.QuitarLike(comando);
+            Assert.That(result.Status, Is.EqualTo(ResultStatus.NotFound));
+            Assert.That(result.Errors.ElementAt(0), Is.EqualTo("No se encontró el comentario"));
         }
     }
 }
+
+
+
+
+
+

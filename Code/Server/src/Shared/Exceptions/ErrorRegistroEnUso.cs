@@ -1,7 +1,7 @@
 
 public class ErrorRegistroEnUso : DomainException
 {
-    public ErrorRegistroEnUso() 
+    public ErrorRegistroEnUso()
         : base($"No se puede eliminar el registro porque está siendo utilizado")
     {
     }

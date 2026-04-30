@@ -17,6 +17,11 @@ namespace IMT_Reservas.Tests.ServiceTests
             _equipoRepositoryMock = new Mock<IEquipoRepository>();
             _grupoEquipoRepositoryMock = new Mock<IGrupoEquipoRepository>();
             _equipoService = new EquipoService(_equipoRepositoryMock.Object, _grupoEquipoRepositoryMock.Object);
+            _equipoRepositoryMock.Setup(r => r.ExisteActivoPorId(It.IsAny<int>())).Returns(true);
+            _equipoRepositoryMock.Setup(r => r.ObtenerEquipoIdPorCodigoImt(It.IsAny<int>())).Returns(1);
+            _equipoRepositoryMock.Setup(r => r.ObtenerGrupoEquipoIdPorEquipoId(It.IsAny<int>())).Returns(1);
+            _equipoRepositoryMock.Setup(r => r.ObtenerGaveteroIdPorNombre(It.IsAny<string>())).Returns(1);
+            _equipoRepositoryMock.Setup(r => r.ObtenerCategoriaIdPorGrupoEquipoId(It.IsAny<int>())).Returns(1);
         }
 
         [Test]
@@ -24,10 +29,10 @@ namespace IMT_Reservas.Tests.ServiceTests
         {
             CrearEquipoComando comando = new CrearEquipoComando("Osciloscopio", "Tektronix", "TBS1052B", "UCB-OSC-01", "Osciloscopio digital de 2 canales", "SN-OSC-54321", "Laboratorio de Electrónica", "Compra", 450.00, 10, "GAV-03");
             _equipoRepositoryMock.Setup(r => r.ObtenerGrupoEquipoIdPorNombreModeloMarca(It.IsAny<string>(), It.IsAny<string>(), It.IsAny<string>())).Returns(1);
-            _equipoRepositoryMock.Setup(r => r.ObtenerGaveteroIdPorNombre(It.IsAny<string>())).Returns((int?)null);
+            _equipoRepositoryMock.Setup(r => r.ObtenerGaveteroIdPorNombre(It.IsAny<string>())).Returns(1);
             _equipoRepositoryMock.Setup(r => r.ObtenerCategoriaIdPorGrupoEquipoId(It.IsAny<int>())).Returns(1);
             _equipoRepositoryMock.Setup(r => r.GenerarCodigoImt(It.IsAny<int>())).Returns(1);
-            _equipoRepositoryMock.Setup(r => r.Crear(It.IsAny<int>(), It.IsAny<int>(), It.IsAny<int?>(), It.IsAny<CrearEquipoComando>()));
+            _equipoRepositoryMock.Setup(r => r.Crear(It.IsAny<int>(), It.IsAny<int>(), It.IsAny<int?>(), It.IsAny<CrearEquipoComando>())).Returns(Result<EquipoDto>.Success(new EquipoDto()));
 
             var resultado = _equipoService.Crear(comando);
 
@@ -88,7 +93,7 @@ namespace IMT_Reservas.Tests.ServiceTests
             ActualizarEquipoComando comando = new ActualizarEquipoComando(7, "Prueba Actualizada", null, null, "UCB-PRUEBA-01", "desc act", "SN-PRUEBA-UPD", "Almacén", "Donación", 450.00, 2, "GAV-01", "operativo");
             _equipoRepositoryMock.Setup(r => r.ExisteActivoPorId(It.IsAny<int>())).Returns(true);
             _equipoRepositoryMock.Setup(r => r.ObtenerGrupoEquipoIdPorEquipoId(It.IsAny<int>())).Returns(1);
-            _equipoRepositoryMock.Setup(r => r.Actualizar(It.IsAny<int?>(), It.IsAny<int?>(), It.IsAny<ActualizarEquipoComando>()));
+            _equipoRepositoryMock.Setup(r => r.Actualizar(It.IsAny<int?>(), It.IsAny<int?>(), It.IsAny<ActualizarEquipoComando>())).Returns(Result<EquipoDto>.Success(new EquipoDto()));
 
             var resultado = _equipoService.Actualizar(comando);
 
@@ -112,7 +117,7 @@ namespace IMT_Reservas.Tests.ServiceTests
             EliminarEquipoComando comando = new EliminarEquipoComando(5);
             _equipoRepositoryMock.Setup(r => r.ExisteActivoPorId(It.IsAny<int>())).Returns(true);
             _equipoRepositoryMock.Setup(r => r.ObtenerGrupoEquipoIdPorEquipoId(It.IsAny<int>())).Returns(1);
-            _equipoRepositoryMock.Setup(r => r.Eliminar(It.IsAny<EliminarEquipoComando>()));
+            _equipoRepositoryMock.Setup(r => r.Eliminar(It.IsAny<EliminarEquipoComando>())).Returns(Result<EquipoDto>.Success(new EquipoDto()));
 
             var resultado = _equipoService.Eliminar(comando);
 
@@ -131,3 +136,4 @@ namespace IMT_Reservas.Tests.ServiceTests
         }
     }
 }
+

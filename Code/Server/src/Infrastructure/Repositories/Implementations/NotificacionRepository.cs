@@ -1,4 +1,4 @@
-﻿using System.Data;
+using System.Data;
 using MongoDB.Driver;
 using MongoDB.Bson;
 using Ardalis.Result;
@@ -27,10 +27,13 @@ public class NotificacionRepository : INotificacionRepository
 
     public Result<NotificacionDto> Eliminar(EliminarNotificacionComando comando)
     {
-        var filtro = new BsonDocument { ["_id"] = new ObjectId(comando.Id) };
+        if (!ObjectId.TryParse(comando.Id, out var objectId))
+            return Result<NotificacionDto>.NotFound("ID de notificación inválido");
+
+        var filtro = new BsonDocument { ["_id"] = objectId };
         var actualizacion = Builders<BsonDocument>.Update.Set("EstadoEliminado", true);
-        _coleccion.UpdateOne(filtro, actualizacion);
-        return Result<NotificacionDto>.Success(new NotificacionDto { Id = comando.Id });
+        var res = _coleccion.UpdateOne(filtro, actualizacion);
+        return res.MatchedCount == 0 ? Result<NotificacionDto>.NotFound("No se encontró la notificación") : Result<NotificacionDto>.Success(new NotificacionDto { Id = comando.Id });
     }
 
     public DataTable ObtenerPorUsuario(ObtenerNotificacionPorCarnetUsuarioConsulta consulta)
@@ -45,7 +48,8 @@ public class NotificacionRepository : INotificacionRepository
 
     public void MarcarComoLeida(MarcarComoLeidoComando comando)
     {
-        var filtro = new BsonDocument { ["_id"] = new ObjectId(comando.Id) };
+        if (!ObjectId.TryParse(comando.Id, out var objectId)) return;
+        var filtro = new BsonDocument { ["_id"] = objectId };
         var actualizacion = Builders<BsonDocument>.Update.Set("Leido", true);
         _coleccion.UpdateOne(filtro, actualizacion);
     }

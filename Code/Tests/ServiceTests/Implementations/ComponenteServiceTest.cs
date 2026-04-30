@@ -15,18 +15,20 @@ namespace IMT_Reservas.Tests.ServiceTests
         {
             _componenteRepositoryMock = new Mock<IComponenteRepository>();
             _componenteService = new ComponenteService(_componenteRepositoryMock.Object);
+            _componenteRepositoryMock.Setup(r => r.ExisteActivoPorId(It.IsAny<int>())).Returns(true);
+            _componenteRepositoryMock.Setup(r => r.ObtenerEquipoIdPorCodigoImt(It.IsAny<int>())).Returns(1);
         }
 
         [Test]
         public void Crear_ComandoValido_RetornaSuccess()
         {
             CrearComponenteComando comando = new CrearComponenteComando("CPU i7", "i7-9700K", "Procesador", 12345, "CPU de 8 núcleos", 350.00, null);
-            _componenteRepositoryMock.Setup(r => r.Crear(It.IsAny<CrearComponenteComando>())).Returns(Result<ComponenteDto>.Created(new ComponenteDto { Id = 1, Nombre = "CPU i7" }));
+            _componenteRepositoryMock.Setup(r => r.Crear(It.IsAny<int>(), It.IsAny<CrearComponenteComando>())).Returns(Result<ComponenteDto>.Created(new ComponenteDto { Id = 1, Nombre = "CPU i7" }));
 
             var resultado = _componenteService.Crear(comando);
 
             Assert.That(resultado.IsSuccess, Is.True);
-            _componenteRepositoryMock.Verify(r => r.Crear(comando), Times.Once);
+            _componenteRepositoryMock.Verify(r => r.Crear(It.IsAny<int>(), comando), Times.Once);
         }
 
         [Test]
@@ -112,12 +114,12 @@ namespace IMT_Reservas.Tests.ServiceTests
         {
             ActualizarComponenteComando comando = new ActualizarComponenteComando(1, "CPU i9", "i9-9900K", "Procesador", 12345, "CPU de 8 núcleos y 16 hilos", 500.00, null);
             _componenteRepositoryMock.Setup(r => r.ExisteActivoPorId(It.IsAny<int>())).Returns(true);
-            _componenteRepositoryMock.Setup(r => r.Actualizar(It.IsAny<ActualizarComponenteComando>())).Returns(Result<ComponenteDto>.Success(new ComponenteDto { Id = 1 }));
+            _componenteRepositoryMock.Setup(r => r.Actualizar(It.IsAny<int?>(), It.IsAny<ActualizarComponenteComando>())).Returns(Result<ComponenteDto>.Success(new ComponenteDto { Id = 1 }));
 
             var resultado = _componenteService.Actualizar(comando);
 
             Assert.That(resultado.IsSuccess, Is.True);
-            _componenteRepositoryMock.Verify(r => r.Actualizar(comando), Times.Once);
+            _componenteRepositoryMock.Verify(r => r.Actualizar(It.IsAny<int?>(), comando), Times.Once);
         }
 
         [Test]
@@ -154,3 +156,4 @@ namespace IMT_Reservas.Tests.ServiceTests
         }
     }
 }
+

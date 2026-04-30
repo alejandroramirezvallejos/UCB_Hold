@@ -1,7 +1,7 @@
 
 public class ErrorFechaInvalida : DomainException
 {
-    public ErrorFechaInvalida() 
+    public ErrorFechaInvalida()
         : base($"La fecha es inválida")
     {
     }

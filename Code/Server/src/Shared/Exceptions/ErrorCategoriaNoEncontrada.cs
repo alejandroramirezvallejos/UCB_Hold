@@ -1,6 +1,6 @@
 public class ErrorCategoriaNoEncontrada : DomainException
 {
-    public ErrorCategoriaNoEncontrada() 
+    public ErrorCategoriaNoEncontrada()
         : base("La categoría especificada por nombre no existe o no está activa")
     {
     }

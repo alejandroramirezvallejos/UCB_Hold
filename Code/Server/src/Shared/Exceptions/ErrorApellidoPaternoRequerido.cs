@@ -1,6 +1,6 @@
 public class ErrorApellidoPaternoRequerido : DomainException
 {
-    public ErrorApellidoPaternoRequerido() 
+    public ErrorApellidoPaternoRequerido()
         : base("El apellido paterno es requerido")
     {
     }

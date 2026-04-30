@@ -15,18 +15,20 @@ namespace IMT_Reservas.Tests.ServiceTests
         {
             _accesorioRepositoryMock = new Mock<IAccesorioRepository>();
             _accesorioService        = new AccesorioService(_accesorioRepositoryMock.Object);
+            _accesorioRepositoryMock.Setup(r => r.ExisteActivoPorId(It.IsAny<int>())).Returns(true);
+            _accesorioRepositoryMock.Setup(r => r.ObtenerEquipoIdPorCodigoImt(It.IsAny<int>())).Returns(1);
         }
 
         [Test]
         public void Crear_ComandoValido_RetornaSuccess()
         {
             CrearAccesorioComando comando = new CrearAccesorioComando("cable usb", "dasd", "Electrónico", 5, "C-123", 15.99, "https://datasheet.example.com/c123.pdf");
-            _accesorioRepositoryMock.Setup(r => r.Crear(It.IsAny<CrearAccesorioComando>())).Returns(Result<AccesorioDto>.Created(new AccesorioDto { Id = 1, Nombre = "cable usb" }));
+            _accesorioRepositoryMock.Setup(r => r.Crear(It.IsAny<int>(), It.IsAny<CrearAccesorioComando>())).Returns(Result<AccesorioDto>.Created(new AccesorioDto { Id = 1, Nombre = "cable usb" }));
 
             var resultado = _accesorioService.Crear(comando);
 
             Assert.That(resultado.IsSuccess, Is.True);
-            _accesorioRepositoryMock.Verify(r => r.Crear(comando), Times.Once);
+            _accesorioRepositoryMock.Verify(r => r.Crear(It.IsAny<int>(), comando), Times.Once);
         }
 
         [Test]
@@ -77,7 +79,7 @@ namespace IMT_Reservas.Tests.ServiceTests
                 new DataColumn("tipo_accesorio", typeof(string)),
                 new DataColumn("precio_accesorio", typeof(double)),
                 new DataColumn("nombre_equipo_asociado", typeof(string)),
-                new DataColumn("codigo_imt_equipo_asociado", typeof(int)),
+                new DataColumn("codigo_imt_equipo", typeof(int)),
                 new DataColumn("descripcion_accesorio", typeof(string)),
                 new DataColumn("url_data_sheet_accesorio", typeof(string))
             });
@@ -101,12 +103,12 @@ namespace IMT_Reservas.Tests.ServiceTests
         public void Actualizar_ComandoValido_RetornaSuccess()
         {
             ActualizarAccesorioComando comando = new ActualizarAccesorioComando(2, "cable usb-c", "dasd-2", "Electrónico", 5, "cable usb actualizado", 19.99, "https://datasheet.example.com/c123-v2.pdf");
-            _accesorioRepositoryMock.Setup(r => r.Actualizar(It.IsAny<ActualizarAccesorioComando>())).Returns(Result<AccesorioDto>.Success(new AccesorioDto { Id = 2, Nombre = "cable usb-c" }));
+            _accesorioRepositoryMock.Setup(r => r.Actualizar(It.IsAny<int?>(), It.IsAny<ActualizarAccesorioComando>())).Returns(Result<AccesorioDto>.Success(new AccesorioDto { Id = 2, Nombre = "cable usb-c" }));
 
             var resultado = _accesorioService.Actualizar(comando);
 
             Assert.That(resultado.IsSuccess, Is.True);
-            _accesorioRepositoryMock.Verify(r => r.Actualizar(comando), Times.Once);
+            _accesorioRepositoryMock.Verify(r => r.Actualizar(It.IsAny<int?>(), comando), Times.Once);
         }
 
         [Test]
@@ -142,4 +144,5 @@ namespace IMT_Reservas.Tests.ServiceTests
         }
     }
 }
+
 

@@ -144,7 +144,7 @@ namespace IMT_Reservas.Tests.ServiceTests
 
             _usuarioRepositoryMock.Setup(r => r.ObtenerPorEmailYContrasena(consulta.Email, consulta.Contrasena)).Returns(dt);
 
-            UsuarioDto resultado = _usuarioService.IniciarSesionUsuario(consulta);
+            UsuarioDto? resultado = _usuarioService.IniciarSesionUsuario(consulta);
             Assert.IsNotNull(resultado);
             Assert.That(resultado.Email, Is.EqualTo(consulta.Email));
         }
@@ -155,7 +155,7 @@ namespace IMT_Reservas.Tests.ServiceTests
             IniciarSesionUsuarioConsulta consulta = new IniciarSesionUsuarioConsulta("fernando.terrazas@ucb.edu.bo", "wrongpass");
             _usuarioRepositoryMock.Setup(r => r.ObtenerPorEmailYContrasena(consulta.Email, consulta.Contrasena)).Returns(new DataTable());
 
-            UsuarioDto resultado = _usuarioService.IniciarSesionUsuario(consulta);
+            UsuarioDto? resultado = _usuarioService.IniciarSesionUsuario(consulta);
             Assert.IsNull(resultado);
         }
     }

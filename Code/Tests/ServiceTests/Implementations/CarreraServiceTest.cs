@@ -15,6 +15,7 @@ namespace IMT_Reservas.Tests.ServiceTests
         {
             _carreraRepositoryMock = new Mock<ICarreraRepository>();
             _carreraService        = new CarreraService(_carreraRepositoryMock.Object);
+            _carreraRepositoryMock.Setup(r => r.ExisteActivaPorId(It.IsAny<int>())).Returns(true);
         }
 
         [Test]
@@ -135,4 +136,5 @@ namespace IMT_Reservas.Tests.ServiceTests
         }
     }
 }
+
 

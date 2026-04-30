@@ -1,6 +1,6 @@
 public class ErrorContratoNoNulo : DomainException
 {
-    public ErrorContratoNoNulo() 
+    public ErrorContratoNoNulo()
         : base("El contrato especificado no puede ser nulo")
     {
     }

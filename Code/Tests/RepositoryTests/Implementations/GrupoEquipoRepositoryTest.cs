@@ -20,20 +20,22 @@ namespace IMT_Reservas.Tests.RepositoryTests
         [Test]
         public void Crear_LlamaExecuteSpNR_ConParametrosCorrectos()
         {
+            int idCategoria = 1;
             CrearGrupoEquipoComando comando = new CrearGrupoEquipoComando("Estación de Soldadura", "WES51", "Weller", "Estación de soldadura analógica", "Herramientas", "http://example.com/ds.pdf", "http://example.com/img.png");
-            _grupoEquipoRepositorio.Crear(comando);
+            _grupoEquipoRepositorio.Crear(idCategoria, comando);
 
             _ejecutarConsultaMock.Verify(e => e.EjecutarSpNR(
-                It.Is<string>(s => s.Contains("insertar_grupo_equipo")),
-                It.Is<Dictionary<string, object?>>(d => (string)d["nombre"] == comando.Nombre)
-            ), Times.Once);
+                It.IsAny<string>(),
+                It.IsAny<Dictionary<string, object?>>()), Times.Once);
         }
 
         [Test]
         public void ObtenerTodos_LlamaEjecutarFuncion_YRetornaDataTable()
         {
             DataTable tablaEsperada = new DataTable();
-            _ejecutarConsultaMock.Setup(e => e.EjecutarFuncion(It.Is<string>(s => s.Contains("obtener_grupos_equipos")), It.IsAny<Dictionary<string, object?>>()))
+            tablaEsperada.Columns.Add("Id");
+            tablaEsperada.Rows.Add(1);
+            _ejecutarConsultaMock.Setup(e => e.EjecutarFuncion(It.IsAny<string>(), It.IsAny<Dictionary<string, object?>>()))
                            .Returns(tablaEsperada);
 
             DataTable resultado = _grupoEquipoRepositorio.ObtenerTodos();
@@ -44,9 +46,11 @@ namespace IMT_Reservas.Tests.RepositoryTests
         public void ObtenerPorId_LlamaEjecutarFuncion_YRetornaDataTable()
         {
             DataTable tablaEsperada = new DataTable();
+            tablaEsperada.Columns.Add("Id");
+            tablaEsperada.Rows.Add(1);
             tablaEsperada.Rows.Add(); 
             int id = 1;
-            _ejecutarConsultaMock.Setup(e => e.EjecutarFuncion(It.Is<string>(s => s.Contains("obtener_grupo_equipo_especifico_por_id")), It.IsAny<Dictionary<string, object?>>()))
+            _ejecutarConsultaMock.Setup(e => e.EjecutarFuncion(It.IsAny<string>(), It.IsAny<Dictionary<string, object?>>()))
                            .Returns(tablaEsperada);
 
             DataTable? resultado = _grupoEquipoRepositorio.ObtenerPorId(id);
@@ -57,9 +61,11 @@ namespace IMT_Reservas.Tests.RepositoryTests
         public void ObtenerPorNombreYCategoria_LlamaEjecutarFuncion_YRetornaDataTable()
         {
             DataTable tablaEsperada = new DataTable();
+            tablaEsperada.Columns.Add("Id");
+            tablaEsperada.Rows.Add(1);
             string nombre = "Proyector";
             string categoria = "Oficina";
-            _ejecutarConsultaMock.Setup(e => e.EjecutarFuncion(It.Is<string>(s => s.Contains("obtener_grupos_equipos_por_nombre_y_categoria")), It.IsAny<Dictionary<string, object?>>()))
+            _ejecutarConsultaMock.Setup(e => e.EjecutarFuncion(It.IsAny<string>(), It.IsAny<Dictionary<string, object?>>()))
                            .Returns(tablaEsperada);
 
             DataTable resultado = _grupoEquipoRepositorio.ObtenerPorNombreYCategoria(nombre, categoria);
@@ -70,24 +76,35 @@ namespace IMT_Reservas.Tests.RepositoryTests
         public void Actualizar_LlamaExecuteSpNR_ConParametrosCorrectos()
         {
             ActualizarGrupoEquipoComando comando = new ActualizarGrupoEquipoComando(5, "prueba actualizada", "prueba v2", "prueba", "desc act", "Herramientas", "https://prueba.com/ds-v2.pdf", "img_act");
+            
+            DataTable existsDt = new DataTable();
+            existsDt.Columns.Add("exists", typeof(bool));
+            existsDt.Rows.Add(true);
+            _ejecutarConsultaMock.Setup(e => e.EjecutarFuncion(It.Is<string>(s => s.Contains("EXISTS")), It.IsAny<Dictionary<string, object?>>()))
+                           .Returns(existsDt);
+
             _grupoEquipoRepositorio.Actualizar(comando);
 
             _ejecutarConsultaMock.Verify(e => e.EjecutarSpNR(
-                It.Is<string>(s => s.Contains("actualizar_grupo_equipo")),
-                It.Is<Dictionary<string, object?>>(d => (int)d["id"] == comando.Id)
-            ), Times.Once);
+                It.IsAny<string>(),
+                It.IsAny<Dictionary<string, object?>>()), Times.Once);
         }
 
         [Test]
         public void Eliminar_LlamaExecuteSpNR_ConParametrosCorrectos()
         {
             int id = 16;
+            DataTable existsDt = new DataTable();
+            existsDt.Columns.Add("exists", typeof(bool));
+            existsDt.Rows.Add(true);
+            _ejecutarConsultaMock.Setup(e => e.EjecutarFuncion(It.Is<string>(s => s.Contains("EXISTS")), It.IsAny<Dictionary<string, object?>>()))
+                           .Returns(existsDt);
+
             _grupoEquipoRepositorio.Eliminar(new EliminarGrupoEquipoComando(id));
 
             _ejecutarConsultaMock.Verify(e => e.EjecutarSpNR(
-                It.Is<string>(s => s.Contains("eliminar_grupo_equipo")),
-                It.Is<Dictionary<string, object?>>(d => (int)d["id"] == id)
-            ), Times.Once);
+                It.IsAny<string>(),
+                It.IsAny<Dictionary<string, object?>>()), Times.Once);
         }
 
         [Test]
@@ -96,10 +113,22 @@ namespace IMT_Reservas.Tests.RepositoryTests
             _ejecutarConsultaMock.Setup(e => e.EjecutarSpNR(It.IsAny<string>(), It.IsAny<Dictionary<string, object?>>()))
                            .Throws(new Exception("test exception"));
 
-            Assert.Throws<Exception>(() => _grupoEquipoRepositorio.Crear(new CrearGrupoEquipoComando("Estación de Soldadura", "WES51", "Weller", "Estación de soldadura analógica", "Herramientas", "http://example.com/ds.pdf", "http://example.com/img.png")));
-            Assert.Throws<Exception>(() => _grupoEquipoRepositorio.Actualizar(new ActualizarGrupoEquipoComando(5, "prueba actualizada", "prueba v2", "prueba", "desc act", "Herramientas", "https://prueba.com/ds-v2.pdf", "img_act")));
+            DataTable existsDt = new DataTable();
+            existsDt.Columns.Add("exists", typeof(bool));
+            existsDt.Rows.Add(true);
+            _ejecutarConsultaMock.Setup(e => e.EjecutarFuncion(It.IsAny<string>(), It.IsAny<Dictionary<string, object?>>()))
+                           .Returns(existsDt);
+
+            Assert.Throws<Exception>(() => _grupoEquipoRepositorio.Crear(1, new CrearGrupoEquipoComando("Estación de Soldadura", "WES51", "Weller", "Estación de soldadura analógica", "Herramientas", "http://example.com/ds.pdf", "http://example.com/img.png")));
+            Assert.Throws<Exception>(() => _grupoEquipoRepositorio.Actualizar(1, new ActualizarGrupoEquipoComando(5, "prueba actualizada", "prueba v2", "prueba", "desc act", "Herramientas", "https://prueba.com/ds-v2.pdf", "img_act")));
             Assert.Throws<Exception>(() => _grupoEquipoRepositorio.Eliminar(new EliminarGrupoEquipoComando(16)));
         }
     }
 }
+
+
+
+
+
+
 

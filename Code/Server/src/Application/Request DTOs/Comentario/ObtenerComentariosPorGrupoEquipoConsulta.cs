@@ -1,4 +1,4 @@
 public record ObtenerComentariosPorGrupoEquipoConsulta(
-    int IdGrupoEquipo  
+    int IdGrupoEquipo
 );
 

@@ -1,7 +1,7 @@
 
 public class ErrorRegistroNoEncontrado : DomainException
 {
-    public ErrorRegistroNoEncontrado() 
+    public ErrorRegistroNoEncontrado()
         : base($"No se encontró el registro especificado")
     {
     }

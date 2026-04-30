@@ -81,7 +81,7 @@ namespace IMT_Reservas.Tests.ControllerTests
             string email = "fernando.terrazas@ucb.edu.bo";
             string contrasena = "wrongpass";
             var consulta = new IniciarSesionUsuarioConsulta(email, contrasena);
-            _usuarioServiceMock.Setup(s => s.IniciarSesionUsuario(It.IsAny<IniciarSesionUsuarioConsulta>())).Returns((UsuarioDto)null);
+            _usuarioServiceMock.Setup(s => s.IniciarSesionUsuario(It.IsAny<IniciarSesionUsuarioConsulta>())).Returns((UsuarioDto?)null);
             var resultadoAccion = _usuariosController.IniciarSesion(consulta);
             Assert.That(resultadoAccion, Is.InstanceOf<OkObjectResult>());
             var okResult = (OkObjectResult)resultadoAccion;

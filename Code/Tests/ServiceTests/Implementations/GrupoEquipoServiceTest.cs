@@ -15,6 +15,7 @@ namespace IMT_Reservas.Tests.ServiceTests
         {
             _grupoEquipoRepositoryMock = new Mock<IGrupoEquipoRepository>();
             _grupoEquipoService = new GrupoEquipoService(_grupoEquipoRepositoryMock.Object);
+            _grupoEquipoRepositoryMock.Setup(r => r.ExisteActivoPorId(It.IsAny<int>())).Returns(true);
         }
 
         [Test]
@@ -72,6 +73,7 @@ namespace IMT_Reservas.Tests.ServiceTests
         {
             ActualizarGrupoEquipoComando comando = new ActualizarGrupoEquipoComando(1, "Proyectores HD", "Epson-200", "Epson", "desc act", "cat", null, "img_act");
             _grupoEquipoRepositoryMock.Setup(r => r.ExisteActivoPorId(It.IsAny<int>())).Returns(true);
+            _grupoEquipoRepositoryMock.Setup(r => r.ObtenerCategoriaIdPorNombre(It.IsAny<string>())).Returns(1);
             _grupoEquipoRepositoryMock.Setup(r => r.Actualizar(It.IsAny<int?>(), It.IsAny<ActualizarGrupoEquipoComando>())).Returns(Result<GrupoEquipoDto>.Success(new GrupoEquipoDto { Id = 1 }));
 
             var resultado = _grupoEquipoService.Actualizar(comando);
@@ -114,3 +116,4 @@ namespace IMT_Reservas.Tests.ServiceTests
         }
     }
 }
+

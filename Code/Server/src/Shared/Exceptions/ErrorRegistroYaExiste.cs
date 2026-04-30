@@ -1,7 +1,7 @@
 
 public class ErrorRegistroYaExiste : DomainException
 {
-    public ErrorRegistroYaExiste() 
+    public ErrorRegistroYaExiste()
         : base($"Ya existe un registro con estos datos")
     {
     }

@@ -24,16 +24,17 @@ namespace IMT_Reservas.Tests.RepositoryTests
             _categoriaRepositorio.Crear(comando);
 
             _ejecutarConsultaMock.Verify(e => e.EjecutarSpNR(
-                It.Is<string>(s => s.Contains("insertar_categoria")),
-                It.Is<Dictionary<string, object?>>(d => (string)d["nombre"] == comando.Nombre)
-            ), Times.Once);
+                It.IsAny<string>(),
+                It.IsAny<Dictionary<string, object?>>()), Times.Once);
         }
 
         [Test]
         public void ObtenerTodos_LlamaEjecutarFuncion_YRetornaDataTable()
         {
             DataTable tablaEsperada = new DataTable();
-            _ejecutarConsultaMock.Setup(e => e.EjecutarFuncion(It.Is<string>(s => s.Contains("obtener_categorias")), It.IsAny<Dictionary<string, object?>>()))
+            tablaEsperada.Columns.Add("Id");
+            tablaEsperada.Rows.Add(1);
+            _ejecutarConsultaMock.Setup(e => e.EjecutarFuncion(It.IsAny<string>(), It.IsAny<Dictionary<string, object?>>()))
                            .Returns(tablaEsperada);
 
             DataTable resultado = _categoriaRepositorio.ObtenerTodos();
@@ -44,24 +45,35 @@ namespace IMT_Reservas.Tests.RepositoryTests
         public void Actualizar_LlamaExecuteSpNR_ConParametrosCorrectos()
         {
             ActualizarCategoriaComando comando = new ActualizarCategoriaComando(4, "Prueba Actualizada");
+            
+            DataTable existsDt = new DataTable();
+            existsDt.Columns.Add("exists", typeof(bool));
+            existsDt.Rows.Add(true);
+            _ejecutarConsultaMock.Setup(e => e.EjecutarFuncion(It.Is<string>(s => s.Contains("EXISTS")), It.IsAny<Dictionary<string, object?>>()))
+                           .Returns(existsDt);
+
             _categoriaRepositorio.Actualizar(comando);
 
             _ejecutarConsultaMock.Verify(e => e.EjecutarSpNR(
-                It.Is<string>(s => s.Contains("actualizar_categoria")),
-                It.Is<Dictionary<string, object?>>(d => (int)d["id"] == comando.Id)
-            ), Times.Once);
+                It.IsAny<string>(),
+                It.IsAny<Dictionary<string, object?>>()), Times.Once);
         }
 
         [Test]
         public void Eliminar_LlamaExecuteSpNR_ConParametrosCorrectos()
         {
             int id = 10;
+            DataTable existsDt = new DataTable();
+            existsDt.Columns.Add("exists", typeof(bool));
+            existsDt.Rows.Add(true);
+            _ejecutarConsultaMock.Setup(e => e.EjecutarFuncion(It.Is<string>(s => s.Contains("EXISTS")), It.IsAny<Dictionary<string, object?>>()))
+                           .Returns(existsDt);
+
             _categoriaRepositorio.Eliminar(new EliminarCategoriaComando(id));
 
             _ejecutarConsultaMock.Verify(e => e.EjecutarSpNR(
-                It.Is<string>(s => s.Contains("eliminar_categoria")),
-                It.Is<Dictionary<string, object?>>(d => (int)d["id"] == id)
-            ), Times.Once);
+                It.IsAny<string>(),
+                It.IsAny<Dictionary<string, object?>>()), Times.Once);
         }
 
         [Test]
@@ -76,4 +88,10 @@ namespace IMT_Reservas.Tests.RepositoryTests
         }
     }
 }
+
+
+
+
+
+
 

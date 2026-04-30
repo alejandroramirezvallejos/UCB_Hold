@@ -1,6 +1,6 @@
 public class ErrorCarreraRequerida : DomainException
 {
-    public ErrorCarreraRequerida() 
+    public ErrorCarreraRequerida()
         : base("La carrera es requerida")
     {
     }

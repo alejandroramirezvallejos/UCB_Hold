@@ -149,7 +149,7 @@ public class PrestamoRepository : IPrestamoRepository
             ? Result<DataTable>.NotFound("No se encontró el registro especificado")
             : Result<DataTable>.Success(dt);
     }
-    
+
     public DataTable ObtenerPorCarnetYEstadoPrestamo(string carnetUsuario, string estadoPrestamo)
     {
         const string sql = @"SELECT p.id_prestamo, u.carnet, u.nombre, u.apellido_paterno, u.telefono,
@@ -176,7 +176,7 @@ public class PrestamoRepository : IPrestamoRepository
         catch (NpgsqlException ex) { throw new ErrorDataBase($"Error de base de datos al obtener préstamos por carnet y estado: {ex.Message}", ex.SqlState, null, ex); }
         catch (Exception ex) { throw new ErrorRepository($"Error del repositorio al obtener préstamos por carnet y estado: {ex.Message}", ex); }
     }
-    
+
     public void ActualizarEstado(ActualizarEstadoPrestamoComando comando)
     {
         const string sql = @"UPDATE public.prestamos SET estado_prestamo = @estadoPrestamo::estado_prestamo WHERE id_prestamo = @idPrestamo AND estado_eliminado = FALSE";

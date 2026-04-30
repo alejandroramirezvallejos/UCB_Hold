@@ -31,10 +31,11 @@ public class ExecuteQuery : IExecuteQuery
         }
         catch (NpgsqlException ex)
         {
-            var parametrosStr = parametros != null 
+            var parametrosStr = parametros != null
                 ? string.Join(", ", parametros.Select(p => $"{p.Key}={p.Value}"))
                 : "null";
-            throw new NpgsqlException($"Error ejecutando comando: {nombreSp}\nParámetros: {parametrosStr}\nError original: {ex.Message}", ex);        }
+            throw new NpgsqlException($"Error ejecutando comando: {nombreSp}\nParámetros: {parametrosStr}\nError original: {ex.Message}", ex);
+        }
     }
 
     public virtual DataTable EjecutarFuncion(string consultaSql, Dictionary<string, object?> parametros)
@@ -81,10 +82,10 @@ public class ExecuteQuery : IExecuteQuery
     private bool EsArrayOLista(object value)
     {
         var type = value.GetType();
-        
+
         if (type.IsArray)
             return true;
-            
+
         return false;
     }
     private NpgsqlParameter CrearParametroArray(string nombreParametro, object arrayValue)

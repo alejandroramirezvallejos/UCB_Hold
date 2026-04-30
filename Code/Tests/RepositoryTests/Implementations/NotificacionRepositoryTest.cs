@@ -55,11 +55,14 @@ namespace IMT_Reservas.Tests.RepositoryTests
             var expectedUpdate = Builders<BsonDocument>.Update.Set("EstadoEliminado", true);
             var renderedExpected = expectedUpdate.Render(serializer, BsonSerializer.SerializerRegistry);
 
+            var mockUpdateResult = new Mock<UpdateResult>();
+            mockUpdateResult.Setup(r => r.MatchedCount).Returns(1);
             _collectionMock.Setup(c => c.UpdateOne(
                 It.IsAny<FilterDefinition<BsonDocument>>(),
                 It.Is<UpdateDefinition<BsonDocument>>(u => u.Render(serializer, BsonSerializer.SerializerRegistry).Equals(renderedExpected)),
                 It.IsAny<UpdateOptions>(),
-                default)).Verifiable();
+                default))
+            .Returns(mockUpdateResult.Object).Verifiable();
             
             _notificacionRepository.Eliminar(comando);
 
@@ -145,11 +148,14 @@ namespace IMT_Reservas.Tests.RepositoryTests
         }
 
         [Test]
-        public void Repositorio_IdInvalido_LanzaErrorDataBase()
+        public void Repositorio_IdInvalido_RetornaNotFound()
         {
             var invalidId = "id";
-            Assert.Throws<ErrorDataBase>(() => _notificacionRepository.Eliminar(new EliminarNotificacionComando(invalidId)));
-            Assert.Throws<ErrorDataBase>(() => _notificacionRepository.MarcarComoLeida(new MarcarComoLeidoComando(invalidId)));
+            var result = _notificacionRepository.Eliminar(new EliminarNotificacionComando(invalidId));
+            Assert.That(result.Status, Is.EqualTo(ResultStatus.NotFound));
+            
+            // MarcarComoLeida should just return gracefully
+            Assert.DoesNotThrow(() => _notificacionRepository.MarcarComoLeida(new MarcarComoLeidoComando(invalidId)));
         }
 
         [Test]
@@ -198,3 +204,9 @@ namespace IMT_Reservas.Tests.RepositoryTests
         }
     }
 }
+
+
+
+
+
+

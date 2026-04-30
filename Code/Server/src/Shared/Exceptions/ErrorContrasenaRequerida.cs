@@ -1,6 +1,6 @@
 public class ErrorContrasenaRequerida : DomainException
 {
-    public ErrorContrasenaRequerida() 
+    public ErrorContrasenaRequerida()
         : base("La contraseña es requerida")
     {
     }

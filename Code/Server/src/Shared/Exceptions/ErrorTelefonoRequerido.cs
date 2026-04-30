@@ -1,6 +1,6 @@
 public class ErrorTelefonoRequerido : DomainException
 {
-    public ErrorTelefonoRequerido() 
+    public ErrorTelefonoRequerido()
         : base("El teléfono es requerido")
     {
     }

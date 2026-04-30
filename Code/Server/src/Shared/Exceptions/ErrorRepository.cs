@@ -18,7 +18,7 @@ public class ErrorRepository : Exception
         Entity = entity;
     }
 
-    public ErrorRepository(string message, string? operation, string? entity, Exception innerException) 
+    public ErrorRepository(string message, string? operation, string? entity, Exception innerException)
         : base(message, innerException)
     {
         Operation = operation;

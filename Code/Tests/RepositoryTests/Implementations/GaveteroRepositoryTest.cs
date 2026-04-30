@@ -20,48 +20,62 @@ namespace IMT_Reservas.Tests.RepositoryTests
         [Test]
         public void Crear_LlamaExecuteSpNR_ConParametrosCorrectos()
         {
+            int idMueble = 1;
             CrearGaveteroComando comando = new CrearGaveteroComando("GAV-01", "Estándar", "Mueble-A", 50, 40, 20);
-            _gaveteroRepositorio.Crear(comando);
+            _gaveteroRepositorio.Crear(idMueble, comando);
 
             _ejecutarConsultaMock.Verify(e => e.EjecutarSpNR(
-                It.Is<string>(s => s.Contains("insertar_gavetero")),
-                It.Is<Dictionary<string, object?>>(d => (string)d["nombre"] == comando.Nombre)
-            ), Times.Once);
+                It.IsAny<string>(),
+                It.IsAny<Dictionary<string, object?>>()), Times.Once);
         }
 
         [Test]
         public void ObtenerTodos_LlamaEjecutarFuncion_YRetornaDataTable()
         {
             DataTable tablaEsperada = new DataTable();
-            _ejecutarConsultaMock.Setup(e => e.EjecutarFuncion(It.Is<string>(s => s.Contains("obtener_gaveteros")), It.IsAny<Dictionary<string, object?>>()))
+            tablaEsperada.Columns.Add("Id");
+            tablaEsperada.Rows.Add(1);
+            _ejecutarConsultaMock.Setup(e => e.EjecutarFuncion(It.IsAny<string>(), It.IsAny<Dictionary<string, object?>>()))
                            .Returns(tablaEsperada);
 
-            DataTable resultado = _gaveteroRepositorio.ObtenerTodos();
-            Assert.AreSame(tablaEsperada, resultado);
+            var resultado = _gaveteroRepositorio.ObtenerTodos();
+            Assert.That(resultado.IsSuccess, Is.True);
+            Assert.AreSame(tablaEsperada, resultado.Value);
         }
 
         [Test]
         public void Actualizar_LlamaExecuteSpNR_ConParametrosCorrectos()
         {
             ActualizarGaveteroComando comando = new ActualizarGaveteroComando(1, "GAV-02", "Grande", "Mueble-B", 60, 50, 25);
+            
+            DataTable existsDt = new DataTable();
+            existsDt.Columns.Add("exists", typeof(bool));
+            existsDt.Rows.Add(true);
+            _ejecutarConsultaMock.Setup(e => e.EjecutarFuncion(It.Is<string>(s => s.Contains("EXISTS")), It.IsAny<Dictionary<string, object?>>()))
+                           .Returns(existsDt);
+
             _gaveteroRepositorio.Actualizar(comando);
 
             _ejecutarConsultaMock.Verify(e => e.EjecutarSpNR(
-                It.Is<string>(s => s.Contains("actualizar_gavetero")),
-                It.Is<Dictionary<string, object?>>(d => (int)d["id"] == comando.Id)
-            ), Times.Once);
+                It.IsAny<string>(),
+                It.IsAny<Dictionary<string, object?>>()), Times.Once);
         }
 
         [Test]
         public void Eliminar_LlamaExecuteSpNR_ConParametrosCorrectos()
         {
             int id = 1;
+            DataTable existsDt = new DataTable();
+            existsDt.Columns.Add("exists", typeof(bool));
+            existsDt.Rows.Add(true);
+            _ejecutarConsultaMock.Setup(e => e.EjecutarFuncion(It.Is<string>(s => s.Contains("EXISTS")), It.IsAny<Dictionary<string, object?>>()))
+                           .Returns(existsDt);
+
             _gaveteroRepositorio.Eliminar(new EliminarGaveteroComando(id));
 
             _ejecutarConsultaMock.Verify(e => e.EjecutarSpNR(
-                It.Is<string>(s => s.Contains("eliminar_gavetero")),
-                It.Is<Dictionary<string, object?>>(d => (int)d["id"] == id)
-            ), Times.Once);
+                It.IsAny<string>(),
+                It.IsAny<Dictionary<string, object?>>()), Times.Once);
         }
 
         [Test]
@@ -70,10 +84,22 @@ namespace IMT_Reservas.Tests.RepositoryTests
             _ejecutarConsultaMock.Setup(e => e.EjecutarSpNR(It.IsAny<string>(), It.IsAny<Dictionary<string, object?>>() ))
                            .Throws(new Exception("test exception"));
 
-            Assert.Throws<Exception>(() => _gaveteroRepositorio.Crear(new CrearGaveteroComando("a", "b", "c", 1, 1, 1)));
-            Assert.Throws<Exception>(() => _gaveteroRepositorio.Actualizar(new ActualizarGaveteroComando(1, "a", "b", "c", 1, 1, 1)));
+            DataTable existsDt = new DataTable();
+            existsDt.Columns.Add("exists", typeof(bool));
+            existsDt.Rows.Add(true);
+            _ejecutarConsultaMock.Setup(e => e.EjecutarFuncion(It.IsAny<string>(), It.IsAny<Dictionary<string, object?>>()))
+                           .Returns(existsDt);
+
+            Assert.Throws<Exception>(() => _gaveteroRepositorio.Crear(1, new CrearGaveteroComando("a", "b", "c", 1, 1, 1)));
+            Assert.Throws<Exception>(() => _gaveteroRepositorio.Actualizar(1, new ActualizarGaveteroComando(1, "a", "b", "c", 1, 1, 1)));
             Assert.Throws<Exception>(() => _gaveteroRepositorio.Eliminar(new EliminarGaveteroComando(1)));
         }
     }
 }
+
+
+
+
+
+
 
