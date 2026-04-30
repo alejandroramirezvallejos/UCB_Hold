@@ -1,7 +1,8 @@
-﻿using Moq;
+using Moq;
 using System.Data;
-using IMT_Reservas.Server.Infrastructure.MongoDb;
+using Ardalis.Result;
 using MongoDB.Driver;
+using IMT_Reservas.Server.Infrastructure.MongoDb;
 using MongoDB.Bson;
 using System.Collections.Generic;
 using System;
@@ -137,10 +138,10 @@ namespace IMT_Reservas.Tests.RepositoryTests
             _collectionMock.Setup(c => c.UpdateOne(It.IsAny<FilterDefinition<BsonDocument>>(), It.IsAny<UpdateDefinition<BsonDocument>>(), It.IsAny<UpdateOptions>(), default)).Throws(exception);
             _collectionMock.Setup(c => c.FindSync(It.IsAny<FilterDefinition<BsonDocument>>(), It.IsAny<FindOptions<BsonDocument, BsonDocument>>(), default)).Throws(exception);
 
-            Assert.Throws<ErrorRepository>(() => _notificacionRepository.Crear(new CrearNotificacionComando("u", "t", "c")));
-            Assert.Throws<ErrorRepository>(() => _notificacionRepository.Eliminar(new EliminarNotificacionComando(validObjectId)));
-            Assert.Throws<ErrorRepository>(() => _notificacionRepository.MarcarComoLeida(new MarcarComoLeidoComando(validObjectId)));
-            Assert.Throws<ErrorRepository>(() => _notificacionRepository.ObtenerPorUsuario(new ObtenerNotificacionPorCarnetUsuarioConsulta("u")));
+            Assert.Throws<Exception>(() => _notificacionRepository.Crear(new CrearNotificacionComando("u", "t", "c")));
+            Assert.Throws<Exception>(() => _notificacionRepository.Eliminar(new EliminarNotificacionComando(validObjectId)));
+            Assert.Throws<Exception>(() => _notificacionRepository.MarcarComoLeida(new MarcarComoLeidoComando(validObjectId)));
+            Assert.Throws<Exception>(() => _notificacionRepository.ObtenerPorUsuario(new ObtenerNotificacionPorCarnetUsuarioConsulta("u")));
         }
 
         [Test]

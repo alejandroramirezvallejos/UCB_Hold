@@ -1,17 +1,12 @@
 using System.Data;
-using Npgsql;
+using Ardalis.Result;
 
-public class GrupoEquipoRepository :
-    ICrearRepository<CrearGrupoEquipoComando>,
-    IActualizarRepository<ActualizarGrupoEquipoComando>,
-    IEliminarRepository<EliminarGrupoEquipoComando>,
-    IObtenerTodosRepository<CrearGrupoEquipoComando, DataTable>,
-    IObtenerPorIdRepository<int, CrearGrupoEquipoComando, DataTable?>
+public class GrupoEquipoRepository : IGrupoEquipoRepository
 {
     private readonly IExecuteQuery _ejecutarConsulta;
     public GrupoEquipoRepository(IExecuteQuery ejecutarConsulta) => _ejecutarConsulta = ejecutarConsulta;
 
-    public void Crear(int idCategoria, CrearGrupoEquipoComando comando)
+    public Result<GrupoEquipoDto> Crear(int idCategoria, CrearGrupoEquipoComando comando)
     {
         const string sql = @"INSERT INTO public.grupos_equipos (nombre, modelo, marca, descripcion, id_categoria, url_data_sheet, url_imagen, estado_eliminado, cantidad, costo_promedio)
                              VALUES (@nombre, @modelo, @marca, @descripcion, @idCategoria, @urlDataSheet, @urlImagen, FALSE, 0, 0)";
@@ -25,15 +20,13 @@ public class GrupoEquipoRepository :
             ["urlDataSheet"] = comando.UrlDataSheet ?? (object)DBNull.Value,
             ["urlImagen"] = comando.UrlImagen ?? (object)DBNull.Value
         };
-        try { _ejecutarConsulta.EjecutarSpNR(sql, parametros); }
-        catch (NpgsqlException ex) { throw new ErrorDataBase($"Error de base de datos al crear grupo de equipo: {ex.Message}", ex.SqlState, null, ex); }
-        catch (Exception ex) { throw new ErrorRepository($"Error del repositorio al crear grupo de equipo: {ex.Message}", ex); }
+        _ejecutarConsulta.EjecutarSpNR(sql, parametros);
+        var dto = new GrupoEquipoDto { Nombre = comando.Nombre };
+        return Result<GrupoEquipoDto>.Created(dto);
     }
 
-    public void Crear(CrearGrupoEquipoComando comando)
-    {
-        throw new InvalidOperationException("Use Crear(int idCategoria, CrearGrupoEquipoComando comando) en su lugar.");
-    }
+    public Result<GrupoEquipoDto> Crear(CrearGrupoEquipoComando comando)
+        => Result<GrupoEquipoDto>.Error("Use Crear(int idCategoria, CrearGrupoEquipoComando comando)");
 
     public DataTable? ObtenerPorId(int id)
     {
@@ -45,12 +38,8 @@ public class GrupoEquipoRepository :
             INNER JOIN public.categorias AS c ON ge.id_categoria = c.id_categoria
             WHERE ge.id_grupo_equipo = @id AND ge.estado_eliminado = FALSE";
         var parametros = new Dictionary<string, object?> { ["id"] = id };
-        try {
-            var dt = _ejecutarConsulta.EjecutarFuncion(sql, parametros);
-            if (dt.Rows.Count == 0) return null;
-            return dt;
-        } catch (NpgsqlException ex) { throw new ErrorDataBase($"Error de base de datos al obtener grupo de equipo: {ex.Message}", ex.SqlState, null, ex); }
-        catch (Exception ex) { throw new ErrorRepository($"Error del repositorio al obtener grupo de equipo: {ex.Message}", ex); }
+        var dt = _ejecutarConsulta.EjecutarFuncion(sql, parametros);
+        return dt.Rows.Count == 0 ? null : dt;
     }
 
     public DataTable ObtenerPorNombreYCategoria(string? nombre, string? categoria)
@@ -64,17 +53,14 @@ public class GrupoEquipoRepository :
             WHERE ge.estado_eliminado = FALSE
             AND (@nombre::text IS NULL OR ge.nombre ILIKE '%' || @nombre::text || '%')
             AND (@categoria::text IS NULL OR c.nombre ILIKE '%' || @categoria::text || '%')";
-        try {
-            return _ejecutarConsulta.EjecutarFuncion(sql, new Dictionary<string, object?>
-            {
-                ["nombre"] = nombre ?? (object)DBNull.Value,
-                ["categoria"] = categoria ?? (object)DBNull.Value
-            });
-        } catch (NpgsqlException ex) { throw new ErrorDataBase($"Error de base de datos al obtener grupos de equipos: {ex.Message}", ex.SqlState, null, ex); }
-        catch (Exception ex) { throw new ErrorRepository($"Error del repositorio al obtener grupos de equipos: {ex.Message}", ex); }
+        return _ejecutarConsulta.EjecutarFuncion(sql, new Dictionary<string, object?>
+        {
+            ["nombre"] = nombre ?? (object)DBNull.Value,
+            ["categoria"] = categoria ?? (object)DBNull.Value
+        });
     }
 
-    public void Actualizar(int? idCategoria, ActualizarGrupoEquipoComando comando)
+    public Result<GrupoEquipoDto> Actualizar(int? idCategoria, ActualizarGrupoEquipoComando comando)
     {
         const string sql = @"UPDATE public.grupos_equipos SET
             nombre = COALESCE(@nombre, nombre),
@@ -96,26 +82,23 @@ public class GrupoEquipoRepository :
             ["urlDataSheet"] = comando.UrlDataSheet ?? (object)DBNull.Value,
             ["urlImagen"] = comando.UrlImagen ?? (object)DBNull.Value
         };
-        try { _ejecutarConsulta.EjecutarSpNR(sql, parametros); }
-        catch (NpgsqlException ex) { throw new ErrorDataBase($"Error de base de datos al actualizar grupo de equipo: {ex.Message}", ex.SqlState, null, ex); }
-        catch (Exception ex) { throw new ErrorRepository($"Error del repositorio al actualizar grupo de equipo: {ex.Message}", ex); }
+        _ejecutarConsulta.EjecutarSpNR(sql, parametros);
+        var dto = new GrupoEquipoDto { Id = comando.Id, Nombre = comando.Nombre };
+        return Result<GrupoEquipoDto>.Success(dto);
     }
 
-    public void Actualizar(ActualizarGrupoEquipoComando comando)
-    {
-        Actualizar(null, comando);
-    }
+    public Result<GrupoEquipoDto> Actualizar(ActualizarGrupoEquipoComando comando)
+        => Actualizar(null, comando);
 
-    public void Eliminar(EliminarGrupoEquipoComando comando)
+    public Result<GrupoEquipoDto> Eliminar(EliminarGrupoEquipoComando comando)
     {
         const string sql = @"UPDATE public.grupos_equipos SET estado_eliminado = TRUE WHERE id_grupo_equipo = @id";
         var parametros = new Dictionary<string, object?> { ["id"] = comando.Id };
-        try { _ejecutarConsulta.EjecutarSpNR(sql, parametros); }
-        catch (NpgsqlException ex) { throw new ErrorDataBase($"Error de base de datos al eliminar grupo de equipo: {ex.Message}", ex.SqlState, null, ex); }
-        catch (Exception ex) { throw new ErrorRepository($"Error del repositorio al eliminar grupo de equipo: {ex.Message}", ex); }
+        _ejecutarConsulta.EjecutarSpNR(sql, parametros);
+        return Result<GrupoEquipoDto>.Success(new GrupoEquipoDto { Id = comando.Id });
     }
 
-    public DataTable ObtenerTodos()
+    public Result<DataTable> ObtenerTodos()
     {
         const string sql = @"SELECT ge.id_grupo_equipo, ge.nombre AS nombre_grupo_equipo, ge.modelo AS modelo_grupo_equipo,
             ge.marca AS marca_grupo_equipo, ge.descripcion AS descripcion_grupo_equipo,
@@ -124,12 +107,11 @@ public class GrupoEquipoRepository :
             FROM public.grupos_equipos AS ge
             INNER JOIN public.categorias AS c ON ge.id_categoria = c.id_categoria
             WHERE ge.estado_eliminado = FALSE";
-        try { return _ejecutarConsulta.EjecutarFuncion(sql, new Dictionary<string, object?>()); }
-        catch (NpgsqlException ex) { throw new ErrorDataBase($"Error de base de datos al obtener grupos de equipos: {ex.Message}", ex.SqlState, null, ex); }
-        catch (Exception ex) { throw new ErrorRepository($"Error del repositorio al obtener grupos de equipos: {ex.Message}", ex); }
+        var dt = _ejecutarConsulta.EjecutarFuncion(sql, new Dictionary<string, object?>());
+        return dt.Rows.Count == 0
+            ? Result<DataTable>.NotFound("No se encontró el registro especificado")
+            : Result<DataTable>.Success(dt);
     }
-
-    // --- Métodos auxiliares para la lógica de negocio en el servicio ---
 
     public bool ExisteActivoPorId(int id)
     {
@@ -160,8 +142,7 @@ public class GrupoEquipoRepository :
         const string sql = @"SELECT id_categoria FROM public.categorias WHERE nombre = @nombre AND estado_eliminado = FALSE LIMIT 1";
         var parametros = new Dictionary<string, object?> { ["nombre"] = nombreCategoria };
         var dt = _ejecutarConsulta.EjecutarFuncion(sql, parametros);
-        if (dt.Rows.Count == 0) return null;
-        return Convert.ToInt32(dt.Rows[0][0]);
+        return dt.Rows.Count == 0 ? null : Convert.ToInt32(dt.Rows[0][0]);
     }
 
     public void ActualizarCantidad(int idGrupoEquipo, int incremento)

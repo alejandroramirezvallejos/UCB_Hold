@@ -1,38 +1,49 @@
-﻿using Moq;
+using Moq;
 using System.Data;
+using Ardalis.Result;
 
 namespace IMT_Reservas.Tests.ServiceTests
 {
     [TestFixture]
-    public class MantenimientoServiceTest : IMantenimientoServiceTest
+    public class MantenimientoServiceTest
     {
         private Mock<IMantenimientoRepository> _mantenimientoRepositoryMock;
-        private MantenimientoService          _mantenimientoService;
+        private MantenimientoService _mantenimientoService;
 
         [SetUp]
         public void Setup()
         {
             _mantenimientoRepositoryMock = new Mock<IMantenimientoRepository>();
-            _mantenimientoService        = new MantenimientoService(_mantenimientoRepositoryMock.Object);
+            _mantenimientoService = new MantenimientoService(_mantenimientoRepositoryMock.Object);
         }
 
         [Test]
-        public void CrearMantenimiento_ComandoValido_LlamaRepositorioCrear()
+        public void Crear_ComandoValido_RetornaSuccess()
         {
             CrearMantenimientoComando comando = new CrearMantenimientoComando(DateOnly.FromDateTime(DateTime.Now), DateOnly.FromDateTime(DateTime.Now.AddDays(1)), "Empresa A", 100.50, "Descripción", new int[] { 1 }, new string[] { "Preventivo" }, new string[] { "desc" });
-            _mantenimientoService.CrearMantenimiento(comando);
-            _mantenimientoRepositoryMock.Verify(r => r.Crear(comando), Times.Once);
+            _mantenimientoRepositoryMock.Setup(r => r.ObtenerEmpresaIdPorNombre(It.IsAny<string>())).Returns(1);
+            _mantenimientoRepositoryMock.Setup(r => r.ObtenerEquipoIdPorCodigoImt(It.IsAny<int>())).Returns(1);
+            _mantenimientoRepositoryMock.Setup(r => r.CrearMantenimiento(It.IsAny<int>(), It.IsAny<CrearMantenimientoComando>())).Returns(1);
+            _mantenimientoRepositoryMock.Setup(r => r.CrearDetalleMantenimiento(It.IsAny<int>(), It.IsAny<int>(), It.IsAny<string>(), It.IsAny<string>()));
+
+            var resultado = _mantenimientoService.Crear(comando);
+
+            Assert.That(resultado.IsSuccess, Is.True);
+            _mantenimientoRepositoryMock.Verify(r => r.CrearMantenimiento(It.IsAny<int>(), comando), Times.Once);
         }
 
         [Test]
-        public void CrearMantenimiento_FechaFinAnteriorAInicio_LanzaErrorFechaInvalida()
+        public void Crear_FechaFinAnteriorAInicio_RetornaInvalid()
         {
             CrearMantenimientoComando comando = new CrearMantenimientoComando(DateOnly.FromDateTime(DateTime.Now), DateOnly.FromDateTime(DateTime.Now.AddDays(-1)), "Empresa A", 100.50, "Descripción", new int[] { 1 }, new string[] { "Preventivo" }, new string[] { "desc" });
-            Assert.Throws<ErrorFechaInvalida>(() => _mantenimientoService.CrearMantenimiento(comando));
+
+            var resultado = _mantenimientoService.Crear(comando);
+
+            Assert.That(resultado.IsSuccess, Is.False);
         }
 
         [Test]
-        public void ObtenerTodosMantenimientos_CuandoHayDatos_RetornaListaDeDtos()
+        public void ObtenerTodos_CuandoHayDatos_RetornaListaDeDtos()
         {
             DataTable mantenimientosDataTable = new DataTable();
             mantenimientosDataTable.Columns.Add("id_mantenimiento", typeof(int));
@@ -46,26 +57,43 @@ namespace IMT_Reservas.Tests.ServiceTests
             mantenimientosDataTable.Columns.Add("tipo_detalle_mantenimiento", typeof(string));
             mantenimientosDataTable.Columns.Add("descripcion_equipo", typeof(string));
 
-            mantenimientosDataTable.Rows.Add(1, new DateTime(2025, 4, 4), new DateTime(2025, 1, 1), "Empresa Ficticia 1", DBNull.Value, DBNull.Value, 1, "Equipo 1", "Preventivo", "Desc 1");
+            mantenimientosDataTable.Rows.Add(1, new DateTime(2025, 4, 4), new DateTime(2025, 5, 5), "Empresa Ficticia 1", DBNull.Value, DBNull.Value, 1, "Equipo 1", "Preventivo", "Desc 1");
             mantenimientosDataTable.Rows.Add(2, new DateTime(2026, 1, 1), new DateTime(2026, 2, 2), "Empresa Ficticia 1", DBNull.Value, DBNull.Value, 2, "Equipo 2", "Correctivo", "Desc 2");
             mantenimientosDataTable.Rows.Add(7, new DateTime(2027, 1, 1), new DateTime(2027, 5, 5), "Empresa Ficticia 1", 100.0, "asdadasd", 3, "Equipo 3", "Preventivo", "Desc 3");
 
-            _mantenimientoRepositoryMock.Setup(r => r.ObtenerTodos()).Returns(mantenimientosDataTable);
+            _mantenimientoRepositoryMock.Setup(r => r.ObtenerTodos()).Returns(Result<DataTable>.Success(mantenimientosDataTable));
 
-            List<MantenimientoDto> resultado = _mantenimientoService.ObtenerTodosMantenimientos();
-            Assert.That(resultado, Has.Count.EqualTo(3));
-            Assert.That(resultado[0].Id, Is.EqualTo(1));
-            Assert.That(resultado[1].Id, Is.EqualTo(2));
-            Assert.That(resultado[2].Id, Is.EqualTo(7));
-            Assert.That(resultado[2].Descripcion, Is.EqualTo("asdadasd"));
+            var resultado = _mantenimientoService.ObtenerTodos();
+
+            Assert.That(resultado.IsSuccess, Is.True);
+            Assert.That(resultado.Value, Has.Count.EqualTo(3));
+            Assert.That(resultado.Value[0].Id, Is.EqualTo(1));
+            Assert.That(resultado.Value[1].Id, Is.EqualTo(2));
+            Assert.That(resultado.Value[2].Id, Is.EqualTo(7));
+            Assert.That(resultado.Value[2].Descripcion, Is.EqualTo("asdadasd"));
         }
 
         [Test]
-        public void EliminarMantenimiento_ComandoValido_LlamaRepositorioEliminar()
+        public void Eliminar_ComandoValido_RetornaSuccess()
         {
             EliminarMantenimientoComando comando = new EliminarMantenimientoComando(7);
-            _mantenimientoService.EliminarMantenimiento(comando);
-            _mantenimientoRepositoryMock.Verify(r => r.Eliminar(comando.Id), Times.Once);
+            _mantenimientoRepositoryMock.Setup(r => r.ExisteActivoPorId(It.IsAny<int>())).Returns(true);
+            _mantenimientoRepositoryMock.Setup(r => r.Eliminar(It.IsAny<EliminarMantenimientoComando>())).Returns(Result<MantenimientoDto>.Success(new MantenimientoDto { Id = 7 }));
+
+            var resultado = _mantenimientoService.Eliminar(comando);
+
+            Assert.That(resultado.IsSuccess, Is.True);
+            _mantenimientoRepositoryMock.Verify(r => r.Eliminar(comando), Times.Once);
+        }
+
+        [Test]
+        public void Eliminar_IdInvalido_RetornaInvalid()
+        {
+            EliminarMantenimientoComando comando = new EliminarMantenimientoComando(0);
+
+            var resultado = _mantenimientoService.Eliminar(comando);
+
+            Assert.That(resultado.IsSuccess, Is.False);
         }
     }
 }

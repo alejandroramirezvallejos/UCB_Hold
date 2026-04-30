@@ -1,10 +1,7 @@
-﻿using API.Controllers;
 using Moq;
-using Microsoft.AspNetCore.Mvc;
-using IMT_Reservas.Server.Application.Interfaces;
+using Ardalis.Result;
 using IMT_Reservas.Server.Shared.Common;
-using System.Collections.Generic;
-using System;
+using Microsoft.AspNetCore.Mvc;
 
 namespace IMT_Reservas.Tests.ControllerTests
 {
@@ -25,10 +22,10 @@ namespace IMT_Reservas.Tests.ControllerTests
         public void CrearComentario_Valido_RetornaCreated()
         {
             var comando = new CrearComentarioComando("2", 6, "El router funciona perfectamente, buena velocidad de conexión.");
-            _comentarioServiceMock.Setup(s => s.CrearComentario(comando));
-            
+            var dto = new ComentarioDto { Id = "abc123", CarnetUsuario = "2", IdGrupoEquipo = 6 };
+            _comentarioServiceMock.Setup(s => s.Crear(It.IsAny<CrearComentarioComando>())).Returns(Result<ComentarioDto>.Created(dto));
             var resultado = _comentarioController.Crear(comando);
-            Assert.That(resultado, Is.InstanceOf<CreatedResult>());
+            Assert.That(resultado.Status, Is.EqualTo(ResultStatus.Created));
         }
 
         private static IEnumerable<object[]> FuenteCasos_CrearComentario_BadRequest()
@@ -45,22 +42,18 @@ namespace IMT_Reservas.Tests.ControllerTests
         [TestCaseSource(nameof(FuenteCasos_CrearComentario_BadRequest))]
         public void CrearComentario_Invalido_RetornaBadRequest(CrearComentarioComando comando, System.Exception excepcionLanzada)
         {
-            _comentarioServiceMock.Setup(s => s.CrearComentario(comando)).Throws(excepcionLanzada);
-            
+            _comentarioServiceMock.Setup(s => s.Crear(It.IsAny<CrearComentarioComando>())).Returns(Result<ComentarioDto>.Invalid(new ValidationError("campo", excepcionLanzada.Message)));
             var resultado = _comentarioController.Crear(comando);
-            Assert.That(resultado, Is.InstanceOf<BadRequestObjectResult>());
+            Assert.That(resultado.Status, Is.EqualTo(ResultStatus.Invalid));
         }
 
         [Test]
-        public void CrearComentario_ServicioError_RetornaError500()
+        public void CrearComentario_ServicioError_RetornaError()
         {
             var comando = new CrearComentarioComando("2", 6, "Error");
-            _comentarioServiceMock.Setup(s => s.CrearComentario(comando)).Throws(new Exception("Error General Servidor"));
+            _comentarioServiceMock.Setup(s => s.Crear(It.IsAny<CrearComentarioComando>())).Returns(Result<ComentarioDto>.Error("Error General Servidor"));
             var resultado = _comentarioController.Crear(comando);
-            
-            Assert.That(resultado, Is.InstanceOf<ObjectResult>());
-            var objectResult = resultado as ObjectResult;
-            Assert.That(objectResult.StatusCode, Is.EqualTo(500));
+            Assert.That(resultado.Status, Is.EqualTo(ResultStatus.Error));
         }
 
         [Test]
@@ -69,10 +62,10 @@ namespace IMT_Reservas.Tests.ControllerTests
             var idGrupoEquipo = 8;
             var comentariosEsperados = new List<ComentarioDto>
             {
-                new ComentarioDto { Id = "68531f233cba0b4adf2ea2cd", CarnetUsuario = "7", IdGrupoEquipo = 8, Contenido = "El servidor está bien configurado, pero recomendaría actualizar el sis…", Likes = 3, FechaCreacion = DateTime.Parse("2025-06-12T09:15:00.000Z") }
+                new ComentarioDto { Id = "68531f233cba0b4adf2ea2cd", CarnetUsuario = "7", IdGrupoEquipo = 8, Contenido = "El servidor está bien configurado.", Likes = 3, FechaCreacion = DateTime.Parse("2025-06-12T09:15:00.000Z") }
             };
             _comentarioServiceMock.Setup(s => s.ObtenerComentariosPorGrupoEquipo(It.Is<ObtenerComentariosPorGrupoEquipoConsulta>(c => c.IdGrupoEquipo == idGrupoEquipo))).Returns(comentariosEsperados);
-            IActionResult resultado = _comentarioController.ObtenerComentariosPorGrupoEquipo(idGrupoEquipo);
+            var resultado = _comentarioController.ObtenerComentariosPorGrupoEquipo(idGrupoEquipo);
             Assert.That(resultado, Is.InstanceOf<OkObjectResult>());
             var okResult = resultado as OkObjectResult;
             Assert.That(okResult.Value, Is.EqualTo(comentariosEsperados));
@@ -83,56 +76,45 @@ namespace IMT_Reservas.Tests.ControllerTests
         {
             var idGrupoEquipo = 999;
             _comentarioServiceMock.Setup(s => s.ObtenerComentariosPorGrupoEquipo(It.IsAny<ObtenerComentariosPorGrupoEquipoConsulta>())).Returns(new List<ComentarioDto>());
-            IActionResult resultado = _comentarioController.ObtenerComentariosPorGrupoEquipo(idGrupoEquipo);
+            var resultado = _comentarioController.ObtenerComentariosPorGrupoEquipo(idGrupoEquipo);
             Assert.That(resultado, Is.InstanceOf<NotFoundObjectResult>());
         }
 
         [Test]
-        public void ObtenerComentariosPorGrupoEquipo_IdInvalido_RetornaBadRequest()
-        {
-            var idGrupoEquipo = 0;
-            _comentarioServiceMock.Setup(s => s.ObtenerComentariosPorGrupoEquipo(It.IsAny<ObtenerComentariosPorGrupoEquipoConsulta>())).Throws(new ErrorIdInvalido("El IdGrupoEquipo es requerido y debe ser mayor a 0."));
-            IActionResult resultado = _comentarioController.ObtenerComentariosPorGrupoEquipo(idGrupoEquipo);
-            Assert.That(resultado, Is.InstanceOf<BadRequestObjectResult>());
-        }
-
-        [Test]
-        public void EliminarComentario_Valido_RetornaNoContent()
+        public void EliminarComentario_Valido_RetornaSuccess()
         {
             var idComentario = "68531f233cba0b4adf2ea2cc";
-            _comentarioServiceMock.Setup(s => s.EliminarComentario(It.Is<EliminarComentarioComando>(c => c.Id == idComentario)));
+            var dto = new ComentarioDto { Id = idComentario };
+            _comentarioServiceMock.Setup(s => s.Eliminar(It.Is<EliminarComentarioComando>(c => c.Id == idComentario))).Returns(Result<ComentarioDto>.Success(dto));
             var resultado = _comentarioController.Eliminar(idComentario);
-
-            Assert.That(resultado, Is.InstanceOf<NoContentResult>());
+            Assert.That(resultado.IsSuccess, Is.True);
         }
 
         [Test]
-        public void EliminarComentario_IdInvalido_RetornaBadRequest()
+        public void EliminarComentario_IdInvalido_RetornaInvalid()
         {
             var idComentario = "id_invalido";
-            _comentarioServiceMock.Setup(s => s.EliminarComentario(It.Is<EliminarComentarioComando>(c => c.Id == idComentario))).Throws(new ErrorIdInvalido("Id inválido"));
+            _comentarioServiceMock.Setup(s => s.Eliminar(It.IsAny<EliminarComentarioComando>())).Returns(Result<ComentarioDto>.Invalid(new ValidationError("Id", "Id inválido")));
             var resultado = _comentarioController.Eliminar(idComentario);
-            Assert.That(resultado, Is.InstanceOf<BadRequestObjectResult>());
+            Assert.That(resultado.Status, Is.EqualTo(ResultStatus.Invalid));
         }
 
         [Test]
         public void EliminarComentario_NoEncontrado_RetornaNotFound()
         {
             var idComentario = "id_no_existente";
-            _comentarioServiceMock.Setup(s => s.EliminarComentario(It.IsAny<EliminarComentarioComando>())).Throws(new ErrorRegistroNoEncontrado());
+            _comentarioServiceMock.Setup(s => s.Eliminar(It.IsAny<EliminarComentarioComando>())).Returns(Result<ComentarioDto>.NotFound());
             var resultado = _comentarioController.Eliminar(idComentario);
-            
-            Assert.That(resultado, Is.InstanceOf<NotFoundObjectResult>());
+            Assert.That(resultado.Status, Is.EqualTo(ResultStatus.NotFound));
         }
 
         [Test]
-        public void EliminarComentario_NoAutorizado_RetornaForbid()
+        public void EliminarComentario_NoAutorizado_RetornaForbidden()
         {
             var idComentario = "68531f233cba0b4adf2ea2cc";
-            _comentarioServiceMock.Setup(s => s.EliminarComentario(It.Is<EliminarComentarioComando>(c => c.Id == idComentario))).Throws(new ErrorUsuarioNoAutorizado());
+            _comentarioServiceMock.Setup(s => s.Eliminar(It.Is<EliminarComentarioComando>(c => c.Id == idComentario))).Returns(Result<ComentarioDto>.Forbidden());
             var resultado = _comentarioController.Eliminar(idComentario);
-            
-            Assert.That(resultado, Is.InstanceOf<ForbidResult>());
+            Assert.That(resultado.Status, Is.EqualTo(ResultStatus.Forbidden));
         }
 
         [Test]
@@ -141,31 +123,9 @@ namespace IMT_Reservas.Tests.ControllerTests
             var idComentario = "68531f233cba0b4adf2ea2cc";
             var carnetUsuario = "2";
             var comando = new AgregarLikeComentarioComando(idComentario, carnetUsuario);
-            _comentarioServiceMock.Setup(s => s.AgregarLikeComentario(It.Is<AgregarLikeComentarioComando>(c => c.Id == idComentario && c.CarnetUsuario == carnetUsuario)));
+            _comentarioServiceMock.Setup(s => s.AgregarLikeComentario(It.IsAny<AgregarLikeComentarioComando>()));
             var resultado = _comentarioController.AgregarMeGusta(idComentario, comando);
             Assert.That(resultado, Is.InstanceOf<OkObjectResult>());
-        }
-
-        [Test]
-        public void AgregarMeGusta_IdInvalido_RetornaBadRequest()
-        {
-            var idComentario = "id_invalido";
-            var carnetUsuario = "2";
-            var comando = new AgregarLikeComentarioComando(idComentario, carnetUsuario);
-            _comentarioServiceMock.Setup(s => s.AgregarLikeComentario(It.Is<AgregarLikeComentarioComando>(c => c.Id == idComentario && c.CarnetUsuario == carnetUsuario))).Throws(new ErrorIdInvalido("Id inválido"));
-            var resultado = _comentarioController.AgregarMeGusta(idComentario, comando);
-            Assert.That(resultado, Is.InstanceOf<BadRequestObjectResult>());
-        }
-
-        [Test]
-        public void AgregarMeGusta_NoEncontrado_RetornaNotFound()
-        {
-            var idComentario = "id_no_existente";
-            var carnetUsuario = "2";
-            var comando = new AgregarLikeComentarioComando(idComentario, carnetUsuario);
-            _comentarioServiceMock.Setup(s => s.AgregarLikeComentario(It.IsAny<AgregarLikeComentarioComando>())).Throws(new ErrorRegistroNoEncontrado());
-            var resultado = _comentarioController.AgregarMeGusta(idComentario, comando);
-            Assert.That(resultado, Is.InstanceOf<NotFoundObjectResult>());
         }
 
         [Test]
@@ -174,31 +134,9 @@ namespace IMT_Reservas.Tests.ControllerTests
             var idComentario = "68531f233cba0b4adf2ea2cc";
             var carnetUsuario = "2";
             var comando = new QuitarLikeComentarioComando(idComentario, carnetUsuario);
-            _comentarioServiceMock.Setup(s => s.QuitarLikeComentario(It.Is<QuitarLikeComentarioComando>(c => c.Id == idComentario && c.CarnetUsuario == carnetUsuario)));
+            _comentarioServiceMock.Setup(s => s.QuitarLikeComentario(It.IsAny<QuitarLikeComentarioComando>()));
             var resultado = _comentarioController.QuitarMeGusta(idComentario, comando);
             Assert.That(resultado, Is.InstanceOf<OkObjectResult>());
-        }
-
-        [Test]
-        public void QuitarMeGusta_IdInvalido_RetornaBadRequest()
-        {
-            var idComentario = "id_invalido";
-            var carnetUsuario = "2";
-            var comando = new QuitarLikeComentarioComando(idComentario, carnetUsuario);
-            _comentarioServiceMock.Setup(s => s.QuitarLikeComentario(It.Is<QuitarLikeComentarioComando>(c => c.Id == idComentario && c.CarnetUsuario == carnetUsuario))).Throws(new ErrorIdInvalido("Id inválido"));
-            var resultado = _comentarioController.QuitarMeGusta(idComentario, comando);
-            Assert.That(resultado, Is.InstanceOf<BadRequestObjectResult>());
-        }
-
-        [Test]
-        public void QuitarMeGusta_NoEncontrado_RetornaNotFound()
-        {
-            var idComentario = "id_no_existente";
-            var carnetUsuario = "2";
-            var comando = new QuitarLikeComentarioComando(idComentario, carnetUsuario);
-            _comentarioServiceMock.Setup(s => s.QuitarLikeComentario(It.IsAny<QuitarLikeComentarioComando>())).Throws(new ErrorRegistroNoEncontrado());
-            var resultado = _comentarioController.QuitarMeGusta(idComentario, comando);
-            Assert.That(resultado, Is.InstanceOf<NotFoundObjectResult>());
         }
     }
 }

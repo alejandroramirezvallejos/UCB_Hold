@@ -1,111 +1,145 @@
 using System.Data;
-using IMT_Reservas.Server.Shared.Common;
+using Ardalis.Result;
 
-public class ComponenteService : BaseServicios,
-    ICrearServicio<CrearComponenteComando>,
-    IActualizarServicio<ActualizarComponenteComando>,
-    IEliminarServicio<EliminarComponenteComando>,
-    IObtenerTodosServicio<ComponenteDto>
+public class ComponenteService : BaseServicios, IComponenteService
 {
-    private readonly ComponenteRepository _componenteRepository;
+    private readonly IComponenteRepository _componenteRepository;
 
-    public ComponenteService(ComponenteRepository componenteRepository)
+    public ComponenteService(IComponenteRepository componenteRepository)
     {
         _componenteRepository = componenteRepository;
     }
 
-    public virtual void Crear(CrearComponenteComando comando)
+    public virtual Result<ComponenteDto> Crear(CrearComponenteComando comando)
     {
-        ValidarEntradaCreacion(comando);
+        var validResult = ValidarEntrada(comando);
+        if (!validResult.IsSuccess) return Result<ComponenteDto>.Invalid(validResult.ValidationErrors.ToArray());
 
-        // Resolver FK: código IMT → id_equipo
         var idEquipo = _componenteRepository.ObtenerEquipoIdPorCodigoImt(comando.CodigoIMT!.Value);
         if (idEquipo == null)
-            throw new ErrorCodigoImtNoEncontrado();
+            return Result<ComponenteDto>.NotFound("El código IMT no fue encontrado");
 
-        _componenteRepository.Crear(idEquipo.Value, comando);
+        var result = _componenteRepository.Crear(idEquipo.Value, comando);
+        return result;
     }
-    
-    protected override void ValidarEntradaCreacion<T>(T comando)
-    {
-        base.ValidarEntradaCreacion(comando); // Validación base (null check)
-        
-        // Validaciones específicas para CrearComponenteComando
-        if (comando is CrearComponenteComando componenteComando)
-        {
-            if (string.IsNullOrWhiteSpace(componenteComando.Nombre)) throw new ErrorNombreRequerido();
-            if (componenteComando.Nombre.Length > 255) throw new ErrorLongitudInvalida("nombre", 255);
-            if(string.IsNullOrWhiteSpace(componenteComando.Modelo)) throw new ErrorModeloRequerido();
-            if (componenteComando.Modelo.Length > 255) throw new ErrorLongitudInvalida("modelo", 255);
-            if (componenteComando.CodigoIMT <= 0) throw new ErrorCodigoImtRequerido();
-            if (componenteComando.PrecioReferencia.HasValue && componenteComando.PrecioReferencia.Value < 0) throw new ErrorValorNegativo("precio de referencia");
-        }
-    }
-    
-    public virtual List<ComponenteDto>? ObtenerTodos()
-    {
-        try
-        {
-            DataTable resultado = _componenteRepository.ObtenerTodos();
-            var lista = new List<ComponenteDto>(resultado.Rows.Count);
-            foreach (DataRow fila in resultado.Rows)
-            {
-                var dto = MapearFilaADto(fila) as ComponenteDto;
-                if (dto != null) lista.Add(dto);
-            }
-            return lista;
-        }
-        catch { throw; }
-    }
-    public virtual void Actualizar(ActualizarComponenteComando comando)
-    {
-        ValidarEntradaActualizacion(comando);
 
-        // Verificar que el componente exista y esté activo
+    public virtual Result<List<ComponenteDto>> ObtenerTodos()
+    {
+        var repoResult = _componenteRepository.ObtenerTodos();
+        if (!repoResult.IsSuccess)
+            return Result<List<ComponenteDto>>.Error("Error al obtener los componentes");
+
+        var resultado = repoResult.Value;
+        var lista = new List<ComponenteDto>(resultado.Rows.Count);
+        foreach (DataRow fila in resultado.Rows)
+        {
+            var dto = MapearFilaADto(fila) as ComponenteDto;
+            if (dto != null) lista.Add(dto);
+        }
+        return lista.Count == 0
+            ? Result<List<ComponenteDto>>.NotFound("No se encontraron componentes")
+            : Result<List<ComponenteDto>>.Success(lista);
+    }
+
+    public virtual Result<ComponenteDto> Actualizar(ActualizarComponenteComando comando)
+    {
+        var validResult = ValidarEntrada(comando);
+        if (!validResult.IsSuccess) return Result<ComponenteDto>.Invalid(validResult.ValidationErrors.ToArray());
+
         if (!_componenteRepository.ExisteActivoPorId(comando.Id))
-            throw new ErrorRegistroNoEncontrado();
+            return Result<ComponenteDto>.NotFound("El componente no fue encontrado");
 
-        // Resolver FK: código IMT → id_equipo (si se proporcionó)
         int? idEquipo = null;
         if (comando.CodigoIMT.HasValue && comando.CodigoIMT.Value > 0)
         {
             idEquipo = _componenteRepository.ObtenerEquipoIdPorCodigoImt(comando.CodigoIMT.Value);
             if (idEquipo == null)
-                throw new ErrorCodigoImtNoEncontrado();
+                return Result<ComponenteDto>.NotFound("El código IMT no fue encontrado");
         }
 
-        _componenteRepository.Actualizar(idEquipo, comando);
+        var result = _componenteRepository.Actualizar(idEquipo, comando);
+        return result;
     }
 
-    private void ValidarEntradaActualizacion(ActualizarComponenteComando comando)
+    public virtual Result<ComponenteDto> Eliminar(EliminarComponenteComando comando)
     {
-        if (comando == null) throw new ArgumentNullException(nameof(comando));
-        if (comando.Id <= 0) throw new ErrorIdInvalido("componente");
-        if (!string.IsNullOrWhiteSpace(comando.Nombre) && comando.Nombre.Length > 255) throw new ErrorLongitudInvalida("nombre", 255);
-        if (!string.IsNullOrWhiteSpace(comando.Modelo) && comando.Modelo.Length > 255) throw new ErrorLongitudInvalida("modelo", 255);
-        if (comando.PrecioReferencia.HasValue && comando.PrecioReferencia.Value < 0) throw new ErrorValorNegativo("precio de referencia");
-    }
+        var validResult = ValidarEntrada(comando);
+        if (!validResult.IsSuccess) return Result<ComponenteDto>.Invalid(validResult.ValidationErrors.ToArray());
 
-    public virtual void Eliminar(EliminarComponenteComando comando)
-    {
-        ValidarEntradaEliminacion(comando);
-
-        // Verificar que el componente exista y esté activo
         if (!_componenteRepository.ExisteActivoPorId(comando.Id))
-            throw new ErrorRegistroNoEncontrado();
+            return Result<ComponenteDto>.NotFound("El componente no fue encontrado");
 
-        _componenteRepository.Eliminar(comando);
+        var result = _componenteRepository.Eliminar(comando);
+        return result;
     }
-    
-    protected override void ValidarEntradaEliminacion<T>(T comando)
+
+    private Result<CrearComponenteComando> ValidarEntrada(CrearComponenteComando comando)
     {
-        base.ValidarEntradaEliminacion(comando); // Validación base (null check)
-        
-        // Validaciones específicas para EliminarComponenteComando
-        if (comando is EliminarComponenteComando componenteComando)
-        {
-            if (componenteComando.Id <= 0) throw new ErrorIdInvalido("componente");
-        }
+        var errors = new List<ValidationError>();
+
+        if (comando == null)
+            errors.Add(new("comando", "El comando es requerido"));
+
+        if (string.IsNullOrWhiteSpace(comando?.Nombre))
+            errors.Add(new("Nombre", "El nombre es requerido"));
+
+        if (comando?.Nombre?.Length > 255)
+            errors.Add(new("Nombre", "El nombre no puede tener más de 255 caracteres"));
+
+        if (string.IsNullOrWhiteSpace(comando?.Modelo))
+            errors.Add(new("Modelo", "El modelo es requerido"));
+
+        if (comando?.Modelo?.Length > 255)
+            errors.Add(new("Modelo", "El modelo no puede tener más de 255 caracteres"));
+
+        if (comando?.CodigoIMT <= 0)
+            errors.Add(new("CodigoIMT", "El código IMT es inválido"));
+
+        if (comando?.PrecioReferencia.HasValue == true && comando.PrecioReferencia.Value < 0)
+            errors.Add(new("PrecioReferencia", "El precio de referencia no puede ser negativo"));
+
+        return errors.Any()
+            ? Result<CrearComponenteComando>.Invalid(errors.ToArray())
+            : Result<CrearComponenteComando>.Success(comando!);
+    }
+
+    private Result<ActualizarComponenteComando> ValidarEntrada(ActualizarComponenteComando comando)
+    {
+        var errors = new List<ValidationError>();
+
+        if (comando == null)
+            errors.Add(new("comando", "El comando es requerido"));
+
+        if (comando?.Id <= 0)
+            errors.Add(new("Id", "El ID debe ser mayor a 0"));
+
+        if (!string.IsNullOrWhiteSpace(comando?.Nombre) && comando.Nombre.Length > 255)
+            errors.Add(new("Nombre", "El nombre no puede tener más de 255 caracteres"));
+
+        if (!string.IsNullOrWhiteSpace(comando?.Modelo) && comando.Modelo.Length > 255)
+            errors.Add(new("Modelo", "El modelo no puede tener más de 255 caracteres"));
+
+        if (comando?.PrecioReferencia.HasValue == true && comando.PrecioReferencia.Value < 0)
+            errors.Add(new("PrecioReferencia", "El precio de referencia no puede ser negativo"));
+
+        return errors.Any()
+            ? Result<ActualizarComponenteComando>.Invalid(errors.ToArray())
+            : Result<ActualizarComponenteComando>.Success(comando!);
+    }
+
+    private Result<EliminarComponenteComando> ValidarEntrada(EliminarComponenteComando comando)
+    {
+        var errors = new List<ValidationError>();
+
+        if (comando == null)
+            errors.Add(new("comando", "El comando es requerido"));
+
+        if (comando?.Id <= 0)
+            errors.Add(new("Id", "El ID debe ser mayor a 0"));
+
+        return errors.Any()
+            ? Result<EliminarComponenteComando>.Invalid(errors.ToArray())
+            : Result<EliminarComponenteComando>.Success(comando!);
     }
 
     protected override BaseDto MapearFilaADto(DataRow fila) => new ComponenteDto

@@ -1,7 +1,6 @@
-﻿using Moq;
+using Moq;
 using System.Data;
-using IMT_Reservas.Server.Shared.Common;
-using IMT_Reservas.Server.Application.Interfaces;
+using Ardalis.Result;
 using System;
 using System.Collections.Generic;
 
@@ -26,7 +25,7 @@ namespace IMT_Reservas.Tests.ServiceTests
         public void CrearNotificacion_ComandoValido_LlamaRepositorioCrear()
         {
             var comando = new CrearNotificacionComando("12890061", "Solicitud aprobada", "Tu solicitud de préstamo para Router Inalámbrico ha sido aprobada. Pue…");
-            _notificacionService.CrearNotificacion(comando);
+            _notificacionService.Crear(comando);
             _notificacionRepositoryMock.Verify(r => r.Crear(comando), Times.Once);
         }
 
@@ -58,7 +57,7 @@ namespace IMT_Reservas.Tests.ServiceTests
         public void EliminarNotificacion_ComandoValido_LlamaRepositorioEliminar()
         {
             var comando = new EliminarNotificacionComando("68535f7ddd47665ee70310b7");
-            _notificacionService.EliminarNotificacion(comando);
+            _notificacionService.Eliminar(comando);
             _notificacionRepositoryMock.Verify(r => r.Eliminar(comando), Times.Once);
         }
 
@@ -89,3 +88,4 @@ namespace IMT_Reservas.Tests.ServiceTests
         }
     }
 }
+

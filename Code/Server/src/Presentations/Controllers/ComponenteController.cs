@@ -1,36 +1,36 @@
 using Microsoft.AspNetCore.Mvc;
-using IMT_Reservas.Server.Shared.Common;
-
-namespace API.Controllers;
+using Ardalis.Result;
+using Ardalis.Result.AspNetCore;
 
 [ApiController]
 [Route("api/[controller]")]
+[TranslateResultToActionResult]
 public class ComponenteController : ControllerBase
 {
-    private readonly ComponenteService servicio;
-    public ComponenteController(ComponenteService servicio) => this.servicio = servicio;
+    private readonly IComponenteService _servicio;
+    public ComponenteController(IComponenteService servicio) => _servicio = servicio;
 
     [HttpPost]
-    public IActionResult Crear([FromBody] CrearComponenteComando input)
+    public Result<ComponenteDto> Crear([FromBody] CrearComponenteComando input)
     {
-        servicio.Crear(input); return Created("", new { message = "Componente creado exitosamente" });
+        return _servicio.Crear(input);
     }
 
     [HttpGet]
-    public IActionResult ObtenerTodos()
+    public Result<List<ComponenteDto>> ObtenerTodos()
     {
-        return Ok(servicio.ObtenerTodos());
+        return _servicio.ObtenerTodos();
     }
 
     [HttpPut]
-    public IActionResult Actualizar([FromBody] ActualizarComponenteComando input)
+    public Result<ComponenteDto> Actualizar([FromBody] ActualizarComponenteComando input)
     {
-        servicio.Actualizar(input); return Ok(new { mensaje = "Componente actualizado exitosamente" });
+        return _servicio.Actualizar(input);
     }
 
     [HttpDelete("{id}")]
-    public IActionResult Eliminar(int id)
+    public Result<ComponenteDto> Eliminar(int id)
     {
-        servicio.Eliminar(new EliminarComponenteComando(id)); return NoContent();
+        return _servicio.Eliminar(new EliminarComponenteComando(id));
     }
 }

@@ -1,16 +1,12 @@
 using System.Data;
-using Npgsql;
+using Ardalis.Result;
 
-public class MuebleRepository :
-    ICrearRepository<CrearMuebleComando>,
-    IActualizarRepository<ActualizarMuebleComando>,
-    IEliminarRepository<EliminarMuebleComando>,
-    IObtenerTodosRepository<CrearMuebleComando, DataTable>
+public class MuebleRepository : IMuebleRepository
 {
     private readonly IExecuteQuery _ejecutarConsulta;
     public MuebleRepository(IExecuteQuery ejecutarConsulta) => _ejecutarConsulta = ejecutarConsulta;
 
-    public void Crear(CrearMuebleComando comando)
+    public Result<MuebleDto> Crear(CrearMuebleComando comando)
     {
         const string sql = @"INSERT INTO public.muebles (nombre, tipo, costo, ubicacion, longitud, profundidad, altura, estado_eliminado)
                              VALUES (@nombre, @tipo, @costo, @ubicacion, @longitud, @profundidad, @altura, FALSE)";
@@ -24,12 +20,12 @@ public class MuebleRepository :
             ["profundidad"] = comando.Profundidad ?? (object)DBNull.Value,
             ["altura"] = comando.Altura ?? (object)DBNull.Value
         };
-        try { _ejecutarConsulta.EjecutarSpNR(sql, parametros); }
-        catch (NpgsqlException ex) { throw new ErrorDataBase($"Error de base de datos al crear mueble: {ex.Message}", ex.SqlState, null, ex); }
-        catch (Exception ex) { throw new ErrorRepository($"Error del repositorio al crear mueble: {ex.Message}", ex); }
+        _ejecutarConsulta.EjecutarSpNR(sql, parametros);
+        var dto = new MuebleDto { Nombre = comando.Nombre, Tipo = comando.Tipo };
+        return Result<MuebleDto>.Created(dto);
     }
 
-    public void Actualizar(ActualizarMuebleComando comando)
+    public Result<MuebleDto> Actualizar(ActualizarMuebleComando comando)
     {
         const string sql = @"UPDATE public.muebles SET
             nombre = COALESCE(@nombre, nombre),
@@ -51,32 +47,30 @@ public class MuebleRepository :
             ["profundidad"] = comando.Profundidad ?? (object)DBNull.Value,
             ["altura"] = comando.Altura ?? (object)DBNull.Value
         };
-        try { _ejecutarConsulta.EjecutarSpNR(sql, parametros); }
-        catch (NpgsqlException ex) { throw new ErrorDataBase($"Error de base de datos al actualizar mueble: {ex.Message}", ex.SqlState, null, ex); }
-        catch (Exception ex) { throw new ErrorRepository($"Error del repositorio al actualizar mueble: {ex.Message}", ex); }
+        _ejecutarConsulta.EjecutarSpNR(sql, parametros);
+        var dto = new MuebleDto { Id = comando.Id, Nombre = comando.Nombre, Tipo = comando.Tipo };
+        return Result<MuebleDto>.Success(dto);
     }
 
-    public void Eliminar(EliminarMuebleComando comando)
+    public Result<MuebleDto> Eliminar(EliminarMuebleComando comando)
     {
         const string sql = @"UPDATE public.muebles SET estado_eliminado = TRUE WHERE id_mueble = @id";
         var parametros = new Dictionary<string, object?> { ["id"] = comando.Id };
-        try { _ejecutarConsulta.EjecutarSpNR(sql, parametros); }
-        catch (NpgsqlException ex) { throw new ErrorDataBase($"Error de base de datos al eliminar mueble: {ex.Message}", ex.SqlState, null, ex); }
-        catch (Exception ex) { throw new ErrorRepository($"Error del repositorio al eliminar mueble: {ex.Message}", ex); }
+        _ejecutarConsulta.EjecutarSpNR(sql, parametros);
+        return Result<MuebleDto>.Success(new MuebleDto { Id = comando.Id });
     }
 
-    public DataTable ObtenerTodos()
+    public Result<DataTable> ObtenerTodos()
     {
         const string sql = @"SELECT m.id_mueble, m.nombre AS nombre_mueble, m.numero_gaveteros AS numero_gaveteros_mueble,
             m.ubicacion AS ubicacion_mueble, m.tipo AS tipo_mueble, m.costo AS costo_mueble,
             m.longitud AS longitud_mueble, m.profundidad AS profundidad_mueble, m.altura AS altura_mueble
             FROM public.muebles AS m WHERE m.estado_eliminado = FALSE";
-        try { return _ejecutarConsulta.EjecutarFuncion(sql, new Dictionary<string, object?>()); }
-        catch (NpgsqlException ex) { throw new ErrorDataBase($"Error de base de datos al obtener muebles: {ex.Message}", ex.SqlState, null, ex); }
-        catch (Exception ex) { throw new ErrorRepository($"Error del repositorio al obtener muebles: {ex.Message}", ex); }
+        var dt = _ejecutarConsulta.EjecutarFuncion(sql, new Dictionary<string, object?>());
+        return dt.Rows.Count == 0
+            ? Result<DataTable>.NotFound("No se encontró el registro especificado")
+            : Result<DataTable>.Success(dt);
     }
-
-    // --- Métodos auxiliares para la lógica de negocio en el servicio ---
 
     public bool ExisteActivoPorId(int id)
     {

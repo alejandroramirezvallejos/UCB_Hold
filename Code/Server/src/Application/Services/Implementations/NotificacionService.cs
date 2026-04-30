@@ -1,39 +1,35 @@
-﻿using System.Data;
-using IMT_Reservas.Server.Shared.Common;
+using System.Data;
+using Ardalis.Result;
 
-public class NotificacionService : BaseServicios,
-    ICrearServicio<CrearNotificacionComando>,
-    IEliminarServicio<EliminarNotificacionComando>
+public class NotificacionService : BaseServicios, INotificacionService
 {
-    private readonly NotificacionRepository _notificacionRepository;
-    private readonly PrestamoRepository _prestamoRepository;
-    public NotificacionService(NotificacionRepository notificacionRepository, PrestamoRepository prestamoRepository)
+    private readonly INotificacionRepository _notificacionRepository;
+    private readonly IPrestamoRepository _prestamoRepository;
+
+    public NotificacionService(INotificacionRepository notificacionRepository, IPrestamoRepository prestamoRepository)
     {
         _notificacionRepository = notificacionRepository;
         _prestamoRepository = prestamoRepository;
-    }    
-    public void Crear(CrearNotificacionComando comando)
-    {
-        ValidarEntradaCreacion(comando);
-        _notificacionRepository.Crear(comando);
     }
-    protected override void ValidarEntradaCreacion<T>(T comando)
+
+    public Result<NotificacionDto> Crear(CrearNotificacionComando comando)
     {
-        base.ValidarEntradaCreacion(comando);
+        var validResult = ValidarEntrada(comando);
+        if (!validResult.IsSuccess) return Result<NotificacionDto>.Invalid(validResult.ValidationErrors.ToArray());
+
+        var result = _notificacionRepository.Crear(comando);
+        return result;
     }
-    public void Eliminar(EliminarNotificacionComando comando)
+
+    public Result<NotificacionDto> Eliminar(EliminarNotificacionComando comando)
     {
-        ValidarEntradaEliminacion(comando);
-        _notificacionRepository.Eliminar(comando);
-    }    
-    protected override void ValidarEntradaEliminacion<T>(T comando)
-    {
-        base.ValidarEntradaEliminacion(comando);
-        if (comando is EliminarNotificacionComando notificacionComando)
-        {
-            if (string.IsNullOrWhiteSpace(notificacionComando.Id)) throw new ErrorIdInvalido("notificación");
-        }
+        var validResult = ValidarEntrada(comando);
+        if (!validResult.IsSuccess) return Result<NotificacionDto>.Invalid(validResult.ValidationErrors.ToArray());
+
+        var result = _notificacionRepository.Eliminar(comando);
+        return result;
     }
+
     public List<NotificacionDto> ObtenerNotificacionesPorUsuario(ObtenerNotificacionPorCarnetUsuarioConsulta consulta)
     {
         var tabla = _notificacionRepository.ObtenerPorUsuario(consulta);
@@ -44,18 +40,6 @@ public class NotificacionService : BaseServicios,
             if (dto != null) notificaciones.Add(dto);
         }
         return notificaciones;
-    }
-    protected override BaseDto MapearFilaADto(DataRow fila)
-    {
-        return new NotificacionDto
-        {
-            Id = fila["id_notificacion"].ToString(),
-            CarnetUsuario = fila["carnet_usuario"].ToString(),
-            Titulo = fila["titulo"].ToString(),
-            Contenido = fila["contenido"].ToString(),
-            FechaEnvio = (System.DateTime)fila["fecha_envio"],
-            Leido = fila.Table.Columns.Contains("leido") ? Convert.ToBoolean(fila["leido"]) : false
-        };
     }
 
     public void MarcarNotificacionComoLeida(MarcarComoLeidoComando comando)
@@ -68,35 +52,11 @@ public class NotificacionService : BaseServicios,
         return _notificacionRepository.TieneNotificacionesNoLeidas(consulta);
     }
 
-    private bool NotificacionYaExiste(string carnet, string titulo, string contenido)
-    {
-        var consulta = new ObtenerNotificacionPorCarnetUsuarioConsulta(carnet);
-        var notificaciones = _notificacionRepository.ObtenerPorUsuario(consulta);
-        foreach (DataRow fila in notificaciones.Rows)
-        {
-            if (fila["titulo"].ToString() == titulo && fila["contenido"].ToString() == contenido)
-                return true;
-        }
-        return false;
-    }
-
-    private bool NotificacionBloqueoYaExiste(string carnet)
-    {
-        var consulta = new ObtenerNotificacionPorCarnetUsuarioConsulta(carnet);
-        var notificaciones = _notificacionRepository.ObtenerPorUsuario(consulta);
-        foreach (DataRow fila in notificaciones.Rows)
-        {
-            if (fila["titulo"].ToString() == "Retraso en el pedido")
-                return true;
-        }
-        return false;
-    }
-
     public void EnviarNotificacionesRetraso()
     {
         var prestamos = _prestamoRepository.ObtenerTodos();
         var ahora = DateTime.UtcNow;
-        foreach (DataRow fila in prestamos.Rows)
+        foreach (DataRow fila in prestamos.Value.Rows)
         {
             var tieneEstadoEliminado = fila.Table.Columns.Contains("estado_eliminado");
             if (fila["fecha_devolucion_esperada"] == DBNull.Value || fila["fecha_devolucion"] != DBNull.Value || (tieneEstadoEliminado && Convert.ToBoolean(fila["estado_eliminado"]))) continue;
@@ -121,7 +81,7 @@ public class NotificacionService : BaseServicios,
     {
         var prestamos = _prestamoRepository.ObtenerTodos();
         var ahora = DateTime.UtcNow;
-        foreach (DataRow fila in prestamos.Rows)
+        foreach (DataRow fila in prestamos.Value.Rows)
         {
             var tieneEstadoEliminado = fila.Table.Columns.Contains("estado_eliminado");
             if (fila["fecha_devolucion_esperada"] == DBNull.Value || fila["fecha_devolucion"] != DBNull.Value || (tieneEstadoEliminado && Convert.ToBoolean(fila["estado_eliminado"]))) continue;
@@ -144,7 +104,7 @@ public class NotificacionService : BaseServicios,
     public void EnviarEstadoDelPrestamo()
     {
         var prestamos = _prestamoRepository.ObtenerTodos();
-        foreach (DataRow fila in prestamos.Rows)
+        foreach (DataRow fila in prestamos.Value.Rows)
         {
             if (fila["estado_prestamo"] == DBNull.Value || fila["carnet"] == DBNull.Value) continue;
             var estado = fila["estado_prestamo"].ToString();
@@ -171,5 +131,69 @@ public class NotificacionService : BaseServicios,
                 }
             }
         }
+    }
+
+    private bool NotificacionYaExiste(string carnet, string titulo, string contenido)
+    {
+        var consulta = new ObtenerNotificacionPorCarnetUsuarioConsulta(carnet);
+        var notificaciones = _notificacionRepository.ObtenerPorUsuario(consulta);
+        foreach (DataRow fila in notificaciones.Rows)
+        {
+            if (fila["titulo"].ToString() == titulo && fila["contenido"].ToString() == contenido)
+                return true;
+        }
+        return false;
+    }
+
+    private bool NotificacionBloqueoYaExiste(string carnet)
+    {
+        var consulta = new ObtenerNotificacionPorCarnetUsuarioConsulta(carnet);
+        var notificaciones = _notificacionRepository.ObtenerPorUsuario(consulta);
+        foreach (DataRow fila in notificaciones.Rows)
+        {
+            if (fila["titulo"].ToString() == "Retraso en el pedido")
+                return true;
+        }
+        return false;
+    }
+
+    private Result<CrearNotificacionComando> ValidarEntrada(CrearNotificacionComando comando)
+    {
+        var errors = new List<ValidationError>();
+
+        if (comando == null)
+            errors.Add(new("comando", "El comando es requerido"));
+
+        return errors.Any()
+            ? Result<CrearNotificacionComando>.Invalid(errors.ToArray())
+            : Result<CrearNotificacionComando>.Success(comando!);
+    }
+
+    private Result<EliminarNotificacionComando> ValidarEntrada(EliminarNotificacionComando comando)
+    {
+        var errors = new List<ValidationError>();
+
+        if (comando == null)
+            errors.Add(new("comando", "El comando es requerido"));
+
+        if (string.IsNullOrWhiteSpace(comando?.Id))
+            errors.Add(new("Id", "El ID de la notificación es inválido"));
+
+        return errors.Any()
+            ? Result<EliminarNotificacionComando>.Invalid(errors.ToArray())
+            : Result<EliminarNotificacionComando>.Success(comando!);
+    }
+
+    protected override BaseDto MapearFilaADto(DataRow fila)
+    {
+        return new NotificacionDto
+        {
+            Id = fila["id_notificacion"].ToString(),
+            CarnetUsuario = fila["carnet_usuario"].ToString(),
+            Titulo = fila["titulo"].ToString(),
+            Contenido = fila["contenido"].ToString(),
+            FechaEnvio = (System.DateTime)fila["fecha_envio"],
+            Leido = fila.Table.Columns.Contains("leido") ? Convert.ToBoolean(fila["leido"]) : false
+        };
     }
 }

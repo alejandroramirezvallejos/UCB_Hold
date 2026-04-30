@@ -1,45 +1,57 @@
-﻿using Moq;
+using Moq;
 using System.Data;
+using Ardalis.Result;
 
 namespace IMT_Reservas.Tests.ServiceTests
 {
     [TestFixture]
-    public class UsuarioServiceTest : IUsuarioServiceTest
+    public class UsuarioServiceTest
     {
         private Mock<IUsuarioRepository> _usuarioRepositoryMock;
-        private UsuarioService          _usuarioService;
+        private UsuarioService _usuarioService;
 
         [SetUp]
         public void Setup()
         {
             _usuarioRepositoryMock = new Mock<IUsuarioRepository>();
-            _usuarioService        = new UsuarioService(_usuarioRepositoryMock.Object);
+            _usuarioService = new UsuarioService(_usuarioRepositoryMock.Object);
         }
 
         [Test]
-        public void CrearUsuario_ComandoValido_LlamaRepositorioCrear()
+        public void Crear_ComandoValido_RetornaSuccess()
         {
             CrearUsuarioComando comando = new CrearUsuarioComando("1", "Andrea", "Vargas", "Rojas", "estudiante", "estudiante0@ucb.edu.bo", "password1", "Sistemas", "77327303", "68834902", "Antonio Cruz", "referencia1047@gmail.com");
-            _usuarioService.CrearUsuario(comando);
-            _usuarioRepositoryMock.Verify(r => r.Crear(comando), Times.Once);
+            _usuarioRepositoryMock.Setup(r => r.ObtenerCarreraIdPorNombre(It.IsAny<string>())).Returns(1);
+            _usuarioRepositoryMock.Setup(r => r.Crear(It.IsAny<int>(), It.IsAny<CrearUsuarioComando>())).Returns(Result<UsuarioDto>.Created(new UsuarioDto { Carnet = "1", Nombre = "Andrea" }));
+
+            var resultado = _usuarioService.Crear(comando);
+
+            Assert.That(resultado.IsSuccess, Is.True);
+            _usuarioRepositoryMock.Verify(r => r.Crear(It.IsAny<int>(), comando), Times.Once);
         }
 
         [Test]
-        public void CrearUsuario_CarnetVacio_LanzaErrorNombreRequerido()
+        public void Crear_CarnetVacio_RetornaInvalid()
         {
             CrearUsuarioComando comando = new CrearUsuarioComando("", "Juan", "Perez", "Gomez", null, "juan.perez@ucb.edu.bo", "pass123", "Sistemas", "77712345", null, null, null);
-            Assert.Throws<ErrorCarnetRequerido>(() => _usuarioService.CrearUsuario(comando));
+
+            var resultado = _usuarioService.Crear(comando);
+
+            Assert.That(resultado.IsSuccess, Is.False);
         }
 
         [Test]
-        public void CrearUsuario_EmailInvalido_LanzaErrorNombreRequerido()
+        public void Crear_EmailInvalido_RetornaInvalid()
         {
             CrearUsuarioComando comando = new CrearUsuarioComando("12345", "Juan", "Perez", "Gomez", null, "email-invalido", "pass123", "Sistemas", "77712345", null, null, null);
-            Assert.Throws<ErrorEmailInvalido>(() => _usuarioService.CrearUsuario(comando));
+
+            var resultado = _usuarioService.Crear(comando);
+
+            Assert.That(resultado.IsSuccess, Is.False);
         }
 
         [Test]
-        public void ObtenerTodosUsuarios_CuandoHayDatos_RetornaListaDeDtos()
+        public void ObtenerTodos_CuandoHayDatos_RetornaListaDeDtos()
         {
             DataTable usuariosDataTable = new DataTable();
             usuariosDataTable.Columns.Add("carnet", typeof(string));
@@ -56,28 +68,60 @@ namespace IMT_Reservas.Tests.ServiceTests
             usuariosDataTable.Rows.Add("1", "Andrea", "Vargas", "Rojas", "Sistemas", "estudiante", "estudiante0@ucb.edu.bo", "77327303", "68834902", "Antonio Cruz", "referencia1047@gmail.com");
             usuariosDataTable.Rows.Add("2", "Juan", "Silva", "Morales", "Sistemas", "estudiante", "estudiante1@ucb.edu.bo", "78660046", "67152605", "Luis Rojas", "referencia6609@gmail.com");
 
-            _usuarioRepositoryMock.Setup(r => r.ObtenerTodos()).Returns(usuariosDataTable);
+            _usuarioRepositoryMock.Setup(r => r.ObtenerTodos()).Returns(Result<DataTable>.Success(usuariosDataTable));
 
-            List<UsuarioDto> resultado = _usuarioService.ObtenerTodosUsuarios();
-            Assert.That(resultado, Has.Count.EqualTo(2));
-            Assert.That(resultado[0].Carnet, Is.EqualTo("1"));
-            Assert.That(resultado[1].Carnet, Is.EqualTo("2"));
+            var resultado = _usuarioService.ObtenerTodos();
+
+            Assert.That(resultado.IsSuccess, Is.True);
+            Assert.That(resultado.Value, Has.Count.EqualTo(2));
+            Assert.That(resultado.Value[0].Carnet, Is.EqualTo("1"));
+            Assert.That(resultado.Value[1].Carnet, Is.EqualTo("2"));
         }
 
         [Test]
-        public void ActualizarUsuario_ComandoValido_LlamaRepositorioActualizar()
+        public void Actualizar_ComandoValido_RetornaSuccess()
         {
             ActualizarUsuarioComando comando = new ActualizarUsuarioComando("1", "Andrea Maria", null, null, null, null, "estudiante", null, null, null, null, null);
-            _usuarioService.ActualizarUsuario(comando);
-            _usuarioRepositoryMock.Verify(r => r.Actualizar(comando), Times.Once);
+            _usuarioRepositoryMock.Setup(r => r.ExisteActivoPorCarnet(It.IsAny<string>())).Returns(true);
+            _usuarioRepositoryMock.Setup(r => r.Actualizar(It.IsAny<int?>(), It.IsAny<ActualizarUsuarioComando>())).Returns(Result<UsuarioDto>.Success(new UsuarioDto { Carnet = "1" }));
+
+            var resultado = _usuarioService.Actualizar(comando);
+
+            Assert.That(resultado.IsSuccess, Is.True);
+            _usuarioRepositoryMock.Verify(r => r.Actualizar(It.IsAny<int?>(), comando), Times.Once);
         }
 
         [Test]
-        public void EliminarUsuario_ComandoValido_LlamaRepositorioEliminar()
+        public void Actualizar_CarnetVacio_RetornaInvalid()
+        {
+            ActualizarUsuarioComando comando = new ActualizarUsuarioComando("", "Andrea Maria", null, null, null, null, "estudiante", null, null, null, null, null);
+
+            var resultado = _usuarioService.Actualizar(comando);
+
+            Assert.That(resultado.IsSuccess, Is.False);
+        }
+
+        [Test]
+        public void Eliminar_ComandoValido_RetornaSuccess()
         {
             EliminarUsuarioComando comando = new EliminarUsuarioComando("1");
-            _usuarioService.EliminarUsuario(comando);
-            _usuarioRepositoryMock.Verify(r => r.Eliminar(comando.Carnet), Times.Once);
+            _usuarioRepositoryMock.Setup(r => r.ExisteActivoPorCarnet(It.IsAny<string>())).Returns(true);
+            _usuarioRepositoryMock.Setup(r => r.Eliminar(It.IsAny<EliminarUsuarioComando>())).Returns(Result<UsuarioDto>.Success(new UsuarioDto { Carnet = "1" }));
+
+            var resultado = _usuarioService.Eliminar(comando);
+
+            Assert.That(resultado.IsSuccess, Is.True);
+            _usuarioRepositoryMock.Verify(r => r.Eliminar(comando), Times.Once);
+        }
+
+        [Test]
+        public void Eliminar_CarnetVacio_RetornaInvalid()
+        {
+            EliminarUsuarioComando comando = new EliminarUsuarioComando("");
+
+            var resultado = _usuarioService.Eliminar(comando);
+
+            Assert.That(resultado.IsSuccess, Is.False);
         }
 
         [Test]

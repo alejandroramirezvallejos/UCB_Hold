@@ -1,36 +1,36 @@
 using Microsoft.AspNetCore.Mvc;
-using IMT_Reservas.Server.Shared.Common;
-
-namespace API.Controllers;
+using Ardalis.Result;
+using Ardalis.Result.AspNetCore;
 
 [ApiController]
 [Route("api/[controller]")]
+[TranslateResultToActionResult]
 public class EmpresaMantenimientoController : ControllerBase
 {
-    private readonly EmpresaMantenimientoService servicio;
-    public EmpresaMantenimientoController(EmpresaMantenimientoService servicio) => this.servicio = servicio;
+    private readonly IEmpresaMantenimientoService _servicio;
+    public EmpresaMantenimientoController(IEmpresaMantenimientoService servicio) => _servicio = servicio;
 
     [HttpPost]
-    public IActionResult Crear([FromBody] CrearEmpresaMantenimientoComando input)
+    public Result<EmpresaMantenimientoDto> Crear([FromBody] CrearEmpresaMantenimientoComando input)
     {
-        servicio.Crear(input); return Created("", new { mensaje = "Empresa de mantenimiento creada exitosamente" });
+        return _servicio.Crear(input);
     }
 
     [HttpGet]
-    public IActionResult ObtenerTodos()
+    public Result<List<EmpresaMantenimientoDto>> ObtenerTodos()
     {
-        return Ok(servicio.ObtenerTodos());
+        return _servicio.ObtenerTodos();
     }
 
     [HttpPut]
-    public IActionResult Actualizar([FromBody] ActualizarEmpresaMantenimientoComando input)
+    public Result<EmpresaMantenimientoDto> Actualizar([FromBody] ActualizarEmpresaMantenimientoComando input)
     {
-        servicio.Actualizar(input); return Ok(new { mensaje = "Empresa actualizada exitosamente" });
+        return _servicio.Actualizar(input);
     }
 
     [HttpDelete("{id}")]
-    public IActionResult Eliminar(int id)
+    public Result<EmpresaMantenimientoDto> Eliminar(int id)
     {
-        servicio.Eliminar(new EliminarEmpresaMantenimientoComando(id)); return NoContent();
+        return _servicio.Eliminar(new EliminarEmpresaMantenimientoComando(id));
     }
 }

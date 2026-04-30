@@ -1,16 +1,12 @@
 using System.Data;
-using Npgsql;
+using Ardalis.Result;
 
-public class EquipoRepository :
-    ICrearRepository<CrearEquipoComando>,
-    IActualizarRepository<ActualizarEquipoComando>,
-    IEliminarRepository<EliminarEquipoComando>,
-    IObtenerTodosRepository<CrearEquipoComando, DataTable>
+public class EquipoRepository : IEquipoRepository
 {
     private readonly IExecuteQuery _ejecutarConsulta;
     public EquipoRepository(IExecuteQuery ejecutarConsulta) => _ejecutarConsulta = ejecutarConsulta;
 
-    public void Crear(int idGrupoEquipo, int codigoImt, int? idGavetero, CrearEquipoComando comando)
+    public Result<EquipoDto> Crear(int idGrupoEquipo, int codigoImt, int? idGavetero, CrearEquipoComando comando)
     {
         const string sql = @"INSERT INTO public.equipos (id_grupo_equipo, codigo_imt, descripcion, numero_serial, ubicacion, costo_referencia, tiempo_max_prestamo, procedencia, id_gavetero, estado_eliminado, codigo_ucb)
                              VALUES (@idGrupoEquipo, @codigoImt, @descripcion, @numeroSerial, @ubicacion, @costoReferencia, @tiempoMaximoPrestamo, @procedencia, @idGavetero, FALSE, @codigoUcb)";
@@ -27,17 +23,15 @@ public class EquipoRepository :
             ["idGavetero"] = idGavetero ?? (object)DBNull.Value,
             ["codigoUcb"] = comando.CodigoUcb ?? (object)DBNull.Value
         };
-        try { _ejecutarConsulta.EjecutarSpNR(sql, parametros); }
-        catch (NpgsqlException ex) { throw new ErrorDataBase($"Error de base de datos al crear equipo: {ex.Message}", ex.SqlState, null, ex); }
-        catch (Exception ex) { throw new ErrorRepository($"Error del repositorio al crear equipo: {ex.Message}", ex); }
+        _ejecutarConsulta.EjecutarSpNR(sql, parametros);
+        var dto = new EquipoDto { CodigoImt = codigoImt, Descripcion = comando.Descripcion };
+        return Result<EquipoDto>.Created(dto);
     }
 
-    public void Crear(CrearEquipoComando comando)
-    {
-        throw new InvalidOperationException("Use Crear(int idGrupoEquipo, int codigoImt, int? idGavetero, CrearEquipoComando comando) en su lugar.");
-    }
+    public Result<EquipoDto> Crear(CrearEquipoComando comando)
+        => Result<EquipoDto>.Error("Use Crear(int idGrupoEquipo, int codigoImt, int? idGavetero, CrearEquipoComando comando)");
 
-    public void Actualizar(int? idGrupoEquipo, int? idGavetero, ActualizarEquipoComando comando)
+    public Result<EquipoDto> Actualizar(int? idGrupoEquipo, int? idGavetero, ActualizarEquipoComando comando)
     {
         const string sql = @"UPDATE public.equipos SET
             id_grupo_equipo = COALESCE(@idGrupoEquipo, id_grupo_equipo),
@@ -65,26 +59,23 @@ public class EquipoRepository :
             ["estadoEquipo"] = comando.EstadoEquipo ?? (object)DBNull.Value,
             ["codigoUcb"] = comando.CodigoUcb ?? (object)DBNull.Value
         };
-        try { _ejecutarConsulta.EjecutarSpNR(sql, parametros); }
-        catch (NpgsqlException ex) { throw new ErrorDataBase($"Error de base de datos al actualizar equipo: {ex.Message}", ex.SqlState, null, ex); }
-        catch (Exception ex) { throw new ErrorRepository($"Error del repositorio al actualizar equipo: {ex.Message}", ex); }
+        _ejecutarConsulta.EjecutarSpNR(sql, parametros);
+        var dto = new EquipoDto { Id = comando.Id, Descripcion = comando.Descripcion };
+        return Result<EquipoDto>.Success(dto);
     }
 
-    public void Actualizar(ActualizarEquipoComando comando)
-    {
-        Actualizar(null, null, comando);
-    }
+    public Result<EquipoDto> Actualizar(ActualizarEquipoComando comando)
+        => Actualizar(null, null, comando);
 
-    public void Eliminar(EliminarEquipoComando comando)
+    public Result<EquipoDto> Eliminar(EliminarEquipoComando comando)
     {
         const string sql = @"UPDATE public.equipos SET estado_eliminado = TRUE WHERE id_equipo = @id";
         var parametros = new Dictionary<string, object?> { ["id"] = comando.Id };
-        try { _ejecutarConsulta.EjecutarSpNR(sql, parametros); }
-        catch (NpgsqlException ex) { throw new ErrorDataBase($"Error de base de datos al eliminar equipo: {ex.Message}", ex.SqlState, null, ex); }
-        catch (Exception ex) { throw new ErrorRepository($"Error del repositorio al eliminar equipo: {ex.Message}", ex); }
+        _ejecutarConsulta.EjecutarSpNR(sql, parametros);
+        return Result<EquipoDto>.Success(new EquipoDto { Id = comando.Id });
     }
 
-    public DataTable ObtenerTodos()
+    public Result<DataTable> ObtenerTodos()
     {
         const string sql = @"SELECT e.id_equipo, ge.nombre AS nombre_grupo_equipo, ge.modelo AS modelo_equipo,
             ge.marca AS marca_equipo, e.codigo_imt AS codigo_imt_equipo, e.codigo_ucb AS codigo_ucb_equipo,
@@ -96,12 +87,11 @@ public class EquipoRepository :
             INNER JOIN public.grupos_equipos AS ge ON e.id_grupo_equipo = ge.id_grupo_equipo
             LEFT JOIN public.gaveteros AS g ON e.id_gavetero = g.id_gavetero
             WHERE e.estado_eliminado = FALSE";
-        try { return _ejecutarConsulta.EjecutarFuncion(sql, new Dictionary<string, object?>()); }
-        catch (NpgsqlException ex) { throw new ErrorDataBase($"Error de base de datos al obtener equipos: {ex.Message}", ex.SqlState, null, ex); }
-        catch (Exception ex) { throw new ErrorRepository($"Error del repositorio al obtener equipos: {ex.Message}", ex); }
+        var dt = _ejecutarConsulta.EjecutarFuncion(sql, new Dictionary<string, object?>());
+        return dt.Rows.Count == 0
+            ? Result<DataTable>.NotFound("No se encontró el registro especificado")
+            : Result<DataTable>.Success(dt);
     }
-
-    // --- Métodos auxiliares ---
 
     public bool ExisteActivoPorId(int id)
     {

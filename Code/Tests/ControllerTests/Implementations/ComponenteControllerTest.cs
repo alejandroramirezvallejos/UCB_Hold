@@ -1,17 +1,14 @@
-using API.Controllers;
 using Moq;
-using Microsoft.AspNetCore.Mvc;
-using Microsoft.Extensions.Configuration;
+using Ardalis.Result;
 using IMT_Reservas.Server.Shared.Common;
-using IMT_Reservas.Server.Application.Interfaces;
 
 namespace IMT_Reservas.Tests.ControllerTests
 {
     [TestFixture]
     public class ComponenteControllerTest : IComponenteControllerTest
     {
-        private Mock<IComponenteService>    _componenteServiceMock;
-        private ComponenteController       _componentesController;
+        private Mock<IComponenteService> _componenteServiceMock;
+        private ComponenteController _componentesController;
 
         [SetUp]
         public void Setup()
@@ -23,44 +20,43 @@ namespace IMT_Reservas.Tests.ControllerTests
         [Test]
         public void GetComponentes_ConDatos_RetornaOk()
         {
-            List<ComponenteDto> componentesEsperados = new List<ComponenteDto>
+            var componentesEsperados = new List<ComponenteDto>
             {
                 new ComponenteDto { Id = 1, Nombre = "prueba componente", Modelo = "prueba" },
                 new ComponenteDto { Id = 3, Nombre = "PRE", Modelo = "MODULAR" }
             };
-            _componenteServiceMock.Setup(s => s.ObtenerTodosComponentes()).Returns(componentesEsperados);
-            IActionResult resultadoAccion = _componentesController.ObtenerTodos();
-            Assert.That(resultadoAccion, Is.InstanceOf<OkObjectResult>());
-            OkObjectResult okObjectResult = (OkObjectResult)resultadoAccion;
-            Assert.That(okObjectResult.Value, Is.InstanceOf<List<ComponenteDto>>().And.Count.EqualTo(componentesEsperados.Count));
+            _componenteServiceMock.Setup(s => s.ObtenerTodos()).Returns(Result<List<ComponenteDto>>.Success(componentesEsperados));
+            var resultado = _componentesController.ObtenerTodos();
+            Assert.That(resultado.IsSuccess, Is.True);
+            Assert.That(resultado.Value, Has.Count.EqualTo(componentesEsperados.Count));
         }
 
         [Test]
         public void GetComponentes_SinDatos_RetornaOkVacia()
         {
-            List<ComponenteDto> componentesEsperados = new List<ComponenteDto>();
-            _componenteServiceMock.Setup(s => s.ObtenerTodosComponentes()).Returns(componentesEsperados);
-            IActionResult resultadoAccion = _componentesController.ObtenerTodos();
-            Assert.That(resultadoAccion, Is.InstanceOf<OkObjectResult>());
-            OkObjectResult okObjectResult = (OkObjectResult)resultadoAccion;
-            Assert.That(okObjectResult.Value, Is.InstanceOf<List<ComponenteDto>>().And.Empty);
+            _componenteServiceMock.Setup(s => s.ObtenerTodos()).Returns(Result<List<ComponenteDto>>.Success(new List<ComponenteDto>()));
+            var resultado = _componentesController.ObtenerTodos();
+            Assert.That(resultado.IsSuccess, Is.True);
+            Assert.That(resultado.Value, Is.Empty);
         }
 
         [Test]
         public void GetComponentes_ServicioError_RetornaBadRequest()
         {
-            _componenteServiceMock.Setup(s => s.ObtenerTodosComponentes()).Throws(new System.Exception("Error servicio"));
-            IActionResult resultadoAccion = _componentesController.ObtenerTodos();
-            Assert.That(resultadoAccion, Is.InstanceOf<BadRequestObjectResult>());
+            _componenteServiceMock.Setup(s => s.ObtenerTodos()).Returns(Result<List<ComponenteDto>>.Error("Error servicio"));
+            var resultado = _componentesController.ObtenerTodos();
+            Assert.That(resultado.IsSuccess, Is.False);
+            Assert.That(resultado.Status, Is.EqualTo(ResultStatus.Error));
         }
 
         [Test]
         public void CrearComponente_Valido_RetornaCreated()
         {
-            CrearComponenteComando comando = new CrearComponenteComando("Nuevo Componente", "NC-01", "Tipo Nuevo", 5, "Desc Nuevo", 150.00, "http://example.com/nc01.pdf");
-            _componenteServiceMock.Setup(s => s.CrearComponente(comando));
-            IActionResult resultadoAccion = _componentesController.Crear(comando);
-            Assert.That(resultadoAccion, Is.InstanceOf<CreatedResult>());
+            var comando = new CrearComponenteComando("Nuevo Componente", "NC-01", "Tipo Nuevo", 5, "Desc Nuevo", 150.00, "http://example.com/nc01.pdf");
+            var dto = new ComponenteDto { Id = 1, Nombre = "Nuevo Componente" };
+            _componenteServiceMock.Setup(s => s.Crear(It.IsAny<CrearComponenteComando>())).Returns(Result<ComponenteDto>.Created(dto));
+            var resultado = _componentesController.Crear(comando);
+            Assert.That(resultado.Status, Is.EqualTo(ResultStatus.Created));
         }
 
         private static IEnumerable<object[]> FuenteCasos_CrearComponente_BadRequest()
@@ -77,38 +73,37 @@ namespace IMT_Reservas.Tests.ControllerTests
         [TestCaseSource(nameof(FuenteCasos_CrearComponente_BadRequest))]
         public void CrearComponente_Invalido_RetornaBadRequest(CrearComponenteComando comando, System.Exception excepcionLanzada)
         {
-            _componenteServiceMock.Setup(s => s.CrearComponente(comando)).Throws(excepcionLanzada);
-            IActionResult resultadoAccion = _componentesController.Crear(comando);
-            Assert.That(resultadoAccion, Is.InstanceOf<BadRequestObjectResult>());
+            _componenteServiceMock.Setup(s => s.Crear(It.IsAny<CrearComponenteComando>())).Returns(Result<ComponenteDto>.Invalid(new ValidationError("campo", excepcionLanzada.Message)));
+            var resultado = _componentesController.Crear(comando);
+            Assert.That(resultado.Status, Is.EqualTo(ResultStatus.Invalid));
         }
 
         [Test]
         public void CrearComponente_RegistroExistente_RetornaConflict()
         {
-            CrearComponenteComando comando = new CrearComponenteComando("prueba componente", "prueba", "jjjj", 7, "desc", 0, null);
-            _componenteServiceMock.Setup(s => s.CrearComponente(It.IsAny<CrearComponenteComando>())).Throws(new ErrorRegistroYaExiste());
-            IActionResult resultadoAccion = _componentesController.Crear(comando);
-            Assert.That(resultadoAccion, Is.InstanceOf<ConflictObjectResult>());
+            var comando = new CrearComponenteComando("prueba componente", "prueba", "jjjj", 7, "desc", 0, null);
+            _componenteServiceMock.Setup(s => s.Crear(It.IsAny<CrearComponenteComando>())).Returns(Result<ComponenteDto>.Conflict());
+            var resultado = _componentesController.Crear(comando);
+            Assert.That(resultado.Status, Is.EqualTo(ResultStatus.Conflict));
         }
-        
+
         [Test]
         public void CrearComponente_ServicioError_RetornaError500()
         {
-            CrearComponenteComando comando = new CrearComponenteComando("Error General", "ERR001", "Error", 9, "desc", 0, null);
-            _componenteServiceMock.Setup(s => s.CrearComponente(It.IsAny<CrearComponenteComando>())).Throws(new System.Exception("Error General Servidor"));
-            IActionResult resultadoAccion = _componentesController.Crear(comando);
-            Assert.That(resultadoAccion, Is.InstanceOf<ObjectResult>());
-            ObjectResult objectResult = resultadoAccion as ObjectResult;
-            Assert.That(objectResult.StatusCode, Is.EqualTo(500));
+            var comando = new CrearComponenteComando("Error General", "ERR001", "Error", 9, "desc", 0, null);
+            _componenteServiceMock.Setup(s => s.Crear(It.IsAny<CrearComponenteComando>())).Returns(Result<ComponenteDto>.Error("Error General Servidor"));
+            var resultado = _componentesController.Crear(comando);
+            Assert.That(resultado.Status, Is.EqualTo(ResultStatus.Error));
         }
-        
+
         [Test]
         public void ActualizarComponente_Valido_RetornaOk()
         {
-            ActualizarComponenteComando comando = new ActualizarComponenteComando(1, "prueba componente actualizada", "prueba-v2", "jjjj", 7, "desc actualizada", 10.00, "http://example.com/updated.pdf");
-            _componenteServiceMock.Setup(s => s.ActualizarComponente(comando));
-            IActionResult resultadoAccion = _componentesController.Actualizar(comando);
-            Assert.That(resultadoAccion, Is.InstanceOf<OkObjectResult>());
+            var comando = new ActualizarComponenteComando(1, "prueba componente actualizada", "prueba-v2", "jjjj", 7, "desc actualizada", 10.00, "http://example.com/updated.pdf");
+            var dto = new ComponenteDto { Id = 1, Nombre = "prueba componente actualizada" };
+            _componenteServiceMock.Setup(s => s.Actualizar(It.IsAny<ActualizarComponenteComando>())).Returns(Result<ComponenteDto>.Success(dto));
+            var resultado = _componentesController.Actualizar(comando);
+            Assert.That(resultado.IsSuccess, Is.True);
         }
 
         private static IEnumerable<object[]> FuenteCasos_ActualizarComponente_BadRequest()
@@ -126,47 +121,46 @@ namespace IMT_Reservas.Tests.ControllerTests
         [TestCaseSource(nameof(FuenteCasos_ActualizarComponente_BadRequest))]
         public void ActualizarComponente_Invalido_RetornaBadRequest(ActualizarComponenteComando comando, System.Exception excepcionLanzada)
         {
-            _componenteServiceMock.Setup(s => s.ActualizarComponente(comando)).Throws(excepcionLanzada);
-            IActionResult resultadoAccion = _componentesController.Actualizar(comando);
-            Assert.That(resultadoAccion, Is.InstanceOf<BadRequestObjectResult>());
+            _componenteServiceMock.Setup(s => s.Actualizar(It.IsAny<ActualizarComponenteComando>())).Returns(Result<ComponenteDto>.Invalid(new ValidationError("campo", excepcionLanzada.Message)));
+            var resultado = _componentesController.Actualizar(comando);
+            Assert.That(resultado.Status, Is.EqualTo(ResultStatus.Invalid));
         }
 
         [Test]
         public void ActualizarComponente_NoEncontrado_RetornaNotFound()
         {
-            ActualizarComponenteComando comando = new ActualizarComponenteComando(99, "NoExiste", "NE001", null, 1, null, 0, null); 
-            _componenteServiceMock.Setup(s => s.ActualizarComponente(It.IsAny<ActualizarComponenteComando>())).Throws(new ErrorRegistroNoEncontrado());
-            IActionResult resultadoAccion = _componentesController.Actualizar(comando);
-            Assert.That(resultadoAccion, Is.InstanceOf<NotFoundObjectResult>());
+            var comando = new ActualizarComponenteComando(99, "NoExiste", "NE001", null, 1, null, 0, null);
+            _componenteServiceMock.Setup(s => s.Actualizar(It.IsAny<ActualizarComponenteComando>())).Returns(Result<ComponenteDto>.NotFound());
+            var resultado = _componentesController.Actualizar(comando);
+            Assert.That(resultado.Status, Is.EqualTo(ResultStatus.NotFound));
         }
 
         [Test]
         public void ActualizarComponente_RegistroExistente_RetornaConflict()
         {
-            ActualizarComponenteComando comando = new ActualizarComponenteComando(3, "prueba componente", "MODULAR", "PRE", 7, "desc", 0, null);
-            _componenteServiceMock.Setup(s => s.ActualizarComponente(It.IsAny<ActualizarComponenteComando>())).Throws(new ErrorRegistroYaExiste());
-            IActionResult resultadoAccion = _componentesController.Actualizar(comando);
-            Assert.That(resultadoAccion, Is.InstanceOf<ConflictObjectResult>());
+            var comando = new ActualizarComponenteComando(3, "prueba componente", "MODULAR", "PRE", 7, "desc", 0, null);
+            _componenteServiceMock.Setup(s => s.Actualizar(It.IsAny<ActualizarComponenteComando>())).Returns(Result<ComponenteDto>.Conflict());
+            var resultado = _componentesController.Actualizar(comando);
+            Assert.That(resultado.Status, Is.EqualTo(ResultStatus.Conflict));
         }
 
         [Test]
         public void ActualizarComponente_ServicioError_RetornaError500()
         {
-            ActualizarComponenteComando comando = new ActualizarComponenteComando(1, "Error General", "ERR002", null, 0, null, 0, null);
-            _componenteServiceMock.Setup(s => s.ActualizarComponente(It.IsAny<ActualizarComponenteComando>())).Throws(new System.Exception("Error General Servidor"));
-            IActionResult resultadoAccion = _componentesController.Actualizar(comando);
-            Assert.That(resultadoAccion, Is.InstanceOf<ObjectResult>());
-            ObjectResult objectResult = resultadoAccion as ObjectResult;
-            Assert.That(objectResult.StatusCode, Is.EqualTo(500));
+            var comando = new ActualizarComponenteComando(1, "Error General", "ERR002", null, 0, null, 0, null);
+            _componenteServiceMock.Setup(s => s.Actualizar(It.IsAny<ActualizarComponenteComando>())).Returns(Result<ComponenteDto>.Error("Error General Servidor"));
+            var resultado = _componentesController.Actualizar(comando);
+            Assert.That(resultado.Status, Is.EqualTo(ResultStatus.Error));
         }
 
         [Test]
         public void EliminarComponente_Valido_RetornaNoContent()
         {
             int idValido = 4;
-            _componenteServiceMock.Setup(s => s.EliminarComponente(It.Is<EliminarComponenteComando>(c => c.Id == idValido)));
-            IActionResult resultadoAccion = _componentesController.Eliminar(idValido);
-            Assert.That(resultadoAccion, Is.InstanceOf<NoContentResult>());
+            var dto = new ComponenteDto { Id = idValido };
+            _componenteServiceMock.Setup(s => s.Eliminar(It.Is<EliminarComponenteComando>(c => c.Id == idValido))).Returns(Result<ComponenteDto>.Success(dto));
+            var resultado = _componentesController.Eliminar(idValido);
+            Assert.That(resultado.IsSuccess, Is.True);
         }
 
         private static IEnumerable<object[]> FuenteCasos_EliminarComponente_BadRequest()
@@ -178,38 +172,36 @@ namespace IMT_Reservas.Tests.ControllerTests
         [TestCaseSource(nameof(FuenteCasos_EliminarComponente_BadRequest))]
         public void EliminarComponente_Invalido_RetornaBadRequest(int idComponente, System.Exception excepcionLanzada)
         {
-            _componenteServiceMock.Setup(s => s.EliminarComponente(It.Is<EliminarComponenteComando>(c => c.Id == idComponente))).Throws(excepcionLanzada);
-            IActionResult resultadoAccion = _componentesController.Eliminar(idComponente);
-            Assert.That(resultadoAccion, Is.InstanceOf<BadRequestObjectResult>());
+            _componenteServiceMock.Setup(s => s.Eliminar(It.IsAny<EliminarComponenteComando>())).Returns(Result<ComponenteDto>.Invalid(new ValidationError("Id", excepcionLanzada.Message)));
+            var resultado = _componentesController.Eliminar(idComponente);
+            Assert.That(resultado.Status, Is.EqualTo(ResultStatus.Invalid));
         }
 
         [Test]
         public void EliminarComponente_NoEncontrado_RetornaNotFound()
         {
             int idNoExistente = 99;
-            _componenteServiceMock.Setup(s => s.EliminarComponente(It.Is<EliminarComponenteComando>(c => c.Id == idNoExistente))).Throws(new ErrorRegistroNoEncontrado());
-            IActionResult resultadoAccion = _componentesController.Eliminar(idNoExistente);
-            Assert.That(resultadoAccion, Is.InstanceOf<NotFoundObjectResult>());
+            _componenteServiceMock.Setup(s => s.Eliminar(It.IsAny<EliminarComponenteComando>())).Returns(Result<ComponenteDto>.NotFound());
+            var resultado = _componentesController.Eliminar(idNoExistente);
+            Assert.That(resultado.Status, Is.EqualTo(ResultStatus.NotFound));
         }
 
         [Test]
-        public void EliminarComponente_EnUso_RetornaConflict() 
+        public void EliminarComponente_EnUso_RetornaConflict()
         {
             int idEnUso = 2;
-            _componenteServiceMock.Setup(s => s.EliminarComponente(It.Is<EliminarComponenteComando>(c => c.Id == idEnUso))).Throws(new ErrorRegistroEnUso());
-            IActionResult resultadoAccion = _componentesController.Eliminar(idEnUso);
-            Assert.That(resultadoAccion, Is.InstanceOf<ConflictObjectResult>());
+            _componenteServiceMock.Setup(s => s.Eliminar(It.IsAny<EliminarComponenteComando>())).Returns(Result<ComponenteDto>.Conflict());
+            var resultado = _componentesController.Eliminar(idEnUso);
+            Assert.That(resultado.Status, Is.EqualTo(ResultStatus.Conflict));
         }
 
         [Test]
         public void EliminarComponente_ServicioError_RetornaError500()
         {
             int idErrorGeneral = 4;
-            _componenteServiceMock.Setup(s => s.EliminarComponente(It.Is<EliminarComponenteComando>(c => c.Id == idErrorGeneral))).Throws(new System.Exception("Error General Servidor"));
-            IActionResult resultadoAccion = _componentesController.Eliminar(idErrorGeneral);
-            Assert.That(resultadoAccion, Is.InstanceOf<ObjectResult>());
-            ObjectResult objectResult = resultadoAccion as ObjectResult;
-            Assert.That(objectResult.StatusCode, Is.EqualTo(500));
+            _componenteServiceMock.Setup(s => s.Eliminar(It.IsAny<EliminarComponenteComando>())).Returns(Result<ComponenteDto>.Error("Error General Servidor"));
+            var resultado = _componentesController.Eliminar(idErrorGeneral);
+            Assert.That(resultado.Status, Is.EqualTo(ResultStatus.Error));
         }
     }
 }

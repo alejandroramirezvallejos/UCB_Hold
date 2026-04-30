@@ -1,16 +1,12 @@
 using System.Data;
-using Npgsql;
+using Ardalis.Result;
 
-public class GaveteroRepository :
-    ICrearRepository<CrearGaveteroComando>,
-    IActualizarRepository<ActualizarGaveteroComando>,
-    IEliminarRepository<EliminarGaveteroComando>,
-    IObtenerTodosRepository<CrearGaveteroComando, DataTable>
+public class GaveteroRepository : IGaveteroRepository
 {
     private readonly IExecuteQuery _ejecutarConsulta;
     public GaveteroRepository(IExecuteQuery ejecutarConsulta) => _ejecutarConsulta = ejecutarConsulta;
-    
-    public void Crear(int idMueble, CrearGaveteroComando comando)
+
+    public Result<GaveteroDto> Crear(int idMueble, CrearGaveteroComando comando)
     {
         const string sql = @"INSERT INTO public.gaveteros (nombre, tipo, id_mueble, longitud, profundidad, altura, estado_eliminado)
                              VALUES (@nombre, @tipo, @idMueble, @longitud, @profundidad, @altura, FALSE)";
@@ -23,18 +19,15 @@ public class GaveteroRepository :
             ["profundidad"] = comando.Profundidad ?? (object)DBNull.Value,
             ["altura"] = comando.Altura ?? (object)DBNull.Value
         };
-        try { _ejecutarConsulta.EjecutarSpNR(sql, parametros); }
-        catch (NpgsqlException ex) { throw new ErrorDataBase($"Error de base de datos al crear gavetero: {ex.Message}", ex.SqlState, null, ex); }
-        catch (Exception ex) { throw new ErrorRepository($"Error del repositorio al crear gavetero: {ex.Message}", ex); }
+        _ejecutarConsulta.EjecutarSpNR(sql, parametros);
+        var dto = new GaveteroDto { Nombre = comando.Nombre, Tipo = comando.Tipo };
+        return Result<GaveteroDto>.Created(dto);
     }
 
-    // Implementación de la interfaz ICrearRepository (delega con id_mueble = 0 — no usar directamente)
-    public void Crear(CrearGaveteroComando comando)
-    {
-        throw new InvalidOperationException("Use Crear(int idMueble, CrearGaveteroComando comando) en su lugar.");
-    }
+    public Result<GaveteroDto> Crear(CrearGaveteroComando comando)
+        => Result<GaveteroDto>.Error("Use Crear(int idMueble, CrearGaveteroComando comando)");
 
-    public void Actualizar(int? idMueble, ActualizarGaveteroComando comando)
+    public Result<GaveteroDto> Actualizar(int? idMueble, ActualizarGaveteroComando comando)
     {
         const string sql = @"UPDATE public.gaveteros SET
             nombre = COALESCE(@nombre, nombre),
@@ -54,26 +47,23 @@ public class GaveteroRepository :
             ["profundidad"] = comando.Profundidad ?? (object)DBNull.Value,
             ["altura"] = comando.Altura ?? (object)DBNull.Value
         };
-        try { _ejecutarConsulta.EjecutarSpNR(sql, parametros); }
-        catch (NpgsqlException ex) { throw new ErrorDataBase($"Error de base de datos al actualizar gavetero: {ex.Message}", ex.SqlState, null, ex); }
-        catch (Exception ex) { throw new ErrorRepository($"Error del repositorio al actualizar gavetero: {ex.Message}", ex); }
+        _ejecutarConsulta.EjecutarSpNR(sql, parametros);
+        var dto = new GaveteroDto { Id = comando.Id, Nombre = comando.Nombre, Tipo = comando.Tipo };
+        return Result<GaveteroDto>.Success(dto);
     }
 
-    public void Actualizar(ActualizarGaveteroComando comando)
-    {
-        Actualizar(null, comando);
-    }
+    public Result<GaveteroDto> Actualizar(ActualizarGaveteroComando comando)
+        => Actualizar(null, comando);
 
-    public void Eliminar(EliminarGaveteroComando comando)
+    public Result<GaveteroDto> Eliminar(EliminarGaveteroComando comando)
     {
         const string sql = @"UPDATE public.gaveteros SET estado_eliminado = TRUE WHERE id_gavetero = @id";
         var parametros = new Dictionary<string, object?> { ["id"] = comando.Id };
-        try { _ejecutarConsulta.EjecutarSpNR(sql, parametros); }
-        catch (NpgsqlException ex) { throw new ErrorDataBase($"Error de base de datos al eliminar gavetero: {ex.Message}", ex.SqlState, null, ex); }
-        catch (Exception ex) { throw new ErrorRepository($"Error del repositorio al eliminar gavetero: {ex.Message}", ex); }
+        _ejecutarConsulta.EjecutarSpNR(sql, parametros);
+        return Result<GaveteroDto>.Success(new GaveteroDto { Id = comando.Id });
     }
 
-    public DataTable ObtenerTodos()
+    public Result<DataTable> ObtenerTodos()
     {
         const string sql = @"SELECT g.id_gavetero, g.nombre AS nombre_gavetero, g.tipo AS tipo_gavetero,
             m.nombre AS nombre_mueble, g.longitud AS longitud_gavetero, g.profundidad AS profundidad_gavetero,
@@ -81,12 +71,11 @@ public class GaveteroRepository :
             FROM public.gaveteros AS g
             INNER JOIN public.muebles AS m ON g.id_mueble = m.id_mueble
             WHERE g.estado_eliminado = FALSE";
-        try { return _ejecutarConsulta.EjecutarFuncion(sql, new Dictionary<string, object?>()); }
-        catch (NpgsqlException ex) { throw new ErrorDataBase($"Error de base de datos al obtener gaveteros: {ex.Message}", ex.SqlState, null, ex); }
-        catch (Exception ex) { throw new ErrorRepository($"Error del repositorio al obtener gaveteros: {ex.Message}", ex); }
+        var dt = _ejecutarConsulta.EjecutarFuncion(sql, new Dictionary<string, object?>());
+        return dt.Rows.Count == 0
+            ? Result<DataTable>.NotFound("No se encontró el registro especificado")
+            : Result<DataTable>.Success(dt);
     }
-
-    // --- Métodos auxiliares para la lógica de negocio en el servicio ---
 
     public bool ExisteActivoPorId(int id)
     {
@@ -117,8 +106,7 @@ public class GaveteroRepository :
         const string sql = @"SELECT id_mueble FROM public.muebles WHERE nombre = @nombre AND estado_eliminado = FALSE LIMIT 1";
         var parametros = new Dictionary<string, object?> { ["nombre"] = nombreMueble };
         var dt = _ejecutarConsulta.EjecutarFuncion(sql, parametros);
-        if (dt.Rows.Count == 0) return null;
-        return Convert.ToInt32(dt.Rows[0][0]);
+        return dt.Rows.Count == 0 ? null : Convert.ToInt32(dt.Rows[0][0]);
     }
 
     public int? ObtenerMuebleIdPorGaveteroId(int gaveteroId)
@@ -126,7 +114,6 @@ public class GaveteroRepository :
         const string sql = @"SELECT id_mueble FROM public.gaveteros WHERE id_gavetero = @id AND estado_eliminado = FALSE";
         var parametros = new Dictionary<string, object?> { ["id"] = gaveteroId };
         var dt = _ejecutarConsulta.EjecutarFuncion(sql, parametros);
-        if (dt.Rows.Count == 0) return null;
-        return Convert.ToInt32(dt.Rows[0][0]);
+        return dt.Rows.Count == 0 ? null : Convert.ToInt32(dt.Rows[0][0]);
     }
 }

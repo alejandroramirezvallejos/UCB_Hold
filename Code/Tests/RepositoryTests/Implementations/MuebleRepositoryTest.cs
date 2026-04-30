@@ -1,10 +1,11 @@
-﻿using Moq;
+using Moq;
 using System.Data;
+using Ardalis.Result;
 
 namespace IMT_Reservas.Tests.RepositoryTests
 {
     [TestFixture]
-    public class MuebleRepositoryTest : IMuebleRepositoryTest
+    public class MuebleRepositoryTest 
     {
         private Mock<IExecuteQuery> _ejecutarConsultaMock;
         private IMuebleRepository  _muebleRepositorio;
@@ -55,7 +56,7 @@ namespace IMT_Reservas.Tests.RepositoryTests
         public void Eliminar_LlamaExecuteSpNR_ConParametrosCorrectos()
         {
             int id = 3;
-            _muebleRepositorio.Eliminar(id);
+            _muebleRepositorio.Eliminar(new EliminarMuebleComando(id));
 
             _ejecutarConsultaMock.Verify(e => e.EjecutarSpNR(
                 It.Is<string>(s => s.Contains("eliminar_mueble")),
@@ -69,9 +70,10 @@ namespace IMT_Reservas.Tests.RepositoryTests
             _ejecutarConsultaMock.Setup(e => e.EjecutarSpNR(It.IsAny<string>(), It.IsAny<Dictionary<string, object?>>()))
                            .Throws(new Exception("test exception"));
 
-            Assert.Throws<ErrorRepository>(() => _muebleRepositorio.Crear(new CrearMuebleComando("Test", "Test", 100, "Test", 1, 1, 1)));
-            Assert.Throws<ErrorRepository>(() => _muebleRepositorio.Actualizar(new ActualizarMuebleComando(1, "Test", "Test", 100, "Test", 1, 1, 1)));
-            Assert.Throws<ErrorRepository>(() => _muebleRepositorio.Eliminar(1));
+            Assert.Throws<Exception>(() => _muebleRepositorio.Crear(new CrearMuebleComando("Test", "Test", 100, "Test", 1, 1, 1)));
+            Assert.Throws<Exception>(() => _muebleRepositorio.Actualizar(new ActualizarMuebleComando(1, "Test", "Test", 100, "Test", 1, 1, 1)));
+            Assert.Throws<Exception>(() => _muebleRepositorio.Eliminar(new EliminarMuebleComando(1)));
         }
     }
 }
+

@@ -3,6 +3,7 @@ using IMT_Reservas.Server.Infrastructure.MongoDb;
 using IMT_Reservas.Server.Infrastructure.Repositories.Implementations;
 using IMT_Reservas.Server.Presentations.Middleware;
 using Microsoft.AspNetCore.Mvc;
+using Ardalis.Result.AspNetCore;
 using System.Collections.Generic;
 using System.Data;
 using System.Diagnostics;
@@ -216,7 +217,10 @@ public static class CommandLineInterface
 
         var builder = WebApplication.CreateBuilder(args);
 
-        builder.Services.AddControllers().AddJsonOptions(options =>
+        builder.Services.AddControllers(options =>
+        {
+            options.AddDefaultResultConvention();
+        }).AddJsonOptions(options =>
             {
                 options.JsonSerializerOptions.PropertyNamingPolicy = null;
                 options.JsonSerializerOptions.PropertyNameCaseInsensitive = true;
@@ -242,85 +246,40 @@ public static class CommandLineInterface
         });
 
         builder.Services.AddMongoDb(builder.Configuration)
-            .AddScoped<ComentarioService>()
-            .AddScoped<NotificacionService>()
-            .AddScoped<ComentarioRepository>()
-            .AddScoped<NotificacionRepository>();
-
+            .AddScoped<IComentarioService, ComentarioService>()
+            .AddScoped<INotificacionService, NotificacionService>()
+            .AddScoped<IComentarioRepository, ComentarioRepository>()
+            .AddScoped<INotificacionRepository, NotificacionRepository>();
 
         builder.Services.AddScoped<IExecuteQuery, ExecuteQuery>();
 
-        builder.Services.AddScoped<AccesorioService>();
-        builder.Services.AddScoped<CarreraService>();
-        builder.Services.AddScoped<CategoriaService>();
-        builder.Services.AddScoped<ComponenteService>();
-        builder.Services.AddScoped<EmpresaMantenimientoService>();
-        builder.Services.AddScoped<EquipoService>();
-        builder.Services.AddScoped<GaveteroService>();
-        builder.Services.AddScoped<GrupoEquipoService>();
-        builder.Services.AddScoped<MantenimientoService>();
-        builder.Services.AddScoped<MuebleService>();
-        builder.Services.AddScoped<PrestamoService>();
-        builder.Services.AddScoped<UsuarioService>();
+        builder.Services.AddScoped<IAccesorioService, AccesorioService>();
+        builder.Services.AddScoped<ICarreraService, CarreraService>();
+        builder.Services.AddScoped<ICategoriaService, CategoriaService>();
+        builder.Services.AddScoped<IComponenteService, ComponenteService>();
+        builder.Services.AddScoped<IEmpresaMantenimientoService, EmpresaMantenimientoService>();
+        builder.Services.AddScoped<IEquipoService, EquipoService>();
+        builder.Services.AddScoped<IGaveteroService, GaveteroService>();
+        builder.Services.AddScoped<IGrupoEquipoService, GrupoEquipoService>();
+        builder.Services.AddScoped<IMantenimientoService, MantenimientoService>();
+        builder.Services.AddScoped<IMuebleService, MuebleService>();
+        builder.Services.AddScoped<IPrestamoService, PrestamoService>();
+        builder.Services.AddScoped<IUsuarioService, UsuarioService>();
         builder.Services.AddScoped<CarritoService>();
 
-        builder.Services.AddScoped<AccesorioRepository>();
-        builder.Services.AddScoped<CarreraRepository>();
-        builder.Services.AddScoped<CategoriaRepository>();
-        builder.Services.AddScoped<ComponenteRepository>();
-        builder.Services.AddScoped<EmpresaMantenimientoRepository>();
-        builder.Services.AddScoped<EquipoRepository>();
-        builder.Services.AddScoped<GaveteroRepository>();
-        builder.Services.AddScoped<GrupoEquipoRepository>();
-        builder.Services.AddScoped<MantenimientoRepository>();
-        builder.Services.AddScoped<MuebleRepository>();
-        builder.Services.AddScoped<PrestamoRepository>();
-        builder.Services.AddScoped<UsuarioRepository>();
+        builder.Services.AddScoped<IAccesorioRepository, AccesorioRepository>();
+        builder.Services.AddScoped<ICarreraRepository, CarreraRepository>();
+        builder.Services.AddScoped<ICategoriaRepository, CategoriaRepository>();
+        builder.Services.AddScoped<IComponenteRepository, ComponenteRepository>();
+        builder.Services.AddScoped<IEmpresaMantenimientoRepository, EmpresaMantenimientoRepository>();
+        builder.Services.AddScoped<IEquipoRepository, EquipoRepository>();
+        builder.Services.AddScoped<IGaveteroRepository, GaveteroRepository>();
+        builder.Services.AddScoped<IGrupoEquipoRepository, GrupoEquipoRepository>();
+        builder.Services.AddScoped<IMantenimientoRepository, MantenimientoRepository>();
+        builder.Services.AddScoped<IMuebleRepository, MuebleRepository>();
+        builder.Services.AddScoped<IPrestamoRepository, PrestamoRepository>();
+        builder.Services.AddScoped<IUsuarioRepository, UsuarioRepository>();
         builder.Services.AddScoped<CarritoRepository>();
-
-        builder.Services.AddScoped<ICrearRepository<CrearAccesorioComando>>(sp => sp.GetRequiredService<AccesorioRepository>());
-        builder.Services.AddScoped<IActualizarRepository<ActualizarAccesorioComando>>(sp => sp.GetRequiredService<AccesorioRepository>());
-        builder.Services.AddScoped<IEliminarRepository<EliminarAccesorioComando>>(sp => sp.GetRequiredService<AccesorioRepository>());
-        builder.Services.AddScoped<IObtenerTodosRepository<CrearAccesorioComando, DataTable>>(sp => sp.GetRequiredService<AccesorioRepository>());
-
-        builder.Services.AddScoped<ICrearRepository<CrearCarreraComando>>(sp => sp.GetRequiredService<CarreraRepository>());
-        builder.Services.AddScoped<IActualizarRepository<ActualizarCarreraComando>>(sp => sp.GetRequiredService<CarreraRepository>());
-        builder.Services.AddScoped<IEliminarRepository<EliminarCarreraComando>>(sp => sp.GetRequiredService<CarreraRepository>());
-        builder.Services.AddScoped<IObtenerTodosRepository<CrearCarreraComando, DataTable>>(sp => sp.GetRequiredService<CarreraRepository>());
-
-        builder.Services.AddScoped<ICrearRepository<CrearCategoriaComando>>(sp => sp.GetRequiredService<CategoriaRepository>());
-        builder.Services.AddScoped<IActualizarRepository<ActualizarCategoriaComando>>(sp => sp.GetRequiredService<CategoriaRepository>());
-        builder.Services.AddScoped<IEliminarRepository<EliminarCategoriaComando>>(sp => sp.GetRequiredService<CategoriaRepository>());
-        builder.Services.AddScoped<IObtenerTodosRepository<CrearCategoriaComando, DataTable>>(sp => sp.GetRequiredService<CategoriaRepository>());
-
-        builder.Services.AddScoped<ICrearRepository<CrearComponenteComando>>(sp => sp.GetRequiredService<ComponenteRepository>());
-        builder.Services.AddScoped<IActualizarRepository<ActualizarComponenteComando>>(sp => sp.GetRequiredService<ComponenteRepository>());
-        builder.Services.AddScoped<IEliminarRepository<EliminarComponenteComando>>(sp => sp.GetRequiredService<ComponenteRepository>());
-        builder.Services.AddScoped<IObtenerTodosRepository<CrearComponenteComando, DataTable>>(sp => sp.GetRequiredService<ComponenteRepository>());
-
-        builder.Services.AddScoped<ICrearRepository<CrearEmpresaMantenimientoComando>>(sp => sp.GetRequiredService<EmpresaMantenimientoRepository>());
-        builder.Services.AddScoped<IActualizarRepository<ActualizarEmpresaMantenimientoComando>>(sp => sp.GetRequiredService<EmpresaMantenimientoRepository>());
-        builder.Services.AddScoped<IEliminarRepository<EliminarEmpresaMantenimientoComando>>(sp => sp.GetRequiredService<EmpresaMantenimientoRepository>());
-        builder.Services.AddScoped<IObtenerTodosRepository<CrearEmpresaMantenimientoComando, DataTable>>(sp => sp.GetRequiredService<EmpresaMantenimientoRepository>());
-
-        builder.Services.AddScoped<ICrearRepository<CrearEquipoComando>>(sp => sp.GetRequiredService<EquipoRepository>());
-        builder.Services.AddScoped<IActualizarRepository<ActualizarEquipoComando>>(sp => sp.GetRequiredService<EquipoRepository>());
-        builder.Services.AddScoped<IEliminarRepository<EliminarEquipoComando>>(sp => sp.GetRequiredService<EquipoRepository>());
-        builder.Services.AddScoped<IObtenerTodosRepository<CrearEquipoComando, DataTable>>(sp => sp.GetRequiredService<EquipoRepository>());
-
-        builder.Services.AddScoped<ICrearRepository<CrearGaveteroComando>>(sp => sp.GetRequiredService<GaveteroRepository>());
-        builder.Services.AddScoped<IActualizarRepository<ActualizarGaveteroComando>>(sp => sp.GetRequiredService<GaveteroRepository>());
-        builder.Services.AddScoped<IEliminarRepository<EliminarGaveteroComando>>(sp => sp.GetRequiredService<GaveteroRepository>());
-        builder.Services.AddScoped<IObtenerTodosRepository<CrearGaveteroComando, DataTable>>(sp => sp.GetRequiredService<GaveteroRepository>());
-
-        builder.Services.AddScoped<ICrearRepository<CrearMantenimientoComando>>(sp => sp.GetRequiredService<MantenimientoRepository>());
-        builder.Services.AddScoped<IEliminarRepository<EliminarMantenimientoComando>>(sp => sp.GetRequiredService<MantenimientoRepository>());
-        builder.Services.AddScoped<IObtenerTodosRepository<CrearMantenimientoComando, DataTable>>(sp => sp.GetRequiredService<MantenimientoRepository>());
-
-        builder.Services.AddScoped<ICrearRepository<CrearMuebleComando>>(sp => sp.GetRequiredService<MuebleRepository>());
-        builder.Services.AddScoped<IActualizarRepository<ActualizarMuebleComando>>(sp => sp.GetRequiredService<MuebleRepository>());
-        builder.Services.AddScoped<IEliminarRepository<EliminarMuebleComando>>(sp => sp.GetRequiredService<MuebleRepository>());
-        builder.Services.AddScoped<IObtenerTodosRepository<CrearMuebleComando, DataTable>>(sp => sp.GetRequiredService<MuebleRepository>());
 
         builder.Services.AddSingleton<MongoDB.Driver.IMongoClient>(sp =>
         {

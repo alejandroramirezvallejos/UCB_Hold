@@ -1,36 +1,36 @@
 using Microsoft.AspNetCore.Mvc;
-using IMT_Reservas.Server.Shared.Common;
-
-namespace API.Controllers;
+using Ardalis.Result;
+using Ardalis.Result.AspNetCore;
 
 [ApiController]
 [Route("api/[controller]")]
+[TranslateResultToActionResult]
 public class MuebleController : ControllerBase
 {
-    private readonly MuebleService servicio;
-    public MuebleController(MuebleService servicio) => this.servicio = servicio;
+    private readonly IMuebleService _servicio;
+    public MuebleController(IMuebleService servicio) => _servicio = servicio;
 
     [HttpPost]
-    public IActionResult Crear([FromBody] CrearMuebleComando input)
+    public Result<MuebleDto> Crear([FromBody] CrearMuebleComando input)
     {
-        servicio.Crear(input); return Created("", new { mensaje = "Mueble creado exitosamente" });
+        return _servicio.Crear(input);
     }
 
     [HttpGet]
-    public IActionResult ObtenerTodos()
+    public Result<List<MuebleDto>> ObtenerTodos()
     {
-        return Ok(servicio.ObtenerTodos());
+        return _servicio.ObtenerTodos();
     }
 
     [HttpPut]
-    public IActionResult Actualizar([FromBody] ActualizarMuebleComando input)
+    public Result<MuebleDto> Actualizar([FromBody] ActualizarMuebleComando input)
     {
-        servicio.Actualizar(input); return Ok(new { mensaje = "Mueble actualizado exitosamente" });
+        return _servicio.Actualizar(input);
     }
 
     [HttpDelete("{id}")]
-    public IActionResult Eliminar(int id)
+    public Result<MuebleDto> Eliminar(int id)
     {
-        servicio.Eliminar(new EliminarMuebleComando(id)); return NoContent();
+        return _servicio.Eliminar(new EliminarMuebleComando(id));
     }
 }

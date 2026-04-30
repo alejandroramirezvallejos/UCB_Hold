@@ -1,10 +1,11 @@
-﻿using Moq;
+using Moq;
 using System.Data;
+using Ardalis.Result;
 
 namespace IMT_Reservas.Tests.RepositoryTests
 {
     [TestFixture]
-    public class CarreraRepositoryTest : ICarreraRepositoryTest
+    public class CarreraRepositoryTest 
     {
         private Mock<IExecuteQuery> _ejecutarConsultaMock;
         private ICarreraRepository _carreraRepositorio;
@@ -29,13 +30,13 @@ namespace IMT_Reservas.Tests.RepositoryTests
         }
 
         [Test]
-        public void ObtenerTodas_LlamaEjecutarFuncion_YRetornaDataTable()
+        public void ObtenerTodos_LlamaEjecutarFuncion_YRetornaDataTable()
         {
             DataTable tablaEsperada = new DataTable();
             _ejecutarConsultaMock.Setup(e => e.EjecutarFuncion(It.Is<string>(s => s.Contains("obtener_carreras")), It.IsAny<Dictionary<string, object?>>()))
                            .Returns(tablaEsperada);
 
-            DataTable resultado = _carreraRepositorio.ObtenerTodas();
+            DataTable resultado = _carreraRepositorio.ObtenerTodos();
             Assert.AreSame(tablaEsperada, resultado);
         }
 
@@ -55,7 +56,7 @@ namespace IMT_Reservas.Tests.RepositoryTests
         public void Eliminar_LlamaExecuteSpNR_ConParametrosCorrectos()
         {
             int id = 25;
-            _carreraRepositorio.Eliminar(id);
+            _carreraRepositorio.Eliminar(new EliminarCarreraComando(id));
 
             _ejecutarConsultaMock.Verify(e => e.EjecutarSpNR(
                 It.Is<string>(s => s.Contains("eliminar_carrera")),
@@ -69,9 +70,10 @@ namespace IMT_Reservas.Tests.RepositoryTests
             _ejecutarConsultaMock.Setup(e => e.EjecutarSpNR(It.IsAny<string>(), It.IsAny<Dictionary<string, object?>>()))
                            .Throws(new Exception("test exception"));
 
-            Assert.Throws<ErrorRepository>(() => _carreraRepositorio.Crear(new CrearCarreraComando("Psicopedagogía")));
-            Assert.Throws<ErrorRepository>(() => _carreraRepositorio.Actualizar(new ActualizarCarreraComando(5, "Ingeniería Civil")));
-            Assert.Throws<ErrorRepository>(() => _carreraRepositorio.Eliminar(25));
+            Assert.Throws<Exception>(() => _carreraRepositorio.Crear(new CrearCarreraComando("Psicopedagogía")));
+            Assert.Throws<Exception>(() => _carreraRepositorio.Actualizar(new ActualizarCarreraComando(5, "Ingeniería Civil")));
+            Assert.Throws<Exception>(() => _carreraRepositorio.Eliminar(new EliminarCarreraComando(25)));
         }
     }
 }
+

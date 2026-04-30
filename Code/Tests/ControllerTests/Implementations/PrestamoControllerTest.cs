@@ -1,18 +1,17 @@
-using API.Controllers;
-using IMT_Reservas.Server.Application.Interfaces;
-using Microsoft.AspNetCore.Mvc;
-using Microsoft.Extensions.Configuration;
 using Moq;
+using Ardalis.Result;
 using IMT_Reservas.Server.Shared.Common;
+using IMT_Reservas.Server.Application.ResponseDTOs;
 using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Mvc;
 
 namespace IMT_Reservas.Tests.ControllerTests
 {
     [TestFixture]
     public class PrestamoControllerTests : IPrestamoControllerTest
     {
-        private Mock<IPrestamoService>    _prestamoServiceMock;
-        private PrestamoController       _prestamosController;
+        private Mock<IPrestamoService> _prestamoServiceMock;
+        private PrestamoController _prestamosController;
 
         [SetUp]
         public void Setup()
@@ -24,37 +23,33 @@ namespace IMT_Reservas.Tests.ControllerTests
         [Test]
         public void GetPrestamos_ConDatos_RetornaOk()
         {
-            List<PrestamoDto> prestamosEsperados = new List<PrestamoDto>
+            var prestamosEsperados = new List<PrestamoDto>
             {
                 new PrestamoDto { Id = 5, CarnetUsuario = "12890061" },
                 new PrestamoDto { Id = 6, CarnetUsuario = "12890061" }
             };
-            _prestamoServiceMock.Setup(s => s.ObtenerTodosPrestamos()).Returns(prestamosEsperados);
-            IActionResult resultadoAccion = _prestamosController.ObtenerTodos();
-            Assert.That(resultadoAccion, Is.InstanceOf<OkObjectResult>());
-            OkObjectResult okObjectResult = (OkObjectResult)resultadoAccion;
-            Assert.That(okObjectResult.Value, Is.InstanceOf<List<PrestamoDto>>().And.Count.EqualTo(prestamosEsperados.Count));
+            _prestamoServiceMock.Setup(s => s.ObtenerTodos()).Returns(Result<List<PrestamoDto>>.Success(prestamosEsperados));
+            var resultado = _prestamosController.ObtenerTodos();
+            Assert.That(resultado.IsSuccess, Is.True);
+            Assert.That(resultado.Value, Has.Count.EqualTo(prestamosEsperados.Count));
         }
 
         [Test]
         public void GetPrestamos_SinDatos_RetornaOkVacia()
         {
-            List<PrestamoDto> prestamosEsperados = new List<PrestamoDto>();
-            _prestamoServiceMock.Setup(s => s.ObtenerTodosPrestamos()).Returns(prestamosEsperados);
-            IActionResult resultadoAccion = _prestamosController.ObtenerTodos();
-            Assert.That(resultadoAccion, Is.InstanceOf<OkObjectResult>());
-            OkObjectResult okObjectResult = (OkObjectResult)resultadoAccion;
-            Assert.That(okObjectResult.Value, Is.InstanceOf<List<PrestamoDto>>().And.Empty);
+            _prestamoServiceMock.Setup(s => s.ObtenerTodos()).Returns(Result<List<PrestamoDto>>.Success(new List<PrestamoDto>()));
+            var resultado = _prestamosController.ObtenerTodos();
+            Assert.That(resultado.IsSuccess, Is.True);
+            Assert.That(resultado.Value, Is.Empty);
         }
 
         [Test]
         public void GetPrestamos_ServicioError_RetornaError500()
         {
-            _prestamoServiceMock.Setup(s => s.ObtenerTodosPrestamos()).Throws(new System.Exception("Error servicio"));
-            IActionResult resultadoAccion = _prestamosController.ObtenerTodos();
-            Assert.That(resultadoAccion, Is.InstanceOf<ObjectResult>());
-            ObjectResult objectResult = (ObjectResult)resultadoAccion;
-            Assert.That(objectResult.StatusCode, Is.EqualTo(500));
+            _prestamoServiceMock.Setup(s => s.ObtenerTodos()).Returns(Result<List<PrestamoDto>>.Error("Error servicio"));
+            var resultado = _prestamosController.ObtenerTodos();
+            Assert.That(resultado.IsSuccess, Is.False);
+            Assert.That(resultado.Status, Is.EqualTo(ResultStatus.Error));
         }
 
         [Test]
@@ -62,9 +57,10 @@ namespace IMT_Reservas.Tests.ControllerTests
         {
             var mockFile = new Mock<IFormFile>();
             var comando = new CrearPrestamoComando(new int[] { 1 }, DateTime.Now.AddDays(1), DateTime.Now.AddDays(2), "Obs", "12890061", mockFile.Object);
-            _prestamoServiceMock.Setup(s => s.CrearPrestamo(comando));
-            var resultadoAccion = _prestamosController.Crear(comando);
-            Assert.That(resultadoAccion, Is.InstanceOf<OkObjectResult>());
+            var dto = new PrestamoConEquiposDto { IdPrestamo = 1 };
+            _prestamoServiceMock.Setup(s => s.Crear(It.IsAny<CrearPrestamoComando>())).Returns(Result<PrestamoConEquiposDto>.Created(dto));
+            var resultado = _prestamosController.Crear(comando);
+            Assert.That(resultado.Status, Is.EqualTo(ResultStatus.Created));
         }
 
         private static IEnumerable<object[]> FuenteCasos_CrearPrestamo_BadRequest()
@@ -78,9 +74,9 @@ namespace IMT_Reservas.Tests.ControllerTests
         [TestCaseSource(nameof(FuenteCasos_CrearPrestamo_BadRequest))]
         public void CrearPrestamo_Invalido_RetornaBadRequest(CrearPrestamoComando comando, System.Exception excepcionLanzada)
         {
-            _prestamoServiceMock.Setup(s => s.CrearPrestamo(comando)).Throws(excepcionLanzada);
-            var resultadoAccion = _prestamosController.Crear(comando);
-            Assert.That(resultadoAccion, Is.InstanceOf<BadRequestObjectResult>());
+            _prestamoServiceMock.Setup(s => s.Crear(It.IsAny<CrearPrestamoComando>())).Returns(Result<PrestamoConEquiposDto>.Invalid(new ValidationError("campo", excepcionLanzada.Message)));
+            var resultado = _prestamosController.Crear(comando);
+            Assert.That(resultado.Status, Is.EqualTo(ResultStatus.Invalid));
         }
 
         [Test]
@@ -88,9 +84,9 @@ namespace IMT_Reservas.Tests.ControllerTests
         {
             var mockFile = new Mock<IFormFile>();
             var comando = new CrearPrestamoComando(new int[] { 1 }, DateTime.Now.AddDays(1), DateTime.Now.AddDays(2), "Obs", "00000", mockFile.Object);
-            _prestamoServiceMock.Setup(s => s.CrearPrestamo(It.IsAny<CrearPrestamoComando>())).Throws(new ErrorCarnetUsuarioNoEncontrado());
-            var resultadoAccion = _prestamosController.Crear(comando);
-            Assert.That(resultadoAccion, Is.InstanceOf<NotFoundObjectResult>());
+            _prestamoServiceMock.Setup(s => s.Crear(It.IsAny<CrearPrestamoComando>())).Returns(Result<PrestamoConEquiposDto>.NotFound());
+            var resultado = _prestamosController.Crear(comando);
+            Assert.That(resultado.Status, Is.EqualTo(ResultStatus.NotFound));
         }
 
         [Test]
@@ -98,36 +94,37 @@ namespace IMT_Reservas.Tests.ControllerTests
         {
             var mockFile = new Mock<IFormFile>();
             var comando = new CrearPrestamoComando(new int[] { 1 }, DateTime.Now.AddDays(1), DateTime.Now.AddDays(2), "Obs", "12890061", mockFile.Object);
-            _prestamoServiceMock.Setup(s => s.CrearPrestamo(It.IsAny<CrearPrestamoComando>())).Throws(new ErrorNoEquiposDisponibles());
-            var resultadoAccion = _prestamosController.Crear(comando);
-            Assert.That(resultadoAccion, Is.InstanceOf<ConflictObjectResult>());
+            _prestamoServiceMock.Setup(s => s.Crear(It.IsAny<CrearPrestamoComando>())).Returns(Result<PrestamoConEquiposDto>.Conflict());
+            var resultado = _prestamosController.Crear(comando);
+            Assert.That(resultado.Status, Is.EqualTo(ResultStatus.Conflict));
         }
 
         [Test]
         public void EliminarPrestamo_Valido_RetornaOk()
         {
             int idValido = 19;
-            _prestamoServiceMock.Setup(s => s.EliminarPrestamo(It.Is<EliminarPrestamoComando>(c => c.Id == idValido)));
-            IActionResult resultadoAccion = _prestamosController.Eliminar(idValido);
-            Assert.That(resultadoAccion, Is.InstanceOf<OkObjectResult>());
+            var dto = new PrestamoDto { Id = idValido };
+            _prestamoServiceMock.Setup(s => s.Eliminar(It.Is<EliminarPrestamoComando>(c => c.Id == idValido))).Returns(Result<PrestamoDto>.Success(dto));
+            var resultado = _prestamosController.Eliminar(idValido);
+            Assert.That(resultado.IsSuccess, Is.True);
         }
 
         [Test]
         public void EliminarPrestamo_NoEncontrado_RetornaNotFound()
         {
             int idNoExistente = 99;
-            _prestamoServiceMock.Setup(s => s.EliminarPrestamo(It.Is<EliminarPrestamoComando>(c => c.Id == idNoExistente))).Throws(new ErrorRegistroNoEncontrado());
-            IActionResult resultadoAccion = _prestamosController.Eliminar(idNoExistente);
-            Assert.That(resultadoAccion, Is.InstanceOf<NotFoundObjectResult>());
+            _prestamoServiceMock.Setup(s => s.Eliminar(It.IsAny<EliminarPrestamoComando>())).Returns(Result<PrestamoDto>.NotFound());
+            var resultado = _prestamosController.Eliminar(idNoExistente);
+            Assert.That(resultado.Status, Is.EqualTo(ResultStatus.NotFound));
         }
 
         [Test]
         public void EliminarPrestamo_EnUso_RetornaConflict()
         {
             int idEnUso = 5;
-            _prestamoServiceMock.Setup(s => s.EliminarPrestamo(It.Is<EliminarPrestamoComando>(c => c.Id == idEnUso))).Throws(new ErrorRegistroEnUso());
-            IActionResult resultadoAccion = _prestamosController.Eliminar(idEnUso);
-            Assert.That(resultadoAccion, Is.InstanceOf<ConflictObjectResult>());
+            _prestamoServiceMock.Setup(s => s.Eliminar(It.IsAny<EliminarPrestamoComando>())).Returns(Result<PrestamoDto>.Conflict());
+            var resultado = _prestamosController.Eliminar(idEnUso);
+            Assert.That(resultado.Status, Is.EqualTo(ResultStatus.Conflict));
         }
 
         [Test]
@@ -140,14 +137,11 @@ namespace IMT_Reservas.Tests.ControllerTests
                 new PrestamoDto { Id = 1, CarnetUsuario = carnetUsuario, EstadoPrestamo = estadoPrestamo },
                 new PrestamoDto { Id = 2, CarnetUsuario = carnetUsuario, EstadoPrestamo = estadoPrestamo }
             };
-
             _prestamoServiceMock.Setup(s => s.ObtenerPrestamosPorCarnetYEstadoPrestamo(carnetUsuario, estadoPrestamo)).Returns(prestamosEsperados);
-
             var resultadoAccion = _prestamosController.ObtenerPorCarnetYEstado(carnetUsuario, estadoPrestamo);
-
             Assert.That(resultadoAccion, Is.InstanceOf<OkObjectResult>());
-            var okObjectResult = (OkObjectResult)resultadoAccion;
-            Assert.That(okObjectResult.Value, Is.InstanceOf<List<PrestamoDto>>().And.Count.EqualTo(prestamosEsperados.Count));
+            var okResult = (OkObjectResult)resultadoAccion;
+            Assert.That(okResult.Value, Is.InstanceOf<List<PrestamoDto>>().And.Count.EqualTo(prestamosEsperados.Count));
         }
 
         [Test]
@@ -155,15 +149,11 @@ namespace IMT_Reservas.Tests.ControllerTests
         {
             var carnetUsuario = "12890061";
             var estadoPrestamo = "Activo";
-            var prestamosEsperados = new List<PrestamoDto>();
-
-            _prestamoServiceMock.Setup(s => s.ObtenerPrestamosPorCarnetYEstadoPrestamo(carnetUsuario, estadoPrestamo)).Returns(prestamosEsperados);
-
+            _prestamoServiceMock.Setup(s => s.ObtenerPrestamosPorCarnetYEstadoPrestamo(carnetUsuario, estadoPrestamo)).Returns(new List<PrestamoDto>());
             var resultadoAccion = _prestamosController.ObtenerPorCarnetYEstado(carnetUsuario, estadoPrestamo);
-
             Assert.That(resultadoAccion, Is.InstanceOf<OkObjectResult>());
-            var okObjectResult = (OkObjectResult)resultadoAccion;
-            Assert.That(okObjectResult.Value, Is.InstanceOf<List<PrestamoDto>>().And.Empty);
+            var okResult = (OkObjectResult)resultadoAccion;
+            Assert.That(okResult.Value, Is.InstanceOf<List<PrestamoDto>>().And.Empty);
         }
     }
 }

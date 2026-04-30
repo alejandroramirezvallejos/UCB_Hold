@@ -1,55 +1,55 @@
 using System.Data;
-using Npgsql;
+using Ardalis.Result;
 
-public class CarreraRepository :
-    ICrearRepository<CrearCarreraComando>,
-    IActualizarRepository<ActualizarCarreraComando>,
-    IEliminarRepository<EliminarCarreraComando>,
-    IObtenerTodosRepository<CrearCarreraComando, DataTable>
+public class CarreraRepository : ICarreraRepository
 {
     private readonly IExecuteQuery _ejecutarConsulta;
     public CarreraRepository(IExecuteQuery ejecutarConsulta) => _ejecutarConsulta = ejecutarConsulta;
 
-    public void Crear(CrearCarreraComando comando)
+    public Result<CarreraDto> Crear(CrearCarreraComando comando)
     {
         const string sql = @"INSERT INTO public.carreras (nombre, estado_eliminado) VALUES (@nombre, FALSE)";
         var parametros = new Dictionary<string, object?> { ["nombre"] = comando.Nombre };
-        try { _ejecutarConsulta.EjecutarSpNR(sql, parametros); }
-        catch (NpgsqlException ex) { throw new ErrorDataBase($"Error de base de datos al crear carrera: {ex.Message}", ex.SqlState, null, ex); }
-        catch (Exception ex) { throw new ErrorRepository($"Error en repositorio al crear carrera: {ex.Message}", "crear", "carrera", ex); }
+        _ejecutarConsulta.EjecutarSpNR(sql, parametros);
+        var dto = new CarreraDto { Nombre = comando.Nombre };
+        return Result<CarreraDto>.Created(dto);
     }
 
-    public void Eliminar(EliminarCarreraComando comando)
+    public Result<CarreraDto> Eliminar(EliminarCarreraComando comando)
     {
+        if (!ExisteActivaPorId(comando.Id))
+            return Result<CarreraDto>.NotFound("No se encontró el registro especificado");
+
         const string sql = @"UPDATE public.carreras SET estado_eliminado = TRUE WHERE id_carrera = @id";
         var parametros = new Dictionary<string, object?> { ["id"] = comando.Id };
-        try { _ejecutarConsulta.EjecutarSpNR(sql, parametros); }
-        catch (NpgsqlException ex) { throw new ErrorDataBase($"Error de base de datos al eliminar carrera: {ex.Message}", ex.SqlState, null, ex); }
-        catch (Exception ex) { throw new ErrorRepository($"Error en repositorio al eliminar carrera: {ex.Message}", "eliminar", "carrera", ex); }
+        _ejecutarConsulta.EjecutarSpNR(sql, parametros);
+        return Result<CarreraDto>.Success(new CarreraDto { Id = comando.Id });
     }
 
-    public void Actualizar(ActualizarCarreraComando comando)
+    public Result<CarreraDto> Actualizar(ActualizarCarreraComando comando)
     {
+        if (!ExisteActivaPorId(comando.Id))
+            return Result<CarreraDto>.NotFound("No se encontró el registro especificado");
+
         const string sql = @"UPDATE public.carreras SET nombre = COALESCE(@nombre, nombre) WHERE id_carrera = @id AND estado_eliminado = FALSE";
         var parametros = new Dictionary<string, object?>
         {
             ["id"] = comando.Id,
             ["nombre"] = comando.Nombre ?? (object)DBNull.Value
         };
-        try { _ejecutarConsulta.EjecutarSpNR(sql, parametros); }
-        catch (NpgsqlException ex) { throw new ErrorDataBase($"Error de base de datos al actualizar carrera: {ex.Message}", ex.SqlState, null, ex); }
-        catch (Exception ex) { throw new ErrorRepository($"Error en repositorio al actualizar carrera: {ex.Message}", "actualizar", "carrera", ex); }
+        _ejecutarConsulta.EjecutarSpNR(sql, parametros);
+        var dto = new CarreraDto { Id = comando.Id, Nombre = comando.Nombre };
+        return Result<CarreraDto>.Success(dto);
     }
 
-    public DataTable ObtenerTodos()
+    public Result<DataTable> ObtenerTodos()
     {
         const string sql = @"SELECT c.id_carrera, c.nombre AS nombre_carrera FROM public.carreras AS c WHERE c.estado_eliminado = FALSE";
-        try { return _ejecutarConsulta.EjecutarFuncion(sql, new Dictionary<string, object?>()); }
-        catch (NpgsqlException ex) { throw new ErrorDataBase($"Error de base de datos al obtener carreras: {ex.Message}", ex.SqlState, null, ex); }
-        catch (Exception ex) { throw new ErrorRepository($"Error en repositorio al obtener carreras: {ex.Message}", "obtener", "carreras", ex); }
+        var dt = _ejecutarConsulta.EjecutarFuncion(sql, new Dictionary<string, object?>());
+        return dt.Rows.Count == 0
+            ? Result<DataTable>.NotFound("No se encontró el registro especificado")
+            : Result<DataTable>.Success(dt);
     }
-
-    // --- Métodos auxiliares para la lógica de negocio en el servicio ---
 
     public bool ExisteActivaPorId(int id)
     {
@@ -79,15 +79,10 @@ public class CarreraRepository :
     {
         const string sql = @"UPDATE public.carreras SET estado_eliminado = FALSE WHERE nombre = @nombre AND estado_eliminado = TRUE";
         var parametros = new Dictionary<string, object?> { ["nombre"] = nombre };
-        try 
-        { 
-            _ejecutarConsulta.EjecutarSpNR(sql, parametros);
-            // Verificar si se actualizó alguna fila
-            var checkSql = @"SELECT EXISTS(SELECT 1 FROM public.carreras WHERE nombre = @nombre AND estado_eliminado = FALSE)";
-            var dt = _ejecutarConsulta.EjecutarFuncion(checkSql, parametros);
-            return dt.Rows.Count > 0 && Convert.ToBoolean(dt.Rows[0][0]);
-        }
-        catch { return false; }
+        _ejecutarConsulta.EjecutarSpNR(sql, parametros);
+        var checkSql = @"SELECT EXISTS(SELECT 1 FROM public.carreras WHERE nombre = @nombre AND estado_eliminado = FALSE)";
+        var dt = _ejecutarConsulta.EjecutarFuncion(checkSql, parametros);
+        return dt.Rows.Count > 0 && Convert.ToBoolean(dt.Rows[0][0]);
     }
 
     public void EliminarLogicamentePorId(int id)

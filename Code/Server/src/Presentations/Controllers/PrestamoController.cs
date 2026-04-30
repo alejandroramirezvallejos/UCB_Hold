@@ -1,56 +1,61 @@
 using Microsoft.AspNetCore.Mvc;
-using IMT_Reservas.Server.Shared.Common;
-
-namespace API.Controllers;
+using Ardalis.Result;
+using Ardalis.Result.AspNetCore;
+using IMT_Reservas.Server.Application.ResponseDTOs;
 
 [ApiController]
 [Route("api/[controller]")]
+[TranslateResultToActionResult]
 public class PrestamoController : ControllerBase
 {
-    private readonly PrestamoService servicio;
-    public PrestamoController(PrestamoService servicio) => this.servicio = servicio;
+    private readonly IPrestamoService _servicio;
+    public PrestamoController(IPrestamoService servicio) => _servicio = servicio;
 
     [HttpPost]
-    public IActionResult Crear([FromForm] CrearPrestamoComando input)
+    public Result<PrestamoConEquiposDto> Crear([FromForm] CrearPrestamoComando input)
     {
-        return Ok(servicio.Crear(input));
+        return _servicio.Crear(input);
     }
 
     [HttpGet]
-    public IActionResult ObtenerTodos()
+    public Result<List<PrestamoDto>> ObtenerTodos()
     {
-        return Ok(servicio.ObtenerTodos());
+        return _servicio.ObtenerTodos();
     }
 
     [HttpGet("historial")]
     public IActionResult ObtenerPorCarnetYEstado([FromQuery] string carnetUsuario, [FromQuery] string estadoPrestamo)
     {
-        return Ok(servicio.ObtenerPrestamosPorCarnetYEstadoPrestamo(carnetUsuario, estadoPrestamo));
+        return Ok(_servicio.ObtenerPrestamosPorCarnetYEstadoPrestamo(carnetUsuario, estadoPrestamo));
     }
 
     [HttpDelete("{id}")]
-    public IActionResult Eliminar(int id)
+    public Result<PrestamoDto> Eliminar(int id)
     {
-        servicio.Eliminar(new EliminarPrestamoComando(id)); return Ok(new { mensaje = "Préstamo eliminado exitosamente" });
+        return _servicio.Eliminar(new EliminarPrestamoComando(id));
     }
 
     [HttpPut("estadoPrestamo")]
     public IActionResult ActualizarEstado([FromBody] ActualizarEstadoPrestamoComando input)
     {
-        servicio.ActualizarEstadoPrestamo(input); return Ok(new { mensaje = "Estado del préstamo actualizado exitosamente" });
+        _servicio.ActualizarEstadoPrestamo(input);
+        return Ok(new { mensaje = "Estado del préstamo actualizado exitosamente" });
     }
 
     [HttpGet("{id}")]
     public IActionResult ObtenerPorId(int id)
     {
-        var prestamos = servicio.ObtenerTodos(); var prestamo = prestamos?.FirstOrDefault(p => p.Id == id); if (prestamo == null) return NotFound(); return Ok(prestamo);
+        var prestamos = _servicio.ObtenerTodos();
+        var prestamo = prestamos?.Value?.FirstOrDefault(p => p.Id == id);
+        if (prestamo == null) return NotFound();
+        return Ok(prestamo);
     }
 
     [HttpGet("contrato/{prestamoId}")]
     public IActionResult ObtenerChunksContratoPorPrestamo(int prestamoId)
     {
         var consulta = new ObtenerContratoPorPrestamoConsulta(prestamoId);
-        var chunks = servicio.ObtenerContratoPorPrestamo(consulta);
+        var chunks = _servicio.ObtenerContratoPorPrestamo(consulta);
         return Ok(chunks);
     }
 }

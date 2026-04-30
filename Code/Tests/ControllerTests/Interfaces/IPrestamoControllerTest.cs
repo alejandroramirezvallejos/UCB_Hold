@@ -1,3 +1,6 @@
+using Moq;
+using System.Data;
+using Ardalis.Result;
 namespace IMT_Reservas.Tests.ControllerTests
 {
     public interface IPrestamoControllerTest

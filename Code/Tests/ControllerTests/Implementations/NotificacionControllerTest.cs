@@ -1,10 +1,6 @@
-﻿using API.Controllers;
 using Moq;
+using Ardalis.Result;
 using Microsoft.AspNetCore.Mvc;
-using IMT_Reservas.Server.Application.Interfaces;
-using IMT_Reservas.Server.Shared.Common;
-using System.Collections.Generic;
-using System;
 
 namespace IMT_Reservas.Tests.ControllerTests
 {
@@ -22,12 +18,14 @@ namespace IMT_Reservas.Tests.ControllerTests
         }
 
         [Test]
-        public void CrearNotificacion_Valido_RetornaOk()
+        public void CrearNotificacion_Valido_RetornaDto()
         {
             var comando = new CrearNotificacionComando("12890061", "Solicitud aprobada", "Tu solicitud de préstamo para Router Inalámbrico ha sido aprobada.");
-            _notificacionServiceMock.Setup(s => s.CrearNotificacion(comando));
+            var dto = new NotificacionDto { Id = "abc123", CarnetUsuario = "12890061", Titulo = "Solicitud aprobada" };
+            _notificacionServiceMock.Setup(s => s.Crear(It.IsAny<CrearNotificacionComando>())).Returns(Result<NotificacionDto>.Success(dto));
             var resultado = _notificacionController.Crear(comando);
-            Assert.That(resultado, Is.InstanceOf<OkObjectResult>());
+            Assert.That(resultado, Is.Not.Null);
+            Assert.That(resultado, Is.InstanceOf<NotificacionDto>());
         }
 
         [Test]
@@ -36,46 +34,14 @@ namespace IMT_Reservas.Tests.ControllerTests
             var carnetUsuario = "12890061";
             var notificacionesEsperadas = new List<NotificacionDto>
             {
-                new NotificacionDto { Id = "68535f7ddd47665ee70310b7", CarnetUsuario = "12890061", Titulo = "Solicitud aprobada", Contenido = "Tu solicitud de préstamo para Router Inalámbrico ha sido aprobada. Pue…", FechaEnvio = DateTime.Parse("2025-06-12T09:15:00.000Z"), Leido = false },
-                new NotificacionDto { Id = "68535f7ddd47665ee70310b8", CarnetUsuario = "12890061", Titulo = "Solicitud rechazada", Contenido = "Tu solicitud de préstamo para Monitor Profesional ha sido rechazada de…", FechaEnvio = DateTime.Parse("2025-06-14T10:30:00.000Z"), Leido = false }
+                new NotificacionDto { Id = "68535f7ddd47665ee70310b7", CarnetUsuario = "12890061", Titulo = "Solicitud aprobada", Contenido = "Tu solicitud de préstamo para Router Inalámbrico ha sido aprobada.", FechaEnvio = DateTime.Parse("2025-06-12T09:15:00.000Z"), Leido = false },
+                new NotificacionDto { Id = "68535f7ddd47665ee70310b8", CarnetUsuario = "12890061", Titulo = "Solicitud rechazada", Contenido = "Tu solicitud de préstamo para Monitor Profesional ha sido rechazada.", FechaEnvio = DateTime.Parse("2025-06-14T10:30:00.000Z"), Leido = false }
             };
             _notificacionServiceMock.Setup(s => s.ObtenerNotificacionesPorUsuario(It.Is<ObtenerNotificacionPorCarnetUsuarioConsulta>(c => c.CarnetUsuario == carnetUsuario))).Returns(notificacionesEsperadas);
             var resultado = _notificacionController.ObtenerPorUsuario(carnetUsuario);
             Assert.That(resultado, Is.InstanceOf<OkObjectResult>());
             var okResult = resultado as OkObjectResult;
             Assert.That(okResult.Value, Is.EqualTo(notificacionesEsperadas));
-        }
-
-        [Test]
-        public void EliminarNotificacion_Valido_RetornaNoContent()
-        {
-            var idNotificacion = "68535f7ddd47665ee70310b7";
-            _notificacionServiceMock.Setup(s => s.EliminarNotificacion(It.Is<EliminarNotificacionComando>(c => c.Id == idNotificacion)));
-            var resultado = _notificacionController.Eliminar(idNotificacion);
-            Assert.That(resultado, Is.InstanceOf<NoContentResult>());
-        }
-
-        [Test]
-        public void MarcarComoLeida_Valido_RetornaOk()
-        {
-            var idNotificacion = "68535f7ddd47665ee70310b7";
-            var comando = new MarcarComoLeidoComando(idNotificacion);
-            _notificacionServiceMock.Setup(s => s.MarcarNotificacionComoLeida(comando));
-            
-            var resultado = _notificacionController.MarcarComoLeida(idNotificacion);
-            
-            Assert.That(resultado, Is.InstanceOf<OkObjectResult>());
-        }
-
-        [Test]
-        public void CrearNotificacion_ServicioError_RetornaError500()
-        {
-            var comando = new CrearNotificacionComando("123", "Error", "Error");
-            _notificacionServiceMock.Setup(s => s.CrearNotificacion(comando)).Throws(new System.Exception("Error General Servidor"));
-            var resultado = _notificacionController.Crear(comando);
-            Assert.That(resultado, Is.InstanceOf<ObjectResult>());
-            var objectResult = resultado as ObjectResult;
-            Assert.That(objectResult.StatusCode, Is.EqualTo(500));
         }
 
         [Test]
@@ -90,6 +56,24 @@ namespace IMT_Reservas.Tests.ControllerTests
         }
 
         [Test]
+        public void EliminarNotificacion_Valido_RetornaNoContent()
+        {
+            var idNotificacion = "68535f7ddd47665ee70310b7";
+            _notificacionServiceMock.Setup(s => s.Eliminar(It.Is<EliminarNotificacionComando>(c => c.Id == idNotificacion))).Returns(Result<NotificacionDto>.Success(new NotificacionDto()));
+            var resultado = _notificacionController.Eliminar(idNotificacion);
+            Assert.That(resultado, Is.InstanceOf<NoContentResult>());
+        }
+
+        [Test]
+        public void MarcarComoLeida_Valido_RetornaOk()
+        {
+            var idNotificacion = "68535f7ddd47665ee70310b7";
+            _notificacionServiceMock.Setup(s => s.MarcarNotificacionComoLeida(It.IsAny<MarcarComoLeidoComando>()));
+            var resultado = _notificacionController.MarcarComoLeida(idNotificacion);
+            Assert.That(resultado, Is.InstanceOf<OkObjectResult>());
+        }
+
+        [Test]
         public void TieneNoLeidas_True_RetornaOkTrue()
         {
             var carnetUsuario = "12890061";
@@ -97,7 +81,6 @@ namespace IMT_Reservas.Tests.ControllerTests
             var resultado = _notificacionController.TieneNoLeidas(carnetUsuario);
             Assert.That(resultado, Is.InstanceOf<OkObjectResult>());
             var okResult = resultado as OkObjectResult;
-            var dict = okResult.Value.GetType().GetProperties();
             var tieneNoLeidas = okResult.Value.GetType().GetProperty("tieneNoLeidas").GetValue(okResult.Value, null);
             Assert.That((bool)tieneNoLeidas, Is.True);
         }

@@ -1,128 +1,148 @@
 using System.Data;
-using IMT_Reservas.Server.Shared.Common;
+using Ardalis.Result;
 
-public class CarreraService : BaseServicios,
-    ICrearServicio<CrearCarreraComando>,
-    IActualizarServicio<ActualizarCarreraComando>,
-    IEliminarServicio<EliminarCarreraComando>,
-    IObtenerTodosServicio<CarreraDto>
+public class CarreraService : BaseServicios, ICarreraService
 {
-    private readonly CarreraRepository _carreraRepository;
+    private readonly ICarreraRepository _carreraRepository;
 
-    public CarreraService(CarreraRepository carreraRepository)
+    public CarreraService(ICarreraRepository carreraRepository)
     {
         _carreraRepository = carreraRepository;
     }
 
-    public virtual void Crear(CrearCarreraComando comando)
+    public virtual Result<CarreraDto> Crear(CrearCarreraComando comando)
     {
-        ValidarEntradaCreacion(comando);
+        var validResult = ValidarEntrada(comando);
+        if (!validResult.IsSuccess) return Result<CarreraDto>.Invalid(validResult.ValidationErrors.ToArray());
 
         var nombreTrimmed = comando.Nombre!.Trim();
 
         if (string.IsNullOrWhiteSpace(nombreTrimmed))
-            throw new ErrorNombreRequerido();
+            return Result<CarreraDto>.Invalid(new ValidationError("Nombre", "El nombre es requerido"));
 
-        // Intentar reactivar si existe una carrera eliminada lógicamente con ese nombre
         if (_carreraRepository.ReactivarEliminadaPorNombre(nombreTrimmed))
-            return;
+            return Result<CarreraDto>.Success(null);
 
-        // Verificar si ya existe una carrera activa con ese nombre
         if (_carreraRepository.ExisteActivaPorNombre(nombreTrimmed))
-            throw new ErrorRegistroYaExiste();
+            return Result<CarreraDto>.Conflict("Ya existe una carrera activa con este nombre");
 
-        // Insertar nueva carrera (usar record con nombre trimmed)
         var comandoFinal = new CrearCarreraComando(nombreTrimmed);
-        _carreraRepository.Crear(comandoFinal);
+        var result = _carreraRepository.Crear(comandoFinal);
+        return result;
     }
-    
-    protected override void ValidarEntradaCreacion<T>(T comando)
-    {
-        base.ValidarEntradaCreacion(comando); // Validación base (null check)
-        
-        // Validaciones específicas para CrearCarreraComando
-        if (comando is CrearCarreraComando carreraComando)
-        {
-            if (string.IsNullOrWhiteSpace(carreraComando.Nombre)) throw new ErrorNombreRequerido();
-            if (carreraComando.Nombre.Length > 256) throw new ErrorLongitudInvalida("nombre de la carrera", 255);
-        }
-    }
-    public virtual List<CarreraDto>? ObtenerTodos()
-    {
-        try
-        {
-            DataTable resultado = _carreraRepository.ObtenerTodos();
-            var lista = new List<CarreraDto>(resultado.Rows.Count);
-            foreach (DataRow fila in resultado.Rows)
-            {
-                var baseDto = MapearFilaADto(fila);
-                if (baseDto is CarreraDto carrera)
-                    lista.Add(carrera);
-            }
-            return lista;
-        }
-        catch { throw; }
-    }
-    public virtual void Actualizar(ActualizarCarreraComando comando)
-    {
-        ValidarEntradaActualizacion(comando);
 
-        // Verificar que la carrera exista y esté activa
+    public virtual Result<List<CarreraDto>> ObtenerTodos()
+    {
+        var repoResult = _carreraRepository.ObtenerTodos();
+        if (!repoResult.IsSuccess)
+            return Result<List<CarreraDto>>.Error("Error al obtener las carreras");
+
+        var resultado = repoResult.Value;
+        var lista = new List<CarreraDto>(resultado.Rows.Count);
+        foreach (DataRow fila in resultado.Rows)
+        {
+            var baseDto = MapearFilaADto(fila);
+            if (baseDto is CarreraDto carrera)
+                lista.Add(carrera);
+        }
+        return lista.Count == 0
+            ? Result<List<CarreraDto>>.NotFound("No se encontraron carreras")
+            : Result<List<CarreraDto>>.Success(lista);
+    }
+
+    public virtual Result<CarreraDto> Actualizar(ActualizarCarreraComando comando)
+    {
+        var validResult = ValidarEntrada(comando);
+        if (!validResult.IsSuccess) return Result<CarreraDto>.Invalid(validResult.ValidationErrors.ToArray());
+
         if (!_carreraRepository.ExisteActivaPorId(comando.Id))
-            throw new ErrorRegistroNoEncontrado();
+            return Result<CarreraDto>.NotFound("La carrera no fue encontrada");
 
         var nombreNuevo = comando.Nombre?.Trim();
 
         if (nombreNuevo != null)
         {
             if (string.IsNullOrWhiteSpace(nombreNuevo))
-                throw new ErrorNombreRequerido();
+                return Result<CarreraDto>.Invalid(new ValidationError("Nombre", "El nombre es requerido"));
 
-            // Verificar si ya existe otra carrera activa con ese nombre (diferente al ID actual)
             if (_carreraRepository.ExisteActivaPorNombreExcluyendoId(nombreNuevo, comando.Id))
-                throw new ErrorRegistroYaExiste();
+                return Result<CarreraDto>.Conflict("Ya existe otra carrera activa con ese nombre");
 
-            // Si existe una carrera eliminada con el mismo nombre, reactivarla y eliminar lógicamente la actual
             if (_carreraRepository.ReactivarEliminadaPorNombre(nombreNuevo))
             {
                 _carreraRepository.EliminarLogicamentePorId(comando.Id);
-                return;
+                return Result<CarreraDto>.Success(null);
             }
         }
 
-        // Actualización normal
         var comandoFinal = new ActualizarCarreraComando(comando.Id, nombreNuevo);
-        _carreraRepository.Actualizar(comandoFinal);
+        var result = _carreraRepository.Actualizar(comandoFinal);
+        return result;
     }
-    
-    private void ValidarEntradaActualizacion(ActualizarCarreraComando comando)
-    {
-        if (comando == null) throw new ArgumentNullException(nameof(comando));
-        if (comando.Id <= 0) throw new ErrorIdInvalido("carrera");
-        if (string.IsNullOrWhiteSpace(comando.Nombre)) throw new ErrorNombreRequerido();
-        if (comando.Nombre.Length > 255) throw new ErrorLongitudInvalida("nombre de la carrera", 255);
-    }
-    public virtual void Eliminar(EliminarCarreraComando comando)
-    {
-        ValidarEntradaEliminacion(comando);
 
-        // Verificar que la carrera exista y esté activa
+    public virtual Result<CarreraDto> Eliminar(EliminarCarreraComando comando)
+    {
+        var validResult = ValidarEntrada(comando);
+        if (!validResult.IsSuccess) return Result<CarreraDto>.Invalid(validResult.ValidationErrors.ToArray());
+
         if (!_carreraRepository.ExisteActivaPorId(comando.Id))
-            throw new ErrorRegistroNoEncontrado();
+            return Result<CarreraDto>.NotFound("La carrera no fue encontrada");
 
-        _carreraRepository.Eliminar(comando);
+        var result = _carreraRepository.Eliminar(comando);
+        return result;
     }
-    
-    protected override void ValidarEntradaEliminacion<T>(T comando)
+
+    private Result<CrearCarreraComando> ValidarEntrada(CrearCarreraComando comando)
     {
-        base.ValidarEntradaEliminacion(comando); // Validación base (null check)
-        
-        // Validaciones específicas para EliminarCarreraComando
-        if (comando is EliminarCarreraComando carreraComando)
-        {
-            if (carreraComando.Id <= 0) throw new ErrorIdInvalido("carrera");
-        }
-    }    
+        var errors = new List<ValidationError>();
+
+        if (comando == null)
+            errors.Add(new("comando", "El comando es requerido"));
+
+        if (string.IsNullOrWhiteSpace(comando?.Nombre))
+            errors.Add(new("Nombre", "El nombre es requerido"));
+
+        if (comando?.Nombre?.Length > 256)
+            errors.Add(new("Nombre", "El nombre no puede tener más de 256 caracteres"));
+
+        return errors.Any()
+            ? Result<CrearCarreraComando>.Invalid(errors.ToArray())
+            : Result<CrearCarreraComando>.Success(comando!);
+    }
+
+    private Result<ActualizarCarreraComando> ValidarEntrada(ActualizarCarreraComando comando)
+    {
+        var errors = new List<ValidationError>();
+
+        if (comando == null)
+            errors.Add(new("comando", "El comando es requerido"));
+
+        if (comando?.Id <= 0)
+            errors.Add(new("Id", "El ID debe ser mayor a 0"));
+
+        if (!string.IsNullOrWhiteSpace(comando?.Nombre) && comando.Nombre.Length > 255)
+            errors.Add(new("Nombre", "El nombre no puede tener más de 255 caracteres"));
+
+        return errors.Any()
+            ? Result<ActualizarCarreraComando>.Invalid(errors.ToArray())
+            : Result<ActualizarCarreraComando>.Success(comando!);
+    }
+
+    private Result<EliminarCarreraComando> ValidarEntrada(EliminarCarreraComando comando)
+    {
+        var errors = new List<ValidationError>();
+
+        if (comando == null)
+            errors.Add(new("comando", "El comando es requerido"));
+
+        if (comando?.Id <= 0)
+            errors.Add(new("Id", "El ID debe ser mayor a 0"));
+
+        return errors.Any()
+            ? Result<EliminarCarreraComando>.Invalid(errors.ToArray())
+            : Result<EliminarCarreraComando>.Success(comando!);
+    }
+
     protected override BaseDto MapearFilaADto(DataRow fila)
     {
         return new CarreraDto

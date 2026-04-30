@@ -1,11 +1,11 @@
-﻿using Moq;
+using Moq;
 using System.Data;
-using Microsoft.Extensions.Configuration;
+using Ardalis.Result;
 
 namespace IMT_Reservas.Tests.RepositoryTests
 {
     [TestFixture]
-    public class CategoriaRepositoryTest : ICategoriaRepositoryTest
+    public class CategoriaRepositoryTest 
     {
         private Mock<IExecuteQuery>   _ejecutarConsultaMock;
         private ICategoriaRepository _categoriaRepositorio;
@@ -56,7 +56,7 @@ namespace IMT_Reservas.Tests.RepositoryTests
         public void Eliminar_LlamaExecuteSpNR_ConParametrosCorrectos()
         {
             int id = 10;
-            _categoriaRepositorio.Eliminar(id);
+            _categoriaRepositorio.Eliminar(new EliminarCategoriaComando(id));
 
             _ejecutarConsultaMock.Verify(e => e.EjecutarSpNR(
                 It.Is<string>(s => s.Contains("eliminar_categoria")),
@@ -70,9 +70,10 @@ namespace IMT_Reservas.Tests.RepositoryTests
             _ejecutarConsultaMock.Setup(e => e.EjecutarSpNR(It.IsAny<string>(), It.IsAny<Dictionary<string, object?>>()))
                            .Throws(new Exception("test exception"));
 
-            Assert.Throws<ErrorRepository>(() => _categoriaRepositorio.Crear(new CrearCategoriaComando("Adaptadores")));
-            Assert.Throws<ErrorRepository>(() => _categoriaRepositorio.Actualizar(new ActualizarCategoriaComando(4, "Prueba Actualizada")));
-            Assert.Throws<ErrorRepository>(() => _categoriaRepositorio.Eliminar(10));
+            Assert.Throws<Exception>(() => _categoriaRepositorio.Crear(new CrearCategoriaComando("Adaptadores")));
+            Assert.Throws<Exception>(() => _categoriaRepositorio.Actualizar(new ActualizarCategoriaComando(4, "Prueba Actualizada")));
+            Assert.Throws<Exception>(() => _categoriaRepositorio.Eliminar(new EliminarCategoriaComando(10)));
         }
     }
 }
+

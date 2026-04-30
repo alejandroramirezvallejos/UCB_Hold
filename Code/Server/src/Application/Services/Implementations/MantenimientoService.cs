@@ -1,40 +1,35 @@
 using System.Data;
-using IMT_Reservas.Server.Shared.Common;
-public class MantenimientoService : BaseServicios,
-    ICrearServicio<CrearMantenimientoComando>,
-    IEliminarServicio<EliminarMantenimientoComando>,
-    IObtenerTodosServicio<MantenimientoDto>
-{
-    private readonly MantenimientoRepository _mantenimientoRepository;
+using Ardalis.Result;
 
-    public MantenimientoService(MantenimientoRepository mantenimientoRepository)
+public class MantenimientoService : BaseServicios, IMantenimientoService
+{
+    private readonly IMantenimientoRepository _mantenimientoRepository;
+
+    public MantenimientoService(IMantenimientoRepository mantenimientoRepository)
     {
         _mantenimientoRepository = mantenimientoRepository;
     }
 
-    public virtual void Crear(CrearMantenimientoComando comando)
+    public virtual Result<MantenimientoDto> Crear(CrearMantenimientoComando comando)
     {
-        ValidarEntradaCreacion(comando);
+        var validResult = ValidarEntrada(comando);
+        if (!validResult.IsSuccess) return Result<MantenimientoDto>.Invalid(validResult.ValidationErrors.ToArray());
 
-        // Resolver FK: nombre de empresa → id_empresa
         var idEmpresa = _mantenimientoRepository.ObtenerEmpresaIdPorNombre(comando.NombreEmpresaMantenimiento!);
         if (idEmpresa == null)
-            throw new ErrorEmpresaMantenimientoNoEncontrada();
+            return Result<MantenimientoDto>.NotFound("La empresa de mantenimiento no fue encontrada");
 
-        // Validar que todos los códigos IMT correspondan a equipos activos
         var equipoIds = new int[comando.CodigoIMT!.Length];
         for (int i = 0; i < comando.CodigoIMT.Length; i++)
         {
             var idEquipo = _mantenimientoRepository.ObtenerEquipoIdPorCodigoImt(comando.CodigoIMT[i]);
             if (idEquipo == null)
-                throw new ErrorCodigoImtNoEncontrado();
+                return Result<MantenimientoDto>.NotFound("El código IMT no fue encontrado");
             equipoIds[i] = idEquipo.Value;
         }
 
-        // Crear el mantenimiento (retorna ID)
         var idMantenimiento = _mantenimientoRepository.CrearMantenimiento(idEmpresa.Value, comando);
 
-        // Crear detalles de mantenimiento
         for (int i = 0; i < equipoIds.Length; i++)
         {
             var tipo = comando.TipoMantenimiento != null && i < comando.TipoMantenimiento.Length
@@ -43,65 +38,94 @@ public class MantenimientoService : BaseServicios,
                 ? comando.DescripcionEquipo[i] : null;
             _mantenimientoRepository.CrearDetalleMantenimiento(idMantenimiento, equipoIds[i], tipo, desc);
         }
+
+        return Result<MantenimientoDto>.Success(null);
     }
-    
-    protected override void ValidarEntradaCreacion<T>(T comando)
+
+    public virtual Result<List<MantenimientoDto>> ObtenerTodos()
     {
-        base.ValidarEntradaCreacion(comando); // Validación base (null check)
-        
-        // Validaciones específicas para CrearMantenimientoComando
-        if (comando is CrearMantenimientoComando mantenimientoComando)
+        var repoResult = _mantenimientoRepository.ObtenerTodos();
+        if (!repoResult.IsSuccess)
+            return Result<List<MantenimientoDto>>.Error("Error al obtener los mantenimientos");
+
+        var resultado = repoResult.Value;
+        var lista = new List<MantenimientoDto>(resultado.Rows.Count);
+        foreach (DataRow fila in resultado.Rows)
         {
-            if (mantenimientoComando.FechaMantenimiento == null) throw new ErrorFechaMantenimientoInicioRequerida();
-            if (mantenimientoComando.FechaFinalDeMantenimiento == null) throw new ErrorFechaMantenimientoFinalRequerida();
-            if (mantenimientoComando.FechaFinalDeMantenimiento < mantenimientoComando.FechaMantenimiento) throw new ErrorFechaInvalida();
-            if (string.IsNullOrWhiteSpace(mantenimientoComando.NombreEmpresaMantenimiento)) throw new ErrorNombreRequerido();
-            if (mantenimientoComando.CodigoIMT == null || mantenimientoComando.CodigoIMT.Length == 0) throw new ErrorCodigoImtRequerido();
-            if (mantenimientoComando.TipoMantenimiento == null || mantenimientoComando.TipoMantenimiento.Length == 0) throw new ErrorTipoMantenimientoRequerido();
-            if (mantenimientoComando.CodigoIMT.Length != mantenimientoComando.TipoMantenimiento.Length) throw new ErrorCodigoImtYTiposLongitudDiferente();
-            if (mantenimientoComando.CodigoIMT.Any(codigo => codigo <= 0)) throw new ErrorCodigosImtInvalido();
-            if (mantenimientoComando.Costo.HasValue && mantenimientoComando.Costo.Value < 0) throw new ErrorValorNegativo("costo");
+            var dto = MapearFilaADto(fila) as MantenimientoDto;
+            if (dto != null) lista.Add(dto);
         }
+        return lista.Count == 0
+            ? Result<List<MantenimientoDto>>.NotFound("No se encontraron mantenimientos")
+            : Result<List<MantenimientoDto>>.Success(lista);
     }
 
-    public virtual void Eliminar(EliminarMantenimientoComando comando)
+    public virtual Result<MantenimientoDto> Eliminar(EliminarMantenimientoComando comando)
     {
-        ValidarEntradaEliminacion(comando);
+        var validResult = ValidarEntrada(comando);
+        if (!validResult.IsSuccess) return Result<MantenimientoDto>.Invalid(validResult.ValidationErrors.ToArray());
 
-        // Verificar que el mantenimiento exista y esté activo
         if (!_mantenimientoRepository.ExisteActivoPorId(comando.Id))
-            throw new ErrorRegistroNoEncontrado();
+            return Result<MantenimientoDto>.NotFound("El mantenimiento no fue encontrado");
 
-        _mantenimientoRepository.Eliminar(comando);
-    }
-    
-    protected override void ValidarEntradaEliminacion<T>(T comando)
-    {
-        base.ValidarEntradaEliminacion(comando); // Validación base (null check)
-        
-        // Validaciones específicas para EliminarMantenimientoComando
-        if (comando is EliminarMantenimientoComando mantenimientoComando)
-        {
-            if (mantenimientoComando.Id <= 0) throw new ErrorIdInvalido("mantenimiento");
-        }
+        var result = _mantenimientoRepository.Eliminar(comando);
+        return result;
     }
 
-    public virtual List<MantenimientoDto>? ObtenerTodos()
+    private Result<CrearMantenimientoComando> ValidarEntrada(CrearMantenimientoComando comando)
     {
-        try
-        {
-            DataTable resultado = _mantenimientoRepository.ObtenerTodos();
-            var lista = new List<MantenimientoDto>(resultado.Rows.Count);
-            foreach (DataRow fila in resultado.Rows) 
-            {
-                var dto = MapearFilaADto(fila) as MantenimientoDto;
-                if (dto != null) lista.Add(dto);
-            }
-            return lista;
-        }
-        catch { throw; }
+        var errors = new List<ValidationError>();
+
+        if (comando == null)
+            errors.Add(new("comando", "El comando es requerido"));
+
+        if (comando?.FechaMantenimiento == null)
+            errors.Add(new("FechaMantenimiento", "La fecha de mantenimiento es requerida"));
+
+        if (comando?.FechaFinalDeMantenimiento == null)
+            errors.Add(new("FechaFinalDeMantenimiento", "La fecha final de mantenimiento es requerida"));
+
+        if (comando?.FechaFinalDeMantenimiento < comando?.FechaMantenimiento)
+            errors.Add(new("FechaFinalDeMantenimiento", "La fecha final no puede ser anterior a la fecha de inicio"));
+
+        if (string.IsNullOrWhiteSpace(comando?.NombreEmpresaMantenimiento))
+            errors.Add(new("NombreEmpresaMantenimiento", "El nombre de la empresa es requerido"));
+
+        if (comando?.CodigoIMT == null || comando.CodigoIMT.Length == 0)
+            errors.Add(new("CodigoIMT", "Los códigos IMT son requeridos"));
+
+        if (comando?.TipoMantenimiento == null || comando.TipoMantenimiento.Length == 0)
+            errors.Add(new("TipoMantenimiento", "Los tipos de mantenimiento son requeridos"));
+
+        if (comando?.CodigoIMT?.Length != comando?.TipoMantenimiento?.Length)
+            errors.Add(new("CodigoIMT", "Los códigos IMT y tipos de mantenimiento deben tener la misma cantidad"));
+
+        if (comando?.CodigoIMT?.Any(codigo => codigo <= 0) == true)
+            errors.Add(new("CodigoIMT", "Los códigos IMT deben ser válidos"));
+
+        if (comando?.Costo.HasValue == true && comando.Costo.Value < 0)
+            errors.Add(new("Costo", "El costo no puede ser negativo"));
+
+        return errors.Any()
+            ? Result<CrearMantenimientoComando>.Invalid(errors.ToArray())
+            : Result<CrearMantenimientoComando>.Success(comando!);
     }
-    
+
+    private Result<EliminarMantenimientoComando> ValidarEntrada(EliminarMantenimientoComando comando)
+    {
+        var errors = new List<ValidationError>();
+
+        if (comando == null)
+            errors.Add(new("comando", "El comando es requerido"));
+
+        if (comando?.Id <= 0)
+            errors.Add(new("Id", "El ID debe ser mayor a 0"));
+
+        return errors.Any()
+            ? Result<EliminarMantenimientoComando>.Invalid(errors.ToArray())
+            : Result<EliminarMantenimientoComando>.Success(comando!);
+    }
+
     protected override BaseDto MapearFilaADto(DataRow fila)
     {
         return new MantenimientoDto

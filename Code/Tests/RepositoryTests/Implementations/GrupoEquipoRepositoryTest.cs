@@ -1,10 +1,11 @@
-﻿using Moq;
+using Moq;
 using System.Data;
+using Ardalis.Result;
 
 namespace IMT_Reservas.Tests.RepositoryTests
 {
     [TestFixture]
-    public class GrupoEquipoRepositoryTest : IGrupoEquipoRepositoryTest
+    public class GrupoEquipoRepositoryTest 
     {
         private Mock<IExecuteQuery>     _ejecutarConsultaMock;
         private IGrupoEquipoRepository _grupoEquipoRepositorio;
@@ -81,7 +82,7 @@ namespace IMT_Reservas.Tests.RepositoryTests
         public void Eliminar_LlamaExecuteSpNR_ConParametrosCorrectos()
         {
             int id = 16;
-            _grupoEquipoRepositorio.Eliminar(id);
+            _grupoEquipoRepositorio.Eliminar(new EliminarGrupoEquipoComando(id));
 
             _ejecutarConsultaMock.Verify(e => e.EjecutarSpNR(
                 It.Is<string>(s => s.Contains("eliminar_grupo_equipo")),
@@ -95,9 +96,10 @@ namespace IMT_Reservas.Tests.RepositoryTests
             _ejecutarConsultaMock.Setup(e => e.EjecutarSpNR(It.IsAny<string>(), It.IsAny<Dictionary<string, object?>>()))
                            .Throws(new Exception("test exception"));
 
-            Assert.Throws<ErrorRepository>(() => _grupoEquipoRepositorio.Crear(new CrearGrupoEquipoComando("Estación de Soldadura", "WES51", "Weller", "Estación de soldadura analógica", "Herramientas", "http://example.com/ds.pdf", "http://example.com/img.png")));
-            Assert.Throws<ErrorRepository>(() => _grupoEquipoRepositorio.Actualizar(new ActualizarGrupoEquipoComando(5, "prueba actualizada", "prueba v2", "prueba", "desc act", "Herramientas", "https://prueba.com/ds-v2.pdf", "img_act")));
-            Assert.Throws<ErrorRepository>(() => _grupoEquipoRepositorio.Eliminar(16));
+            Assert.Throws<Exception>(() => _grupoEquipoRepositorio.Crear(new CrearGrupoEquipoComando("Estación de Soldadura", "WES51", "Weller", "Estación de soldadura analógica", "Herramientas", "http://example.com/ds.pdf", "http://example.com/img.png")));
+            Assert.Throws<Exception>(() => _grupoEquipoRepositorio.Actualizar(new ActualizarGrupoEquipoComando(5, "prueba actualizada", "prueba v2", "prueba", "desc act", "Herramientas", "https://prueba.com/ds-v2.pdf", "img_act")));
+            Assert.Throws<Exception>(() => _grupoEquipoRepositorio.Eliminar(new EliminarGrupoEquipoComando(16)));
         }
     }
 }
+

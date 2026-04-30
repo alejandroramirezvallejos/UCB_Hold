@@ -1,10 +1,11 @@
-﻿using Moq;
+using Moq;
 using System.Data;
+using Ardalis.Result;
 
 namespace IMT_Reservas.Tests.RepositoryTests
 {
     [TestFixture]
-    public class MantenimientoRepositoryTest : IMantenimientoRepositoryTest
+    public class MantenimientoRepositoryTest 
     {
         private Mock<IExecuteQuery>       _ejecutarConsultaMock;
         private IMantenimientoRepository _mantenimientoRepositorio;
@@ -43,7 +44,7 @@ namespace IMT_Reservas.Tests.RepositoryTests
         public void Eliminar_LlamaExecuteSpNR_ConParametrosCorrectos()
         {
             int id = 7;
-            _mantenimientoRepositorio.Eliminar(id);
+            _mantenimientoRepositorio.Eliminar(new EliminarMantenimientoComando(id));
 
             _ejecutarConsultaMock.Verify(e => e.EjecutarSpNR(
                 It.Is<string>(s => s.Contains("eliminar_mantenimiento")),
@@ -57,8 +58,9 @@ namespace IMT_Reservas.Tests.RepositoryTests
             _ejecutarConsultaMock.Setup(e => e.EjecutarSpNR(It.IsAny<string>(), It.IsAny<Dictionary<string, object?>>()))
                            .Throws(new Exception("test exception"));
 
-            Assert.Throws<ErrorRepository>(() => _mantenimientoRepositorio.Crear(new CrearMantenimientoComando(DateOnly.FromDateTime(DateTime.Now), DateOnly.FromDateTime(DateTime.Now.AddDays(1)), "Test", 100, "desc", new int[] {1}, new string[] {"tipo"}, new string[] {"desc"})));
-            Assert.Throws<ErrorRepository>(() => _mantenimientoRepositorio.Eliminar(1));
+            Assert.Throws<Exception>(() => _mantenimientoRepositorio.Crear(new CrearMantenimientoComando(DateOnly.FromDateTime(DateTime.Now), DateOnly.FromDateTime(DateTime.Now.AddDays(1)), "Test", 100, "desc", new int[] {1}, new string[] {"tipo"}, new string[] {"desc"})));
+            Assert.Throws<Exception>(() => _mantenimientoRepositorio.Eliminar(new EliminarMantenimientoComando(1)));
         }
     }
 }
+

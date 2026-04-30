@@ -1,88 +1,138 @@
 using System.Data;
-using IMT_Reservas.Server.Shared.Common;
-public class MuebleService : BaseServicios,
-    ICrearServicio<CrearMuebleComando>,
-    IActualizarServicio<ActualizarMuebleComando>,
-    IEliminarServicio<EliminarMuebleComando>,
-    IObtenerTodosServicio<MuebleDto>
-{
-    private readonly MuebleRepository _muebleRepository;
+using Ardalis.Result;
 
-    public MuebleService(MuebleRepository muebleRepository)
+public class MuebleService : BaseServicios, IMuebleService
+{
+    private readonly IMuebleRepository _muebleRepository;
+
+    public MuebleService(IMuebleRepository muebleRepository)
     {
         _muebleRepository = muebleRepository;
     }
 
-    public virtual void Crear(CrearMuebleComando comando)
+    public virtual Result<MuebleDto> Crear(CrearMuebleComando comando)
     {
-        ValidarEntradaCreacion(comando);
-        _muebleRepository.Crear(comando);
-    }
-    protected override void ValidarEntradaCreacion<T>(T comando)
-    {
-        base.ValidarEntradaCreacion(comando);
-        if (comando is CrearMuebleComando cmd)
-        {
-            if (string.IsNullOrWhiteSpace(cmd.Nombre)) throw new ErrorNombreRequerido();
-            if (cmd.Costo.HasValue && cmd.Costo < 0) throw new ErrorValorNegativo("costo");
-            if (cmd.Longitud.HasValue && cmd.Longitud <= 0) throw new ErrorValorNegativo("longitud");
-            if (cmd.Profundidad.HasValue && cmd.Profundidad <= 0) throw new ErrorValorNegativo("profundidad");
-            if (cmd.Altura.HasValue && cmd.Altura <= 0) throw new ErrorValorNegativo("altura");
-        }
-    }
-    public virtual void Actualizar(ActualizarMuebleComando comando)
-    {
-        ValidarEntradaActualizacion(comando);
+        var validResult = ValidarEntrada(comando);
+        if (!validResult.IsSuccess) return Result<MuebleDto>.Invalid(validResult.ValidationErrors.ToArray());
 
-        // Verificar que el mueble exista y esté activo
+        var result = _muebleRepository.Crear(comando);
+        return result;
+    }
+
+    public virtual Result<List<MuebleDto>> ObtenerTodos()
+    {
+        var repoResult = _muebleRepository.ObtenerTodos();
+        if (!repoResult.IsSuccess)
+            return Result<List<MuebleDto>>.Error("Error al obtener los muebles");
+
+        var resultado = repoResult.Value;
+        var lista = new List<MuebleDto>(resultado.Rows.Count);
+        foreach (DataRow fila in resultado.Rows)
+        {
+            var dto = MapearFilaADto(fila) as MuebleDto;
+            if (dto != null) lista.Add(dto);
+        }
+        return lista.Count == 0
+            ? Result<List<MuebleDto>>.NotFound("No se encontraron muebles")
+            : Result<List<MuebleDto>>.Success(lista);
+    }
+
+    public virtual Result<MuebleDto> Actualizar(ActualizarMuebleComando comando)
+    {
+        var validResult = ValidarEntrada(comando);
+        if (!validResult.IsSuccess) return Result<MuebleDto>.Invalid(validResult.ValidationErrors.ToArray());
+
         if (!_muebleRepository.ExisteActivoPorId(comando.Id))
-            throw new ErrorRegistroNoEncontrado();
+            return Result<MuebleDto>.NotFound("El mueble no fue encontrado");
 
-        _muebleRepository.Actualizar(comando);
+        var result = _muebleRepository.Actualizar(comando);
+        return result;
     }
-    private void ValidarEntradaActualizacion(ActualizarMuebleComando comando)
-    {
-        if (comando == null) throw new ArgumentNullException(nameof(comando));
-        if (comando.Id <= 0) throw new ErrorIdInvalido("mueble");
-        if (!string.IsNullOrWhiteSpace(comando.Nombre) && comando.Nombre.Length > 255) throw new ErrorLongitudInvalida("nombre mueble", 255);
-        if (comando.Costo.HasValue && comando.Costo < 0) throw new ErrorValorNegativo("costo");
-        if (comando.Longitud.HasValue && comando.Longitud <= 0) throw new ErrorValorNegativo("longitud");
-        if (comando.Profundidad.HasValue && comando.Profundidad <= 0) throw new ErrorValorNegativo("profundidad");
-        if (comando.Altura.HasValue && comando.Altura <= 0) throw new ErrorValorNegativo("altura");
-    }
-    public virtual void Eliminar(EliminarMuebleComando comando)
-    {
-        ValidarEntradaEliminacion(comando);
 
-        // Verificar que el mueble exista y esté activo
+    public virtual Result<MuebleDto> Eliminar(EliminarMuebleComando comando)
+    {
+        var validResult = ValidarEntrada(comando);
+        if (!validResult.IsSuccess) return Result<MuebleDto>.Invalid(validResult.ValidationErrors.ToArray());
+
         if (!_muebleRepository.ExisteActivoPorId(comando.Id))
-            throw new ErrorRegistroNoEncontrado();
+            return Result<MuebleDto>.NotFound("El mueble no fue encontrado");
 
-        _muebleRepository.Eliminar(comando);
+        var result = _muebleRepository.Eliminar(comando);
+        return result;
     }
-    protected override void ValidarEntradaEliminacion<T>(T comando)
+
+    private Result<CrearMuebleComando> ValidarEntrada(CrearMuebleComando comando)
     {
-        base.ValidarEntradaEliminacion(comando);
-        if (comando is EliminarMuebleComando cmd)
-        {
-            if (cmd.Id <= 0) throw new ErrorIdInvalido("mueble");
-        }
+        var errors = new List<ValidationError>();
+
+        if (comando == null)
+            errors.Add(new("comando", "El comando es requerido"));
+
+        if (string.IsNullOrWhiteSpace(comando?.Nombre))
+            errors.Add(new("Nombre", "El nombre es requerido"));
+
+        if (comando?.Costo.HasValue == true && comando.Costo < 0)
+            errors.Add(new("Costo", "El costo no puede ser negativo"));
+
+        if (comando?.Longitud.HasValue == true && comando.Longitud <= 0)
+            errors.Add(new("Longitud", "La longitud debe ser mayor a 0"));
+
+        if (comando?.Profundidad.HasValue == true && comando.Profundidad <= 0)
+            errors.Add(new("Profundidad", "La profundidad debe ser mayor a 0"));
+
+        if (comando?.Altura.HasValue == true && comando.Altura <= 0)
+            errors.Add(new("Altura", "La altura debe ser mayor a 0"));
+
+        return errors.Any()
+            ? Result<CrearMuebleComando>.Invalid(errors.ToArray())
+            : Result<CrearMuebleComando>.Success(comando!);
     }
-    public virtual List<MuebleDto>? ObtenerTodos()
+
+    private Result<ActualizarMuebleComando> ValidarEntrada(ActualizarMuebleComando comando)
     {
-        try
-        {
-            DataTable resultado = _muebleRepository.ObtenerTodos();
-            var lista = new List<MuebleDto>(resultado.Rows.Count);
-            foreach (DataRow fila in resultado.Rows)
-            {
-                var dto = MapearFilaADto(fila) as MuebleDto;
-                if (dto != null) lista.Add(dto);
-            }
-            return lista;
-        }
-        catch { throw; }
+        var errors = new List<ValidationError>();
+
+        if (comando == null)
+            errors.Add(new("comando", "El comando es requerido"));
+
+        if (comando?.Id <= 0)
+            errors.Add(new("Id", "El ID debe ser mayor a 0"));
+
+        if (!string.IsNullOrWhiteSpace(comando?.Nombre) && comando.Nombre.Length > 255)
+            errors.Add(new("Nombre", "El nombre no puede tener más de 255 caracteres"));
+
+        if (comando?.Costo.HasValue == true && comando.Costo < 0)
+            errors.Add(new("Costo", "El costo no puede ser negativo"));
+
+        if (comando?.Longitud.HasValue == true && comando.Longitud <= 0)
+            errors.Add(new("Longitud", "La longitud debe ser mayor a 0"));
+
+        if (comando?.Profundidad.HasValue == true && comando.Profundidad <= 0)
+            errors.Add(new("Profundidad", "La profundidad debe ser mayor a 0"));
+
+        if (comando?.Altura.HasValue == true && comando.Altura <= 0)
+            errors.Add(new("Altura", "La altura debe ser mayor a 0"));
+
+        return errors.Any()
+            ? Result<ActualizarMuebleComando>.Invalid(errors.ToArray())
+            : Result<ActualizarMuebleComando>.Success(comando!);
     }
+
+    private Result<EliminarMuebleComando> ValidarEntrada(EliminarMuebleComando comando)
+    {
+        var errors = new List<ValidationError>();
+
+        if (comando == null)
+            errors.Add(new("comando", "El comando es requerido"));
+
+        if (comando?.Id <= 0)
+            errors.Add(new("Id", "El ID debe ser mayor a 0"));
+
+        return errors.Any()
+            ? Result<EliminarMuebleComando>.Invalid(errors.ToArray())
+            : Result<EliminarMuebleComando>.Success(comando!);
+    }
+
     protected override BaseDto MapearFilaADto(DataRow fila)
     {
         return new MuebleDto

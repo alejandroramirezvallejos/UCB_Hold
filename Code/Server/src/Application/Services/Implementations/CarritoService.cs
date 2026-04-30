@@ -1,3 +1,4 @@
+using Ardalis.Result;
 using IMT_Reservas.Server.Application.ResponseDTOs;
 using IMT_Reservas.Server.Application.RequestDTOs.Carrito;
 using IMT_Reservas.Server.Shared.Common;
@@ -11,28 +12,31 @@ public class CarritoService
     private readonly CarritoRepository _repository;
     public CarritoService(CarritoRepository repository) => _repository = repository;
 
-    public IEnumerable<FechaNoDisponibleDto> ObtenerFechasNoDisponibles(ObtenerFechasNoDisponiblesComando input)
+    public Result<List<FechaNoDisponibleDto>> ObtenerFechasNoDisponibles(ObtenerFechasNoDisponiblesComando input)
     {
         if (string.IsNullOrEmpty(input.Carrito))
-            throw new ArgumentException("El carrito no puede estar vacío.");
+            return Result<List<FechaNoDisponibleDto>>.Invalid(new ValidationError("Carrito", "El carrito no puede estar vacío"));
 
-        var carritoDict = JsonSerializer.Deserialize<Dictionary<int, int>>(input.Carrito)
-            ?? throw new ArgumentException("El carrito tiene un formato inválido.");
+        var carritoDict = JsonSerializer.Deserialize<Dictionary<int, int>>(input.Carrito);
+        if (carritoDict == null)
+            return Result<List<FechaNoDisponibleDto>>.Invalid(new ValidationError("Carrito", "El carrito tiene un formato inválido"));
 
-        return _repository.ObtenerFechasNoDisponibles(input.FechaInicio, input.FechaFin, carritoDict);
+        var resultado = _repository.ObtenerFechasNoDisponibles(input.FechaInicio, input.FechaFin, carritoDict);
+        return Result<List<FechaNoDisponibleDto>>.Success(resultado?.ToList() ?? new List<FechaNoDisponibleDto>());
     }
 
-    public IEnumerable<DisponibilidadEquipoDto> ObtenerDisponibilidadEquiposPorFechasYGrupos(ObtenerDisponibilidadEquiposComando input)
+    public Result<List<DisponibilidadEquipoDto>> ObtenerDisponibilidadEquiposPorFechasYGrupos(ObtenerDisponibilidadEquiposComando input)
     {
         if (input == null)
-            throw new ArgumentNullException(nameof(input), "El comando no puede ser nulo.");
+            return Result<List<DisponibilidadEquipoDto>>.Invalid(new ValidationError("input", "El comando no puede ser nulo"));
 
         if (input.ArrayIds == null || input.ArrayIds.Length == 0)
-            throw new ArgumentException("El array de IDs no puede estar vacío.");
+            return Result<List<DisponibilidadEquipoDto>>.Invalid(new ValidationError("ArrayIds", "El array de IDs no puede estar vacío"));
 
         if (input.FechaFin < input.FechaInicio)
-            throw new ArgumentException("La fecha de fin no puede ser menor a la fecha de inicio.");
+            return Result<List<DisponibilidadEquipoDto>>.Invalid(new ValidationError("FechaFin", "La fecha de fin no puede ser menor a la fecha de inicio"));
 
-        return _repository.ObtenerDisponibilidadEquiposPorFechasYGrupos(input.FechaInicio, input.FechaFin, input.ArrayIds);
+        var resultado = _repository.ObtenerDisponibilidadEquiposPorFechasYGrupos(input.FechaInicio, input.FechaFin, input.ArrayIds);
+        return Result<List<DisponibilidadEquipoDto>>.Success(resultado?.ToList() ?? new List<DisponibilidadEquipoDto>());
     }
 }

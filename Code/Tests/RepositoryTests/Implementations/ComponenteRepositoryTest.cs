@@ -1,11 +1,11 @@
-﻿using Moq;
+using Moq;
 using System.Data;
-using Microsoft.Extensions.Configuration;
+using Ardalis.Result;
 
 namespace IMT_Reservas.Tests.RepositoryTests
 {
     [TestFixture]
-    public class ComponenteRepositoryTest : IComponenteRepositoryTest
+    public class ComponenteRepositoryTest 
     {
         private Mock<IExecuteQuery>    _ejecutarConsultaMock;
         private IComponenteRepository _componenteRepositorio;
@@ -56,7 +56,7 @@ namespace IMT_Reservas.Tests.RepositoryTests
         public void Eliminar_LlamaExecuteSpNR_ConParametrosCorrectos()
         {
             int id = 4;
-            _componenteRepositorio.Eliminar(id);
+            _componenteRepositorio.Eliminar(new EliminarComponenteComando(id));
 
             _ejecutarConsultaMock.Verify(e => e.EjecutarSpNR(
                 It.Is<string>(s => s.Contains("eliminar_componente")),
@@ -70,9 +70,10 @@ namespace IMT_Reservas.Tests.RepositoryTests
             _ejecutarConsultaMock.Setup(e => e.EjecutarSpNR(It.IsAny<string>(), It.IsAny<Dictionary<string, object?>>()))
                            .Throws(new Exception("test exception"));
 
-            Assert.Throws<ErrorRepository>(() => _componenteRepositorio.Crear(new CrearComponenteComando("Test", "Test", "Test", 1, "Test", 1, "Test")));
-            Assert.Throws<ErrorRepository>(() => _componenteRepositorio.Actualizar(new ActualizarComponenteComando(1, "Test", "Test", "Test", 1, "Test", 1, "Test")));
-            Assert.Throws<ErrorRepository>(() => _componenteRepositorio.Eliminar(1));
+            Assert.Throws<Exception>(() => _componenteRepositorio.Crear(new CrearComponenteComando("Test", "Test", "Test", 1, "Test", 1, "Test")));
+            Assert.Throws<Exception>(() => _componenteRepositorio.Actualizar(new ActualizarComponenteComando(1, "Test", "Test", "Test", 1, "Test", 1, "Test")));
+            Assert.Throws<Exception>(() => _componenteRepositorio.Eliminar(new EliminarComponenteComando(1)));
         }
     }
 }
+

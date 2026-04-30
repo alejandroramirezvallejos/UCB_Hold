@@ -1,19 +1,18 @@
 using System.Data;
-using Npgsql;
+using Ardalis.Result;
 using IMT_Reservas.Server.Infrastructure.MongoDb;
 using MongoDB.Driver;
 using MongoDB.Driver.GridFS;
 using Microsoft.AspNetCore.Http;
 using IMT_Reservas.Server.Application.ResponseDTOs;
+using Npgsql;
 
-public class PrestamoRepository :
-    IEliminarRepository<EliminarPrestamoComando>,
-    IObtenerTodosRepository<CrearPrestamoComando, DataTable>
+public class PrestamoRepository : IPrestamoRepository
 {
     private readonly IExecuteQuery _ejecutarConsulta;
     private readonly MongoDbContexto _mongoDbContext;
     private readonly IGridFSBucket _gridFsBucket;
-    
+
     public PrestamoRepository(IExecuteQuery ejecutarConsulta, MongoDbContexto mongoDbContext, IGridFSBucket gridFsBucket)
     {
         _ejecutarConsulta = ejecutarConsulta;
@@ -21,7 +20,7 @@ public class PrestamoRepository :
         _gridFsBucket = gridFsBucket;
     }
 
-    public int CrearPrestamo(CrearPrestamoComando comando)
+    public Result<int> CrearPrestamo(CrearPrestamoComando comando)
     {
         const string sql = @"INSERT INTO public.prestamos (fecha_prestamo_esperada, fecha_devolucion_esperada, observacion, carnet, estado_eliminado)
                              VALUES (@fechaPrestamoEsperada, @fechaDevolucionEsperada, @observacion, @carnetUsuario, FALSE)
@@ -33,13 +32,9 @@ public class PrestamoRepository :
             ["observacion"] = comando.Observacion ?? (object)DBNull.Value,
             ["carnetUsuario"] = comando.CarnetUsuario!
         };
-        try
-        {
-            var dt = _ejecutarConsulta.EjecutarFuncion(sql, parametros);
-            return Convert.ToInt32(dt.Rows[0][0]);
-        }
-        catch (NpgsqlException ex) { throw new ErrorDataBase($"Error de base de datos al crear préstamo: {ex.Message}", ex.SqlState, null, ex); }
-        catch (Exception ex) { throw new ErrorRepository($"Error del repositorio al crear préstamo: {ex.Message}", ex); }
+        var dt = _ejecutarConsulta.EjecutarFuncion(sql, parametros);
+        var idPrestamo = Convert.ToInt32(dt.Rows[0][0]);
+        return Result<int>.Created(idPrestamo);
     }
 
     public void CrearDetallePrestamo(int idPrestamo, int idEquipo)
@@ -51,9 +46,7 @@ public class PrestamoRepository :
             ["idPrestamo"] = idPrestamo,
             ["idEquipo"] = idEquipo
         };
-        try { _ejecutarConsulta.EjecutarSpNR(sql, parametros); }
-        catch (NpgsqlException ex) { throw new ErrorDataBase($"Error de base de datos al crear detalle préstamo: {ex.Message}", ex.SqlState, null, ex); }
-        catch (Exception ex) { throw new ErrorRepository($"Error del repositorio al crear detalle préstamo: {ex.Message}", ex); }
+        _ejecutarConsulta.EjecutarSpNR(sql, parametros);
     }
 
     public int? ObtenerEquipoDisponiblePorGrupo(int idGrupoEquipo, DateTime fechaPrestamoEsperada, DateTime fechaDevolucionEsperada)
@@ -123,24 +116,19 @@ public class PrestamoRepository :
         ActualizarIdContrato(idPrestamo, contratoDoc.FileId);
     }
 
-    public void Eliminar(EliminarPrestamoComando comando)
+    public Result<PrestamoDto> Eliminar(EliminarPrestamoComando comando)
     {
-        // Eliminar detalles primero
         const string sqlDetalles = @"UPDATE public.detalles_prestamos SET estado_eliminado = TRUE WHERE id_prestamo = @id";
         var parametrosDetalles = new Dictionary<string, object?> { ["id"] = comando.Id };
-        try { _ejecutarConsulta.EjecutarSpNR(sqlDetalles, parametrosDetalles); }
-        catch (NpgsqlException ex) { throw new ErrorDataBase($"Error de base de datos al eliminar detalles préstamo: {ex.Message}", ex.SqlState, null, ex); }
-        catch (Exception ex) { throw new ErrorRepository($"Error del repositorio al eliminar detalles préstamo: {ex.Message}", ex); }
+        _ejecutarConsulta.EjecutarSpNR(sqlDetalles, parametrosDetalles);
 
-        // Eliminar préstamo
         const string sql = @"UPDATE public.prestamos SET estado_eliminado = TRUE WHERE id_prestamo = @id";
         var parametros = new Dictionary<string, object?> { ["id"] = comando.Id };
-        try { _ejecutarConsulta.EjecutarSpNR(sql, parametros); }
-        catch (NpgsqlException ex) { throw new ErrorDataBase($"Error de base de datos al eliminar préstamo: {ex.Message}", ex.SqlState, null, ex); }
-        catch (Exception ex) { throw new ErrorRepository($"Error del repositorio al eliminar préstamo: {ex.Message}", ex); }
+        _ejecutarConsulta.EjecutarSpNR(sql, parametros);
+        return Result<PrestamoDto>.Success(new PrestamoDto { Id = comando.Id });
     }
-    
-    public DataTable ObtenerTodos()
+
+    public Result<DataTable> ObtenerTodos()
     {
         const string sql = @"SELECT p.id_prestamo, u.carnet, u.nombre, u.apellido_paterno, u.telefono,
             ge.nombre AS nombre_grupo_equipo, CAST(e.codigo_imt AS TEXT) AS codigo_imt,
@@ -156,9 +144,10 @@ public class PrestamoRepository :
             LEFT JOIN public.gaveteros AS g ON e.id_gavetero = g.id_gavetero
             LEFT JOIN public.muebles AS m ON g.id_mueble = m.id_mueble
             WHERE p.estado_eliminado = FALSE AND dp.estado_eliminado = FALSE";
-        try { return _ejecutarConsulta.EjecutarFuncion(sql, new Dictionary<string, object?>()); }
-        catch (NpgsqlException ex) { throw new ErrorDataBase($"Error de base de datos al obtener préstamos: {ex.Message}", ex.SqlState, null, ex); }
-        catch (Exception ex) { throw new ErrorRepository($"Error del repositorio al obtener préstamos: {ex.Message}", ex); }
+        var dt = _ejecutarConsulta.EjecutarFuncion(sql, new Dictionary<string, object?>());
+        return dt.Rows.Count == 0
+            ? Result<DataTable>.NotFound("No se encontró el registro especificado")
+            : Result<DataTable>.Success(dt);
     }
     
     public DataTable ObtenerPorCarnetYEstadoPrestamo(string carnetUsuario, string estadoPrestamo)
@@ -196,11 +185,9 @@ public class PrestamoRepository :
             ["idPrestamo"] = comando.Id,
             ["estadoPrestamo"] = comando.EstadoPrestamo
         };
-        try { _ejecutarConsulta.EjecutarSpNR(sql, parametros); }
-        catch (NpgsqlException ex) { throw new ErrorDataBase($"Error de base de datos al actualizar estado del préstamo: {ex.Message}", ex.SqlState, null, ex); }
-        catch (Exception ex) { throw new ErrorRepository($"Error del repositorio al actualizar estado del préstamo: {ex.Message}", ex); }
+        _ejecutarConsulta.EjecutarSpNR(sql, parametros);
     }
-    
+
     public void ActualizarIdContrato(int prestamoId, string idContrato)
     {
         const string sql = @"UPDATE public.prestamos SET id_contrato = @idContrato WHERE id_prestamo = @idPrestamo";
@@ -209,9 +196,7 @@ public class PrestamoRepository :
             ["idPrestamo"] = prestamoId,
             ["idContrato"] = idContrato
         };
-        try { _ejecutarConsulta.EjecutarSpNR(sql, parametros); }
-        catch (NpgsqlException ex) { throw new ErrorDataBase($"Error de base de datos al actualizar el id del contrato: {ex.Message}", ex.SqlState, null, ex); }
-        catch (Exception ex) { throw new ErrorRepository($"Error del repositorio al actualizar el id del contrato: {ex.Message}", ex); }
+        _ejecutarConsulta.EjecutarSpNR(sql, parametros);
     }
 
     public List<byte[]> ObtenerContratoPorPrestamo(ObtenerContratoPorPrestamoConsulta consulta)

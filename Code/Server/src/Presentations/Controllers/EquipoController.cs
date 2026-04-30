@@ -1,36 +1,36 @@
 using Microsoft.AspNetCore.Mvc;
-using IMT_Reservas.Server.Shared.Common;
-
-namespace API.Controllers;
+using Ardalis.Result;
+using Ardalis.Result.AspNetCore;
 
 [ApiController]
 [Route("api/[controller]")]
+[TranslateResultToActionResult]
 public class EquipoController : ControllerBase
 {
-    private readonly EquipoService servicio;
-    public EquipoController(EquipoService servicio) => this.servicio = servicio;
+    private readonly IEquipoService _servicio;
+    public EquipoController(IEquipoService servicio) => _servicio = servicio;
 
     [HttpPost]
-    public IActionResult Crear([FromBody] CrearEquipoComando input)
+    public Result<EquipoDto> Crear([FromBody] CrearEquipoComando input)
     {
-        servicio.Crear(input); return Created("", new { mensaje = "Equipo creado exitosamente" });
+        return _servicio.Crear(input);
     }
 
     [HttpGet]
-    public IActionResult ObtenerTodos()
+    public Result<List<EquipoDto>> ObtenerTodos()
     {
-        return Ok(servicio.ObtenerTodos());
+        return _servicio.ObtenerTodos();
     }
 
     [HttpPut]
-    public IActionResult Actualizar([FromBody] ActualizarEquipoComando input)
+    public Result<EquipoDto> Actualizar([FromBody] ActualizarEquipoComando input)
     {
-        servicio.Actualizar(input); return Ok(new { mensaje = "Equipo actualizado exitosamente" });
+        return _servicio.Actualizar(input);
     }
 
     [HttpDelete("{id}")]
-    public IActionResult Eliminar(int id)
+    public Result<EquipoDto> Eliminar(int id)
     {
-        servicio.Eliminar(new EliminarEquipoComando(id)); return NoContent();
+        return _servicio.Eliminar(new EliminarEquipoComando(id));
     }
 }

@@ -1,7 +1,5 @@
-using Microsoft.AspNetCore.Mvc;
-using Microsoft.Extensions.Configuration;
 using Moq;
-using IMT_Reservas.Server.Application.Interfaces;
+using Ardalis.Result;
 using IMT_Reservas.Server.Shared.Common;
 
 namespace IMT_Reservas.Tests.ControllerTests
@@ -22,44 +20,43 @@ namespace IMT_Reservas.Tests.ControllerTests
         [Test]
         public void GetAccesorios_ConDatos_RetornaOk()
         {
-            List<AccesorioDto> accesoriosEsperados = new List<AccesorioDto>
+            var accesoriosEsperados = new List<AccesorioDto>
             {
                 new AccesorioDto { Id = 2, Nombre = "cable usb", Modelo = "dasd" },
                 new AccesorioDto { Id = 3, Nombre = "string", Modelo = "string" }
             };
-            _accesorioServiceMock.Setup(s => s.ObtenerTodosAccesorios()).Returns(accesoriosEsperados);
-            IActionResult resultadoAccion = _accesoriosController.ObtenerTodos();
-            Assert.That(resultadoAccion, Is.InstanceOf<OkObjectResult>());
-            OkObjectResult okObjectResult = (OkObjectResult)resultadoAccion;
-            Assert.That(okObjectResult.Value, Is.InstanceOf<List<AccesorioDto>>().And.Count.EqualTo(accesoriosEsperados.Count));
+            _accesorioServiceMock.Setup(s => s.ObtenerTodos()).Returns(Result<List<AccesorioDto>>.Success(accesoriosEsperados));
+            var resultado = _accesoriosController.ObtenerTodos();
+            Assert.That(resultado.IsSuccess, Is.True);
+            Assert.That(resultado.Value, Has.Count.EqualTo(accesoriosEsperados.Count));
         }
 
         [Test]
         public void GetAccesorios_SinDatos_RetornaOkVacia()
         {
-            List<AccesorioDto> accesoriosEsperados = new List<AccesorioDto>();
-            _accesorioServiceMock.Setup(s => s.ObtenerTodosAccesorios()).Returns(accesoriosEsperados);
-            IActionResult resultadoAccion = _accesoriosController.ObtenerTodos();
-            Assert.That(resultadoAccion, Is.InstanceOf<OkObjectResult>());
-            OkObjectResult okObjectResult = (OkObjectResult)resultadoAccion;
-            Assert.That(okObjectResult.Value, Is.InstanceOf<List<AccesorioDto>>().And.Empty);
+            _accesorioServiceMock.Setup(s => s.ObtenerTodos()).Returns(Result<List<AccesorioDto>>.Success(new List<AccesorioDto>()));
+            var resultado = _accesoriosController.ObtenerTodos();
+            Assert.That(resultado.IsSuccess, Is.True);
+            Assert.That(resultado.Value, Is.Empty);
         }
 
         [Test]
         public void GetAccesorios_ServicioError_RetornaBadRequest()
         {
-            _accesorioServiceMock.Setup(s => s.ObtenerTodosAccesorios()).Throws(new System.Exception("Error servicio"));
-            IActionResult resultadoAccion = _accesoriosController.ObtenerTodos();
-            Assert.That(resultadoAccion, Is.InstanceOf<BadRequestObjectResult>());
+            _accesorioServiceMock.Setup(s => s.ObtenerTodos()).Returns(Result<List<AccesorioDto>>.Error("Error servicio"));
+            var resultado = _accesoriosController.ObtenerTodos();
+            Assert.That(resultado.IsSuccess, Is.False);
+            Assert.That(resultado.Status, Is.EqualTo(ResultStatus.Error));
         }
 
         [Test]
         public void CrearAccesorio_Valido_RetornaCreated()
         {
-            CrearAccesorioComando comando = new CrearAccesorioComando("Nuevo Cable", "NC-01", "Electrónico", 777, "Un cable nuevo", 20.00, "http://example.com/nc01.pdf");
-            _accesorioServiceMock.Setup(s => s.CrearAccesorio(comando));
-            IActionResult resultadoAccion = _accesoriosController.Crear(comando);
-            Assert.That(resultadoAccion, Is.InstanceOf<CreatedResult>());
+            var comando = new CrearAccesorioComando("Nuevo Cable", "NC-01", "Electrónico", 777, "Un cable nuevo", 20.00, "http://example.com/nc01.pdf");
+            var dto = new AccesorioDto { Id = 1, Nombre = "Nuevo Cable" };
+            _accesorioServiceMock.Setup(s => s.Crear(It.IsAny<CrearAccesorioComando>())).Returns(Result<AccesorioDto>.Created(dto));
+            var resultado = _accesoriosController.Crear(comando);
+            Assert.That(resultado.Status, Is.EqualTo(ResultStatus.Created));
         }
 
         private static IEnumerable<object[]> FuenteCasos_CrearAccesorio_BadRequest()
@@ -69,45 +66,44 @@ namespace IMT_Reservas.Tests.ControllerTests
             yield return new object[] { new CrearAccesorioComando(new string('a', 257), "ModeloX", "TipoY", 1005, "desc", 10.0, null), new ErrorLongitudInvalida("nombre del accesorio", 256) };
             yield return new object[] { new CrearAccesorioComando("NombreValido", "ModeloX", "TipoY", 0, "desc", 10.0, null), new ErrorCodigoImtRequerido() };
             yield return new object[] { new CrearAccesorioComando("NombreValido", "ModeloX", "TipoY", 1, "desc", -1.0, null), new ErrorValorNegativo("precio") };
-            yield return new object[] { new CrearAccesorioComando("ReferenciaInv", "ModeloR", "TipoB", 1007, "desc", 10.0, null), new ErrorReferenciaInvalida("Referencia Inválida") }; 
+            yield return new object[] { new CrearAccesorioComando("ReferenciaInv", "ModeloR", "TipoB", 1007, "desc", 10.0, null), new ErrorReferenciaInvalida("Referencia Inválida") };
         }
 
         [Test]
         [TestCaseSource(nameof(FuenteCasos_CrearAccesorio_BadRequest))]
         public void CrearAccesorio_Invalido_RetornaBadRequest(CrearAccesorioComando comando, System.Exception excepcionLanzada)
         {
-            _accesorioServiceMock.Setup(s => s.CrearAccesorio(comando)).Throws(excepcionLanzada);
-            IActionResult resultadoAccion = _accesoriosController.Crear(comando);
-            Assert.That(resultadoAccion, Is.InstanceOf<BadRequestObjectResult>());
+            _accesorioServiceMock.Setup(s => s.Crear(It.IsAny<CrearAccesorioComando>())).Returns(Result<AccesorioDto>.Invalid(new ValidationError("campo", excepcionLanzada.Message)));
+            var resultado = _accesoriosController.Crear(comando);
+            Assert.That(resultado.Status, Is.EqualTo(ResultStatus.Invalid));
         }
 
         [Test]
         public void CrearAccesorio_RegistroExistente_RetornaConflict()
         {
-            CrearAccesorioComando comando = new CrearAccesorioComando("cable usb", "dasd", "Electrónico", 123, "desc", 15.99, null);
-            _accesorioServiceMock.Setup(s => s.CrearAccesorio(It.IsAny<CrearAccesorioComando>())).Throws(new ErrorRegistroYaExiste());
-            IActionResult resultadoAccion = _accesoriosController.Crear(comando);
-            Assert.That(resultadoAccion, Is.InstanceOf<ConflictObjectResult>());
+            var comando = new CrearAccesorioComando("cable usb", "dasd", "Electrónico", 123, "desc", 15.99, null);
+            _accesorioServiceMock.Setup(s => s.Crear(It.IsAny<CrearAccesorioComando>())).Returns(Result<AccesorioDto>.Conflict());
+            var resultado = _accesoriosController.Crear(comando);
+            Assert.That(resultado.Status, Is.EqualTo(ResultStatus.Conflict));
         }
-        
+
         [Test]
         public void CrearAccesorio_ServicioError_RetornaError500()
         {
-            CrearAccesorioComando comando = new CrearAccesorioComando("Error General", "ModeloErr", "TipoErr", 9999, "desc", 0, null);
-            _accesorioServiceMock.Setup(s => s.CrearAccesorio(It.IsAny<CrearAccesorioComando>())).Throws(new System.Exception("Error General Servidor"));
-            IActionResult resultadoAccion = _accesoriosController.Crear(comando);
-            Assert.That(resultadoAccion, Is.InstanceOf<ObjectResult>());
-            ObjectResult objectResult = resultadoAccion as ObjectResult;
-            Assert.That(objectResult.StatusCode, Is.EqualTo(500));
+            var comando = new CrearAccesorioComando("Error General", "ModeloErr", "TipoErr", 9999, "desc", 0, null);
+            _accesorioServiceMock.Setup(s => s.Crear(It.IsAny<CrearAccesorioComando>())).Returns(Result<AccesorioDto>.Error("Error General Servidor"));
+            var resultado = _accesoriosController.Crear(comando);
+            Assert.That(resultado.Status, Is.EqualTo(ResultStatus.Error));
         }
-        
+
         [Test]
         public void ActualizarAccesorio_Valido_RetornaOk()
         {
-            ActualizarAccesorioComando comando = new ActualizarAccesorioComando(2, "cable usb-c", "dasd-2", "Electrónico", 123, "cable usb actualizado", 19.99, "https://datasheet.example.com/c123-v2.pdf");
-            _accesorioServiceMock.Setup(s => s.ActualizarAccesorio(comando));
-            IActionResult resultadoAccion = _accesoriosController.Actualizar(comando);
-            Assert.That(resultadoAccion, Is.InstanceOf<OkObjectResult>());
+            var comando = new ActualizarAccesorioComando(2, "cable usb-c", "dasd-2", "Electrónico", 123, "cable usb actualizado", 19.99, "https://datasheet.example.com/c123-v2.pdf");
+            var dto = new AccesorioDto { Id = 2, Nombre = "cable usb-c" };
+            _accesorioServiceMock.Setup(s => s.Actualizar(It.IsAny<ActualizarAccesorioComando>())).Returns(Result<AccesorioDto>.Success(dto));
+            var resultado = _accesoriosController.Actualizar(comando);
+            Assert.That(resultado.IsSuccess, Is.True);
         }
 
         private static IEnumerable<object[]> FuenteCasos_ActualizarAccesorio_BadRequest()
@@ -123,47 +119,46 @@ namespace IMT_Reservas.Tests.ControllerTests
         [TestCaseSource(nameof(FuenteCasos_ActualizarAccesorio_BadRequest))]
         public void ActualizarAccesorio_Invalido_RetornaBadRequest(ActualizarAccesorioComando comando, System.Exception excepcionLanzada)
         {
-            _accesorioServiceMock.Setup(s => s.ActualizarAccesorio(comando)).Throws(excepcionLanzada);
-            IActionResult resultadoAccion = _accesoriosController.Actualizar(comando);
-            Assert.That(resultadoAccion, Is.InstanceOf<BadRequestObjectResult>());
+            _accesorioServiceMock.Setup(s => s.Actualizar(It.IsAny<ActualizarAccesorioComando>())).Returns(Result<AccesorioDto>.Invalid(new ValidationError("campo", excepcionLanzada.Message)));
+            var resultado = _accesoriosController.Actualizar(comando);
+            Assert.That(resultado.Status, Is.EqualTo(ResultStatus.Invalid));
         }
 
         [Test]
         public void ActualizarAccesorio_NoEncontrado_RetornaNotFound()
         {
-            ActualizarAccesorioComando comando = new ActualizarAccesorioComando(99, "NoExiste", null, null, null, null, null, null); 
-            _accesorioServiceMock.Setup(s => s.ActualizarAccesorio(It.IsAny<ActualizarAccesorioComando>())).Throws(new ErrorRegistroNoEncontrado());
-            IActionResult resultadoAccion = _accesoriosController.Actualizar(comando);
-            Assert.That(resultadoAccion, Is.InstanceOf<NotFoundObjectResult>());
+            var comando = new ActualizarAccesorioComando(99, "NoExiste", null, null, null, null, null, null);
+            _accesorioServiceMock.Setup(s => s.Actualizar(It.IsAny<ActualizarAccesorioComando>())).Returns(Result<AccesorioDto>.NotFound());
+            var resultado = _accesoriosController.Actualizar(comando);
+            Assert.That(resultado.Status, Is.EqualTo(ResultStatus.NotFound));
         }
 
         [Test]
         public void ActualizarAccesorio_RegistroExistente_RetornaConflict()
         {
-            ActualizarAccesorioComando comando = new ActualizarAccesorioComando(1, "cable usb", null, null, 1002, null, null, null);
-            _accesorioServiceMock.Setup(s => s.ActualizarAccesorio(It.IsAny<ActualizarAccesorioComando>())).Throws(new ErrorRegistroYaExiste());
-            IActionResult resultadoAccion = _accesoriosController.Actualizar(comando);
-            Assert.That(resultadoAccion, Is.InstanceOf<ConflictObjectResult>());
+            var comando = new ActualizarAccesorioComando(1, "cable usb", null, null, 1002, null, null, null);
+            _accesorioServiceMock.Setup(s => s.Actualizar(It.IsAny<ActualizarAccesorioComando>())).Returns(Result<AccesorioDto>.Conflict());
+            var resultado = _accesoriosController.Actualizar(comando);
+            Assert.That(resultado.Status, Is.EqualTo(ResultStatus.Conflict));
         }
 
         [Test]
         public void ActualizarAccesorio_ServicioError_RetornaError500()
         {
-            ActualizarAccesorioComando comando = new ActualizarAccesorioComando(1, "Error General", null, null, null, null, null, null);
-            _accesorioServiceMock.Setup(s => s.ActualizarAccesorio(It.IsAny<ActualizarAccesorioComando>())).Throws(new System.Exception("Error General Servidor"));
-            IActionResult resultadoAccion = _accesoriosController.Actualizar(comando);
-            Assert.That(resultadoAccion, Is.InstanceOf<ObjectResult>());
-            ObjectResult objectResult = resultadoAccion as ObjectResult;
-            Assert.That(objectResult.StatusCode, Is.EqualTo(500));
+            var comando = new ActualizarAccesorioComando(1, "Error General", null, null, null, null, null, null);
+            _accesorioServiceMock.Setup(s => s.Actualizar(It.IsAny<ActualizarAccesorioComando>())).Returns(Result<AccesorioDto>.Error("Error General Servidor"));
+            var resultado = _accesoriosController.Actualizar(comando);
+            Assert.That(resultado.Status, Is.EqualTo(ResultStatus.Error));
         }
 
         [Test]
         public void EliminarAccesorio_Valido_RetornaNoContent()
         {
             int idValido = 3;
-            _accesorioServiceMock.Setup(s => s.EliminarAccesorio(It.Is<EliminarAccesorioComando>(c => c.Id == idValido)));
-            IActionResult resultadoAccion = _accesoriosController.Eliminar(idValido);
-            Assert.That(resultadoAccion, Is.InstanceOf<NoContentResult>());
+            var dto = new AccesorioDto { Id = idValido };
+            _accesorioServiceMock.Setup(s => s.Eliminar(It.Is<EliminarAccesorioComando>(c => c.Id == idValido))).Returns(Result<AccesorioDto>.Success(dto));
+            var resultado = _accesoriosController.Eliminar(idValido);
+            Assert.That(resultado.IsSuccess, Is.True);
         }
 
         private static IEnumerable<object[]> FuenteCasos_EliminarAccesorio_BadRequest()
@@ -175,38 +170,36 @@ namespace IMT_Reservas.Tests.ControllerTests
         [TestCaseSource(nameof(FuenteCasos_EliminarAccesorio_BadRequest))]
         public void EliminarAccesorio_Invalido_RetornaBadRequest(int idAccesorio, System.Exception excepcionLanzada)
         {
-            _accesorioServiceMock.Setup(s => s.EliminarAccesorio(It.Is<EliminarAccesorioComando>(c => c.Id == idAccesorio))).Throws(excepcionLanzada);
-            IActionResult resultadoAccion = _accesoriosController.Eliminar(idAccesorio);
-            Assert.That(resultadoAccion, Is.InstanceOf<BadRequestObjectResult>());
+            _accesorioServiceMock.Setup(s => s.Eliminar(It.IsAny<EliminarAccesorioComando>())).Returns(Result<AccesorioDto>.Invalid(new ValidationError("Id", excepcionLanzada.Message)));
+            var resultado = _accesoriosController.Eliminar(idAccesorio);
+            Assert.That(resultado.Status, Is.EqualTo(ResultStatus.Invalid));
         }
 
         [Test]
         public void EliminarAccesorio_NoEncontrado_RetornaNotFound()
         {
             int idNoExistente = 99;
-            _accesorioServiceMock.Setup(s => s.EliminarAccesorio(It.Is<EliminarAccesorioComando>(c => c.Id == idNoExistente))).Throws(new ErrorRegistroNoEncontrado());
-            IActionResult resultadoAccion = _accesoriosController.Eliminar(idNoExistente);
-            Assert.That(resultadoAccion, Is.InstanceOf<NotFoundObjectResult>());
+            _accesorioServiceMock.Setup(s => s.Eliminar(It.IsAny<EliminarAccesorioComando>())).Returns(Result<AccesorioDto>.NotFound());
+            var resultado = _accesoriosController.Eliminar(idNoExistente);
+            Assert.That(resultado.Status, Is.EqualTo(ResultStatus.NotFound));
         }
 
         [Test]
         public void EliminarAccesorio_EnUso_RetornaConflict()
         {
             int idEnUso = 2;
-            _accesorioServiceMock.Setup(s => s.EliminarAccesorio(It.Is<EliminarAccesorioComando>(c => c.Id == idEnUso))).Throws(new ErrorRegistroEnUso());
-            IActionResult resultadoAccion = _accesoriosController.Eliminar(idEnUso);
-            Assert.That(resultadoAccion, Is.InstanceOf<ConflictObjectResult>());
+            _accesorioServiceMock.Setup(s => s.Eliminar(It.IsAny<EliminarAccesorioComando>())).Returns(Result<AccesorioDto>.Conflict());
+            var resultado = _accesoriosController.Eliminar(idEnUso);
+            Assert.That(resultado.Status, Is.EqualTo(ResultStatus.Conflict));
         }
 
         [Test]
         public void EliminarAccesorio_ServicioError_RetornaError500()
         {
             int idErrorGeneral = 4;
-            _accesorioServiceMock.Setup(s => s.EliminarAccesorio(It.Is<EliminarAccesorioComando>(c => c.Id == idErrorGeneral))).Throws(new System.Exception("Error General Servidor"));
-            IActionResult resultadoAccion = _accesoriosController.Eliminar(idErrorGeneral);
-            Assert.That(resultadoAccion, Is.InstanceOf<ObjectResult>());
-            ObjectResult objectResult = resultadoAccion as ObjectResult;
-            Assert.That(objectResult.StatusCode, Is.EqualTo(500));
+            _accesorioServiceMock.Setup(s => s.Eliminar(It.IsAny<EliminarAccesorioComando>())).Returns(Result<AccesorioDto>.Error("Error General Servidor"));
+            var resultado = _accesoriosController.Eliminar(idErrorGeneral);
+            Assert.That(resultado.Status, Is.EqualTo(ResultStatus.Error));
         }
     }
 }

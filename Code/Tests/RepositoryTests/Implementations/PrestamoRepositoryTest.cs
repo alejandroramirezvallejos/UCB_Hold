@@ -1,16 +1,14 @@
-﻿using Moq;
+using Moq;
 using System.Data;
-using IMT_Reservas.Server.Shared.Common;
-using Microsoft.AspNetCore.Http;
-using IMT_Reservas.Server.Infrastructure.MongoDb;
+using Ardalis.Result;
 using MongoDB.Driver;
+using IMT_Reservas.Server.Infrastructure.MongoDb;
 using MongoDB.Driver.GridFS;
-using IMT_Reservas.Server.Application.ResponseDTOs;
 
 namespace IMT_Reservas.Tests.RepositoryTests
 {
     [TestFixture]
-    public class PrestamoRepositoryTest : IPrestamoRepositoryTest
+    public class PrestamoRepositoryTest 
     {
         private Mock<IExecuteQuery>  _ejecutarConsultaMock;
         private Mock<MongoDbContexto> _mongoDbContextoMock;
@@ -46,14 +44,14 @@ namespace IMT_Reservas.Tests.RepositoryTests
                 It.IsAny<Dictionary<string, object?>>()))
                 .Returns(dt);
 
-            var result = _prestamoRepositorio.Crear(comando);
+            var result = _prestamoRepositorio.CrearPrestamo(comando);
 
             _ejecutarConsultaMock.Verify(e => e.EjecutarFuncion(
                 It.Is<string>(s => s.Contains("insertar_y_obtener_prestamo")),
                 It.Is<Dictionary<string, object?>>(d => (string)d["carnetUsuario"] == comando.CarnetUsuario)
             ), Times.Once);
 
-            Assert.That(result.IdPrestamo, Is.EqualTo(123));
+            Assert.That(result.Value, Is.EqualTo(123));
         }
 
         [Test]
@@ -71,7 +69,7 @@ namespace IMT_Reservas.Tests.RepositoryTests
         public void Eliminar_LlamaExecuteSpNR_ConParametrosCorrectos()
         {
             int id = 19;
-            _prestamoRepositorio.Eliminar(id);
+            _prestamoRepositorio.Eliminar(new EliminarPrestamoComando(id));
 
             _ejecutarConsultaMock.Verify(e => e.EjecutarSpNR(
                 It.Is<string>(s => s.Contains("eliminar_prestamo")),
@@ -100,9 +98,10 @@ namespace IMT_Reservas.Tests.RepositoryTests
             _ejecutarConsultaMock.Setup(e => e.EjecutarSpNR(It.IsAny<string>(), It.IsAny<Dictionary<string, object?>>()))
                            .Throws(new System.Exception("test exception"));
 
-            Assert.Throws<ErrorRepository>(() => _prestamoRepositorio.Crear(new CrearPrestamoComando(new int[] { 1 }, System.DateTime.Now, System.DateTime.Now, "Test", "12890061", null)));
-            Assert.Throws<ErrorRepository>(() => _prestamoRepositorio.Eliminar(19));
-            Assert.Throws<ErrorRepository>(() => _prestamoRepositorio.ActualizarIdContrato(1, "contract-id"));
+            Assert.Throws<Exception>(() => _prestamoRepositorio.CrearPrestamo(new CrearPrestamoComando(new int[] { 1 }, System.DateTime.Now, System.DateTime.Now, "Test", "12890061", null)));
+            Assert.Throws<Exception>(() => _prestamoRepositorio.Eliminar(new EliminarPrestamoComando(19)));
+            Assert.Throws<Exception>(() => _prestamoRepositorio.ActualizarIdContrato(1, "contract-id"));
         }
     }
 }
+

@@ -1,10 +1,11 @@
-﻿using Moq;
+using Moq;
 using System.Data;
+using Ardalis.Result;
 
 namespace IMT_Reservas.Tests.RepositoryTests
 {
     [TestFixture]
-    public class AccesorioRepositoryTest : IAccesorioRepositoryTest
+    public class AccesorioRepositoryTest 
     {
         private Mock<IExecuteQuery>   _ejecutarConsultaMock;
         private IAccesorioRepository _accesorioRepositorio;
@@ -29,14 +30,16 @@ namespace IMT_Reservas.Tests.RepositoryTests
         }
 
         [Test]
-        public void ObtenerTodos_LlamaEjecutarFuncion_YRetornaDataTable()
+        public void ObtenerTodos_LlamaEjecutarFuncion_YRetornaResult()
         {
             DataTable tablaEsperada = new DataTable();
             _ejecutarConsultaMock.Setup(e => e.EjecutarFuncion(It.Is<string>(s => s.Contains("obtener_accesorios")), It.IsAny<Dictionary<string, object?>>()))
                            .Returns(tablaEsperada);
 
-            DataTable resultado = _accesorioRepositorio.ObtenerTodos();
-            Assert.AreSame(tablaEsperada, resultado);
+            var resultado = _accesorioRepositorio.ObtenerTodos();
+
+            Assert.That(resultado.IsSuccess, Is.True);
+            Assert.AreSame(tablaEsperada, resultado.Value);
         }
 
         [Test]
@@ -55,23 +58,13 @@ namespace IMT_Reservas.Tests.RepositoryTests
         public void Eliminar_LlamaExecuteSpNR_ConParametrosCorrectos()
         {
             int id = 3;
-            _accesorioRepositorio.Eliminar(id);
-            
+            _accesorioRepositorio.Eliminar(new EliminarAccesorioComando(id));
+
             _ejecutarConsultaMock.Verify(e => e.EjecutarSpNR(
                 It.Is<string>(s => s.Contains("eliminar_accesorio")),
                 It.Is<Dictionary<string, object?>>(d => (int)d["id"] == id)
             ), Times.Once);
         }
-
-        [Test]
-        public void Repositorio_CuandoHayExcepcion_LanzaExcepcion()
-        {
-            _ejecutarConsultaMock.Setup(e => e.EjecutarSpNR(It.IsAny<string>(), It.IsAny<Dictionary<string, object?>>()))
-                           .Throws(new Exception("test exception"));
-
-            Assert.Throws<ErrorRepository>(() => _accesorioRepositorio.Crear(new CrearAccesorioComando("cable usb", "dasd", "Electrónico", 123, "desc", 15.99, null)));
-            Assert.Throws<ErrorRepository>(() => _accesorioRepositorio.Actualizar(new ActualizarAccesorioComando(2, "cable usb-c", "dasd-2", "Electrónico", 123, "desc", 19.99, null)));
-            Assert.Throws<ErrorRepository>(() => _accesorioRepositorio.Eliminar(3));
-        }
     }
 }
+

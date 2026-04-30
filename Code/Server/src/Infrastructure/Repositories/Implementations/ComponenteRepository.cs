@@ -1,15 +1,12 @@
 using System.Data;
-using Npgsql;
-public class ComponenteRepository :
-    ICrearRepository<CrearComponenteComando>,
-    IActualizarRepository<ActualizarComponenteComando>,
-    IEliminarRepository<EliminarComponenteComando>,
-    IObtenerTodosRepository<CrearComponenteComando, DataTable>
+using Ardalis.Result;
+
+public class ComponenteRepository : IComponenteRepository
 {
     private readonly IExecuteQuery _ejecutarConsulta;
     public ComponenteRepository(IExecuteQuery ejecutarConsulta) => _ejecutarConsulta = ejecutarConsulta;
 
-    public void Crear(int idEquipo, CrearComponenteComando comando)
+    public Result<ComponenteDto> Crear(int idEquipo, CrearComponenteComando comando)
     {
         const string sql = @"INSERT INTO public.componentes (nombre, modelo, tipo, id_equipo, descripcion, precio_referencia, url_data_sheet, estado_eliminado)
                              VALUES (@nombre, @modelo, @tipo, @idEquipo, @descripcion, @precioReferencia, @urlDataSheet, FALSE)";
@@ -23,17 +20,22 @@ public class ComponenteRepository :
             ["precioReferencia"] = comando.PrecioReferencia ?? (object)DBNull.Value,
             ["urlDataSheet"] = comando.UrlDataSheet ?? (object)DBNull.Value
         };
-        try { _ejecutarConsulta.EjecutarSpNR(sql, parametros); }
-        catch (NpgsqlException ex) { throw new ErrorDataBase($"Error de base de datos al crear componente: {ex.Message}", ex.SqlState, null, ex); }
-        catch (Exception ex) { throw new ErrorRepository($"Error en repositorio al crear componente: {ex.Message}", "crear", "componente", ex); }
+        _ejecutarConsulta.EjecutarSpNR(sql, parametros);
+        var dto = new ComponenteDto
+        {
+            Nombre = comando.Nombre,
+            Modelo = comando.Modelo,
+            Tipo = comando.Tipo,
+            Descripcion = comando.Descripcion,
+            PrecioReferencia = comando.PrecioReferencia ?? 0
+        };
+        return Result<ComponenteDto>.Created(dto);
     }
 
-    public void Crear(CrearComponenteComando comando)
-    {
-        throw new InvalidOperationException("Use Crear(int idEquipo, CrearComponenteComando comando) en su lugar.");
-    }
+    public Result<ComponenteDto> Crear(CrearComponenteComando comando)
+        => Result<ComponenteDto>.Error("Use Crear(int idEquipo, CrearComponenteComando comando)");
 
-    public void Actualizar(int? idEquipo, ActualizarComponenteComando comando)
+    public Result<ComponenteDto> Actualizar(int? idEquipo, ActualizarComponenteComando comando)
     {
         const string sql = @"UPDATE public.componentes SET
             nombre = COALESCE(@nombre, nombre),
@@ -55,26 +57,31 @@ public class ComponenteRepository :
             ["precioReferencia"] = comando.PrecioReferencia ?? (object)DBNull.Value,
             ["urlDataSheet"] = comando.UrlDataSheet ?? (object)DBNull.Value
         };
-        try { _ejecutarConsulta.EjecutarSpNR(sql, parametros); }
-        catch (NpgsqlException ex) { throw new ErrorDataBase($"Error de base de datos al actualizar componente: {ex.Message}", ex.SqlState, null, ex); }
-        catch (Exception ex) { throw new ErrorRepository($"Error en repositorio al actualizar componente: {ex.Message}", "actualizar", "componente", ex); }
+        _ejecutarConsulta.EjecutarSpNR(sql, parametros);
+        var dto = new ComponenteDto
+        {
+            Id = comando.Id,
+            Nombre = comando.Nombre,
+            Modelo = comando.Modelo,
+            Tipo = comando.Tipo,
+            Descripcion = comando.Descripcion,
+            PrecioReferencia = comando.PrecioReferencia ?? 0
+        };
+        return Result<ComponenteDto>.Success(dto);
     }
 
-    public void Actualizar(ActualizarComponenteComando comando)
-    {
-        Actualizar(null, comando);
-    }
+    public Result<ComponenteDto> Actualizar(ActualizarComponenteComando comando)
+        => Actualizar(null, comando);
 
-    public void Eliminar(EliminarComponenteComando comando)
+    public Result<ComponenteDto> Eliminar(EliminarComponenteComando comando)
     {
         const string sql = @"UPDATE public.componentes SET estado_eliminado = TRUE WHERE id_componente = @id";
         var parametros = new Dictionary<string, object?> { ["id"] = comando.Id };
-        try { _ejecutarConsulta.EjecutarSpNR(sql, parametros); }
-        catch (NpgsqlException ex) { throw new ErrorDataBase($"Error de base de datos al eliminar componente: {ex.Message}", ex.SqlState, null, ex); }
-        catch (Exception ex) { throw new ErrorRepository($"Error en repositorio al eliminar componente: {ex.Message}", "eliminar", "componente", ex); }
+        _ejecutarConsulta.EjecutarSpNR(sql, parametros);
+        return Result<ComponenteDto>.Success(new ComponenteDto { Id = comando.Id });
     }
 
-    public DataTable ObtenerTodos()
+    public Result<DataTable> ObtenerTodos()
     {
         const string sql = @"SELECT c.id_componente, c.nombre AS nombre_componente, c.modelo AS modelo_componente,
             c.tipo AS tipo_componente, c.descripcion AS descripcion_componente,
@@ -84,10 +91,11 @@ public class ComponenteRepository :
             INNER JOIN public.equipos AS e ON c.id_equipo = e.id_equipo
             INNER JOIN public.grupos_equipos AS ge ON e.id_grupo_equipo = ge.id_grupo_equipo
             WHERE c.estado_eliminado = FALSE";
-        return _ejecutarConsulta.EjecutarFuncion(sql, new Dictionary<string, object?>());
+        var dt = _ejecutarConsulta.EjecutarFuncion(sql, new Dictionary<string, object?>());
+        return dt.Rows.Count == 0
+            ? Result<DataTable>.NotFound("No se encontró el registro especificado")
+            : Result<DataTable>.Success(dt);
     }
-
-    // --- Métodos auxiliares ---
 
     public bool ExisteActivoPorId(int id)
     {
@@ -102,7 +110,6 @@ public class ComponenteRepository :
         const string sql = @"SELECT id_equipo FROM public.equipos WHERE codigo_imt = @codigoImt AND estado_eliminado = FALSE LIMIT 1";
         var parametros = new Dictionary<string, object?> { ["codigoImt"] = codigoImt };
         var dt = _ejecutarConsulta.EjecutarFuncion(sql, parametros);
-        if (dt.Rows.Count == 0) return null;
-        return Convert.ToInt32(dt.Rows[0][0]);
+        return dt.Rows.Count == 0 ? null : Convert.ToInt32(dt.Rows[0][0]);
     }
 }

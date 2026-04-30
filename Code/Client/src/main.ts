@@ -2,13 +2,15 @@ import { bootstrapApplication } from '@angular/platform-browser';
 import { AppComponent } from './app/app.component';
 import { importProvidersFrom, LOCALE_ID } from '@angular/core';
 import { AppRoutingModule } from './app/app-routing.module';
-import { HttpClientModule } from '@angular/common/http';
+import { HttpClientModule, HTTP_INTERCEPTORS } from '@angular/common/http';
 import { registerLocaleData } from '@angular/common';
+import { ResultResponseInterceptor } from './app/interceptors/result-response.interceptor';
 import localeEs from '@angular/common/locales/es';
 registerLocaleData(localeEs);
 bootstrapApplication(AppComponent, {
   providers: [
     importProvidersFrom(AppRoutingModule, HttpClientModule),
-     { provide: LOCALE_ID, useValue: 'es' }
+    { provide: LOCALE_ID, useValue: 'es' },
+    { provide: HTTP_INTERCEPTORS, useClass: ResultResponseInterceptor, multi: true }
   ]
 }).catch(err => console.error(err));

@@ -1,7 +1,5 @@
-using API.Controllers;
 using Moq;
-using Microsoft.AspNetCore.Mvc;
-using Microsoft.Extensions.Configuration;
+using Ardalis.Result;
 using IMT_Reservas.Server.Shared.Common;
 
 namespace IMT_Reservas.Tests.ControllerTests
@@ -9,19 +7,12 @@ namespace IMT_Reservas.Tests.ControllerTests
     [TestFixture]
     public class EmpresaMantenimientoControllerTest : IEmpresaMantenimientoControllerTest
     {
-        private Mock<IEmpresaMantenimientoService>    _empresaServiceMock;
-        private Mock<EmpresaMantenimientoRepository> _empresaRepoMock;
-        private Mock<ExecuteQuery>                   _queryExecMock;
-        private Mock<IConfiguration>                 _configMock;
-        private EmpresaMantenimientoController       _empresasController;
+        private Mock<IEmpresaMantenimientoService> _empresaServiceMock;
+        private EmpresaMantenimientoController _empresasController;
 
         [SetUp]
         public void Setup()
         {
-            _configMock         = new Mock<IConfiguration>();
-            _configMock.Setup(config => config.GetSection("ConnectionStrings")["DefaultConnection"]).Returns("fake_connection_string");
-            _queryExecMock      = new Mock<ExecuteQuery>(_configMock.Object);
-            _empresaRepoMock    = new Mock<EmpresaMantenimientoRepository>(_queryExecMock.Object);
             _empresaServiceMock = new Mock<IEmpresaMantenimientoService>();
             _empresasController = new EmpresaMantenimientoController(_empresaServiceMock.Object);
         }
@@ -29,44 +20,43 @@ namespace IMT_Reservas.Tests.ControllerTests
         [Test]
         public void GetEmpresas_ConDatos_RetornaOk()
         {
-            List<EmpresaMantenimientoDto> empresasEsperadas = new List<EmpresaMantenimientoDto>
+            var empresasEsperadas = new List<EmpresaMantenimientoDto>
             {
                 new EmpresaMantenimientoDto { Id = 1, NombreEmpresa = "JJJ" },
                 new EmpresaMantenimientoDto { Id = 2, NombreEmpresa = "PRUEBA" }
             };
-            _empresaServiceMock.Setup(s => s.ObtenerTodasEmpresasMantenimiento()).Returns(empresasEsperadas);
-            IActionResult resultadoAccion = _empresasController.ObtenerTodos();
-            Assert.That(resultadoAccion, Is.InstanceOf<OkObjectResult>());
-            OkObjectResult okObjectResult = (OkObjectResult)resultadoAccion;
-            Assert.That(okObjectResult.Value, Is.InstanceOf<List<EmpresaMantenimientoDto>>().And.Count.EqualTo(empresasEsperadas.Count));
+            _empresaServiceMock.Setup(s => s.ObtenerTodos()).Returns(Result<List<EmpresaMantenimientoDto>>.Success(empresasEsperadas));
+            var resultado = _empresasController.ObtenerTodos();
+            Assert.That(resultado.IsSuccess, Is.True);
+            Assert.That(resultado.Value, Has.Count.EqualTo(empresasEsperadas.Count));
         }
 
         [Test]
         public void GetEmpresas_SinDatos_RetornaOkVacia()
         {
-            List<EmpresaMantenimientoDto> empresasEsperadas = new List<EmpresaMantenimientoDto>();
-            _empresaServiceMock.Setup(s => s.ObtenerTodasEmpresasMantenimiento()).Returns(empresasEsperadas);
-            IActionResult resultadoAccion = _empresasController.ObtenerTodos();
-            Assert.That(resultadoAccion, Is.InstanceOf<OkObjectResult>());
-            OkObjectResult okObjectResult = (OkObjectResult)resultadoAccion;
-            Assert.That(okObjectResult.Value, Is.InstanceOf<List<EmpresaMantenimientoDto>>().And.Empty);
+            _empresaServiceMock.Setup(s => s.ObtenerTodos()).Returns(Result<List<EmpresaMantenimientoDto>>.Success(new List<EmpresaMantenimientoDto>()));
+            var resultado = _empresasController.ObtenerTodos();
+            Assert.That(resultado.IsSuccess, Is.True);
+            Assert.That(resultado.Value, Is.Empty);
         }
 
         [Test]
         public void GetEmpresas_ServicioError_RetornaBadRequest()
         {
-            _empresaServiceMock.Setup(s => s.ObtenerTodasEmpresasMantenimiento()).Throws(new System.Exception("Error servicio"));
-            IActionResult resultadoAccion = _empresasController.ObtenerTodos();
-            Assert.That(resultadoAccion, Is.InstanceOf<BadRequestObjectResult>());
+            _empresaServiceMock.Setup(s => s.ObtenerTodos()).Returns(Result<List<EmpresaMantenimientoDto>>.Error("Error servicio"));
+            var resultado = _empresasController.ObtenerTodos();
+            Assert.That(resultado.IsSuccess, Is.False);
+            Assert.That(resultado.Status, Is.EqualTo(ResultStatus.Error));
         }
 
         [Test]
         public void CrearEmpresa_Valida_RetornaCreated()
         {
-            CrearEmpresaMantenimientoComando comando = new CrearEmpresaMantenimientoComando("Mantenimiento Global", "Carlos", "Ruiz", "55555555", "Av. Principal 456", "987654321");
-            _empresaServiceMock.Setup(s => s.CrearEmpresaMantenimiento(comando));
-            IActionResult resultadoAccion = _empresasController.Crear(comando);
-            Assert.That(resultadoAccion, Is.InstanceOf<CreatedResult>());
+            var comando = new CrearEmpresaMantenimientoComando("Mantenimiento Global", "Carlos", "Ruiz", "55555555", "Av. Principal 456", "987654321");
+            var dto = new EmpresaMantenimientoDto { Id = 1, NombreEmpresa = "Mantenimiento Global" };
+            _empresaServiceMock.Setup(s => s.Crear(It.IsAny<CrearEmpresaMantenimientoComando>())).Returns(Result<EmpresaMantenimientoDto>.Created(dto));
+            var resultado = _empresasController.Crear(comando);
+            Assert.That(resultado.Status, Is.EqualTo(ResultStatus.Created));
         }
 
         private static IEnumerable<object[]> FuenteCasos_CrearEmpresa_BadRequest()
@@ -80,38 +70,37 @@ namespace IMT_Reservas.Tests.ControllerTests
         [TestCaseSource(nameof(FuenteCasos_CrearEmpresa_BadRequest))]
         public void CrearEmpresa_Invalida_RetornaBadRequest(CrearEmpresaMantenimientoComando comando, System.Exception excepcionLanzada)
         {
-            _empresaServiceMock.Setup(s => s.CrearEmpresaMantenimiento(comando)).Throws(excepcionLanzada);
-            IActionResult resultadoAccion = _empresasController.Crear(comando);
-            Assert.That(resultadoAccion, Is.InstanceOf<BadRequestObjectResult>());
+            _empresaServiceMock.Setup(s => s.Crear(It.IsAny<CrearEmpresaMantenimientoComando>())).Returns(Result<EmpresaMantenimientoDto>.Invalid(new ValidationError("campo", excepcionLanzada.Message)));
+            var resultado = _empresasController.Crear(comando);
+            Assert.That(resultado.Status, Is.EqualTo(ResultStatus.Invalid));
         }
 
         [Test]
         public void CrearEmpresa_RegistroExistente_RetornaConflict()
         {
-            CrearEmpresaMantenimientoComando comando = new CrearEmpresaMantenimientoComando("PRUEBA", null, null, null, null, null);
-            _empresaServiceMock.Setup(s => s.CrearEmpresaMantenimiento(It.IsAny<CrearEmpresaMantenimientoComando>())).Throws(new ErrorRegistroYaExiste());
-            IActionResult resultadoAccion = _empresasController.Crear(comando);
-            Assert.That(resultadoAccion, Is.InstanceOf<ConflictObjectResult>());
+            var comando = new CrearEmpresaMantenimientoComando("PRUEBA", null, null, null, null, null);
+            _empresaServiceMock.Setup(s => s.Crear(It.IsAny<CrearEmpresaMantenimientoComando>())).Returns(Result<EmpresaMantenimientoDto>.Conflict());
+            var resultado = _empresasController.Crear(comando);
+            Assert.That(resultado.Status, Is.EqualTo(ResultStatus.Conflict));
         }
 
         [Test]
         public void CrearEmpresa_ServicioError_RetornaError500()
         {
-            CrearEmpresaMantenimientoComando comando = new CrearEmpresaMantenimientoComando("Error General", null, null, null, null, null);
-            _empresaServiceMock.Setup(s => s.CrearEmpresaMantenimiento(It.IsAny<CrearEmpresaMantenimientoComando>())).Throws(new System.Exception("Error General Servidor"));
-            IActionResult resultadoAccion = _empresasController.Crear(comando);
-            Assert.That(resultadoAccion, Is.InstanceOf<ObjectResult>());
-            ObjectResult objectResult = (ObjectResult)resultadoAccion;
-            Assert.That(objectResult.StatusCode, Is.EqualTo(500));
+            var comando = new CrearEmpresaMantenimientoComando("Error General", null, null, null, null, null);
+            _empresaServiceMock.Setup(s => s.Crear(It.IsAny<CrearEmpresaMantenimientoComando>())).Returns(Result<EmpresaMantenimientoDto>.Error("Error General Servidor"));
+            var resultado = _empresasController.Crear(comando);
+            Assert.That(resultado.Status, Is.EqualTo(ResultStatus.Error));
         }
 
         [Test]
         public void ActualizarEmpresa_Valida_RetornaOk()
         {
-            ActualizarEmpresaMantenimientoComando comando = new ActualizarEmpresaMantenimientoComando(1, "JJJ Actualizado", "string", "string", "string", "string", "string");
-            _empresaServiceMock.Setup(s => s.ActualizarEmpresaMantenimiento(comando));
-            IActionResult resultadoAccion = _empresasController.Actualizar(comando);
-            Assert.That(resultadoAccion, Is.InstanceOf<OkObjectResult>());
+            var comando = new ActualizarEmpresaMantenimientoComando(1, "JJJ Actualizado", "string", "string", "string", "string", "string");
+            var dto = new EmpresaMantenimientoDto { Id = 1, NombreEmpresa = "JJJ Actualizado" };
+            _empresaServiceMock.Setup(s => s.Actualizar(It.IsAny<ActualizarEmpresaMantenimientoComando>())).Returns(Result<EmpresaMantenimientoDto>.Success(dto));
+            var resultado = _empresasController.Actualizar(comando);
+            Assert.That(resultado.IsSuccess, Is.True);
         }
 
         private static IEnumerable<object[]> FuenteCasos_ActualizarEmpresa_BadRequest()
@@ -127,47 +116,46 @@ namespace IMT_Reservas.Tests.ControllerTests
         [TestCaseSource(nameof(FuenteCasos_ActualizarEmpresa_BadRequest))]
         public void ActualizarEmpresa_Invalida_RetornaBadRequest(ActualizarEmpresaMantenimientoComando comando, System.Exception excepcionLanzada)
         {
-            _empresaServiceMock.Setup(s => s.ActualizarEmpresaMantenimiento(comando)).Throws(excepcionLanzada);
-            IActionResult resultadoAccion = _empresasController.Actualizar(comando);
-            Assert.That(resultadoAccion, Is.InstanceOf<BadRequestObjectResult>());
+            _empresaServiceMock.Setup(s => s.Actualizar(It.IsAny<ActualizarEmpresaMantenimientoComando>())).Returns(Result<EmpresaMantenimientoDto>.Invalid(new ValidationError("campo", excepcionLanzada.Message)));
+            var resultado = _empresasController.Actualizar(comando);
+            Assert.That(resultado.Status, Is.EqualTo(ResultStatus.Invalid));
         }
 
         [Test]
         public void ActualizarEmpresa_NoEncontrada_RetornaNotFound()
         {
-            ActualizarEmpresaMantenimientoComando comando = new ActualizarEmpresaMantenimientoComando(99, "NoExiste", null, null, null, null, null);
-            _empresaServiceMock.Setup(s => s.ActualizarEmpresaMantenimiento(It.IsAny<ActualizarEmpresaMantenimientoComando>())).Throws(new ErrorRegistroNoEncontrado());
-            IActionResult resultadoAccion = _empresasController.Actualizar(comando);
-            Assert.That(resultadoAccion, Is.InstanceOf<NotFoundObjectResult>());
+            var comando = new ActualizarEmpresaMantenimientoComando(99, "NoExiste", null, null, null, null, null);
+            _empresaServiceMock.Setup(s => s.Actualizar(It.IsAny<ActualizarEmpresaMantenimientoComando>())).Returns(Result<EmpresaMantenimientoDto>.NotFound());
+            var resultado = _empresasController.Actualizar(comando);
+            Assert.That(resultado.Status, Is.EqualTo(ResultStatus.NotFound));
         }
 
         [Test]
         public void ActualizarEmpresa_RegistroExistente_RetornaConflict()
         {
-            ActualizarEmpresaMantenimientoComando comando = new ActualizarEmpresaMantenimientoComando(3, "PRUEBA", null, null, null, null, null);
-            _empresaServiceMock.Setup(s => s.ActualizarEmpresaMantenimiento(It.IsAny<ActualizarEmpresaMantenimientoComando>())).Throws(new ErrorRegistroYaExiste());
-            IActionResult resultadoAccion = _empresasController.Actualizar(comando);
-            Assert.That(resultadoAccion, Is.InstanceOf<ConflictObjectResult>());
+            var comando = new ActualizarEmpresaMantenimientoComando(3, "PRUEBA", null, null, null, null, null);
+            _empresaServiceMock.Setup(s => s.Actualizar(It.IsAny<ActualizarEmpresaMantenimientoComando>())).Returns(Result<EmpresaMantenimientoDto>.Conflict());
+            var resultado = _empresasController.Actualizar(comando);
+            Assert.That(resultado.Status, Is.EqualTo(ResultStatus.Conflict));
         }
 
         [Test]
         public void ActualizarEmpresa_ServicioError_RetornaError500()
         {
-            ActualizarEmpresaMantenimientoComando comando = new ActualizarEmpresaMantenimientoComando(1, "Error General", null, null, null, null, null);
-            _empresaServiceMock.Setup(s => s.ActualizarEmpresaMantenimiento(It.IsAny<ActualizarEmpresaMantenimientoComando>())).Throws(new System.Exception("Error General Servidor"));
-            IActionResult resultadoAccion = _empresasController.Actualizar(comando);
-            Assert.That(resultadoAccion, Is.InstanceOf<ObjectResult>());
-            ObjectResult objectResult = (ObjectResult)resultadoAccion;
-            Assert.That(objectResult.StatusCode, Is.EqualTo(500));
+            var comando = new ActualizarEmpresaMantenimientoComando(1, "Error General", null, null, null, null, null);
+            _empresaServiceMock.Setup(s => s.Actualizar(It.IsAny<ActualizarEmpresaMantenimientoComando>())).Returns(Result<EmpresaMantenimientoDto>.Error("Error General Servidor"));
+            var resultado = _empresasController.Actualizar(comando);
+            Assert.That(resultado.Status, Is.EqualTo(ResultStatus.Error));
         }
 
         [Test]
         public void EliminarEmpresa_Valida_RetornaNoContent()
         {
             int idValido = 6;
-            _empresaServiceMock.Setup(s => s.EliminarEmpresaMantenimiento(It.Is<EliminarEmpresaMantenimientoComando>(c => c.Id == idValido)));
-            IActionResult resultadoAccion = _empresasController.Eliminar(idValido);
-            Assert.That(resultadoAccion, Is.InstanceOf<NoContentResult>());
+            var dto = new EmpresaMantenimientoDto { Id = idValido };
+            _empresaServiceMock.Setup(s => s.Eliminar(It.Is<EliminarEmpresaMantenimientoComando>(c => c.Id == idValido))).Returns(Result<EmpresaMantenimientoDto>.Success(dto));
+            var resultado = _empresasController.Eliminar(idValido);
+            Assert.That(resultado.IsSuccess, Is.True);
         }
 
         private static IEnumerable<object[]> FuenteCasos_EliminarEmpresa_BadRequest()
@@ -179,38 +167,36 @@ namespace IMT_Reservas.Tests.ControllerTests
         [TestCaseSource(nameof(FuenteCasos_EliminarEmpresa_BadRequest))]
         public void EliminarEmpresa_Invalida_RetornaBadRequest(int idEmpresa, System.Exception excepcionLanzada)
         {
-            _empresaServiceMock.Setup(s => s.EliminarEmpresaMantenimiento(It.Is<EliminarEmpresaMantenimientoComando>(c => c.Id == idEmpresa))).Throws(excepcionLanzada);
-            IActionResult resultadoAccion = _empresasController.Eliminar(idEmpresa);
-            Assert.That(resultadoAccion, Is.InstanceOf<BadRequestObjectResult>());
+            _empresaServiceMock.Setup(s => s.Eliminar(It.IsAny<EliminarEmpresaMantenimientoComando>())).Returns(Result<EmpresaMantenimientoDto>.Invalid(new ValidationError("Id", excepcionLanzada.Message)));
+            var resultado = _empresasController.Eliminar(idEmpresa);
+            Assert.That(resultado.Status, Is.EqualTo(ResultStatus.Invalid));
         }
 
         [Test]
         public void EliminarEmpresa_NoEncontrada_RetornaNotFound()
         {
             int idNoExistente = 99;
-            _empresaServiceMock.Setup(s => s.EliminarEmpresaMantenimiento(It.Is<EliminarEmpresaMantenimientoComando>(c => c.Id == idNoExistente))).Throws(new ErrorRegistroNoEncontrado());
-            IActionResult resultadoAccion = _empresasController.Eliminar(idNoExistente);
-            Assert.That(resultadoAccion, Is.InstanceOf<NotFoundObjectResult>());
+            _empresaServiceMock.Setup(s => s.Eliminar(It.IsAny<EliminarEmpresaMantenimientoComando>())).Returns(Result<EmpresaMantenimientoDto>.NotFound());
+            var resultado = _empresasController.Eliminar(idNoExistente);
+            Assert.That(resultado.Status, Is.EqualTo(ResultStatus.NotFound));
         }
 
         [Test]
         public void EliminarEmpresa_EnUso_RetornaConflict()
         {
             int idEnUso = 2;
-            _empresaServiceMock.Setup(s => s.EliminarEmpresaMantenimiento(It.Is<EliminarEmpresaMantenimientoComando>(c => c.Id == idEnUso))).Throws(new ErrorRegistroEnUso());
-            IActionResult resultadoAccion = _empresasController.Eliminar(idEnUso);
-            Assert.That(resultadoAccion, Is.InstanceOf<ConflictObjectResult>());
+            _empresaServiceMock.Setup(s => s.Eliminar(It.IsAny<EliminarEmpresaMantenimientoComando>())).Returns(Result<EmpresaMantenimientoDto>.Conflict());
+            var resultado = _empresasController.Eliminar(idEnUso);
+            Assert.That(resultado.Status, Is.EqualTo(ResultStatus.Conflict));
         }
 
         [Test]
         public void EliminarEmpresa_ServicioError_RetornaError500()
         {
             int idErrorGeneral = 4;
-            _empresaServiceMock.Setup(s => s.EliminarEmpresaMantenimiento(It.Is<EliminarEmpresaMantenimientoComando>(c => c.Id == idErrorGeneral))).Throws(new System.Exception("Error General Servidor"));
-            IActionResult resultadoAccion = _empresasController.Eliminar(idErrorGeneral);
-            Assert.That(resultadoAccion, Is.InstanceOf<ObjectResult>());
-            ObjectResult objectResult = (ObjectResult)resultadoAccion;
-            Assert.That(objectResult.StatusCode, Is.EqualTo(500));
+            _empresaServiceMock.Setup(s => s.Eliminar(It.IsAny<EliminarEmpresaMantenimientoComando>())).Returns(Result<EmpresaMantenimientoDto>.Error("Error General Servidor"));
+            var resultado = _empresasController.Eliminar(idErrorGeneral);
+            Assert.That(resultado.Status, Is.EqualTo(ResultStatus.Error));
         }
     }
 }

@@ -21,11 +21,17 @@ export class DisponibilidadService {
     const localDate = new Date(date.getTime() - offset * 60000);
     return localDate.toISOString().split('Z')[0];
   }
-  obtenerDisponibilidad(fechaInicio : Date , fechaFin : Date , grupoEquipoIds : number[]){ 
-    const idsParams =grupoEquipoIds.map(id => `&ArrayIds=${id}`).join('');
-    var envio = this.url + '?FechaInicio=' + this.toLocalISOString(fechaInicio) + '&FechaFin=' + this.toLocalISOString(fechaFin) + idsParams;
-    return this.http.get<any[]>(envio).pipe(
-      map(data=> data.map(item => this.mapear(item)))
+  obtenerDisponibilidad(fechaInicio: Date, fechaFin: Date, grupoEquipoIds: number[]) {
+    const payload = {
+      FechaInicio: this.toLocalISOString(fechaInicio),
+      FechaFin: this.toLocalISOString(fechaFin),
+      ArrayIds: grupoEquipoIds
+    };
+    return this.http.post<any>(this.url, payload).pipe(
+      map(response => {
+        const data = response.data?.value || response.value || response.data || response;
+        return Array.isArray(data) ? data.map((item: any) => this.mapear(item)) : [];
+      })
     );
-  };
+  }
 }

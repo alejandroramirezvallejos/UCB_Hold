@@ -1,43 +1,36 @@
 using System.Data;
-using IMT_Reservas.Server.Shared.Common;
+using Ardalis.Result;
 using IMT_Reservas.Server.Application.ResponseDTOs;
 
-public class PrestamoService : BaseServicios,
-    ICrearServicioResultado<CrearPrestamoComando, PrestamoConEquiposDto>,
-    IEliminarServicio<EliminarPrestamoComando>,
-    IObtenerTodosServicio<PrestamoDto>
+public class PrestamoService : BaseServicios, IPrestamoService
 {
-    private readonly PrestamoRepository _prestamoRepository;
-    
-    public PrestamoService(PrestamoRepository prestamoRepository)
+    private readonly IPrestamoRepository _prestamoRepository;
+
+    public PrestamoService(IPrestamoRepository prestamoRepository)
     {
         _prestamoRepository = prestamoRepository;
     }
-    public virtual PrestamoConEquiposDto Crear(CrearPrestamoComando comando)
+
+    public virtual Result<PrestamoConEquiposDto> Crear(CrearPrestamoComando comando)
     {
-        ValidarEntradaCreacion(comando);
-
-        // Verificar que el usuario exista
         if (!_prestamoRepository.ExisteUsuarioActivoPorCarnet(comando.CarnetUsuario!))
-            throw new ErrorCarnetUsuarioNoEncontrado();
+            return Result<PrestamoConEquiposDto>.NotFound("El usuario no fue encontrado");
 
-        // Verificar que todos los grupos existan y buscar equipos disponibles
         var equipoIds = new List<int>();
         var equiposInfo = new List<EquipoAsignadoDto>();
 
         foreach (var grupoId in comando.GrupoEquipoId!)
         {
             if (!_prestamoRepository.ExisteGrupoEquipoActivoPorId(grupoId))
-                throw new ErrorRegistroNoEncontrado();
+                return Result<PrestamoConEquiposDto>.NotFound("El grupo de equipo no fue encontrado");
 
             var idEquipo = _prestamoRepository.ObtenerEquipoDisponiblePorGrupo(
                 grupoId, comando.FechaPrestamoEsperada!.Value, comando.FechaDevolucionEsperada!.Value);
             if (idEquipo == null)
-                throw new ErrorNoEquiposDisponibles();
+                return Result<PrestamoConEquiposDto>.NotFound("No hay equipos disponibles");
 
             equipoIds.Add(idEquipo.Value);
 
-            // Obtener info del equipo para la respuesta
             var equipoDt = _prestamoRepository.ObtenerEquipoPorId(idEquipo.Value);
             if (equipoDt.Rows.Count > 0)
             {
@@ -55,97 +48,75 @@ public class PrestamoService : BaseServicios,
             }
         }
 
-        // Crear el préstamo
         var idPrestamo = _prestamoRepository.CrearPrestamo(comando);
 
-        // Crear detalles
         foreach (var idEquipo in equipoIds)
         {
             _prestamoRepository.CrearDetallePrestamo(idPrestamo, idEquipo);
         }
 
-        // Guardar contrato si existe
         if (comando.Contrato != null)
         {
             _prestamoRepository.GuardarContrato(idPrestamo, comando.Contrato);
         }
 
-        return new PrestamoConEquiposDto
+        return Result<PrestamoConEquiposDto>.Created(new PrestamoConEquiposDto
         {
             IdPrestamo = idPrestamo,
             EquiposAsignados = equiposInfo
-        };
+        });
     }
 
-    protected override void ValidarEntradaCreacion<T>(T comando)
+    public virtual Result<List<PrestamoDto>> ObtenerTodos()
     {
-        base.ValidarEntradaCreacion(comando);
-        if (comando is CrearPrestamoComando cmd)
+        var repoResult = _prestamoRepository.ObtenerTodos();
+        if (!repoResult.IsSuccess)
+            return Result<List<PrestamoDto>>.Error("Error al obtener los préstamos");
+
+        var resultado = repoResult.Value;
+        var lista = new List<PrestamoDto>(resultado.Rows.Count);
+        foreach (DataRow fila in resultado.Rows)
         {
-            if (string.IsNullOrWhiteSpace(cmd.CarnetUsuario)) throw new ErrorCarnetRequerido();
-            if (cmd.GrupoEquipoId == null || cmd.GrupoEquipoId.Length == 0) throw new ErrorGrupoEquipoIdInvalido();
-            if (cmd.GrupoEquipoId.Any(id => id <= 0)) throw new ErrorGrupoEquipoIdInvalido();
-            if (cmd.FechaPrestamoEsperada == null) throw new ErrorFechaPrestamoEsperadaRequerida();
-            if (cmd.FechaDevolucionEsperada == null) throw new ErrorFechaDevolucionEsperadaRequerida();
-            if (cmd.FechaDevolucionEsperada < cmd.FechaPrestamoEsperada) throw new ErrorFechaPrestamoYFechaDevolucionInvalidas();
-            if (cmd.Contrato == null) throw new ErrorContratoNoNulo();
+            var dto = MapearFilaADto(fila) as PrestamoDto;
+            if (dto != null) lista.Add(dto);
         }
+        return lista.Count == 0
+            ? Result<List<PrestamoDto>>.NotFound("No se encontraron préstamos")
+            : Result<List<PrestamoDto>>.Success(lista);
     }
 
-    public virtual void Eliminar(EliminarPrestamoComando comando)
+    public virtual Result<PrestamoDto> Eliminar(EliminarPrestamoComando comando)
     {
-        ValidarEntradaEliminacion(comando);
+        var validResult = ValidarEntrada(comando);
+        if (!validResult.IsSuccess) return Result<PrestamoDto>.Invalid(validResult.ValidationErrors.ToArray());
 
-        // Verificar que el préstamo exista y esté activo
         if (!_prestamoRepository.ExisteActivoPorId(comando.Id))
-            throw new ErrorRegistroNoEncontrado();
+            return Result<PrestamoDto>.NotFound("El préstamo no fue encontrado");
 
-        _prestamoRepository.Eliminar(comando);
-    }
-    protected override void ValidarEntradaEliminacion<T>(T comando)
-    {
-        base.ValidarEntradaEliminacion(comando);
-        if (comando is EliminarPrestamoComando cmd)
-        {
-            if (cmd.Id <= 0) throw new ErrorIdInvalido("préstamo");
-        }
+        var result = _prestamoRepository.Eliminar(comando);
+        return result;
     }
 
-    public virtual List<PrestamoDto>? ObtenerTodos()
-    {
-        try
-        {
-            DataTable resultado = _prestamoRepository.ObtenerTodos();
-            var lista = new List<PrestamoDto>(resultado.Rows.Count);
-            foreach (DataRow fila in resultado.Rows)
-            {
-                var dto = MapearFilaADto(fila) as PrestamoDto;
-                if (dto != null) lista.Add(dto);
-            }
-            return lista;
-        }
-        catch { throw; }
-    }
     public virtual void ActualizarEstadoPrestamo(ActualizarEstadoPrestamoComando comando)
     {
-        ValidarEntradaActualizacionEstado(comando);
+        if (comando == null) throw new ArgumentNullException(nameof(comando));
+        if (comando.Id <= 0) throw new ArgumentException("El ID del préstamo es inválido");
+        if (string.IsNullOrWhiteSpace(comando.EstadoPrestamo)) throw new ArgumentException("El estado del préstamo es requerido");
 
-        // Verificar que el préstamo exista
+        var isValidState = comando.EstadoPrestamo switch
+        {
+            "pendiente" or "rechazado" or "finalizado" or "cancelado" or "aprobado" or "activo" => true,
+            _ => false
+        };
+        if (!isValidState)
+            throw new ArgumentException("Estado de préstamo inválido");
+
         if (!_prestamoRepository.ExisteActivoPorId(comando.Id!.Value))
-            throw new ErrorRegistroNoEncontrado();
+            throw new ArgumentException("El préstamo no fue encontrado");
 
         _prestamoRepository.ActualizarEstado(comando);
     }
-    private void ValidarEntradaActualizacionEstado(ActualizarEstadoPrestamoComando comando)
-    {
-        if (comando == null) throw new ArgumentNullException(nameof(comando));
-        if (comando.Id <= 0) throw new ErrorIdInvalido("préstamo");
-        if (string.IsNullOrWhiteSpace(comando.EstadoPrestamo)) throw new ErrorEstadoPrestamoRequerido();
-        if (comando.EstadoPrestamo != "pendiente" && comando.EstadoPrestamo != "rechazado" &&
-            comando.EstadoPrestamo != "finalizado" && comando.EstadoPrestamo != "cancelado" &&
-            comando.EstadoPrestamo != "aprobado" && comando.EstadoPrestamo != "activo")
-            throw new ErrorEstadoPrestamoInvalido();
-    }
+
     public virtual List<PrestamoDto>? ObtenerPrestamosPorCarnetYEstadoPrestamo(string carnetUsuario, string estadoPrestamo)
     {
         try
@@ -161,6 +132,27 @@ public class PrestamoService : BaseServicios,
         }
         catch { throw; }
     }
+
+    public List<byte[]> ObtenerContratoPorPrestamo(ObtenerContratoPorPrestamoConsulta consulta)
+    {
+        return _prestamoRepository.ObtenerContratoPorPrestamo(consulta);
+    }
+
+    private Result<EliminarPrestamoComando> ValidarEntrada(EliminarPrestamoComando comando)
+    {
+        var errors = new List<ValidationError>();
+
+        if (comando == null)
+            errors.Add(new("comando", "El comando es requerido"));
+
+        if (comando?.Id <= 0)
+            errors.Add(new("Id", "El ID debe ser mayor a 0"));
+
+        return errors.Any()
+            ? Result<EliminarPrestamoComando>.Invalid(errors.ToArray())
+            : Result<EliminarPrestamoComando>.Success(comando!);
+    }
+
     protected override BaseDto MapearFilaADto(DataRow fila)
     {
         return new PrestamoDto
@@ -184,9 +176,5 @@ public class PrestamoService : BaseServicios,
             Nombre_Mueble = fila["nombre_mueble"] == DBNull.Value ? null : fila["nombre_mueble"].ToString(),
             Ubicacion_Mueble = fila["ubicacion_mueble"] == DBNull.Value ? null : fila["ubicacion_mueble"].ToString()
         };
-    }
-    public List<byte[]> ObtenerContratoPorPrestamo(ObtenerContratoPorPrestamoConsulta consulta)
-    {
-        return _prestamoRepository.ObtenerContratoPorPrestamo(consulta);
     }
 }

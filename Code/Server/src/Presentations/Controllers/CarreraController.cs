@@ -1,34 +1,36 @@
 using Microsoft.AspNetCore.Mvc;
-using IMT_Reservas.Server.Shared.Common;
+using Ardalis.Result;
+using Ardalis.Result.AspNetCore;
 
 [ApiController]
 [Route("api/[controller]")]
+[TranslateResultToActionResult]
 public class CarreraController : ControllerBase
 {
-    private readonly CarreraService _servicio;
-    public CarreraController(CarreraService servicio) => _servicio = servicio;
+    private readonly ICarreraService _servicio;
+    public CarreraController(ICarreraService servicio) => _servicio = servicio;
 
     [HttpGet]
-    public IActionResult ObtenerTodos()
+    public Result<List<CarreraDto>> ObtenerTodos()
     {
-        return Ok(_servicio.ObtenerTodos());
+        return _servicio.ObtenerTodos();
     }
 
     [HttpPost]
-    public IActionResult Crear([FromBody] CrearCarreraComando input)
+    public Result<CarreraDto> Crear([FromBody] CrearCarreraComando input)
     {
-        _servicio.Crear(input); return Created($"api/carrera/{input.Nombre}", input);
+        return _servicio.Crear(input);
     }
 
     [HttpPut]
-    public IActionResult Actualizar([FromBody] ActualizarCarreraComando input)
+    public Result<CarreraDto> Actualizar([FromBody] ActualizarCarreraComando input)
     {
-        _servicio.Actualizar(input); return Ok(new { mensaje = "Carrera actualizada exitosamente" });
+        return _servicio.Actualizar(input);
     }
 
     [HttpDelete("{id}")]
-    public IActionResult Eliminar(int id)
+    public Result<CarreraDto> Eliminar(int id)
     {
-        _servicio.Eliminar(new EliminarCarreraComando(id)); return NoContent();
+        return _servicio.Eliminar(new EliminarCarreraComando(id));
     }
 }

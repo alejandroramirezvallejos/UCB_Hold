@@ -1,7 +1,8 @@
-﻿using Moq;
+using Moq;
 using System.Data;
-using IMT_Reservas.Server.Infrastructure.MongoDb;
+using Ardalis.Result;
 using MongoDB.Driver;
+using IMT_Reservas.Server.Infrastructure.MongoDb;
 using MongoDB.Bson;
 using System.Collections.Generic;
 using System;
@@ -159,10 +160,10 @@ namespace IMT_Reservas.Tests.RepositoryTests
             _collectionMock.Setup(c => c.InsertOne(It.IsAny<BsonDocument>(), null, default)).Throws(exception);
             _collectionMock.Setup(c => c.CountDocuments(It.IsAny<FilterDefinition<BsonDocument>>(), It.IsAny<CountOptions>(), default)).Throws(exception);
 
-            Assert.Throws<ErrorRepository>(() => _comentarioRepository.Crear(new CrearComentarioComando("1", 1, "test")));
-            Assert.Throws<ErrorRepository>(() => _comentarioRepository.Eliminar(new EliminarComentarioComando(objectId)));
-            Assert.Throws<ErrorRepository>(() => _comentarioRepository.AgregarLike(new AgregarLikeComentarioComando(objectId, "2")));
-            Assert.Throws<ErrorRepository>(() => _comentarioRepository.ObtenerPorGrupoEquipo(1));
+            Assert.Throws<Exception>(() => _comentarioRepository.Crear(new CrearComentarioComando("1", 1, "test")));
+            Assert.Throws<Exception>(() => _comentarioRepository.Eliminar(new EliminarComentarioComando(objectId)));
+            Assert.Throws<Exception>(() => _comentarioRepository.AgregarLike(new AgregarLikeComentarioComando(objectId, "2")));
+            Assert.Throws<Exception>(() => _comentarioRepository.ObtenerPorGrupoEquipo(1));
         }
 
         [Test]

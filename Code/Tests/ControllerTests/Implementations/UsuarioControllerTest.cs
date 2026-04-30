@@ -1,17 +1,14 @@
-using API.Controllers;
-using Microsoft.AspNetCore.Mvc;
-using Microsoft.Extensions.Configuration;
 using Moq;
-using IMT_Reservas.Server.Shared.Common;
-using IMT_Reservas.Server.Application.Interfaces;
+using Ardalis.Result;
+using Microsoft.AspNetCore.Mvc;
 
 namespace IMT_Reservas.Tests.ControllerTests
 {
     [TestFixture]
     public class UsuarioControllerTest : IUsuarioControllerTest
     {
-        private Mock<IUsuarioService>    _usuarioServiceMock;
-        private UsuarioController       _usuariosController;
+        private Mock<IUsuarioService> _usuarioServiceMock;
+        private UsuarioController _usuariosController;
 
         [SetUp]
         public void Setup()
@@ -23,43 +20,45 @@ namespace IMT_Reservas.Tests.ControllerTests
         [Test]
         public void GetUsuarios_ConDatos_RetornaOk()
         {
-            List<UsuarioDto> usuariosEsperados = new List<UsuarioDto>
+            var usuariosEsperados = new List<UsuarioDto>
             {
                 new UsuarioDto { Carnet = "1", Nombre = "Andrea" },
                 new UsuarioDto { Carnet = "2", Nombre = "Juan" }
             };
-            _usuarioServiceMock.Setup(s => s.ObtenerTodosUsuarios()).Returns(usuariosEsperados);
-            IActionResult resultadoAccion = _usuariosController.ObtenerTodos();
-            Assert.That(resultadoAccion, Is.InstanceOf<OkObjectResult>());
-            OkObjectResult okObjectResult = (OkObjectResult)resultadoAccion;
-            Assert.That(okObjectResult.Value, Is.InstanceOf<List<UsuarioDto>>().And.Count.EqualTo(usuariosEsperados.Count));
+            _usuarioServiceMock.Setup(s => s.ObtenerTodos()).Returns(Result<List<UsuarioDto>>.Success(usuariosEsperados));
+            var resultado = _usuariosController.ObtenerTodos();
+            Assert.That(resultado.IsSuccess, Is.True);
+            Assert.That(resultado.Value, Has.Count.EqualTo(usuariosEsperados.Count));
         }
 
         [Test]
         public void CrearUsuario_Valido_RetornaOk()
         {
-            CrearUsuarioComando comando = new CrearUsuarioComando("3", "Juan", "Moreno", "Silva", null, "estudiante2@ucb.edu.bo", "password3", "Sistemas", "72742435", "61300599", "Lucia Herrera", "referencia7529@gmail.com");
-            _usuarioServiceMock.Setup(s => s.CrearUsuario(comando));
-            IActionResult resultadoAccion = _usuariosController.Crear(comando);
-            Assert.That(resultadoAccion, Is.InstanceOf<OkObjectResult>());
+            var comando = new CrearUsuarioComando("3", "Juan", "Moreno", "Silva", null, "estudiante2@ucb.edu.bo", "password3", "Sistemas", "72742435", "61300599", "Lucia Herrera", "referencia7529@gmail.com");
+            var dto = new UsuarioDto { Carnet = "3", Nombre = "Juan" };
+            _usuarioServiceMock.Setup(s => s.Crear(It.IsAny<CrearUsuarioComando>())).Returns(Result<UsuarioDto>.Created(dto));
+            var resultado = _usuariosController.Crear(comando);
+            Assert.That(resultado.Status, Is.EqualTo(ResultStatus.Created));
         }
 
         [Test]
         public void ActualizarUsuario_Valido_RetornaOk()
         {
-            ActualizarUsuarioComando comando = new ActualizarUsuarioComando("1", "Andrea Maria", null, null, null, null, null, null, null, null, null, null);
-            _usuarioServiceMock.Setup(s => s.ActualizarUsuario(comando));
-            IActionResult resultadoAccion = _usuariosController.Actualizar(comando);
-            Assert.That(resultadoAccion, Is.InstanceOf<OkObjectResult>());
+            var comando = new ActualizarUsuarioComando("1", "Andrea Maria", null, null, null, null, null, null, null, null, null, null);
+            var dto = new UsuarioDto { Carnet = "1", Nombre = "Andrea Maria" };
+            _usuarioServiceMock.Setup(s => s.Actualizar(It.IsAny<ActualizarUsuarioComando>())).Returns(Result<UsuarioDto>.Success(dto));
+            var resultado = _usuariosController.Actualizar(comando);
+            Assert.That(resultado.IsSuccess, Is.True);
         }
 
         [Test]
         public void EliminarUsuario_Valido_RetornaOk()
         {
             string carnetValido = "1";
-            _usuarioServiceMock.Setup(s => s.EliminarUsuario(It.Is<EliminarUsuarioComando>(c => c.Carnet == carnetValido)));
-            IActionResult resultadoAccion = _usuariosController.Eliminar(carnetValido);
-            Assert.That(resultadoAccion, Is.InstanceOf<OkObjectResult>());
+            var dto = new UsuarioDto { Carnet = carnetValido };
+            _usuarioServiceMock.Setup(s => s.Eliminar(It.Is<EliminarUsuarioComando>(c => c.Carnet == carnetValido))).Returns(Result<UsuarioDto>.Success(dto));
+            var resultado = _usuariosController.Eliminar(carnetValido);
+            Assert.That(resultado.IsSuccess, Is.True);
         }
 
         [Test]
@@ -67,13 +66,13 @@ namespace IMT_Reservas.Tests.ControllerTests
         {
             string email = "fernando.terrazas@ucb.edu.bo";
             string contrasena = "123456";
-            IniciarSesionUsuarioConsulta consulta = new IniciarSesionUsuarioConsulta(email, contrasena);
-            UsuarioDto usuarioEsperado = new UsuarioDto { Email = email, Nombre = "FERRR" };
+            var consulta = new IniciarSesionUsuarioConsulta(email, contrasena);
+            var usuarioEsperado = new UsuarioDto { Email = email, Nombre = "FERRR" };
             _usuarioServiceMock.Setup(s => s.IniciarSesionUsuario(It.Is<IniciarSesionUsuarioConsulta>(c => c.Email == email && c.Contrasena == contrasena))).Returns(usuarioEsperado);
-            IActionResult resultadoAccion = _usuariosController.IniciarSesion(consulta);
+            var resultadoAccion = _usuariosController.IniciarSesion(consulta);
             Assert.That(resultadoAccion, Is.InstanceOf<OkObjectResult>());
-            OkObjectResult okObjectResult = (OkObjectResult)resultadoAccion;
-            Assert.That(((UsuarioDto)okObjectResult.Value).Email, Is.EqualTo(usuarioEsperado.Email));
+            var okResult = (OkObjectResult)resultadoAccion;
+            Assert.That(((UsuarioDto)okResult.Value).Email, Is.EqualTo(usuarioEsperado.Email));
         }
 
         [Test]
@@ -81,12 +80,12 @@ namespace IMT_Reservas.Tests.ControllerTests
         {
             string email = "fernando.terrazas@ucb.edu.bo";
             string contrasena = "wrongpass";
-            IniciarSesionUsuarioConsulta consulta = new IniciarSesionUsuarioConsulta(email, contrasena);
+            var consulta = new IniciarSesionUsuarioConsulta(email, contrasena);
             _usuarioServiceMock.Setup(s => s.IniciarSesionUsuario(It.IsAny<IniciarSesionUsuarioConsulta>())).Returns((UsuarioDto)null);
-            IActionResult resultadoAccion = _usuariosController.IniciarSesion(consulta);
+            var resultadoAccion = _usuariosController.IniciarSesion(consulta);
             Assert.That(resultadoAccion, Is.InstanceOf<OkObjectResult>());
-            OkObjectResult okObjectResult = (OkObjectResult)resultadoAccion;
-            Assert.That(okObjectResult.Value, Is.Null);
+            var okResult = (OkObjectResult)resultadoAccion;
+            Assert.That(okResult.Value, Is.Null);
         }
     }
 }

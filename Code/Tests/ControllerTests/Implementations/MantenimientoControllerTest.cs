@@ -1,7 +1,5 @@
-using API.Controllers;
-using Microsoft.AspNetCore.Mvc;
-using Microsoft.Extensions.Configuration;
 using Moq;
+using Ardalis.Result;
 using IMT_Reservas.Server.Shared.Common;
 
 namespace IMT_Reservas.Tests.ControllerTests
@@ -9,19 +7,12 @@ namespace IMT_Reservas.Tests.ControllerTests
     [TestFixture]
     public class MantenimientoControllerTest : IMantenimientoControllerTest
     {
-        private Mock<IMantenimientoService>    _mantenimientoServiceMock;
-        private Mock<MantenimientoRepository> _mantenimientoRepoMock;
-        private Mock<ExecuteQuery>            _queryExecMock;
-        private Mock<IConfiguration>          _configMock;
-        private MantenimientoController       _mantenimientosController;
+        private Mock<IMantenimientoService> _mantenimientoServiceMock;
+        private MantenimientoController _mantenimientosController;
 
         [SetUp]
         public void Setup()
         {
-            _configMock               = new Mock<IConfiguration>();
-            _configMock.Setup(config => config.GetSection("ConnectionStrings")["DefaultConnection"]).Returns("fake_connection_string");
-            _queryExecMock            = new Mock<ExecuteQuery>(_configMock.Object);
-            _mantenimientoRepoMock    = new Mock<MantenimientoRepository>(_queryExecMock.Object);
             _mantenimientoServiceMock = new Mock<IMantenimientoService>();
             _mantenimientosController = new MantenimientoController(_mantenimientoServiceMock.Object);
         }
@@ -29,48 +20,46 @@ namespace IMT_Reservas.Tests.ControllerTests
         [Test]
         public void GetMantenimientos_ConDatos_RetornaOk()
         {
-            List<MantenimientoDto> mantenimientosEsperados = new List<MantenimientoDto>
+            var mantenimientosEsperados = new List<MantenimientoDto>
             {
                 new MantenimientoDto { Id = 1, NombreEmpresaMantenimiento = "Empresa Ficticia 1" },
                 new MantenimientoDto { Id = 2, NombreEmpresaMantenimiento = "Empresa Ficticia 1" }
             };
-            _mantenimientoServiceMock.Setup(s => s.ObtenerTodosMantenimientos()).Returns(mantenimientosEsperados);
-            IActionResult resultadoAccion = _mantenimientosController.ObtenerTodos();
-            Assert.That(resultadoAccion, Is.InstanceOf<OkObjectResult>());
-            OkObjectResult okObjectResult = (OkObjectResult)resultadoAccion;
-            Assert.That(okObjectResult.Value, Is.InstanceOf<List<MantenimientoDto>>().And.Count.EqualTo(mantenimientosEsperados.Count));
+            _mantenimientoServiceMock.Setup(s => s.ObtenerTodos()).Returns(Result<List<MantenimientoDto>>.Success(mantenimientosEsperados));
+            var resultado = _mantenimientosController.ObtenerTodos();
+            Assert.That(resultado.IsSuccess, Is.True);
+            Assert.That(resultado.Value, Has.Count.EqualTo(mantenimientosEsperados.Count));
         }
 
         [Test]
         public void GetMantenimientos_SinDatos_RetornaOkVacia()
         {
-            List<MantenimientoDto> mantenimientosEsperados = new List<MantenimientoDto>();
-            _mantenimientoServiceMock.Setup(s => s.ObtenerTodosMantenimientos()).Returns(mantenimientosEsperados);
-            IActionResult resultadoAccion = _mantenimientosController.ObtenerTodos();
-            Assert.That(resultadoAccion, Is.InstanceOf<OkObjectResult>());
-            OkObjectResult okObjectResult = (OkObjectResult)resultadoAccion;
-            Assert.That(okObjectResult.Value, Is.InstanceOf<List<MantenimientoDto>>().And.Empty);
+            _mantenimientoServiceMock.Setup(s => s.ObtenerTodos()).Returns(Result<List<MantenimientoDto>>.Success(new List<MantenimientoDto>()));
+            var resultado = _mantenimientosController.ObtenerTodos();
+            Assert.That(resultado.IsSuccess, Is.True);
+            Assert.That(resultado.Value, Is.Empty);
         }
 
         [Test]
         public void GetMantenimientos_ServicioError_RetornaBadRequest()
         {
-            _mantenimientoServiceMock.Setup(s => s.ObtenerTodosMantenimientos()).Throws(new System.Exception("Error servicio"));
-            IActionResult resultadoAccion = _mantenimientosController.ObtenerTodos();
-            Assert.That(resultadoAccion, Is.InstanceOf<BadRequestObjectResult>());
+            _mantenimientoServiceMock.Setup(s => s.ObtenerTodos()).Returns(Result<List<MantenimientoDto>>.Error("Error servicio"));
+            var resultado = _mantenimientosController.ObtenerTodos();
+            Assert.That(resultado.IsSuccess, Is.False);
+            Assert.That(resultado.Status, Is.EqualTo(ResultStatus.Error));
         }
 
         [Test]
         public void CrearMantenimiento_Valido_RetornaCreated()
         {
-            CrearMantenimientoComando comando = new CrearMantenimientoComando(new DateOnly(2025, 8, 1), new DateOnly(2025, 8, 10), "Empresa Nueva", 300.00, "Mantenimiento de servidor", new int[] { 8 }, new string[] { "Preventivo" }, new string[] { "Servidor Rack" });
-            _mantenimientoServiceMock.Setup(s => s.CrearMantenimiento(comando));
-            IActionResult resultadoAccion = _mantenimientosController.Crear(comando);
-            Assert.That(resultadoAccion, Is.InstanceOf<CreatedResult>());
+            var comando = new CrearMantenimientoComando(new DateOnly(2025, 8, 1), new DateOnly(2025, 8, 10), "Empresa Nueva", 300.00, "Mantenimiento de servidor", new int[] { 8 }, new string[] { "Preventivo" }, new string[] { "Servidor Rack" });
+            var dto = new MantenimientoDto { Id = 1, NombreEmpresaMantenimiento = "Empresa Nueva" };
+            _mantenimientoServiceMock.Setup(s => s.Crear(It.IsAny<CrearMantenimientoComando>())).Returns(Result<MantenimientoDto>.Created(dto));
+            var resultado = _mantenimientosController.Crear(comando);
+            Assert.That(resultado.Status, Is.EqualTo(ResultStatus.Created));
         }
 
-        private static IEnumerable<object[]>
-        FuenteCasos_CrearMantenimiento_BadRequest()
+        private static IEnumerable<object[]> FuenteCasos_CrearMantenimiento_BadRequest()
         {
             var today = DateOnly.FromDateTime(DateTime.Now);
             yield return new object[] { new CrearMantenimientoComando(today, today.AddDays(1), "", 100.50, "Desc", new int[] { 1 }, new string[] { "Tipo" }, new string[] { "Equipo" }), new ErrorNombreRequerido() };
@@ -89,59 +78,57 @@ namespace IMT_Reservas.Tests.ControllerTests
         [TestCaseSource(nameof(FuenteCasos_CrearMantenimiento_BadRequest))]
         public void CrearMantenimiento_Invalido_RetornaBadRequest(CrearMantenimientoComando comando, System.Exception excepcionLanzada)
         {
-            _mantenimientoServiceMock.Setup(s => s.CrearMantenimiento(comando)).Throws(excepcionLanzada);
-            IActionResult resultadoAccion = _mantenimientosController.Crear(comando);
-            Assert.That(resultadoAccion, Is.InstanceOf<BadRequestObjectResult>());
+            _mantenimientoServiceMock.Setup(s => s.Crear(It.IsAny<CrearMantenimientoComando>())).Returns(Result<MantenimientoDto>.Invalid(new ValidationError("campo", excepcionLanzada.Message)));
+            var resultado = _mantenimientosController.Crear(comando);
+            Assert.That(resultado.Status, Is.EqualTo(ResultStatus.Invalid));
         }
 
         [Test]
         public void CrearMantenimiento_ServicioError_RetornaError500()
         {
-            CrearMantenimientoComando comando = new CrearMantenimientoComando(DateOnly.FromDateTime(DateTime.Now), DateOnly.FromDateTime(DateTime.Now.AddDays(1)), "Error General", 100.50, "Desc", new int[] { 1 }, new string[] { "Tipo" }, new string[] { "Equipo" });
-            _mantenimientoServiceMock.Setup(s => s.CrearMantenimiento(It.IsAny<CrearMantenimientoComando>())).Throws(new System.Exception("Error General Servidor"));
-            IActionResult resultadoAccion = _mantenimientosController.Crear(comando);
-            Assert.That(resultadoAccion, Is.InstanceOf<ObjectResult>());
-            ObjectResult objectResult = (ObjectResult)resultadoAccion;
-            Assert.That(objectResult.StatusCode, Is.EqualTo(500));
+            var comando = new CrearMantenimientoComando(DateOnly.FromDateTime(DateTime.Now), DateOnly.FromDateTime(DateTime.Now.AddDays(1)), "Error General", 100.50, "Desc", new int[] { 1 }, new string[] { "Tipo" }, new string[] { "Equipo" });
+            _mantenimientoServiceMock.Setup(s => s.Crear(It.IsAny<CrearMantenimientoComando>())).Returns(Result<MantenimientoDto>.Error("Error General Servidor"));
+            var resultado = _mantenimientosController.Crear(comando);
+            Assert.That(resultado.Status, Is.EqualTo(ResultStatus.Error));
         }
 
         [Test]
         public void EliminarMantenimiento_Valido_RetornaNoContent()
         {
             int idValido = 7;
-            _mantenimientoServiceMock.Setup(s => s.EliminarMantenimiento(It.Is<EliminarMantenimientoComando>(c => c.Id == idValido)));
-            IActionResult resultadoAccion = _mantenimientosController.Eliminar(idValido);
-            Assert.That(resultadoAccion, Is.InstanceOf<NoContentResult>());
+            var dto = new MantenimientoDto { Id = idValido };
+            _mantenimientoServiceMock.Setup(s => s.Eliminar(It.Is<EliminarMantenimientoComando>(c => c.Id == idValido))).Returns(Result<MantenimientoDto>.Success(dto));
+            var resultado = _mantenimientosController.Eliminar(idValido);
+            Assert.That(resultado.IsSuccess, Is.True);
         }
 
         [Test]
         public void EliminarMantenimiento_NoEncontrado_RetornaNotFound()
         {
             int idNoExistente = 99;
-            _mantenimientoServiceMock.Setup(s => s.EliminarMantenimiento(It.Is<EliminarMantenimientoComando>(c => c.Id == idNoExistente))).Throws(new ErrorRegistroNoEncontrado());
-            IActionResult resultadoAccion = _mantenimientosController.Eliminar(idNoExistente);
-            Assert.That(resultadoAccion, Is.InstanceOf<NotFoundObjectResult>());
+            _mantenimientoServiceMock.Setup(s => s.Eliminar(It.IsAny<EliminarMantenimientoComando>())).Returns(Result<MantenimientoDto>.NotFound());
+            var resultado = _mantenimientosController.Eliminar(idNoExistente);
+            Assert.That(resultado.Status, Is.EqualTo(ResultStatus.NotFound));
         }
 
         [Test]
         public void EliminarMantenimiento_EnUso_RetornaConflict()
         {
             int idEnUso = 2;
-            _mantenimientoServiceMock.Setup(s => s.EliminarMantenimiento(It.Is<EliminarMantenimientoComando>(c => c.Id == idEnUso))).Throws(new ErrorRegistroEnUso());
-            IActionResult resultadoAccion = _mantenimientosController.Eliminar(idEnUso);
-            Assert.That(resultadoAccion, Is.InstanceOf<ConflictObjectResult>());
+            _mantenimientoServiceMock.Setup(s => s.Eliminar(It.IsAny<EliminarMantenimientoComando>())).Returns(Result<MantenimientoDto>.Conflict());
+            var resultado = _mantenimientosController.Eliminar(idEnUso);
+            Assert.That(resultado.Status, Is.EqualTo(ResultStatus.Conflict));
         }
 
         [Test]
         public void EliminarMantenimiento_ServicioError_RetornaError500()
         {
             int idErrorGeneral = 4;
-            _mantenimientoServiceMock.Setup(s => s.EliminarMantenimiento(It.Is<EliminarMantenimientoComando>(c => c.Id == idErrorGeneral))).Throws(new System.Exception("Error General Servidor"));
-            IActionResult resultadoAccion = _mantenimientosController.Eliminar(idErrorGeneral);
-            Assert.That(resultadoAccion, Is.InstanceOf<ObjectResult>());
-            ObjectResult objectResult = (ObjectResult)resultadoAccion;
-            Assert.That(objectResult.StatusCode, Is.EqualTo(500));
+            _mantenimientoServiceMock.Setup(s => s.Eliminar(It.IsAny<EliminarMantenimientoComando>())).Returns(Result<MantenimientoDto>.Error("Error General Servidor"));
+            var resultado = _mantenimientosController.Eliminar(idErrorGeneral);
+            Assert.That(resultado.Status, Is.EqualTo(ResultStatus.Error));
         }
+
         private static IEnumerable<object[]> FuenteCasos_EliminarMantenimiento_BadRequest()
         {
             yield return new object[] { 0, new ErrorIdInvalido("Id inválido") };
@@ -151,9 +138,9 @@ namespace IMT_Reservas.Tests.ControllerTests
         [TestCaseSource(nameof(FuenteCasos_EliminarMantenimiento_BadRequest))]
         public void EliminarMantenimiento_Invalido_RetornaBadRequest(int idMantenimiento, System.Exception excepcionLanzada)
         {
-            _mantenimientoServiceMock.Setup(s => s.EliminarMantenimiento(It.Is<EliminarMantenimientoComando>(c => c.Id == idMantenimiento))).Throws(excepcionLanzada);
-            IActionResult resultadoAccion = _mantenimientosController.Eliminar(idMantenimiento);
-            Assert.That(resultadoAccion, Is.InstanceOf<BadRequestObjectResult>());
+            _mantenimientoServiceMock.Setup(s => s.Eliminar(It.IsAny<EliminarMantenimientoComando>())).Returns(Result<MantenimientoDto>.Invalid(new ValidationError("Id", excepcionLanzada.Message)));
+            var resultado = _mantenimientosController.Eliminar(idMantenimiento);
+            Assert.That(resultado.Status, Is.EqualTo(ResultStatus.Invalid));
         }
     }
 }

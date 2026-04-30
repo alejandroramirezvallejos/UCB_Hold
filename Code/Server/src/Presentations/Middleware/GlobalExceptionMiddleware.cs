@@ -33,36 +33,37 @@ public class GlobalExceptionMiddleware
     private Task HandleExceptionAsync(HttpContext context, Exception exception)
     {
         context.Response.ContentType = "application/json";
-        
-        int statusCode = (int)HttpStatusCode.BadRequest; // Default to 400
 
-        if (exception is ErrorRegistroNoEncontrado || exception is ErrorCarnetUsuarioNoEncontrado || exception is ErrorCarreraNoEncontrada || exception is ErrorCategoriaNoEncontrada || exception is ErrorCodigoImtNoEncontrado || exception is ErrorEmpresaMantenimientoNoEncontrada || exception is ErrorGaveteroNoEncontrado || exception is ErrorGrupoEquipoNoEncontrado || exception is ErrorMuebleNoEncontrado)
+        (int statusCode, string message) = exception switch
         {
-            statusCode = (int)HttpStatusCode.NotFound;
-        }
-        else if (exception is ErrorRegistroYaExiste || exception is ErrorRegistroEnUso || exception is ErrorNoEquiposDisponibles)
-        {
-            statusCode = (int)HttpStatusCode.Conflict;
-        }
-        else if (exception is ErrorUsuarioNoAutorizado)
-        {
-            statusCode = (int)HttpStatusCode.Unauthorized;
-        }
-        else if (exception is ErrorDataBase || exception.Message.Contains("Error General Servidor") || exception.InnerException?.Message.Contains("Error General Servidor") == true)
-        {
-            statusCode = (int)HttpStatusCode.InternalServerError;
-        }
-        else if (!(exception is DomainException) && !(exception is ArgumentException) && !(exception is ArgumentNullException))
-        {
-            statusCode = (int)HttpStatusCode.InternalServerError;
-        }
+            ErrorRegistroNoEncontrado => (404, "No se encontró el registro especificado"),
+            ErrorCarnetUsuarioNoEncontrado => (404, "El carnet de usuario no fue encontrado"),
+            ErrorGrupoEquipoNoEncontrado => (404, "El grupo de equipos no fue encontrado"),
+            ErrorCategoriaNoEncontrada => (404, "La categoría no fue encontrada"),
+            ErrorCarreraNoEncontrada => (404, "La carrera no fue encontrada"),
+            ErrorCodigoImtNoEncontrado => (404, "El código IMT no fue encontrado"),
+            ErrorEmpresaMantenimientoNoEncontrada => (404, "La empresa de mantenimiento no fue encontrada"),
+            ErrorGaveteroNoEncontrado => (404, "El gavetero no fue encontrado"),
+            ErrorMuebleNoEncontrado => (404, "El mueble no fue encontrado"),
+
+            ErrorRegistroYaExiste => (409, "Ya existe un registro con estos datos"),
+            ErrorRegistroEnUso => (409, "No se puede eliminar el registro porque está siendo utilizado"),
+            ErrorNoEquiposDisponibles => (409, "No hay equipos disponibles para las fechas solicitadas"),
+
+            ErrorUsuarioNoAutorizado => (401, "El usuario no está autorizado para realizar esta acción"),
+
+            ErrorDataBase ex => (500, $"Error de base de datos: {ex.Message}"),
+            ErrorRepository ex => (500, $"Error del repositorio: {ex.Message}"),
+
+            _ => (500, exception.Message)
+        };
 
         context.Response.StatusCode = statusCode;
 
-        var response = new 
-        { 
-            error = exception.GetType().Name, 
-            mensaje = exception.Message 
+        var response = new
+        {
+            error = exception.GetType().Name,
+            mensaje = message
         };
 
         var options = new JsonSerializerOptions { PropertyNamingPolicy = null };

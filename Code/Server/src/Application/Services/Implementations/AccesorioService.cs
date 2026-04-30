@@ -1,107 +1,144 @@
 using System.Data;
-using IMT_Reservas.Server.Shared.Common;
+using Ardalis.Result;
 
-public class AccesorioService : BaseServicios,
-    ICrearServicio<CrearAccesorioComando>,
-    IActualizarServicio<ActualizarAccesorioComando>,
-    IEliminarServicio<EliminarAccesorioComando>,
-    IObtenerTodosServicio<AccesorioDto>
+public class AccesorioService : BaseServicios, IAccesorioService
 {
-    private readonly AccesorioRepository _accesorioRepository;
+    private readonly IAccesorioRepository _accesorioRepository;
 
-    public AccesorioService(AccesorioRepository accesorioRepository)
+    public AccesorioService(IAccesorioRepository accesorioRepository)
     {
         _accesorioRepository = accesorioRepository;
     }
 
-    public virtual void Crear(CrearAccesorioComando comando)
+    public virtual Result<AccesorioDto> Crear(CrearAccesorioComando comando)
     {
-        ValidarEntradaCreacion(comando);
+        var validResult = ValidarEntrada(comando);
+        if (!validResult.IsSuccess) return Result<AccesorioDto>.Invalid(validResult.ValidationErrors.ToArray());
 
-        // Resolver FK: código IMT → id_equipo
         var idEquipo = _accesorioRepository.ObtenerEquipoIdPorCodigoImt(comando.CodigoIMT!.Value);
         if (idEquipo == null)
-            throw new ErrorCodigoImtNoEncontrado();
+            return Result<AccesorioDto>.NotFound("El código IMT no fue encontrado");
 
-        _accesorioRepository.Crear(idEquipo.Value, comando);
+        var result = _accesorioRepository.Crear(idEquipo.Value, comando);
+        return result;
     }
-    
-    protected override void ValidarEntradaCreacion<T>(T comando)
-    {
-        base.ValidarEntradaCreacion(comando); // Validación base (null check)
-        
-        if (comando is CrearAccesorioComando accesorioComando)
-        {
-            if (string.IsNullOrWhiteSpace(accesorioComando.Nombre)) throw new ErrorNombreRequerido();
-            if (string.IsNullOrWhiteSpace(accesorioComando.Modelo)) throw new ErrorModeloRequerido();
-            if (accesorioComando.Nombre.Length > 256) throw new ErrorLongitudInvalida("nombre del accesorio", 255);
-            if (accesorioComando.CodigoIMT <= 0) throw new ErrorCodigoImtInvalido();
-            if (accesorioComando.Precio.HasValue && accesorioComando.Precio.Value <= 0) throw new ErrorValorNegativo("precio");
-        }
-    }
-    public virtual List<AccesorioDto>? ObtenerTodos()
-    {
-        try
-        {
-            DataTable dt = _accesorioRepository.ObtenerTodos();
-            var lista = new List<AccesorioDto>(dt.Rows.Count);            
-            foreach (DataRow row in dt.Rows)
-            {
-                var baseDto = MapearFilaADto(row);
-                if (baseDto is AccesorioDto accesorio)
-                    lista.Add(accesorio);
-            }
-            return lista;
-        }
-        catch { throw; }
-    }
-    public virtual void Actualizar(ActualizarAccesorioComando comando)
-    {
-        ValidarEntradaActualizacion(comando);
 
-        // Verificar que el accesorio exista y esté activo
+    public virtual Result<List<AccesorioDto>> ObtenerTodos()
+    {
+        var result = _accesorioRepository.ObtenerTodos();
+        if (!result.IsSuccess) return Result<List<AccesorioDto>>.Error("Error al obtener los accesorios");
+
+        var lista = new List<AccesorioDto>(result.Value.Rows.Count);
+        foreach (DataRow row in result.Value.Rows)
+        {
+            var baseDto = MapearFilaADto(row);
+            if (baseDto is AccesorioDto accesorio)
+                lista.Add(accesorio);
+        }
+
+        return lista.Count == 0
+            ? Result<List<AccesorioDto>>.NotFound("No se encontró el registro especificado")
+            : Result<List<AccesorioDto>>.Success(lista);
+    }
+
+    public virtual Result<AccesorioDto> Actualizar(ActualizarAccesorioComando comando)
+    {
+        var validResult = ValidarEntrada(comando);
+        if (!validResult.IsSuccess) return Result<AccesorioDto>.Invalid(validResult.ValidationErrors.ToArray());
+
         if (!_accesorioRepository.ExisteActivoPorId(comando.Id))
-            throw new ErrorRegistroNoEncontrado();
+            return Result<AccesorioDto>.NotFound("No se encontró el registro especificado");
 
-        // Resolver FK: código IMT → id_equipo (si se proporcionó)
         int? idEquipo = null;
         if (comando.CodigoIMT > 0)
         {
             idEquipo = _accesorioRepository.ObtenerEquipoIdPorCodigoImt(comando.CodigoIMT!.Value);
             if (idEquipo == null)
-                throw new ErrorCodigoImtNoEncontrado();
+                return Result<AccesorioDto>.NotFound("El código IMT no fue encontrado");
         }
 
-        _accesorioRepository.Actualizar(idEquipo, comando);
+        var result = _accesorioRepository.Actualizar(idEquipo, comando);
+        return result;
     }
-    private void ValidarEntradaActualizacion(ActualizarAccesorioComando comando)
-    {
-        if (comando == null) throw new ArgumentNullException(nameof(comando));
-        if (comando.Id <= 0) throw new ErrorIdInvalido("accesorio");
-        if (!string.IsNullOrWhiteSpace(comando.Nombre) && comando.Nombre.Length > 255) throw new ErrorLongitudInvalida("nombre del accesorio", 255);
-        if (comando.CodigoIMT <= 0) throw new ErrorCodigoImtInvalido();
-        if (comando.Precio.HasValue && comando.Precio.Value < 0) throw new ErrorValorNegativo("precio");
-    }
-    public virtual void Eliminar(EliminarAccesorioComando comando)
-    {
-        ValidarEntradaEliminacion(comando);
 
-        // Verificar que el accesorio exista y esté activo
+    public virtual Result<AccesorioDto> Eliminar(EliminarAccesorioComando comando)
+    {
+        var validResult = ValidarEntrada(comando);
+        if (!validResult.IsSuccess) return Result<AccesorioDto>.Invalid(validResult.ValidationErrors.ToArray());
+
         if (!_accesorioRepository.ExisteActivoPorId(comando.Id))
-            throw new ErrorRegistroNoEncontrado();
+            return Result<AccesorioDto>.NotFound("No se encontró el registro especificado");
 
-        _accesorioRepository.Eliminar(comando);
+        var result = _accesorioRepository.Eliminar(comando);
+        return result;
     }
-    
-    protected override void ValidarEntradaEliminacion<T>(T comando)
+
+    private Result<CrearAccesorioComando> ValidarEntrada(CrearAccesorioComando comando)
     {
-        base.ValidarEntradaEliminacion(comando); // Validación base (null check)
-        
-        if (comando is EliminarAccesorioComando accesorioComando)
-        {
-            if (accesorioComando.Id <= 0) throw new ErrorIdInvalido("accesorio");
-        }
-    }    
+        var errors = new List<ValidationError>();
+
+        if (comando == null)
+            errors.Add(new("comando", "El comando es requerido"));
+
+        if (string.IsNullOrWhiteSpace(comando?.Nombre))
+            errors.Add(new("Nombre", "El nombre es requerido"));
+
+        if (comando?.Nombre.Length > 256)
+            errors.Add(new("Nombre", "El nombre no puede tener más de 256 caracteres"));
+
+        if (string.IsNullOrWhiteSpace(comando?.Modelo))
+            errors.Add(new("Modelo", "El modelo es requerido"));
+
+        if (comando?.CodigoIMT <= 0)
+            errors.Add(new("CodigoIMT", "El código IMT es inválido"));
+
+        if (comando?.Precio.HasValue == true && comando.Precio.Value <= 0)
+            errors.Add(new("Precio", "El precio no puede ser negativo"));
+
+        return errors.Any()
+            ? Result<CrearAccesorioComando>.Invalid(errors.ToArray())
+            : Result<CrearAccesorioComando>.Success(comando!);
+    }
+
+    private Result<ActualizarAccesorioComando> ValidarEntrada(ActualizarAccesorioComando comando)
+    {
+        var errors = new List<ValidationError>();
+
+        if (comando == null)
+            errors.Add(new("comando", "El comando es requerido"));
+
+        if (comando?.Id <= 0)
+            errors.Add(new("Id", "El ID debe ser mayor a 0"));
+
+        if (!string.IsNullOrWhiteSpace(comando?.Nombre) && comando.Nombre.Length > 255)
+            errors.Add(new("Nombre", "El nombre no puede tener más de 255 caracteres"));
+
+        if (comando?.CodigoIMT < 0)
+            errors.Add(new("CodigoIMT", "El código IMT es inválido"));
+
+        if (comando?.Precio.HasValue == true && comando.Precio.Value < 0)
+            errors.Add(new("Precio", "El precio no puede ser negativo"));
+
+        return errors.Any()
+            ? Result<ActualizarAccesorioComando>.Invalid(errors.ToArray())
+            : Result<ActualizarAccesorioComando>.Success(comando!);
+    }
+
+    private Result<EliminarAccesorioComando> ValidarEntrada(EliminarAccesorioComando comando)
+    {
+        var errors = new List<ValidationError>();
+
+        if (comando == null)
+            errors.Add(new("comando", "El comando es requerido"));
+
+        if (comando?.Id <= 0)
+            errors.Add(new("Id", "El ID debe ser mayor a 0"));
+
+        return errors.Any()
+            ? Result<EliminarAccesorioComando>.Invalid(errors.ToArray())
+            : Result<EliminarAccesorioComando>.Success(comando!);
+    }
+
     protected override BaseDto MapearFilaADto(DataRow fila)
     {
         return new AccesorioDto

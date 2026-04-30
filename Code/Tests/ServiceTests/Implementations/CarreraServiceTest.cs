@@ -1,11 +1,11 @@
 using Moq;
 using System.Data;
-using IMT_Reservas.Server.Shared.Common;
+using Ardalis.Result;
 
 namespace IMT_Reservas.Tests.ServiceTests
 {
     [TestFixture]
-    public class CarreraServiceTest : ICarreraServiceTest
+    public class CarreraServiceTest 
     {
         private Mock<ICarreraRepository> _carreraRepositoryMock;
         private CarreraService          _carreraService;
@@ -18,29 +18,39 @@ namespace IMT_Reservas.Tests.ServiceTests
         }
 
         [Test]
-        public void CrearCarrera_ComandoValido_LlamaRepositorioCrear()
+        public void Crear_ComandoValido_RetornaSuccess()
         {
             CrearCarreraComando comando = new CrearCarreraComando("Psicopedagogía");
-            _carreraService.CrearCarrera(comando);
+            _carreraRepositoryMock.Setup(r => r.Crear(It.IsAny<CrearCarreraComando>())).Returns(Result<CarreraDto>.Created(new CarreraDto { Id = 1, Nombre = "Psicopedagogía" }));
+
+            var resultado = _carreraService.Crear(comando);
+
+            Assert.That(resultado.IsSuccess, Is.True);
             _carreraRepositoryMock.Verify(r => r.Crear(comando), Times.Once);
         }
 
         [Test]
-        public void CrearCarrera_NombreVacio_LanzaErrorNombreRequerido()
+        public void Crear_NombreVacio_RetornaInvalid()
         {
             CrearCarreraComando comando = new CrearCarreraComando("");
-            Assert.Throws<ErrorNombreRequerido>(() => _carreraService.CrearCarrera(comando));
+
+            var resultado = _carreraService.Crear(comando);
+
+            Assert.That(resultado.IsSuccess, Is.False);
         }
 
         [Test]
-        public void CrearCarrera_NombreExcedeLimite_LanzaErrorLongitudInvalida()
+        public void Crear_NombreExcedeLimite_RetornaInvalid()
         {
             CrearCarreraComando comando = new CrearCarreraComando(new string('a', 257));
-            Assert.Throws<ErrorLongitudInvalida>(() => _carreraService.CrearCarrera(comando));
+
+            var resultado = _carreraService.Crear(comando);
+
+            Assert.That(resultado.IsSuccess, Is.False);
         }
 
         [Test]
-        public void ObtenerTodasCarreras_CuandoHayDatos_RetornaListaDeDtos()
+        public void ObtenerTodos_CuandoHayDatos_RetornaListaDeDtos()
         {
             DataTable carrerasDataTable = new DataTable();
             carrerasDataTable.Columns.Add("id_carrera", typeof(int));
@@ -50,59 +60,79 @@ namespace IMT_Reservas.Tests.ServiceTests
             carrerasDataTable.Rows.Add(2, "Software", false);
             carrerasDataTable.Rows.Add(3, "Inteligencia Artificial", false);
 
-            _carreraRepositoryMock.Setup(r => r.ObtenerTodas()).Returns(carrerasDataTable);
+            _carreraRepositoryMock.Setup(r => r.ObtenerTodos()).Returns(Result<DataTable>.Success(carrerasDataTable));
 
-            List<CarreraDto> resultado = _carreraService.ObtenerTodasCarreras();
+            var resultado = _carreraService.ObtenerTodos();
 
-            Assert.That(resultado, Has.Count.EqualTo(3));
-            Assert.That(resultado[0].Id, Is.EqualTo(1));
-            Assert.That(resultado[0].Nombre, Is.EqualTo("Mecatronica"));
-            Assert.That(resultado[1].Id, Is.EqualTo(2));
-            Assert.That(resultado[1].Nombre, Is.EqualTo("Software"));
+            Assert.That(resultado.IsSuccess, Is.True);
+            Assert.That(resultado.Value, Has.Count.EqualTo(3));
+            Assert.That(resultado.Value[0].Id, Is.EqualTo(1));
+            Assert.That(resultado.Value[0].Nombre, Is.EqualTo("Mecatronica"));
         }
 
         [Test]
-        public void ActualizarCarrera_ComandoValido_LlamaRepositorioActualizar()
+        public void Actualizar_ComandoValido_RetornaSuccess()
         {
             ActualizarCarreraComando comando = new ActualizarCarreraComando(5, "Ingeniería Civil");
-            _carreraService.ActualizarCarrera(comando);
+            _carreraRepositoryMock.Setup(r => r.Actualizar(It.IsAny<ActualizarCarreraComando>())).Returns(Result<CarreraDto>.Success(new CarreraDto { Id = 5, Nombre = "Ingeniería Civil" }));
+
+            var resultado = _carreraService.Actualizar(comando);
+
+            Assert.That(resultado.IsSuccess, Is.True);
             _carreraRepositoryMock.Verify(r => r.Actualizar(comando), Times.Once);
         }
 
         [Test]
-        public void ActualizarCarrera_IdInvalido_LanzaErrorIdInvalido()
+        public void Actualizar_IdInvalido_RetornaInvalid()
         {
             ActualizarCarreraComando comando = new ActualizarCarreraComando(0, "Ingeniería Civil");
-            Assert.Throws<ErrorIdInvalido>(() => _carreraService.ActualizarCarrera(comando));
+
+            var resultado = _carreraService.Actualizar(comando);
+
+            Assert.That(resultado.IsSuccess, Is.False);
         }
 
         [Test]
-        public void ActualizarCarrera_NombreVacio_LanzaErrorNombreRequerido()
+        public void Actualizar_NombreVacio_RetornaInvalid()
         {
             ActualizarCarreraComando comando = new ActualizarCarreraComando(1, "");
-            Assert.Throws<ErrorNombreRequerido>(() => _carreraService.ActualizarCarrera(comando));
+
+            var resultado = _carreraService.Actualizar(comando);
+
+            Assert.That(resultado.IsSuccess, Is.False);
         }
 
         [Test]
-        public void ActualizarCarrera_NombreExcedeLimite_LanzaErrorLongitudInvalida()
+        public void Actualizar_NombreExcedeLimite_RetornaInvalid()
         {
             ActualizarCarreraComando comando = new ActualizarCarreraComando(1, new string('a', 256));
-            Assert.Throws<ErrorLongitudInvalida>(() => _carreraService.ActualizarCarrera(comando));
+
+            var resultado = _carreraService.Actualizar(comando);
+
+            Assert.That(resultado.IsSuccess, Is.False);
         }
 
         [Test]
-        public void EliminarCarrera_ComandoValido_LlamaRepositorioEliminar()
+        public void Eliminar_ComandoValido_RetornaSuccess()
         {
             EliminarCarreraComando comando = new EliminarCarreraComando(25);
-            _carreraService.EliminarCarrera(comando);
-            _carreraRepositoryMock.Verify(r => r.Eliminar(comando.Id), Times.Once);
+            _carreraRepositoryMock.Setup(r => r.Eliminar(It.IsAny<EliminarCarreraComando>())).Returns(Result<CarreraDto>.Success(new CarreraDto { Id = 25 }));
+
+            var resultado = _carreraService.Eliminar(comando);
+
+            Assert.That(resultado.IsSuccess, Is.True);
+            _carreraRepositoryMock.Verify(r => r.Eliminar(new EliminarCarreraComando(comando.Id)), Times.Once);
         }
 
         [Test]
-        public void EliminarCarrera_IdInvalido_LanzaErrorIdInvalido()
+        public void Eliminar_IdInvalido_RetornaInvalid()
         {
             EliminarCarreraComando comando = new EliminarCarreraComando(0);
-            Assert.Throws<ErrorIdInvalido>(() => _carreraService.EliminarCarrera(comando));
+
+            var resultado = _carreraService.Eliminar(comando);
+
+            Assert.That(resultado.IsSuccess, Is.False);
         }
     }
 }
+

@@ -1,116 +1,136 @@
 using System.Data;
-using IMT_Reservas.Server.Shared.Common;
+using Ardalis.Result;
 
-public class EmpresaMantenimientoService : BaseServicios,
-    ICrearServicio<CrearEmpresaMantenimientoComando>,
-    IActualizarServicio<ActualizarEmpresaMantenimientoComando>,
-    IEliminarServicio<EliminarEmpresaMantenimientoComando>,
-    IObtenerTodosServicio<EmpresaMantenimientoDto>
+public class EmpresaMantenimientoService : BaseServicios, IEmpresaMantenimientoService
 {
-    private readonly EmpresaMantenimientoRepository _empresaRepository;
+    private readonly IEmpresaMantenimientoRepository _empresaRepository;
 
-    public EmpresaMantenimientoService(EmpresaMantenimientoRepository empresaRepository)
+    public EmpresaMantenimientoService(IEmpresaMantenimientoRepository empresaRepository)
     {
         _empresaRepository = empresaRepository;
     }
 
-    public virtual void Crear(CrearEmpresaMantenimientoComando comando)
+    public virtual Result<EmpresaMantenimientoDto> Crear(CrearEmpresaMantenimientoComando comando)
     {
-        ValidarEntradaCreacion(comando);
+        var validResult = ValidarEntrada(comando);
+        if (!validResult.IsSuccess) return Result<EmpresaMantenimientoDto>.Invalid(validResult.ValidationErrors.ToArray());
 
-        // Intentar reactivar si existe una empresa eliminada lógicamente con ese nombre
         if (_empresaRepository.ReactivarEliminadaPorNombre(comando.NombreEmpresa!))
-            return;
+            return Result<EmpresaMantenimientoDto>.Success(null);
 
-        // Verificar si ya existe una empresa activa con ese nombre
         if (_empresaRepository.ExisteActivaPorNombre(comando.NombreEmpresa!))
-            throw new ErrorRegistroYaExiste();
+            return Result<EmpresaMantenimientoDto>.Conflict("Ya existe una empresa de mantenimiento activa con este nombre");
 
-        _empresaRepository.Crear(comando);
+        var result = _empresaRepository.Crear(comando);
+        return result;
     }
-    
-    protected override void ValidarEntradaCreacion<T>(T comando)
+
+    public virtual Result<List<EmpresaMantenimientoDto>> ObtenerTodos()
     {
-        base.ValidarEntradaCreacion(comando); // Validación base (null check)
-        
-        // Validaciones específicas para CrearEmpresaMantenimientoComando
-        if (comando is CrearEmpresaMantenimientoComando empresaComando)
+        var repoResult = _empresaRepository.ObtenerTodos();
+        if (!repoResult.IsSuccess)
+            return Result<List<EmpresaMantenimientoDto>>.Error("Error al obtener las empresas de mantenimiento");
+
+        var resultado = repoResult.Value;
+        var lista = new List<EmpresaMantenimientoDto>(resultado.Rows.Count);
+        foreach (DataRow fila in resultado.Rows)
         {
-            if (string.IsNullOrWhiteSpace(empresaComando.NombreEmpresa)) throw new ErrorNombreRequerido();
-            if (empresaComando.NombreEmpresa.Length > 255) throw new ErrorLongitudInvalida("nombre", 255);
-            if (!string.IsNullOrWhiteSpace(empresaComando.Telefono) && empresaComando.Telefono.Length > 20) throw new ErrorLongitudInvalida("telefono", 20);
+            var dto = MapearFilaADto(fila) as EmpresaMantenimientoDto;
+            if (dto != null) lista.Add(dto);
         }
+        return lista.Count == 0
+            ? Result<List<EmpresaMantenimientoDto>>.NotFound("No se encontraron empresas de mantenimiento")
+            : Result<List<EmpresaMantenimientoDto>>.Success(lista);
     }
 
-    public virtual List<EmpresaMantenimientoDto>? ObtenerTodos()
+    public virtual Result<EmpresaMantenimientoDto> Actualizar(ActualizarEmpresaMantenimientoComando comando)
     {
-        try
-        {
-            DataTable resultado = _empresaRepository.ObtenerTodos();
-            var lista = new List<EmpresaMantenimientoDto>(resultado.Rows.Count);
-            foreach (DataRow fila in resultado.Rows)
-            {
-                var dto = MapearFilaADto(fila) as EmpresaMantenimientoDto;
-                if (dto != null) lista.Add(dto);
-            }
-            return lista;
-        }
-        catch { throw; }
-    }
-    
-    public virtual void Actualizar(ActualizarEmpresaMantenimientoComando comando)
-    {
-        ValidarEntradaActualizacion(comando);
+        var validResult = ValidarEntrada(comando);
+        if (!validResult.IsSuccess) return Result<EmpresaMantenimientoDto>.Invalid(validResult.ValidationErrors.ToArray());
 
-        // Verificar que la empresa exista y esté activa
         if (!_empresaRepository.ExisteActivaPorId(comando.Id))
-            throw new ErrorRegistroNoEncontrado();
+            return Result<EmpresaMantenimientoDto>.NotFound("La empresa de mantenimiento no fue encontrada");
 
-        // Verificar duplicados si se está cambiando el nombre
         if (!string.IsNullOrWhiteSpace(comando.NombreEmpresa))
         {
             if (_empresaRepository.ExisteActivaPorNombreExcluyendoId(comando.NombreEmpresa, comando.Id))
-                throw new ErrorRegistroYaExiste();
+                return Result<EmpresaMantenimientoDto>.Conflict("Ya existe otra empresa activa con ese nombre");
 
-            // Reactivar si existe eliminada lógicamente con ese nombre (como en el SP)
             if (_empresaRepository.ReactivarEliminadaPorNombre(comando.NombreEmpresa))
             {
                 _empresaRepository.EliminarLogicamentePorId(comando.Id);
-                return;
+                return Result<EmpresaMantenimientoDto>.Success(null);
             }
         }
 
-        _empresaRepository.Actualizar(comando);
+        var result = _empresaRepository.Actualizar(comando);
+        return result;
     }
 
-    private void ValidarEntradaActualizacion(ActualizarEmpresaMantenimientoComando comando)
+    public virtual Result<EmpresaMantenimientoDto> Eliminar(EliminarEmpresaMantenimientoComando comando)
     {
-        if (comando == null) throw new ArgumentNullException(nameof(comando));
-        if (comando.Id <= 0) throw new ErrorIdInvalido("empresa de mantenimiento");
-        if (!string.IsNullOrWhiteSpace(comando.NombreEmpresa) && comando.NombreEmpresa.Length > 255)
-            throw new ErrorLongitudInvalida("nombre de la empresa", 255);
-    }
+        var validResult = ValidarEntrada(comando);
+        if (!validResult.IsSuccess) return Result<EmpresaMantenimientoDto>.Invalid(validResult.ValidationErrors.ToArray());
 
-    public virtual void Eliminar(EliminarEmpresaMantenimientoComando comando)
-    {
-        ValidarEntradaEliminacion(comando);
-
-        // Verificar que la empresa exista y esté activa
         if (!_empresaRepository.ExisteActivaPorId(comando.Id))
-            throw new ErrorRegistroNoEncontrado();
+            return Result<EmpresaMantenimientoDto>.NotFound("La empresa de mantenimiento no fue encontrada");
 
-        _empresaRepository.Eliminar(comando);
+        var result = _empresaRepository.Eliminar(comando);
+        return result;
     }
-    
-    protected override void ValidarEntradaEliminacion<T>(T comando)
+
+    private Result<CrearEmpresaMantenimientoComando> ValidarEntrada(CrearEmpresaMantenimientoComando comando)
     {
-        base.ValidarEntradaEliminacion(comando); // Validación base (null check)
-        
-        // Validaciones específicas para EliminarEmpresaMantenimientoComando
-        if (comando is EliminarEmpresaMantenimientoComando empresaComando)
-        {
-            if (empresaComando.Id <= 0) throw new ErrorIdInvalido("empresa de mantenimiento");
-        }
+        var errors = new List<ValidationError>();
+
+        if (comando == null)
+            errors.Add(new("comando", "El comando es requerido"));
+
+        if (string.IsNullOrWhiteSpace(comando?.NombreEmpresa))
+            errors.Add(new("NombreEmpresa", "El nombre de la empresa es requerido"));
+
+        if (comando?.NombreEmpresa?.Length > 255)
+            errors.Add(new("NombreEmpresa", "El nombre no puede tener más de 255 caracteres"));
+
+        if (!string.IsNullOrWhiteSpace(comando?.Telefono) && comando.Telefono.Length > 20)
+            errors.Add(new("Telefono", "El teléfono no puede tener más de 20 caracteres"));
+
+        return errors.Any()
+            ? Result<CrearEmpresaMantenimientoComando>.Invalid(errors.ToArray())
+            : Result<CrearEmpresaMantenimientoComando>.Success(comando!);
+    }
+
+    private Result<ActualizarEmpresaMantenimientoComando> ValidarEntrada(ActualizarEmpresaMantenimientoComando comando)
+    {
+        var errors = new List<ValidationError>();
+
+        if (comando == null)
+            errors.Add(new("comando", "El comando es requerido"));
+
+        if (comando?.Id <= 0)
+            errors.Add(new("Id", "El ID debe ser mayor a 0"));
+
+        if (!string.IsNullOrWhiteSpace(comando?.NombreEmpresa) && comando.NombreEmpresa.Length > 255)
+            errors.Add(new("NombreEmpresa", "El nombre de la empresa no puede tener más de 255 caracteres"));
+
+        return errors.Any()
+            ? Result<ActualizarEmpresaMantenimientoComando>.Invalid(errors.ToArray())
+            : Result<ActualizarEmpresaMantenimientoComando>.Success(comando!);
+    }
+
+    private Result<EliminarEmpresaMantenimientoComando> ValidarEntrada(EliminarEmpresaMantenimientoComando comando)
+    {
+        var errors = new List<ValidationError>();
+
+        if (comando == null)
+            errors.Add(new("comando", "El comando es requerido"));
+
+        if (comando?.Id <= 0)
+            errors.Add(new("Id", "El ID debe ser mayor a 0"));
+
+        return errors.Any()
+            ? Result<EliminarEmpresaMantenimientoComando>.Invalid(errors.ToArray())
+            : Result<EliminarEmpresaMantenimientoComando>.Success(comando!);
     }
 
     protected override BaseDto MapearFilaADto(DataRow fila)

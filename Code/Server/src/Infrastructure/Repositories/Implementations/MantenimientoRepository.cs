@@ -1,15 +1,12 @@
 using System.Data;
-using Npgsql;
+using Ardalis.Result;
 
-public class MantenimientoRepository :
-    ICrearRepository<CrearMantenimientoComando>,
-    IEliminarRepository<EliminarMantenimientoComando>,
-    IObtenerTodosRepository<CrearMantenimientoComando, DataTable>
+public class MantenimientoRepository : IMantenimientoRepository
 {
     private readonly IExecuteQuery _ejecutarConsulta;
     public MantenimientoRepository(IExecuteQuery ejecutarConsulta) => _ejecutarConsulta = ejecutarConsulta;
-    
-    public int CrearMantenimiento(int idEmpresa, CrearMantenimientoComando comando)
+
+    public Result<int> CrearMantenimiento(int idEmpresa, CrearMantenimientoComando comando)
     {
         const string sql = @"INSERT INTO public.mantenimientos (fecha_mantenimiento, fecha_final_mantenimiento, id_empresa, costo, descripcion, estado_eliminado)
                              VALUES (@fechaMantenimiento, @fechaFinalMantenimiento, @idEmpresa, @costo, @descripcion, FALSE)
@@ -22,19 +19,12 @@ public class MantenimientoRepository :
             ["costo"] = comando.Costo ?? (object)DBNull.Value,
             ["descripcion"] = comando.DescripcionMantenimiento ?? (object)DBNull.Value
         };
-        try
-        {
-            var dt = _ejecutarConsulta.EjecutarFuncion(sql, parametros);
-            return Convert.ToInt32(dt.Rows[0][0]);
-        }
-        catch (NpgsqlException ex) { throw new ErrorDataBase($"Error de base de datos al crear mantenimiento: {ex.Message}", ex.SqlState, null, ex); }
-        catch (Exception ex) { throw new ErrorRepository($"Error del repositorio al crear mantenimiento: {ex.Message}", ex); }
+        var dt = _ejecutarConsulta.EjecutarFuncion(sql, parametros);
+        return Result<int>.Created(Convert.ToInt32(dt.Rows[0][0]));
     }
 
-    public void Crear(CrearMantenimientoComando comando)
-    {
-        throw new InvalidOperationException("Use CrearMantenimiento(int idEmpresa, CrearMantenimientoComando comando) en su lugar.");
-    }
+    public Result<MantenimientoDto> Crear(CrearMantenimientoComando comando)
+        => Result<MantenimientoDto>.Error("Use CrearMantenimiento(int idEmpresa, CrearMantenimientoComando comando)");
 
     public void CrearDetalleMantenimiento(int idMantenimiento, int idEquipo, string? tipoMantenimiento, string? descripcionEquipo)
     {
@@ -47,28 +37,22 @@ public class MantenimientoRepository :
             ["tipoMantenimiento"] = tipoMantenimiento ?? (object)DBNull.Value,
             ["descripcion"] = descripcionEquipo ?? (object)DBNull.Value
         };
-        try { _ejecutarConsulta.EjecutarSpNR(sql, parametros); }
-        catch (NpgsqlException ex) { throw new ErrorDataBase($"Error de base de datos al crear detalle mantenimiento: {ex.Message}", ex.SqlState, null, ex); }
-        catch (Exception ex) { throw new ErrorRepository($"Error del repositorio al crear detalle mantenimiento: {ex.Message}", ex); }
+        _ejecutarConsulta.EjecutarSpNR(sql, parametros);
     }
 
-    public void Eliminar(EliminarMantenimientoComando comando)
+    public Result<MantenimientoDto> Eliminar(EliminarMantenimientoComando comando)
     {
-        // Eliminar detalles primero
         const string sqlDetalles = @"UPDATE public.detalles_mantenimientos SET estado_eliminado = TRUE WHERE id_mantenimiento = @id";
         var parametrosDetalles = new Dictionary<string, object?> { ["id"] = comando.Id };
-        try { _ejecutarConsulta.EjecutarSpNR(sqlDetalles, parametrosDetalles); }
-        catch (NpgsqlException ex) { throw new ErrorDataBase($"Error de base de datos al eliminar detalles mantenimiento: {ex.Message}", ex.SqlState, null, ex); }
-        catch (Exception ex) { throw new ErrorRepository($"Error del repositorio al eliminar detalles mantenimiento: {ex.Message}", ex); }
+        _ejecutarConsulta.EjecutarSpNR(sqlDetalles, parametrosDetalles);
 
-        // Eliminar mantenimiento
         const string sql = @"UPDATE public.mantenimientos SET estado_eliminado = TRUE WHERE id_mantenimiento = @id";
         var parametros = new Dictionary<string, object?> { ["id"] = comando.Id };
-        try { _ejecutarConsulta.EjecutarSpNR(sql, parametros); }
-        catch (NpgsqlException ex) { throw new ErrorDataBase($"Error de base de datos al eliminar mantenimiento: {ex.Message}", ex.SqlState, null, ex); }
-        catch (Exception ex) { throw new ErrorRepository($"Error del repositorio al eliminar mantenimiento: {ex.Message}", ex); }
+        _ejecutarConsulta.EjecutarSpNR(sql, parametros);
+        return Result<MantenimientoDto>.Success(new MantenimientoDto { Id = comando.Id });
     }
-    public DataTable ObtenerTodos()
+
+    public Result<DataTable> ObtenerTodos()
     {
         const string sql = @"SELECT m.id_mantenimiento, m.fecha_mantenimiento, m.fecha_final_mantenimiento,
             em.nombre AS nombre_empresa_mantenimiento, m.costo AS costo_mantenimiento,
@@ -81,12 +65,11 @@ public class MantenimientoRepository :
             LEFT JOIN public.equipos AS e ON dm.id_equipo = e.id_equipo AND e.estado_eliminado = FALSE
             LEFT JOIN public.grupos_equipos AS ge ON e.id_grupo_equipo = ge.id_grupo_equipo AND ge.estado_eliminado = FALSE
             WHERE m.estado_eliminado = FALSE";
-        try { return _ejecutarConsulta.EjecutarFuncion(sql, new Dictionary<string, object?>()); }
-        catch (NpgsqlException ex) { throw new ErrorDataBase($"Error de base de datos al obtener mantenimientos: {ex.Message}", ex.SqlState, null, ex); }
-        catch (Exception ex) { throw new ErrorRepository($"Error del repositorio al obtener mantenimientos: {ex.Message}", ex); }
+        var dt = _ejecutarConsulta.EjecutarFuncion(sql, new Dictionary<string, object?>());
+        return dt.Rows.Count == 0
+            ? Result<DataTable>.NotFound("No se encontró el registro especificado")
+            : Result<DataTable>.Success(dt);
     }
-
-    // --- Métodos auxiliares ---
 
     public bool ExisteActivoPorId(int id)
     {
@@ -101,8 +84,7 @@ public class MantenimientoRepository :
         const string sql = @"SELECT id_empresa_mantenimiento FROM public.empresas_mantenimiento WHERE nombre = @nombre AND estado_eliminado = FALSE LIMIT 1";
         var parametros = new Dictionary<string, object?> { ["nombre"] = nombreEmpresa };
         var dt = _ejecutarConsulta.EjecutarFuncion(sql, parametros);
-        if (dt.Rows.Count == 0) return null;
-        return Convert.ToInt32(dt.Rows[0][0]);
+        return dt.Rows.Count == 0 ? null : Convert.ToInt32(dt.Rows[0][0]);
     }
 
     public int? ObtenerEquipoIdPorCodigoImt(int codigoImt)
@@ -110,7 +92,6 @@ public class MantenimientoRepository :
         const string sql = @"SELECT id_equipo FROM public.equipos WHERE codigo_imt = @codigoImt AND estado_eliminado = FALSE LIMIT 1";
         var parametros = new Dictionary<string, object?> { ["codigoImt"] = codigoImt };
         var dt = _ejecutarConsulta.EjecutarFuncion(sql, parametros);
-        if (dt.Rows.Count == 0) return null;
-        return Convert.ToInt32(dt.Rows[0][0]);
+        return dt.Rows.Count == 0 ? null : Convert.ToInt32(dt.Rows[0][0]);
     }
 }

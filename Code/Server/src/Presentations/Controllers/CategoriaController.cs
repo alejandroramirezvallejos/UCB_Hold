@@ -1,36 +1,36 @@
 using Microsoft.AspNetCore.Mvc;
-using IMT_Reservas.Server.Shared.Common;
-
-namespace API.Controllers;
+using Ardalis.Result;
+using Ardalis.Result.AspNetCore;
 
 [ApiController]
 [Route("api/[controller]")]
+[TranslateResultToActionResult]
 public class CategoriaController : ControllerBase
 {
-    private readonly CategoriaService servicio;
-    public CategoriaController(CategoriaService servicio) => this.servicio = servicio;
+    private readonly ICategoriaService _servicio;
+    public CategoriaController(ICategoriaService servicio) => _servicio = servicio;
 
     [HttpPost]
-    public IActionResult Crear([FromBody] CrearCategoriaComando input)
+    public Result<CategoriaDto> Crear([FromBody] CrearCategoriaComando input)
     {
-        servicio.Crear(input); return Created("", new { mensaje = "Categoría creada exitosamente" });
+        return _servicio.Crear(input);
     }
 
     [HttpGet]
-    public IActionResult ObtenerTodos()
+    public Result<List<CategoriaDto>> ObtenerTodos()
     {
-        return Ok(servicio.ObtenerTodos());
+        return _servicio.ObtenerTodos();
     }
 
     [HttpPut]
-    public IActionResult Actualizar([FromBody] ActualizarCategoriaComando input)
+    public Result<CategoriaDto> Actualizar([FromBody] ActualizarCategoriaComando input)
     {
-        servicio.Actualizar(input); return Ok(new { mensaje = "Categoría actualizada exitosamente" });
+        return _servicio.Actualizar(input);
     }
 
     [HttpDelete("{id}")]
-    public IActionResult Eliminar(int id)
+    public Result<CategoriaDto> Eliminar(int id)
     {
-        servicio.Eliminar(new EliminarCategoriaComando(id)); return NoContent();
+        return _servicio.Eliminar(new EliminarCategoriaComando(id));
     }
 }

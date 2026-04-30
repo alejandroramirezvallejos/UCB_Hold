@@ -1,47 +1,58 @@
-﻿using System.Data;
-using System.Linq;
-using IMT_Reservas.Server.Shared.Common;
+using System.Data;
+using Ardalis.Result;
 
-public class ComentarioService : BaseServicios,
-    ICrearServicio<CrearComentarioComando>,
-    IEliminarServicio<EliminarComentarioComando>
+public class ComentarioService : BaseServicios, IComentarioService
 {
-    private readonly ComentarioRepository _comentarioRepository;
-    private readonly UsuarioRepository _usuarioRepository;
-    
-    public ComentarioService(ComentarioRepository comentarioRepository, UsuarioRepository usuarioRepository)
+    private readonly IComentarioRepository _comentarioRepository;
+    private readonly IUsuarioRepository _usuarioRepository;
+
+    public ComentarioService(IComentarioRepository comentarioRepository, IUsuarioRepository usuarioRepository)
     {
         _comentarioRepository = comentarioRepository;
         _usuarioRepository = usuarioRepository;
     }
 
-    public void Crear(CrearComentarioComando comando)
+    public Result<ComentarioDto> Crear(CrearComentarioComando comando)
     {
-        ValidarEntradaCreacion(comando);
-        _comentarioRepository.Crear(comando);
+        var validResult = ValidarEntrada(comando);
+        if (!validResult.IsSuccess) return Result<ComentarioDto>.Invalid(validResult.ValidationErrors.ToArray());
+
+        var result = _comentarioRepository.Crear(comando);
+        return result;
     }
-    
-    protected override void ValidarEntradaCreacion<T>(T comando)
+
+    private Result<CrearComentarioComando> ValidarEntrada(CrearComentarioComando comando)
     {
-        base.ValidarEntradaCreacion(comando); // Validación base (null check)
-        
-        if (comando is CrearComentarioComando comentarioComando)
-        {
-            if (string.IsNullOrWhiteSpace(comentarioComando.CarnetUsuario)) throw new ErrorCarnetInvalido();
-            if (comentarioComando.IdGrupoEquipo <= 0) throw new ErrorIdInvalido("grupo equipo");
-            if (string.IsNullOrWhiteSpace(comentarioComando.Contenido)) throw new ErrorCampoRequerido("contenido");
-            if (comentarioComando.Contenido.Length > 500) throw new ErrorLongitudInvalida("contenido", 500);
-        }
+        var errors = new List<ValidationError>();
+
+        if (comando == null)
+            errors.Add(new("comando", "El comando es requerido"));
+
+        if (string.IsNullOrWhiteSpace(comando?.CarnetUsuario))
+            errors.Add(new("CarnetUsuario", "El carnet del usuario es requerido"));
+
+        if (comando?.IdGrupoEquipo <= 0)
+            errors.Add(new("IdGrupoEquipo", "El ID del grupo de equipo es inválido"));
+
+        if (string.IsNullOrWhiteSpace(comando?.Contenido))
+            errors.Add(new("Contenido", "El contenido es requerido"));
+
+        if (comando?.Contenido?.Length > 500)
+            errors.Add(new("Contenido", "El contenido no puede exceder 500 caracteres"));
+
+        return errors.Any()
+            ? Result<CrearComentarioComando>.Invalid(errors.ToArray())
+            : Result<CrearComentarioComando>.Success(comando!);
     }
 
     public List<ComentarioDto>? ObtenerComentariosPorGrupoEquipo(ObtenerComentariosPorGrupoEquipoConsulta consulta)
     {
         if (consulta == null) throw new ArgumentNullException();
-        if (consulta.IdGrupoEquipo <= 0) throw new ErrorIdInvalido("comentarios");
+        if (consulta.IdGrupoEquipo <= 0) throw new ArgumentException("El ID del grupo de equipo es inválido");
 
         var comentariosData = _comentarioRepository.ObtenerPorGrupoEquipo(consulta.IdGrupoEquipo);
         if (comentariosData.Rows.Count == 0) return new List<ComentarioDto>();
-        
+
         List<string> carnets = new List<string>();
         for (int i = 0; i < comentariosData.Rows.Count; i++)
         {
@@ -64,7 +75,7 @@ public class ComentarioService : BaseServicios,
                     usuariosMap[carnet] = (nombre, apellido);
             }
         }
-        
+
         var lista = new List<ComentarioDto>(comentariosData.Rows.Count);
         for (int i = 0; i < comentariosData.Rows.Count; i++)
         {
@@ -83,47 +94,48 @@ public class ComentarioService : BaseServicios,
         return lista;
     }
 
-    public void Eliminar(EliminarComentarioComando comando)
+    public Result<ComentarioDto> Eliminar(EliminarComentarioComando comando)
     {
-        ValidarEntradaEliminacion(comando);
-        _comentarioRepository.Eliminar(comando);
-    }
-    protected override void ValidarEntradaEliminacion<T>(T comando)
-    {
-        base.ValidarEntradaEliminacion(comando); // Validación base (null check)
+        var validResult = ValidarEntradaEliminar(comando);
+        if (!validResult.IsSuccess) return Result<ComentarioDto>.Invalid(validResult.ValidationErrors.ToArray());
 
-        // Validaciones específicas para EliminarComentarioComando
-        if (comando is EliminarComentarioComando comentarioComando)
-        {
-            if (string.IsNullOrWhiteSpace(comentarioComando.Id)) throw new ErrorIdInvalido("comentario");
-        }
+        var result = _comentarioRepository.Eliminar(comando);
+        return result;
+    }
+
+    private Result<EliminarComentarioComando> ValidarEntradaEliminar(EliminarComentarioComando comando)
+    {
+        var errors = new List<ValidationError>();
+
+        if (comando == null)
+            errors.Add(new("comando", "El comando es requerido"));
+
+        if (string.IsNullOrWhiteSpace(comando?.Id))
+            errors.Add(new("Id", "El ID del comentario es inválido"));
+
+        return errors.Any()
+            ? Result<EliminarComentarioComando>.Invalid(errors.ToArray())
+            : Result<EliminarComentarioComando>.Success(comando!);
     }
 
     public void AgregarLikeComentario(AgregarLikeComentarioComando comando)
     {
-        ValidarEntradaLike(comando);
+        if (comando == null) throw new ArgumentNullException(nameof(comando));
+        if (string.IsNullOrWhiteSpace(comando.Id)) throw new ArgumentException("El ID del comentario es requerido");
+        if (string.IsNullOrWhiteSpace(comando.CarnetUsuario)) throw new ArgumentException("El carnet del usuario es requerido");
+
         _comentarioRepository.AgregarLike(comando);
     }
-    
-    protected virtual void ValidarEntradaLike(AgregarLikeComentarioComando comando)
-    {
-        if (comando == null) throw new ArgumentNullException(nameof(comando));
-        if (string.IsNullOrWhiteSpace(comando.Id)) throw new ErrorIdInvalido("comentario");
-        if (string.IsNullOrWhiteSpace(comando.CarnetUsuario)) throw new ErrorCarnetInvalido();
-    }
-    
+
     public void QuitarLikeComentario(QuitarLikeComentarioComando comando)
     {
-        ValidarEntradaQuitarLike(comando);
+        if (comando == null) throw new ArgumentNullException(nameof(comando));
+        if (string.IsNullOrWhiteSpace(comando.Id)) throw new ArgumentException("El ID del comentario es requerido");
+        if (string.IsNullOrWhiteSpace(comando.CarnetUsuario)) throw new ArgumentException("El carnet del usuario es requerido");
+
         _comentarioRepository.QuitarLike(comando);
     }
-    
-    protected virtual void ValidarEntradaQuitarLike(QuitarLikeComentarioComando comando)
-    {
-        if (comando == null) throw new ArgumentNullException(nameof(comando));
-        if (string.IsNullOrWhiteSpace(comando.Id)) throw new ErrorIdInvalido("comentario");
-        if (string.IsNullOrWhiteSpace(comando.CarnetUsuario)) throw new ErrorCarnetInvalido();
-    }
+
     protected override BaseDto MapearFilaADto(DataRow fila)
     {
         return new ComentarioDto

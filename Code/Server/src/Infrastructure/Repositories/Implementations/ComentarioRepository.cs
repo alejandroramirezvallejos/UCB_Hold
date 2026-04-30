@@ -1,116 +1,82 @@
 using System.Data;
 using MongoDB.Driver;
 using MongoDB.Bson;
+using Ardalis.Result;
 using IMT_Reservas.Server.Infrastructure.MongoDb;
 
-public class ComentarioRepository
+public class ComentarioRepository : IComentarioRepository
 {
     private readonly IMongoCollection<BsonDocument> _coleccion;
     public ComentarioRepository(MongoDbContexto contexto) => _coleccion = contexto.BaseDeDatos.GetCollection<BsonDocument>("comentarios");
 
-    public void Crear(CrearComentarioComando comando)
+    public Result<ComentarioDto> Crear(CrearComentarioComando comando)
     {
         var doc = new BsonDocument
         {
             ["CarnetUsuario"] = comando.CarnetUsuario,
             ["IdGrupoEquipo"] = comando.IdGrupoEquipo,
             ["Contenido"] = comando.Contenido,
-            ["Likes"] = new BsonArray(), // Ahora es un array de objetos
+            ["Likes"] = new BsonArray(),
             ["FechaCreacion"] = DateTime.UtcNow,
             ["EstadoEliminado"] = false
         };
-        try { _coleccion.InsertOne(doc); }
-        catch (Exception ex) { throw new ErrorRepository($"Error al crear comentario: {ex.Message}", ex); }
+        _coleccion.InsertOne(doc);
+        var dto = new ComentarioDto { Contenido = comando.Contenido };
+        return Result<ComentarioDto>.Created(dto);
     }
 
-    public void Eliminar(EliminarComentarioComando comando)
+    public Result<ComentarioDto> Eliminar(EliminarComentarioComando comando)
     {
-        if (string.IsNullOrWhiteSpace(comando.Id) || comando.Id.Length != 24 || !ObjectId.TryParse(comando.Id, out var objectId))
-            throw new ErrorDataBase("ID de comentario inválido", null, null, null);
+        if (!ObjectId.TryParse(comando.Id, out var objectId))
+            return Result<ComentarioDto>.NotFound("No se encontró el comentario");
         var filtro = Builders<BsonDocument>.Filter.And(
             Builders<BsonDocument>.Filter.Eq("_id", objectId),
             Builders<BsonDocument>.Filter.Eq("EstadoEliminado", false)
         );
-        try {
-            if (_coleccion == null)
-                throw new ErrorRepository("No se encontró el comentario", null);
-            // Si ocurre cualquier excepción en CountDocuments, captúrala y relanza como ErrorRepository
-            bool existe;
-            try {
-                existe = _coleccion.CountDocuments(filtro) > 0;
-            } catch (Exception ex) {
-                throw new ErrorRepository($"Error al verificar existencia del comentario: {ex.Message}", ex);
-            }
-            if (!existe) throw new ErrorDataBase("No se encontró el comentario", null, null, null);
-            var res = _coleccion.UpdateOne(filtro, Builders<BsonDocument>.Update.Set("EstadoEliminado", true));
-            if (res == null || res.MatchedCount == 0) throw new ErrorDataBase("No se encontró el comentario", null, null, null);
-        }
-        catch (ErrorDataBase) { throw; }
-        catch (Exception ex) { throw new ErrorRepository($"Error al eliminar comentario: {ex.Message}", ex); }
+        bool existe = _coleccion.CountDocuments(filtro) > 0;
+        if (!existe) return Result<ComentarioDto>.NotFound("No se encontró el comentario");
+        var res = _coleccion.UpdateOne(filtro, Builders<BsonDocument>.Update.Set("EstadoEliminado", true));
+        return res.MatchedCount == 0 ? Result<ComentarioDto>.NotFound("No se encontró el comentario") : Result<ComentarioDto>.Success(new ComentarioDto { Id = comando.Id });
     }
 
-    public void AgregarLike(AgregarLikeComentarioComando comando)
+    public Result<ComentarioDto> AgregarLike(AgregarLikeComentarioComando comando)
     {
-        if (string.IsNullOrWhiteSpace(comando.Id) || comando.Id.Length != 24 || !ObjectId.TryParse(comando.Id, out var objectId))
-            throw new ErrorDataBase("ID de comentario inválido", null, null, null);
+        if (!ObjectId.TryParse(comando.Id, out var objectId))
+            return Result<ComentarioDto>.NotFound("No se encontró el comentario");
         var filtro = Builders<BsonDocument>.Filter.And(
             Builders<BsonDocument>.Filter.Eq("_id", objectId),
             Builders<BsonDocument>.Filter.Eq("EstadoEliminado", false)
         );
-        try {
-            if (_coleccion == null)
-                throw new ErrorDataBase("No se encontró el comentario", null, null, null);
-            bool existe;
-            try {
-                existe = _coleccion.CountDocuments(filtro) > 0;
-            } catch (Exception ex) {
-                throw new ErrorRepository($"Error al verificar existencia del comentario: {ex.Message}", ex);
-            }
-            if (!existe) throw new ErrorDataBase("No se encontró el comentario", null, null, null);
-            // Verificar si el usuario ya dio like
-            var yaDioLike = _coleccion.Find(
-                Builders<BsonDocument>.Filter.And(
-                    filtro,
-                    Builders<BsonDocument>.Filter.ElemMatch("Likes", Builders<BsonDocument>.Filter.Eq("CarnetUsuario", comando.CarnetUsuario))
-                )
-            ).Any();
-            if (yaDioLike)
-                throw new ErrorRepository("El usuario ya dio like a este comentario", null);
-            var likeObj = new BsonDocument {
-                { "CarnetUsuario", comando.CarnetUsuario },
-                { "Fecha", DateTime.UtcNow }
-            };
-            var res = _coleccion.UpdateOne(filtro, Builders<BsonDocument>.Update.Push("Likes", likeObj));
-            if (res == null || res.MatchedCount == 0) throw new ErrorDataBase("No se encontró el comentario", null, null, null);
-        }
-        catch (ErrorDataBase) { throw; }
-        catch (Exception ex) { throw new ErrorRepository($"Error al agregar like al comentario: {ex.Message}", ex); }
+        bool existe = _coleccion.CountDocuments(filtro) > 0;
+        if (!existe) return Result<ComentarioDto>.NotFound("No se encontró el comentario");
+        var yaDioLike = _coleccion.Find(
+            Builders<BsonDocument>.Filter.And(
+                filtro,
+                Builders<BsonDocument>.Filter.ElemMatch("Likes", Builders<BsonDocument>.Filter.Eq("CarnetUsuario", comando.CarnetUsuario))
+            )
+        ).Any();
+        if (yaDioLike) return Result<ComentarioDto>.Error("El usuario ya dio like a este comentario");
+        var likeObj = new BsonDocument {
+            { "CarnetUsuario", comando.CarnetUsuario },
+            { "Fecha", DateTime.UtcNow }
+        };
+        var res = _coleccion.UpdateOne(filtro, Builders<BsonDocument>.Update.Push("Likes", likeObj));
+        return res.MatchedCount == 0 ? Result<ComentarioDto>.NotFound("No se encontró el comentario") : Result<ComentarioDto>.Success(new ComentarioDto { Id = comando.Id });
     }
 
-    public void QuitarLike(QuitarLikeComentarioComando comando)
+    public Result<ComentarioDto> QuitarLike(QuitarLikeComentarioComando comando)
     {
-        if (string.IsNullOrWhiteSpace(comando.Id) || comando.Id.Length != 24 || !ObjectId.TryParse(comando.Id, out var objectId))
-            throw new ErrorDataBase("ID de comentario inválido", null, null, null);
+        if (!ObjectId.TryParse(comando.Id, out var objectId))
+            return Result<ComentarioDto>.NotFound("No se encontró el comentario");
         var filtro = Builders<BsonDocument>.Filter.And(
             Builders<BsonDocument>.Filter.Eq("_id", objectId),
             Builders<BsonDocument>.Filter.Eq("EstadoEliminado", false)
         );
-        try {
-            if (_coleccion == null)
-                throw new ErrorDataBase("No se encontró el comentario", null, null, null);
-            bool existe;
-            try {
-                existe = _coleccion.CountDocuments(filtro) > 0;
-            } catch (Exception ex) {
-                throw new ErrorRepository($"Error al verificar existencia del comentario: {ex.Message}", ex);
-            }
-            if (!existe) throw new ErrorDataBase("No se encontró el comentario", null, null, null);
-            var update = Builders<BsonDocument>.Update.PullFilter("Likes", Builders<BsonDocument>.Filter.Eq("CarnetUsuario", comando.CarnetUsuario));
-            var res = _coleccion.UpdateOne(filtro, update);
-            if (res == null || res.MatchedCount == 0) throw new ErrorDataBase("No se encontró el comentario", null, null, null);
-        }
-        catch (ErrorDataBase) { throw; }
-        catch (Exception ex) { throw new ErrorRepository($"Error al quitar like al comentario: {ex.Message}", ex); }
+        bool existe = _coleccion.CountDocuments(filtro) > 0;
+        if (!existe) return Result<ComentarioDto>.NotFound("No se encontró el comentario");
+        var update = Builders<BsonDocument>.Update.PullFilter("Likes", Builders<BsonDocument>.Filter.Eq("CarnetUsuario", comando.CarnetUsuario));
+        var res = _coleccion.UpdateOne(filtro, update);
+        return res.MatchedCount == 0 ? Result<ComentarioDto>.NotFound("No se encontró el comentario") : Result<ComentarioDto>.Success(new ComentarioDto { Id = comando.Id });
     }
 
     public DataTable ObtenerPorGrupoEquipo(int idGrupoEquipo)
@@ -124,16 +90,13 @@ public class ComentarioRepository
 
     private DataTable ObtenerComentarios(FilterDefinition<BsonDocument> filtro)
     {
-        try {
-            var pipeline = new BsonDocument[]
-            {
-                new BsonDocument("$match", filtro.Render(_coleccion.DocumentSerializer, _coleccion.Settings.SerializerRegistry)),
-                new BsonDocument("$sort", new BsonDocument("FechaCreacion", -1))
-            };
-            var docs = _coleccion.Aggregate<BsonDocument>(pipeline).ToList();
-            return ConvertirATablaDeDatos(docs);
-        }
-        catch (Exception ex) { throw new ErrorRepository($"Error al consultar comentarios: {ex.Message}", ex); }
+        var pipeline = new BsonDocument[]
+        {
+            new BsonDocument("$match", filtro.Render(_coleccion.DocumentSerializer, _coleccion.Settings.SerializerRegistry)),
+            new BsonDocument("$sort", new BsonDocument("FechaCreacion", -1))
+        };
+        var docs = _coleccion.Aggregate<BsonDocument>(pipeline).ToList();
+        return ConvertirATablaDeDatos(docs);
     }
 
     private DataTable ConvertirATablaDeDatos(List<BsonDocument> docs)

@@ -2,6 +2,7 @@ using IMT_Reservas.Server.Application.ResponseDTOs;
 using IMT_Reservas.Server.Shared.Common;
 using System.Data;
 using System.Text.Json;
+using Ardalis.Result;
 
 namespace IMT_Reservas.Server.Infrastructure.Repositories.Implementations;
 

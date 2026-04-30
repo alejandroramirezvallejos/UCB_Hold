@@ -1,11 +1,11 @@
-﻿using Moq;
+using Moq;
 using System.Data;
-using Microsoft.Extensions.Configuration;
+using Ardalis.Result;
 
 namespace IMT_Reservas.Tests.RepositoryTests
 {
     [TestFixture]
-    public class EmpresaMantenimientoRepositoryTest : IEmpresaMantenimientoRepositoryTest
+    public class EmpresaMantenimientoRepositoryTest 
     {
         private Mock<IExecuteQuery>              _ejecutarConsultaMock;
         private IEmpresaMantenimientoRepository _empresaMantenimientoRepositorio;
@@ -56,7 +56,7 @@ namespace IMT_Reservas.Tests.RepositoryTests
         public void Eliminar_LlamaExecuteSpNR_ConParametrosCorrectos()
         {
             int id = 6;
-            _empresaMantenimientoRepositorio.Eliminar(id);
+            _empresaMantenimientoRepositorio.Eliminar(new EliminarEmpresaMantenimientoComando(id));
 
             _ejecutarConsultaMock.Verify(e => e.EjecutarSpNR(
                 It.Is<string>(s => s.Contains("eliminar_empresas_mantenimiento")),
@@ -70,9 +70,10 @@ namespace IMT_Reservas.Tests.RepositoryTests
             _ejecutarConsultaMock.Setup(e => e.EjecutarSpNR(It.IsAny<string>(), It.IsAny<Dictionary<string, object?>>() ))
                            .Throws(new Exception("test exception"));
 
-            Assert.Throws<ErrorRepository>(() => _empresaMantenimientoRepositorio.Crear(new CrearEmpresaMantenimientoComando("a", "b", "c", "d", "e", "f")));
-            Assert.Throws<ErrorRepository>(() => _empresaMantenimientoRepositorio.Actualizar(new ActualizarEmpresaMantenimientoComando(1, "a", "b", "c", "d", "e", "f")));
-            Assert.Throws<ErrorRepository>(() => _empresaMantenimientoRepositorio.Eliminar(6));
+            Assert.Throws<Exception>(() => _empresaMantenimientoRepositorio.Crear(new CrearEmpresaMantenimientoComando("a", "b", "c", "d", "e", "f")));
+            Assert.Throws<Exception>(() => _empresaMantenimientoRepositorio.Actualizar(new ActualizarEmpresaMantenimientoComando(1, "a", "b", "c", "d", "e", "f")));
+            Assert.Throws<Exception>(() => _empresaMantenimientoRepositorio.Eliminar(new EliminarEmpresaMantenimientoComando(6)));
         }
     }
 }
+

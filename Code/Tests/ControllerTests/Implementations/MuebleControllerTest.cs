@@ -1,16 +1,14 @@
-using API.Controllers;
-using Microsoft.AspNetCore.Mvc;
 using Moq;
+using Ardalis.Result;
 using IMT_Reservas.Server.Shared.Common;
-using IMT_Reservas.Server.Application.Interfaces;
 
 namespace IMT_Reservas.Tests.ControllerTests
 {
     [TestFixture]
     public class MuebleControllerTest : IMuebleControllerTest
     {
-        private Mock<IMuebleService>    _muebleServiceMock;
-        private MuebleController       _mueblesController;
+        private Mock<IMuebleService> _muebleServiceMock;
+        private MuebleController _mueblesController;
 
         [SetUp]
         public void Setup()
@@ -22,44 +20,43 @@ namespace IMT_Reservas.Tests.ControllerTests
         [Test]
         public void GetMuebles_ConDatos_RetornaOk()
         {
-            List<MuebleDto> mueblesEsperados = new List<MuebleDto>
+            var mueblesEsperados = new List<MuebleDto>
             {
                 new MuebleDto { Id = 3, Nombre = "FERRR" },
                 new MuebleDto { Id = 4, Nombre = "ferprueba" }
             };
-            _muebleServiceMock.Setup(s => s.ObtenerTodosMuebles()).Returns(mueblesEsperados);
-            IActionResult resultadoAccion = _mueblesController.ObtenerTodos();
-            Assert.That(resultadoAccion, Is.InstanceOf<OkObjectResult>());
-            OkObjectResult okObjectResult = (OkObjectResult)resultadoAccion;
-            Assert.That(okObjectResult.Value, Is.InstanceOf<List<MuebleDto>>().And.Count.EqualTo(mueblesEsperados.Count));
+            _muebleServiceMock.Setup(s => s.ObtenerTodos()).Returns(Result<List<MuebleDto>>.Success(mueblesEsperados));
+            var resultado = _mueblesController.ObtenerTodos();
+            Assert.That(resultado.IsSuccess, Is.True);
+            Assert.That(resultado.Value, Has.Count.EqualTo(mueblesEsperados.Count));
         }
 
         [Test]
         public void GetMuebles_SinDatos_RetornaOkVacia()
         {
-            List<MuebleDto> mueblesEsperados = new List<MuebleDto>();
-            _muebleServiceMock.Setup(s => s.ObtenerTodosMuebles()).Returns(mueblesEsperados);
-            IActionResult resultadoAccion = _mueblesController.ObtenerTodos();
-            Assert.That(resultadoAccion, Is.InstanceOf<OkObjectResult>());
-            OkObjectResult okObjectResult = (OkObjectResult)resultadoAccion;
-            Assert.That(okObjectResult.Value, Is.InstanceOf<List<MuebleDto>>().And.Empty);
+            _muebleServiceMock.Setup(s => s.ObtenerTodos()).Returns(Result<List<MuebleDto>>.Success(new List<MuebleDto>()));
+            var resultado = _mueblesController.ObtenerTodos();
+            Assert.That(resultado.IsSuccess, Is.True);
+            Assert.That(resultado.Value, Is.Empty);
         }
 
         [Test]
         public void GetMuebles_ServicioError_RetornaBadRequest()
         {
-            _muebleServiceMock.Setup(s => s.ObtenerTodosMuebles()).Throws(new System.Exception("Error servicio"));
-            IActionResult resultadoAccion = _mueblesController.ObtenerTodos();
-            Assert.That(resultadoAccion, Is.InstanceOf<BadRequestObjectResult>());
+            _muebleServiceMock.Setup(s => s.ObtenerTodos()).Returns(Result<List<MuebleDto>>.Error("Error servicio"));
+            var resultado = _mueblesController.ObtenerTodos();
+            Assert.That(resultado.IsSuccess, Is.False);
+            Assert.That(resultado.Status, Is.EqualTo(ResultStatus.Error));
         }
 
         [Test]
         public void CrearMueble_Valido_RetornaCreated()
         {
-            CrearMuebleComando comando = new CrearMuebleComando("Armario Metálico", "Almacenamiento", 250.00, "Depósito 2", 180.0, 90.0, 45.0);
-            _muebleServiceMock.Setup(s => s.CrearMueble(comando));
-            IActionResult resultadoAccion = _mueblesController.Crear(comando);
-            Assert.That(resultadoAccion, Is.InstanceOf<CreatedResult>());
+            var comando = new CrearMuebleComando("Armario Metálico", "Almacenamiento", 250.00, "Depósito 2", 180.0, 90.0, 45.0);
+            var dto = new MuebleDto { Id = 1, Nombre = "Armario Metálico" };
+            _muebleServiceMock.Setup(s => s.Crear(It.IsAny<CrearMuebleComando>())).Returns(Result<MuebleDto>.Created(dto));
+            var resultado = _mueblesController.Crear(comando);
+            Assert.That(resultado.Status, Is.EqualTo(ResultStatus.Created));
         }
 
         private static IEnumerable<object[]> FuenteCasos_CrearMueble_BadRequest()
@@ -75,38 +72,37 @@ namespace IMT_Reservas.Tests.ControllerTests
         [TestCaseSource(nameof(FuenteCasos_CrearMueble_BadRequest))]
         public void CrearMueble_Invalido_RetornaBadRequest(CrearMuebleComando comando, System.Exception excepcionLanzada)
         {
-            _muebleServiceMock.Setup(s => s.CrearMueble(comando)).Throws(excepcionLanzada);
-            IActionResult resultadoAccion = _mueblesController.Crear(comando);
-            Assert.That(resultadoAccion, Is.InstanceOf<BadRequestObjectResult>());
+            _muebleServiceMock.Setup(s => s.Crear(It.IsAny<CrearMuebleComando>())).Returns(Result<MuebleDto>.Invalid(new ValidationError("campo", excepcionLanzada.Message)));
+            var resultado = _mueblesController.Crear(comando);
+            Assert.That(resultado.Status, Is.EqualTo(ResultStatus.Invalid));
         }
 
         [Test]
         public void CrearMueble_RegistroExistente_RetornaConflict()
         {
-            CrearMuebleComando comando = new CrearMuebleComando("ferprueba", "prueba", null, "x", null, null, null);
-            _muebleServiceMock.Setup(s => s.CrearMueble(It.IsAny<CrearMuebleComando>())).Throws(new ErrorRegistroYaExiste());
-            IActionResult resultadoAccion = _mueblesController.Crear(comando);
-            Assert.That(resultadoAccion, Is.InstanceOf<ConflictObjectResult>());
+            var comando = new CrearMuebleComando("ferprueba", "prueba", null, "x", null, null, null);
+            _muebleServiceMock.Setup(s => s.Crear(It.IsAny<CrearMuebleComando>())).Returns(Result<MuebleDto>.Conflict());
+            var resultado = _mueblesController.Crear(comando);
+            Assert.That(resultado.Status, Is.EqualTo(ResultStatus.Conflict));
         }
 
         [Test]
         public void CrearMueble_ServicioError_RetornaError500()
         {
-            CrearMuebleComando comando = new CrearMuebleComando("Error General", "Tipo", null, "Ubicacion", null, null, null);
-            _muebleServiceMock.Setup(s => s.CrearMueble(It.IsAny<CrearMuebleComando>())).Throws(new System.Exception("Error General Servidor"));
-            IActionResult resultadoAccion = _mueblesController.Crear(comando);
-            Assert.That(resultadoAccion, Is.InstanceOf<ObjectResult>());
-            ObjectResult objectResult = (ObjectResult)resultadoAccion;
-            Assert.That(objectResult.StatusCode, Is.EqualTo(500));
+            var comando = new CrearMuebleComando("Error General", "Tipo", null, "Ubicacion", null, null, null);
+            _muebleServiceMock.Setup(s => s.Crear(It.IsAny<CrearMuebleComando>())).Returns(Result<MuebleDto>.Error("Error General Servidor"));
+            var resultado = _mueblesController.Crear(comando);
+            Assert.That(resultado.Status, Is.EqualTo(ResultStatus.Error));
         }
 
         [Test]
         public void ActualizarMueble_Valido_RetornaOk()
         {
-            ActualizarMuebleComando comando = new ActualizarMuebleComando(4, "ferprueba-actualizado", "prueba-v2", 120.00, "y", 1.5, 4.2, 0.6);
-            _muebleServiceMock.Setup(s => s.ActualizarMueble(comando));
-            IActionResult resultadoAccion = _mueblesController.Actualizar(comando);
-            Assert.That(resultadoAccion, Is.InstanceOf<OkObjectResult>());
+            var comando = new ActualizarMuebleComando(4, "ferprueba-actualizado", "prueba-v2", 120.00, "y", 1.5, 4.2, 0.6);
+            var dto = new MuebleDto { Id = 4, Nombre = "ferprueba-actualizado" };
+            _muebleServiceMock.Setup(s => s.Actualizar(It.IsAny<ActualizarMuebleComando>())).Returns(Result<MuebleDto>.Success(dto));
+            var resultado = _mueblesController.Actualizar(comando);
+            Assert.That(resultado.IsSuccess, Is.True);
         }
 
         private static IEnumerable<object[]> FuenteCasos_ActualizarMueble_BadRequest()
@@ -123,38 +119,37 @@ namespace IMT_Reservas.Tests.ControllerTests
         [TestCaseSource(nameof(FuenteCasos_ActualizarMueble_BadRequest))]
         public void ActualizarMueble_Invalido_RetornaBadRequest(ActualizarMuebleComando comando, System.Exception excepcionLanzada)
         {
-            _muebleServiceMock.Setup(s => s.ActualizarMueble(comando)).Throws(excepcionLanzada);
-            IActionResult resultadoAccion = _mueblesController.Actualizar(comando);
-            Assert.That(resultadoAccion, Is.InstanceOf<BadRequestObjectResult>());
+            _muebleServiceMock.Setup(s => s.Actualizar(It.IsAny<ActualizarMuebleComando>())).Returns(Result<MuebleDto>.Invalid(new ValidationError("campo", excepcionLanzada.Message)));
+            var resultado = _mueblesController.Actualizar(comando);
+            Assert.That(resultado.Status, Is.EqualTo(ResultStatus.Invalid));
         }
 
         [Test]
         public void ActualizarMueble_NoEncontrado_RetornaNotFound()
         {
-            ActualizarMuebleComando comando = new ActualizarMuebleComando(99, "NoExiste", null, null, null, null, null, null);
-            _muebleServiceMock.Setup(s => s.ActualizarMueble(It.IsAny<ActualizarMuebleComando>())).Throws(new ErrorRegistroNoEncontrado());
-            IActionResult resultadoAccion = _mueblesController.Actualizar(comando);
-            Assert.That(resultadoAccion, Is.InstanceOf<NotFoundObjectResult>());
+            var comando = new ActualizarMuebleComando(99, "NoExiste", null, null, null, null, null, null);
+            _muebleServiceMock.Setup(s => s.Actualizar(It.IsAny<ActualizarMuebleComando>())).Returns(Result<MuebleDto>.NotFound());
+            var resultado = _mueblesController.Actualizar(comando);
+            Assert.That(resultado.Status, Is.EqualTo(ResultStatus.NotFound));
         }
 
         [Test]
         public void ActualizarMueble_ServicioError_RetornaError500()
         {
-            ActualizarMuebleComando comando = new ActualizarMuebleComando(1, "Error General", null, null, null, null, null, null);
-            _muebleServiceMock.Setup(s => s.ActualizarMueble(It.IsAny<ActualizarMuebleComando>())).Throws(new System.Exception("Error General Servidor"));
-            IActionResult resultadoAccion = _mueblesController.Actualizar(comando);
-            Assert.That(resultadoAccion, Is.InstanceOf<ObjectResult>());
-            ObjectResult objectResult = (ObjectResult)resultadoAccion;
-            Assert.That(objectResult.StatusCode, Is.EqualTo(500));
+            var comando = new ActualizarMuebleComando(1, "Error General", null, null, null, null, null, null);
+            _muebleServiceMock.Setup(s => s.Actualizar(It.IsAny<ActualizarMuebleComando>())).Returns(Result<MuebleDto>.Error("Error General Servidor"));
+            var resultado = _mueblesController.Actualizar(comando);
+            Assert.That(resultado.Status, Is.EqualTo(ResultStatus.Error));
         }
 
         [Test]
         public void EliminarMueble_Valido_RetornaNoContent()
         {
             int idValido = 3;
-            _muebleServiceMock.Setup(s => s.EliminarMueble(It.Is<EliminarMuebleComando>(c => c.Id == idValido)));
-            IActionResult resultadoAccion = _mueblesController.Eliminar(idValido);
-            Assert.That(resultadoAccion, Is.InstanceOf<NoContentResult>());
+            var dto = new MuebleDto { Id = idValido };
+            _muebleServiceMock.Setup(s => s.Eliminar(It.Is<EliminarMuebleComando>(c => c.Id == idValido))).Returns(Result<MuebleDto>.Success(dto));
+            var resultado = _mueblesController.Eliminar(idValido);
+            Assert.That(resultado.IsSuccess, Is.True);
         }
 
         private static IEnumerable<object[]> FuenteCasos_EliminarMueble_BadRequest()
@@ -166,38 +161,36 @@ namespace IMT_Reservas.Tests.ControllerTests
         [TestCaseSource(nameof(FuenteCasos_EliminarMueble_BadRequest))]
         public void EliminarMueble_Invalido_RetornaBadRequest(int idMueble, System.Exception excepcionLanzada)
         {
-            _muebleServiceMock.Setup(s => s.EliminarMueble(It.Is<EliminarMuebleComando>(c => c.Id == idMueble))).Throws(excepcionLanzada);
-            IActionResult resultadoAccion = _mueblesController.Eliminar(idMueble);
-            Assert.That(resultadoAccion, Is.InstanceOf<BadRequestObjectResult>());
+            _muebleServiceMock.Setup(s => s.Eliminar(It.IsAny<EliminarMuebleComando>())).Returns(Result<MuebleDto>.Invalid(new ValidationError("Id", excepcionLanzada.Message)));
+            var resultado = _mueblesController.Eliminar(idMueble);
+            Assert.That(resultado.Status, Is.EqualTo(ResultStatus.Invalid));
         }
 
         [Test]
         public void EliminarMueble_NoEncontrado_RetornaNotFound()
         {
             int idNoExistente = 99;
-            _muebleServiceMock.Setup(s => s.EliminarMueble(It.Is<EliminarMuebleComando>(c => c.Id == idNoExistente))).Throws(new ErrorRegistroNoEncontrado());
-            IActionResult resultadoAccion = _mueblesController.Eliminar(idNoExistente);
-            Assert.That(resultadoAccion, Is.InstanceOf<NotFoundObjectResult>());
+            _muebleServiceMock.Setup(s => s.Eliminar(It.IsAny<EliminarMuebleComando>())).Returns(Result<MuebleDto>.NotFound());
+            var resultado = _mueblesController.Eliminar(idNoExistente);
+            Assert.That(resultado.Status, Is.EqualTo(ResultStatus.NotFound));
         }
 
         [Test]
         public void EliminarMueble_EnUso_RetornaConflict()
         {
             int idEnUso = 5;
-            _muebleServiceMock.Setup(s => s.EliminarMueble(It.Is<EliminarMuebleComando>(c => c.Id == idEnUso))).Throws(new ErrorRegistroEnUso());
-            IActionResult resultadoAccion = _mueblesController.Eliminar(idEnUso);
-            Assert.That(resultadoAccion, Is.InstanceOf<ConflictObjectResult>());
+            _muebleServiceMock.Setup(s => s.Eliminar(It.IsAny<EliminarMuebleComando>())).Returns(Result<MuebleDto>.Conflict());
+            var resultado = _mueblesController.Eliminar(idEnUso);
+            Assert.That(resultado.Status, Is.EqualTo(ResultStatus.Conflict));
         }
 
         [Test]
         public void EliminarMueble_ServicioError_RetornaError500()
         {
             int idErrorGeneral = 4;
-            _muebleServiceMock.Setup(s => s.EliminarMueble(It.Is<EliminarMuebleComando>(c => c.Id == idErrorGeneral))).Throws(new System.Exception("Error General Servidor"));
-            IActionResult resultadoAccion = _mueblesController.Eliminar(idErrorGeneral);
-            Assert.That(resultadoAccion, Is.InstanceOf<ObjectResult>());
-            ObjectResult objectResult = (ObjectResult)resultadoAccion;
-            Assert.That(objectResult.StatusCode, Is.EqualTo(500));
+            _muebleServiceMock.Setup(s => s.Eliminar(It.IsAny<EliminarMuebleComando>())).Returns(Result<MuebleDto>.Error("Error General Servidor"));
+            var resultado = _mueblesController.Eliminar(idErrorGeneral);
+            Assert.That(resultado.Status, Is.EqualTo(ResultStatus.Error));
         }
     }
 }

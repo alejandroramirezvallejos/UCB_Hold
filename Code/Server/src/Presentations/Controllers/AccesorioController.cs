@@ -1,33 +1,36 @@
 using Microsoft.AspNetCore.Mvc;
+using Ardalis.Result;
+using Ardalis.Result.AspNetCore;
 
 [ApiController]
 [Route("api/[controller]")]
+[TranslateResultToActionResult]
 public class AccesorioController : ControllerBase
 {
-    private readonly AccesorioService servicio;
-    public AccesorioController(AccesorioService servicio) => this.servicio = servicio;
+    private readonly IAccesorioService _servicio;
+    public AccesorioController(IAccesorioService servicio) => _servicio = servicio;
 
     [HttpPost]
-    public IActionResult Crear([FromBody] CrearAccesorioComando input)
+    public Result<AccesorioDto> Crear([FromBody] CrearAccesorioComando input)
     {
-        servicio.Crear(input); return Created("", new { message = "Accesorio creado exitosamente" });
+        return _servicio.Crear(input);
     }
 
     [HttpGet]
-    public IActionResult ObtenerTodos()
+    public Result<List<AccesorioDto>> ObtenerTodos()
     {
-        return Ok(servicio.ObtenerTodos());
+        return _servicio.ObtenerTodos();
     }
 
     [HttpPut]
-    public IActionResult Actualizar([FromBody] ActualizarAccesorioComando input)
+    public Result<AccesorioDto> Actualizar([FromBody] ActualizarAccesorioComando input)
     {
-        servicio.Actualizar(input); return Ok(new { mensaje = "Accesorio actualizado exitosamente" });
+        return _servicio.Actualizar(input);
     }
 
     [HttpDelete("{id}")]
-    public IActionResult Eliminar(int id)
+    public Result<AccesorioDto> Eliminar(int id)
     {
-        servicio.Eliminar(new EliminarAccesorioComando(id)); return NoContent();
+        return _servicio.Eliminar(new EliminarAccesorioComando(id));
     }
 }

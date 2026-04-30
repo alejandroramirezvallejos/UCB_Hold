@@ -1,179 +1,196 @@
 using System.Data;
-using IMT_Reservas.Server.Shared.Common;
+using Ardalis.Result;
 
-public class EquipoService : BaseServicios,
-    ICrearServicio<CrearEquipoComando>,
-    IActualizarServicio<ActualizarEquipoComando>,
-    IEliminarServicio<EliminarEquipoComando>,
-    IObtenerTodosServicio<EquipoDto>
+public class EquipoService : BaseServicios, IEquipoService
 {
-    private readonly EquipoRepository _equipoRepository;
-    private readonly GrupoEquipoRepository _grupoEquipoRepository;
+    private readonly IEquipoRepository _equipoRepository;
+    private readonly IGrupoEquipoRepository _grupoEquipoRepository;
 
-    public EquipoService(EquipoRepository equipoRepository, GrupoEquipoRepository grupoEquipoRepository)
+    public EquipoService(IEquipoRepository equipoRepository, IGrupoEquipoRepository grupoEquipoRepository)
     {
         _equipoRepository = equipoRepository;
         _grupoEquipoRepository = grupoEquipoRepository;
     }
 
-    public void Crear(CrearEquipoComando comando)
+    public Result<EquipoDto> Crear(CrearEquipoComando comando)
     {
-        ValidarEntradaCreacion(comando);
+        var validResult = ValidarEntrada(comando);
+        if (!validResult.IsSuccess) return Result<EquipoDto>.Invalid(validResult.ValidationErrors.ToArray());
 
-        // Resolver FK: nombre del grupo equipo → id_grupo_equipo (usando nombre que viene como NombreGrupoEquipo)
         var idGrupoEquipo = _equipoRepository.ObtenerGrupoEquipoIdPorNombreModeloMarca(
             comando.NombreGrupoEquipo!, comando.Modelo!, comando.Marca!);
         if (idGrupoEquipo == null)
-            throw new ErrorGrupoEquipoNoEncontrado();
+            return Result<EquipoDto>.NotFound("El grupo de equipo no fue encontrado");
 
-        // Resolver FK opcional: gavetero por nombre
         int? idGavetero = null;
         if (!string.IsNullOrWhiteSpace(comando.NombreGavetero))
         {
             idGavetero = _equipoRepository.ObtenerGaveteroIdPorNombre(comando.NombreGavetero);
             if (idGavetero == null)
-                throw new ErrorGaveteroNoEncontrado();
+                return Result<EquipoDto>.NotFound("El gavetero no fue encontrado");
         }
 
-        // Generar código IMT
         var idCategoria = _equipoRepository.ObtenerCategoriaIdPorGrupoEquipoId(idGrupoEquipo.Value);
         if (idCategoria == null)
-            throw new ErrorCategoriaNoEncontrada();
+            return Result<EquipoDto>.NotFound("La categoría no fue encontrada");
 
         var codigoImt = _equipoRepository.GenerarCodigoImt(idCategoria.Value);
 
-        // Insertar equipo
         _equipoRepository.Crear(idGrupoEquipo.Value, codigoImt, idGavetero, comando);
-
-        // Trigger logic: incrementar cantidad y recalcular costo promedio del grupo
         _grupoEquipoRepository.ActualizarCantidad(idGrupoEquipo.Value, 1);
         _grupoEquipoRepository.ActualizarCostoPromedio(idGrupoEquipo.Value);
+
+        return Result<EquipoDto>.Success(null);
     }
-    
-    protected override void ValidarEntradaCreacion<T>(T comando)
+
+    public Result<List<EquipoDto>> ObtenerTodos()
     {
-        base.ValidarEntradaCreacion(comando); // Validación base (null check)
-        
-        // Validaciones específicas para CrearEquipoComando
-        if (comando is CrearEquipoComando equipoComando)
+        var repoResult = _equipoRepository.ObtenerTodos();
+        if (!repoResult.IsSuccess)
+            return Result<List<EquipoDto>>.Error("Error al obtener los equipos");
+
+        var resultado = repoResult.Value;
+        var lista = new List<EquipoDto>(resultado.Rows.Count);
+        foreach (DataRow fila in resultado.Rows)
         {
-            if (string.IsNullOrWhiteSpace(equipoComando.NombreGrupoEquipo)) throw new ErrorNombreRequerido();
-            if (string.IsNullOrWhiteSpace(equipoComando.Modelo)) throw new ErrorModeloRequerido();
-            if (string.IsNullOrWhiteSpace(equipoComando.Marca)) throw new ErrorMarcaRequerida();
-            if (equipoComando.CostoReferencia.HasValue && equipoComando.CostoReferencia < 0) throw new ErrorValorNegativo("costo de referencia");
-            if (equipoComando.TiempoMaximoPrestamo.HasValue && equipoComando.TiempoMaximoPrestamo <= 0) throw new ErrorValorNegativo("Tiempo máximo de préstamo");
+            var dto = MapearFilaADto(fila) as EquipoDto;
+            if (dto != null) lista.Add(dto);
         }
+        return lista.Count == 0
+            ? Result<List<EquipoDto>>.NotFound("No se encontraron equipos")
+            : Result<List<EquipoDto>>.Success(lista);
     }
 
-    public void Actualizar(ActualizarEquipoComando comando)
+    public Result<EquipoDto> Actualizar(ActualizarEquipoComando comando)
     {
-        ValidarEntradaActualizacion(comando);
+        var validResult = ValidarEntrada(comando);
+        if (!validResult.IsSuccess) return Result<EquipoDto>.Invalid(validResult.ValidationErrors.ToArray());
 
-        // Verificar que el equipo exista y esté activo
         if (!_equipoRepository.ExisteActivoPorId(comando.Id))
-            throw new ErrorRegistroNoEncontrado();
+            return Result<EquipoDto>.NotFound("El equipo no fue encontrado");
 
-        // Obtener grupo actual (para trigger logic)
         var grupoActualId = _equipoRepository.ObtenerGrupoEquipoIdPorEquipoId(comando.Id);
 
         int? nuevoIdGrupoEquipo = null;
         int? nuevoIdGavetero = null;
 
-        // Resolver FK del grupo si se está cambiando
-        if (!string.IsNullOrWhiteSpace(comando.NombreGrupoEquipo))
-        {
-            // Para actualizar necesitamos nombre+modelo+marca, pero aquí solo viene NombreGrupoEquipo
-            // Buscar por nombre parcial — en la práctica el SP original también buscaba por nombre
-            var sql = @"SELECT id_grupo_equipo FROM public.grupos_equipos WHERE nombre = @nombre AND estado_eliminado = FALSE LIMIT 1";
-            // Usar el repo directamente (no cambiamos la lógica, solo movemos la resolución)
-        }
-
-        // Resolver FK del gavetero si se está cambiando
         if (!string.IsNullOrWhiteSpace(comando.NombreGavetero))
         {
             nuevoIdGavetero = _equipoRepository.ObtenerGaveteroIdPorNombre(comando.NombreGavetero);
             if (nuevoIdGavetero == null)
-                throw new ErrorGaveteroNoEncontrado();
+                return Result<EquipoDto>.NotFound("El gavetero no fue encontrado");
         }
 
-        // Validar estado_equipo si se proporciona
         if (!string.IsNullOrWhiteSpace(comando.EstadoEquipo))
         {
-            var estadosValidos = new[] { "operativo", "inoperativo", "parcialmente_operativo" };
-            if (!estadosValidos.Contains(comando.EstadoEquipo))
-                throw new ArgumentException("Estado de equipo inválido. Debe ser 'operativo', 'inoperativo', o 'parcialmente_operativo'.");
+            var isValidState = comando.EstadoEquipo switch
+            {
+                "operativo" or "inoperativo" or "parcialmente_operativo" => true,
+                _ => false
+            };
+            if (!isValidState)
+                return Result<EquipoDto>.Invalid(new ValidationError("EstadoEquipo", "Estado de equipo inválido"));
         }
 
         _equipoRepository.Actualizar(nuevoIdGrupoEquipo, nuevoIdGavetero, comando);
 
-        // Trigger logic: recalcular costo promedio
         if (grupoActualId.HasValue)
             _grupoEquipoRepository.ActualizarCostoPromedio(grupoActualId.Value);
 
-        // Trigger logic: si cambió de grupo, ajustar cantidades y costo promedio de ambos
         if (nuevoIdGrupoEquipo.HasValue && grupoActualId.HasValue && nuevoIdGrupoEquipo.Value != grupoActualId.Value)
         {
             _grupoEquipoRepository.ActualizarCantidad(grupoActualId.Value, -1);
             _grupoEquipoRepository.ActualizarCantidad(nuevoIdGrupoEquipo.Value, 1);
             _grupoEquipoRepository.ActualizarCostoPromedio(nuevoIdGrupoEquipo.Value);
         }
+
+        return Result<EquipoDto>.Success(null);
     }
 
-    private void ValidarEntradaActualizacion(ActualizarEquipoComando comando)
+    public Result<EquipoDto> Eliminar(EliminarEquipoComando comando)
     {
-        if (comando == null) throw new ArgumentNullException(nameof(comando));
-        if (comando.Id <= 0) throw new ErrorIdInvalido("equipo");
-        if (comando.CostoReferencia.HasValue && comando.CostoReferencia < 0) throw new ErrorValorNegativo("costo de referencia");
-        if (comando.TiempoMaximoPrestamo.HasValue && comando.TiempoMaximoPrestamo <= 0) throw new ErrorValorNegativo("Tiempo máximo de préstamo");
-    }
+        var validResult = ValidarEntrada(comando);
+        if (!validResult.IsSuccess) return Result<EquipoDto>.Invalid(validResult.ValidationErrors.ToArray());
 
-    public void Eliminar(EliminarEquipoComando comando)
-    {
-        ValidarEntradaEliminacion(comando);
-
-        // Verificar que el equipo exista y esté activo
         if (!_equipoRepository.ExisteActivoPorId(comando.Id))
-            throw new ErrorRegistroNoEncontrado();
+            return Result<EquipoDto>.NotFound("El equipo no fue encontrado");
 
-        // Obtener grupo actual para trigger logic
         var grupoActualId = _equipoRepository.ObtenerGrupoEquipoIdPorEquipoId(comando.Id);
 
         _equipoRepository.Eliminar(comando);
 
-        // Trigger logic: decrementar cantidad y recalcular costo promedio
         if (grupoActualId.HasValue)
         {
             _grupoEquipoRepository.ActualizarCantidad(grupoActualId.Value, -1);
             _grupoEquipoRepository.ActualizarCostoPromedio(grupoActualId.Value);
         }
-    }
-    
-    protected override void ValidarEntradaEliminacion<T>(T comando)
-    {
-        base.ValidarEntradaEliminacion(comando); 
-        
-        if (comando is EliminarEquipoComando equipoComando)
-        {
-            if (equipoComando.Id <= 0) throw new ErrorIdInvalido("equipo");
-        }
+
+        return Result<EquipoDto>.Success(null);
     }
 
-    public List<EquipoDto>? ObtenerTodos()
+    private Result<CrearEquipoComando> ValidarEntrada(CrearEquipoComando comando)
     {
-        try
-        {
-            DataTable resultado = _equipoRepository.ObtenerTodos();
-            var lista = new List<EquipoDto>(resultado.Rows.Count);
-            foreach (DataRow fila in resultado.Rows)
-            {
-                var dto = MapearFilaADto(fila) as EquipoDto;
-                if (dto != null) lista.Add(dto);
-            }
-            return lista;
-        }
-        catch { throw; }
+        var errors = new List<ValidationError>();
+
+        if (comando == null)
+            errors.Add(new("comando", "El comando es requerido"));
+
+        if (string.IsNullOrWhiteSpace(comando?.NombreGrupoEquipo))
+            errors.Add(new("NombreGrupoEquipo", "El nombre del grupo de equipo es requerido"));
+
+        if (string.IsNullOrWhiteSpace(comando?.Modelo))
+            errors.Add(new("Modelo", "El modelo es requerido"));
+
+        if (string.IsNullOrWhiteSpace(comando?.Marca))
+            errors.Add(new("Marca", "La marca es requerida"));
+
+        if (comando?.CostoReferencia.HasValue == true && comando.CostoReferencia < 0)
+            errors.Add(new("CostoReferencia", "El costo de referencia no puede ser negativo"));
+
+        if (comando?.TiempoMaximoPrestamo.HasValue == true && comando.TiempoMaximoPrestamo <= 0)
+            errors.Add(new("TiempoMaximoPrestamo", "El tiempo máximo de préstamo debe ser mayor a 0"));
+
+        return errors.Any()
+            ? Result<CrearEquipoComando>.Invalid(errors.ToArray())
+            : Result<CrearEquipoComando>.Success(comando!);
     }
-    
+
+    private Result<ActualizarEquipoComando> ValidarEntrada(ActualizarEquipoComando comando)
+    {
+        var errors = new List<ValidationError>();
+
+        if (comando == null)
+            errors.Add(new("comando", "El comando es requerido"));
+
+        if (comando?.Id <= 0)
+            errors.Add(new("Id", "El ID debe ser mayor a 0"));
+
+        if (comando?.CostoReferencia.HasValue == true && comando.CostoReferencia < 0)
+            errors.Add(new("CostoReferencia", "El costo de referencia no puede ser negativo"));
+
+        if (comando?.TiempoMaximoPrestamo.HasValue == true && comando.TiempoMaximoPrestamo <= 0)
+            errors.Add(new("TiempoMaximoPrestamo", "El tiempo máximo de préstamo debe ser mayor a 0"));
+
+        return errors.Any()
+            ? Result<ActualizarEquipoComando>.Invalid(errors.ToArray())
+            : Result<ActualizarEquipoComando>.Success(comando!);
+    }
+
+    private Result<EliminarEquipoComando> ValidarEntrada(EliminarEquipoComando comando)
+    {
+        var errors = new List<ValidationError>();
+
+        if (comando == null)
+            errors.Add(new("comando", "El comando es requerido"));
+
+        if (comando?.Id <= 0)
+            errors.Add(new("Id", "El ID debe ser mayor a 0"));
+
+        return errors.Any()
+            ? Result<EliminarEquipoComando>.Invalid(errors.ToArray())
+            : Result<EliminarEquipoComando>.Success(comando!);
+    }
+
     protected override BaseDto MapearFilaADto(DataRow fila) => new EquipoDto
     {
         Id = Convert.ToInt32(fila["id_equipo"]),

@@ -1,11 +1,11 @@
-﻿using Moq;
+using Moq;
 using System.Data;
-using Microsoft.Extensions.Configuration;
+using Ardalis.Result;
 
 namespace IMT_Reservas.Tests.RepositoryTests
 {
     [TestFixture]
-    public class GaveteroRepositoryTest : IGaveteroRepositoryTest
+    public class GaveteroRepositoryTest 
     {
         private Mock<IExecuteQuery>  _ejecutarConsultaMock;
         private IGaveteroRepository _gaveteroRepositorio;
@@ -56,7 +56,7 @@ namespace IMT_Reservas.Tests.RepositoryTests
         public void Eliminar_LlamaExecuteSpNR_ConParametrosCorrectos()
         {
             int id = 1;
-            _gaveteroRepositorio.Eliminar(id);
+            _gaveteroRepositorio.Eliminar(new EliminarGaveteroComando(id));
 
             _ejecutarConsultaMock.Verify(e => e.EjecutarSpNR(
                 It.Is<string>(s => s.Contains("eliminar_gavetero")),
@@ -70,9 +70,10 @@ namespace IMT_Reservas.Tests.RepositoryTests
             _ejecutarConsultaMock.Setup(e => e.EjecutarSpNR(It.IsAny<string>(), It.IsAny<Dictionary<string, object?>>() ))
                            .Throws(new Exception("test exception"));
 
-            Assert.Throws<ErrorRepository>(() => _gaveteroRepositorio.Crear(new CrearGaveteroComando("a", "b", "c", 1, 1, 1)));
-            Assert.Throws<ErrorRepository>(() => _gaveteroRepositorio.Actualizar(new ActualizarGaveteroComando(1, "a", "b", "c", 1, 1, 1)));
-            Assert.Throws<ErrorRepository>(() => _gaveteroRepositorio.Eliminar(1));
+            Assert.Throws<Exception>(() => _gaveteroRepositorio.Crear(new CrearGaveteroComando("a", "b", "c", 1, 1, 1)));
+            Assert.Throws<Exception>(() => _gaveteroRepositorio.Actualizar(new ActualizarGaveteroComando(1, "a", "b", "c", 1, 1, 1)));
+            Assert.Throws<Exception>(() => _gaveteroRepositorio.Eliminar(new EliminarGaveteroComando(1)));
         }
     }
 }
+

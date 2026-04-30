@@ -1,39 +1,36 @@
 using Microsoft.AspNetCore.Mvc;
-using IMT_Reservas.Server.Shared.Common;
-
-namespace API.Controllers;
+using Ardalis.Result;
+using Ardalis.Result.AspNetCore;
 
 [ApiController]
 [Route("api/[controller]")]
+[TranslateResultToActionResult]
 public class GaveteroController : ControllerBase
 {
-    private readonly GaveteroService servicio;
-    public GaveteroController(GaveteroService servicio) => this.servicio = servicio;
+    private readonly IGaveteroService _servicio;
+    public GaveteroController(IGaveteroService servicio) => _servicio = servicio;
 
     [HttpPost]
-    public IActionResult Crear([FromBody] CrearGaveteroComando input)
+    public Result<GaveteroDto> Crear([FromBody] CrearGaveteroComando input)
     {
-        servicio.Crear(input); 
-        return Created("", new { mensaje = "Gavetero creado exitosamente" }); 
+        return _servicio.Crear(input);
     }
 
     [HttpGet]
-    public IActionResult ObtenerTodos()
+    public Result<List<GaveteroDto>> ObtenerTodos()
     {
-        return Ok(servicio.ObtenerTodos());
+        return _servicio.ObtenerTodos();
     }
 
     [HttpPut]
-    public IActionResult Actualizar([FromBody] ActualizarGaveteroComando input)
+    public Result<GaveteroDto> Actualizar([FromBody] ActualizarGaveteroComando input)
     {
-        servicio.Actualizar(input); 
-        return Ok(new { mensaje = "Gavetero actualizado exitosamente" }); 
+        return _servicio.Actualizar(input);
     }
 
     [HttpDelete("{id}")]
-    public IActionResult Eliminar(int id)
+    public Result<GaveteroDto> Eliminar(int id)
     {
-        servicio.Eliminar(new EliminarGaveteroComando(id)); 
-        return NoContent(); 
+        return _servicio.Eliminar(new EliminarGaveteroComando(id));
     }
 }

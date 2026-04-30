@@ -1,32 +1,30 @@
 using Microsoft.AspNetCore.Mvc;
-using IMT_Reservas.Server.Shared.Common;
-
-namespace API.Controllers;
+using Ardalis.Result;
+using Ardalis.Result.AspNetCore;
 
 [ApiController]
 [Route("api/[controller]")]
+[TranslateResultToActionResult]
 public class MantenimientoController : ControllerBase
 {
-    private readonly MantenimientoService servicio;
-    public MantenimientoController(MantenimientoService servicio) => this.servicio = servicio;
+    private readonly IMantenimientoService _servicio;
+    public MantenimientoController(IMantenimientoService servicio) => _servicio = servicio;
 
     [HttpPost]
-    public IActionResult Crear([FromBody] CrearMantenimientoComando input)
+    public Result<MantenimientoDto> Crear([FromBody] CrearMantenimientoComando input)
     {
-        servicio.Crear(input); 
-        return Created("", new { mensaje = "Mantenimiento creado exitosamente" }); 
+        return _servicio.Crear(input);
     }
 
     [HttpGet]
-    public IActionResult ObtenerTodos()
+    public Result<List<MantenimientoDto>> ObtenerTodos()
     {
-        return Ok(servicio.ObtenerTodos());
+        return _servicio.ObtenerTodos();
     }
 
     [HttpDelete("{id}")]
-    public IActionResult Eliminar(int id)
+    public Result<MantenimientoDto> Eliminar(int id)
     {
-        servicio.Eliminar(new EliminarMantenimientoComando(id)); 
-        return NoContent(); 
+        return _servicio.Eliminar(new EliminarMantenimientoComando(id));
     }
 }

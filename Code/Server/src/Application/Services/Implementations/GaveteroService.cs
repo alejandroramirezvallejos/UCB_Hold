@@ -1,136 +1,181 @@
 using System.Data;
-using IMT_Reservas.Server.Shared.Common;
+using Ardalis.Result;
 
-public class GaveteroService : BaseServicios,
-    ICrearServicio<CrearGaveteroComando>,
-    IActualizarServicio<ActualizarGaveteroComando>,
-    IEliminarServicio<EliminarGaveteroComando>,
-    IObtenerTodosServicio<GaveteroDto>
+public class GaveteroService : BaseServicios, IGaveteroService
 {
-    private readonly GaveteroRepository _gaveteroRepository;
-    private readonly MuebleRepository _muebleRepository;
+    private readonly IGaveteroRepository _gaveteroRepository;
+    private readonly IMuebleRepository _muebleRepository;
 
-    public GaveteroService(GaveteroRepository gaveteroRepository, MuebleRepository muebleRepository)
+    public GaveteroService(IGaveteroRepository gaveteroRepository, IMuebleRepository muebleRepository)
     {
         _gaveteroRepository = gaveteroRepository;
         _muebleRepository = muebleRepository;
     }
 
-    public virtual void Crear(CrearGaveteroComando comando)
+    public virtual Result<GaveteroDto> Crear(CrearGaveteroComando comando)
     {
-        ValidarEntradaCreacion(comando);
+        var validResult = ValidarEntrada(comando);
+        if (!validResult.IsSuccess) return Result<GaveteroDto>.Invalid(validResult.ValidationErrors.ToArray());
 
-        // Resolver FK: nombre del mueble → id_mueble
         var idMueble = _gaveteroRepository.ObtenerMuebleIdPorNombre(comando.NombreMueble!);
         if (idMueble == null)
-            throw new ErrorMuebleNoEncontrado();
+            return Result<GaveteroDto>.NotFound("El mueble no fue encontrado");
 
-        // Verificar si ya existe un gavetero activo con ese nombre
         if (_gaveteroRepository.ExisteActivoPorNombre(comando.Nombre!))
-            throw new ErrorRegistroYaExiste();
+            return Result<GaveteroDto>.Conflict("Ya existe un gavetero activo con este nombre");
 
-        // Insertar gavetero
         _gaveteroRepository.Crear(idMueble.Value, comando);
-
-        // Trigger logic: incrementar numero_gaveteros del mueble
         _muebleRepository.ActualizarNumeroGaveteros(idMueble.Value, 1);
+
+        return Result<GaveteroDto>.Success(null);
     }
-    
-    protected override void ValidarEntradaCreacion<T>(T comando)
+
+    public virtual Result<List<GaveteroDto>> ObtenerTodos()
     {
-        base.ValidarEntradaCreacion(comando); // Validación base (null check)
-        
-        // Validaciones específicas para CrearGaveteroComando
-        if (comando is CrearGaveteroComando gaveteroComando)
+        var repoResult = _gaveteroRepository.ObtenerTodos();
+        if (!repoResult.IsSuccess)
+            return Result<List<GaveteroDto>>.Error("Error al obtener los gaveteros");
+
+        var resultado = repoResult.Value;
+        var lista = new List<GaveteroDto>(resultado.Rows.Count);
+        foreach (DataRow fila in resultado.Rows)
         {
-            if (string.IsNullOrWhiteSpace(gaveteroComando.Nombre)) throw new ErrorNombreRequerido();
-            if (string.IsNullOrWhiteSpace(gaveteroComando.NombreMueble)) throw new ErrorNombreMuebleRequerido();
-            if (gaveteroComando.Longitud.HasValue && gaveteroComando.Longitud <= 0) throw new ErrorValorNegativo("longitud");
-            if (gaveteroComando.Profundidad.HasValue && gaveteroComando.Profundidad <= 0) throw new ErrorValorNegativo("profundidad");
-            if (gaveteroComando.Altura.HasValue && gaveteroComando.Altura <= 0) throw new ErrorValorNegativo("altura");
+            var dto = MapearFilaADto(fila) as GaveteroDto;
+            if (dto != null) lista.Add(dto);
         }
+        return lista.Count == 0
+            ? Result<List<GaveteroDto>>.NotFound("No se encontraron gaveteros")
+            : Result<List<GaveteroDto>>.Success(lista);
     }
 
-    public virtual void Actualizar(ActualizarGaveteroComando comando)
+    public virtual Result<GaveteroDto> Actualizar(ActualizarGaveteroComando comando)
     {
-        ValidarEntradaActualizacion(comando);
+        var validResult = ValidarEntrada(comando);
+        if (!validResult.IsSuccess) return Result<GaveteroDto>.Invalid(validResult.ValidationErrors.ToArray());
 
-        // Verificar que el gavetero exista y esté activo
         if (!_gaveteroRepository.ExisteActivoPorId(comando.Id))
-            throw new ErrorRegistroNoEncontrado();
+            return Result<GaveteroDto>.NotFound("El gavetero no fue encontrado");
 
-        // Verificar duplicados de nombre
         if (!string.IsNullOrWhiteSpace(comando.Nombre))
         {
             if (_gaveteroRepository.ExisteActivoPorNombreExcluyendoId(comando.Nombre, comando.Id))
-                throw new ErrorRegistroYaExiste();
+                return Result<GaveteroDto>.Conflict("Ya existe otro gavetero activo con ese nombre");
         }
 
         int? nuevoIdMueble = null;
         int? viejoIdMueble = null;
 
-        // Resolver FK del mueble si se está cambiando
         if (!string.IsNullOrWhiteSpace(comando.NombreMueble))
         {
             nuevoIdMueble = _gaveteroRepository.ObtenerMuebleIdPorNombre(comando.NombreMueble);
             if (nuevoIdMueble == null)
-                throw new ErrorMuebleNoEncontrado();
+                return Result<GaveteroDto>.NotFound("El mueble no fue encontrado");
 
-            // Obtener el mueble actual del gavetero para trigger logic
             viejoIdMueble = _gaveteroRepository.ObtenerMuebleIdPorGaveteroId(comando.Id);
         }
 
         _gaveteroRepository.Actualizar(nuevoIdMueble, comando);
 
-        // Trigger logic: si cambió de mueble, ajustar conteos
         if (nuevoIdMueble.HasValue && viejoIdMueble.HasValue && nuevoIdMueble.Value != viejoIdMueble.Value)
         {
             _muebleRepository.ActualizarNumeroGaveteros(viejoIdMueble.Value, -1);
             _muebleRepository.ActualizarNumeroGaveteros(nuevoIdMueble.Value, 1);
         }
-    }
-    
-    private void ValidarEntradaActualizacion(ActualizarGaveteroComando comando)
-    {
-        if (comando == null) throw new ArgumentNullException(nameof(comando));
-        if (comando.Id <= 0) throw new ErrorIdInvalido("gavetero");
-        if (!string.IsNullOrWhiteSpace(comando.Nombre) && comando.Nombre.Length > 255) throw new ErrorLongitudInvalida("nombre gavetero", 255);
-        if (!string.IsNullOrWhiteSpace(comando.NombreMueble) && comando.NombreMueble.Length > 255) throw new ErrorLongitudInvalida("nombre mueble", 255);
-        if (comando.Longitud.HasValue && comando.Longitud <= 0) throw new ErrorValorNegativo("longitud");
-        if (comando.Profundidad.HasValue && comando.Profundidad <= 0) throw new ErrorValorNegativo("profundidad");
-        if (comando.Altura.HasValue && comando.Altura <= 0) throw new ErrorValorNegativo("altura");
+
+        return Result<GaveteroDto>.Success(null);
     }
 
-    public virtual void Eliminar(EliminarGaveteroComando comando)
+    public virtual Result<GaveteroDto> Eliminar(EliminarGaveteroComando comando)
     {
-        ValidarEntradaEliminacion(comando);
+        var validResult = ValidarEntrada(comando);
+        if (!validResult.IsSuccess) return Result<GaveteroDto>.Invalid(validResult.ValidationErrors.ToArray());
 
-        // Verificar que el gavetero exista y esté activo
         if (!_gaveteroRepository.ExisteActivoPorId(comando.Id))
-            throw new ErrorRegistroNoEncontrado();
+            return Result<GaveteroDto>.NotFound("El gavetero no fue encontrado");
 
-        // Obtener el mueble actual para trigger logic
         var idMueble = _gaveteroRepository.ObtenerMuebleIdPorGaveteroId(comando.Id);
 
         _gaveteroRepository.Eliminar(comando);
 
-        // Trigger logic: decrementar numero_gaveteros del mueble
         if (idMueble.HasValue)
             _muebleRepository.ActualizarNumeroGaveteros(idMueble.Value, -1);
-    }
-    
-    protected override void ValidarEntradaEliminacion<T>(T comando)
-    {
-        base.ValidarEntradaEliminacion(comando); // Validación base (null check)
-        
-        // Validaciones específicas para EliminarGaveteroComando
-        if (comando is EliminarGaveteroComando gaveteroComando)
-        {
-            if (gaveteroComando.Id <= 0) throw new ErrorIdInvalido("gavetero");
-        }
+
+        return Result<GaveteroDto>.Success(null);
     }
 
-    public virtual List<GaveteroDto>? ObtenerTodos()
+    private Result<CrearGaveteroComando> ValidarEntrada(CrearGaveteroComando comando)
+    {
+        var errors = new List<ValidationError>();
+
+        if (comando == null)
+            errors.Add(new("comando", "El comando es requerido"));
+
+        if (string.IsNullOrWhiteSpace(comando?.Nombre))
+            errors.Add(new("Nombre", "El nombre es requerido"));
+
+        if (string.IsNullOrWhiteSpace(comando?.NombreMueble))
+            errors.Add(new("NombreMueble", "El nombre del mueble es requerido"));
+
+        if (comando?.Longitud.HasValue == true && comando.Longitud <= 0)
+            errors.Add(new("Longitud", "La longitud debe ser mayor a 0"));
+
+        if (comando?.Profundidad.HasValue == true && comando.Profundidad <= 0)
+            errors.Add(new("Profundidad", "La profundidad debe ser mayor a 0"));
+
+        if (comando?.Altura.HasValue == true && comando.Altura <= 0)
+            errors.Add(new("Altura", "La altura debe ser mayor a 0"));
+
+        return errors.Any()
+            ? Result<CrearGaveteroComando>.Invalid(errors.ToArray())
+            : Result<CrearGaveteroComando>.Success(comando!);
+    }
+
+    private Result<ActualizarGaveteroComando> ValidarEntrada(ActualizarGaveteroComando comando)
+    {
+        var errors = new List<ValidationError>();
+
+        if (comando == null)
+            errors.Add(new("comando", "El comando es requerido"));
+
+        if (comando?.Id <= 0)
+            errors.Add(new("Id", "El ID debe ser mayor a 0"));
+
+        if (!string.IsNullOrWhiteSpace(comando?.Nombre) && comando.Nombre.Length > 255)
+            errors.Add(new("Nombre", "El nombre no puede tener más de 255 caracteres"));
+
+        if (!string.IsNullOrWhiteSpace(comando?.NombreMueble) && comando.NombreMueble.Length > 255)
+            errors.Add(new("NombreMueble", "El nombre del mueble no puede tener más de 255 caracteres"));
+
+        if (comando?.Longitud.HasValue == true && comando.Longitud <= 0)
+            errors.Add(new("Longitud", "La longitud debe ser mayor a 0"));
+
+        if (comando?.Profundidad.HasValue == true && comando.Profundidad <= 0)
+            errors.Add(new("Profundidad", "La profundidad debe ser mayor a 0"));
+
+        if (comando?.Altura.HasValue == true && comando.Altura <= 0)
+            errors.Add(new("Altura", "La altura debe ser mayor a 0"));
+
+        return errors.Any()
+            ? Result<ActualizarGaveteroComando>.Invalid(errors.ToArray())
+            : Result<ActualizarGaveteroComando>.Success(comando!);
+    }
+
+    private Result<EliminarGaveteroComando> ValidarEntrada(EliminarGaveteroComando comando)
+    {
+        var errors = new List<ValidationError>();
+
+        if (comando == null)
+            errors.Add(new("comando", "El comando es requerido"));
+
+        if (comando?.Id <= 0)
+            errors.Add(new("Id", "El ID debe ser mayor a 0"));
+
+        return errors.Any()
+            ? Result<EliminarGaveteroComando>.Invalid(errors.ToArray())
+            : Result<EliminarGaveteroComando>.Success(comando!);
+    }
+
+    public virtual List<GaveteroDto>? ObtenerTodosList()
     {
         try
         {
@@ -145,7 +190,7 @@ public class GaveteroService : BaseServicios,
         }
         catch { throw; }
     }
-    
+
     protected override BaseDto MapearFilaADto(DataRow fila)
     {
         return new GaveteroDto

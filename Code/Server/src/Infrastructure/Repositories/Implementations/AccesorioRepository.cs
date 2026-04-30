@@ -1,19 +1,15 @@
 using System.Data;
-using Npgsql;
+using Ardalis.Result;
 
-public class AccesorioRepository :
-    ICrearRepository<CrearAccesorioComando>,
-    IActualizarRepository<ActualizarAccesorioComando>,
-    IEliminarRepository<EliminarAccesorioComando>,
-    IObtenerTodosRepository<CrearAccesorioComando, DataTable>
+public class AccesorioRepository : IAccesorioRepository
 {
     private readonly IExecuteQuery _ejecutarConsulta;
     public AccesorioRepository(IExecuteQuery ejecutarConsulta) => _ejecutarConsulta = ejecutarConsulta;
 
-    public void Crear(int idEquipo, CrearAccesorioComando comando)
+    public Result<AccesorioDto> Crear(int idEquipo, CrearAccesorioComando comando)
     {
         const string sql = @"INSERT INTO public.accesorios (nombre, descripcion, modelo, url_data_sheet, precio, id_equipo, tipo, estado_eliminado)
-                             VALUES (@nombre, @descripcion, @modelo, @urlDataSheet, @precio, @idEquipo, @tipo, FALSE)";
+                             VALUES (@nombre, @descripcion, @modelo, @urlDataSheet, @precio, @idEquipo, @tipo, FALSE) RETURNING id_accesorio";
         var parametros = new Dictionary<string, object?>
         {
             ["nombre"] = comando.Nombre,
@@ -24,18 +20,27 @@ public class AccesorioRepository :
             ["idEquipo"] = idEquipo,
             ["tipo"] = comando.Tipo ?? (object)DBNull.Value
         };
-        try { _ejecutarConsulta.EjecutarSpNR(sql, parametros); }
-        catch (NpgsqlException ex) { throw new ErrorDataBase($"Error de base de datos al crear accesorio: {ex.Message}", ex.SqlState, null, ex); }
-        catch (Exception ex) { throw new ErrorRepository($"Error del repositorio al crear accesorio: {ex.Message}", ex); }
+
+        _ejecutarConsulta.EjecutarSpNR(sql, parametros);
+        var dto = new AccesorioDto
+        {
+            Nombre = comando.Nombre,
+            Descripcion = comando.Descripcion,
+            Modelo = comando.Modelo,
+            Precio = comando.Precio ?? 0,
+            Tipo = comando.Tipo
+        };
+        return Result<AccesorioDto>.Created(dto);
     }
 
-    public void Crear(CrearAccesorioComando comando)
-    {
-        throw new InvalidOperationException("Use Crear(int idEquipo, CrearAccesorioComando comando) en su lugar.");
-    }
+    public Result<AccesorioDto> Crear(CrearAccesorioComando comando)
+        => Result<AccesorioDto>.Error("Use Crear(int idEquipo, CrearAccesorioComando comando)");
 
-    public void Actualizar(int? idEquipo, ActualizarAccesorioComando comando)
+    public Result<AccesorioDto> Actualizar(int? idEquipo, ActualizarAccesorioComando comando)
     {
+        if (!ExisteActivoPorId(comando.Id))
+            return Result<AccesorioDto>.NotFound("No se encontró el registro especificado");
+
         const string sql = @"UPDATE public.accesorios SET
             nombre = COALESCE(@nombre, nombre),
             descripcion = COALESCE(@descripcion, descripcion),
@@ -56,26 +61,36 @@ public class AccesorioRepository :
             ["idEquipo"] = idEquipo ?? (object)DBNull.Value,
             ["tipo"] = comando.Tipo ?? (object)DBNull.Value
         };
-        try { _ejecutarConsulta.EjecutarSpNR(sql, parametros); }
-        catch (NpgsqlException ex) { throw new ErrorDataBase($"Error de base de datos al actualizar accesorio: {ex.Message}", ex.SqlState, null, ex); }
-        catch (Exception ex) { throw new ErrorRepository($"Error del repositorio al actualizar accesorio: {ex.Message}", ex); }
+
+        _ejecutarConsulta.EjecutarSpNR(sql, parametros);
+        var dto = new AccesorioDto
+        {
+            Id = comando.Id,
+            Nombre = comando.Nombre,
+            Descripcion = comando.Descripcion,
+            Modelo = comando.Modelo,
+            Precio = comando.Precio ?? 0,
+            Tipo = comando.Tipo
+        };
+        return Result<AccesorioDto>.Success(dto);
     }
 
-    public void Actualizar(ActualizarAccesorioComando comando)
-    {
-        Actualizar(null, comando);
-    }
+    public Result<AccesorioDto> Actualizar(ActualizarAccesorioComando comando)
+        => Actualizar(null, comando);
 
-    public void Eliminar(EliminarAccesorioComando comando)
+    public Result<AccesorioDto> Eliminar(EliminarAccesorioComando comando)
     {
+        if (!ExisteActivoPorId(comando.Id))
+            return Result<AccesorioDto>.NotFound("No se encontró el registro especificado");
+
         const string sql = @"UPDATE public.accesorios SET estado_eliminado = TRUE WHERE id_accesorio = @id";
         var parametros = new Dictionary<string, object?> { ["id"] = comando.Id };
-        try { _ejecutarConsulta.EjecutarSpNR(sql, parametros); }
-        catch (NpgsqlException ex) { throw new ErrorDataBase($"Error de base de datos al eliminar accesorio: {ex.Message}", ex.SqlState, null, ex); }
-        catch (Exception ex) { throw new ErrorRepository($"Error del repositorio al eliminar accesorio: {ex.Message}", ex); }
+
+        _ejecutarConsulta.EjecutarSpNR(sql, parametros);
+        return Result<AccesorioDto>.Success(new AccesorioDto { Id = comando.Id });
     }
 
-    public DataTable ObtenerTodos()
+    public Result<DataTable> ObtenerTodos()
     {
         const string sql = @"SELECT a.id_accesorio, a.nombre AS nombre_accesorio, a.descripcion AS descripcion_accesorio,
             a.modelo AS modelo_accesorio, a.url_data_sheet AS url_data_sheet_accesorio,
@@ -84,12 +99,12 @@ public class AccesorioRepository :
             FROM public.accesorios AS a
             INNER JOIN public.equipos AS e ON a.id_equipo = e.id_equipo
             WHERE a.estado_eliminado = FALSE";
-        try { return _ejecutarConsulta.EjecutarFuncion(sql, new Dictionary<string, object?>()); }
-        catch (NpgsqlException ex) { throw new ErrorDataBase($"Error de base de datos al obtener accesorios: {ex.Message}", ex.SqlState, null, ex); }
-        catch (Exception ex) { throw new ErrorRepository($"Error del repositorio al obtener accesorios: {ex.Message}", ex); }
-    }
 
-    // --- Métodos auxiliares ---
+        var dt = _ejecutarConsulta.EjecutarFuncion(sql, new Dictionary<string, object?>());
+        return dt.Rows.Count == 0
+            ? Result<DataTable>.NotFound("No se encontró el registro especificado")
+            : Result<DataTable>.Success(dt);
+    }
 
     public bool ExisteActivoPorId(int id)
     {
@@ -104,7 +119,6 @@ public class AccesorioRepository :
         const string sql = @"SELECT id_equipo FROM public.equipos WHERE codigo_imt = @codigoImt AND estado_eliminado = FALSE LIMIT 1";
         var parametros = new Dictionary<string, object?> { ["codigoImt"] = codigoImt };
         var dt = _ejecutarConsulta.EjecutarFuncion(sql, parametros);
-        if (dt.Rows.Count == 0) return null;
-        return Convert.ToInt32(dt.Rows[0][0]);
+        return dt.Rows.Count == 0 ? null : Convert.ToInt32(dt.Rows[0][0]);
     }
 }

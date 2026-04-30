@@ -1,128 +1,148 @@
 using System.Data;
-using IMT_Reservas.Server.Shared.Common;
+using Ardalis.Result;
 
-public class CategoriaService : BaseServicios,
-    ICrearServicio<CrearCategoriaComando>,
-    IActualizarServicio<ActualizarCategoriaComando>,
-    IEliminarServicio<EliminarCategoriaComando>,
-    IObtenerTodosServicio<CategoriaDto>
+public class CategoriaService : BaseServicios, ICategoriaService
 {
-    private readonly CategoriaRepository _categoriaRepository;
+    private readonly ICategoriaRepository _categoriaRepository;
 
-    public CategoriaService(CategoriaRepository categoriaRepository)
+    public CategoriaService(ICategoriaRepository categoriaRepository)
     {
         _categoriaRepository = categoriaRepository;
     }
 
-    public virtual void Crear(CrearCategoriaComando comando)
+    public virtual Result<CategoriaDto> Crear(CrearCategoriaComando comando)
     {
-        ValidarEntradaCreacion(comando);
+        var validResult = ValidarEntrada(comando);
+        if (!validResult.IsSuccess) return Result<CategoriaDto>.Invalid(validResult.ValidationErrors.ToArray());
 
         var nombreTrimmed = comando.Nombre!.Trim();
 
         if (string.IsNullOrWhiteSpace(nombreTrimmed))
-            throw new ErrorNombreRequerido();
+            return Result<CategoriaDto>.Invalid(new ValidationError("Nombre", "El nombre es requerido"));
 
-        // Intentar reactivar si existe una categoría eliminada lógicamente
         if (_categoriaRepository.ReactivarEliminadaPorNombre(nombreTrimmed))
-            return;
+            return Result<CategoriaDto>.Success(null);
 
-        // Verificar si ya existe una categoría activa con ese nombre
         if (_categoriaRepository.ExisteActivaPorNombre(nombreTrimmed))
-            throw new ErrorRegistroYaExiste();
+            return Result<CategoriaDto>.Conflict("Ya existe una categoría activa con este nombre");
 
-        // Insertar nueva categoría (crear nuevo record con nombre trimmed)
         var comandoFinal = new CrearCategoriaComando(nombreTrimmed);
-        _categoriaRepository.Crear(comandoFinal);
+        var result = _categoriaRepository.Crear(comandoFinal);
+        return result;
     }
-    
-    protected override void ValidarEntradaCreacion<T>(T comando)
-    {
-        base.ValidarEntradaCreacion(comando); // Validación base (null check)
-        
-        // Validaciones específicas para CrearCategoriaComando
-        if (comando is CrearCategoriaComando categoriaComando)
-        {
-            if (string.IsNullOrWhiteSpace(categoriaComando.Nombre)) throw new ErrorNombreRequerido();
-            if (categoriaComando.Nombre.Length > 255) throw new ErrorLongitudInvalida("nombre de la categoría", 255);
-        }
-    }
-    public virtual List<CategoriaDto>? ObtenerTodos()
-    {
-        try
-        {
-            DataTable resultado = _categoriaRepository.ObtenerTodos();
-            var lista = new List<CategoriaDto>(resultado.Rows.Count);
-            foreach (DataRow fila in resultado.Rows)
-            {
-                var baseDto = MapearFilaADto(fila);
-                if (baseDto is CategoriaDto categoria)
-                    lista.Add(categoria);
-            }
-            return lista;
-        }
-        catch { throw; }
-    }
-    public virtual void Actualizar(ActualizarCategoriaComando comando)
-    {
-        ValidarEntradaActualizacion(comando);
 
-        // Verificar que la categoría exista y esté activa
+    public virtual Result<List<CategoriaDto>> ObtenerTodos()
+    {
+        var repoResult = _categoriaRepository.ObtenerTodos();
+        if (!repoResult.IsSuccess)
+            return Result<List<CategoriaDto>>.Error("Error al obtener las categorías");
+
+        var resultado = repoResult.Value;
+        var lista = new List<CategoriaDto>(resultado.Rows.Count);
+        foreach (DataRow fila in resultado.Rows)
+        {
+            var baseDto = MapearFilaADto(fila);
+            if (baseDto is CategoriaDto categoria)
+                lista.Add(categoria);
+        }
+        return lista.Count == 0
+            ? Result<List<CategoriaDto>>.NotFound("No se encontraron categorías")
+            : Result<List<CategoriaDto>>.Success(lista);
+    }
+
+    public virtual Result<CategoriaDto> Actualizar(ActualizarCategoriaComando comando)
+    {
+        var validResult = ValidarEntrada(comando);
+        if (!validResult.IsSuccess) return Result<CategoriaDto>.Invalid(validResult.ValidationErrors.ToArray());
+
         if (!_categoriaRepository.ExisteActivaPorId(comando.Id))
-            throw new ErrorRegistroNoEncontrado();
+            return Result<CategoriaDto>.NotFound("La categoría no fue encontrada");
 
         var nombreNuevo = comando.Nombre?.Trim();
 
         if (nombreNuevo != null)
         {
             if (string.IsNullOrWhiteSpace(nombreNuevo))
-                throw new ErrorNombreRequerido();
+                return Result<CategoriaDto>.Invalid(new ValidationError("Nombre", "El nombre es requerido"));
 
-            // Verificar si ya existe otra categoría activa con ese nombre
             if (_categoriaRepository.ExisteActivaPorNombreExcluyendoId(nombreNuevo, comando.Id))
-                throw new ErrorRegistroYaExiste();
+                return Result<CategoriaDto>.Conflict("Ya existe otra categoría activa con ese nombre");
 
-            // Si existe una categoría eliminada con el mismo nombre, reactivarla y eliminar la actual
             if (_categoriaRepository.ReactivarEliminadaPorNombre(nombreNuevo))
             {
                 _categoriaRepository.EliminarLogicamentePorId(comando.Id);
-                return;
+                return Result<CategoriaDto>.Success(null);
             }
         }
 
-        // Actualización normal
         var comandoFinal = new ActualizarCategoriaComando(comando.Id, nombreNuevo);
-        _categoriaRepository.Actualizar(comandoFinal);
+        var result = _categoriaRepository.Actualizar(comandoFinal);
+        return result;
     }
-    
-    private void ValidarEntradaActualizacion(ActualizarCategoriaComando comando)
-    {
-        if (comando == null) throw new ArgumentNullException(nameof(comando));
-        if (comando.Id <= 0) throw new ErrorIdInvalido("categoría");
-        if (string.IsNullOrWhiteSpace(comando.Nombre)) throw new ErrorNombreRequerido();
-        if (comando.Nombre.Length > 255) throw new ErrorLongitudInvalida("nombre de la categoría", 255);
-    }
-    public virtual void Eliminar(EliminarCategoriaComando comando)
-    {
-        ValidarEntradaEliminacion(comando);
 
-        // Verificar que la categoría exista y esté activa
+    public virtual Result<CategoriaDto> Eliminar(EliminarCategoriaComando comando)
+    {
+        var validResult = ValidarEntrada(comando);
+        if (!validResult.IsSuccess) return Result<CategoriaDto>.Invalid(validResult.ValidationErrors.ToArray());
+
         if (!_categoriaRepository.ExisteActivaPorId(comando.Id))
-            throw new ErrorRegistroNoEncontrado();
+            return Result<CategoriaDto>.NotFound("La categoría no fue encontrada");
 
-        _categoriaRepository.Eliminar(comando);
+        var result = _categoriaRepository.Eliminar(comando);
+        return result;
     }
-    
-    protected override void ValidarEntradaEliminacion<T>(T comando)
+
+    private Result<CrearCategoriaComando> ValidarEntrada(CrearCategoriaComando comando)
     {
-        base.ValidarEntradaEliminacion(comando); // Validación base (null check)
-        
-        // Validaciones específicas para EliminarCategoriaComando
-        if (comando is EliminarCategoriaComando categoriaComando)
-        {
-            if (categoriaComando.Id <= 0) throw new ErrorIdInvalido("categoría");
-        }
+        var errors = new List<ValidationError>();
+
+        if (comando == null)
+            errors.Add(new("comando", "El comando es requerido"));
+
+        if (string.IsNullOrWhiteSpace(comando?.Nombre))
+            errors.Add(new("Nombre", "El nombre es requerido"));
+
+        if (comando?.Nombre?.Length > 255)
+            errors.Add(new("Nombre", "El nombre no puede tener más de 255 caracteres"));
+
+        return errors.Any()
+            ? Result<CrearCategoriaComando>.Invalid(errors.ToArray())
+            : Result<CrearCategoriaComando>.Success(comando!);
     }
+
+    private Result<ActualizarCategoriaComando> ValidarEntrada(ActualizarCategoriaComando comando)
+    {
+        var errors = new List<ValidationError>();
+
+        if (comando == null)
+            errors.Add(new("comando", "El comando es requerido"));
+
+        if (comando?.Id <= 0)
+            errors.Add(new("Id", "El ID debe ser mayor a 0"));
+
+        if (!string.IsNullOrWhiteSpace(comando?.Nombre) && comando.Nombre.Length > 255)
+            errors.Add(new("Nombre", "El nombre no puede tener más de 255 caracteres"));
+
+        return errors.Any()
+            ? Result<ActualizarCategoriaComando>.Invalid(errors.ToArray())
+            : Result<ActualizarCategoriaComando>.Success(comando!);
+    }
+
+    private Result<EliminarCategoriaComando> ValidarEntrada(EliminarCategoriaComando comando)
+    {
+        var errors = new List<ValidationError>();
+
+        if (comando == null)
+            errors.Add(new("comando", "El comando es requerido"));
+
+        if (comando?.Id <= 0)
+            errors.Add(new("Id", "El ID debe ser mayor a 0"));
+
+        return errors.Any()
+            ? Result<EliminarCategoriaComando>.Invalid(errors.ToArray())
+            : Result<EliminarCategoriaComando>.Success(comando!);
+    }
+
     protected override BaseDto MapearFilaADto(DataRow fila)
     {
         return new CategoriaDto
