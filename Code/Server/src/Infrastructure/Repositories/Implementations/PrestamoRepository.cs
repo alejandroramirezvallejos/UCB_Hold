@@ -116,7 +116,7 @@ public class PrestamoRepository : IPrestamoRepository
         ActualizarIdContrato(idPrestamo, contratoDoc.FileId);
     }
 
-    public Result<PrestamoDto> Eliminar(EliminarPrestamoComando comando)
+    public Result<PrestamoDto?> Eliminar(EliminarPrestamoComando comando)
     {
         const string sqlDetalles = @"UPDATE public.detalles_prestamos SET estado_eliminado = TRUE WHERE id_prestamo = @id";
         var parametrosDetalles = new Dictionary<string, object?> { ["id"] = comando.Id };
@@ -125,7 +125,7 @@ public class PrestamoRepository : IPrestamoRepository
         const string sql = @"UPDATE public.prestamos SET estado_eliminado = TRUE WHERE id_prestamo = @id";
         var parametros = new Dictionary<string, object?> { ["id"] = comando.Id };
         _ejecutarConsulta.EjecutarSpNR(sql, parametros);
-        return Result<PrestamoDto>.Success(new PrestamoDto { Id = comando.Id });
+        return Result<PrestamoDto?>.Success(new PrestamoDto { Id = comando.Id });
     }
 
     public Result<DataTable> ObtenerTodos()

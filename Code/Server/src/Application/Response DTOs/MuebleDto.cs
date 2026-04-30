@@ -1,4 +1,4 @@
-public class MuebleDto : BaseDto
+public class MuebleDto : Dto
 {
     public string? Nombre { get; set; }
     public int? NumeroGaveteros { get; set; }

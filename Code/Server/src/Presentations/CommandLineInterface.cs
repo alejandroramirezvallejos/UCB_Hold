@@ -246,25 +246,25 @@ public static class CommandLineInterface
         });
 
         builder.Services.AddMongoDb(builder.Configuration)
-            .AddScoped<IComentarioService, ComentarioService>()
-            .AddScoped<INotificacionService, NotificacionService>()
+            .AddScoped<ComentarioService>()
+            .AddScoped<NotificacionService>()
             .AddScoped<IComentarioRepository, ComentarioRepository>()
             .AddScoped<INotificacionRepository, NotificacionRepository>();
 
         builder.Services.AddScoped<IExecuteQuery, ExecuteQuery>();
 
-        builder.Services.AddScoped<IAccesorioService, AccesorioService>();
-        builder.Services.AddScoped<ICarreraService, CarreraService>();
-        builder.Services.AddScoped<ICategoriaService, CategoriaService>();
-        builder.Services.AddScoped<IComponenteService, ComponenteService>();
-        builder.Services.AddScoped<IEmpresaMantenimientoService, EmpresaMantenimientoService>();
-        builder.Services.AddScoped<IEquipoService, EquipoService>();
-        builder.Services.AddScoped<IGaveteroService, GaveteroService>();
-        builder.Services.AddScoped<IGrupoEquipoService, GrupoEquipoService>();
-        builder.Services.AddScoped<IMantenimientoService, MantenimientoService>();
-        builder.Services.AddScoped<IMuebleService, MuebleService>();
-        builder.Services.AddScoped<IPrestamoService, PrestamoService>();
-        builder.Services.AddScoped<IUsuarioService, UsuarioService>();
+        builder.Services.AddScoped<AccesorioService>();
+        builder.Services.AddScoped<CarreraService>();
+        builder.Services.AddScoped<CategoriaService>();
+        builder.Services.AddScoped<ComponenteService>();
+        builder.Services.AddScoped<EmpresaMantenimientoService>();
+        builder.Services.AddScoped<EquipoService>();
+        builder.Services.AddScoped<GaveteroService>();
+        builder.Services.AddScoped<GrupoEquipoService>();
+        builder.Services.AddScoped<MantenimientoService>();
+        builder.Services.AddScoped<MuebleService>();
+        builder.Services.AddScoped<PrestamoService>();
+        builder.Services.AddScoped<UsuarioService>();
         builder.Services.AddScoped<CarritoService>();
 
         builder.Services.AddScoped<IAccesorioRepository, AccesorioRepository>();

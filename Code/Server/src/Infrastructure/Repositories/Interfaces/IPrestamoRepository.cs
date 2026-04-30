@@ -4,7 +4,7 @@ using Microsoft.AspNetCore.Http;
 
 public interface IPrestamoRepository
 {
-    Result<PrestamoDto> Eliminar(EliminarPrestamoComando comando);
+    Result<PrestamoDto?> Eliminar(EliminarPrestamoComando comando);
     Result<DataTable> ObtenerTodos();
     bool ExisteActivoPorId(int id);
     bool ExisteGrupoEquipoActivoPorId(int id);

@@ -1,4 +1,4 @@
-public class MantenimientoDto : BaseDto
+public class MantenimientoDto : Dto
 {
     public string? NombreEmpresaMantenimiento { get; set; }
     public DateOnly? FechaMantenimiento { get; set; }

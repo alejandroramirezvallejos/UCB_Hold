@@ -3,11 +3,11 @@ using Ardalis.Result;
 
 public interface IUsuarioRepository
 {
-    Result<UsuarioDto> Crear(CrearUsuarioComando comando);
-    Result<UsuarioDto> Crear(int idCarrera, CrearUsuarioComando comando);
-    Result<UsuarioDto> Actualizar(ActualizarUsuarioComando comando);
-    Result<UsuarioDto> Actualizar(int? idCarrera, ActualizarUsuarioComando comando);
-    Result<UsuarioDto> Eliminar(EliminarUsuarioComando comando);
+    Result<UsuarioDto?> Crear(CrearUsuarioComando comando);
+    Result<UsuarioDto?> Crear(int idCarrera, CrearUsuarioComando comando);
+    Result<UsuarioDto?> Actualizar(ActualizarUsuarioComando comando);
+    Result<UsuarioDto?> Actualizar(int? idCarrera, ActualizarUsuarioComando comando);
+    Result<UsuarioDto?> Eliminar(EliminarUsuarioComando comando);
     Result<DataTable> ObtenerTodos();
     bool ExisteActivoPorCarnet(string carnet);
     int? ObtenerCarreraIdPorNombre(string nombreCarrera);

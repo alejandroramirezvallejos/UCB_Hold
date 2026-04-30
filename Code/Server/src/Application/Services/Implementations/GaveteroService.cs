@@ -1,7 +1,7 @@
 using System.Data;
 using Ardalis.Result;
 
-public class GaveteroService : BaseServicios, IGaveteroService
+public class GaveteroService : Service
 {
     private readonly IGaveteroRepository _gaveteroRepository;
     private readonly IMuebleRepository _muebleRepository;
@@ -12,29 +12,29 @@ public class GaveteroService : BaseServicios, IGaveteroService
         _muebleRepository = muebleRepository;
     }
 
-    public virtual Result<GaveteroDto> Crear(CrearGaveteroComando comando)
+    public virtual Result<GaveteroDto?> Crear(CrearGaveteroComando comando)
     {
         var validResult = ValidarEntrada(comando);
-        if (!validResult.IsSuccess) return Result<GaveteroDto>.Invalid(validResult.ValidationErrors.ToArray());
+        if (!validResult.IsSuccess) return Result<GaveteroDto?>.Invalid(validResult.ValidationErrors.ToArray());
 
         var idMueble = _gaveteroRepository.ObtenerMuebleIdPorNombre(comando.NombreMueble!);
         if (idMueble == null)
-            return Result<GaveteroDto>.NotFound("El mueble no fue encontrado");
+            return Result<GaveteroDto?>.NotFound("El mueble no fue encontrado");
 
         if (_gaveteroRepository.ExisteActivoPorNombre(comando.Nombre!))
-            return Result<GaveteroDto>.Conflict("Ya existe un gavetero activo con este nombre");
+            return Result<GaveteroDto?>.Conflict("Ya existe un gavetero activo con este nombre");
 
         _gaveteroRepository.Crear(idMueble.Value, comando);
         _muebleRepository.ActualizarNumeroGaveteros(idMueble.Value, 1);
 
-        return Result<GaveteroDto>.Success(null);
+        return Result<GaveteroDto?>.Success(null);
     }
 
-    public virtual Result<List<GaveteroDto>> ObtenerTodos()
+    public virtual Result<List<GaveteroDto?>> ObtenerTodos()
     {
         var repoResult = _gaveteroRepository.ObtenerTodos();
         if (!repoResult.IsSuccess)
-            return Result<List<GaveteroDto>>.Error("Error al obtener los gaveteros");
+            return Result<List<GaveteroDto?>>.Error("Error al obtener los gaveteros");
 
         var resultado = repoResult.Value;
         var lista = new List<GaveteroDto>(resultado.Rows.Count);
@@ -44,22 +44,22 @@ public class GaveteroService : BaseServicios, IGaveteroService
             if (dto != null) lista.Add(dto);
         }
         return lista.Count == 0
-            ? Result<List<GaveteroDto>>.NotFound("No se encontraron gaveteros")
-            : Result<List<GaveteroDto>>.Success(lista);
+            ? Result<List<GaveteroDto?>>.NotFound("No se encontraron gaveteros")
+            : Result<List<GaveteroDto?>>.Success(lista);
     }
 
-    public virtual Result<GaveteroDto> Actualizar(ActualizarGaveteroComando comando)
+    public virtual Result<GaveteroDto?> Actualizar(ActualizarGaveteroComando comando)
     {
         var validResult = ValidarEntrada(comando);
-        if (!validResult.IsSuccess) return Result<GaveteroDto>.Invalid(validResult.ValidationErrors.ToArray());
+        if (!validResult.IsSuccess) return Result<GaveteroDto?>.Invalid(validResult.ValidationErrors.ToArray());
 
         if (!_gaveteroRepository.ExisteActivoPorId(comando.Id))
-            return Result<GaveteroDto>.NotFound("El gavetero no fue encontrado");
+            return Result<GaveteroDto?>.NotFound("El gavetero no fue encontrado");
 
         if (!string.IsNullOrWhiteSpace(comando.Nombre))
         {
             if (_gaveteroRepository.ExisteActivoPorNombreExcluyendoId(comando.Nombre, comando.Id))
-                return Result<GaveteroDto>.Conflict("Ya existe otro gavetero activo con ese nombre");
+                return Result<GaveteroDto?>.Conflict("Ya existe otro gavetero activo con ese nombre");
         }
 
         int? nuevoIdMueble = null;
@@ -69,7 +69,7 @@ public class GaveteroService : BaseServicios, IGaveteroService
         {
             nuevoIdMueble = _gaveteroRepository.ObtenerMuebleIdPorNombre(comando.NombreMueble);
             if (nuevoIdMueble == null)
-                return Result<GaveteroDto>.NotFound("El mueble no fue encontrado");
+                return Result<GaveteroDto?>.NotFound("El mueble no fue encontrado");
 
             viejoIdMueble = _gaveteroRepository.ObtenerMuebleIdPorGaveteroId(comando.Id);
         }
@@ -82,16 +82,16 @@ public class GaveteroService : BaseServicios, IGaveteroService
             _muebleRepository.ActualizarNumeroGaveteros(nuevoIdMueble.Value, 1);
         }
 
-        return Result<GaveteroDto>.Success(null);
+        return Result<GaveteroDto?>.Success(null);
     }
 
-    public virtual Result<GaveteroDto> Eliminar(EliminarGaveteroComando comando)
+    public virtual Result<GaveteroDto?> Eliminar(EliminarGaveteroComando comando)
     {
         var validResult = ValidarEntrada(comando);
-        if (!validResult.IsSuccess) return Result<GaveteroDto>.Invalid(validResult.ValidationErrors.ToArray());
+        if (!validResult.IsSuccess) return Result<GaveteroDto?>.Invalid(validResult.ValidationErrors.ToArray());
 
         if (!_gaveteroRepository.ExisteActivoPorId(comando.Id))
-            return Result<GaveteroDto>.NotFound("El gavetero no fue encontrado");
+            return Result<GaveteroDto?>.NotFound("El gavetero no fue encontrado");
 
         var idMueble = _gaveteroRepository.ObtenerMuebleIdPorGaveteroId(comando.Id);
 
@@ -100,7 +100,7 @@ public class GaveteroService : BaseServicios, IGaveteroService
         if (idMueble.HasValue)
             _muebleRepository.ActualizarNumeroGaveteros(idMueble.Value, -1);
 
-        return Result<GaveteroDto>.Success(null);
+        return Result<GaveteroDto?>.Success(null);
     }
 
     private Result<CrearGaveteroComando> ValidarEntrada(CrearGaveteroComando comando)
@@ -191,7 +191,7 @@ public class GaveteroService : BaseServicios, IGaveteroService
         catch { throw; }
     }
 
-    protected override BaseDto MapearFilaADto(DataRow fila)
+    protected override Dto MapearFilaADto(DataRow fila)
     {
         return new GaveteroDto
         {

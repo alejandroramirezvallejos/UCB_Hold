@@ -3,9 +3,9 @@ using Ardalis.Result;
 
 public interface ICarreraRepository
 {
-    Result<CarreraDto> Crear(CrearCarreraComando comando);
-    Result<CarreraDto> Actualizar(ActualizarCarreraComando comando);
-    Result<CarreraDto> Eliminar(EliminarCarreraComando comando);
+    Result<CarreraDto?> Crear(CrearCarreraComando comando);
+    Result<CarreraDto?> Actualizar(ActualizarCarreraComando comando);
+    Result<CarreraDto?> Eliminar(EliminarCarreraComando comando);
     Result<DataTable> ObtenerTodos();
     bool ExisteActivaPorId(int id);
     bool ExisteActivaPorNombre(string nombre);

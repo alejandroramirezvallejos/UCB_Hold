@@ -6,7 +6,7 @@ public class GaveteroRepository : IGaveteroRepository
     private readonly IExecuteQuery _ejecutarConsulta;
     public GaveteroRepository(IExecuteQuery ejecutarConsulta) => _ejecutarConsulta = ejecutarConsulta;
 
-    public Result<GaveteroDto> Crear(int idMueble, CrearGaveteroComando comando)
+    public Result<GaveteroDto?> Crear(int idMueble, CrearGaveteroComando comando)
     {
         const string sql = @"INSERT INTO public.gaveteros (nombre, tipo, id_mueble, longitud, profundidad, altura, estado_eliminado)
                              VALUES (@nombre, @tipo, @idMueble, @longitud, @profundidad, @altura, FALSE)";
@@ -21,13 +21,13 @@ public class GaveteroRepository : IGaveteroRepository
         };
         _ejecutarConsulta.EjecutarSpNR(sql, parametros);
         var dto = new GaveteroDto { Nombre = comando.Nombre, Tipo = comando.Tipo };
-        return Result<GaveteroDto>.Created(dto);
+        return Result<GaveteroDto?>.Created(dto);
     }
 
-    public Result<GaveteroDto> Crear(CrearGaveteroComando comando)
-        => Result<GaveteroDto>.Error("Use Crear(int idMueble, CrearGaveteroComando comando)");
+    public Result<GaveteroDto?> Crear(CrearGaveteroComando comando)
+        => Result<GaveteroDto?>.Error("Use Crear(int idMueble, CrearGaveteroComando comando)");
 
-    public Result<GaveteroDto> Actualizar(int? idMueble, ActualizarGaveteroComando comando)
+    public Result<GaveteroDto?> Actualizar(int? idMueble, ActualizarGaveteroComando comando)
     {
         const string sql = @"UPDATE public.gaveteros SET
             nombre = COALESCE(@nombre, nombre),
@@ -49,18 +49,18 @@ public class GaveteroRepository : IGaveteroRepository
         };
         _ejecutarConsulta.EjecutarSpNR(sql, parametros);
         var dto = new GaveteroDto { Id = comando.Id, Nombre = comando.Nombre, Tipo = comando.Tipo };
-        return Result<GaveteroDto>.Success(dto);
+        return Result<GaveteroDto?>.Success(dto);
     }
 
-    public Result<GaveteroDto> Actualizar(ActualizarGaveteroComando comando)
+    public Result<GaveteroDto?> Actualizar(ActualizarGaveteroComando comando)
         => Actualizar(null, comando);
 
-    public Result<GaveteroDto> Eliminar(EliminarGaveteroComando comando)
+    public Result<GaveteroDto?> Eliminar(EliminarGaveteroComando comando)
     {
         const string sql = @"UPDATE public.gaveteros SET estado_eliminado = TRUE WHERE id_gavetero = @id";
         var parametros = new Dictionary<string, object?> { ["id"] = comando.Id };
         _ejecutarConsulta.EjecutarSpNR(sql, parametros);
-        return Result<GaveteroDto>.Success(new GaveteroDto { Id = comando.Id });
+        return Result<GaveteroDto?>.Success(new GaveteroDto { Id = comando.Id });
     }
 
     public Result<DataTable> ObtenerTodos()

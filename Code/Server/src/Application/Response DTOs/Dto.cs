@@ -1,4 +1,4 @@
-public abstract class BaseDto
+public abstract class Dto
 {
     public int? Id { get; set; }
 }

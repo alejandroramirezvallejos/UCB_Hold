@@ -7,29 +7,29 @@ using Ardalis.Result.AspNetCore;
 [TranslateResultToActionResult]
 public class EmpresaMantenimientoController : ControllerBase
 {
-    private readonly IEmpresaMantenimientoService _servicio;
-    public EmpresaMantenimientoController(IEmpresaMantenimientoService servicio) => _servicio = servicio;
+    private readonly EmpresaMantenimientoService _servicio;
+    public EmpresaMantenimientoController(EmpresaMantenimientoService servicio) => _servicio = servicio;
 
     [HttpPost]
-    public Result<EmpresaMantenimientoDto> Crear([FromBody] CrearEmpresaMantenimientoComando input)
+    public Result<EmpresaMantenimientoDto?> Crear([FromBody] CrearEmpresaMantenimientoComando input)
     {
         return _servicio.Crear(input);
     }
 
     [HttpGet]
-    public Result<List<EmpresaMantenimientoDto>> ObtenerTodos()
+    public Result<List<EmpresaMantenimientoDto?>> ObtenerTodos()
     {
         return _servicio.ObtenerTodos();
     }
 
     [HttpPut]
-    public Result<EmpresaMantenimientoDto> Actualizar([FromBody] ActualizarEmpresaMantenimientoComando input)
+    public Result<EmpresaMantenimientoDto?> Actualizar([FromBody] ActualizarEmpresaMantenimientoComando input)
     {
         return _servicio.Actualizar(input);
     }
 
     [HttpDelete("{id}")]
-    public Result<EmpresaMantenimientoDto> Eliminar(int id)
+    public Result<EmpresaMantenimientoDto?> Eliminar(int id)
     {
         return _servicio.Eliminar(new EliminarEmpresaMantenimientoComando(id));
     }

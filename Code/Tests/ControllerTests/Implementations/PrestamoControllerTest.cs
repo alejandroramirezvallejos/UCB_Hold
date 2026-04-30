@@ -8,7 +8,7 @@ using Microsoft.AspNetCore.Mvc;
 namespace IMT_Reservas.Tests.ControllerTests
 {
     [TestFixture]
-    public class PrestamoControllerTests : IPrestamoControllerTest
+    public class PrestamoControllerTests
     {
         private Mock<IPrestamoService> _prestamoServiceMock;
         private PrestamoController _prestamosController;

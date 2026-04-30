@@ -1,7 +1,7 @@
 using System.Data;
 using Ardalis.Result;
 
-public class UsuarioService : BaseServicios, IUsuarioService
+public class UsuarioService : Service
 {
     private readonly IUsuarioRepository _usuarioRepository;
 
@@ -10,24 +10,24 @@ public class UsuarioService : BaseServicios, IUsuarioService
         _usuarioRepository = usuarioRepository;
     }
 
-    public Result<UsuarioDto> Crear(CrearUsuarioComando comando)
+    public Result<UsuarioDto?> Crear(CrearUsuarioComando comando)
     {
         var validResult = ValidarEntrada(comando);
-        if (!validResult.IsSuccess) return Result<UsuarioDto>.Invalid(validResult.ValidationErrors.ToArray());
+        if (!validResult.IsSuccess) return Result<UsuarioDto?>.Invalid(validResult.ValidationErrors.ToArray());
 
         var idCarrera = _usuarioRepository.ObtenerCarreraIdPorNombre(comando.NombreCarrera!);
         if (idCarrera == null)
-            return Result<UsuarioDto>.NotFound("La carrera no fue encontrada");
+            return Result<UsuarioDto?>.NotFound("La carrera no fue encontrada");
 
         var result = _usuarioRepository.Crear(idCarrera.Value, comando);
         return result;
     }
 
-    public Result<List<UsuarioDto>> ObtenerTodos()
+    public Result<List<UsuarioDto?>> ObtenerTodos()
     {
         var repoResult = _usuarioRepository.ObtenerTodos();
         if (!repoResult.IsSuccess)
-            return Result<List<UsuarioDto>>.Error("Error al obtener los usuarios");
+            return Result<List<UsuarioDto?>>.Error("Error al obtener los usuarios");
 
         var resultado = repoResult.Value;
         var lista = new List<UsuarioDto>(resultado.Rows.Count);
@@ -37,43 +37,43 @@ public class UsuarioService : BaseServicios, IUsuarioService
             if (dto != null) lista.Add(dto);
         }
         return lista.Count == 0
-            ? Result<List<UsuarioDto>>.NotFound("No se encontraron usuarios")
-            : Result<List<UsuarioDto>>.Success(lista);
+            ? Result<List<UsuarioDto?>>.NotFound("No se encontraron usuarios")
+            : Result<List<UsuarioDto?>>.Success(lista);
     }
 
-    public Result<UsuarioDto> Actualizar(ActualizarUsuarioComando comando)
+    public Result<UsuarioDto?> Actualizar(ActualizarUsuarioComando comando)
     {
         var validResult = ValidarEntrada(comando);
-        if (!validResult.IsSuccess) return Result<UsuarioDto>.Invalid(validResult.ValidationErrors.ToArray());
+        if (!validResult.IsSuccess) return Result<UsuarioDto?>.Invalid(validResult.ValidationErrors.ToArray());
 
         if (!_usuarioRepository.ExisteActivoPorCarnet(comando.Carnet!))
-            return Result<UsuarioDto>.NotFound("El usuario no fue encontrado");
+            return Result<UsuarioDto?>.NotFound("El usuario no fue encontrado");
 
         int? idCarrera = null;
         if (!string.IsNullOrWhiteSpace(comando.NombreCarrera))
         {
             idCarrera = _usuarioRepository.ObtenerCarreraIdPorNombre(comando.NombreCarrera);
             if (idCarrera == null)
-                return Result<UsuarioDto>.NotFound("La carrera no fue encontrada");
+                return Result<UsuarioDto?>.NotFound("La carrera no fue encontrada");
         }
 
         if (!string.IsNullOrWhiteSpace(comando.Rol))
         {
             if (comando.Rol != "administrador" && comando.Rol != "estudiante")
-                return Result<UsuarioDto>.Invalid(new ValidationError("Rol", "El rol no es válido"));
+                return Result<UsuarioDto?>.Invalid(new ValidationError("Rol", "El rol no es válido"));
         }
 
         var result = _usuarioRepository.Actualizar(idCarrera, comando);
         return result;
     }
 
-    public Result<UsuarioDto> Eliminar(EliminarUsuarioComando comando)
+    public Result<UsuarioDto?> Eliminar(EliminarUsuarioComando comando)
     {
         var validResult = ValidarEntrada(comando);
-        if (!validResult.IsSuccess) return Result<UsuarioDto>.Invalid(validResult.ValidationErrors.ToArray());
+        if (!validResult.IsSuccess) return Result<UsuarioDto?>.Invalid(validResult.ValidationErrors.ToArray());
 
         if (!_usuarioRepository.ExisteActivoPorCarnet(comando.Carnet!))
-            return Result<UsuarioDto>.NotFound("El usuario no fue encontrado");
+            return Result<UsuarioDto?>.NotFound("El usuario no fue encontrado");
 
         var result = _usuarioRepository.Eliminar(comando);
         return result;
@@ -121,7 +121,7 @@ public class UsuarioService : BaseServicios, IUsuarioService
         if (comando?.ApellidoMaterno?.Length > 100)
             errors.Add(new("ApellidoMaterno", "El apellido materno no puede tener más de 100 caracteres"));
 
-        if (string.IsNullOrWhiteSpace(comando?.Email) || !IsValidEmail(comando?.Email))
+        if (string.IsNullOrWhiteSpace(comando?.Email) || !IsValidEmail(comando?.Email ?? string.Empty))
             errors.Add(new("Email", "El email es inválido"));
 
         if (comando?.Email?.Length > 150)
@@ -211,7 +211,7 @@ public class UsuarioService : BaseServicios, IUsuarioService
         catch { return false; }
     }
 
-    protected override BaseDto MapearFilaADto(DataRow fila)
+    protected override Dto MapearFilaADto(DataRow fila)
     {
         return new UsuarioDto
         {

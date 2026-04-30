@@ -6,8 +6,8 @@ namespace IMT_Reservas.Server.Infrastructure.MongoDb
 {
     public class MongoDbContexto
     {
-        private readonly IMongoDatabase _baseDeDatos;
-        private readonly GridFSBucket _gestionArchivos;
+        private readonly IMongoDatabase _baseDeDatos = null!;
+        private readonly GridFSBucket _gestionArchivos = null!;
 
         public MongoDbContexto(IOptions<MongoDbConfiguracion> configuracion)
         {

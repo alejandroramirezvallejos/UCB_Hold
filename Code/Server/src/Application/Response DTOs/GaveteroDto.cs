@@ -1,4 +1,4 @@
-public class GaveteroDto : BaseDto
+public class GaveteroDto : Dto
 {
     public string? Nombre { get; set; }
     public string? Tipo { get; set; }

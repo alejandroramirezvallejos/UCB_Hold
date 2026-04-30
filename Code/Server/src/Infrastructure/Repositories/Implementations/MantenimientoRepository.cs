@@ -23,8 +23,8 @@ public class MantenimientoRepository : IMantenimientoRepository
         return Result<int>.Created(Convert.ToInt32(dt.Rows[0][0]));
     }
 
-    public Result<MantenimientoDto> Crear(CrearMantenimientoComando comando)
-        => Result<MantenimientoDto>.Error("Use CrearMantenimiento(int idEmpresa, CrearMantenimientoComando comando)");
+    public Result<MantenimientoDto?> Crear(CrearMantenimientoComando comando)
+        => Result<MantenimientoDto?>.Error("Use CrearMantenimiento(int idEmpresa, CrearMantenimientoComando comando)");
 
     public void CrearDetalleMantenimiento(int idMantenimiento, int idEquipo, string? tipoMantenimiento, string? descripcionEquipo)
     {
@@ -40,7 +40,7 @@ public class MantenimientoRepository : IMantenimientoRepository
         _ejecutarConsulta.EjecutarSpNR(sql, parametros);
     }
 
-    public Result<MantenimientoDto> Eliminar(EliminarMantenimientoComando comando)
+    public Result<MantenimientoDto?> Eliminar(EliminarMantenimientoComando comando)
     {
         const string sqlDetalles = @"UPDATE public.detalles_mantenimientos SET estado_eliminado = TRUE WHERE id_mantenimiento = @id";
         var parametrosDetalles = new Dictionary<string, object?> { ["id"] = comando.Id };
@@ -49,7 +49,7 @@ public class MantenimientoRepository : IMantenimientoRepository
         const string sql = @"UPDATE public.mantenimientos SET estado_eliminado = TRUE WHERE id_mantenimiento = @id";
         var parametros = new Dictionary<string, object?> { ["id"] = comando.Id };
         _ejecutarConsulta.EjecutarSpNR(sql, parametros);
-        return Result<MantenimientoDto>.Success(new MantenimientoDto { Id = comando.Id });
+        return Result<MantenimientoDto?>.Success(new MantenimientoDto { Id = comando.Id });
     }
 
     public Result<DataTable> ObtenerTodos()

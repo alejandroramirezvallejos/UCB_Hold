@@ -1,7 +1,7 @@
 using System.Data;
 using Ardalis.Result;
 
-public class NotificacionService : BaseServicios, INotificacionService
+public class NotificacionService : Service
 {
     private readonly INotificacionRepository _notificacionRepository;
     private readonly IPrestamoRepository _prestamoRepository;
@@ -12,19 +12,19 @@ public class NotificacionService : BaseServicios, INotificacionService
         _prestamoRepository = prestamoRepository;
     }
 
-    public Result<NotificacionDto> Crear(CrearNotificacionComando comando)
+    public Result<NotificacionDto?> Crear(CrearNotificacionComando comando)
     {
         var validResult = ValidarEntrada(comando);
-        if (!validResult.IsSuccess) return Result<NotificacionDto>.Invalid(validResult.ValidationErrors.ToArray());
+        if (!validResult.IsSuccess) return Result<NotificacionDto?>.Invalid(validResult.ValidationErrors.ToArray());
 
         var result = _notificacionRepository.Crear(comando);
         return result;
     }
 
-    public Result<NotificacionDto> Eliminar(EliminarNotificacionComando comando)
+    public Result<NotificacionDto?> Eliminar(EliminarNotificacionComando comando)
     {
         var validResult = ValidarEntrada(comando);
-        if (!validResult.IsSuccess) return Result<NotificacionDto>.Invalid(validResult.ValidationErrors.ToArray());
+        if (!validResult.IsSuccess) return Result<NotificacionDto?>.Invalid(validResult.ValidationErrors.ToArray());
 
         var result = _notificacionRepository.Eliminar(comando);
         return result;
@@ -63,8 +63,8 @@ public class NotificacionService : BaseServicios, INotificacionService
             var fechaDevolucionEsperada = ((DateTime)fila["fecha_devolucion_esperada"]).ToUniversalTime();
             if (fechaDevolucionEsperada < ahora)
             {
-                var idPrestamo = fila["id_prestamo"].ToString();
-                var carnet = fila["carnet"].ToString();
+                var idPrestamo = fila["id_prestamo"].ToString() ?? string.Empty;
+                var carnet = fila["carnet"].ToString() ?? string.Empty;
                 var fechaPenalizacion = fechaDevolucionEsperada.AddDays(1);
                 var contenido = $"El préstamo con Numero de Prestamo {idPrestamo} no ha sido devuelto. Entregalo antes del {fechaPenalizacion:yyyy-MM-dd HH:mm}.";
                 var titulo = "Préstamo retrasado";
@@ -88,8 +88,8 @@ public class NotificacionService : BaseServicios, INotificacionService
             var fechaDevolucionEsperada = ((DateTime)fila["fecha_devolucion_esperada"]).ToUniversalTime();
             if (ahora >= fechaDevolucionEsperada.AddDays(1))
             {
-                var idPrestamo = fila["id_prestamo"].ToString();
-                var carnet = fila["carnet"].ToString();
+                var idPrestamo = fila["id_prestamo"].ToString() ?? string.Empty;
+                var carnet = fila["carnet"].ToString() ?? string.Empty;
                 var contenido = $"El préstamo con Numero de Prestamo {idPrestamo} no ha sido devuelto. Entregalo lo mas pronto posible.";
                 var titulo = "Atraso";
                 if (!NotificacionBloqueoYaExiste(carnet))
@@ -107,9 +107,9 @@ public class NotificacionService : BaseServicios, INotificacionService
         foreach (DataRow fila in prestamos.Value.Rows)
         {
             if (fila["estado_prestamo"] == DBNull.Value || fila["carnet"] == DBNull.Value) continue;
-            var estado = fila["estado_prestamo"].ToString();
-            var idPrestamo = fila["id_prestamo"].ToString();
-            var carnet = fila["carnet"].ToString();
+            var estado = fila["estado_prestamo"].ToString() ?? string.Empty;
+            var idPrestamo = fila["id_prestamo"].ToString() ?? string.Empty;
+            var carnet = fila["carnet"].ToString() ?? string.Empty;
             if (estado == "aprobado")
             {
                 var contenido = $"Tu solicitud de préstamo con el Numero de Prestamo {idPrestamo} ha sido aprobada.";
@@ -184,7 +184,7 @@ public class NotificacionService : BaseServicios, INotificacionService
             : Result<EliminarNotificacionComando>.Success(comando!);
     }
 
-    protected override BaseDto MapearFilaADto(DataRow fila)
+    protected override Dto MapearFilaADto(DataRow fila)
     {
         return new NotificacionDto
         {

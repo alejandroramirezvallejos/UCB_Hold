@@ -6,7 +6,7 @@ public class AccesorioRepository : IAccesorioRepository
     private readonly IExecuteQuery _ejecutarConsulta;
     public AccesorioRepository(IExecuteQuery ejecutarConsulta) => _ejecutarConsulta = ejecutarConsulta;
 
-    public Result<AccesorioDto> Crear(int idEquipo, CrearAccesorioComando comando)
+    public Result<AccesorioDto?> Crear(int idEquipo, CrearAccesorioComando comando)
     {
         const string sql = @"INSERT INTO public.accesorios (nombre, descripcion, modelo, url_data_sheet, precio, id_equipo, tipo, estado_eliminado)
                              VALUES (@nombre, @descripcion, @modelo, @urlDataSheet, @precio, @idEquipo, @tipo, FALSE) RETURNING id_accesorio";
@@ -30,16 +30,16 @@ public class AccesorioRepository : IAccesorioRepository
             Precio = comando.Precio ?? 0,
             Tipo = comando.Tipo
         };
-        return Result<AccesorioDto>.Created(dto);
+        return Result<AccesorioDto?>.Created(dto);
     }
 
-    public Result<AccesorioDto> Crear(CrearAccesorioComando comando)
-        => Result<AccesorioDto>.Error("Use Crear(int idEquipo, CrearAccesorioComando comando)");
+    public Result<AccesorioDto?> Crear(CrearAccesorioComando comando)
+        => Result<AccesorioDto?>.Error("Use Crear(int idEquipo, CrearAccesorioComando comando)");
 
-    public Result<AccesorioDto> Actualizar(int? idEquipo, ActualizarAccesorioComando comando)
+    public Result<AccesorioDto?> Actualizar(int? idEquipo, ActualizarAccesorioComando comando)
     {
         if (!ExisteActivoPorId(comando.Id))
-            return Result<AccesorioDto>.NotFound("No se encontró el registro especificado");
+            return Result<AccesorioDto?>.NotFound("No se encontró el registro especificado");
 
         const string sql = @"UPDATE public.accesorios SET
             nombre = COALESCE(@nombre, nombre),
@@ -72,22 +72,22 @@ public class AccesorioRepository : IAccesorioRepository
             Precio = comando.Precio ?? 0,
             Tipo = comando.Tipo
         };
-        return Result<AccesorioDto>.Success(dto);
+        return Result<AccesorioDto?>.Success(dto);
     }
 
-    public Result<AccesorioDto> Actualizar(ActualizarAccesorioComando comando)
+    public Result<AccesorioDto?> Actualizar(ActualizarAccesorioComando comando)
         => Actualizar(null, comando);
 
-    public Result<AccesorioDto> Eliminar(EliminarAccesorioComando comando)
+    public Result<AccesorioDto?> Eliminar(EliminarAccesorioComando comando)
     {
         if (!ExisteActivoPorId(comando.Id))
-            return Result<AccesorioDto>.NotFound("No se encontró el registro especificado");
+            return Result<AccesorioDto?>.NotFound("No se encontró el registro especificado");
 
         const string sql = @"UPDATE public.accesorios SET estado_eliminado = TRUE WHERE id_accesorio = @id";
         var parametros = new Dictionary<string, object?> { ["id"] = comando.Id };
 
         _ejecutarConsulta.EjecutarSpNR(sql, parametros);
-        return Result<AccesorioDto>.Success(new AccesorioDto { Id = comando.Id });
+        return Result<AccesorioDto?>.Success(new AccesorioDto { Id = comando.Id });
     }
 
     public Result<DataTable> ObtenerTodos()

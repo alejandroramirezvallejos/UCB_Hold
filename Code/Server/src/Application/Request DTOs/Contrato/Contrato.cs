@@ -7,14 +7,14 @@ namespace IMT_Reservas.Server.Infrastructure.MongoDb
     {
         [BsonId]
         [BsonRepresentation(BsonType.ObjectId)]
-        public string Id { get; set; }
+        public string Id { get; set; } = null!;
 
         [BsonElement("prestamoId")]
         public int PrestamoId { get; set; }
 
         [BsonElement("fileId")]
         [BsonRepresentation(BsonType.ObjectId)]
-        public string FileId { get; set; }
+        public string FileId { get; set; } = null!;
 
         [BsonElement("EstadoEliminado")]
         public bool EstadoEliminado { get; set; } = false;

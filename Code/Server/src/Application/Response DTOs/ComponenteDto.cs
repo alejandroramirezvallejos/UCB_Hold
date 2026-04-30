@@ -1,4 +1,4 @@
-public class ComponenteDto : BaseDto
+public class ComponenteDto : Dto
 {
     public string? Nombre { get; set; }
     public string? Modelo { get; set; }

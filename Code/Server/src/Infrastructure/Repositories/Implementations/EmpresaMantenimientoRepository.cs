@@ -6,7 +6,7 @@ public class EmpresaMantenimientoRepository : IEmpresaMantenimientoRepository
     private readonly IExecuteQuery _ejecutarConsulta;
     public EmpresaMantenimientoRepository(IExecuteQuery ejecutarConsulta) => _ejecutarConsulta = ejecutarConsulta;
 
-    public Result<EmpresaMantenimientoDto> Crear(CrearEmpresaMantenimientoComando comando)
+    public Result<EmpresaMantenimientoDto?> Crear(CrearEmpresaMantenimientoComando comando)
     {
         const string sql = @"INSERT INTO public.empresas_mantenimiento (nombre, nombre_responsable, apellido_responsable, telefono, direccion, nit, estado_eliminado)
                              VALUES (@nombre, @nombreResponsable, @apellidoResponsable, @telefono, @direccion, @nit, FALSE)";
@@ -21,10 +21,10 @@ public class EmpresaMantenimientoRepository : IEmpresaMantenimientoRepository
         };
         _ejecutarConsulta.EjecutarSpNR(sql, parametros);
         var dto = new EmpresaMantenimientoDto { NombreEmpresa = comando.NombreEmpresa };
-        return Result<EmpresaMantenimientoDto>.Created(dto);
+        return Result<EmpresaMantenimientoDto?>.Created(dto);
     }
 
-    public Result<EmpresaMantenimientoDto> Actualizar(ActualizarEmpresaMantenimientoComando comando)
+    public Result<EmpresaMantenimientoDto?> Actualizar(ActualizarEmpresaMantenimientoComando comando)
     {
         const string sql = @"UPDATE public.empresas_mantenimiento SET
             nombre = COALESCE(@nombre, nombre),
@@ -46,15 +46,15 @@ public class EmpresaMantenimientoRepository : IEmpresaMantenimientoRepository
         };
         _ejecutarConsulta.EjecutarSpNR(sql, parametros);
         var dto = new EmpresaMantenimientoDto { Id = comando.Id, NombreEmpresa = comando.NombreEmpresa };
-        return Result<EmpresaMantenimientoDto>.Success(dto);
+        return Result<EmpresaMantenimientoDto?>.Success(dto);
     }
 
-    public Result<EmpresaMantenimientoDto> Eliminar(EliminarEmpresaMantenimientoComando comando)
+    public Result<EmpresaMantenimientoDto?> Eliminar(EliminarEmpresaMantenimientoComando comando)
     {
         const string sql = @"UPDATE public.empresas_mantenimiento SET estado_eliminado = TRUE WHERE id_empresa_mantenimiento = @id";
         var parametros = new Dictionary<string, object?> { ["id"] = comando.Id };
         _ejecutarConsulta.EjecutarSpNR(sql, parametros);
-        return Result<EmpresaMantenimientoDto>.Success(new EmpresaMantenimientoDto { Id = comando.Id });
+        return Result<EmpresaMantenimientoDto?>.Success(new EmpresaMantenimientoDto { Id = comando.Id });
     }
 
     public Result<DataTable> ObtenerTodos()

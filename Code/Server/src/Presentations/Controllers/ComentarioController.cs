@@ -7,11 +7,11 @@ using Ardalis.Result.AspNetCore;
 [TranslateResultToActionResult]
 public class ComentarioController : ControllerBase
 {
-    private readonly IComentarioService _servicio;
-    public ComentarioController(IComentarioService servicio) => _servicio = servicio;
+    private readonly ComentarioService _servicio;
+    public ComentarioController(ComentarioService servicio) => _servicio = servicio;
 
     [HttpPost]
-    public Result<ComentarioDto> Crear([FromBody] CrearComentarioComando input)
+    public Result<ComentarioDto?> Crear([FromBody] CrearComentarioComando input)
     {
         return _servicio.Crear(input);
     }
@@ -27,7 +27,7 @@ public class ComentarioController : ControllerBase
     }
 
     [HttpDelete("{id}")]
-    public Result<ComentarioDto> Eliminar(string id)
+    public Result<ComentarioDto?> Eliminar(string id)
     {
         return _servicio.Eliminar(new EliminarComentarioComando(id));
     }

@@ -7,29 +7,29 @@ using Ardalis.Result.AspNetCore;
 [TranslateResultToActionResult]
 public class UsuarioController : ControllerBase
 {
-    private readonly IUsuarioService _servicio;
-    public UsuarioController(IUsuarioService servicio) => _servicio = servicio;
+    private readonly UsuarioService _servicio;
+    public UsuarioController(UsuarioService servicio) => _servicio = servicio;
 
     [HttpPost]
-    public Result<UsuarioDto> Crear([FromBody] CrearUsuarioComando comando)
+    public Result<UsuarioDto?> Crear([FromBody] CrearUsuarioComando comando)
     {
         return _servicio.Crear(comando);
     }
 
     [HttpGet]
-    public Result<List<UsuarioDto>> ObtenerTodos()
+    public Result<List<UsuarioDto?>> ObtenerTodos()
     {
         return _servicio.ObtenerTodos();
     }
 
     [HttpPut]
-    public Result<UsuarioDto> Actualizar([FromBody] ActualizarUsuarioComando comando)
+    public Result<UsuarioDto?> Actualizar([FromBody] ActualizarUsuarioComando comando)
     {
         return _servicio.Actualizar(comando);
     }
 
     [HttpDelete("{carnet}")]
-    public Result<UsuarioDto> Eliminar(string carnet)
+    public Result<UsuarioDto?> Eliminar(string carnet)
     {
         return _servicio.Eliminar(new EliminarUsuarioComando(carnet));
     }

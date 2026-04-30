@@ -1,7 +1,7 @@
 using System.Data;
 using Ardalis.Result;
 
-public class MuebleService : BaseServicios, IMuebleService
+public class MuebleService : Service
 {
     private readonly IMuebleRepository _muebleRepository;
 
@@ -10,20 +10,20 @@ public class MuebleService : BaseServicios, IMuebleService
         _muebleRepository = muebleRepository;
     }
 
-    public virtual Result<MuebleDto> Crear(CrearMuebleComando comando)
+    public virtual Result<MuebleDto?> Crear(CrearMuebleComando comando)
     {
         var validResult = ValidarEntrada(comando);
-        if (!validResult.IsSuccess) return Result<MuebleDto>.Invalid(validResult.ValidationErrors.ToArray());
+        if (!validResult.IsSuccess) return Result<MuebleDto?>.Invalid(validResult.ValidationErrors.ToArray());
 
         var result = _muebleRepository.Crear(comando);
         return result;
     }
 
-    public virtual Result<List<MuebleDto>> ObtenerTodos()
+    public virtual Result<List<MuebleDto?>> ObtenerTodos()
     {
         var repoResult = _muebleRepository.ObtenerTodos();
         if (!repoResult.IsSuccess)
-            return Result<List<MuebleDto>>.Error("Error al obtener los muebles");
+            return Result<List<MuebleDto?>>.Error("Error al obtener los muebles");
 
         var resultado = repoResult.Value;
         var lista = new List<MuebleDto>(resultado.Rows.Count);
@@ -33,29 +33,29 @@ public class MuebleService : BaseServicios, IMuebleService
             if (dto != null) lista.Add(dto);
         }
         return lista.Count == 0
-            ? Result<List<MuebleDto>>.NotFound("No se encontraron muebles")
-            : Result<List<MuebleDto>>.Success(lista);
+            ? Result<List<MuebleDto?>>.NotFound("No se encontraron muebles")
+            : Result<List<MuebleDto?>>.Success(lista);
     }
 
-    public virtual Result<MuebleDto> Actualizar(ActualizarMuebleComando comando)
+    public virtual Result<MuebleDto?> Actualizar(ActualizarMuebleComando comando)
     {
         var validResult = ValidarEntrada(comando);
-        if (!validResult.IsSuccess) return Result<MuebleDto>.Invalid(validResult.ValidationErrors.ToArray());
+        if (!validResult.IsSuccess) return Result<MuebleDto?>.Invalid(validResult.ValidationErrors.ToArray());
 
         if (!_muebleRepository.ExisteActivoPorId(comando.Id))
-            return Result<MuebleDto>.NotFound("El mueble no fue encontrado");
+            return Result<MuebleDto?>.NotFound("El mueble no fue encontrado");
 
         var result = _muebleRepository.Actualizar(comando);
         return result;
     }
 
-    public virtual Result<MuebleDto> Eliminar(EliminarMuebleComando comando)
+    public virtual Result<MuebleDto?> Eliminar(EliminarMuebleComando comando)
     {
         var validResult = ValidarEntrada(comando);
-        if (!validResult.IsSuccess) return Result<MuebleDto>.Invalid(validResult.ValidationErrors.ToArray());
+        if (!validResult.IsSuccess) return Result<MuebleDto?>.Invalid(validResult.ValidationErrors.ToArray());
 
         if (!_muebleRepository.ExisteActivoPorId(comando.Id))
-            return Result<MuebleDto>.NotFound("El mueble no fue encontrado");
+            return Result<MuebleDto?>.NotFound("El mueble no fue encontrado");
 
         var result = _muebleRepository.Eliminar(comando);
         return result;
@@ -133,7 +133,7 @@ public class MuebleService : BaseServicios, IMuebleService
             : Result<EliminarMuebleComando>.Success(comando!);
     }
 
-    protected override BaseDto MapearFilaADto(DataRow fila)
+    protected override Dto MapearFilaADto(DataRow fila)
     {
         return new MuebleDto
         {

@@ -6,8 +6,8 @@ using Ardalis.Result.AspNetCore;
 [TranslateResultToActionResult]
 public class NotificacionController : ControllerBase
 {
-    private readonly INotificacionService _servicio;
-    public NotificacionController(INotificacionService servicio) => _servicio = servicio;
+    private readonly NotificacionService _servicio;
+    public NotificacionController(NotificacionService servicio) => _servicio = servicio;
 
     [HttpPost]
     public NotificacionDto Crear([FromBody] CrearNotificacionComando comando)

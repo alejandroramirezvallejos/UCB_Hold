@@ -9,7 +9,7 @@ public class ComentarioRepository : IComentarioRepository
     private readonly IMongoCollection<BsonDocument> _coleccion;
     public ComentarioRepository(MongoDbContexto contexto) => _coleccion = contexto.BaseDeDatos.GetCollection<BsonDocument>("comentarios");
 
-    public Result<ComentarioDto> Crear(CrearComentarioComando comando)
+    public Result<ComentarioDto?> Crear(CrearComentarioComando comando)
     {
         var doc = new BsonDocument
         {
@@ -22,61 +22,61 @@ public class ComentarioRepository : IComentarioRepository
         };
         _coleccion.InsertOne(doc);
         var dto = new ComentarioDto { Contenido = comando.Contenido };
-        return Result<ComentarioDto>.Created(dto);
+        return Result<ComentarioDto?>.Created(dto);
     }
 
-    public Result<ComentarioDto> Eliminar(EliminarComentarioComando comando)
+    public Result<ComentarioDto?> Eliminar(EliminarComentarioComando comando)
     {
         if (!ObjectId.TryParse(comando.Id, out var objectId))
-            return Result<ComentarioDto>.NotFound("No se encontró el comentario");
+            return Result<ComentarioDto?>.NotFound("No se encontró el comentario");
         var filtro = Builders<BsonDocument>.Filter.And(
             Builders<BsonDocument>.Filter.Eq("_id", objectId),
             Builders<BsonDocument>.Filter.Eq("EstadoEliminado", false)
         );
         bool existe = _coleccion.CountDocuments(filtro) > 0;
-        if (!existe) return Result<ComentarioDto>.NotFound("No se encontró el comentario");
+        if (!existe) return Result<ComentarioDto?>.NotFound("No se encontró el comentario");
         var res = _coleccion.UpdateOne(filtro, Builders<BsonDocument>.Update.Set("EstadoEliminado", true));
-        return res.MatchedCount == 0 ? Result<ComentarioDto>.NotFound("No se encontró el comentario") : Result<ComentarioDto>.Success(new ComentarioDto { Id = comando.Id });
+        return res.MatchedCount == 0 ? Result<ComentarioDto?>.NotFound("No se encontró el comentario") : Result<ComentarioDto?>.Success(new ComentarioDto { Id = comando.Id });
     }
 
-    public Result<ComentarioDto> AgregarLike(AgregarLikeComentarioComando comando)
+    public Result<ComentarioDto?> AgregarLike(AgregarLikeComentarioComando comando)
     {
         if (!ObjectId.TryParse(comando.Id, out var objectId))
-            return Result<ComentarioDto>.NotFound("No se encontró el comentario");
+            return Result<ComentarioDto?>.NotFound("No se encontró el comentario");
         var filtro = Builders<BsonDocument>.Filter.And(
             Builders<BsonDocument>.Filter.Eq("_id", objectId),
             Builders<BsonDocument>.Filter.Eq("EstadoEliminado", false)
         );
         bool existe = _coleccion.CountDocuments(filtro) > 0;
-        if (!existe) return Result<ComentarioDto>.NotFound("No se encontró el comentario");
+        if (!existe) return Result<ComentarioDto?>.NotFound("No se encontró el comentario");
         var yaDioLike = _coleccion.Find(
             Builders<BsonDocument>.Filter.And(
                 filtro,
                 Builders<BsonDocument>.Filter.ElemMatch("Likes", Builders<BsonDocument>.Filter.Eq("CarnetUsuario", comando.CarnetUsuario))
             )
         ).Any();
-        if (yaDioLike) return Result<ComentarioDto>.Error("El usuario ya dio like a este comentario");
+        if (yaDioLike) return Result<ComentarioDto?>.Error("El usuario ya dio like a este comentario");
         var likeObj = new BsonDocument {
             { "CarnetUsuario", comando.CarnetUsuario },
             { "Fecha", DateTime.UtcNow }
         };
         var res = _coleccion.UpdateOne(filtro, Builders<BsonDocument>.Update.Push("Likes", likeObj));
-        return res.MatchedCount == 0 ? Result<ComentarioDto>.NotFound("No se encontró el comentario") : Result<ComentarioDto>.Success(new ComentarioDto { Id = comando.Id });
+        return res.MatchedCount == 0 ? Result<ComentarioDto?>.NotFound("No se encontró el comentario") : Result<ComentarioDto?>.Success(new ComentarioDto { Id = comando.Id });
     }
 
-    public Result<ComentarioDto> QuitarLike(QuitarLikeComentarioComando comando)
+    public Result<ComentarioDto?> QuitarLike(QuitarLikeComentarioComando comando)
     {
         if (!ObjectId.TryParse(comando.Id, out var objectId))
-            return Result<ComentarioDto>.NotFound("No se encontró el comentario");
+            return Result<ComentarioDto?>.NotFound("No se encontró el comentario");
         var filtro = Builders<BsonDocument>.Filter.And(
             Builders<BsonDocument>.Filter.Eq("_id", objectId),
             Builders<BsonDocument>.Filter.Eq("EstadoEliminado", false)
         );
         bool existe = _coleccion.CountDocuments(filtro) > 0;
-        if (!existe) return Result<ComentarioDto>.NotFound("No se encontró el comentario");
+        if (!existe) return Result<ComentarioDto?>.NotFound("No se encontró el comentario");
         var update = Builders<BsonDocument>.Update.PullFilter("Likes", Builders<BsonDocument>.Filter.Eq("CarnetUsuario", comando.CarnetUsuario));
         var res = _coleccion.UpdateOne(filtro, update);
-        return res.MatchedCount == 0 ? Result<ComentarioDto>.NotFound("No se encontró el comentario") : Result<ComentarioDto>.Success(new ComentarioDto { Id = comando.Id });
+        return res.MatchedCount == 0 ? Result<ComentarioDto?>.NotFound("No se encontró el comentario") : Result<ComentarioDto?>.Success(new ComentarioDto { Id = comando.Id });
     }
 
     public DataTable ObtenerPorGrupoEquipo(int idGrupoEquipo)

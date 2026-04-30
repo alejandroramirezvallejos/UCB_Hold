@@ -30,7 +30,7 @@ export class ResultResponseInterceptor implements HttpInterceptor {
             switch (body.status) {
               case 200:
               case 201:
-                return event.clone({ body: { message: body.successMessage || 'Operación exitosa', data: body.value } });
+                return event.clone({ body: body.value });
 
               case 400:
                 const validationErrors = body.validationErrors?.map(e => `${e.propertyName}: ${e.description}`).join(', ') || 'Errores de validación';

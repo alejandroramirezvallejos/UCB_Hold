@@ -8,17 +8,17 @@ using IMT_Reservas.Server.Application.ResponseDTOs;
 [TranslateResultToActionResult]
 public class PrestamoController : ControllerBase
 {
-    private readonly IPrestamoService _servicio;
-    public PrestamoController(IPrestamoService servicio) => _servicio = servicio;
+    private readonly PrestamoService _servicio;
+    public PrestamoController(PrestamoService servicio) => _servicio = servicio;
 
     [HttpPost]
-    public Result<PrestamoConEquiposDto> Crear([FromForm] CrearPrestamoComando input)
+    public Result<PrestamoConEquiposDto?> Crear([FromForm] CrearPrestamoComando input)
     {
         return _servicio.Crear(input);
     }
 
     [HttpGet]
-    public Result<List<PrestamoDto>> ObtenerTodos()
+    public Result<List<PrestamoDto?>> ObtenerTodos()
     {
         return _servicio.ObtenerTodos();
     }
@@ -30,7 +30,7 @@ public class PrestamoController : ControllerBase
     }
 
     [HttpDelete("{id}")]
-    public Result<PrestamoDto> Eliminar(int id)
+    public Result<PrestamoDto?> Eliminar(int id)
     {
         return _servicio.Eliminar(new EliminarPrestamoComando(id));
     }

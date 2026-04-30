@@ -6,7 +6,7 @@ public class EquipoRepository : IEquipoRepository
     private readonly IExecuteQuery _ejecutarConsulta;
     public EquipoRepository(IExecuteQuery ejecutarConsulta) => _ejecutarConsulta = ejecutarConsulta;
 
-    public Result<EquipoDto> Crear(int idGrupoEquipo, int codigoImt, int? idGavetero, CrearEquipoComando comando)
+    public Result<EquipoDto?> Crear(int idGrupoEquipo, int codigoImt, int? idGavetero, CrearEquipoComando comando)
     {
         const string sql = @"INSERT INTO public.equipos (id_grupo_equipo, codigo_imt, descripcion, numero_serial, ubicacion, costo_referencia, tiempo_max_prestamo, procedencia, id_gavetero, estado_eliminado, codigo_ucb)
                              VALUES (@idGrupoEquipo, @codigoImt, @descripcion, @numeroSerial, @ubicacion, @costoReferencia, @tiempoMaximoPrestamo, @procedencia, @idGavetero, FALSE, @codigoUcb)";
@@ -25,13 +25,13 @@ public class EquipoRepository : IEquipoRepository
         };
         _ejecutarConsulta.EjecutarSpNR(sql, parametros);
         var dto = new EquipoDto { CodigoImt = codigoImt, Descripcion = comando.Descripcion };
-        return Result<EquipoDto>.Created(dto);
+        return Result<EquipoDto?>.Created(dto);
     }
 
-    public Result<EquipoDto> Crear(CrearEquipoComando comando)
-        => Result<EquipoDto>.Error("Use Crear(int idGrupoEquipo, int codigoImt, int? idGavetero, CrearEquipoComando comando)");
+    public Result<EquipoDto?> Crear(CrearEquipoComando comando)
+        => Result<EquipoDto?>.Error("Use Crear(int idGrupoEquipo, int codigoImt, int? idGavetero, CrearEquipoComando comando)");
 
-    public Result<EquipoDto> Actualizar(int? idGrupoEquipo, int? idGavetero, ActualizarEquipoComando comando)
+    public Result<EquipoDto?> Actualizar(int? idGrupoEquipo, int? idGavetero, ActualizarEquipoComando comando)
     {
         const string sql = @"UPDATE public.equipos SET
             id_grupo_equipo = COALESCE(@idGrupoEquipo, id_grupo_equipo),
@@ -61,18 +61,18 @@ public class EquipoRepository : IEquipoRepository
         };
         _ejecutarConsulta.EjecutarSpNR(sql, parametros);
         var dto = new EquipoDto { Id = comando.Id, Descripcion = comando.Descripcion };
-        return Result<EquipoDto>.Success(dto);
+        return Result<EquipoDto?>.Success(dto);
     }
 
-    public Result<EquipoDto> Actualizar(ActualizarEquipoComando comando)
+    public Result<EquipoDto?> Actualizar(ActualizarEquipoComando comando)
         => Actualizar(null, null, comando);
 
-    public Result<EquipoDto> Eliminar(EliminarEquipoComando comando)
+    public Result<EquipoDto?> Eliminar(EliminarEquipoComando comando)
     {
         const string sql = @"UPDATE public.equipos SET estado_eliminado = TRUE WHERE id_equipo = @id";
         var parametros = new Dictionary<string, object?> { ["id"] = comando.Id };
         _ejecutarConsulta.EjecutarSpNR(sql, parametros);
-        return Result<EquipoDto>.Success(new EquipoDto { Id = comando.Id });
+        return Result<EquipoDto?>.Success(new EquipoDto { Id = comando.Id });
     }
 
     public Result<DataTable> ObtenerTodos()

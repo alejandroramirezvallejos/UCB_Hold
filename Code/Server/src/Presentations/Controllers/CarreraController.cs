@@ -7,29 +7,29 @@ using Ardalis.Result.AspNetCore;
 [TranslateResultToActionResult]
 public class CarreraController : ControllerBase
 {
-    private readonly ICarreraService _servicio;
-    public CarreraController(ICarreraService servicio) => _servicio = servicio;
+    private readonly CarreraService _servicio;
+    public CarreraController(CarreraService servicio) => _servicio = servicio;
 
     [HttpGet]
-    public Result<List<CarreraDto>> ObtenerTodos()
+    public Result<List<CarreraDto?>> ObtenerTodos()
     {
         return _servicio.ObtenerTodos();
     }
 
     [HttpPost]
-    public Result<CarreraDto> Crear([FromBody] CrearCarreraComando input)
+    public Result<CarreraDto?> Crear([FromBody] CrearCarreraComando input)
     {
         return _servicio.Crear(input);
     }
 
     [HttpPut]
-    public Result<CarreraDto> Actualizar([FromBody] ActualizarCarreraComando input)
+    public Result<CarreraDto?> Actualizar([FromBody] ActualizarCarreraComando input)
     {
         return _servicio.Actualizar(input);
     }
 
     [HttpDelete("{id}")]
-    public Result<CarreraDto> Eliminar(int id)
+    public Result<CarreraDto?> Eliminar(int id)
     {
         return _servicio.Eliminar(new EliminarCarreraComando(id));
     }

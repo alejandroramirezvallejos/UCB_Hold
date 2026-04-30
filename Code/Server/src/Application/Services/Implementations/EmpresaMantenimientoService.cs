@@ -1,7 +1,7 @@
 using System.Data;
 using Ardalis.Result;
 
-public class EmpresaMantenimientoService : BaseServicios, IEmpresaMantenimientoService
+public class EmpresaMantenimientoService : Service
 {
     private readonly IEmpresaMantenimientoRepository _empresaRepository;
 
@@ -10,26 +10,26 @@ public class EmpresaMantenimientoService : BaseServicios, IEmpresaMantenimientoS
         _empresaRepository = empresaRepository;
     }
 
-    public virtual Result<EmpresaMantenimientoDto> Crear(CrearEmpresaMantenimientoComando comando)
+    public virtual Result<EmpresaMantenimientoDto?> Crear(CrearEmpresaMantenimientoComando comando)
     {
         var validResult = ValidarEntrada(comando);
-        if (!validResult.IsSuccess) return Result<EmpresaMantenimientoDto>.Invalid(validResult.ValidationErrors.ToArray());
+        if (!validResult.IsSuccess) return Result<EmpresaMantenimientoDto?>.Invalid(validResult.ValidationErrors.ToArray());
 
         if (_empresaRepository.ReactivarEliminadaPorNombre(comando.NombreEmpresa!))
-            return Result<EmpresaMantenimientoDto>.Success(null);
+            return Result<EmpresaMantenimientoDto?>.Success(null);
 
         if (_empresaRepository.ExisteActivaPorNombre(comando.NombreEmpresa!))
-            return Result<EmpresaMantenimientoDto>.Conflict("Ya existe una empresa de mantenimiento activa con este nombre");
+            return Result<EmpresaMantenimientoDto?>.Conflict("Ya existe una empresa de mantenimiento activa con este nombre");
 
         var result = _empresaRepository.Crear(comando);
         return result;
     }
 
-    public virtual Result<List<EmpresaMantenimientoDto>> ObtenerTodos()
+    public virtual Result<List<EmpresaMantenimientoDto?>> ObtenerTodos()
     {
         var repoResult = _empresaRepository.ObtenerTodos();
         if (!repoResult.IsSuccess)
-            return Result<List<EmpresaMantenimientoDto>>.Error("Error al obtener las empresas de mantenimiento");
+            return Result<List<EmpresaMantenimientoDto?>>.Error("Error al obtener las empresas de mantenimiento");
 
         var resultado = repoResult.Value;
         var lista = new List<EmpresaMantenimientoDto>(resultado.Rows.Count);
@@ -39,27 +39,27 @@ public class EmpresaMantenimientoService : BaseServicios, IEmpresaMantenimientoS
             if (dto != null) lista.Add(dto);
         }
         return lista.Count == 0
-            ? Result<List<EmpresaMantenimientoDto>>.NotFound("No se encontraron empresas de mantenimiento")
-            : Result<List<EmpresaMantenimientoDto>>.Success(lista);
+            ? Result<List<EmpresaMantenimientoDto?>>.NotFound("No se encontraron empresas de mantenimiento")
+            : Result<List<EmpresaMantenimientoDto?>>.Success(lista);
     }
 
-    public virtual Result<EmpresaMantenimientoDto> Actualizar(ActualizarEmpresaMantenimientoComando comando)
+    public virtual Result<EmpresaMantenimientoDto?> Actualizar(ActualizarEmpresaMantenimientoComando comando)
     {
         var validResult = ValidarEntrada(comando);
-        if (!validResult.IsSuccess) return Result<EmpresaMantenimientoDto>.Invalid(validResult.ValidationErrors.ToArray());
+        if (!validResult.IsSuccess) return Result<EmpresaMantenimientoDto?>.Invalid(validResult.ValidationErrors.ToArray());
 
         if (!_empresaRepository.ExisteActivaPorId(comando.Id))
-            return Result<EmpresaMantenimientoDto>.NotFound("La empresa de mantenimiento no fue encontrada");
+            return Result<EmpresaMantenimientoDto?>.NotFound("La empresa de mantenimiento no fue encontrada");
 
         if (!string.IsNullOrWhiteSpace(comando.NombreEmpresa))
         {
             if (_empresaRepository.ExisteActivaPorNombreExcluyendoId(comando.NombreEmpresa, comando.Id))
-                return Result<EmpresaMantenimientoDto>.Conflict("Ya existe otra empresa activa con ese nombre");
+                return Result<EmpresaMantenimientoDto?>.Conflict("Ya existe otra empresa activa con ese nombre");
 
             if (_empresaRepository.ReactivarEliminadaPorNombre(comando.NombreEmpresa))
             {
                 _empresaRepository.EliminarLogicamentePorId(comando.Id);
-                return Result<EmpresaMantenimientoDto>.Success(null);
+                return Result<EmpresaMantenimientoDto?>.Success(null);
             }
         }
 
@@ -67,13 +67,13 @@ public class EmpresaMantenimientoService : BaseServicios, IEmpresaMantenimientoS
         return result;
     }
 
-    public virtual Result<EmpresaMantenimientoDto> Eliminar(EliminarEmpresaMantenimientoComando comando)
+    public virtual Result<EmpresaMantenimientoDto?> Eliminar(EliminarEmpresaMantenimientoComando comando)
     {
         var validResult = ValidarEntrada(comando);
-        if (!validResult.IsSuccess) return Result<EmpresaMantenimientoDto>.Invalid(validResult.ValidationErrors.ToArray());
+        if (!validResult.IsSuccess) return Result<EmpresaMantenimientoDto?>.Invalid(validResult.ValidationErrors.ToArray());
 
         if (!_empresaRepository.ExisteActivaPorId(comando.Id))
-            return Result<EmpresaMantenimientoDto>.NotFound("La empresa de mantenimiento no fue encontrada");
+            return Result<EmpresaMantenimientoDto?>.NotFound("La empresa de mantenimiento no fue encontrada");
 
         var result = _empresaRepository.Eliminar(comando);
         return result;
@@ -133,7 +133,7 @@ public class EmpresaMantenimientoService : BaseServicios, IEmpresaMantenimientoS
             : Result<EliminarEmpresaMantenimientoComando>.Success(comando!);
     }
 
-    protected override BaseDto MapearFilaADto(DataRow fila)
+    protected override Dto MapearFilaADto(DataRow fila)
     {
         return new EmpresaMantenimientoDto
         {

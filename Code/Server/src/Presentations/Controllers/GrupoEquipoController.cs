@@ -7,17 +7,17 @@ using Ardalis.Result.AspNetCore;
 [TranslateResultToActionResult]
 public class GrupoEquipoController : ControllerBase
 {
-    private readonly IGrupoEquipoService _servicio;
-    public GrupoEquipoController(IGrupoEquipoService servicio) => _servicio = servicio;
+    private readonly GrupoEquipoService _servicio;
+    public GrupoEquipoController(GrupoEquipoService servicio) => _servicio = servicio;
 
     [HttpPost]
-    public Result<GrupoEquipoDto> Crear([FromBody] CrearGrupoEquipoComando input)
+    public Result<GrupoEquipoDto?> Crear([FromBody] CrearGrupoEquipoComando input)
     {
         return _servicio.Crear(input);
     }
 
     [HttpGet]
-    public Result<List<GrupoEquipoDto>> ObtenerTodos()
+    public Result<List<GrupoEquipoDto?>> ObtenerTodos()
     {
         return _servicio.ObtenerTodos();
     }
@@ -39,13 +39,13 @@ public class GrupoEquipoController : ControllerBase
     }
 
     [HttpPut]
-    public Result<GrupoEquipoDto> Actualizar([FromBody] ActualizarGrupoEquipoComando input)
+    public Result<GrupoEquipoDto?> Actualizar([FromBody] ActualizarGrupoEquipoComando input)
     {
         return _servicio.Actualizar(input);
     }
 
     [HttpDelete("{id}")]
-    public Result<GrupoEquipoDto> Eliminar(int id)
+    public Result<GrupoEquipoDto?> Eliminar(int id)
     {
         return _servicio.Eliminar(new EliminarGrupoEquipoComando(id));
     }

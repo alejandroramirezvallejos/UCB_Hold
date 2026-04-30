@@ -5,7 +5,7 @@ using IMT_Reservas.Server.Shared.Common;
 namespace IMT_Reservas.Tests.ControllerTests
 {
     [TestFixture]
-    public class GaveteroControllerTest : IGaveteroControllerTest
+    public class GaveteroControllerTest
     {
         private Mock<IGaveteroService> _gaveteroServiceMock;
         private GaveteroController _gaveterosController;

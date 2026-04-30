@@ -5,7 +5,7 @@ using IMT_Reservas.Server.Shared.Common;
 namespace IMT_Reservas.Tests.ControllerTests
 {
     [TestFixture]
-    public class GrupoEquipoControllerTest : IGrupoEquipoControllerTest
+    public class GrupoEquipoControllerTest
     {
         private Mock<IGrupoEquipoService> _grupoServiceMock;
         private GrupoEquipoController _gruposController;

@@ -3,8 +3,8 @@ using Ardalis.Result;
 
 public interface IMantenimientoRepository
 {
-    Result<MantenimientoDto> Crear(CrearMantenimientoComando comando);
-    Result<MantenimientoDto> Eliminar(EliminarMantenimientoComando comando);
+    Result<MantenimientoDto?> Crear(CrearMantenimientoComando comando);
+    Result<MantenimientoDto?> Eliminar(EliminarMantenimientoComando comando);
     Result<DataTable> ObtenerTodos();
     bool ExisteActivoPorId(int id);
     int? ObtenerEmpresaIdPorNombre(string nombreEmpresa);

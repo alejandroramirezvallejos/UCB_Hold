@@ -6,7 +6,7 @@ public class MuebleRepository : IMuebleRepository
     private readonly IExecuteQuery _ejecutarConsulta;
     public MuebleRepository(IExecuteQuery ejecutarConsulta) => _ejecutarConsulta = ejecutarConsulta;
 
-    public Result<MuebleDto> Crear(CrearMuebleComando comando)
+    public Result<MuebleDto?> Crear(CrearMuebleComando comando)
     {
         const string sql = @"INSERT INTO public.muebles (nombre, tipo, costo, ubicacion, longitud, profundidad, altura, estado_eliminado)
                              VALUES (@nombre, @tipo, @costo, @ubicacion, @longitud, @profundidad, @altura, FALSE)";
@@ -22,10 +22,10 @@ public class MuebleRepository : IMuebleRepository
         };
         _ejecutarConsulta.EjecutarSpNR(sql, parametros);
         var dto = new MuebleDto { Nombre = comando.Nombre, Tipo = comando.Tipo };
-        return Result<MuebleDto>.Created(dto);
+        return Result<MuebleDto?>.Created(dto);
     }
 
-    public Result<MuebleDto> Actualizar(ActualizarMuebleComando comando)
+    public Result<MuebleDto?> Actualizar(ActualizarMuebleComando comando)
     {
         const string sql = @"UPDATE public.muebles SET
             nombre = COALESCE(@nombre, nombre),
@@ -49,15 +49,15 @@ public class MuebleRepository : IMuebleRepository
         };
         _ejecutarConsulta.EjecutarSpNR(sql, parametros);
         var dto = new MuebleDto { Id = comando.Id, Nombre = comando.Nombre, Tipo = comando.Tipo };
-        return Result<MuebleDto>.Success(dto);
+        return Result<MuebleDto?>.Success(dto);
     }
 
-    public Result<MuebleDto> Eliminar(EliminarMuebleComando comando)
+    public Result<MuebleDto?> Eliminar(EliminarMuebleComando comando)
     {
         const string sql = @"UPDATE public.muebles SET estado_eliminado = TRUE WHERE id_mueble = @id";
         var parametros = new Dictionary<string, object?> { ["id"] = comando.Id };
         _ejecutarConsulta.EjecutarSpNR(sql, parametros);
-        return Result<MuebleDto>.Success(new MuebleDto { Id = comando.Id });
+        return Result<MuebleDto?>.Success(new MuebleDto { Id = comando.Id });
     }
 
     public Result<DataTable> ObtenerTodos()

@@ -1,7 +1,7 @@
 using System.Data;
 using Ardalis.Result;
 
-public class GrupoEquipoService : BaseServicios, IGrupoEquipoService
+public class GrupoEquipoService : Service
 {
     private readonly IGrupoEquipoRepository _grupoEquipoRepository;
     public GrupoEquipoService(IGrupoEquipoRepository grupoEquipoRepository)
@@ -9,27 +9,27 @@ public class GrupoEquipoService : BaseServicios, IGrupoEquipoService
         _grupoEquipoRepository = grupoEquipoRepository;
     }
 
-    public virtual Result<GrupoEquipoDto> Crear(CrearGrupoEquipoComando comando)
+    public virtual Result<GrupoEquipoDto?> Crear(CrearGrupoEquipoComando comando)
     {
         var validResult = ValidarEntrada(comando);
-        if (!validResult.IsSuccess) return Result<GrupoEquipoDto>.Invalid(validResult.ValidationErrors.ToArray());
+        if (!validResult.IsSuccess) return Result<GrupoEquipoDto?>.Invalid(validResult.ValidationErrors.ToArray());
 
         var idCategoria = _grupoEquipoRepository.ObtenerCategoriaIdPorNombre(comando.NombreCategoria!);
         if (idCategoria == null)
-            return Result<GrupoEquipoDto>.NotFound("La categoría no fue encontrada");
+            return Result<GrupoEquipoDto?>.NotFound("La categoría no fue encontrada");
 
         if (_grupoEquipoRepository.ExisteDuplicadoPorNombreModeloMarca(comando.Nombre!, comando.Modelo!, comando.Marca!))
-            return Result<GrupoEquipoDto>.Conflict("Ya existe un grupo de equipo con estos datos");
+            return Result<GrupoEquipoDto?>.Conflict("Ya existe un grupo de equipo con estos datos");
 
         var result = _grupoEquipoRepository.Crear(idCategoria.Value, comando);
         return result;
     }
 
-    public virtual Result<List<GrupoEquipoDto>> ObtenerTodos()
+    public virtual Result<List<GrupoEquipoDto?>> ObtenerTodos()
     {
         var repoResult = _grupoEquipoRepository.ObtenerTodos();
         if (!repoResult.IsSuccess)
-            return Result<List<GrupoEquipoDto>>.Error("Error al obtener los grupos de equipos");
+            return Result<List<GrupoEquipoDto?>>.Error("Error al obtener los grupos de equipos");
 
         var resultado = repoResult.Value;
         var lista = new List<GrupoEquipoDto>(resultado.Rows.Count);
@@ -39,17 +39,17 @@ public class GrupoEquipoService : BaseServicios, IGrupoEquipoService
             if (dto != null) lista.Add(dto);
         }
         return lista.Count == 0
-            ? Result<List<GrupoEquipoDto>>.NotFound("No se encontraron grupos de equipos")
-            : Result<List<GrupoEquipoDto>>.Success(lista);
+            ? Result<List<GrupoEquipoDto?>>.NotFound("No se encontraron grupos de equipos")
+            : Result<List<GrupoEquipoDto?>>.Success(lista);
     }
 
-    public virtual Result<GrupoEquipoDto> ActualizarResult(ActualizarGrupoEquipoComando comando)
+    public virtual Result<GrupoEquipoDto?> ActualizarResult(ActualizarGrupoEquipoComando comando)
     {
         var validResult = ValidarEntrada(comando);
-        if (!validResult.IsSuccess) return Result<GrupoEquipoDto>.Invalid(validResult.ValidationErrors.ToArray());
+        if (!validResult.IsSuccess) return Result<GrupoEquipoDto?>.Invalid(validResult.ValidationErrors.ToArray());
 
         if (!_grupoEquipoRepository.ExisteActivoPorId(comando.Id))
-            return Result<GrupoEquipoDto>.NotFound("El grupo de equipo no fue encontrado");
+            return Result<GrupoEquipoDto?>.NotFound("El grupo de equipo no fue encontrado");
 
         int? idCategoria = null;
 
@@ -57,7 +57,7 @@ public class GrupoEquipoService : BaseServicios, IGrupoEquipoService
         {
             idCategoria = _grupoEquipoRepository.ObtenerCategoriaIdPorNombre(comando.NombreCategoria);
             if (idCategoria == null)
-                return Result<GrupoEquipoDto>.NotFound("La categoría no fue encontrada");
+                return Result<GrupoEquipoDto?>.NotFound("La categoría no fue encontrada");
         }
 
         if (!string.IsNullOrWhiteSpace(comando.Nombre) || !string.IsNullOrWhiteSpace(comando.Modelo) || !string.IsNullOrWhiteSpace(comando.Marca))
@@ -72,7 +72,7 @@ public class GrupoEquipoService : BaseServicios, IGrupoEquipoService
                 if (nombreFinal != null && modeloFinal != null && marcaFinal != null)
                 {
                     if (_grupoEquipoRepository.ExisteDuplicadoPorNombreModeloMarcaExcluyendoId(nombreFinal, modeloFinal, marcaFinal, comando.Id))
-                        return Result<GrupoEquipoDto>.Conflict("Ya existe otro grupo con estos datos");
+                        return Result<GrupoEquipoDto?>.Conflict("Ya existe otro grupo con estos datos");
                 }
             }
         }
@@ -81,18 +81,18 @@ public class GrupoEquipoService : BaseServicios, IGrupoEquipoService
         return result;
     }
 
-    public virtual Result<GrupoEquipoDto> Actualizar(ActualizarGrupoEquipoComando comando)
+    public virtual Result<GrupoEquipoDto?> Actualizar(ActualizarGrupoEquipoComando comando)
     {
         return ActualizarResult(comando);
     }
 
-    public virtual Result<GrupoEquipoDto> Eliminar(EliminarGrupoEquipoComando comando)
+    public virtual Result<GrupoEquipoDto?> Eliminar(EliminarGrupoEquipoComando comando)
     {
         var validResult = ValidarEntrada(comando);
-        if (!validResult.IsSuccess) return Result<GrupoEquipoDto>.Invalid(validResult.ValidationErrors.ToArray());
+        if (!validResult.IsSuccess) return Result<GrupoEquipoDto?>.Invalid(validResult.ValidationErrors.ToArray());
 
         if (!_grupoEquipoRepository.ExisteActivoPorId(comando.Id))
-            return Result<GrupoEquipoDto>.NotFound("El grupo de equipo no fue encontrado");
+            return Result<GrupoEquipoDto?>.NotFound("El grupo de equipo no fue encontrado");
 
         var result = _grupoEquipoRepository.Eliminar(comando);
         return result;
@@ -206,7 +206,7 @@ public class GrupoEquipoService : BaseServicios, IGrupoEquipoService
             : Result<EliminarGrupoEquipoComando>.Success(comando!);
     }
 
-    protected override BaseDto MapearFilaADto(DataRow fila)
+    protected override Dto MapearFilaADto(DataRow fila)
     {
         return new GrupoEquipoDto
         {

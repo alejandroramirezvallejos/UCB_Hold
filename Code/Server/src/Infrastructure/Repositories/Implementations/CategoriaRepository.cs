@@ -6,13 +6,13 @@ public class CategoriaRepository : ICategoriaRepository
     private readonly IExecuteQuery _ejecutarConsulta;
     public CategoriaRepository(IExecuteQuery ejecutarConsulta) => _ejecutarConsulta = ejecutarConsulta;
 
-    public Result<CategoriaDto> Crear(CrearCategoriaComando comando)
+    public Result<CategoriaDto?> Crear(CrearCategoriaComando comando)
     {
         const string sql = @"INSERT INTO public.categorias (nombre, estado_eliminado) VALUES (@nombre, FALSE)";
         var parametros = new Dictionary<string, object?> { ["nombre"] = comando.Nombre };
         _ejecutarConsulta.EjecutarSpNR(sql, parametros);
         var dto = new CategoriaDto { Nombre = comando.Nombre };
-        return Result<CategoriaDto>.Created(dto);
+        return Result<CategoriaDto?>.Created(dto);
     }
 
     public Result<DataTable> ObtenerTodos()
@@ -24,7 +24,7 @@ public class CategoriaRepository : ICategoriaRepository
             : Result<DataTable>.Success(dt);
     }
 
-    public Result<CategoriaDto> Actualizar(ActualizarCategoriaComando comando)
+    public Result<CategoriaDto?> Actualizar(ActualizarCategoriaComando comando)
     {
         const string sql = @"UPDATE public.categorias SET nombre = COALESCE(@nombre, nombre) WHERE id_categoria = @id AND estado_eliminado = FALSE";
         var parametros = new Dictionary<string, object?>
@@ -34,15 +34,15 @@ public class CategoriaRepository : ICategoriaRepository
         };
         _ejecutarConsulta.EjecutarSpNR(sql, parametros);
         var dto = new CategoriaDto { Id = comando.Id, Nombre = comando.Nombre };
-        return Result<CategoriaDto>.Success(dto);
+        return Result<CategoriaDto?>.Success(dto);
     }
 
-    public Result<CategoriaDto> Eliminar(EliminarCategoriaComando comando)
+    public Result<CategoriaDto?> Eliminar(EliminarCategoriaComando comando)
     {
         const string sql = @"UPDATE public.categorias SET estado_eliminado = TRUE WHERE id_categoria = @id";
         var parametros = new Dictionary<string, object?> { ["id"] = comando.Id };
         _ejecutarConsulta.EjecutarSpNR(sql, parametros);
-        return Result<CategoriaDto>.Success(new CategoriaDto { Id = comando.Id });
+        return Result<CategoriaDto?>.Success(new CategoriaDto { Id = comando.Id });
     }
 
     public bool ExisteActivaPorId(int id)

@@ -6,7 +6,7 @@ public class ComponenteRepository : IComponenteRepository
     private readonly IExecuteQuery _ejecutarConsulta;
     public ComponenteRepository(IExecuteQuery ejecutarConsulta) => _ejecutarConsulta = ejecutarConsulta;
 
-    public Result<ComponenteDto> Crear(int idEquipo, CrearComponenteComando comando)
+    public Result<ComponenteDto?> Crear(int idEquipo, CrearComponenteComando comando)
     {
         const string sql = @"INSERT INTO public.componentes (nombre, modelo, tipo, id_equipo, descripcion, precio_referencia, url_data_sheet, estado_eliminado)
                              VALUES (@nombre, @modelo, @tipo, @idEquipo, @descripcion, @precioReferencia, @urlDataSheet, FALSE)";
@@ -29,13 +29,13 @@ public class ComponenteRepository : IComponenteRepository
             Descripcion = comando.Descripcion,
             PrecioReferencia = comando.PrecioReferencia ?? 0
         };
-        return Result<ComponenteDto>.Created(dto);
+        return Result<ComponenteDto?>.Created(dto);
     }
 
-    public Result<ComponenteDto> Crear(CrearComponenteComando comando)
-        => Result<ComponenteDto>.Error("Use Crear(int idEquipo, CrearComponenteComando comando)");
+    public Result<ComponenteDto?> Crear(CrearComponenteComando comando)
+        => Result<ComponenteDto?>.Error("Use Crear(int idEquipo, CrearComponenteComando comando)");
 
-    public Result<ComponenteDto> Actualizar(int? idEquipo, ActualizarComponenteComando comando)
+    public Result<ComponenteDto?> Actualizar(int? idEquipo, ActualizarComponenteComando comando)
     {
         const string sql = @"UPDATE public.componentes SET
             nombre = COALESCE(@nombre, nombre),
@@ -67,18 +67,18 @@ public class ComponenteRepository : IComponenteRepository
             Descripcion = comando.Descripcion,
             PrecioReferencia = comando.PrecioReferencia ?? 0
         };
-        return Result<ComponenteDto>.Success(dto);
+        return Result<ComponenteDto?>.Success(dto);
     }
 
-    public Result<ComponenteDto> Actualizar(ActualizarComponenteComando comando)
+    public Result<ComponenteDto?> Actualizar(ActualizarComponenteComando comando)
         => Actualizar(null, comando);
 
-    public Result<ComponenteDto> Eliminar(EliminarComponenteComando comando)
+    public Result<ComponenteDto?> Eliminar(EliminarComponenteComando comando)
     {
         const string sql = @"UPDATE public.componentes SET estado_eliminado = TRUE WHERE id_componente = @id";
         var parametros = new Dictionary<string, object?> { ["id"] = comando.Id };
         _ejecutarConsulta.EjecutarSpNR(sql, parametros);
-        return Result<ComponenteDto>.Success(new ComponenteDto { Id = comando.Id });
+        return Result<ComponenteDto?>.Success(new ComponenteDto { Id = comando.Id });
     }
 
     public Result<DataTable> ObtenerTodos()

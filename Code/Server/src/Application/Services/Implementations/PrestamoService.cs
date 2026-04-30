@@ -2,7 +2,7 @@ using System.Data;
 using Ardalis.Result;
 using IMT_Reservas.Server.Application.ResponseDTOs;
 
-public class PrestamoService : BaseServicios, IPrestamoService
+public class PrestamoService : Service
 {
     private readonly IPrestamoRepository _prestamoRepository;
 
@@ -11,10 +11,10 @@ public class PrestamoService : BaseServicios, IPrestamoService
         _prestamoRepository = prestamoRepository;
     }
 
-    public virtual Result<PrestamoConEquiposDto> Crear(CrearPrestamoComando comando)
+    public virtual Result<PrestamoConEquiposDto?> Crear(CrearPrestamoComando comando)
     {
         if (!_prestamoRepository.ExisteUsuarioActivoPorCarnet(comando.CarnetUsuario!))
-            return Result<PrestamoConEquiposDto>.NotFound("El usuario no fue encontrado");
+            return Result<PrestamoConEquiposDto?>.NotFound("El usuario no fue encontrado");
 
         var equipoIds = new List<int>();
         var equiposInfo = new List<EquipoAsignadoDto>();
@@ -22,12 +22,12 @@ public class PrestamoService : BaseServicios, IPrestamoService
         foreach (var grupoId in comando.GrupoEquipoId!)
         {
             if (!_prestamoRepository.ExisteGrupoEquipoActivoPorId(grupoId))
-                return Result<PrestamoConEquiposDto>.NotFound("El grupo de equipo no fue encontrado");
+                return Result<PrestamoConEquiposDto?>.NotFound("El grupo de equipo no fue encontrado");
 
             var idEquipo = _prestamoRepository.ObtenerEquipoDisponiblePorGrupo(
                 grupoId, comando.FechaPrestamoEsperada!.Value, comando.FechaDevolucionEsperada!.Value);
             if (idEquipo == null)
-                return Result<PrestamoConEquiposDto>.NotFound("No hay equipos disponibles");
+                return Result<PrestamoConEquiposDto?>.NotFound("No hay equipos disponibles");
 
             equipoIds.Add(idEquipo.Value);
 
@@ -60,18 +60,18 @@ public class PrestamoService : BaseServicios, IPrestamoService
             _prestamoRepository.GuardarContrato(idPrestamo, comando.Contrato);
         }
 
-        return Result<PrestamoConEquiposDto>.Created(new PrestamoConEquiposDto
+        return Result<PrestamoConEquiposDto?>.Created(new PrestamoConEquiposDto
         {
             IdPrestamo = idPrestamo,
             EquiposAsignados = equiposInfo
         });
     }
 
-    public virtual Result<List<PrestamoDto>> ObtenerTodos()
+    public virtual Result<List<PrestamoDto?>> ObtenerTodos()
     {
         var repoResult = _prestamoRepository.ObtenerTodos();
         if (!repoResult.IsSuccess)
-            return Result<List<PrestamoDto>>.Error("Error al obtener los préstamos");
+            return Result<List<PrestamoDto?>>.Error("Error al obtener los préstamos");
 
         var resultado = repoResult.Value;
         var lista = new List<PrestamoDto>(resultado.Rows.Count);
@@ -81,17 +81,17 @@ public class PrestamoService : BaseServicios, IPrestamoService
             if (dto != null) lista.Add(dto);
         }
         return lista.Count == 0
-            ? Result<List<PrestamoDto>>.NotFound("No se encontraron préstamos")
-            : Result<List<PrestamoDto>>.Success(lista);
+            ? Result<List<PrestamoDto?>>.NotFound("No se encontraron préstamos")
+            : Result<List<PrestamoDto?>>.Success(lista);
     }
 
-    public virtual Result<PrestamoDto> Eliminar(EliminarPrestamoComando comando)
+    public virtual Result<PrestamoDto?> Eliminar(EliminarPrestamoComando comando)
     {
         var validResult = ValidarEntrada(comando);
-        if (!validResult.IsSuccess) return Result<PrestamoDto>.Invalid(validResult.ValidationErrors.ToArray());
+        if (!validResult.IsSuccess) return Result<PrestamoDto?>.Invalid(validResult.ValidationErrors.ToArray());
 
         if (!_prestamoRepository.ExisteActivoPorId(comando.Id))
-            return Result<PrestamoDto>.NotFound("El préstamo no fue encontrado");
+            return Result<PrestamoDto?>.NotFound("El préstamo no fue encontrado");
 
         var result = _prestamoRepository.Eliminar(comando);
         return result;
@@ -153,7 +153,7 @@ public class PrestamoService : BaseServicios, IPrestamoService
             : Result<EliminarPrestamoComando>.Success(comando!);
     }
 
-    protected override BaseDto MapearFilaADto(DataRow fila)
+    protected override Dto MapearFilaADto(DataRow fila)
     {
         return new PrestamoDto
         {

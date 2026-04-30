@@ -5,7 +5,7 @@ using IMT_Reservas.Server.Shared.Common;
 namespace IMT_Reservas.Tests.ControllerTests
 {
     [TestFixture]
-    public class AccesorioControllerTest : IAccesorioControllerTest
+    public class AccesorioControllerTest
     {
         private Mock<IAccesorioService> _accesorioServiceMock;
         private AccesorioController _accesoriosController;

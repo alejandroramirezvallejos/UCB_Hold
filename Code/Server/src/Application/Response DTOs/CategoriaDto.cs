@@ -1,4 +1,4 @@
-public class CategoriaDto : BaseDto
+public class CategoriaDto : Dto
 {
     public string? Nombre { get; set; }
 }

@@ -1,7 +1,7 @@
 using System.Data;
 using Ardalis.Result;
 
-public class ComponenteService : BaseServicios, IComponenteService
+public class ComponenteService : Service
 {
     private readonly IComponenteRepository _componenteRepository;
 
@@ -10,24 +10,24 @@ public class ComponenteService : BaseServicios, IComponenteService
         _componenteRepository = componenteRepository;
     }
 
-    public virtual Result<ComponenteDto> Crear(CrearComponenteComando comando)
+    public virtual Result<ComponenteDto?> Crear(CrearComponenteComando comando)
     {
         var validResult = ValidarEntrada(comando);
-        if (!validResult.IsSuccess) return Result<ComponenteDto>.Invalid(validResult.ValidationErrors.ToArray());
+        if (!validResult.IsSuccess) return Result<ComponenteDto?>.Invalid(validResult.ValidationErrors.ToArray());
 
         var idEquipo = _componenteRepository.ObtenerEquipoIdPorCodigoImt(comando.CodigoIMT!.Value);
         if (idEquipo == null)
-            return Result<ComponenteDto>.NotFound("El código IMT no fue encontrado");
+            return Result<ComponenteDto?>.NotFound("El código IMT no fue encontrado");
 
         var result = _componenteRepository.Crear(idEquipo.Value, comando);
         return result;
     }
 
-    public virtual Result<List<ComponenteDto>> ObtenerTodos()
+    public virtual Result<List<ComponenteDto?>> ObtenerTodos()
     {
         var repoResult = _componenteRepository.ObtenerTodos();
         if (!repoResult.IsSuccess)
-            return Result<List<ComponenteDto>>.Error("Error al obtener los componentes");
+            return Result<List<ComponenteDto?>>.Error("Error al obtener los componentes");
 
         var resultado = repoResult.Value;
         var lista = new List<ComponenteDto>(resultado.Rows.Count);
@@ -37,37 +37,37 @@ public class ComponenteService : BaseServicios, IComponenteService
             if (dto != null) lista.Add(dto);
         }
         return lista.Count == 0
-            ? Result<List<ComponenteDto>>.NotFound("No se encontraron componentes")
-            : Result<List<ComponenteDto>>.Success(lista);
+            ? Result<List<ComponenteDto?>>.NotFound("No se encontraron componentes")
+            : Result<List<ComponenteDto?>>.Success(lista);
     }
 
-    public virtual Result<ComponenteDto> Actualizar(ActualizarComponenteComando comando)
+    public virtual Result<ComponenteDto?> Actualizar(ActualizarComponenteComando comando)
     {
         var validResult = ValidarEntrada(comando);
-        if (!validResult.IsSuccess) return Result<ComponenteDto>.Invalid(validResult.ValidationErrors.ToArray());
+        if (!validResult.IsSuccess) return Result<ComponenteDto?>.Invalid(validResult.ValidationErrors.ToArray());
 
         if (!_componenteRepository.ExisteActivoPorId(comando.Id))
-            return Result<ComponenteDto>.NotFound("El componente no fue encontrado");
+            return Result<ComponenteDto?>.NotFound("El componente no fue encontrado");
 
         int? idEquipo = null;
         if (comando.CodigoIMT.HasValue && comando.CodigoIMT.Value > 0)
         {
             idEquipo = _componenteRepository.ObtenerEquipoIdPorCodigoImt(comando.CodigoIMT.Value);
             if (idEquipo == null)
-                return Result<ComponenteDto>.NotFound("El código IMT no fue encontrado");
+                return Result<ComponenteDto?>.NotFound("El código IMT no fue encontrado");
         }
 
         var result = _componenteRepository.Actualizar(idEquipo, comando);
         return result;
     }
 
-    public virtual Result<ComponenteDto> Eliminar(EliminarComponenteComando comando)
+    public virtual Result<ComponenteDto?> Eliminar(EliminarComponenteComando comando)
     {
         var validResult = ValidarEntrada(comando);
-        if (!validResult.IsSuccess) return Result<ComponenteDto>.Invalid(validResult.ValidationErrors.ToArray());
+        if (!validResult.IsSuccess) return Result<ComponenteDto?>.Invalid(validResult.ValidationErrors.ToArray());
 
         if (!_componenteRepository.ExisteActivoPorId(comando.Id))
-            return Result<ComponenteDto>.NotFound("El componente no fue encontrado");
+            return Result<ComponenteDto?>.NotFound("El componente no fue encontrado");
 
         var result = _componenteRepository.Eliminar(comando);
         return result;
@@ -142,7 +142,7 @@ public class ComponenteService : BaseServicios, IComponenteService
             : Result<EliminarComponenteComando>.Success(comando!);
     }
 
-    protected override BaseDto MapearFilaADto(DataRow fila) => new ComponenteDto
+    protected override Dto MapearFilaADto(DataRow fila) => new ComponenteDto
     {
         Id = Convert.ToInt32(fila["id_componente"]),
         Nombre = fila["nombre_componente"] == DBNull.Value ? null : fila["nombre_componente"].ToString(),

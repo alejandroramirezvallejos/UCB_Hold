@@ -1,7 +1,7 @@
 using System.Data;
 using Ardalis.Result;
 
-public class AccesorioService : BaseServicios, IAccesorioService
+public class AccesorioService : Service
 {
     private readonly IAccesorioRepository _accesorioRepository;
 
@@ -10,23 +10,23 @@ public class AccesorioService : BaseServicios, IAccesorioService
         _accesorioRepository = accesorioRepository;
     }
 
-    public virtual Result<AccesorioDto> Crear(CrearAccesorioComando comando)
+    public virtual Result<AccesorioDto?> Crear(CrearAccesorioComando comando)
     {
         var validResult = ValidarEntrada(comando);
-        if (!validResult.IsSuccess) return Result<AccesorioDto>.Invalid(validResult.ValidationErrors.ToArray());
+        if (!validResult.IsSuccess) return Result<AccesorioDto?>.Invalid(validResult.ValidationErrors.ToArray());
 
         var idEquipo = _accesorioRepository.ObtenerEquipoIdPorCodigoImt(comando.CodigoIMT!.Value);
         if (idEquipo == null)
-            return Result<AccesorioDto>.NotFound("El código IMT no fue encontrado");
+            return Result<AccesorioDto?>.NotFound("El código IMT no fue encontrado");
 
         var result = _accesorioRepository.Crear(idEquipo.Value, comando);
         return result;
     }
 
-    public virtual Result<List<AccesorioDto>> ObtenerTodos()
+    public virtual Result<List<AccesorioDto?>> ObtenerTodos()
     {
         var result = _accesorioRepository.ObtenerTodos();
-        if (!result.IsSuccess) return Result<List<AccesorioDto>>.Error("Error al obtener los accesorios");
+        if (!result.IsSuccess) return Result<List<AccesorioDto?>>.Error("Error al obtener los accesorios");
 
         var lista = new List<AccesorioDto>(result.Value.Rows.Count);
         foreach (DataRow row in result.Value.Rows)
@@ -37,37 +37,37 @@ public class AccesorioService : BaseServicios, IAccesorioService
         }
 
         return lista.Count == 0
-            ? Result<List<AccesorioDto>>.NotFound("No se encontró el registro especificado")
-            : Result<List<AccesorioDto>>.Success(lista);
+            ? Result<List<AccesorioDto?>>.NotFound("No se encontró el registro especificado")
+            : Result<List<AccesorioDto?>>.Success(lista);
     }
 
-    public virtual Result<AccesorioDto> Actualizar(ActualizarAccesorioComando comando)
+    public virtual Result<AccesorioDto?> Actualizar(ActualizarAccesorioComando comando)
     {
         var validResult = ValidarEntrada(comando);
-        if (!validResult.IsSuccess) return Result<AccesorioDto>.Invalid(validResult.ValidationErrors.ToArray());
+        if (!validResult.IsSuccess) return Result<AccesorioDto?>.Invalid(validResult.ValidationErrors.ToArray());
 
         if (!_accesorioRepository.ExisteActivoPorId(comando.Id))
-            return Result<AccesorioDto>.NotFound("No se encontró el registro especificado");
+            return Result<AccesorioDto?>.NotFound("No se encontró el registro especificado");
 
         int? idEquipo = null;
         if (comando.CodigoIMT > 0)
         {
             idEquipo = _accesorioRepository.ObtenerEquipoIdPorCodigoImt(comando.CodigoIMT!.Value);
             if (idEquipo == null)
-                return Result<AccesorioDto>.NotFound("El código IMT no fue encontrado");
+                return Result<AccesorioDto?>.NotFound("El código IMT no fue encontrado");
         }
 
         var result = _accesorioRepository.Actualizar(idEquipo, comando);
         return result;
     }
 
-    public virtual Result<AccesorioDto> Eliminar(EliminarAccesorioComando comando)
+    public virtual Result<AccesorioDto?> Eliminar(EliminarAccesorioComando comando)
     {
         var validResult = ValidarEntrada(comando);
-        if (!validResult.IsSuccess) return Result<AccesorioDto>.Invalid(validResult.ValidationErrors.ToArray());
+        if (!validResult.IsSuccess) return Result<AccesorioDto?>.Invalid(validResult.ValidationErrors.ToArray());
 
         if (!_accesorioRepository.ExisteActivoPorId(comando.Id))
-            return Result<AccesorioDto>.NotFound("No se encontró el registro especificado");
+            return Result<AccesorioDto?>.NotFound("No se encontró el registro especificado");
 
         var result = _accesorioRepository.Eliminar(comando);
         return result;
@@ -83,7 +83,7 @@ public class AccesorioService : BaseServicios, IAccesorioService
         if (string.IsNullOrWhiteSpace(comando?.Nombre))
             errors.Add(new("Nombre", "El nombre es requerido"));
 
-        if (comando?.Nombre.Length > 256)
+        if (comando?.Nombre?.Length > 256)
             errors.Add(new("Nombre", "El nombre no puede tener más de 256 caracteres"));
 
         if (string.IsNullOrWhiteSpace(comando?.Modelo))
@@ -139,7 +139,7 @@ public class AccesorioService : BaseServicios, IAccesorioService
             : Result<EliminarAccesorioComando>.Success(comando!);
     }
 
-    protected override BaseDto MapearFilaADto(DataRow fila)
+    protected override Dto MapearFilaADto(DataRow fila)
     {
         return new AccesorioDto
         {

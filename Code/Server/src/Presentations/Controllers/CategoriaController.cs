@@ -7,29 +7,29 @@ using Ardalis.Result.AspNetCore;
 [TranslateResultToActionResult]
 public class CategoriaController : ControllerBase
 {
-    private readonly ICategoriaService _servicio;
-    public CategoriaController(ICategoriaService servicio) => _servicio = servicio;
+    private readonly CategoriaService _servicio;
+    public CategoriaController(CategoriaService servicio) => _servicio = servicio;
 
     [HttpPost]
-    public Result<CategoriaDto> Crear([FromBody] CrearCategoriaComando input)
+    public Result<CategoriaDto?> Crear([FromBody] CrearCategoriaComando input)
     {
         return _servicio.Crear(input);
     }
 
     [HttpGet]
-    public Result<List<CategoriaDto>> ObtenerTodos()
+    public Result<List<CategoriaDto?>> ObtenerTodos()
     {
         return _servicio.ObtenerTodos();
     }
 
     [HttpPut]
-    public Result<CategoriaDto> Actualizar([FromBody] ActualizarCategoriaComando input)
+    public Result<CategoriaDto?> Actualizar([FromBody] ActualizarCategoriaComando input)
     {
         return _servicio.Actualizar(input);
     }
 
     [HttpDelete("{id}")]
-    public Result<CategoriaDto> Eliminar(int id)
+    public Result<CategoriaDto?> Eliminar(int id)
     {
         return _servicio.Eliminar(new EliminarCategoriaComando(id));
     }

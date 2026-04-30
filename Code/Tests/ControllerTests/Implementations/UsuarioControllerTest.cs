@@ -5,7 +5,7 @@ using Microsoft.AspNetCore.Mvc;
 namespace IMT_Reservas.Tests.ControllerTests
 {
     [TestFixture]
-    public class UsuarioControllerTest : IUsuarioControllerTest
+    public class UsuarioControllerTest
     {
         private Mock<IUsuarioService> _usuarioServiceMock;
         private UsuarioController _usuariosController;

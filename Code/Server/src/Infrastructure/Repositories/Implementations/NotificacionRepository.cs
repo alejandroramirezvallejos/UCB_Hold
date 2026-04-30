@@ -9,7 +9,7 @@ public class NotificacionRepository : INotificacionRepository
     private readonly IMongoCollection<BsonDocument> _coleccion;
     public NotificacionRepository(MongoDbContexto contexto) => _coleccion = contexto.BaseDeDatos.GetCollection<BsonDocument>("notificaciones");
 
-    public Result<NotificacionDto> Crear(CrearNotificacionComando comando)
+    public Result<NotificacionDto?> Crear(CrearNotificacionComando comando)
     {
         var doc = new BsonDocument
         {
@@ -22,18 +22,18 @@ public class NotificacionRepository : INotificacionRepository
         };
         _coleccion.InsertOne(doc);
         var dto = new NotificacionDto { Titulo = comando.Titulo, Contenido = comando.Contenido };
-        return Result<NotificacionDto>.Created(dto);
+        return Result<NotificacionDto?>.Created(dto);
     }
 
-    public Result<NotificacionDto> Eliminar(EliminarNotificacionComando comando)
+    public Result<NotificacionDto?> Eliminar(EliminarNotificacionComando comando)
     {
         if (!ObjectId.TryParse(comando.Id, out var objectId))
-            return Result<NotificacionDto>.NotFound("ID de notificación inválido");
+            return Result<NotificacionDto?>.NotFound("ID de notificación inválido");
 
         var filtro = new BsonDocument { ["_id"] = objectId };
         var actualizacion = Builders<BsonDocument>.Update.Set("EstadoEliminado", true);
         var res = _coleccion.UpdateOne(filtro, actualizacion);
-        return res.MatchedCount == 0 ? Result<NotificacionDto>.NotFound("No se encontró la notificación") : Result<NotificacionDto>.Success(new NotificacionDto { Id = comando.Id });
+        return res.MatchedCount == 0 ? Result<NotificacionDto?>.NotFound("No se encontró la notificación") : Result<NotificacionDto?>.Success(new NotificacionDto { Id = comando.Id });
     }
 
     public DataTable ObtenerPorUsuario(ObtenerNotificacionPorCarnetUsuarioConsulta consulta)

@@ -5,7 +5,7 @@ using IMT_Reservas.Server.Shared.Common;
 namespace IMT_Reservas.Tests.ControllerTests.Tests
 {
     [TestFixture]
-    public class CarreraControllerTest : ICarreraControllerTest
+    public class CarreraControllerTest
     {
         private Mock<ICarreraService> _carreraServiceMock;
         private CarreraController _carrerasController;

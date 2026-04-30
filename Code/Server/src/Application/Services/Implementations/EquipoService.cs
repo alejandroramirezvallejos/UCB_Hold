@@ -1,7 +1,7 @@
 using System.Data;
 using Ardalis.Result;
 
-public class EquipoService : BaseServicios, IEquipoService
+public class EquipoService : Service
 {
     private readonly IEquipoRepository _equipoRepository;
     private readonly IGrupoEquipoRepository _grupoEquipoRepository;
@@ -12,27 +12,27 @@ public class EquipoService : BaseServicios, IEquipoService
         _grupoEquipoRepository = grupoEquipoRepository;
     }
 
-    public Result<EquipoDto> Crear(CrearEquipoComando comando)
+    public Result<EquipoDto?> Crear(CrearEquipoComando comando)
     {
         var validResult = ValidarEntrada(comando);
-        if (!validResult.IsSuccess) return Result<EquipoDto>.Invalid(validResult.ValidationErrors.ToArray());
+        if (!validResult.IsSuccess) return Result<EquipoDto?>.Invalid(validResult.ValidationErrors.ToArray());
 
         var idGrupoEquipo = _equipoRepository.ObtenerGrupoEquipoIdPorNombreModeloMarca(
             comando.NombreGrupoEquipo!, comando.Modelo!, comando.Marca!);
         if (idGrupoEquipo == null)
-            return Result<EquipoDto>.NotFound("El grupo de equipo no fue encontrado");
+            return Result<EquipoDto?>.NotFound("El grupo de equipo no fue encontrado");
 
         int? idGavetero = null;
         if (!string.IsNullOrWhiteSpace(comando.NombreGavetero))
         {
             idGavetero = _equipoRepository.ObtenerGaveteroIdPorNombre(comando.NombreGavetero);
             if (idGavetero == null)
-                return Result<EquipoDto>.NotFound("El gavetero no fue encontrado");
+                return Result<EquipoDto?>.NotFound("El gavetero no fue encontrado");
         }
 
         var idCategoria = _equipoRepository.ObtenerCategoriaIdPorGrupoEquipoId(idGrupoEquipo.Value);
         if (idCategoria == null)
-            return Result<EquipoDto>.NotFound("La categoría no fue encontrada");
+            return Result<EquipoDto?>.NotFound("La categoría no fue encontrada");
 
         var codigoImt = _equipoRepository.GenerarCodigoImt(idCategoria.Value);
 
@@ -40,14 +40,14 @@ public class EquipoService : BaseServicios, IEquipoService
         _grupoEquipoRepository.ActualizarCantidad(idGrupoEquipo.Value, 1);
         _grupoEquipoRepository.ActualizarCostoPromedio(idGrupoEquipo.Value);
 
-        return Result<EquipoDto>.Success(null);
+        return Result<EquipoDto?>.Success(null);
     }
 
-    public Result<List<EquipoDto>> ObtenerTodos()
+    public Result<List<EquipoDto?>> ObtenerTodos()
     {
         var repoResult = _equipoRepository.ObtenerTodos();
         if (!repoResult.IsSuccess)
-            return Result<List<EquipoDto>>.Error("Error al obtener los equipos");
+            return Result<List<EquipoDto?>>.Error("Error al obtener los equipos");
 
         var resultado = repoResult.Value;
         var lista = new List<EquipoDto>(resultado.Rows.Count);
@@ -57,17 +57,17 @@ public class EquipoService : BaseServicios, IEquipoService
             if (dto != null) lista.Add(dto);
         }
         return lista.Count == 0
-            ? Result<List<EquipoDto>>.NotFound("No se encontraron equipos")
-            : Result<List<EquipoDto>>.Success(lista);
+            ? Result<List<EquipoDto?>>.NotFound("No se encontraron equipos")
+            : Result<List<EquipoDto?>>.Success(lista);
     }
 
-    public Result<EquipoDto> Actualizar(ActualizarEquipoComando comando)
+    public Result<EquipoDto?> Actualizar(ActualizarEquipoComando comando)
     {
         var validResult = ValidarEntrada(comando);
-        if (!validResult.IsSuccess) return Result<EquipoDto>.Invalid(validResult.ValidationErrors.ToArray());
+        if (!validResult.IsSuccess) return Result<EquipoDto?>.Invalid(validResult.ValidationErrors.ToArray());
 
         if (!_equipoRepository.ExisteActivoPorId(comando.Id))
-            return Result<EquipoDto>.NotFound("El equipo no fue encontrado");
+            return Result<EquipoDto?>.NotFound("El equipo no fue encontrado");
 
         var grupoActualId = _equipoRepository.ObtenerGrupoEquipoIdPorEquipoId(comando.Id);
 
@@ -78,7 +78,7 @@ public class EquipoService : BaseServicios, IEquipoService
         {
             nuevoIdGavetero = _equipoRepository.ObtenerGaveteroIdPorNombre(comando.NombreGavetero);
             if (nuevoIdGavetero == null)
-                return Result<EquipoDto>.NotFound("El gavetero no fue encontrado");
+                return Result<EquipoDto?>.NotFound("El gavetero no fue encontrado");
         }
 
         if (!string.IsNullOrWhiteSpace(comando.EstadoEquipo))
@@ -89,7 +89,7 @@ public class EquipoService : BaseServicios, IEquipoService
                 _ => false
             };
             if (!isValidState)
-                return Result<EquipoDto>.Invalid(new ValidationError("EstadoEquipo", "Estado de equipo inválido"));
+                return Result<EquipoDto?>.Invalid(new ValidationError("EstadoEquipo", "Estado de equipo inválido"));
         }
 
         _equipoRepository.Actualizar(nuevoIdGrupoEquipo, nuevoIdGavetero, comando);
@@ -104,16 +104,16 @@ public class EquipoService : BaseServicios, IEquipoService
             _grupoEquipoRepository.ActualizarCostoPromedio(nuevoIdGrupoEquipo.Value);
         }
 
-        return Result<EquipoDto>.Success(null);
+        return Result<EquipoDto?>.Success(null);
     }
 
-    public Result<EquipoDto> Eliminar(EliminarEquipoComando comando)
+    public Result<EquipoDto?> Eliminar(EliminarEquipoComando comando)
     {
         var validResult = ValidarEntrada(comando);
-        if (!validResult.IsSuccess) return Result<EquipoDto>.Invalid(validResult.ValidationErrors.ToArray());
+        if (!validResult.IsSuccess) return Result<EquipoDto?>.Invalid(validResult.ValidationErrors.ToArray());
 
         if (!_equipoRepository.ExisteActivoPorId(comando.Id))
-            return Result<EquipoDto>.NotFound("El equipo no fue encontrado");
+            return Result<EquipoDto?>.NotFound("El equipo no fue encontrado");
 
         var grupoActualId = _equipoRepository.ObtenerGrupoEquipoIdPorEquipoId(comando.Id);
 
@@ -125,7 +125,7 @@ public class EquipoService : BaseServicios, IEquipoService
             _grupoEquipoRepository.ActualizarCostoPromedio(grupoActualId.Value);
         }
 
-        return Result<EquipoDto>.Success(null);
+        return Result<EquipoDto?>.Success(null);
     }
 
     private Result<CrearEquipoComando> ValidarEntrada(CrearEquipoComando comando)
@@ -191,7 +191,7 @@ public class EquipoService : BaseServicios, IEquipoService
             : Result<EliminarEquipoComando>.Success(comando!);
     }
 
-    protected override BaseDto MapearFilaADto(DataRow fila) => new EquipoDto
+    protected override Dto MapearFilaADto(DataRow fila) => new EquipoDto
     {
         Id = Convert.ToInt32(fila["id_equipo"]),
         NombreGrupoEquipo = fila["nombre_grupo_equipo"] == DBNull.Value ? null : fila["nombre_grupo_equipo"].ToString(),

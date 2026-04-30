@@ -1,7 +1,7 @@
 using System.Data;
 using Ardalis.Result;
 
-public class MantenimientoService : BaseServicios, IMantenimientoService
+public class MantenimientoService : Service
 {
     private readonly IMantenimientoRepository _mantenimientoRepository;
 
@@ -10,21 +10,21 @@ public class MantenimientoService : BaseServicios, IMantenimientoService
         _mantenimientoRepository = mantenimientoRepository;
     }
 
-    public virtual Result<MantenimientoDto> Crear(CrearMantenimientoComando comando)
+    public virtual Result<MantenimientoDto?> Crear(CrearMantenimientoComando comando)
     {
         var validResult = ValidarEntrada(comando);
-        if (!validResult.IsSuccess) return Result<MantenimientoDto>.Invalid(validResult.ValidationErrors.ToArray());
+        if (!validResult.IsSuccess) return Result<MantenimientoDto?>.Invalid(validResult.ValidationErrors.ToArray());
 
         var idEmpresa = _mantenimientoRepository.ObtenerEmpresaIdPorNombre(comando.NombreEmpresaMantenimiento!);
         if (idEmpresa == null)
-            return Result<MantenimientoDto>.NotFound("La empresa de mantenimiento no fue encontrada");
+            return Result<MantenimientoDto?>.NotFound("La empresa de mantenimiento no fue encontrada");
 
         var equipoIds = new int[comando.CodigoIMT!.Length];
         for (int i = 0; i < comando.CodigoIMT.Length; i++)
         {
             var idEquipo = _mantenimientoRepository.ObtenerEquipoIdPorCodigoImt(comando.CodigoIMT[i]);
             if (idEquipo == null)
-                return Result<MantenimientoDto>.NotFound("El código IMT no fue encontrado");
+                return Result<MantenimientoDto?>.NotFound("El código IMT no fue encontrado");
             equipoIds[i] = idEquipo.Value;
         }
 
@@ -39,14 +39,14 @@ public class MantenimientoService : BaseServicios, IMantenimientoService
             _mantenimientoRepository.CrearDetalleMantenimiento(idMantenimiento, equipoIds[i], tipo, desc);
         }
 
-        return Result<MantenimientoDto>.Success(null);
+        return Result<MantenimientoDto?>.Success(null);
     }
 
-    public virtual Result<List<MantenimientoDto>> ObtenerTodos()
+    public virtual Result<List<MantenimientoDto?>> ObtenerTodos()
     {
         var repoResult = _mantenimientoRepository.ObtenerTodos();
         if (!repoResult.IsSuccess)
-            return Result<List<MantenimientoDto>>.Error("Error al obtener los mantenimientos");
+            return Result<List<MantenimientoDto?>>.Error("Error al obtener los mantenimientos");
 
         var resultado = repoResult.Value;
         var lista = new List<MantenimientoDto>(resultado.Rows.Count);
@@ -56,17 +56,17 @@ public class MantenimientoService : BaseServicios, IMantenimientoService
             if (dto != null) lista.Add(dto);
         }
         return lista.Count == 0
-            ? Result<List<MantenimientoDto>>.NotFound("No se encontraron mantenimientos")
-            : Result<List<MantenimientoDto>>.Success(lista);
+            ? Result<List<MantenimientoDto?>>.NotFound("No se encontraron mantenimientos")
+            : Result<List<MantenimientoDto?>>.Success(lista);
     }
 
-    public virtual Result<MantenimientoDto> Eliminar(EliminarMantenimientoComando comando)
+    public virtual Result<MantenimientoDto?> Eliminar(EliminarMantenimientoComando comando)
     {
         var validResult = ValidarEntrada(comando);
-        if (!validResult.IsSuccess) return Result<MantenimientoDto>.Invalid(validResult.ValidationErrors.ToArray());
+        if (!validResult.IsSuccess) return Result<MantenimientoDto?>.Invalid(validResult.ValidationErrors.ToArray());
 
         if (!_mantenimientoRepository.ExisteActivoPorId(comando.Id))
-            return Result<MantenimientoDto>.NotFound("El mantenimiento no fue encontrado");
+            return Result<MantenimientoDto?>.NotFound("El mantenimiento no fue encontrado");
 
         var result = _mantenimientoRepository.Eliminar(comando);
         return result;
@@ -126,7 +126,7 @@ public class MantenimientoService : BaseServicios, IMantenimientoService
             : Result<EliminarMantenimientoComando>.Success(comando!);
     }
 
-    protected override BaseDto MapearFilaADto(DataRow fila)
+    protected override Dto MapearFilaADto(DataRow fila)
     {
         return new MantenimientoDto
         {

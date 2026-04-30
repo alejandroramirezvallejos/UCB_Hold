@@ -6,7 +6,7 @@ public class UsuarioRepository : IUsuarioRepository
     private readonly IExecuteQuery _ejecutarConsulta;
     public UsuarioRepository(IExecuteQuery ejecutarConsulta) => _ejecutarConsulta = ejecutarConsulta;
 
-    public Result<UsuarioDto> Crear(int idCarrera, CrearUsuarioComando comando)
+    public Result<UsuarioDto?> Crear(int idCarrera, CrearUsuarioComando comando)
     {
         const string sql = @"INSERT INTO public.usuarios (carnet, nombre, apellido_paterno, apellido_materno, rol, email, contrasena, id_carrera, telefono, telefono_referencia, nombre_referencia, email_referencia, estado_eliminado)
                              VALUES (@carnet, @nombre, @apellidoPaterno, @apellidoMaterno, @rol::tipo_usuario, @email, @contrasena, @idCarrera, @telefono, @telefonoReferencia, @nombreReferencia, @emailReferencia, FALSE)";
@@ -27,13 +27,13 @@ public class UsuarioRepository : IUsuarioRepository
         };
         _ejecutarConsulta.EjecutarSpNR(sql, parametros);
         var dto = new UsuarioDto { Carnet = comando.Carnet, Nombre = comando.Nombre };
-        return Result<UsuarioDto>.Created(dto);
+        return Result<UsuarioDto?>.Created(dto);
     }
 
-    public Result<UsuarioDto> Crear(CrearUsuarioComando comando)
-        => Result<UsuarioDto>.Error("Use Crear(int idCarrera, CrearUsuarioComando comando)");
+    public Result<UsuarioDto?> Crear(CrearUsuarioComando comando)
+        => Result<UsuarioDto?>.Error("Use Crear(int idCarrera, CrearUsuarioComando comando)");
 
-    public Result<UsuarioDto> Actualizar(int? idCarrera, ActualizarUsuarioComando comando)
+    public Result<UsuarioDto?> Actualizar(int? idCarrera, ActualizarUsuarioComando comando)
     {
         const string sql = @"UPDATE public.usuarios SET
             nombre = COALESCE(@nombre, nombre),
@@ -65,18 +65,18 @@ public class UsuarioRepository : IUsuarioRepository
         };
         _ejecutarConsulta.EjecutarSpNR(sql, parametros);
         var dto = new UsuarioDto { Carnet = comando.Carnet, Nombre = comando.Nombre };
-        return Result<UsuarioDto>.Success(dto);
+        return Result<UsuarioDto?>.Success(dto);
     }
 
-    public Result<UsuarioDto> Actualizar(ActualizarUsuarioComando comando)
+    public Result<UsuarioDto?> Actualizar(ActualizarUsuarioComando comando)
         => Actualizar(null, comando);
 
-    public Result<UsuarioDto> Eliminar(EliminarUsuarioComando comando)
+    public Result<UsuarioDto?> Eliminar(EliminarUsuarioComando comando)
     {
         const string sql = @"UPDATE public.usuarios SET estado_eliminado = TRUE WHERE carnet = @carnet";
         var parametros = new Dictionary<string, object?> { ["carnet"] = comando.Carnet };
         _ejecutarConsulta.EjecutarSpNR(sql, parametros);
-        return Result<UsuarioDto>.Success(new UsuarioDto { Carnet = comando.Carnet });
+        return Result<UsuarioDto?>.Success(new UsuarioDto { Carnet = comando.Carnet });
     }
 
     public Result<DataTable> ObtenerTodos()

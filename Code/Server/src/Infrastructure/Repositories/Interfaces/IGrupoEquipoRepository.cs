@@ -3,11 +3,11 @@ using Ardalis.Result;
 
 public interface IGrupoEquipoRepository
 {
-    Result<GrupoEquipoDto> Crear(CrearGrupoEquipoComando comando);
-    Result<GrupoEquipoDto> Crear(int idCategoria, CrearGrupoEquipoComando comando);
-    Result<GrupoEquipoDto> Actualizar(ActualizarGrupoEquipoComando comando);
-    Result<GrupoEquipoDto> Actualizar(int? idCategoria, ActualizarGrupoEquipoComando comando);
-    Result<GrupoEquipoDto> Eliminar(EliminarGrupoEquipoComando comando);
+    Result<GrupoEquipoDto?> Crear(CrearGrupoEquipoComando comando);
+    Result<GrupoEquipoDto?> Crear(int idCategoria, CrearGrupoEquipoComando comando);
+    Result<GrupoEquipoDto?> Actualizar(ActualizarGrupoEquipoComando comando);
+    Result<GrupoEquipoDto?> Actualizar(int? idCategoria, ActualizarGrupoEquipoComando comando);
+    Result<GrupoEquipoDto?> Eliminar(EliminarGrupoEquipoComando comando);
     Result<DataTable> ObtenerTodos();
     bool ExisteActivoPorId(int id);
     bool ExisteDuplicadoPorNombreModeloMarca(string nombre, string modelo, string marca);

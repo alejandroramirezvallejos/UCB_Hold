@@ -1,4 +1,4 @@
-public class EmpresaMantenimientoDto : BaseDto
+public class EmpresaMantenimientoDto : Dto
 {
     public string? NombreEmpresa { get; set; }
     public string? NombreResponsable { get; set; }

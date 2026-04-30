@@ -1,4 +1,4 @@
-public class PrestamoDto : BaseDto
+public class PrestamoDto : Dto
 {
     public string? CarnetUsuario { get; set; }
     public string? NombreUsuario { get; set; }

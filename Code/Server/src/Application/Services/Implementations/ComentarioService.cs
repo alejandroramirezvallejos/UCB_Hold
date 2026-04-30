@@ -1,7 +1,7 @@
 using System.Data;
 using Ardalis.Result;
 
-public class ComentarioService : BaseServicios, IComentarioService
+public class ComentarioService : Service
 {
     private readonly IComentarioRepository _comentarioRepository;
     private readonly IUsuarioRepository _usuarioRepository;
@@ -12,10 +12,10 @@ public class ComentarioService : BaseServicios, IComentarioService
         _usuarioRepository = usuarioRepository;
     }
 
-    public Result<ComentarioDto> Crear(CrearComentarioComando comando)
+    public Result<ComentarioDto?> Crear(CrearComentarioComando comando)
     {
         var validResult = ValidarEntrada(comando);
-        if (!validResult.IsSuccess) return Result<ComentarioDto>.Invalid(validResult.ValidationErrors.ToArray());
+        if (!validResult.IsSuccess) return Result<ComentarioDto?>.Invalid(validResult.ValidationErrors.ToArray());
 
         var result = _comentarioRepository.Crear(comando);
         return result;
@@ -94,10 +94,10 @@ public class ComentarioService : BaseServicios, IComentarioService
         return lista;
     }
 
-    public Result<ComentarioDto> Eliminar(EliminarComentarioComando comando)
+    public Result<ComentarioDto?> Eliminar(EliminarComentarioComando comando)
     {
         var validResult = ValidarEntradaEliminar(comando);
-        if (!validResult.IsSuccess) return Result<ComentarioDto>.Invalid(validResult.ValidationErrors.ToArray());
+        if (!validResult.IsSuccess) return Result<ComentarioDto?>.Invalid(validResult.ValidationErrors.ToArray());
 
         var result = _comentarioRepository.Eliminar(comando);
         return result;
@@ -136,7 +136,7 @@ public class ComentarioService : BaseServicios, IComentarioService
         _comentarioRepository.QuitarLike(comando);
     }
 
-    protected override BaseDto MapearFilaADto(DataRow fila)
+    protected override Dto MapearFilaADto(DataRow fila)
     {
         return new ComentarioDto
         {
