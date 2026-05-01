@@ -1,7 +1,7 @@
 using System.Data;
 using Ardalis.Result;
 
-public class GaveteroService : Service
+public class GaveteroService : Service<GaveteroDto>, ICrud<GaveteroDto, CrearGaveteroComando, ActualizarGaveteroComando, EliminarGaveteroComando>
 {
     private readonly IGaveteroRepository _gaveteroRepository;
     private readonly IMuebleRepository _muebleRepository;
@@ -12,10 +12,11 @@ public class GaveteroService : Service
         _muebleRepository = muebleRepository;
     }
 
-    public virtual Result<GaveteroDto?> Crear(CrearGaveteroComando comando)
+    public Result<GaveteroDto?> Crear(CrearGaveteroComando comando)
     {
         var validResult = ValidarEntrada(comando);
-        if (!validResult.IsSuccess) return Result<GaveteroDto?>.Invalid(validResult.ValidationErrors.ToArray());
+        if (!validResult.IsSuccess)
+            return Result<GaveteroDto?>.Invalid(validResult.ValidationErrors.ToArray());
 
         var idMueble = _gaveteroRepository.ObtenerMuebleIdPorNombre(comando.NombreMueble!);
         if (idMueble == null)
@@ -30,37 +31,18 @@ public class GaveteroService : Service
         return Result<GaveteroDto?>.Success(null);
     }
 
-    public virtual Result<List<GaveteroDto?>> ObtenerTodos()
-    {
-        var repoResult = _gaveteroRepository.ObtenerTodos();
-        if (!repoResult.IsSuccess)
-            return Result<List<GaveteroDto?>>.Error("Error al obtener los gaveteros");
-
-        var resultado = repoResult.Value;
-        var lista = new List<GaveteroDto>(resultado.Rows.Count);
-        foreach (DataRow fila in resultado.Rows)
-        {
-            var dto = MapearFilaADto(fila) as GaveteroDto;
-            if (dto != null) lista.Add(dto);
-        }
-        return lista.Count == 0
-            ? Result<List<GaveteroDto?>>.NotFound("No se encontraron gaveteros")
-            : Result<List<GaveteroDto?>>.Success(lista);
-    }
-
-    public virtual Result<GaveteroDto?> Actualizar(ActualizarGaveteroComando comando)
+    public Result<GaveteroDto?> Actualizar(ActualizarGaveteroComando comando)
     {
         var validResult = ValidarEntrada(comando);
-        if (!validResult.IsSuccess) return Result<GaveteroDto?>.Invalid(validResult.ValidationErrors.ToArray());
+        if (!validResult.IsSuccess)
+            return Result<GaveteroDto?>.Invalid(validResult.ValidationErrors.ToArray());
 
         if (!_gaveteroRepository.ExisteActivoPorId(comando.Id))
             return Result<GaveteroDto?>.NotFound("El gavetero no fue encontrado");
 
         if (!string.IsNullOrWhiteSpace(comando.Nombre))
-        {
             if (_gaveteroRepository.ExisteActivoPorNombreExcluyendoId(comando.Nombre, comando.Id))
                 return Result<GaveteroDto?>.Conflict("Ya existe otro gavetero activo con ese nombre");
-        }
 
         int? nuevoIdMueble = null;
         int? viejoIdMueble = null;
@@ -85,10 +67,11 @@ public class GaveteroService : Service
         return Result<GaveteroDto?>.Success(null);
     }
 
-    public virtual Result<GaveteroDto?> Eliminar(EliminarGaveteroComando comando)
+    public Result<GaveteroDto?> Eliminar(EliminarGaveteroComando comando)
     {
         var validResult = ValidarEntrada(comando);
-        if (!validResult.IsSuccess) return Result<GaveteroDto?>.Invalid(validResult.ValidationErrors.ToArray());
+        if (!validResult.IsSuccess)
+            return Result<GaveteroDto?>.Invalid(validResult.ValidationErrors.ToArray());
 
         if (!_gaveteroRepository.ExisteActivoPorId(comando.Id))
             return Result<GaveteroDto?>.NotFound("El gavetero no fue encontrado");
@@ -101,6 +84,14 @@ public class GaveteroService : Service
             _muebleRepository.ActualizarNumeroGaveteros(idMueble.Value, -1);
 
         return Result<GaveteroDto?>.Success(null);
+    }
+
+    protected override Result<DataTable> ObtenerDataTable()
+    {
+        var result = _gaveteroRepository.ObtenerTodos();
+        if (!result.IsSuccess)
+            return Result<DataTable>.Error("Error al obtener los gaveteros");
+        return result;
     }
 
     private Result<CrearGaveteroComando> ValidarEntrada(CrearGaveteroComando comando)
@@ -175,33 +166,14 @@ public class GaveteroService : Service
             : Result<EliminarGaveteroComando>.Success(comando!);
     }
 
-    public virtual List<GaveteroDto>? ObtenerTodosList()
+    protected override Dto MapearFilaADto(DataRow fila) => new GaveteroDto
     {
-        try
-        {
-            DataTable resultado = _gaveteroRepository.ObtenerTodos();
-            var lista = new List<GaveteroDto>(resultado.Rows.Count);
-            foreach (DataRow fila in resultado.Rows)
-            {
-                var dto = MapearFilaADto(fila) as GaveteroDto;
-                if (dto != null) lista.Add(dto);
-            }
-            return lista;
-        }
-        catch { throw; }
-    }
-
-    protected override Dto MapearFilaADto(DataRow fila)
-    {
-        return new GaveteroDto
-        {
-            Id = Convert.ToInt32(fila["id_gavetero"]),
-            Nombre = fila["nombre_gavetero"] == DBNull.Value ? null : Convert.ToString(fila["nombre_gavetero"]),
-            Tipo = fila["tipo_gavetero"] == DBNull.Value ? null : Convert.ToString(fila["tipo_gavetero"]),
-            NombreMueble = fila["nombre_mueble"] == DBNull.Value ? null : Convert.ToString(fila["nombre_mueble"]),
-            Longitud = fila["longitud_gavetero"] == DBNull.Value ? null : Convert.ToDouble(fila["longitud_gavetero"]),
-            Profundidad = fila["profundidad_gavetero"] == DBNull.Value ? null : Convert.ToDouble(fila["profundidad_gavetero"]),
-            Altura = fila["altura_gavetero"] == DBNull.Value ? null : Convert.ToDouble(fila["altura_gavetero"])
-        };
-    }
+        Id = Convert.ToInt32(fila["id_gavetero"]),
+        Nombre = fila["nombre_gavetero"] == DBNull.Value ? null : Convert.ToString(fila["nombre_gavetero"]),
+        Tipo = fila["tipo_gavetero"] == DBNull.Value ? null : Convert.ToString(fila["tipo_gavetero"]),
+        NombreMueble = fila["nombre_mueble"] == DBNull.Value ? null : Convert.ToString(fila["nombre_mueble"]),
+        Longitud = fila["longitud_gavetero"] == DBNull.Value ? null : Convert.ToDouble(fila["longitud_gavetero"]),
+        Profundidad = fila["profundidad_gavetero"] == DBNull.Value ? null : Convert.ToDouble(fila["profundidad_gavetero"]),
+        Altura = fila["altura_gavetero"] == DBNull.Value ? null : Convert.ToDouble(fila["altura_gavetero"])
+    };
 }

@@ -1,19 +1,17 @@
 using System.Data;
 using Ardalis.Result;
 
-public class EmpresaMantenimientoService : Service
+public class EmpresaMantenimientoService : Service<EmpresaMantenimientoDto>, ICrud<EmpresaMantenimientoDto, CrearEmpresaMantenimientoComando, ActualizarEmpresaMantenimientoComando, EliminarEmpresaMantenimientoComando>
 {
     private readonly IEmpresaMantenimientoRepository _empresaRepository;
 
-    public EmpresaMantenimientoService(IEmpresaMantenimientoRepository empresaRepository)
-    {
-        _empresaRepository = empresaRepository;
-    }
+    public EmpresaMantenimientoService(IEmpresaMantenimientoRepository empresaRepository) => _empresaRepository = empresaRepository;
 
-    public virtual Result<EmpresaMantenimientoDto?> Crear(CrearEmpresaMantenimientoComando comando)
+    public Result<EmpresaMantenimientoDto?> Crear(CrearEmpresaMantenimientoComando comando)
     {
         var validResult = ValidarEntrada(comando);
-        if (!validResult.IsSuccess) return Result<EmpresaMantenimientoDto?>.Invalid(validResult.ValidationErrors.ToArray());
+        if (!validResult.IsSuccess)
+            return Result<EmpresaMantenimientoDto?>.Invalid(validResult.ValidationErrors.ToArray());
 
         if (_empresaRepository.ReactivarEliminadaPorNombre(comando.NombreEmpresa!))
             return Result<EmpresaMantenimientoDto?>.Success(null);
@@ -21,32 +19,22 @@ public class EmpresaMantenimientoService : Service
         if (_empresaRepository.ExisteActivaPorNombre(comando.NombreEmpresa!))
             return Result<EmpresaMantenimientoDto?>.Conflict("Ya existe una empresa de mantenimiento activa con este nombre");
 
-        var result = _empresaRepository.Crear(comando);
+        return _empresaRepository.Crear(comando);
+    }
+
+    protected override Result<DataTable> ObtenerDataTable()
+    {
+        var result = _empresaRepository.ObtenerTodos();
+        if (!result.IsSuccess)
+            return Result<DataTable>.Error("Error al obtener las empresas de mantenimiento");
         return result;
     }
 
-    public virtual Result<List<EmpresaMantenimientoDto?>> ObtenerTodos()
-    {
-        var repoResult = _empresaRepository.ObtenerTodos();
-        if (!repoResult.IsSuccess)
-            return Result<List<EmpresaMantenimientoDto?>>.Error("Error al obtener las empresas de mantenimiento");
-
-        var resultado = repoResult.Value;
-        var lista = new List<EmpresaMantenimientoDto>(resultado.Rows.Count);
-        foreach (DataRow fila in resultado.Rows)
-        {
-            var dto = MapearFilaADto(fila) as EmpresaMantenimientoDto;
-            if (dto != null) lista.Add(dto);
-        }
-        return lista.Count == 0
-            ? Result<List<EmpresaMantenimientoDto?>>.NotFound("No se encontraron empresas de mantenimiento")
-            : Result<List<EmpresaMantenimientoDto?>>.Success(lista);
-    }
-
-    public virtual Result<EmpresaMantenimientoDto?> Actualizar(ActualizarEmpresaMantenimientoComando comando)
+    public Result<EmpresaMantenimientoDto?> Actualizar(ActualizarEmpresaMantenimientoComando comando)
     {
         var validResult = ValidarEntrada(comando);
-        if (!validResult.IsSuccess) return Result<EmpresaMantenimientoDto?>.Invalid(validResult.ValidationErrors.ToArray());
+        if (!validResult.IsSuccess)
+            return Result<EmpresaMantenimientoDto?>.Invalid(validResult.ValidationErrors.ToArray());
 
         if (!_empresaRepository.ExisteActivaPorId(comando.Id))
             return Result<EmpresaMantenimientoDto?>.NotFound("La empresa de mantenimiento no fue encontrada");
@@ -63,20 +51,19 @@ public class EmpresaMantenimientoService : Service
             }
         }
 
-        var result = _empresaRepository.Actualizar(comando);
-        return result;
+        return _empresaRepository.Actualizar(comando);
     }
 
-    public virtual Result<EmpresaMantenimientoDto?> Eliminar(EliminarEmpresaMantenimientoComando comando)
+    public Result<EmpresaMantenimientoDto?> Eliminar(EliminarEmpresaMantenimientoComando comando)
     {
         var validResult = ValidarEntrada(comando);
-        if (!validResult.IsSuccess) return Result<EmpresaMantenimientoDto?>.Invalid(validResult.ValidationErrors.ToArray());
+        if (!validResult.IsSuccess)
+            return Result<EmpresaMantenimientoDto?>.Invalid(validResult.ValidationErrors.ToArray());
 
         if (!_empresaRepository.ExisteActivaPorId(comando.Id))
             return Result<EmpresaMantenimientoDto?>.NotFound("La empresa de mantenimiento no fue encontrada");
 
-        var result = _empresaRepository.Eliminar(comando);
-        return result;
+        return _empresaRepository.Eliminar(comando);
     }
 
     private Result<CrearEmpresaMantenimientoComando> ValidarEntrada(CrearEmpresaMantenimientoComando comando)
@@ -133,17 +120,14 @@ public class EmpresaMantenimientoService : Service
             : Result<EliminarEmpresaMantenimientoComando>.Success(comando!);
     }
 
-    protected override Dto MapearFilaADto(DataRow fila)
+    protected override Dto MapearFilaADto(DataRow fila) => new EmpresaMantenimientoDto
     {
-        return new EmpresaMantenimientoDto
-        {
-            Id = Convert.ToInt32(fila["id_empresa_mantenimiento"]),
-            NombreEmpresa = fila["nombre_empresa"] == DBNull.Value ? null : fila["nombre_empresa"].ToString(),
-            NombreResponsable = fila["nombre_responsable_empresa"] == DBNull.Value ? null : fila["nombre_responsable_empresa"].ToString(),
-            ApellidoResponsable = fila["apellido_responsable_empresa"] == DBNull.Value ? null : fila["apellido_responsable_empresa"].ToString(),
-            Telefono = fila["telefono_empresa"] == DBNull.Value ? null : fila["telefono_empresa"].ToString(),
-            Direccion = fila["direccion_empresa"] == DBNull.Value ? null : fila["direccion_empresa"].ToString(),
-            Nit = fila["nit_empresa"] == DBNull.Value ? null : fila["nit_empresa"].ToString()
-        };
-    }
+        Id = Convert.ToInt32(fila["id_empresa_mantenimiento"]),
+        NombreEmpresa = fila["nombre_empresa"] == DBNull.Value ? null : fila["nombre_empresa"].ToString(),
+        NombreResponsable = fila["nombre_responsable_empresa"] == DBNull.Value ? null : fila["nombre_responsable_empresa"].ToString(),
+        ApellidoResponsable = fila["apellido_responsable_empresa"] == DBNull.Value ? null : fila["apellido_responsable_empresa"].ToString(),
+        Telefono = fila["telefono_empresa"] == DBNull.Value ? null : fila["telefono_empresa"].ToString(),
+        Direccion = fila["direccion_empresa"] == DBNull.Value ? null : fila["direccion_empresa"].ToString(),
+        Nit = fila["nit_empresa"] == DBNull.Value ? null : fila["nit_empresa"].ToString()
+    };
 }

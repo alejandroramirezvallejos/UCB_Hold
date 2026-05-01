@@ -1,7 +1,7 @@
 using System.Data;
 using Ardalis.Result;
 
-public class EquipoService : Service
+public class EquipoService : Service<EquipoDto>, ICrud<EquipoDto, CrearEquipoComando, ActualizarEquipoComando, EliminarEquipoComando>
 {
     private readonly IEquipoRepository _equipoRepository;
     private readonly IGrupoEquipoRepository _grupoEquipoRepository;
@@ -43,22 +43,12 @@ public class EquipoService : Service
         return Result<EquipoDto?>.Success(null);
     }
 
-    public Result<List<EquipoDto?>> ObtenerTodos()
+    protected override Result<DataTable> ObtenerDataTable()
     {
-        var repoResult = _equipoRepository.ObtenerTodos();
-        if (!repoResult.IsSuccess)
-            return Result<List<EquipoDto?>>.Error("Error al obtener los equipos");
-
-        var resultado = repoResult.Value;
-        var lista = new List<EquipoDto>(resultado.Rows.Count);
-        foreach (DataRow fila in resultado.Rows)
-        {
-            var dto = MapearFilaADto(fila) as EquipoDto;
-            if (dto != null) lista.Add(dto);
-        }
-        return lista.Count == 0
-            ? Result<List<EquipoDto?>>.NotFound("No se encontraron equipos")
-            : Result<List<EquipoDto?>>.Success(lista);
+        var result = _equipoRepository.ObtenerTodos();
+        if (!result.IsSuccess)
+            return Result<DataTable>.Error("Error al obtener los equipos");
+        return result;
     }
 
     public Result<EquipoDto?> Actualizar(ActualizarEquipoComando comando)

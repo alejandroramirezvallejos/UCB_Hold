@@ -1,50 +1,30 @@
 using System.Data;
 using Ardalis.Result;
 
-public class ComponenteService : Service
+public class ComponenteService : Service<ComponenteDto>, ICrud<ComponenteDto, CrearComponenteComando, ActualizarComponenteComando, EliminarComponenteComando>
 {
     private readonly IComponenteRepository _componenteRepository;
 
-    public ComponenteService(IComponenteRepository componenteRepository)
-    {
-        _componenteRepository = componenteRepository;
-    }
+    public ComponenteService(IComponenteRepository componenteRepository) => _componenteRepository = componenteRepository;
 
-    public virtual Result<ComponenteDto?> Crear(CrearComponenteComando comando)
+    public Result<ComponenteDto?> Crear(CrearComponenteComando comando)
     {
         var validResult = ValidarEntrada(comando);
-        if (!validResult.IsSuccess) return Result<ComponenteDto?>.Invalid(validResult.ValidationErrors.ToArray());
+        if (!validResult.IsSuccess)
+            return Result<ComponenteDto?>.Invalid(validResult.ValidationErrors.ToArray());
 
         var idEquipo = _componenteRepository.ObtenerEquipoIdPorCodigoImt(comando.CodigoIMT!.Value);
         if (idEquipo == null)
             return Result<ComponenteDto?>.NotFound("El código IMT no fue encontrado");
 
-        var result = _componenteRepository.Crear(idEquipo.Value, comando);
-        return result;
+        return _componenteRepository.Crear(idEquipo.Value, comando);
     }
 
-    public virtual Result<List<ComponenteDto?>> ObtenerTodos()
-    {
-        var repoResult = _componenteRepository.ObtenerTodos();
-        if (!repoResult.IsSuccess)
-            return Result<List<ComponenteDto?>>.Error("Error al obtener los componentes");
-
-        var resultado = repoResult.Value;
-        var lista = new List<ComponenteDto>(resultado.Rows.Count);
-        foreach (DataRow fila in resultado.Rows)
-        {
-            var dto = MapearFilaADto(fila) as ComponenteDto;
-            if (dto != null) lista.Add(dto);
-        }
-        return lista.Count == 0
-            ? Result<List<ComponenteDto?>>.NotFound("No se encontraron componentes")
-            : Result<List<ComponenteDto?>>.Success(lista);
-    }
-
-    public virtual Result<ComponenteDto?> Actualizar(ActualizarComponenteComando comando)
+    public Result<ComponenteDto?> Actualizar(ActualizarComponenteComando comando)
     {
         var validResult = ValidarEntrada(comando);
-        if (!validResult.IsSuccess) return Result<ComponenteDto?>.Invalid(validResult.ValidationErrors.ToArray());
+        if (!validResult.IsSuccess)
+            return Result<ComponenteDto?>.Invalid(validResult.ValidationErrors.ToArray());
 
         if (!_componenteRepository.ExisteActivoPorId(comando.Id))
             return Result<ComponenteDto?>.NotFound("El componente no fue encontrado");
@@ -57,19 +37,26 @@ public class ComponenteService : Service
                 return Result<ComponenteDto?>.NotFound("El código IMT no fue encontrado");
         }
 
-        var result = _componenteRepository.Actualizar(idEquipo, comando);
-        return result;
+        return _componenteRepository.Actualizar(idEquipo, comando);
     }
 
-    public virtual Result<ComponenteDto?> Eliminar(EliminarComponenteComando comando)
+    public Result<ComponenteDto?> Eliminar(EliminarComponenteComando comando)
     {
         var validResult = ValidarEntrada(comando);
-        if (!validResult.IsSuccess) return Result<ComponenteDto?>.Invalid(validResult.ValidationErrors.ToArray());
+        if (!validResult.IsSuccess)
+            return Result<ComponenteDto?>.Invalid(validResult.ValidationErrors.ToArray());
 
         if (!_componenteRepository.ExisteActivoPorId(comando.Id))
             return Result<ComponenteDto?>.NotFound("El componente no fue encontrado");
 
-        var result = _componenteRepository.Eliminar(comando);
+        return _componenteRepository.Eliminar(comando);
+    }
+
+    protected override Result<DataTable> ObtenerDataTable()
+    {
+        var result = _componenteRepository.ObtenerTodos();
+        if (!result.IsSuccess)
+            return Result<DataTable>.Error("Error al obtener los componentes");
         return result;
     }
 

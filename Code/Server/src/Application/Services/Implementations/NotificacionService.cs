@@ -1,7 +1,7 @@
 using System.Data;
 using Ardalis.Result;
 
-public class NotificacionService : Service
+public class NotificacionService : Service<NotificacionDto>
 {
     private readonly INotificacionRepository _notificacionRepository;
     private readonly IPrestamoRepository _prestamoRepository;

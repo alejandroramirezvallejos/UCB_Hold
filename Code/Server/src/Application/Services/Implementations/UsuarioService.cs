@@ -1,14 +1,11 @@
 using System.Data;
 using Ardalis.Result;
 
-public class UsuarioService : Service
+public class UsuarioService : Service<UsuarioDto>, ICrud<UsuarioDto, CrearUsuarioComando, ActualizarUsuarioComando, EliminarUsuarioComando>
 {
     private readonly IUsuarioRepository _usuarioRepository;
 
-    public UsuarioService(IUsuarioRepository usuarioRepository)
-    {
-        _usuarioRepository = usuarioRepository;
-    }
+    public UsuarioService(IUsuarioRepository usuarioRepository) => _usuarioRepository = usuarioRepository;
 
     public Result<UsuarioDto?> Crear(CrearUsuarioComando comando)
     {
@@ -23,22 +20,12 @@ public class UsuarioService : Service
         return result;
     }
 
-    public Result<List<UsuarioDto?>> ObtenerTodos()
+    protected override Result<DataTable> ObtenerDataTable()
     {
-        var repoResult = _usuarioRepository.ObtenerTodos();
-        if (!repoResult.IsSuccess)
-            return Result<List<UsuarioDto?>>.Error("Error al obtener los usuarios");
-
-        var resultado = repoResult.Value;
-        var lista = new List<UsuarioDto>(resultado.Rows.Count);
-        foreach (DataRow fila in resultado.Rows)
-        {
-            var dto = MapearFilaADto(fila) as UsuarioDto;
-            if (dto != null) lista.Add(dto);
-        }
-        return lista.Count == 0
-            ? Result<List<UsuarioDto?>>.NotFound("No se encontraron usuarios")
-            : Result<List<UsuarioDto?>>.Success(lista);
+        var result = _usuarioRepository.ObtenerTodos();
+        if (!result.IsSuccess)
+            return Result<DataTable>.Error("Error al obtener los usuarios");
+        return result;
     }
 
     public Result<UsuarioDto?> Actualizar(ActualizarUsuarioComando comando)

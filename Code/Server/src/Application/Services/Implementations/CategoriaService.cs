@@ -1,14 +1,11 @@
 using System.Data;
 using Ardalis.Result;
 
-public class CategoriaService : Service
+public class CategoriaService : Service<CategoriaDto>, ICrud<CategoriaDto, CrearCategoriaComando, ActualizarCategoriaComando, EliminarCategoriaComando>
 {
     private readonly ICategoriaRepository _categoriaRepository;
 
-    public CategoriaService(ICategoriaRepository categoriaRepository)
-    {
-        _categoriaRepository = categoriaRepository;
-    }
+    public CategoriaService(ICategoriaRepository categoriaRepository) => _categoriaRepository = categoriaRepository;
 
     public virtual Result<CategoriaDto?> Crear(CrearCategoriaComando comando)
     {
@@ -31,26 +28,15 @@ public class CategoriaService : Service
         return result;
     }
 
-    public virtual Result<List<CategoriaDto?>> ObtenerTodos()
+    protected override Result<DataTable> ObtenerDataTable()
     {
-        var repoResult = _categoriaRepository.ObtenerTodos();
-        if (!repoResult.IsSuccess)
-            return Result<List<CategoriaDto?>>.Error("Error al obtener las categorías");
-
-        var resultado = repoResult.Value;
-        var lista = new List<CategoriaDto>(resultado.Rows.Count);
-        foreach (DataRow fila in resultado.Rows)
-        {
-            var baseDto = MapearFilaADto(fila);
-            if (baseDto is CategoriaDto categoria)
-                lista.Add(categoria);
-        }
-        return lista.Count == 0
-            ? Result<List<CategoriaDto?>>.NotFound("No se encontraron categorías")
-            : Result<List<CategoriaDto?>>.Success(lista);
+        var result = _categoriaRepository.ObtenerTodos();
+        if (!result.IsSuccess)
+            return Result<DataTable>.Error("Error al obtener las categorías");
+        return result;
     }
 
-    public virtual Result<CategoriaDto?> Actualizar(ActualizarCategoriaComando comando)
+    public Result<CategoriaDto?> Actualizar(ActualizarCategoriaComando comando)
     {
         var validResult = ValidarEntrada(comando);
         if (!validResult.IsSuccess) return Result<CategoriaDto?>.Invalid(validResult.ValidationErrors.ToArray());
@@ -80,7 +66,7 @@ public class CategoriaService : Service
         return result;
     }
 
-    public virtual Result<CategoriaDto?> Eliminar(EliminarCategoriaComando comando)
+    public Result<CategoriaDto?> Eliminar(EliminarCategoriaComando comando)
     {
         var validResult = ValidarEntrada(comando);
         if (!validResult.IsSuccess) return Result<CategoriaDto?>.Invalid(validResult.ValidationErrors.ToArray());
@@ -143,12 +129,9 @@ public class CategoriaService : Service
             : Result<EliminarCategoriaComando>.Success(comando!);
     }
 
-    protected override Dto MapearFilaADto(DataRow fila)
+    protected override Dto MapearFilaADto(DataRow fila) => new CategoriaDto
     {
-        return new CategoriaDto
-        {
-            Id = Convert.ToInt32(fila["id_categoria"]),
-            Nombre = fila["categoria"] == DBNull.Value ? null : fila["categoria"].ToString(),
-        };
-    }
+        Id = Convert.ToInt32(fila["id_categoria"]),
+        Nombre = fila["categoria"] == DBNull.Value ? null : fila["categoria"].ToString(),
+    };
 }

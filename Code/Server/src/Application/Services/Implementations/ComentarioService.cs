@@ -1,7 +1,7 @@
 using System.Data;
 using Ardalis.Result;
 
-public class ComentarioService : Service
+public class ComentarioService : Service<ComentarioDto>
 {
     private readonly IComentarioRepository _comentarioRepository;
     private readonly IUsuarioRepository _usuarioRepository;

@@ -1,7 +1,7 @@
 using System.Data;
 using Ardalis.Result;
 
-public class GrupoEquipoService : Service
+public class GrupoEquipoService : Service<GrupoEquipoDto>
 {
     private readonly IGrupoEquipoRepository _grupoEquipoRepository;
     public GrupoEquipoService(IGrupoEquipoRepository grupoEquipoRepository)

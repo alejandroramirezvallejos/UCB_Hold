@@ -1,19 +1,17 @@
 using System.Data;
 using Ardalis.Result;
 
-public class MantenimientoService : Service
+public class MantenimientoService : Service<MantenimientoDto>
 {
     private readonly IMantenimientoRepository _mantenimientoRepository;
 
-    public MantenimientoService(IMantenimientoRepository mantenimientoRepository)
-    {
-        _mantenimientoRepository = mantenimientoRepository;
-    }
+    public MantenimientoService(IMantenimientoRepository mantenimientoRepository) => _mantenimientoRepository = mantenimientoRepository;
 
-    public virtual Result<MantenimientoDto?> Crear(CrearMantenimientoComando comando)
+    public Result<MantenimientoDto?> Crear(CrearMantenimientoComando comando)
     {
         var validResult = ValidarEntrada(comando);
-        if (!validResult.IsSuccess) return Result<MantenimientoDto?>.Invalid(validResult.ValidationErrors.ToArray());
+        if (!validResult.IsSuccess)
+            return Result<MantenimientoDto?>.Invalid(validResult.ValidationErrors.ToArray());
 
         var idEmpresa = _mantenimientoRepository.ObtenerEmpresaIdPorNombre(comando.NombreEmpresaMantenimiento!);
         if (idEmpresa == null)
@@ -42,33 +40,23 @@ public class MantenimientoService : Service
         return Result<MantenimientoDto?>.Success(null);
     }
 
-    public virtual Result<List<MantenimientoDto?>> ObtenerTodos()
-    {
-        var repoResult = _mantenimientoRepository.ObtenerTodos();
-        if (!repoResult.IsSuccess)
-            return Result<List<MantenimientoDto?>>.Error("Error al obtener los mantenimientos");
-
-        var resultado = repoResult.Value;
-        var lista = new List<MantenimientoDto>(resultado.Rows.Count);
-        foreach (DataRow fila in resultado.Rows)
-        {
-            var dto = MapearFilaADto(fila) as MantenimientoDto;
-            if (dto != null) lista.Add(dto);
-        }
-        return lista.Count == 0
-            ? Result<List<MantenimientoDto?>>.NotFound("No se encontraron mantenimientos")
-            : Result<List<MantenimientoDto?>>.Success(lista);
-    }
-
-    public virtual Result<MantenimientoDto?> Eliminar(EliminarMantenimientoComando comando)
+    public Result<MantenimientoDto?> Eliminar(EliminarMantenimientoComando comando)
     {
         var validResult = ValidarEntrada(comando);
-        if (!validResult.IsSuccess) return Result<MantenimientoDto?>.Invalid(validResult.ValidationErrors.ToArray());
+        if (!validResult.IsSuccess)
+            return Result<MantenimientoDto?>.Invalid(validResult.ValidationErrors.ToArray());
 
         if (!_mantenimientoRepository.ExisteActivoPorId(comando.Id))
             return Result<MantenimientoDto?>.NotFound("El mantenimiento no fue encontrado");
 
-        var result = _mantenimientoRepository.Eliminar(comando);
+        return _mantenimientoRepository.Eliminar(comando);
+    }
+
+    protected override Result<DataTable> ObtenerDataTable()
+    {
+        var result = _mantenimientoRepository.ObtenerTodos();
+        if (!result.IsSuccess)
+            return Result<DataTable>.Error("Error al obtener los mantenimientos");
         return result;
     }
 
@@ -126,20 +114,17 @@ public class MantenimientoService : Service
             : Result<EliminarMantenimientoComando>.Success(comando!);
     }
 
-    protected override Dto MapearFilaADto(DataRow fila)
+    protected override Dto MapearFilaADto(DataRow fila) => new MantenimientoDto
     {
-        return new MantenimientoDto
-        {
-            Id = Convert.ToInt32(fila["id_mantenimiento"]),
-            FechaMantenimiento = fila["fecha_mantenimiento"] == DBNull.Value ? null : DateOnly.FromDateTime(Convert.ToDateTime(fila["fecha_mantenimiento"])),
-            FechaFinalDeMantenimiento = fila["fecha_final_mantenimiento"] == DBNull.Value ? null : DateOnly.FromDateTime(Convert.ToDateTime(fila["fecha_final_mantenimiento"])),
-            NombreEmpresaMantenimiento = fila["nombre_empresa_mantenimiento"] == DBNull.Value ? null : fila["nombre_empresa_mantenimiento"].ToString(),
-            Costo = fila["costo_mantenimiento"] == DBNull.Value ? null : Convert.ToDouble(fila["costo_mantenimiento"]),
-            Descripcion = fila["descripcion_mantenimiento"] == DBNull.Value ? null : fila["descripcion_mantenimiento"].ToString(),
-            CodigoImtEquipo = fila["codigo_imt_equipo"] == DBNull.Value ? null : Convert.ToInt32(fila["codigo_imt_equipo"]),
-            NombreGrupoEquipo = fila["nombre_grupo_equipo"] == DBNull.Value ? null : fila["nombre_grupo_equipo"].ToString(),
-            TipoMantenimiento = fila["tipo_detalle_mantenimiento"] == DBNull.Value ? null : fila["tipo_detalle_mantenimiento"].ToString(),
-            DescripcionEquipo = fila["descripcion_equipo"] == DBNull.Value ? null : fila["descripcion_equipo"].ToString()
-        };
-    }
+        Id = Convert.ToInt32(fila["id_mantenimiento"]),
+        FechaMantenimiento = fila["fecha_mantenimiento"] == DBNull.Value ? null : DateOnly.FromDateTime(Convert.ToDateTime(fila["fecha_mantenimiento"])),
+        FechaFinalDeMantenimiento = fila["fecha_final_mantenimiento"] == DBNull.Value ? null : DateOnly.FromDateTime(Convert.ToDateTime(fila["fecha_final_mantenimiento"])),
+        NombreEmpresaMantenimiento = fila["nombre_empresa_mantenimiento"] == DBNull.Value ? null : fila["nombre_empresa_mantenimiento"].ToString(),
+        Costo = fila["costo_mantenimiento"] == DBNull.Value ? null : Convert.ToDouble(fila["costo_mantenimiento"]),
+        Descripcion = fila["descripcion_mantenimiento"] == DBNull.Value ? null : fila["descripcion_mantenimiento"].ToString(),
+        CodigoImtEquipo = fila["codigo_imt_equipo"] == DBNull.Value ? null : Convert.ToInt32(fila["codigo_imt_equipo"]),
+        NombreGrupoEquipo = fila["nombre_grupo_equipo"] == DBNull.Value ? null : fila["nombre_grupo_equipo"].ToString(),
+        TipoMantenimiento = fila["tipo_detalle_mantenimiento"] == DBNull.Value ? null : fila["tipo_detalle_mantenimiento"].ToString(),
+        DescripcionEquipo = fila["descripcion_equipo"] == DBNull.Value ? null : fila["descripcion_equipo"].ToString()
+    };
 }

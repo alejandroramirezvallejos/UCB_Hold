@@ -2,7 +2,7 @@ using System.Data;
 using Ardalis.Result;
 using IMT_Reservas.Server.Application.ResponseDTOs;
 
-public class PrestamoService : Service
+public class PrestamoService : Service<PrestamoDto>
 {
     private readonly IPrestamoRepository _prestamoRepository;
 

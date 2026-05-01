@@ -1,19 +1,17 @@
 using System.Data;
 using Ardalis.Result;
 
-public class CarreraService : Service
+public class CarreraService : Service<CarreraDto>, ICrud<CarreraDto, CrearCarreraComando, ActualizarCarreraComando, EliminarCarreraComando>
 {
     private readonly ICarreraRepository _carreraRepository;
 
-    public CarreraService(ICarreraRepository carreraRepository)
-    {
-        _carreraRepository = carreraRepository;
-    }
+    public CarreraService(ICarreraRepository carreraRepository) => _carreraRepository = carreraRepository;
 
-    public virtual Result<CarreraDto?> Crear(CrearCarreraComando comando)
+    public Result<CarreraDto?> Crear(CrearCarreraComando comando)
     {
         var validResult = ValidarEntrada(comando);
-        if (!validResult.IsSuccess) return Result<CarreraDto?>.Invalid(validResult.ValidationErrors.ToArray());
+        if (!validResult.IsSuccess)
+            return Result<CarreraDto?>.Invalid(validResult.ValidationErrors.ToArray());
 
         var nombreTrimmed = comando.Nombre!.Trim();
 
@@ -27,33 +25,14 @@ public class CarreraService : Service
             return Result<CarreraDto?>.Conflict("Ya existe una carrera activa con este nombre");
 
         var comandoFinal = new CrearCarreraComando(nombreTrimmed);
-        var result = _carreraRepository.Crear(comandoFinal);
-        return result;
+        return _carreraRepository.Crear(comandoFinal);
     }
 
-    public virtual Result<List<CarreraDto?>> ObtenerTodos()
-    {
-        var repoResult = _carreraRepository.ObtenerTodos();
-        if (!repoResult.IsSuccess)
-            return Result<List<CarreraDto?>>.Error("Error al obtener las carreras");
-
-        var resultado = repoResult.Value;
-        var lista = new List<CarreraDto>(resultado.Rows.Count);
-        foreach (DataRow fila in resultado.Rows)
-        {
-            var baseDto = MapearFilaADto(fila);
-            if (baseDto is CarreraDto carrera)
-                lista.Add(carrera);
-        }
-        return lista.Count == 0
-            ? Result<List<CarreraDto?>>.NotFound("No se encontraron carreras")
-            : Result<List<CarreraDto?>>.Success(lista);
-    }
-
-    public virtual Result<CarreraDto?> Actualizar(ActualizarCarreraComando comando)
+    public Result<CarreraDto?> Actualizar(ActualizarCarreraComando comando)
     {
         var validResult = ValidarEntrada(comando);
-        if (!validResult.IsSuccess) return Result<CarreraDto?>.Invalid(validResult.ValidationErrors.ToArray());
+        if (!validResult.IsSuccess)
+            return Result<CarreraDto?>.Invalid(validResult.ValidationErrors.ToArray());
 
         if (!_carreraRepository.ExisteActivaPorId(comando.Id))
             return Result<CarreraDto?>.NotFound("La carrera no fue encontrada");
@@ -76,19 +55,26 @@ public class CarreraService : Service
         }
 
         var comandoFinal = new ActualizarCarreraComando(comando.Id, nombreNuevo);
-        var result = _carreraRepository.Actualizar(comandoFinal);
-        return result;
+        return _carreraRepository.Actualizar(comandoFinal);
     }
 
-    public virtual Result<CarreraDto?> Eliminar(EliminarCarreraComando comando)
+    public Result<CarreraDto?> Eliminar(EliminarCarreraComando comando)
     {
         var validResult = ValidarEntrada(comando);
-        if (!validResult.IsSuccess) return Result<CarreraDto?>.Invalid(validResult.ValidationErrors.ToArray());
+        if (!validResult.IsSuccess)
+            return Result<CarreraDto?>.Invalid(validResult.ValidationErrors.ToArray());
 
         if (!_carreraRepository.ExisteActivaPorId(comando.Id))
             return Result<CarreraDto?>.NotFound("La carrera no fue encontrada");
 
-        var result = _carreraRepository.Eliminar(comando);
+        return _carreraRepository.Eliminar(comando);
+    }
+
+    protected override Result<DataTable> ObtenerDataTable()
+    {
+        var result = _carreraRepository.ObtenerTodos();
+        if (!result.IsSuccess)
+            return Result<DataTable>.Error("Error al obtener las carreras");
         return result;
     }
 
@@ -143,12 +129,9 @@ public class CarreraService : Service
             : Result<EliminarCarreraComando>.Success(comando!);
     }
 
-    protected override Dto MapearFilaADto(DataRow fila)
+    protected override Dto MapearFilaADto(DataRow fila) => new CarreraDto
     {
-        return new CarreraDto
-        {
-            Id = Convert.ToInt32(fila["id_carrera"]),
-            Nombre = fila["nombre_carrera"] == DBNull.Value ? null : fila["nombre_carrera"].ToString()
-        };
-    }
+        Id = Convert.ToInt32(fila["id_carrera"]),
+        Nombre = fila["nombre_carrera"] == DBNull.Value ? null : fila["nombre_carrera"].ToString()
+    };
 }
