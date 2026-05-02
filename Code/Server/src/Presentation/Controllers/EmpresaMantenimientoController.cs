@@ -1,7 +1,16 @@
-using IMT_Reservas.Server.Application.Services.Implementations;
-using IMT_Reservas.Server.Application.Commands;
-using IMT_Reservas.Server.Application.DTOs.Response;
-public class EmpresaMantenimientoController : Controller<EmpresaMantenimientoDto, EmpresaMantenimientoService, CrearEmpresaMantenimientoComando, ActualizarEmpresaMantenimientoComando, EliminarEmpresaMantenimientoComando>
+using Microsoft.AspNetCore.Mvc;
+using IMT_Reservas.Server.Application.Features.EmpresaMantenimiento;
+
+namespace IMT_Reservas.Server.Presentation.Controllers;
+
+[ApiController]
+[Route("api/[controller]")]
+public class EmpresaMantenimientoController : ControllerBase
 {
-    public EmpresaMantenimientoController(EmpresaMantenimientoService servicio) : base(servicio) { }
+	private readonly EmpresaMantenimientoService _service;
+
+	public EmpresaMantenimientoController(EmpresaMantenimientoService service)
+	{
+		_service = service;
+	}
 }

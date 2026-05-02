@@ -1,7 +1,16 @@
-using IMT_Reservas.Server.Application.Services.Implementations;
-using IMT_Reservas.Server.Application.Commands;
-using IMT_Reservas.Server.Application.DTOs.Response;
-public class CategoriaController : Controller<CategoriaDto, CategoriaService, CrearCategoriaComando, ActualizarCategoriaComando, EliminarCategoriaComando>
+using Microsoft.AspNetCore.Mvc;
+using IMT_Reservas.Server.Application.Features.Categoria;
+
+namespace IMT_Reservas.Server.Presentation.Controllers;
+
+[ApiController]
+[Route("api/[controller]")]
+public class CategoriaController : ControllerBase
 {
-    public CategoriaController(CategoriaService servicio) : base(servicio) { }
+	private readonly CategoriaService _service;
+
+	public CategoriaController(CategoriaService service)
+	{
+		_service = service;
+	}
 }

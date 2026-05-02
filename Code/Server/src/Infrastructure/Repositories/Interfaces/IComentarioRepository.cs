@@ -1,11 +1,6 @@
-using System.Data;
-using Ardalis.Result;
+namespace IMT_Reservas.Server.Infrastructure.Repositories;
 
 public interface IComentarioRepository
 {
-    Result<ComentarioDto?> Crear(CrearComentarioComando comando);
-    Result<ComentarioDto?> Eliminar(EliminarComentarioComando comando);
-    Result<ComentarioDto?> AgregarLike(AgregarLikeComentarioComando comando);
-    Result<ComentarioDto?> QuitarLike(QuitarLikeComentarioComando comando);
-    DataTable ObtenerPorGrupoEquipo(int idGrupoEquipo);
+	Task<bool> ExisteActivoPorId(string id);
 }

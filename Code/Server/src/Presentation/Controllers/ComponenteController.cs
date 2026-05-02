@@ -1,7 +1,16 @@
-using IMT_Reservas.Server.Application.Services.Implementations;
-using IMT_Reservas.Server.Application.Commands;
-using IMT_Reservas.Server.Application.DTOs.Response;
-public class ComponenteController : Controller<ComponenteDto, ComponenteService, CrearComponenteComando, ActualizarComponenteComando, EliminarComponenteComando>
+using Microsoft.AspNetCore.Mvc;
+using IMT_Reservas.Server.Application.Features.Componente;
+
+namespace IMT_Reservas.Server.Presentation.Controllers;
+
+[ApiController]
+[Route("api/[controller]")]
+public class ComponenteController : ControllerBase
 {
-    public ComponenteController(ComponenteService servicio) : base(servicio) { }
+	private readonly ComponenteService _service;
+
+	public ComponenteController(ComponenteService service)
+	{
+		_service = service;
+	}
 }

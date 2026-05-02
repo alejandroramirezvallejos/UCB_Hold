@@ -1,7 +1,16 @@
-using IMT_Reservas.Server.Application.Services.Implementations;
-using IMT_Reservas.Server.Application.Commands;
-using IMT_Reservas.Server.Application.DTOs.Response;
-public class AccesorioController : Controller<AccesorioDto, AccesorioService, CrearAccesorioComando, ActualizarAccesorioComando, EliminarAccesorioComando>
+using Microsoft.AspNetCore.Mvc;
+using IMT_Reservas.Server.Application.Features.Accesorio;
+
+namespace IMT_Reservas.Server.Presentation.Controllers;
+
+[ApiController]
+[Route("api/[controller]")]
+public class AccesorioController : ControllerBase
 {
-    public AccesorioController(AccesorioService servicio) : base(servicio) { }
+	private readonly AccesorioService _service;
+
+	public AccesorioController(AccesorioService service)
+	{
+		_service = service;
+	}
 }

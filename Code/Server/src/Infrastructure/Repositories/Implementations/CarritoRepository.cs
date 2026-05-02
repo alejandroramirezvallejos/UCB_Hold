@@ -1,12 +1,10 @@
-using IMT_Reservas.Server.Application.ResponseDTOs;
-using IMT_Reservas.Server.Shared.Common;
+using IMT_Reservas.Server.Application.Features.Carrito.Dtos;
 using System.Data;
-using System.Text.Json;
 using Ardalis.Result;
 
 namespace IMT_Reservas.Server.Infrastructure.Repositories.Implementations;
 
-public class CarritoRepository
+public class CarritoRepository : ICarritoRepository
 {
     private readonly IExecuteQuery _executeQuery;
     public CarritoRepository(IExecuteQuery executeQuery) => _executeQuery = executeQuery;
@@ -129,4 +127,8 @@ public class CarritoRepository
         }
         return resultado;
     }
+
+    public IEnumerable<DisponibilidadEquipoDto> ObtenerDisponibilidad(DateTime fechaInicio, DateTime fechaFin, List<int> idsGruposEquipos)
+        => ObtenerDisponibilidadEquiposPorFechasYGrupos(fechaInicio, fechaFin, idsGruposEquipos.ToArray());
 }
+

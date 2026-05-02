@@ -1,7 +1,16 @@
-using IMT_Reservas.Server.Application.Services.Implementations;
-using IMT_Reservas.Server.Application.Commands;
-using IMT_Reservas.Server.Application.DTOs.Response;
-public class EquipoController : Controller<EquipoDto, EquipoService, CrearEquipoComando, ActualizarEquipoComando, EliminarEquipoComando>
+using Microsoft.AspNetCore.Mvc;
+using IMT_Reservas.Server.Application.Features.Equipo;
+
+namespace IMT_Reservas.Server.Presentation.Controllers;
+
+[ApiController]
+[Route("api/[controller]")]
+public class EquipoController : ControllerBase
 {
-    public EquipoController(EquipoService servicio) : base(servicio) { }
+	private readonly EquipoService _service;
+
+	public EquipoController(EquipoService service)
+	{
+		_service = service;
+	}
 }

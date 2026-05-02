@@ -1,6 +1,7 @@
 using MongoDB.Driver;
 using MongoDB.Driver.GridFS;
 using Microsoft.Extensions.Options;
+using IMT_Reservas.Server.Core.Entities;
 
 namespace IMT_Reservas.Server.Infrastructure.MongoDb
 {

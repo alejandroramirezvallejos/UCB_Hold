@@ -1,99 +1,26 @@
-using System.Data;
-using MongoDB.Driver;
 using MongoDB.Bson;
-using Ardalis.Result;
+using MongoDB.Driver;
 using IMT_Reservas.Server.Infrastructure.MongoDb;
+
+namespace IMT_Reservas.Server.Infrastructure.Repositories.Implementations;
 
 public class NotificacionRepository : INotificacionRepository
 {
-    private readonly IMongoCollection<BsonDocument> _coleccion;
-    public NotificacionRepository(MongoDbContexto contexto) => _coleccion = contexto.BaseDeDatos.GetCollection<BsonDocument>("notificaciones");
+	private readonly IMongoCollection<BsonDocument> _coleccion;
 
-    public Result<NotificacionDto?> Crear(CrearNotificacionComando comando)
-    {
-        var doc = new BsonDocument
-        {
-            ["CarnetUsuario"] = comando.CarnetUsuario,
-            ["Titulo"] = comando.Titulo,
-            ["Contenido"] = comando.Contenido,
-            ["FechaEnvio"] = DateTime.UtcNow,
-            ["Leido"] = false,
-            ["EstadoEliminado"] = false
-        };
-        _coleccion.InsertOne(doc);
-        var dto = new NotificacionDto { Titulo = comando.Titulo, Contenido = comando.Contenido };
-        return Result<NotificacionDto?>.Created(dto);
-    }
+	public NotificacionRepository(MongoDbContexto contexto)
+		=> _coleccion = contexto.BaseDeDatos.GetCollection<BsonDocument>("notificaciones");
 
-    public Result<NotificacionDto?> Eliminar(EliminarNotificacionComando comando)
-    {
-        if (!ObjectId.TryParse(comando.Id, out var objectId))
-            return Result<NotificacionDto?>.NotFound("ID de notificación inválido");
+	public async Task<bool> ExisteActivoPorId(int id)
+	{
+		if (!ObjectId.TryParse(id.ToString(), out var objectId))
+			return false;
 
-        var filtro = new BsonDocument { ["_id"] = objectId };
-        var actualizacion = Builders<BsonDocument>.Update.Set("EstadoEliminado", true);
-        var res = _coleccion.UpdateOne(filtro, actualizacion);
-        return res.MatchedCount == 0 ? Result<NotificacionDto?>.NotFound("No se encontró la notificación") : Result<NotificacionDto?>.Success(new NotificacionDto { Id = comando.Id });
-    }
-
-    public DataTable ObtenerPorUsuario(ObtenerNotificacionPorCarnetUsuarioConsulta consulta)
-    {
-        var filtro = new BsonDocument
-        {
-            ["CarnetUsuario"] = consulta.CarnetUsuario,
-            ["EstadoEliminado"] = false
-        };
-        return ObtenerNotificaciones(filtro);
-    }
-
-    public void MarcarComoLeida(MarcarComoLeidoComando comando)
-    {
-        if (!ObjectId.TryParse(comando.Id, out var objectId)) return;
-        var filtro = new BsonDocument { ["_id"] = objectId };
-        var actualizacion = Builders<BsonDocument>.Update.Set("Leido", true);
-        _coleccion.UpdateOne(filtro, actualizacion);
-    }
-
-    public bool TieneNotificacionesNoLeidas(TieneNotificacionesNoLeidasConsulta consulta)
-    {
-        var filtro = Builders<BsonDocument>.Filter.And(
-            Builders<BsonDocument>.Filter.Eq("CarnetUsuario", consulta.CarnetUsuario),
-            Builders<BsonDocument>.Filter.Eq("Leido", false),
-            Builders<BsonDocument>.Filter.Eq("EstadoEliminado", false)
-        );
-        using (var cursor = _coleccion.FindSync(filtro, new FindOptions<BsonDocument, BsonDocument> { Limit = 1 }))
-        {
-            return cursor.MoveNext() && cursor.Current.Any();
-        }
-    }
-
-    private DataTable ObtenerNotificaciones(BsonDocument filtro)
-    {
-        var sort = Builders<BsonDocument>.Sort.Descending("FechaEnvio");
-        var docs = _coleccion.Find(filtro).Sort(sort).ToList();
-        return ConvertirATablaDeDatos(docs);
-    }
-
-    private DataTable ConvertirATablaDeDatos(List<BsonDocument> docs)
-    {
-        var tabla = new DataTable();
-        tabla.Columns.Add("id_notificacion", typeof(string));
-        tabla.Columns.Add("carnet_usuario", typeof(string));
-        tabla.Columns.Add("titulo", typeof(string));
-        tabla.Columns.Add("contenido", typeof(string));
-        tabla.Columns.Add("fecha_envio", typeof(DateTime));
-        tabla.Columns.Add("leido", typeof(bool));
-        foreach (var doc in docs)
-        {
-            var fila = tabla.NewRow();
-            fila["id_notificacion"] = doc["_id"].ToString();
-            fila["carnet_usuario"] = doc["CarnetUsuario"].AsString;
-            fila["titulo"] = doc["Titulo"].AsString;
-            fila["contenido"] = doc["Contenido"].AsString;
-            fila["fecha_envio"] = doc["FechaEnvio"].ToUniversalTime();
-            fila["leido"] = doc.GetValue("Leido", false).AsBoolean;
-            tabla.Rows.Add(fila);
-        }
-        return tabla;
-    }
+		var filtro = Builders<BsonDocument>.Filter.And(
+			Builders<BsonDocument>.Filter.Eq("_id", objectId),
+			Builders<BsonDocument>.Filter.Eq("EstadoEliminado", false)
+		);
+		var count = await _coleccion.CountDocumentsAsync(filtro);
+		return count > 0;
+	}
 }

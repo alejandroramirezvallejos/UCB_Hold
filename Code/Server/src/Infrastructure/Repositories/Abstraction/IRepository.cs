@@ -1,11 +1,13 @@
 using Ardalis.Result;
 
-namespace IMT_Reservas.Server.Infrastructure.Repositories.Abstraction;
+namespace IMT_Reservas.Server.Core.Abstractions;
 
-public interface IRepository<T> where T : class
+public interface IRepository<TDto> where TDto : class
 {
-    Result<T?> Crear(dynamic comando);
-    Result<T?> Actualizar(dynamic comando);
-    Result<T?> Eliminar(dynamic comando);
-    Result<List<T?>> ObtenerTodos();
+	Task<Result<TDto>> CreateAsync(Dictionary<string, object?> parameters);
+	Task<Result<TDto>> UpdateAsync(Dictionary<string, object?> parameters);
+	Task<Result<object>> DeleteAsync(int id);
+	Task<Result<TDto>> GetByIdAsync(int id);
+	Task<Result<List<TDto>>> GetAllAsync(QueryFilter filter = null);
+	Task<bool> ExistsAsync(int id);
 }

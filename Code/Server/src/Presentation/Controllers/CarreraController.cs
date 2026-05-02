@@ -1,7 +1,16 @@
-using IMT_Reservas.Server.Application.Services.Implementations;
-using IMT_Reservas.Server.Application.Commands;
-using IMT_Reservas.Server.Application.DTOs.Response;
-public class CarreraController : Controller<CarreraDto, CarreraService, CrearCarreraComando, ActualizarCarreraComando, EliminarCarreraComando>
+using Microsoft.AspNetCore.Mvc;
+using IMT_Reservas.Server.Application.Features.Carrera;
+
+namespace IMT_Reservas.Server.Presentation.Controllers;
+
+[ApiController]
+[Route("api/[controller]")]
+public class CarreraController : ControllerBase
 {
-    public CarreraController(CarreraService servicio) : base(servicio) { }
+	private readonly CarreraService _service;
+
+	public CarreraController(CarreraService service)
+	{
+		_service = service;
+	}
 }

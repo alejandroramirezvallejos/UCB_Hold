@@ -1,137 +1,52 @@
+using IMT_Reservas.Server.Infrastructure.PostgreSQL;
 using System.Data;
-using Ardalis.Result;
+using IMT_Reservas.Server.Application.Features.Usuario.Dtos;
+using IMT_Reservas.Server.Infrastructure.Repositories.Abstraction;
 
-public class UsuarioRepository : IUsuarioRepository
+namespace IMT_Reservas.Server.Infrastructure.Repositories.Implementations;
+
+public class UsuarioRepository : Repository<UsuarioListDto>
 {
-    private readonly IExecuteQuery _ejecutarConsulta;
-    public UsuarioRepository(IExecuteQuery ejecutarConsulta) => _ejecutarConsulta = ejecutarConsulta;
+	public UsuarioRepository(ExecuteQuery executeQuery) : base(executeQuery) { }
 
-    public Result<UsuarioDto?> Crear(int idCarrera, CrearUsuarioComando comando)
-    {
-        const string sql = @"INSERT INTO public.usuarios (carnet, nombre, apellido_paterno, apellido_materno, rol, email, contrasena, id_carrera, telefono, telefono_referencia, nombre_referencia, email_referencia, estado_eliminado)
-                             VALUES (@carnet, @nombre, @apellidoPaterno, @apellidoMaterno, @rol::tipo_usuario, @email, @contrasena, @idCarrera, @telefono, @telefonoReferencia, @nombreReferencia, @emailReferencia, FALSE)";
-        var parametros = new Dictionary<string, object?>
-        {
-            ["carnet"] = comando.Carnet,
-            ["nombre"] = comando.Nombre,
-            ["apellidoPaterno"] = comando.ApellidoPaterno,
-            ["apellidoMaterno"] = comando.ApellidoMaterno,
-            ["rol"] = comando.Rol,
-            ["email"] = comando.Email,
-            ["contrasena"] = comando.Contrasena,
-            ["idCarrera"] = idCarrera,
-            ["telefono"] = comando.Telefono ?? (object)DBNull.Value,
-            ["telefonoReferencia"] = comando.TelefonoReferencia ?? (object)DBNull.Value,
-            ["nombreReferencia"] = comando.NombreReferencia ?? (object)DBNull.Value,
-            ["emailReferencia"] = comando.EmailReferencia ?? (object)DBNull.Value
-        };
-        _ejecutarConsulta.EjecutarSpNR(sql, parametros);
-        var dto = new UsuarioDto { Carnet = comando.Carnet, Nombre = comando.Nombre };
-        return Result<UsuarioDto?>.Created(dto);
-    }
+	public async Task<bool> ExisteActivoPorId(int id)
+	{
+		const string sql = "SELECT EXISTS(SELECT 1 FROM public.usuarios WHERE carnet = @id AND estado_eliminado = FALSE)";
+		var parameters = new Dictionary<string, object?> { ["id"] = id };
+		var dt = ExecuteQuery.EjecutarFuncion(sql, parameters);
+		return dt?.Rows.Count > 0 && Convert.ToBoolean(dt.Rows[0][0]);
+	}
 
-    public Result<UsuarioDto?> Crear(CrearUsuarioComando comando)
-        => Result<UsuarioDto?>.Error("Use Crear(int idCarrera, CrearUsuarioComando comando)");
+	public int? ObtenerCarreraIdPorNombre(string nombreCarrera)
+	{
+		const string sql = "SELECT id_carrera FROM public.carreras WHERE nombre = @nombre AND estado_eliminado = FALSE LIMIT 1";
+		var parameters = new Dictionary<string, object?> { ["nombre"] = nombreCarrera };
+		var dt = ExecuteQuery.EjecutarFuncion(sql, parameters);
+		return dt?.Rows.Count == 0 ? null : Convert.ToInt32(dt.Rows[0][0]);
+	}
 
-    public Result<UsuarioDto?> Actualizar(int? idCarrera, ActualizarUsuarioComando comando)
-    {
-        const string sql = @"UPDATE public.usuarios SET
-            nombre = COALESCE(@nombre, nombre),
-            apellido_paterno = COALESCE(@apellidoPaterno, apellido_paterno),
-            apellido_materno = COALESCE(@apellidoMaterno, apellido_materno),
-            email = COALESCE(@email, email),
-            contrasena = COALESCE(@contrasena, contrasena),
-            rol = COALESCE(@rol::tipo_usuario, rol),
-            id_carrera = COALESCE(@idCarrera, id_carrera),
-            telefono = COALESCE(@telefono, telefono),
-            telefono_referencia = COALESCE(@telefonoReferencia, telefono_referencia),
-            nombre_referencia = COALESCE(@nombreReferencia, nombre_referencia),
-            email_referencia = COALESCE(@emailReferencia, email_referencia)
-            WHERE carnet = @carnet AND estado_eliminado = FALSE";
-        var parametros = new Dictionary<string, object?>
-        {
-            ["carnet"] = comando.Carnet,
-            ["nombre"] = string.IsNullOrEmpty(comando.Nombre) ? (object)DBNull.Value : comando.Nombre,
-            ["apellidoPaterno"] = string.IsNullOrEmpty(comando.ApellidoPaterno) ? (object)DBNull.Value : comando.ApellidoPaterno,
-            ["apellidoMaterno"] = string.IsNullOrEmpty(comando.ApellidoMaterno) ? (object)DBNull.Value : comando.ApellidoMaterno,
-            ["email"] = string.IsNullOrEmpty(comando.Email) ? (object)DBNull.Value : comando.Email,
-            ["contrasena"] = string.IsNullOrEmpty(comando.Contrasena) ? (object)DBNull.Value : comando.Contrasena,
-            ["rol"] = string.IsNullOrEmpty(comando.Rol) ? (object)DBNull.Value : comando.Rol,
-            ["idCarrera"] = idCarrera ?? (object)DBNull.Value,
-            ["telefono"] = string.IsNullOrEmpty(comando.Telefono) ? (object)DBNull.Value : comando.Telefono,
-            ["telefonoReferencia"] = string.IsNullOrEmpty(comando.TelefonoReferencia) ? (object)DBNull.Value : comando.TelefonoReferencia,
-            ["nombreReferencia"] = string.IsNullOrEmpty(comando.NombreReferencia) ? (object)DBNull.Value : comando.NombreReferencia,
-            ["emailReferencia"] = string.IsNullOrEmpty(comando.EmailReferencia) ? (object)DBNull.Value : comando.EmailReferencia
-        };
-        _ejecutarConsulta.EjecutarSpNR(sql, parametros);
-        var dto = new UsuarioDto { Carnet = comando.Carnet, Nombre = comando.Nombre };
-        return Result<UsuarioDto?>.Success(dto);
-    }
+	protected override string Create()
+		=> "INSERT INTO public.usuarios (carnet, nombre, apellido_paterno, apellido_materno, rol, email, contrasena, id_carrera, telefono, telefono_referencia, nombre_referencia, email_referencia, estado_eliminado) VALUES (@carnet, @nombre, @apellido_paterno, @apellido_materno, @rol, @email, @contrasena, @id_carrera, @telefono, @telefono_referencia, @nombre_referencia, @email_referencia, FALSE)";
 
-    public Result<UsuarioDto?> Actualizar(ActualizarUsuarioComando comando)
-        => Actualizar(null, comando);
+	protected override string Update()
+		=> "UPDATE public.usuarios SET nombre = COALESCE(@nombre, nombre), apellido_paterno = COALESCE(@apellido_paterno, apellido_paterno), apellido_materno = COALESCE(@apellido_materno, apellido_materno), rol = COALESCE(@rol, rol), email = COALESCE(@email, email), contrasena = COALESCE(@contrasena, contrasena), id_carrera = COALESCE(@id_carrera, id_carrera), telefono = COALESCE(@telefono, telefono), telefono_referencia = COALESCE(@telefono_referencia, telefono_referencia), nombre_referencia = COALESCE(@nombre_referencia, nombre_referencia), email_referencia = COALESCE(@email_referencia, email_referencia) WHERE carnet = @id AND estado_eliminado = FALSE";
 
-    public Result<UsuarioDto?> Eliminar(EliminarUsuarioComando comando)
-    {
-        const string sql = @"UPDATE public.usuarios SET estado_eliminado = TRUE WHERE carnet = @carnet";
-        var parametros = new Dictionary<string, object?> { ["carnet"] = comando.Carnet };
-        _ejecutarConsulta.EjecutarSpNR(sql, parametros);
-        return Result<UsuarioDto?>.Success(new UsuarioDto { Carnet = comando.Carnet });
-    }
+	protected override string Delete()
+		=> "UPDATE public.usuarios SET estado_eliminado = TRUE WHERE carnet = @id";
 
-    public Result<DataTable> ObtenerTodos()
-    {
-        const string sql = @"SELECT u.carnet, u.nombre, u.apellido_paterno, u.apellido_materno,
-            c.nombre AS carrera, u.rol, u.email, u.telefono,
-            u.telefono_referencia, u.nombre_referencia, u.email_referencia
-            FROM public.usuarios AS u
-            INNER JOIN public.carreras AS c ON u.id_carrera = c.id_carrera
-            WHERE u.estado_eliminado = FALSE";
-        var dt = _ejecutarConsulta.EjecutarFuncion(sql, new Dictionary<string, object?>());
-        return dt.Rows.Count == 0
-            ? Result<DataTable>.NotFound("No se encontró el registro especificado")
-            : Result<DataTable>.Success(dt);
-    }
+	protected override string SelectAll()
+		=> "SELECT carnet, nombre, apellido_paterno, apellido_materno, rol, email, id_carrera FROM public.usuarios WHERE estado_eliminado = FALSE";
 
-    public DataTable? ObtenerPorEmailYContrasena(string email, string contrasena)
-    {
-        const string sql = @"SELECT u.carnet, u.nombre, u.apellido_paterno, u.apellido_materno,
-            c.nombre AS carrera, u.rol, u.email, u.telefono,
-            u.telefono_referencia, u.nombre_referencia, u.email_referencia
-            FROM public.usuarios AS u
-            INNER JOIN public.carreras AS c ON u.id_carrera = c.id_carrera
-            WHERE u.email = @email AND u.contrasena = @contrasena AND u.estado_eliminado = FALSE";
-        var parametros = new Dictionary<string, object?>
-        {
-            ["email"] = email,
-            ["contrasena"] = contrasena
-        };
-        var dt = _ejecutarConsulta.EjecutarFuncion(sql, parametros);
-        return dt.Rows.Count == 0 ? null : dt;
-    }
+	protected override string SelectById()
+		=> "SELECT carnet, nombre, apellido_paterno, apellido_materno, rol, email, id_carrera FROM public.usuarios WHERE carnet = @id AND estado_eliminado = FALSE";
 
-    public DataTable ObtenerPorCarnets(List<string> carnets)
-    {
-        if (carnets == null || !carnets.Any()) return new DataTable();
-
-        const string sql = @"SELECT carnet, nombre, apellido_paterno FROM public.usuarios WHERE carnet = ANY(@carnets)";
-        var parametros = new Dictionary<string, object?> { ["carnets"] = carnets };
-        return _ejecutarConsulta.EjecutarFuncion(sql, parametros);
-    }
-
-    public bool ExisteActivoPorCarnet(string carnet)
-    {
-        const string sql = @"SELECT EXISTS(SELECT 1 FROM public.usuarios WHERE carnet = @carnet AND estado_eliminado = FALSE)";
-        var parametros = new Dictionary<string, object?> { ["carnet"] = carnet };
-        var dt = _ejecutarConsulta.EjecutarFuncion(sql, parametros);
-        return dt.Rows.Count > 0 && Convert.ToBoolean(dt.Rows[0][0]);
-    }
-
-    public int? ObtenerCarreraIdPorNombre(string nombreCarrera)
-    {
-        const string sql = @"SELECT id_carrera FROM public.carreras WHERE nombre = @nombre AND estado_eliminado = FALSE LIMIT 1";
-        var parametros = new Dictionary<string, object?> { ["nombre"] = nombreCarrera };
-        var dt = _ejecutarConsulta.EjecutarFuncion(sql, parametros);
-        return dt.Rows.Count == 0 ? null : Convert.ToInt32(dt.Rows[0][0]);
-    }
+	protected override UsuarioListDto MapRowToDto(DataRow row) => new()
+	{
+		Carnet = row["carnet"].ToString() ?? "",
+		Nombre = row["nombre"] == DBNull.Value ? null : row["nombre"].ToString(),
+		Email = row["email"] == DBNull.Value ? null : row["email"].ToString(),
+		IdCarrera = row["id_carrera"] == DBNull.Value ? null : Convert.ToInt32(row["id_carrera"]),
+		Rol = row["rol"] == DBNull.Value ? null : row["rol"].ToString()
+	};
 }
+

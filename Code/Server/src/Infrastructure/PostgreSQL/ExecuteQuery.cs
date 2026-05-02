@@ -2,6 +2,8 @@ using Npgsql;
 using NpgsqlTypes;
 using System.Data;
 
+namespace IMT_Reservas.Server.Infrastructure.PostgreSQL;
+
 public class ExecuteQuery : IExecuteQuery
 {
     private readonly string _connectionString;

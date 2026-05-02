@@ -1,7 +1,16 @@
-using IMT_Reservas.Server.Application.Services.Implementations;
-using IMT_Reservas.Server.Application.Commands;
-using IMT_Reservas.Server.Application.DTOs.Response;
-public class MuebleController : Controller<MuebleDto, MuebleService, CrearMuebleComando, ActualizarMuebleComando, EliminarMuebleComando>
+using Microsoft.AspNetCore.Mvc;
+using IMT_Reservas.Server.Application.Features.Mueble;
+
+namespace IMT_Reservas.Server.Presentation.Controllers;
+
+[ApiController]
+[Route("api/[controller]")]
+public class MuebleController : ControllerBase
 {
-    public MuebleController(MuebleService servicio) : base(servicio) { }
+	private readonly MuebleService _service;
+
+	public MuebleController(MuebleService service)
+	{
+		_service = service;
+	}
 }
