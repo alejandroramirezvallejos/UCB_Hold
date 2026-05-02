@@ -41,7 +41,8 @@ public static class DependencyInjection
 {
     public static IServiceCollection AddApplicationServices(this IServiceCollection services)
     {
-        services.AddScoped<IExecuteQuery, ExecuteQuery>();
+        services.AddScoped<ExecuteQuery>();
+        services.AddScoped<IExecuteQuery>(sp => sp.GetRequiredService<ExecuteQuery>());
 
         services.AddAutoMapper(typeof(DependencyInjection).Assembly);
 
