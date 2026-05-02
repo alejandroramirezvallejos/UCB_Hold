@@ -1,20 +1,21 @@
 using Ardalis.Result;
-using IMT_Reservas.Server.Core.Abstractions;
 using ComponenteEntity = IMT_Reservas.Server.Core.Entities.Componente;
 using IMT_Reservas.Server.Core.Entities;
 using IMT_Reservas.Server.Application.Features.Componente.Dtos;
 using IMT_Reservas.Server.Application.Features.Componente.Validators;
+using IMT_Reservas.Server.Infrastructure.Repositories.Implementations;
+using IMT_Reservas.Server.Core.Abstractions;
 
 using AutoMapper;
 
 namespace IMT_Reservas.Server.Application.Features.Componente;
 
-public class ComponenteService 
+public class ComponenteService
 {
-	private readonly IRepository<ComponenteListDto> _repository;
+	private readonly ComponenteRepository _repository;
 	private readonly IMapper _mapper;
 
-	public ComponenteService(IRepository<ComponenteListDto> repository, IMapper mapper) 
+	public ComponenteService(ComponenteRepository repository, IMapper mapper)
 	{
 		_repository = repository;
 		_mapper = mapper;

@@ -1,9 +1,10 @@
 using Ardalis.Result;
-using IMT_Reservas.Server.Core.Abstractions;
 using UsuarioEntity = IMT_Reservas.Server.Core.Entities.Usuario;
 using IMT_Reservas.Server.Core.Entities;
+using IMT_Reservas.Server.Core.Abstractions;
 using IMT_Reservas.Server.Application.Features.Usuario.Dtos;
 using IMT_Reservas.Server.Application.Features.Usuario.Validators;
+using IMT_Reservas.Server.Infrastructure.Repositories.Implementations;
 
 using AutoMapper;
 
@@ -11,10 +12,10 @@ namespace IMT_Reservas.Server.Application.Features.Usuario;
 
 public class UsuarioService
 {
-	private readonly IRepository<UsuarioListDto> _repository;
+	private readonly UsuarioRepository _repository;
 	private readonly IMapper _mapper;
 
-	public UsuarioService(IRepository<UsuarioListDto> repository, IMapper mapper)
+	public UsuarioService(UsuarioRepository repository, IMapper mapper)
 	{
 		_repository = repository;
 		_mapper = mapper;

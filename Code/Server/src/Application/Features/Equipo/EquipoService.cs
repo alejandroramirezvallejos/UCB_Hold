@@ -1,20 +1,21 @@
 using Ardalis.Result;
-using IMT_Reservas.Server.Core.Abstractions;
 using EquipoEntity = IMT_Reservas.Server.Core.Entities.Equipo;
 using IMT_Reservas.Server.Core.Entities;
 using IMT_Reservas.Server.Application.Features.Equipo.Dtos;
 using IMT_Reservas.Server.Application.Features.Equipo.Validators;
+using IMT_Reservas.Server.Infrastructure.Repositories.Implementations;
+using IMT_Reservas.Server.Core.Abstractions;
 
 using AutoMapper;
 
 namespace IMT_Reservas.Server.Application.Features.Equipo;
 
-public class EquipoService 
+public class EquipoService
 {
-private readonly IRepository<EquipoListDto> _repository;
+private readonly EquipoRepository _repository;
 	private readonly IMapper _mapper;
 
-	public EquipoService(IRepository<EquipoListDto> repository, IMapper mapper) 
+	public EquipoService(EquipoRepository repository, IMapper mapper)
 	{
 		_repository = repository;
 		_mapper = mapper;

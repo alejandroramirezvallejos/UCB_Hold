@@ -1,20 +1,21 @@
 using Ardalis.Result;
-using IMT_Reservas.Server.Core.Abstractions;
 using AccesorioEntity = IMT_Reservas.Server.Core.Entities.Accesorio;
 using IMT_Reservas.Server.Core.Entities;
 using IMT_Reservas.Server.Application.Features.Accesorio.Dtos;
 using IMT_Reservas.Server.Application.Features.Accesorio.Validators;
+using IMT_Reservas.Server.Infrastructure.Repositories.Implementations;
+using IMT_Reservas.Server.Core.Abstractions;
 
 using AutoMapper;
 
 namespace IMT_Reservas.Server.Application.Features.Accesorio;
 
-public class AccesorioService 
+public class AccesorioService
 {
-	private readonly IRepository<AccesorioListDto> _repository;
+	private readonly AccesorioRepository _repository;
 	private readonly IMapper _mapper;
 
-	public AccesorioService(IRepository<AccesorioListDto> repository, IMapper mapper)
+	public AccesorioService(AccesorioRepository repository, IMapper mapper)
 	{
 		_repository = repository;
 		_mapper = mapper;

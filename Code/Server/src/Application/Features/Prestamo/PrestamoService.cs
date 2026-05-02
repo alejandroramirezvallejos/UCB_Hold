@@ -1,9 +1,10 @@
 using Ardalis.Result;
-using IMT_Reservas.Server.Core.Abstractions;
 using PrestamoEntity = IMT_Reservas.Server.Core.Entities.Prestamo;
 using IMT_Reservas.Server.Core.Entities;
 using IMT_Reservas.Server.Application.Features.Prestamo.Dtos;
 using IMT_Reservas.Server.Application.Features.Prestamo.Validators;
+using IMT_Reservas.Server.Infrastructure.Repositories.Implementations;
+using IMT_Reservas.Server.Core.Abstractions;
 
 using AutoMapper;
 
@@ -11,10 +12,10 @@ namespace IMT_Reservas.Server.Application.Features.Prestamo;
 
 public class PrestamoService
 {
-	private readonly IRepository<PrestamoListDto> _repository;
+	private readonly PrestamoRepository _repository;
 	private readonly IMapper _mapper;
 
-	public PrestamoService(IRepository<PrestamoListDto> repository, IMapper mapper) 
+	public PrestamoService(PrestamoRepository repository, IMapper mapper) 
 	{
 		_repository = repository;
 		_mapper = mapper;

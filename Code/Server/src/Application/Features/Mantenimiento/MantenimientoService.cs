@@ -1,20 +1,21 @@
 using Ardalis.Result;
-using IMT_Reservas.Server.Core.Abstractions;
 using MantenimientoEntity = IMT_Reservas.Server.Core.Entities.Mantenimiento;
 using IMT_Reservas.Server.Core.Entities;
 using IMT_Reservas.Server.Application.Features.Mantenimiento.Dtos;
 using IMT_Reservas.Server.Application.Features.Mantenimiento.Validators;
+using IMT_Reservas.Server.Infrastructure.Repositories.Implementations;
+using IMT_Reservas.Server.Core.Abstractions;
 
 using AutoMapper;
 
 namespace IMT_Reservas.Server.Application.Features.Mantenimiento;
 
-public class MantenimientoService 
+public class MantenimientoService
 {
-private readonly IRepository<MantenimientoListDto> _repository;
+private readonly MantenimientoRepository _repository;
 	private readonly IMapper _mapper;
 
-	public MantenimientoService(IRepository<MantenimientoListDto> repository, IMapper mapper) 
+	public MantenimientoService(MantenimientoRepository repository, IMapper mapper)
 	{
 		_repository = repository;
 		_mapper = mapper;

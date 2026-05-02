@@ -1,20 +1,21 @@
 using Ardalis.Result;
-using IMT_Reservas.Server.Core.Abstractions;
 using CarreraEntity = IMT_Reservas.Server.Core.Entities.Carrera;
 using IMT_Reservas.Server.Core.Entities;
 using IMT_Reservas.Server.Core.Errors;
 using IMT_Reservas.Server.Application.Features.Carrera.Dtos;
 using IMT_Reservas.Server.Application.Features.Carrera.Validators;
+using IMT_Reservas.Server.Infrastructure.Repositories.Implementations;
+using IMT_Reservas.Server.Core.Abstractions;
 using AutoMapper;
 
 namespace IMT_Reservas.Server.Application.Features.Carrera;
 
 public class CarreraService
 {
-	private readonly IRepository<CarreraListDto> _repository;
+	private readonly CarreraRepository _repository;
 	private readonly IMapper _mapper;
 
-	public CarreraService(IRepository<CarreraListDto> repository, IMapper mapper)
+	public CarreraService(CarreraRepository repository, IMapper mapper)
 	{
 		_repository = repository;
 		_mapper = mapper;

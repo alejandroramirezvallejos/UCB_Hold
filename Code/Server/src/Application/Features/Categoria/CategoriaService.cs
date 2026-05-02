@@ -1,20 +1,21 @@
 using Ardalis.Result;
-using IMT_Reservas.Server.Core.Abstractions;
 using CategoriaEntity = IMT_Reservas.Server.Core.Entities.Categoria;
 using IMT_Reservas.Server.Core.Entities;
 using IMT_Reservas.Server.Application.Features.Categoria.Dtos;
 using IMT_Reservas.Server.Application.Features.Categoria.Validators;
+using IMT_Reservas.Server.Infrastructure.Repositories.Implementations;
+using IMT_Reservas.Server.Core.Abstractions;
 
 using AutoMapper;
 
 namespace IMT_Reservas.Server.Application.Features.Categoria;
 
-public class CategoriaService 
+public class CategoriaService
 {
-	private readonly IRepository<CategoriaListDto> _repository;
+	private readonly CategoriaRepository _repository;
 	private readonly IMapper _mapper;
 
-	public CategoriaService(IRepository<CategoriaListDto> repository, IMapper mapper) 
+	public CategoriaService(CategoriaRepository repository, IMapper mapper)
 	{
 		_repository = repository;
 		_mapper = mapper;

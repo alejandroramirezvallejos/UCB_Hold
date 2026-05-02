@@ -10,9 +10,9 @@ public class ExecuteQuery : IExecuteQuery
 
     public ExecuteQuery(IConfiguration configuration)
     {
-        _connectionString = configuration.GetConnectionString("DefaultConnection")
+        _connectionString = configuration.GetConnectionString("PostgreSQL")
                             ?? throw new InvalidOperationException(
-                                "La cadena de conexión 'DefaultConnection' no está configurada.");
+                                "La cadena de conexión 'PostgreSQL' no está configurada.");
     }
 
     public virtual void EjecutarSpNR(string nombreSp, Dictionary<string, object?> parametros)

@@ -1,20 +1,21 @@
 using Ardalis.Result;
-using IMT_Reservas.Server.Core.Abstractions;
 using MuebleEntity = IMT_Reservas.Server.Core.Entities.Mueble;
 using IMT_Reservas.Server.Core.Entities;
 using IMT_Reservas.Server.Application.Features.Mueble.Dtos;
 using IMT_Reservas.Server.Application.Features.Mueble.Validators;
+using IMT_Reservas.Server.Infrastructure.Repositories.Implementations;
+using IMT_Reservas.Server.Core.Abstractions;
 
 using AutoMapper;
 
 namespace IMT_Reservas.Server.Application.Features.Mueble;
 
-public class MuebleService 
+public class MuebleService
 {
-private readonly IRepository<MuebleListDto> _repository;
+private readonly MuebleRepository _repository;
 	private readonly IMapper _mapper;
 
-	public MuebleService(IRepository<MuebleListDto> repository, IMapper mapper) 
+	public MuebleService(MuebleRepository repository, IMapper mapper)
 	{
 		_repository = repository;
 		_mapper = mapper;

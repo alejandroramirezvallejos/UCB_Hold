@@ -1,20 +1,21 @@
 using Ardalis.Result;
-using IMT_Reservas.Server.Core.Abstractions;
 using GaveteroEntity = IMT_Reservas.Server.Core.Entities.Gavetero;
 using IMT_Reservas.Server.Core.Entities;
 using IMT_Reservas.Server.Application.Features.Gavetero.Dtos;
 using IMT_Reservas.Server.Application.Features.Gavetero.Validators;
+using IMT_Reservas.Server.Infrastructure.Repositories.Implementations;
+using IMT_Reservas.Server.Core.Abstractions;
 
 using AutoMapper;
 
 namespace IMT_Reservas.Server.Application.Features.Gavetero;
 
-public class GaveteroService 
+public class GaveteroService
 {
-private readonly IRepository<GaveteroListDto> _repository;
+private readonly GaveteroRepository _repository;
 	private readonly IMapper _mapper;
 
-	public GaveteroService(IRepository<GaveteroListDto> repository, IMapper mapper) 
+	public GaveteroService(GaveteroRepository repository, IMapper mapper)
 	{
 		_repository = repository;
 		_mapper = mapper;
