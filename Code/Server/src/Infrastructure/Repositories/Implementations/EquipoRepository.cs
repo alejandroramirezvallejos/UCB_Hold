@@ -31,7 +31,7 @@ public class EquipoRepository : Repository<EquipoListDto>
 		        e.codigo_imt, e.codigo_ucb, e.numero_serial, e.estado_equipo, e.ubicacion,
 		        g.nombre as nombre_gavetero, e.costo_referencia, e.descripcion, e.tiempo_max_prestamo, e.procedencia
 		     FROM public.equipos e
-		     LEFT JOIN public.grupo_equipos ge ON e.id_grupo_equipo = ge.id_grupo_equipo
+		     LEFT JOIN public.grupos_equipos ge ON e.id_grupo_equipo = ge.id_grupo_equipo
 		     LEFT JOIN public.gaveteros g ON e.id_gavetero = g.id_gavetero
 		     WHERE e.estado_eliminado = FALSE";
 
@@ -40,7 +40,7 @@ public class EquipoRepository : Repository<EquipoListDto>
 		        e.codigo_imt, e.codigo_ucb, e.numero_serial, e.estado_equipo, e.ubicacion,
 		        g.nombre as nombre_gavetero, e.costo_referencia, e.descripcion, e.tiempo_max_prestamo, e.procedencia
 		     FROM public.equipos e
-		     LEFT JOIN public.grupo_equipos ge ON e.id_grupo_equipo = ge.id_grupo_equipo
+		     LEFT JOIN public.grupos_equipos ge ON e.id_grupo_equipo = ge.id_grupo_equipo
 		     LEFT JOIN public.gaveteros g ON e.id_gavetero = g.id_gavetero
 		     WHERE e.id_equipo = @id AND e.estado_eliminado = FALSE";
 

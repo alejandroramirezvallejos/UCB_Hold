@@ -49,4 +49,20 @@ public class UsuarioController : ControllerBase
 		var result = await _service.DeleteAsync(id);
 		return result.IsSuccess ? NoContent() : BadRequest(result.Errors);
 	}
+
+	[HttpPost("iniciarSesion")]
+	public async Task<IActionResult> IniciarSesion([FromBody] LoginRequest request)
+	{
+		if (string.IsNullOrWhiteSpace(request?.Email) || string.IsNullOrWhiteSpace(request?.Contrasena))
+			return BadRequest(new { error = "Email y contraseña son requeridos" });
+
+		var result = await _service.LoginAsync(request.Email, request.Contrasena);
+		return result.IsSuccess ? Ok(result.Value) : Unauthorized(result.Errors);
+	}
+}
+
+public class LoginRequest
+{
+	public string? Email { get; set; }
+	public string? Contrasena { get; set; }
 }

@@ -34,10 +34,15 @@ export class MantenimientoService {
       map(data => data.map(item => ({
         Id: item.Id,
         FechaMantenimiento: item.FechaMantenimiento,
-        FechaFinalMantenimiento: item.FechaFinalMantenimiento,
+        FechaFinalDeMantenimiento: item.FechaFinalDeMantenimiento,
         IdEmpresa: item.IdEmpresa,
         Descripcion: item.Descripcion,
-        Costo: item.Costo
+        Costo: item.Costo,
+        NombreEmpresaMantenimiento: item.NombreEmpresaMantenimiento,
+        TipoMantenimiento: item.TipoMantenimiento,
+        NombreGrupoEquipo: item.NombreGrupoEquipo,
+        CodigoImtEquipo: item.CodigoImtEquipo,
+        DescripcionEquipo: item.DescripcionEquipo
       })))
     );
   }

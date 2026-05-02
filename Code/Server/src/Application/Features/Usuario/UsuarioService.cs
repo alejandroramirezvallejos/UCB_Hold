@@ -77,6 +77,38 @@ public class UsuarioService
 		return result;
 	}
 
+	public async Task<Result<UsuarioDetailDto>> LoginAsync(string email, string contrasena)
+	{
+		var result = await _repository.GetAllAsync(null);
+		if (!result.IsSuccess)
+			return Result<UsuarioDetailDto>.Error("Error al obtener usuarios");
+
+		var usuario = result.Value?.FirstOrDefault(u =>
+			u.Email?.Equals(email, StringComparison.OrdinalIgnoreCase) == true);
+
+		if (usuario == null)
+			return Result<UsuarioDetailDto>.Error("Usuario no encontrado");
+
+		var detailDto = new UsuarioDetailDto
+		{
+			Id = usuario.Id,
+			Carnet = usuario.Carnet,
+			Nombre = usuario.Nombre,
+			ApellidoPaterno = usuario.ApellidoPaterno,
+			ApellidoMaterno = usuario.ApellidoMaterno,
+			Email = usuario.Email,
+			Rol = usuario.Rol,
+			IdCarrera = usuario.IdCarrera,
+			Telefono = usuario.Telefono,
+			TelefonoReferencia = usuario.TelefonoReferencia,
+			NombreReferencia = usuario.NombreReferencia,
+			EmailReferencia = usuario.EmailReferencia,
+			EstadoEliminado = false
+		};
+
+		return Result<UsuarioDetailDto>.Success(detailDto);
+	}
+
 	protected Dictionary<string, object?> MapEntityToParameters(UsuarioEntity entity)
 	{
 		return new Dictionary<string, object?>

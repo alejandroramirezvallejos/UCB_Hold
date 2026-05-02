@@ -27,18 +27,21 @@ public class EmpresaMantenimientoRepository : Repository<EmpresaMantenimientoLis
 		=> "UPDATE public.empresas_mantenimiento SET estado_eliminado = TRUE WHERE id_empresa_mantenimiento = @id";
 
 	protected override string SelectAll()
-		=> "SELECT id_empresa_mantenimiento, nombre, contacto, email, telefono FROM public.empresas_mantenimiento WHERE estado_eliminado = FALSE";
+		=> "SELECT id_empresa_mantenimiento, nombre, contacto, email, telefono, apellido_responsable, nit, direccion FROM public.empresas_mantenimiento WHERE estado_eliminado = FALSE";
 
 	protected override string SelectById()
-		=> "SELECT id_empresa_mantenimiento, nombre, contacto, email, telefono FROM public.empresas_mantenimiento WHERE id_empresa_mantenimiento = @id AND estado_eliminado = FALSE";
+		=> "SELECT id_empresa_mantenimiento, nombre, contacto, email, telefono, apellido_responsable, nit, direccion FROM public.empresas_mantenimiento WHERE id_empresa_mantenimiento = @id AND estado_eliminado = FALSE";
 
 	protected override EmpresaMantenimientoListDto MapRowToDto(DataRow row) => new()
 	{
 		Id = Convert.ToInt32(row["id_empresa_mantenimiento"]),
-		Nombre = row["nombre"] == DBNull.Value ? null : row["nombre"].ToString(),
-		Contacto = row["contacto"] == DBNull.Value ? null : row["contacto"].ToString(),
+		NombreEmpresa = row["nombre"] == DBNull.Value ? null : row["nombre"].ToString(),
+		NombreResponsable = row["contacto"] == DBNull.Value ? null : row["contacto"].ToString(),
+		ApellidoResponsable = row["apellido_responsable"] == DBNull.Value ? null : row["apellido_responsable"].ToString(),
+		Telefono = row["telefono"] == DBNull.Value ? null : row["telefono"].ToString(),
 		Email = row["email"] == DBNull.Value ? null : row["email"].ToString(),
-		Telefono = row["telefono"] == DBNull.Value ? null : row["telefono"].ToString()
+		Nit = row["nit"] == DBNull.Value ? null : row["nit"].ToString(),
+		Direccion = row["direccion"] == DBNull.Value ? null : row["direccion"].ToString()
 	};
 }
 

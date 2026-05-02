@@ -59,16 +59,29 @@ public class GaveteroRepository : Repository<GaveteroListDto>
 		=> "UPDATE public.gaveteros SET estado_eliminado = TRUE WHERE id_gavetero = @id";
 
 	protected override string SelectAll()
-		=> "SELECT id_gavetero, nombre, tipo, id_mueble, longitud, profundidad, altura FROM public.gaveteros WHERE estado_eliminado = FALSE";
+		=> @"SELECT g.id_gavetero, g.nombre, g.tipo, g.id_mueble, g.longitud, g.profundidad, g.altura,
+		        m.nombre as nombre_mueble
+		     FROM public.gaveteros g
+		     LEFT JOIN public.muebles m ON g.id_mueble = m.id_mueble
+		     WHERE g.estado_eliminado = FALSE";
 
 	protected override string SelectById()
-		=> "SELECT id_gavetero, nombre, tipo, id_mueble, longitud, profundidad, altura FROM public.gaveteros WHERE id_gavetero = @id AND estado_eliminado = FALSE";
+		=> @"SELECT g.id_gavetero, g.nombre, g.tipo, g.id_mueble, g.longitud, g.profundidad, g.altura,
+		        m.nombre as nombre_mueble
+		     FROM public.gaveteros g
+		     LEFT JOIN public.muebles m ON g.id_mueble = m.id_mueble
+		     WHERE g.id_gavetero = @id AND g.estado_eliminado = FALSE";
 
 	protected override GaveteroListDto MapRowToDto(DataRow row) => new()
 	{
 		Id = Convert.ToInt32(row["id_gavetero"]),
 		Nombre = row["nombre"] == DBNull.Value ? null : row["nombre"].ToString(),
-		IdMueble = Convert.ToInt32(row["id_mueble"])
+		IdMueble = Convert.ToInt32(row["id_mueble"]),
+		Tipo = row["tipo"] == DBNull.Value ? null : row["tipo"].ToString(),
+		NombreMueble = row["nombre_mueble"] == DBNull.Value ? null : row["nombre_mueble"].ToString(),
+		Longitud = row["longitud"] == DBNull.Value ? null : Convert.ToDecimal(row["longitud"]),
+		Profundidad = row["profundidad"] == DBNull.Value ? null : Convert.ToDecimal(row["profundidad"]),
+		Altura = row["altura"] == DBNull.Value ? null : Convert.ToDecimal(row["altura"])
 	};
 }
 

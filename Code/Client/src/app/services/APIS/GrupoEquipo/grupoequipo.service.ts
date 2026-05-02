@@ -24,12 +24,17 @@ export class GrupoequipoService {
   obtenersinfiltroGruposEquipos() {
     return this.http.get<any[]>(this.apiUrl).pipe(
       map(data => data.map(item => ({
-        Id: item.Id,
-        Nombre: item.Nombre,
-        Modelo: item.Modelo,
-        Marca: item.Marca,
+        id: item.id,
+        nombre: item.nombre,
+        modelo: item.modelo,
+        marca: item.marca,
         Cantidad: item.Cantidad,
-        IdCategoria: item.IdCategoria
+        IdCategoria: item.IdCategoria,
+        descripcion: item.descripcion,
+        url_data_sheet: item.url_data_sheet,
+        link: item.link,
+        nombreCategoria: item.nombreCategoria,
+        CostoPromedio: item.CostoPromedio
       })))
     );
   }
@@ -37,12 +42,17 @@ export class GrupoequipoService {
     var url : string   = this.apiUrl +'/buscar' + '?nombre=' + producto + '&categoria=' + categoria;
     return this.http.get<any[]>(url).pipe(
       map(data => data.map(item => ({
-        Id: item.Id,
-        Nombre: item.Nombre,
-        Modelo: item.Modelo || '',
-        Marca: item.Marca || '',
+        id: item.id,
+        nombre: item.nombre,
+        modelo: item.modelo || '',
+        marca: item.marca || '',
         Cantidad: item.Cantidad || 0,
-        IdCategoria: item.IdCategoria
+        IdCategoria: item.IdCategoria,
+        descripcion: item.descripcion,
+        url_data_sheet: item.url_data_sheet,
+        link: item.link,
+        nombreCategoria: item.nombreCategoria,
+        CostoPromedio: item.CostoPromedio
       })))
     );
   }
@@ -50,12 +60,17 @@ export class GrupoequipoService {
     const url = `${this.apiUrl}/${id}`;
     return this.http.get<any>(url).pipe(
       map(item => ({
-        Id: item.Id,
-        Nombre: item.Nombre,
-        Modelo: item.Modelo || '',
-        Marca: item.Marca || '',
+        id: item.id,
+        nombre: item.nombre,
+        modelo: item.modelo || '',
+        marca: item.marca || '',
         Cantidad: item.Cantidad || 0,
-        IdCategoria: item.IdCategoria
+        IdCategoria: item.IdCategoria,
+        descripcion: item.descripcion,
+        url_data_sheet: item.url_data_sheet,
+        link: item.link,
+        nombreCategoria: item.nombreCategoria,
+        CostoPromedio: item.CostoPromedio
       }))
     );
   }

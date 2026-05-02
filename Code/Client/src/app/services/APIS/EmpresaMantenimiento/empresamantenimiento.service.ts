@@ -25,9 +25,12 @@ export class EmpresamantenimientoService {
       map(data => data.map(item => ({
         Id: item.Id,
         Email: item.Email,
-        Nombre: item.Nombre,
-        Contacto: item.Contacto,
-        Telefono: item.Telefono
+        NombreEmpresa: item.NombreEmpresa,
+        NombreResponsable: item.NombreResponsable,
+        ApellidoResponsable: item.ApellidoResponsable,
+        Telefono: item.Telefono,
+        Nit: item.Nit,
+        Direccion: item.Direccion
       })))
     );
   }

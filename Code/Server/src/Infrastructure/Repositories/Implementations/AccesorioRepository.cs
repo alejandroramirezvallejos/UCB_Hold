@@ -51,13 +51,13 @@ public class AccesorioRepository : Repository<AccesorioListDto>
 	protected override AccesorioListDto MapRowToDto(DataRow row) => new()
 	{
 		Id = Convert.ToInt32(row["id_accesorio"]),
-		Nombre = row["nombre"] == DBNull.Value ? null : row["nombre"].ToString(),
-		Modelo = row["modelo"] == DBNull.Value ? null : row["modelo"].ToString(),
-		Tipo = row["tipo"] == DBNull.Value ? null : row["tipo"].ToString(),
-		Descripcion = row["descripcion"] == DBNull.Value ? null : row["descripcion"].ToString(),
-		CodigoImt = row["codigo_imt"] == DBNull.Value ? null : row["codigo_imt"].ToString(),
-		Precio = row["precio"] == DBNull.Value ? null : Convert.ToDecimal(row["precio"]),
-		UrlDataSheet = row["url_data_sheet"] == DBNull.Value ? null : row["url_data_sheet"].ToString(),
-		NombreEquipoAsociado = row["nombre_equipo_asociado"] == DBNull.Value ? null : row["nombre_equipo_asociado"].ToString()
+		nombre = row["nombre"] == DBNull.Value ? null : row["nombre"].ToString(),
+		modelo = row["modelo"] == DBNull.Value ? null : row["modelo"].ToString(),
+		tipo = row["tipo"] == DBNull.Value ? null : row["tipo"].ToString(),
+		descripcion = row["descripcion"] == DBNull.Value ? null : row["descripcion"].ToString(),
+		codigo_imt = row["codigo_imt"] == DBNull.Value ? null : row["codigo_imt"].ToString(),
+		precio = row["precio"] == DBNull.Value ? null : Convert.ToDecimal(row["precio"]),
+		url_data_sheet = row["url_data_sheet"] == DBNull.Value ? null : row["url_data_sheet"].ToString(),
+		nombreEquipoAsociado = row["nombre_equipo_asociado"] == DBNull.Value ? null : row["nombre_equipo_asociado"].ToString()
 	};
 }

@@ -30,17 +30,19 @@ export class EquipoService {
     return this.http.get<any[]>(this.apiUrl).pipe(
       map(data => data.map(item => ({
         Id: item.Id,
-        CodigoUcb: item.CodigoUcb,
+        NombreGrupoEquipo: item.NombreGrupoEquipo,
+        Modelo: item.Modelo,
+        Marca: item.Marca,
         CodigoImt: item.CodigoImt,
-        Descripcion: item.Descripcion,
+        CodigoUcb: item.CodigoUcb,
         NumeroSerial: item.NumeroSerial,
+        EstadoEquipo: item.EstadoEquipo,
         Ubicacion: item.Ubicacion,
+        NombreGavetero: item.NombreGavetero,
         CostoReferencia: item.CostoReferencia,
-        TiempoMaxPrestamo: item.TiempoMaxPrestamo,
-        Procedencia: item.Procedencia,
-        IdGavetero: item.IdGavetero,
-        IdGrupoEquipo: item.IdGrupoEquipo,
-        EstadoEquipo: item.EstadoEquipo
+        Descripcion: item.Descripcion,
+        TiempoMaximoPrestamo: item.TiempoMaximoPrestamo,
+        Procedencia: item.Procedencia
       })))
     );
   }

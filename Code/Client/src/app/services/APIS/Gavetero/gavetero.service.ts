@@ -25,7 +25,11 @@ export class GaveteroService {
       map(data => data.map(item => ({
         Id: item.Id,
         Nombre: item.Nombre,
-        IdMueble: item.IdMueble
+        Tipo: item.Tipo,
+        NombreMueble: item.NombreMueble,
+        Longitud: item.Longitud,
+        Profundidad: item.Profundidad,
+        Altura: item.Altura
       })))
     );
   }

@@ -13,10 +13,14 @@ export class AccesoriosService {
     return this.http.get<any[]>(this.apiurl).pipe(
       map(data => data.map(item => ({
         Id: item.Id,
-        nombre: item.Nombre,
-        modelo: item.Modelo,
-        tipo: item.Tipo,
-        precio: item.Precio
+        nombre: item.nombre,
+        modelo: item.modelo,
+        tipo: item.tipo,
+        precio: item.precio,
+        descripcion: item.descripcion,
+        codigo_imt: item.codigo_imt,
+        url_data_sheet: item.url_data_sheet,
+        nombreEquipoAsociado: item.nombreEquipoAsociado
       })))
     );
   }
