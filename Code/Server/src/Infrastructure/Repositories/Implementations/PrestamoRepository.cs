@@ -3,7 +3,6 @@ using IMT_Reservas.Server.Infrastructure.PostgreSQL;
 using IMT_Reservas.Server.Infrastructure.Repositories.Abstraction;
 using Microsoft.EntityFrameworkCore;
 using PrestamoEntity = IMT_Reservas.Server.Core.Entities.Prestamo;
-
 namespace IMT_Reservas.Server.Infrastructure.Repositories.Implementations;
 
 public class PrestamoRepository : Repository<PrestamoEntity, PrestamoListDto>
@@ -40,10 +39,10 @@ public class PrestamoRepository : Repository<PrestamoEntity, PrestamoListDto>
         FechaPrestamo = entity.FechaPrestamo,
         FechaDevolucion = entity.FechaDevolucion,
         Observacion = entity.Observacion,
-        Ubicacion_Equipo = null,
-        Nombre_Gavetero = null,
-        Nombre_Mueble = null,
-        Ubicacion_Mueble = null,
+        UbicacionEquipo = null,
+        NombreGavetero = null,
+        NombreMueble = null,
+        UbicacionMueble = null,
         IdContrato = int.TryParse(entity.IdContrato, out var id) ? id : null,
         FileId = null
     };

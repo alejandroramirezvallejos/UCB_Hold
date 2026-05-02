@@ -1,5 +1,4 @@
 using Ardalis.Result;
-
 namespace IMT_Reservas.Server.Core.Abstractions;
 
 public interface IRepository<TDto> where TDto : class

@@ -3,7 +3,6 @@ using IMT_Reservas.Server.Infrastructure.PostgreSQL;
 using IMT_Reservas.Server.Infrastructure.Repositories.Abstraction;
 using Microsoft.EntityFrameworkCore;
 using AccesorioEntity = IMT_Reservas.Server.Core.Entities.Accesorio;
-
 namespace IMT_Reservas.Server.Infrastructure.Repositories.Implementations;
 
 public class AccesorioRepository : Repository<AccesorioEntity, AccesorioListDto>

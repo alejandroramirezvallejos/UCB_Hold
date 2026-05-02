@@ -3,7 +3,6 @@ using IMT_Reservas.Server.Infrastructure.PostgreSQL;
 using IMT_Reservas.Server.Infrastructure.Repositories.Abstraction;
 using Microsoft.EntityFrameworkCore;
 using MantenimientoEntity = IMT_Reservas.Server.Core.Entities.Mantenimiento;
-
 namespace IMT_Reservas.Server.Infrastructure.Repositories.Implementations;
 
 public class MantenimientoRepository : Repository<MantenimientoEntity, MantenimientoListDto>

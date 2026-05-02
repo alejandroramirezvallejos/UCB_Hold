@@ -40,6 +40,7 @@ public class CategoriaController : ControllerBase
     {
         var entity = _mapper.Map<CategoriaEntity>(dto);
         var result = await _service.Create(entity);
+        
         return result.IsSuccess ? CreatedAtAction(nameof(Get), new { id = result.Value?.Id }, new Response<CategoriaDetailDto> { Success = true, Data = result.Value }) : BadRequest(new Response<object> { Success = false, Errors = result.Errors.ToList() });
     }
 
@@ -49,6 +50,7 @@ public class CategoriaController : ControllerBase
         var entity = _mapper.Map<CategoriaEntity>(dto);
         entity.Id = id;
         var result = await _service.Update(entity);
+        
         return result.IsSuccess ? Ok(new Response<CategoriaDetailDto> { Success = true, Data = result.Value }) : BadRequest(new Response<object> { Success = false, Errors = result.Errors.ToList() });
     }
 
@@ -56,6 +58,7 @@ public class CategoriaController : ControllerBase
     public async Task<IActionResult> Delete(int id)
     {
         var result = await _service.Delete(id);
+       
         return result.IsSuccess ? NoContent() : BadRequest(new Response<object> { Success = false, Errors = result.Errors.ToList() });
     }
 }

@@ -4,7 +4,6 @@ using IMT_Reservas.Server.Infrastructure.PostgreSQL;
 using IMT_Reservas.Server.Infrastructure.Repositories.Abstraction;
 using Microsoft.EntityFrameworkCore;
 using MuebleEntity = IMT_Reservas.Server.Core.Entities.Mueble;
-
 namespace IMT_Reservas.Server.Infrastructure.Repositories.Implementations;
 
 public class MuebleRepository : Repository<MuebleEntity, MuebleListDto>
@@ -20,11 +19,13 @@ public class MuebleRepository : Repository<MuebleEntity, MuebleListDto>
     public async Task<Result<object>> UpdateGavCount(int idMueble, int increment)
     {
         var mueble = await DbContext.Muebles.FirstOrDefaultAsync(m => m.Id == idMueble && !m.EstadoEliminado);
+        
         if (mueble == null)
             return Result<object>.NotFound();
 
         mueble.NumeroGaveteros = Math.Max(0, mueble.NumeroGaveteros + increment);
         await DbContext.SaveChangesAsync();
+        
         return Result<object>.Success(null!);
     }
 

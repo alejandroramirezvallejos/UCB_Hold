@@ -1,11 +1,9 @@
 using Npgsql;
 using NpgsqlTypes;
 using System.Data;
-
 namespace IMT_Reservas.Server.Infrastructure.PostgreSQL;
 
-public class ExecuteQuery : IExecuteQuery
-{
+public class ExecuteQuery {
     private readonly string _connectionString;
 
     public ExecuteQuery(IConfiguration configuration)
@@ -15,7 +13,7 @@ public class ExecuteQuery : IExecuteQuery
                                 "La cadena de conexión 'PostgreSQL' no está configurada.");
     }
 
-    public virtual void EjecutarSpNR(string nombreSp, Dictionary<string, object?> parametros)
+    public virtual void EjecutarSpNR(string nombreSp, Dictionary<string, object?>? parametros)
     {
         try
         {
@@ -26,8 +24,8 @@ public class ExecuteQuery : IExecuteQuery
             {
                 CommandType = CommandType.Text
             };
+            
             AgregarParametros(cmd, parametros);
-
             cmd.ExecuteNonQuery();
             conn.Close();
         }
@@ -36,6 +34,7 @@ public class ExecuteQuery : IExecuteQuery
             var parametrosStr = parametros != null
                 ? string.Join(", ", parametros.Select(p => $"{p.Key}={p.Value}"))
                 : "null";
+            
             throw new NpgsqlException($"Error ejecutando comando: {nombreSp}\nParámetros: {parametrosStr}\nError original: {ex.Message}", ex);
         }
     }
@@ -49,23 +48,21 @@ public class ExecuteQuery : IExecuteQuery
         {
             CommandType = CommandType.Text
         };
+        
         AgregarParametros(cmd, parametros);
-
         NpgsqlDataReader reader = cmd.ExecuteReader();
         DataTable dt = new DataTable();
         dt.Load(reader);
-
         reader.Close();
         conn.Close();
+        
         return dt;
     }
 
-    private void AgregarParametros(NpgsqlCommand cmd, Dictionary<string, object?> parametros)
+    private void AgregarParametros(NpgsqlCommand cmd, Dictionary<string, object?>? parametros)
     {
         if (parametros == null)
-        {
             return;
-        }
 
         foreach (KeyValuePair<string, object?> param in parametros)
         {

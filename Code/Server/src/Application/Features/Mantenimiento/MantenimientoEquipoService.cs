@@ -1,7 +1,6 @@
 using Ardalis.Result;
 using IMT_Reservas.Server.Infrastructure.PostgreSQL;
 using Microsoft.EntityFrameworkCore;
-
 namespace IMT_Reservas.Server.Application.Features.Mantenimiento;
 
 public class MantenimientoEquipoService

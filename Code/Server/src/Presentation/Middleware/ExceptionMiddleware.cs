@@ -3,13 +3,13 @@ using System.Text.Json;
 
 namespace IMT_Reservas.Server.Presentations.Middleware;
 
-public class GlobalExceptionMiddleware
+public class ExceptionMiddleware
 {
     private readonly RequestDelegate _next;
-    private readonly ILogger<GlobalExceptionMiddleware> _logger;
+    private readonly ILogger<ExceptionMiddleware> _logger;
     private readonly IHostEnvironment _environment;
 
-    public GlobalExceptionMiddleware(RequestDelegate next, ILogger<GlobalExceptionMiddleware> logger, IHostEnvironment environment)
+    public ExceptionMiddleware(RequestDelegate next, ILogger<ExceptionMiddleware> logger, IHostEnvironment environment)
     {
         _next = next;
         _logger = logger;
@@ -49,6 +49,6 @@ public static class GlobalExceptionMiddlewareExtensions
 {
     public static IApplicationBuilder UseGlobalExceptionMiddleware(this IApplicationBuilder app)
     {
-        return app.UseMiddleware<GlobalExceptionMiddleware>();
+        return app.UseMiddleware<ExceptionMiddleware>();
     }
 }

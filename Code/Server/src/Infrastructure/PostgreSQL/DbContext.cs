@@ -1,9 +1,8 @@
 using Microsoft.EntityFrameworkCore;
 using IMT_Reservas.Server.Core.Entities;
-
 namespace IMT_Reservas.Server.Infrastructure.PostgreSQL;
 
-public class ApplicationDbContext : Microsoft.EntityFrameworkCore.DbContext
+public class ApplicationDbContext : DbContext
 {
     public DbSet<Usuario> Usuarios { get; set; }
     public DbSet<Carrera> Carreras { get; set; }

@@ -3,7 +3,6 @@ using IMT_Reservas.Server.Infrastructure.PostgreSQL;
 using IMT_Reservas.Server.Infrastructure.Repositories.Abstraction;
 using Microsoft.EntityFrameworkCore;
 using ComponenteEntity = IMT_Reservas.Server.Core.Entities.Componente;
-
 namespace IMT_Reservas.Server.Infrastructure.Repositories.Implementations;
 
 public class ComponenteRepository : Repository<ComponenteEntity, ComponenteListDto>

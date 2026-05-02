@@ -1,5 +1,4 @@
 using Ardalis.Result;
-
 namespace IMT_Reservas.Server.Core.Errors;
 
 public static class ErrorFactory
@@ -53,9 +52,5 @@ public static class ErrorFactory
         };
 
     private static string GetArticle<T>() where T : class
-        => GetEntityName<T>() switch
-        {
-            var x when x[0] is 'a' or 'e' or 'i' or 'o' or 'u' => "un",
-            _ => "un"
-        };
+        => "un";
 }

@@ -5,7 +5,6 @@ using IMT_Reservas.Server.Application.Dtos;
 using IMT_Reservas.Server.Application.Features.Componente.Dtos;
 using ComponenteEntity = IMT_Reservas.Server.Core.Entities.Componente;
 using AutoMapper;
-
 namespace IMT_Reservas.Server.Presentation.Controllers;
 
 [ApiController]
@@ -25,6 +24,7 @@ public class ComponenteController : ControllerBase
     public async Task<IActionResult> GetAll()
     {
         var result = await _service.GetAll();
+        
         return result.IsSuccess ? Ok(new Response<List<ComponenteListDto>> { Success = true, Data = result.Value }) : BadRequest(new Response<object> { Success = false, Errors = result.Errors.ToList() });
     }
 
@@ -32,6 +32,7 @@ public class ComponenteController : ControllerBase
     public async Task<IActionResult> Get(int id)
     {
         var result = await _service.Get(id);
+        
         return result.IsSuccess ? Ok(new Response<ComponenteDetailDto> { Success = true, Data = result.Value }) : NotFound(new Response<object> { Success = false, Errors = result.Errors.ToList() });
     }
 
@@ -40,6 +41,7 @@ public class ComponenteController : ControllerBase
     {
         var entity = _mapper.Map<ComponenteEntity>(dto);
         var result = await _service.Create(entity);
+        
         return result.IsSuccess ? CreatedAtAction(nameof(Get), new { id = result.Value?.Id }, new Response<ComponenteDetailDto> { Success = true, Data = result.Value }) : BadRequest(new Response<object> { Success = false, Errors = result.Errors.ToList() });
     }
 
@@ -49,6 +51,7 @@ public class ComponenteController : ControllerBase
         var entity = _mapper.Map<ComponenteEntity>(dto);
         entity.Id = id;
         var result = await _service.Update(entity);
+        
         return result.IsSuccess ? Ok(new Response<ComponenteDetailDto> { Success = true, Data = result.Value }) : BadRequest(new Response<object> { Success = false, Errors = result.Errors.ToList() });
     }
 
@@ -56,6 +59,7 @@ public class ComponenteController : ControllerBase
     public async Task<IActionResult> Delete(int id)
     {
         var result = await _service.Delete(id);
+        
         return result.IsSuccess ? NoContent() : BadRequest(new Response<object> { Success = false, Errors = result.Errors.ToList() });
     }
 }

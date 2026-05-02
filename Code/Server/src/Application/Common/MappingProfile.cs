@@ -22,7 +22,6 @@ using MantenimientoEntity = IMT_Reservas.Server.Core.Entities.Mantenimiento;
 using EmpresaMantenimientoEntity = IMT_Reservas.Server.Core.Entities.EmpresaMantenimiento;
 using GaveteroEntity = IMT_Reservas.Server.Core.Entities.Gavetero;
 using MuebleEntity = IMT_Reservas.Server.Core.Entities.Mueble;
-
 namespace IMT_Reservas.Server.Application.Common;
 
 public class MappingProfile : Profile
@@ -32,43 +31,33 @@ public class MappingProfile : Profile
         CreateMap<UsuarioDto, UsuarioEntity>().ReverseMap();
         CreateMap<UsuarioEntity, UsuarioDetailDto>().ReverseMap();
         CreateMap<UsuarioEntity, UsuarioListDto>().ReverseMap();
-
         CreateMap<EquipoDto, EquipoEntity>().ReverseMap();
         CreateMap<EquipoEntity, EquipoDetailDto>().ReverseMap();
         CreateMap<EquipoEntity, EquipoListDto>().ReverseMap();
-
         CreateMap<AccesorioDto, AccesorioEntity>().ReverseMap();
         CreateMap<AccesorioEntity, AccesorioDetailDto>().ReverseMap();
         CreateMap<AccesorioEntity, AccesorioListDto>().ReverseMap();
-
         CreateMap<GrupoEquipoDto, GrupoEquipoEntity>().ReverseMap();
         CreateMap<GrupoEquipoEntity, GrupoEquipoDetailDto>().ReverseMap();
         CreateMap<GrupoEquipoEntity, GrupoEquipoListDto>().ReverseMap();
-
         CreateMap<CarreraDto, CarreraEntity>().ReverseMap();
         CreateMap<CarreraEntity, CarreraDetailDto>().ReverseMap();
         CreateMap<CarreraEntity, CarreraListDto>().ReverseMap();
-
         CreateMap<CategoriaDto, CategoriaEntity>().ReverseMap();
         CreateMap<CategoriaEntity, CategoriaDetailDto>().ReverseMap();
         CreateMap<CategoriaEntity, CategoriaListDto>().ReverseMap();
-
         CreateMap<PrestamoDto, PrestamoEntity>().ReverseMap();
         CreateMap<PrestamoEntity, PrestamoDetailDto>().ReverseMap();
         CreateMap<PrestamoEntity, PrestamoListDto>().ReverseMap();
-
         CreateMap<MantenimientoDto, MantenimientoEntity>().ReverseMap();
         CreateMap<MantenimientoEntity, MantenimientoDetailDto>().ReverseMap();
         CreateMap<MantenimientoEntity, MantenimientoListDto>().ReverseMap();
-
         CreateMap<EmpresaMantenimientoDto, EmpresaMantenimientoEntity>().ReverseMap();
         CreateMap<EmpresaMantenimientoEntity, EmpresaMantenimientoDetailDto>().ReverseMap();
         CreateMap<EmpresaMantenimientoEntity, EmpresaMantenimientoListDto>().ReverseMap();
-
         CreateMap<GaveteroDto, GaveteroEntity>().ReverseMap();
         CreateMap<GaveteroEntity, GaveteroDetailDto>().ReverseMap();
         CreateMap<GaveteroEntity, GaveteroListDto>().ReverseMap();
-
         CreateMap<MuebleDto, MuebleEntity>().ReverseMap();
         CreateMap<MuebleEntity, MuebleDetailDto>().ReverseMap();
         CreateMap<MuebleEntity, MuebleListDto>().ReverseMap();

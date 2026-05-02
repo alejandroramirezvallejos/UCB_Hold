@@ -3,7 +3,6 @@ using IMT_Reservas.Server.Application.Features.Mantenimiento.Dtos;
 using MantenimientoEntity = IMT_Reservas.Server.Core.Entities.Mantenimiento;
 using IMT_Reservas.Server.Infrastructure.Repositories.Implementations;
 using IMT_Reservas.Server.Core.Abstractions;
-
 namespace IMT_Reservas.Server.Application.Features.Mantenimiento;
 
 public class MantenimientoService
@@ -18,6 +17,7 @@ public class MantenimientoService
     public async Task<Result<MantenimientoDetailDto>> Create(MantenimientoEntity entity)
     {
         var result = await _repository.Create(entity);
+        
         return !result.IsSuccess
             ? Result<MantenimientoDetailDto>.Error("Error al crear mantenimiento")
             : Result<MantenimientoDetailDto>.Created(MapListDtoToDetailDto(result.Value));
@@ -26,6 +26,7 @@ public class MantenimientoService
     public async Task<Result<MantenimientoDetailDto>> Update(MantenimientoEntity entity)
     {
         var result = await _repository.Update(entity);
+        
         return !result.IsSuccess
             ? Result<MantenimientoDetailDto>.Error("Error al actualizar mantenimiento")
             : Result<MantenimientoDetailDto>.Success(MapListDtoToDetailDto(result.Value));
@@ -34,6 +35,7 @@ public class MantenimientoService
     public async Task<Result<object>> Delete(int id)
     {
         var result = await _repository.Delete(id);
+        
         return result.IsSuccess
             ? Result<object>.Success(null!)
             : Result<object>.Error("Error al eliminar mantenimiento");
@@ -42,6 +44,7 @@ public class MantenimientoService
     public async Task<Result<MantenimientoDetailDto>> Get(int id)
     {
         var mantenimiento = await _repository.Get(id);
+        
         return !mantenimiento.IsSuccess
             ? Result<MantenimientoDetailDto>.NotFound()
             : Result<MantenimientoDetailDto>.Success(MapListDtoToDetailDto(mantenimiento.Value));
@@ -50,23 +53,12 @@ public class MantenimientoService
     public async Task<Result<List<MantenimientoListDto>>> GetAll(QueryFilter? filter = null)
     {
         var result = await _repository.GetAll(filter);
+        
         return result.IsSuccess
             ? Result<List<MantenimientoListDto>>.Success(result.Value)
             : Result<List<MantenimientoListDto>>.Error("Error al obtener mantenimientos");
     }
-
-    private static MantenimientoDetailDto MapEntityToDetailDto(MantenimientoEntity entity) => new()
-    {
-        Id = entity.Id,
-        IdEquipo = 0,
-        IdEmpresaMantenimiento = entity.IdEmpresa,
-        FechaInicio = entity.FechaMantenimiento,
-        FechaFin = entity.FechaFinalMantenimiento,
-        Descripcion = entity.Descripcion,
-        Costo = entity.Costo.HasValue ? (decimal)entity.Costo.Value : null,
-        EstadoEliminado = entity.EstadoEliminado
-    };
-
+    
     private static MantenimientoDetailDto MapListDtoToDetailDto(MantenimientoListDto dto) => new()
     {
         Id = dto.Id,

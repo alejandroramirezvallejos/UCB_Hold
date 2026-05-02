@@ -3,7 +3,6 @@ using IMT_Reservas.Server.Infrastructure.PostgreSQL;
 using IMT_Reservas.Server.Infrastructure.Repositories.Abstraction;
 using Microsoft.EntityFrameworkCore;
 using CategoriaEntity = IMT_Reservas.Server.Core.Entities.Categoria;
-
 namespace IMT_Reservas.Server.Infrastructure.Repositories.Implementations;
 
 public class CategoriaRepository : Repository<CategoriaEntity, CategoriaListDto>

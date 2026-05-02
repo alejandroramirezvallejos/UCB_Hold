@@ -3,7 +3,6 @@ using IMT_Reservas.Server.Infrastructure.PostgreSQL;
 using IMT_Reservas.Server.Infrastructure.Repositories.Abstraction;
 using Microsoft.EntityFrameworkCore;
 using GrupoEquipoEntity = IMT_Reservas.Server.Core.Entities.GrupoEquipo;
-
 namespace IMT_Reservas.Server.Infrastructure.Repositories.Implementations;
 
 public class GrupoEquipoRepository : Repository<GrupoEquipoEntity, GrupoEquipoListDto>
@@ -19,16 +18,16 @@ public class GrupoEquipoRepository : Repository<GrupoEquipoEntity, GrupoEquipoLi
 
     protected override GrupoEquipoListDto MapToDto(GrupoEquipoEntity entity) => new()
     {
-        id = entity.Id,
+        Id = entity.Id,
         IdCategoria = entity.IdCategoria,
-        nombre = entity.Nombre,
-        modelo = entity.Modelo,
-        marca = entity.Marca,
+        Nombre = entity.Nombre,
+        Modelo = entity.Modelo,
+        Marca = entity.Marca,
         Cantidad = entity.Cantidad,
-        descripcion = entity.Descripcion,
-        url_data_sheet = entity.UrlDataSheet,
-        link = null,
-        nombreCategoria = null,
+        Descripcion = entity.Descripcion,
+        UrlDataSheet = entity.UrlDataSheet,
+        Link = null,
+        NombreCategoria = null,
         CostoPromedio = entity.CostoPromedio
     };
 }

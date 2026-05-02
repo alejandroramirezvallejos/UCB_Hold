@@ -1,4 +1,3 @@
-using AutoMapper;
 using Microsoft.EntityFrameworkCore;
 using IMT_Reservas.Server.Application.Features.Accesorio;
 using IMT_Reservas.Server.Application.Features.Carrera;
@@ -19,11 +18,12 @@ using IMT_Reservas.Server.Infrastructure.MongoDb;
 
 var builder = WebApplication.CreateBuilder(args);
 
-builder.Services.Configure<IMT_Reservas.Server.Infrastructure.MongoDb.MongoDbConfiguracion>(
+builder.Services.Configure<MongoDbConfiguracion>(
     builder.Configuration.GetSection("MongoDbSettings"));
 
 var connectionString = builder.Configuration.GetConnectionString("PostgreSQL");
-builder.Services.AddDbContext<IMT_Reservas.Server.Infrastructure.PostgreSQL.ApplicationDbContext>(options =>
+
+builder.Services.AddDbContext<ApplicationDbContext>(options =>
     options.UseNpgsql(connectionString));
 
 builder.Services.AddControllers();
@@ -70,5 +70,4 @@ if (app.Environment.IsDevelopment())
 
 app.UseAuthorization();
 app.MapControllers();
-
 app.Run();

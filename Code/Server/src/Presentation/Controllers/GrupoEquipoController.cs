@@ -5,7 +5,6 @@ using IMT_Reservas.Server.Application.Dtos;
 using IMT_Reservas.Server.Application.Features.GrupoEquipo.Dtos;
 using GrupoEquipoEntity = IMT_Reservas.Server.Core.Entities.GrupoEquipo;
 using AutoMapper;
-
 namespace IMT_Reservas.Server.Presentation.Controllers;
 
 [ApiController]
@@ -25,6 +24,7 @@ public class GrupoEquipoController : ControllerBase
     public async Task<IActionResult> GetAll()
     {
         var result = await _service.GetAll();
+        
         return result.IsSuccess ? Ok(new Response<List<GrupoEquipoListDto>> { Success = true, Data = result.Value }) : BadRequest(new Response<object> { Success = false, Errors = result.Errors.ToList() });
     }
 
@@ -32,6 +32,7 @@ public class GrupoEquipoController : ControllerBase
     public async Task<IActionResult> Get(int id)
     {
         var result = await _service.Get(id);
+        
         return result.IsSuccess ? Ok(new Response<GrupoEquipoDetailDto> { Success = true, Data = result.Value }) : NotFound(new Response<object> { Success = false, Errors = result.Errors.ToList() });
     }
 
@@ -40,6 +41,7 @@ public class GrupoEquipoController : ControllerBase
     {
         var entity = _mapper.Map<GrupoEquipoEntity>(dto);
         var result = await _service.Create(entity);
+        
         return result.IsSuccess ? CreatedAtAction(nameof(Get), new { id = result.Value?.Id }, new Response<GrupoEquipoDetailDto> { Success = true, Data = result.Value }) : BadRequest(new Response<object> { Success = false, Errors = result.Errors.ToList() });
     }
 
@@ -49,6 +51,7 @@ public class GrupoEquipoController : ControllerBase
         var entity = _mapper.Map<GrupoEquipoEntity>(dto);
         entity.Id = id;
         var result = await _service.Update(entity);
+        
         return result.IsSuccess ? Ok(new Response<GrupoEquipoDetailDto> { Success = true, Data = result.Value }) : BadRequest(new Response<object> { Success = false, Errors = result.Errors.ToList() });
     }
 
@@ -56,6 +59,7 @@ public class GrupoEquipoController : ControllerBase
     public async Task<IActionResult> Delete(int id)
     {
         var result = await _service.Delete(id);
+        
         return result.IsSuccess ? NoContent() : BadRequest(new Response<object> { Success = false, Errors = result.Errors.ToList() });
     }
 }

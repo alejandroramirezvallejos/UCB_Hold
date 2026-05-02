@@ -3,7 +3,6 @@ using IMT_Reservas.Server.Infrastructure.PostgreSQL;
 using IMT_Reservas.Server.Infrastructure.Repositories.Abstraction;
 using Microsoft.EntityFrameworkCore;
 using CarreraEntity = IMT_Reservas.Server.Core.Entities.Carrera;
-
 namespace IMT_Reservas.Server.Infrastructure.Repositories.Implementations;
 
 public class CarreraRepository : Repository<CarreraEntity, CarreraListDto>

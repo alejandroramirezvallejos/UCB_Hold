@@ -4,7 +4,6 @@ using IMT_Reservas.Server.Infrastructure.Repositories.Abstraction;
 using Ardalis.Result;
 using Microsoft.EntityFrameworkCore;
 using UsuarioEntity = IMT_Reservas.Server.Core.Entities.Usuario;
-
 namespace IMT_Reservas.Server.Infrastructure.Repositories.Implementations;
 
 public class UsuarioRepository : Repository<UsuarioEntity, UsuarioListDto>
@@ -35,6 +34,7 @@ public class UsuarioRepository : Repository<UsuarioEntity, UsuarioListDto>
         {
             var entity = await DbContext.Usuarios
                 .FirstOrDefaultAsync(u => u.Carnet == carnet && !u.EstadoEliminado);
+            
             if (entity == null)
                 return Result<object>.NotFound();
 
