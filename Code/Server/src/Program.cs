@@ -16,6 +16,9 @@ using IMT_Reservas.Server.Infrastructure.MongoDb;
 
 var builder = WebApplication.CreateBuilder(args);
 
+builder.Services.Configure<IMT_Reservas.Server.Infrastructure.MongoDb.MongoDbSettings>(
+    builder.Configuration.GetSection("MongoDbSettings"));
+
 builder.Services.AddControllers();
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();

@@ -3,21 +3,17 @@ using IMT_Reservas.Server.Application.Features.Prestamo.Dtos;
 using IMT_Reservas.Server.Infrastructure.Repositories.Abstraction;
 using IMT_Reservas.Server.Infrastructure.PostgreSQL;
 using IMT_Reservas.Server.Infrastructure.MongoDb;
-using MongoDB.Driver;
-using MongoDB.Driver.GridFS;
 
 namespace IMT_Reservas.Server.Infrastructure.Repositories.Implementations;
 
 public class PrestamoRepository : Repository<PrestamoListDto>
 {
 	private readonly MongoDbContexto _mongoDbContext;
-	private readonly IGridFSBucket _gridFsBucket;
 
-	public PrestamoRepository(ExecuteQuery executeQuery, MongoDbContexto mongoDbContext, IGridFSBucket gridFsBucket)
+	public PrestamoRepository(ExecuteQuery executeQuery, MongoDbContexto mongoDbContext)
 		: base(executeQuery)
 	{
 		_mongoDbContext = mongoDbContext;
-		_gridFsBucket = gridFsBucket;
 	}
 
 	public async Task<bool> ExisteActivoPorId(int id)
