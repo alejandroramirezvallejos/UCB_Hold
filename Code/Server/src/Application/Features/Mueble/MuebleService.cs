@@ -35,7 +35,7 @@ public class MuebleService
     {
         var result = await _repository.Delete(id);
         return result.IsSuccess
-            ? Result<object>.Success(null)
+            ? Result<object>.Success(null!)
             : Result<object>.Error("Error al eliminar mueble");
     }
 

@@ -34,7 +34,7 @@ public class UsuarioService
     {
         var result = await _repository.Delete(carnet);
         return result.IsSuccess
-            ? Result<object>.Success(null)
+            ? Result<object>.Success(null!)
             : Result<object>.Error("Error al eliminar usuario");
     }
 

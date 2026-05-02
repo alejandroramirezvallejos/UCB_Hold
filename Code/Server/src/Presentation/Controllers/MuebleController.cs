@@ -28,7 +28,7 @@ public class MuebleController : ControllerBase
         return result.IsSuccess ? Ok(new Response<List<MuebleListDto>> { Success = true, Data = result.Value }) : BadRequest(new Response<object> { Success = false, Errors = result.Errors.ToList() });
     }
 
-    [HttpGet("{id}")]
+    [HttpGet("{id:int}")]
     public async Task<IActionResult> Get(int id)
     {
         var result = await _service.Get(id);
@@ -43,7 +43,7 @@ public class MuebleController : ControllerBase
         return result.IsSuccess ? CreatedAtAction(nameof(Get), new { id = result.Value?.Id }, new Response<MuebleDetailDto> { Success = true, Data = result.Value }) : BadRequest(new Response<object> { Success = false, Errors = result.Errors.ToList() });
     }
 
-    [HttpPut("{id}")]
+    [HttpPut("{id:int}")]
     public async Task<IActionResult> Update(int id, [FromBody] MuebleDto dto)
     {
         var entity = _mapper.Map<MuebleEntity>(dto);
@@ -52,7 +52,7 @@ public class MuebleController : ControllerBase
         return result.IsSuccess ? Ok(new Response<MuebleDetailDto> { Success = true, Data = result.Value }) : BadRequest(new Response<object> { Success = false, Errors = result.Errors.ToList() });
     }
 
-    [HttpDelete("{id}")]
+    [HttpDelete("{id:int}")]
     public async Task<IActionResult> Delete(int id)
     {
         var result = await _service.Delete(id);

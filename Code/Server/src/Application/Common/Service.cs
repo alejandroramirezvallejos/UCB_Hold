@@ -27,7 +27,7 @@ public abstract class Service<TEntity, TDetailDto, TListDto>
         var validation = GetValidator().Validate(entity);
         if (!validation.IsSuccess)
         {
-            var errors = validation.Errors.Cast<ValidationError>().Select(e => e.ErrorMessage ?? e.ErrorCode).ToList();
+            var errors = validation.Errors.OfType<ValidationError>().Select(e => e.ErrorMessage ?? e.ErrorCode).ToList();
             return Result<TDetailDto>.Error(string.Join("; ", errors));
         }
 
@@ -43,7 +43,7 @@ public abstract class Service<TEntity, TDetailDto, TListDto>
         var validation = GetValidator().Validate(entity);
         if (!validation.IsSuccess)
         {
-            var errors = validation.Errors.Cast<ValidationError>().Select(e => e.ErrorMessage ?? e.ErrorCode).ToList();
+            var errors = validation.Errors.OfType<ValidationError>().Select(e => e.ErrorMessage ?? e.ErrorCode).ToList();
             return Result<TDetailDto>.Error(string.Join("; ", errors));
         }
 

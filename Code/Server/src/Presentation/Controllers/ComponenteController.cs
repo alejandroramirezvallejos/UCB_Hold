@@ -28,7 +28,7 @@ public class ComponenteController : ControllerBase
         return result.IsSuccess ? Ok(new Response<List<ComponenteListDto>> { Success = true, Data = result.Value }) : BadRequest(new Response<object> { Success = false, Errors = result.Errors.ToList() });
     }
 
-    [HttpGet("{id}")]
+    [HttpGet("{id:int}")]
     public async Task<IActionResult> Get(int id)
     {
         var result = await _service.Get(id);
@@ -43,7 +43,7 @@ public class ComponenteController : ControllerBase
         return result.IsSuccess ? CreatedAtAction(nameof(Get), new { id = result.Value?.Id }, new Response<ComponenteDetailDto> { Success = true, Data = result.Value }) : BadRequest(new Response<object> { Success = false, Errors = result.Errors.ToList() });
     }
 
-    [HttpPut("{id}")]
+    [HttpPut("{id:int}")]
     public async Task<IActionResult> Update(int id, [FromBody] ComponenteDto dto)
     {
         var entity = _mapper.Map<ComponenteEntity>(dto);
@@ -52,7 +52,7 @@ public class ComponenteController : ControllerBase
         return result.IsSuccess ? Ok(new Response<ComponenteDetailDto> { Success = true, Data = result.Value }) : BadRequest(new Response<object> { Success = false, Errors = result.Errors.ToList() });
     }
 
-    [HttpDelete("{id}")]
+    [HttpDelete("{id:int}")]
     public async Task<IActionResult> Delete(int id)
     {
         var result = await _service.Delete(id);

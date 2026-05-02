@@ -27,7 +27,6 @@ public class ApplicationDbContext : Microsoft.EntityFrameworkCore.DbContext
     {
         base.OnModelCreating(modelBuilder);
 
-        // Carrera
         modelBuilder.Entity<Carrera>(entity =>
         {
             entity.HasKey(e => e.Id);
@@ -36,7 +35,6 @@ public class ApplicationDbContext : Microsoft.EntityFrameworkCore.DbContext
             entity.HasQueryFilter(e => !e.EstadoEliminado);
         });
 
-        // Categoria
         modelBuilder.Entity<Categoria>(entity =>
         {
             entity.HasKey(e => e.Id);
@@ -45,7 +43,6 @@ public class ApplicationDbContext : Microsoft.EntityFrameworkCore.DbContext
             entity.HasQueryFilter(e => !e.EstadoEliminado);
         });
 
-        // EmpresaMantenimiento
         modelBuilder.Entity<EmpresaMantenimiento>(entity =>
         {
             entity.HasKey(e => e.Id);
@@ -58,7 +55,6 @@ public class ApplicationDbContext : Microsoft.EntityFrameworkCore.DbContext
             entity.HasQueryFilter(e => !e.EstadoEliminado);
         });
 
-        // GrupoEquipo
         modelBuilder.Entity<GrupoEquipo>(entity =>
         {
             entity.HasKey(e => e.Id);
@@ -75,7 +71,6 @@ public class ApplicationDbContext : Microsoft.EntityFrameworkCore.DbContext
             entity.HasQueryFilter(e => !e.EstadoEliminado);
         });
 
-        // Mueble
         modelBuilder.Entity<Mueble>(entity =>
         {
             entity.HasKey(e => e.Id);
@@ -88,7 +83,6 @@ public class ApplicationDbContext : Microsoft.EntityFrameworkCore.DbContext
             entity.HasQueryFilter(e => !e.EstadoEliminado);
         });
 
-        // Gavetero
         modelBuilder.Entity<Gavetero>(entity =>
         {
             entity.HasKey(e => e.Id);
@@ -100,7 +94,6 @@ public class ApplicationDbContext : Microsoft.EntityFrameworkCore.DbContext
             entity.HasQueryFilter(e => !e.EstadoEliminado);
         });
 
-        // Equipo
         modelBuilder.Entity<Equipo>(entity =>
         {
             entity.HasKey(e => e.Id);
@@ -121,7 +114,6 @@ public class ApplicationDbContext : Microsoft.EntityFrameworkCore.DbContext
             entity.HasQueryFilter(e => !e.EstadoEliminado);
         });
 
-        // Accesorio
         modelBuilder.Entity<Accesorio>(entity =>
         {
             entity.HasKey(e => e.Id);
@@ -133,7 +125,6 @@ public class ApplicationDbContext : Microsoft.EntityFrameworkCore.DbContext
             entity.HasQueryFilter(e => !e.EstadoEliminado);
         });
 
-        // Componente
         modelBuilder.Entity<Componente>(entity =>
         {
             entity.HasKey(e => e.Id);
@@ -145,7 +136,6 @@ public class ApplicationDbContext : Microsoft.EntityFrameworkCore.DbContext
             entity.HasQueryFilter(e => !e.EstadoEliminado);
         });
 
-        // Mantenimiento
         modelBuilder.Entity<Mantenimiento>(entity =>
         {
             entity.HasKey(e => e.Id);
@@ -156,7 +146,6 @@ public class ApplicationDbContext : Microsoft.EntityFrameworkCore.DbContext
             entity.HasQueryFilter(e => !e.EstadoEliminado);
         });
 
-        // DetalleMantenimiento
         modelBuilder.Entity<DetalleMantenimiento>(entity =>
         {
             entity.HasKey(e => e.Id);
@@ -167,7 +156,6 @@ public class ApplicationDbContext : Microsoft.EntityFrameworkCore.DbContext
             entity.HasQueryFilter(e => !e.EstadoEliminado);
         });
 
-        // Usuario
         modelBuilder.Entity<Usuario>(entity =>
         {
             entity.HasKey(e => e.Carnet);
@@ -187,7 +175,6 @@ public class ApplicationDbContext : Microsoft.EntityFrameworkCore.DbContext
             entity.HasQueryFilter(e => !e.EstadoEliminado);
         });
 
-        // Prestamo
         modelBuilder.Entity<Prestamo>(entity =>
         {
             entity.HasKey(e => e.Id);
@@ -202,7 +189,6 @@ public class ApplicationDbContext : Microsoft.EntityFrameworkCore.DbContext
             entity.HasQueryFilter(e => !e.EstadoEliminado);
         });
 
-        // DetallePrestamo
         modelBuilder.Entity<DetallePrestamo>(entity =>
         {
             entity.HasKey(e => e.Id);
@@ -212,7 +198,6 @@ public class ApplicationDbContext : Microsoft.EntityFrameworkCore.DbContext
             entity.HasQueryFilter(e => !e.EstadoEliminado);
         });
 
-        // Contrato (MongoDB - stored separately, but mapped for reference)
         modelBuilder.Entity<Contrato>(entity =>
         {
             entity.HasKey(e => e.Id);

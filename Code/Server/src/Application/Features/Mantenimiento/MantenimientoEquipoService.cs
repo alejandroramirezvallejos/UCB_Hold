@@ -27,7 +27,7 @@ public class MantenimientoEquipoService
             await _dbContext.SaveChangesAsync();
         }
 
-        return Result<object>.Success(null);
+        return Result<object>.Success(null!);
     }
 
     public async Task<Result<object>> IncrementQty(int groupId)
@@ -40,7 +40,7 @@ public class MantenimientoEquipoService
 
         grupo.Cantidad++;
         await _dbContext.SaveChangesAsync();
-        return Result<object>.Success(null);
+        return Result<object>.Success(null!);
     }
 
     public async Task<Result<object>> DecrementQty(int groupId)
@@ -55,7 +55,7 @@ public class MantenimientoEquipoService
             grupo.Cantidad--;
 
         await _dbContext.SaveChangesAsync();
-        return Result<object>.Success(null);
+        return Result<object>.Success(null!);
     }
 
     public async Task<Result<object>> RecalcCost()
@@ -74,7 +74,7 @@ public class MantenimientoEquipoService
         }
 
         await _dbContext.SaveChangesAsync();
-        return Result<object>.Success(null);
+        return Result<object>.Success(null!);
     }
 
     public async Task<Result<List<int>>> GetNeedsMaint()

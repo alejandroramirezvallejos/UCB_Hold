@@ -1,81 +1,111 @@
-using System.Data;
 using Ardalis.Result;
 using IMT_Reservas.Server.Core.Abstractions;
 using IMT_Reservas.Server.Infrastructure.PostgreSQL;
+using Microsoft.EntityFrameworkCore;
 
 namespace IMT_Reservas.Server.Infrastructure.Repositories.Abstraction;
 
-public abstract class Repository<TDto> : IRepository<TDto> where TDto : class
+public abstract class Repository<TEntity, TDto> where TEntity : class where TDto : class
 {
-    protected readonly ExecuteQuery ExecuteQuery;
+    protected readonly ApplicationDbContext DbContext;
 
-    protected Repository(ExecuteQuery executeQuery) => ExecuteQuery = executeQuery;
+    protected Repository(ApplicationDbContext dbContext) => DbContext = dbContext;
 
-    public virtual Result<TDto> Create(Dictionary<string, object?> parameters)
+    public virtual async Task<Result<TDto>> Create(TEntity entity)
     {
-        var sql = CreateStatement();
-        if (string.IsNullOrEmpty(sql))
-            return Result<TDto>.Error("SQL Create command invalid");
-
-        var dt = ExecuteQuery.EjecutarFuncion(sql, parameters);
-        return dt?.Rows.Count == 0
-            ? Result<TDto>.Error("Failed to create record")
-            : Result<TDto>.Created(MapRowToDto(dt.Rows[0]));
+        try
+        {
+            DbContext.Add(entity);
+            await DbContext.SaveChangesAsync();
+            return Result<TDto>.Created(MapToDto(entity));
+        }
+        catch (DbUpdateException ex)
+        {
+            return Result<TDto>.Error($"Database error: {ex.InnerException?.Message}");
+        }
     }
 
-    public virtual Result<TDto> Update(Dictionary<string, object?> parameters)
+    public virtual async Task<Result<TDto>> Update(TEntity entity)
     {
-        var sql = UpdateStatement();
-        if (string.IsNullOrEmpty(sql))
-            return Result<TDto>.Error("SQL Update command invalid");
-
-        ExecuteQuery.EjecutarSpNR(sql, parameters);
-        return Result<TDto>.Success(null);
+        try
+        {
+            DbContext.Update(entity);
+            await DbContext.SaveChangesAsync();
+            return Result<TDto>.Success(MapToDto(entity));
+        }
+        catch (DbUpdateException ex)
+        {
+            return Result<TDto>.Error($"Database error: {ex.InnerException?.Message}");
+        }
     }
 
-    public virtual Result<object> Delete(int id)
+    public virtual async Task<Result<object>> Delete(int id)
     {
-        var parameters = new Dictionary<string, object?> { ["id"] = id };
-        var sql = DeleteStatement();
-        if (string.IsNullOrEmpty(sql))
-            return Result<object>.Error("SQL Delete command invalid");
+        try
+        {
+            var entity = await DbContext.FindAsync(typeof(TEntity), id);
+            if (entity == null)
+                return Result<object>.NotFound();
 
-        ExecuteQuery.EjecutarSpNR(sql, parameters);
-        return Result<object>.Success(null);
+            DbContext.Remove(entity);
+            await DbContext.SaveChangesAsync();
+            return Result<object>.Success(null!);
+        }
+        catch (DbUpdateException ex)
+        {
+            return Result<object>.Error($"Database error: {ex.InnerException?.Message}");
+        }
     }
 
-    public virtual Result<TDto> Get(int id)
+    public virtual async Task<Result<TDto>> Get(int id)
     {
-        var parameters = new Dictionary<string, object?> { ["id"] = id };
-        var sql = SelectById();
-        var dt = ExecuteQuery.EjecutarFuncion(sql, parameters);
-        return dt?.Rows.Count == 0
-            ? Result<TDto>.NotFound()
-            : Result<TDto>.Success(MapRowToDto(dt.Rows[0]));
+        try
+        {
+            var entity = await DbContext.FindAsync(typeof(TEntity), id);
+            return entity == null
+                ? Result<TDto>.NotFound()
+                : Result<TDto>.Success(MapToDto((TEntity)entity));
+        }
+        catch (Exception ex)
+        {
+            return Result<TDto>.Error($"Error: {ex.Message}");
+        }
     }
 
-    public virtual Result<List<TDto>> GetAll(QueryFilter filter = null)
+    public virtual async Task<Result<List<TDto>>> GetAll(QueryFilter? filter = null)
     {
-        var sql = SelectAll();
-        var dt = ExecuteQuery.EjecutarFuncion(sql, filter?.Filters ?? new Dictionary<string, object?>());
-        return dt?.Rows.Count == 0
-            ? Result<List<TDto>>.NotFound()
-            : Result<List<TDto>>.Success(dt.Rows.Cast<DataRow>().Select(MapRowToDto).ToList());
+        try
+        {
+            var query = DbContext.Set<TEntity>().AsQueryable();
+            var entities = await query.ToListAsync();
+            var dtos = entities.Select(MapToDto).ToList();
+            return dtos.Count == 0
+                ? Result<List<TDto>>.NotFound()
+                : Result<List<TDto>>.Success(dtos);
+        }
+        catch (Exception ex)
+        {
+            return Result<List<TDto>>.Error($"Error: {ex.Message}");
+        }
     }
 
     public virtual bool Exists(int id)
     {
-        var parameters = new Dictionary<string, object?> { ["id"] = id };
-        var sql = SelectExists();
-        var dt = ExecuteQuery.EjecutarFuncion(sql, parameters);
-        return dt?.Rows.Count > 0;
+        try
+        {
+            return DbContext.Set<TEntity>().Any(e => GetIdValue(e).Equals(id));
+        }
+        catch
+        {
+            return false;
+        }
     }
 
-    protected abstract string CreateStatement();
-    protected abstract string UpdateStatement();
-    protected abstract string DeleteStatement();
-    protected abstract string SelectAll();
-    protected virtual string SelectById() => SelectAll() + " WHERE id = @id";
-    protected virtual string SelectExists() => "SELECT 1 WHERE 1=0";
-    protected abstract TDto MapRowToDto(DataRow row);
+    protected abstract TDto MapToDto(TEntity entity);
+
+    protected virtual int GetIdValue(TEntity entity)
+    {
+        var idProp = typeof(TEntity).GetProperty("Id");
+        return idProp != null ? (int)idProp.GetValue(entity)! : 0;
+    }
 }
