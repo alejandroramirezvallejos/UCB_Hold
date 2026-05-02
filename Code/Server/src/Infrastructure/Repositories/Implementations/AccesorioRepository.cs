@@ -9,7 +9,7 @@ public class AccesorioRepository : Repository<AccesorioListDto>
 {
 	public AccesorioRepository(ExecuteQuery executeQuery) : base(executeQuery) { }
 
-	public async Task<bool> ExisteActivoPorId(int id)
+	public bool ExisteActivoPorId(int id)
 	{
 		const string sql = "SELECT EXISTS(SELECT 1 FROM public.accesorios WHERE id_accesorio = @id AND estado_eliminado = FALSE)";
 		var parameters = new Dictionary<string, object?> { ["id"] = id };
@@ -25,13 +25,13 @@ public class AccesorioRepository : Repository<AccesorioListDto>
 		return dt?.Rows.Count == 0 ? null : Convert.ToInt32(dt.Rows[0][0]);
 	}
 
-	protected override string Create()
+	protected override string CreateStatement()
 		=> "INSERT INTO public.accesorios (id_equipo, nombre, modelo, tipo, precio, estado_eliminado) VALUES (@idEquipo, @nombre, @modelo, @tipo, @precio, FALSE)";
 
-	protected override string Update()
+	protected override string UpdateStatement()
 		=> "UPDATE public.accesorios SET id_equipo = COALESCE(@idEquipo, id_equipo), nombre = COALESCE(@nombre, nombre), modelo = COALESCE(@modelo, modelo), tipo = COALESCE(@tipo, tipo), precio = COALESCE(@precio, precio) WHERE id_accesorio = @id AND estado_eliminado = FALSE";
 
-	protected override string Delete()
+	protected override string DeleteStatement()
 		=> "UPDATE public.accesorios SET estado_eliminado = TRUE WHERE id_accesorio = @id";
 
 	protected override string SelectAll()
@@ -51,13 +51,13 @@ public class AccesorioRepository : Repository<AccesorioListDto>
 	protected override AccesorioListDto MapRowToDto(DataRow row) => new()
 	{
 		Id = Convert.ToInt32(row["id_accesorio"]),
-		nombre = row["nombre"] == DBNull.Value ? null : row["nombre"].ToString(),
-		modelo = row["modelo"] == DBNull.Value ? null : row["modelo"].ToString(),
-		tipo = row["tipo"] == DBNull.Value ? null : row["tipo"].ToString(),
-		descripcion = row["descripcion"] == DBNull.Value ? null : row["descripcion"].ToString(),
-		codigo_imt = row["codigo_imt"] == DBNull.Value ? null : row["codigo_imt"].ToString(),
-		precio = row["precio"] == DBNull.Value ? null : Convert.ToDecimal(row["precio"]),
-		url_data_sheet = row["url_data_sheet"] == DBNull.Value ? null : row["url_data_sheet"].ToString(),
-		nombreEquipoAsociado = row["nombre_equipo_asociado"] == DBNull.Value ? null : row["nombre_equipo_asociado"].ToString()
+		Nombre = row["nombre"] == DBNull.Value ? null : row["nombre"].ToString(),
+		Modelo = row["modelo"] == DBNull.Value ? null : row["modelo"].ToString(),
+		Tipo = row["tipo"] == DBNull.Value ? null : row["tipo"].ToString(),
+		Descripcion = row["descripcion"] == DBNull.Value ? null : row["descripcion"].ToString(),
+		CodigoImt = row["codigo_imt"] == DBNull.Value ? null : row["codigo_imt"].ToString(),
+		Precio = row["precio"] == DBNull.Value ? null : Convert.ToDecimal(row["precio"]),
+		UrlDataSheet = row["url_data_sheet"] == DBNull.Value ? null : row["url_data_sheet"].ToString(),
+		NombreEquipoAsociado = row["nombre_equipo_asociado"] == DBNull.Value ? null : row["nombre_equipo_asociado"].ToString()
 	};
 }

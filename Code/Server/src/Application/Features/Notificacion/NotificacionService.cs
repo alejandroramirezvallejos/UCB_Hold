@@ -1,12 +1,9 @@
 using Ardalis.Result;
+using AutoMapper;
+using IMT_Reservas.Server.Application.Features.Notificacion.Dtos;
 using IMT_Reservas.Server.Core.Abstractions;
 using NotificacionEntity = IMT_Reservas.Server.Core.Entities.Notificacion;
-using IMT_Reservas.Server.Core.Entities;
-using IMT_Reservas.Server.Application.Features.Notificacion.Dtos;
-using IMT_Reservas.Server.Application.Features.Notificacion.Validators;
 using IMT_Reservas.Server.Infrastructure.Repositories;
-
-using AutoMapper;
 
 namespace IMT_Reservas.Server.Application.Features.Notificacion;
 
@@ -21,72 +18,45 @@ public class NotificacionService
 		_mapper = mapper;
 	}
 
-	public async Task<Result<NotificacionDetailDto>> CreateAsync(NotificacionEntity entity)
+	public async Task<Result<NotificacionDetailDto>> Create(NotificacionEntity entity)
 	{
-		var validationResult = NotificacionValidator.ValidateCreate(entity);
-		if (!validationResult.IsSuccess)
-			return Result<NotificacionDetailDto>.Error("Validation failed");
-
-		var result = await _repository.CreateAsync(MapEntityToParameters(entity));
-
-		if (!result.IsSuccess)
-			return Result<NotificacionDetailDto>.Error(result.Errors.FirstOrDefault()?.ToString() ?? "Unknown error");
-
-		return Result<NotificacionDetailDto>.Success(_mapper.Map<NotificacionDetailDto>(result.Value));
+		var parameters = Common.Mapper.ToParameters(entity);
+		var result = await _repository.CreateAsync(parameters);
+		return result.IsSuccess
+			? Result<NotificacionDetailDto>.Success(_mapper.Map<NotificacionDetailDto>(result.Value))
+			: Result<NotificacionDetailDto>.Error(string.Join(", ", result.Errors));
 	}
 
-	public async Task<Result<NotificacionDetailDto>> UpdateAsync(NotificacionEntity entity)
+	public async Task<Result<NotificacionDetailDto>> Update(NotificacionEntity entity)
 	{
-		var validationResult = NotificacionValidator.ValidateUpdate(entity);
-		if (!validationResult.IsSuccess)
-			return Result<NotificacionDetailDto>.Error("Validation failed");
+		var parameters = Common.Mapper.ToParameters(entity);
+		var result = await _repository.UpdateAsync(parameters);
+		if (!result.IsSuccess) return Result<NotificacionDetailDto>.Error(string.Join(", ", result.Errors));
 
-		var result = await _repository.UpdateAsync(MapEntityToParameters(entity));
-
-		if (!result.IsSuccess)
-			return Result<NotificacionDetailDto>.Error(result.Errors.FirstOrDefault()?.ToString() ?? "Unknown error");
-
-		return Result<NotificacionDetailDto>.Success(_mapper.Map<NotificacionDetailDto>(result.Value));
+		var updated = await _repository.GetByIdAsync(entity.Id);
+		return updated.IsSuccess
+			? Result<NotificacionDetailDto>.Success(_mapper.Map<NotificacionDetailDto>(updated.Value))
+			: Result<NotificacionDetailDto>.NotFound();
 	}
 
-	public async Task<Result<List<NotificacionListDto>>> GetAllAsync(QueryFilter? filter = null)
+	public async Task<Result<object>> Delete(int id)
 	{
-		var result = await _repository.GetAllAsync(filter);
-		if (!result.IsSuccess)
-			return Result<List<NotificacionListDto>>.Error(result.Errors.FirstOrDefault()?.ToString() ?? "Unknown error");
-
-		var dtos = _mapper.Map<List<NotificacionListDto>>(result.Value);
-		return Result<List<NotificacionListDto>>.Success(dtos);
+		return await _repository.DeleteAsync(id);
 	}
 
-	public async Task<Result<NotificacionDetailDto>> GetByIdAsync(int id)
+	public async Task<Result<NotificacionDetailDto>> Get(int id)
 	{
 		var result = await _repository.GetByIdAsync(id);
-		if (!result.IsSuccess)
-			return Result<NotificacionDetailDto>.Error(result.Errors.FirstOrDefault()?.ToString() ?? "Unknown error");
-
-		return Result<NotificacionDetailDto>.Success(_mapper.Map<NotificacionDetailDto>(result.Value));
+		return result.IsSuccess
+			? Result<NotificacionDetailDto>.Success(_mapper.Map<NotificacionDetailDto>(result.Value))
+			: Result<NotificacionDetailDto>.NotFound();
 	}
 
-	public async Task<Result<object>> DeleteAsync(int id)
+	public async Task<Result<List<NotificacionListDto>>> GetAll(QueryFilter? filter = null)
 	{
-		var result = await _repository.DeleteAsync(id);
-		return result;
+		var result = await _repository.GetAllAsync(filter);
+		return result.IsSuccess
+			? Result<List<NotificacionListDto>>.Success(result.Value)
+			: Result<List<NotificacionListDto>>.Error(string.Join(", ", result.Errors));
 	}
-
-	protected Dictionary<string, object?> MapEntityToParameters(NotificacionEntity entity)
-	{
-		return new Dictionary<string, object?>
-		{
-			["id"] = entity.Id,
-			["idUsuario"] = entity.IdUsuario,
-			["titulo"] = entity.Titulo ?? (object)DBNull.Value,
-			["contenido"] = entity.Contenido ?? (object)DBNull.Value,
-			["esLeido"] = entity.EsLeido,
-			["fechaCreacion"] = entity.FechaCreacion
-		};
-	}
-
-	protected int GetEntityId(NotificacionEntity entity) => entity.Id;
 }
-
