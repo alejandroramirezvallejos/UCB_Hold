@@ -17,6 +17,6 @@ public class GrupoEquipoValidator : Validator<GrupoEquipoEntity>
         validation = RequiredPositiveInt(entity.IdCategoria, nameof(entity.IdCategoria));
         if (!validation.IsSuccess) return validation;
 
-        return Result<object>.Success(null);
+        return Result<object>.Success(null!);
     }
 }

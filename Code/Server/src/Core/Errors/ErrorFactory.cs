@@ -49,9 +49,6 @@ public static class ErrorFactory
             "Componente" => "componente",
             "EmpresaMantenimiento" => "empresa de mantenimiento",
             "Mantenimiento" => "mantenimiento",
-            "Comentario" => "comentario",
-            "Notificacion" => "notificación",
-            "ComentarioLike" => "like",
             _ => typeof(T).Name.ToLower()
         };
 

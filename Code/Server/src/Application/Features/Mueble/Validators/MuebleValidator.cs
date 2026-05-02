@@ -14,6 +14,6 @@ public class MuebleValidator : Validator<MuebleEntity>
         validation = MaxLength(entity.Nombre, nameof(entity.Nombre), 255);
         if (!validation.IsSuccess) return validation;
 
-        return Result<object>.Success(null);
+        return Result<object>.Success(null!);
     }
 }

@@ -17,6 +17,6 @@ public class GaveteroValidator : Validator<GaveteroEntity>
         validation = RequiredPositiveInt(entity.IdMueble, nameof(entity.IdMueble));
         if (!validation.IsSuccess) return validation;
 
-        return Result<object>.Success(null);
+        return Result<object>.Success(null!);
     }
 }

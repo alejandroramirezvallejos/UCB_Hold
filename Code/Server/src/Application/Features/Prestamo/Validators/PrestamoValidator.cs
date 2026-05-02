@@ -24,6 +24,6 @@ public class PrestamoValidator : Validator<PrestamoEntity>
         if (entity.FechaDevolucionEsperada <= entity.FechaPrestamoEsperada)
             return Result<object>.Invalid(new ValidationError(nameof(entity.FechaDevolucionEsperada), "La fecha de devolución debe ser posterior a la fecha de préstamo"));
 
-        return Result<object>.Success(null);
+        return Result<object>.Success(null!);
     }
 }

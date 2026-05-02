@@ -25,7 +25,7 @@ public class MuebleRepository : Repository<MuebleEntity, MuebleListDto>
 
         mueble.NumeroGaveteros = Math.Max(0, mueble.NumeroGaveteros + increment);
         await DbContext.SaveChangesAsync();
-        return Result<object>.Success(null);
+        return Result<object>.Success(null!);
     }
 
     protected override MuebleListDto MapToDto(MuebleEntity entity) => new()

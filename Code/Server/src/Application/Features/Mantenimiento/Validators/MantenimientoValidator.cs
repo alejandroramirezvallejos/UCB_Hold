@@ -17,6 +17,6 @@ public class MantenimientoValidator : Validator<MantenimientoEntity>
         if (entity.FechaFinalMantenimiento == default)
             return Result<object>.Invalid(Core.Errors.ErrorFactory.RequiredField(nameof(entity.FechaFinalMantenimiento)));
 
-        return Result<object>.Success(null);
+        return Result<object>.Success(null!);
     }
 }

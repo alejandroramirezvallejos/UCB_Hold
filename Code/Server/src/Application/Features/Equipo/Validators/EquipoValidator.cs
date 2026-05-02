@@ -20,6 +20,6 @@ public class EquipoValidator : Validator<EquipoEntity>
         validation = MaxLength(entity.Modelo, nameof(entity.Modelo), 255);
         if (!validation.IsSuccess) return validation;
 
-        return Result<object>.Success(null);
+        return Result<object>.Success(null!);
     }
 }

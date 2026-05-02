@@ -17,6 +17,6 @@ public class AccesorioValidator : Validator<AccesorioEntity>
         validation = RequiredPositiveInt(entity.IdEquipo, nameof(entity.IdEquipo));
         if (!validation.IsSuccess) return validation;
 
-        return Result<object>.Success(null);
+        return Result<object>.Success(null!);
     }
 }
