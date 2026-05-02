@@ -1,93 +1,29 @@
 using Ardalis.Result;
-using PrestamoEntity = IMT_Reservas.Server.Core.Entities.Prestamo;
-using IMT_Reservas.Server.Core.Entities;
+using AutoMapper;
+using IMT_Reservas.Server.Application.Common;
 using IMT_Reservas.Server.Application.Features.Prestamo.Dtos;
 using IMT_Reservas.Server.Application.Features.Prestamo.Validators;
-using IMT_Reservas.Server.Infrastructure.Repositories.Implementations;
 using IMT_Reservas.Server.Core.Abstractions;
-
-using AutoMapper;
+using PrestamoEntity = IMT_Reservas.Server.Core.Entities.Prestamo;
+using IMT_Reservas.Server.Infrastructure.Repositories.Implementations;
 
 namespace IMT_Reservas.Server.Application.Features.Prestamo;
 
-public class PrestamoService
+public class PrestamoService : Service<PrestamoEntity, PrestamoDetailDto, PrestamoListDto>
 {
-	private readonly PrestamoRepository _repository;
-	private readonly IMapper _mapper;
+    public PrestamoService(PrestamoRepository repository, IMapper mapper) : base(repository, mapper)
+    {
+    }
 
-	public PrestamoService(PrestamoRepository repository, IMapper mapper) 
-	{
-		_repository = repository;
-		_mapper = mapper;
-	}
+    protected override Validator<PrestamoEntity> GetValidator() => new PrestamoValidator();
 
-	public async Task<Result<PrestamoDetailDto>> CreateAsync(PrestamoEntity entity)
-	{
-		var validationResult = PrestamoValidator.ValidateCreate(entity);
-		if (!validationResult.IsSuccess)
-			return Result<PrestamoDetailDto>.Error("Validation failed");
+    public new Result<PrestamoDetailDto> Create(PrestamoEntity entity) => base.Create(entity);
 
-		var result = await _repository.CreateAsync(MapEntityToParameters(entity));
+    public new Result<PrestamoDetailDto> Update(PrestamoEntity entity) => base.Update(entity);
 
-		if (!result.IsSuccess)
-			return Result<PrestamoDetailDto>.Error(result.Errors.FirstOrDefault()?.ToString() ?? "Unknown error");
+    public new Result<object> Delete(int id) => base.Delete(id);
 
-		return Result<PrestamoDetailDto>.Success(_mapper.Map<PrestamoDetailDto>(result.Value));
-	}
+    public new Result<PrestamoDetailDto> Get(int id) => base.Get(id);
 
-	public async Task<Result<PrestamoDetailDto>> UpdateAsync(PrestamoEntity entity)
-	{
-		var validationResult = PrestamoValidator.ValidateUpdate(entity);
-		if (!validationResult.IsSuccess)
-			return Result<PrestamoDetailDto>.Error("Validation failed");
-
-		var result = await _repository.UpdateAsync(MapEntityToParameters(entity));
-
-		if (!result.IsSuccess)
-			return Result<PrestamoDetailDto>.Error(result.Errors.FirstOrDefault()?.ToString() ?? "Unknown error");
-
-		return Result<PrestamoDetailDto>.Success(_mapper.Map<PrestamoDetailDto>(result.Value));
-	}
-
-	public async Task<Result<List<PrestamoListDto>>> GetAllAsync(QueryFilter? filter = null)
-	{
-		var result = await _repository.GetAllAsync(filter);
-		if (!result.IsSuccess)
-			return Result<List<PrestamoListDto>>.Error(result.Errors.FirstOrDefault()?.ToString() ?? "Unknown error");
-
-		var dtos = _mapper.Map<List<PrestamoListDto>>(result.Value);
-		return Result<List<PrestamoListDto>>.Success(dtos);
-	}
-
-	public async Task<Result<PrestamoDetailDto>> GetByIdAsync(int id)
-	{
-		var result = await _repository.GetByIdAsync(id);
-		if (!result.IsSuccess)
-			return Result<PrestamoDetailDto>.Error(result.Errors.FirstOrDefault()?.ToString() ?? "Unknown error");
-
-		return Result<PrestamoDetailDto>.Success(_mapper.Map<PrestamoDetailDto>(result.Value));
-	}
-
-	public async Task<Result<object>> DeleteAsync(int id)
-	{
-		var result = await _repository.DeleteAsync(id);
-		return result;
-	}
-
-	protected Dictionary<string, object?> MapEntityToParameters(PrestamoEntity entity)
-	{
-		return new Dictionary<string, object?>
-		{
-			["id"] = entity.Id,
-			["idUsuario"] = entity.IdUsuario,
-			["fechaSolicitud"] = entity.FechaSolicitud,
-			["fechaInicio"] = entity.FechaInicio,
-			["fechaFin"] = entity.FechaFin,
-			["estadoPrestamo"] = entity.EstadoPrestamo ?? (object)DBNull.Value,
-			["observaciones"] = entity.Observaciones ?? (object)DBNull.Value
-		};
-	}
-
-	protected int GetEntityId(PrestamoEntity entity) => entity.Id;
+    public new Result<List<PrestamoListDto>> GetAll(QueryFilter? filter = null) => base.GetAll(filter);
 }
-

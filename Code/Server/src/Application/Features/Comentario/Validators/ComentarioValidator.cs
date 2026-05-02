@@ -1,48 +1,25 @@
 using Ardalis.Result;
-using IMT_Reservas.Server.Core.Entities;
-using IMT_Reservas.Server.Core.Errors;
+using IMT_Reservas.Server.Core.Abstractions;
 using ComentarioEntity = IMT_Reservas.Server.Core.Entities.Comentario;
 
 namespace IMT_Reservas.Server.Application.Features.Comentario.Validators;
 
-public static class ComentarioValidator
+public class ComentarioValidator : Validator<ComentarioEntity>
 {
-	public static Result<object> ValidateCreate(ComentarioEntity entity)
-	{
-		if (entity == null)
-			return Result<object>.Invalid(ErrorFactory.RequiredField(nameof(entity)));
+    public override Result<object> Validate(ComentarioEntity entity)
+    {
+        var validation = RequiredPositiveInt(entity.IdGrupoEquipo, nameof(entity.IdGrupoEquipo));
+        if (!validation.IsSuccess) return validation;
 
-		if (entity.IdGrupoEquipo <= 0)
-			return Result<object>.Invalid(ErrorFactory.InvalidField<ComentarioEntity>(nameof(entity.IdGrupoEquipo)));
+        validation = RequiredPositiveInt(entity.IdUsuario, nameof(entity.IdUsuario));
+        if (!validation.IsSuccess) return validation;
 
-		if (entity.IdUsuario <= 0)
-			return Result<object>.Invalid(ErrorFactory.InvalidField<ComentarioEntity>(nameof(entity.IdUsuario)));
+        validation = RequiredString(entity.Contenido, nameof(entity.Contenido));
+        if (!validation.IsSuccess) return validation;
 
-		var contenidoTrimmed = entity.Contenido?.Trim();
-		if (string.IsNullOrWhiteSpace(contenidoTrimmed))
-			return Result<object>.Invalid(ErrorFactory.RequiredField(nameof(entity.Contenido)));
+        validation = MaxLength(entity.Contenido, nameof(entity.Contenido), 1000);
+        if (!validation.IsSuccess) return validation;
 
-		if (contenidoTrimmed.Length > 1000)
-			return Result<object>.Invalid(new ValidationError(nameof(entity.Contenido), "Max 1000 characters"));
-
-		return Result<object>.Success(true);
-	}
-
-	public static Result<object> ValidateUpdate(ComentarioEntity entity)
-	{
-		if (entity == null)
-			return Result<object>.Invalid(ErrorFactory.RequiredField(nameof(entity)));
-
-		if (entity.Id <= 0)
-			return Result<object>.Invalid(ErrorFactory.InvalidField<ComentarioEntity>(nameof(entity.Id)));
-
-		var contenidoTrimmed = entity.Contenido?.Trim();
-		if (string.IsNullOrWhiteSpace(contenidoTrimmed))
-			return Result<object>.Invalid(ErrorFactory.RequiredField(nameof(entity.Contenido)));
-
-		if (contenidoTrimmed.Length > 1000)
-			return Result<object>.Invalid(new ValidationError(nameof(entity.Contenido), "Max 1000 characters"));
-
-		return Result<object>.Success(true);
-	}
+        return Result<object>.Success(null);
+    }
 }

@@ -1,0 +1,11 @@
+{
+  "version": "0.0.1",
+  "configurations": [
+    {
+      "name": "dev",
+      "runtimeExecutable": "dotnet",
+      "runtimeArgs": ["run", "--project", "IMT_Reservas.Server.csproj"],
+      "port": 5000
+    }
+  ]
+}

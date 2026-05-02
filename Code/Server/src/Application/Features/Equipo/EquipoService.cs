@@ -1,100 +1,29 @@
 using Ardalis.Result;
-using EquipoEntity = IMT_Reservas.Server.Core.Entities.Equipo;
-using IMT_Reservas.Server.Core.Entities;
+using AutoMapper;
+using IMT_Reservas.Server.Application.Common;
 using IMT_Reservas.Server.Application.Features.Equipo.Dtos;
 using IMT_Reservas.Server.Application.Features.Equipo.Validators;
-using IMT_Reservas.Server.Infrastructure.Repositories.Implementations;
 using IMT_Reservas.Server.Core.Abstractions;
-
-using AutoMapper;
+using EquipoEntity = IMT_Reservas.Server.Core.Entities.Equipo;
+using IMT_Reservas.Server.Infrastructure.Repositories.Implementations;
 
 namespace IMT_Reservas.Server.Application.Features.Equipo;
 
-public class EquipoService
+public class EquipoService : Service<EquipoEntity, EquipoDetailDto, EquipoListDto>
 {
-private readonly EquipoRepository _repository;
-	private readonly IMapper _mapper;
+    public EquipoService(EquipoRepository repository, IMapper mapper) : base(repository, mapper)
+    {
+    }
 
-	public EquipoService(EquipoRepository repository, IMapper mapper)
-	{
-		_repository = repository;
-		_mapper = mapper;
-	}
+    protected override Validator<EquipoEntity> GetValidator() => new EquipoValidator();
 
-	public async Task<Result<EquipoDetailDto>> CreateAsync(EquipoEntity entity)
-	{
-		var validationResult = EquipoValidator.ValidateCreate(entity);
-		if (!validationResult.IsSuccess)
-			return Result<EquipoDetailDto>.Error("Validation failed");
+    public new Result<EquipoDetailDto> Create(EquipoEntity entity) => base.Create(entity);
 
-		var result = await _repository.CreateAsync(MapEntityToParameters(entity));
+    public new Result<EquipoDetailDto> Update(EquipoEntity entity) => base.Update(entity);
 
-		if (!result.IsSuccess)
-			return Result<EquipoDetailDto>.Error(result.Errors.FirstOrDefault()?.ToString() ?? "Unknown error");
+    public new Result<object> Delete(int id) => base.Delete(id);
 
-		return Result<EquipoDetailDto>.Success(_mapper.Map<EquipoDetailDto>(result.Value));
-	}
+    public new Result<EquipoDetailDto> Get(int id) => base.Get(id);
 
-	public async Task<Result<EquipoDetailDto>> UpdateAsync(EquipoEntity entity)
-	{
-		var validationResult = EquipoValidator.ValidateUpdate(entity);
-		if (!validationResult.IsSuccess)
-			return Result<EquipoDetailDto>.Error("Validation failed");
-
-		var result = await _repository.UpdateAsync(MapEntityToParameters(entity));
-
-		if (!result.IsSuccess)
-			return Result<EquipoDetailDto>.Error(result.Errors.FirstOrDefault()?.ToString() ?? "Unknown error");
-
-		return Result<EquipoDetailDto>.Success(_mapper.Map<EquipoDetailDto>(result.Value));
-	}
-
-	public async Task<Result<List<EquipoListDto>>> GetAllAsync(QueryFilter? filter = null)
-	{
-		var result = await _repository.GetAllAsync(filter);
-		if (!result.IsSuccess)
-			return Result<List<EquipoListDto>>.Error(result.Errors.FirstOrDefault()?.ToString() ?? "Unknown error");
-
-		var dtos = _mapper.Map<List<EquipoListDto>>(result.Value);
-		return Result<List<EquipoListDto>>.Success(dtos);
-	}
-
-	public async Task<Result<EquipoDetailDto>> GetByIdAsync(int id)
-	{
-		var result = await _repository.GetByIdAsync(id);
-		if (!result.IsSuccess)
-			return Result<EquipoDetailDto>.Error(result.Errors.FirstOrDefault()?.ToString() ?? "Unknown error");
-
-		return Result<EquipoDetailDto>.Success(_mapper.Map<EquipoDetailDto>(result.Value));
-	}
-
-	public async Task<Result<object>> DeleteAsync(int id)
-	{
-		var result = await _repository.DeleteAsync(id);
-		return result;
-	}
-
-	protected Dictionary<string, object?> MapEntityToParameters(EquipoEntity entity)
-	{
-		return new Dictionary<string, object?>
-		{
-			["id"] = entity.Id,
-			["idGrupoEquipo"] = entity.IdGrupoEquipo,
-			["codigoImt"] = entity.CodigoImt,
-			["idGavetero"] = entity.IdGavetero ?? (object)DBNull.Value,
-			["modelo"] = entity.Modelo ?? (object)DBNull.Value,
-			["marca"] = entity.Marca ?? (object)DBNull.Value,
-			["codigoUcb"] = entity.CodigoUcb ?? (object)DBNull.Value,
-			["numeroSerial"] = entity.NumeroSerial ?? (object)DBNull.Value,
-			["estadoEquipo"] = entity.EstadoEquipo ?? (object)DBNull.Value,
-			["ubicacion"] = entity.Ubicacion ?? (object)DBNull.Value,
-			["costoReferencia"] = entity.CostoReferencia ?? (object)DBNull.Value,
-			["descripcion"] = entity.Descripcion ?? (object)DBNull.Value,
-			["tiempoMaximoPrestamo"] = entity.TiempoMaximoPrestamo ?? (object)DBNull.Value,
-			["procedencia"] = entity.Procedencia ?? (object)DBNull.Value
-		};
-	}
-
-	protected int GetEntityId(EquipoEntity entity) => entity.Id;
+    public new Result<List<EquipoListDto>> GetAll(QueryFilter? filter = null) => base.GetAll(filter);
 }
-

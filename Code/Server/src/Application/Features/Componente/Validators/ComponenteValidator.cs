@@ -1,42 +1,19 @@
 using Ardalis.Result;
-using IMT_Reservas.Server.Core.Entities;
-using IMT_Reservas.Server.Core.Errors;
+using IMT_Reservas.Server.Core.Abstractions;
 using ComponenteEntity = IMT_Reservas.Server.Core.Entities.Componente;
 
 namespace IMT_Reservas.Server.Application.Features.Componente.Validators;
 
-public static class ComponenteValidator
+public class ComponenteValidator : Validator<ComponenteEntity>
 {
-	public static Result<object> ValidateCreate(ComponenteEntity entity)
-	{
-		if (entity == null)
-			return Result<object>.Invalid(ErrorFactory.RequiredField(nameof(entity)));
+    public override Result<object> Validate(ComponenteEntity entity)
+    {
+        var validation = RequiredString(entity.Nombre, nameof(entity.Nombre));
+        if (!validation.IsSuccess) return validation;
 
-		var nombreTrimmed = entity.Nombre?.Trim();
-		if (string.IsNullOrWhiteSpace(nombreTrimmed))
-			return Result<object>.Invalid(ErrorFactory.RequiredField(nameof(entity.Nombre)));
+        validation = MaxLength(entity.Nombre, nameof(entity.Nombre), 255);
+        if (!validation.IsSuccess) return validation;
 
-		if (nombreTrimmed.Length > 255)
-			return Result<object>.Invalid(new ValidationError(nameof(entity.Nombre), "Max 255 characters"));
-
-		return Result<object>.Success(true);
-	}
-
-	public static Result<object> ValidateUpdate(ComponenteEntity entity)
-	{
-		if (entity == null)
-			return Result<object>.Invalid(ErrorFactory.RequiredField(nameof(entity)));
-
-		if (entity.Id <= 0)
-			return Result<object>.Invalid(ErrorFactory.InvalidField<ComponenteEntity>(nameof(entity.Id)));
-
-		var nombreTrimmed = entity.Nombre?.Trim();
-		if (string.IsNullOrWhiteSpace(nombreTrimmed))
-			return Result<object>.Invalid(ErrorFactory.RequiredField(nameof(entity.Nombre)));
-
-		if (nombreTrimmed.Length > 255)
-			return Result<object>.Invalid(new ValidationError(nameof(entity.Nombre), "Max 255 characters"));
-
-		return Result<object>.Success(true);
-	}
+        return Result<object>.Success(null);
+    }
 }

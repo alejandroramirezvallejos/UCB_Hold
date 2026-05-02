@@ -1,92 +1,29 @@
 using Ardalis.Result;
-using GrupoEquipoEntity = IMT_Reservas.Server.Core.Entities.GrupoEquipo;
-using IMT_Reservas.Server.Core.Entities;
+using AutoMapper;
+using IMT_Reservas.Server.Application.Common;
 using IMT_Reservas.Server.Application.Features.GrupoEquipo.Dtos;
 using IMT_Reservas.Server.Application.Features.GrupoEquipo.Validators;
-using IMT_Reservas.Server.Infrastructure.Repositories.Implementations;
 using IMT_Reservas.Server.Core.Abstractions;
-
-using AutoMapper;
+using GrupoEquipoEntity = IMT_Reservas.Server.Core.Entities.GrupoEquipo;
+using IMT_Reservas.Server.Infrastructure.Repositories.Implementations;
 
 namespace IMT_Reservas.Server.Application.Features.GrupoEquipo;
 
-public class GrupoEquipoService
+public class GrupoEquipoService : Service<GrupoEquipoEntity, GrupoEquipoDetailDto, GrupoEquipoListDto>
 {
-private readonly GrupoEquipoRepository _repository;
-	private readonly IMapper _mapper;
+    public GrupoEquipoService(GrupoEquipoRepository repository, IMapper mapper) : base(repository, mapper)
+    {
+    }
 
-	public GrupoEquipoService(GrupoEquipoRepository repository, IMapper mapper)
-	{
-		_repository = repository;
-		_mapper = mapper;
-	}
+    protected override Validator<GrupoEquipoEntity> GetValidator() => new GrupoEquipoValidator();
 
-	public async Task<Result<GrupoEquipoDetailDto>> CreateAsync(GrupoEquipoEntity entity)
-	{
-		var validationResult = GrupoEquipoValidator.ValidateCreate(entity);
-		if (!validationResult.IsSuccess)
-			return Result<GrupoEquipoDetailDto>.Error("Validation failed");
+    public new Result<GrupoEquipoDetailDto> Create(GrupoEquipoEntity entity) => base.Create(entity);
 
-		entity.Nombre = entity.Nombre!.Trim();
-		var result = await _repository.CreateAsync(MapEntityToParameters(entity));
+    public new Result<GrupoEquipoDetailDto> Update(GrupoEquipoEntity entity) => base.Update(entity);
 
-		if (!result.IsSuccess)
-			return Result<GrupoEquipoDetailDto>.Error(result.Errors.FirstOrDefault()?.ToString() ?? "Unknown error");
+    public new Result<object> Delete(int id) => base.Delete(id);
 
-		return Result<GrupoEquipoDetailDto>.Success(_mapper.Map<GrupoEquipoDetailDto>(result.Value));
-	}
+    public new Result<GrupoEquipoDetailDto> Get(int id) => base.Get(id);
 
-	public async Task<Result<GrupoEquipoDetailDto>> UpdateAsync(GrupoEquipoEntity entity)
-	{
-		var validationResult = GrupoEquipoValidator.ValidateUpdate(entity);
-		if (!validationResult.IsSuccess)
-			return Result<GrupoEquipoDetailDto>.Error("Validation failed");
-
-		entity.Nombre = entity.Nombre!.Trim();
-		var result = await _repository.UpdateAsync(MapEntityToParameters(entity));
-
-		if (!result.IsSuccess)
-			return Result<GrupoEquipoDetailDto>.Error(result.Errors.FirstOrDefault()?.ToString() ?? "Unknown error");
-
-		return Result<GrupoEquipoDetailDto>.Success(_mapper.Map<GrupoEquipoDetailDto>(result.Value));
-	}
-
-	public async Task<Result<List<GrupoEquipoListDto>>> GetAllAsync(QueryFilter? filter = null)
-	{
-		var result = await _repository.GetAllAsync(filter);
-		if (!result.IsSuccess)
-			return Result<List<GrupoEquipoListDto>>.Error(result.Errors.FirstOrDefault()?.ToString() ?? "Unknown error");
-
-		var dtos = _mapper.Map<List<GrupoEquipoListDto>>(result.Value);
-		return Result<List<GrupoEquipoListDto>>.Success(dtos);
-	}
-
-	public async Task<Result<GrupoEquipoDetailDto>> GetByIdAsync(int id)
-	{
-		var result = await _repository.GetByIdAsync(id);
-		if (!result.IsSuccess)
-			return Result<GrupoEquipoDetailDto>.Error(result.Errors.FirstOrDefault()?.ToString() ?? "Unknown error");
-
-		return Result<GrupoEquipoDetailDto>.Success(_mapper.Map<GrupoEquipoDetailDto>(result.Value));
-	}
-
-	public async Task<Result<object>> DeleteAsync(int id)
-	{
-		var result = await _repository.DeleteAsync(id);
-		return result;
-	}
-
-	protected Dictionary<string, object?> MapEntityToParameters(GrupoEquipoEntity entity)
-	{
-		return new Dictionary<string, object?>
-		{
-			["id"] = entity.Id,
-			["nombre"] = entity.Nombre ?? (object)DBNull.Value,
-			["descripcion"] = entity.Descripcion ?? (object)DBNull.Value,
-			["idCategoria"] = entity.IdCategoria
-		};
-	}
-
-	protected int GetEntityId(GrupoEquipoEntity entity) => entity.Id;
+    public new Result<List<GrupoEquipoListDto>> GetAll(QueryFilter? filter = null) => base.GetAll(filter);
 }
-

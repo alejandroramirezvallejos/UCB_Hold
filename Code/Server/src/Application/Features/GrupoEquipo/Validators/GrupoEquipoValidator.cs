@@ -1,48 +1,22 @@
 using Ardalis.Result;
-using IMT_Reservas.Server.Core.Entities;
-using IMT_Reservas.Server.Core.Errors;
+using IMT_Reservas.Server.Core.Abstractions;
 using GrupoEquipoEntity = IMT_Reservas.Server.Core.Entities.GrupoEquipo;
 
 namespace IMT_Reservas.Server.Application.Features.GrupoEquipo.Validators;
 
-public static class GrupoEquipoValidator
+public class GrupoEquipoValidator : Validator<GrupoEquipoEntity>
 {
-	public static Result<object> ValidateCreate(GrupoEquipoEntity entity)
-	{
-		if (entity == null)
-			return Result<object>.Invalid(ErrorFactory.RequiredField(nameof(entity)));
+    public override Result<object> Validate(GrupoEquipoEntity entity)
+    {
+        var validation = RequiredString(entity.Nombre, nameof(entity.Nombre));
+        if (!validation.IsSuccess) return validation;
 
-		var nombreTrimmed = entity.Nombre?.Trim();
-		if (string.IsNullOrWhiteSpace(nombreTrimmed))
-			return Result<object>.Invalid(ErrorFactory.RequiredField(nameof(entity.Nombre)));
+        validation = MaxLength(entity.Nombre, nameof(entity.Nombre), 255);
+        if (!validation.IsSuccess) return validation;
 
-		if (nombreTrimmed.Length > 255)
-			return Result<object>.Invalid(new ValidationError(nameof(entity.Nombre), "Max 255 characters"));
+        validation = RequiredPositiveInt(entity.IdCategoria, nameof(entity.IdCategoria));
+        if (!validation.IsSuccess) return validation;
 
-		if (entity.IdCategoria <= 0)
-			return Result<object>.Invalid(ErrorFactory.InvalidField<GrupoEquipoEntity>(nameof(entity.IdCategoria)));
-
-		return Result<object>.Success(true);
-	}
-
-	public static Result<object> ValidateUpdate(GrupoEquipoEntity entity)
-	{
-		if (entity == null)
-			return Result<object>.Invalid(ErrorFactory.RequiredField(nameof(entity)));
-
-		if (entity.Id <= 0)
-			return Result<object>.Invalid(ErrorFactory.InvalidField<GrupoEquipoEntity>(nameof(entity.Id)));
-
-		var nombreTrimmed = entity.Nombre?.Trim();
-		if (string.IsNullOrWhiteSpace(nombreTrimmed))
-			return Result<object>.Invalid(ErrorFactory.RequiredField(nameof(entity.Nombre)));
-
-		if (nombreTrimmed.Length > 255)
-			return Result<object>.Invalid(new ValidationError(nameof(entity.Nombre), "Max 255 characters"));
-
-		if (entity.IdCategoria <= 0)
-			return Result<object>.Invalid(ErrorFactory.InvalidField<GrupoEquipoEntity>(nameof(entity.IdCategoria)));
-
-		return Result<object>.Success(true);
-	}
+        return Result<object>.Success(null);
+    }
 }

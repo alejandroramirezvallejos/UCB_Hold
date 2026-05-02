@@ -1,12 +1,10 @@
-using IMT_Reservas.Server.Core.Abstractions;
-using IMT_Reservas.Server.Infrastructure.MongoDb;
-using IMT_Reservas.Server.Infrastructure.Repositories;
-using IMT_Reservas.Server.Infrastructure.Repositories.Implementations;
-using IMT_Reservas.Server.Infrastructure.PostgreSQL;
+using AutoMapper;
+using IMT_Reservas.Server.Application.Common;
 using IMT_Reservas.Server.Application.Features.Accesorio;
 using IMT_Reservas.Server.Application.Features.Accesorio.Dtos;
 using IMT_Reservas.Server.Application.Features.Carrera;
 using IMT_Reservas.Server.Application.Features.Carrera.Dtos;
+using IMT_Reservas.Server.Application.Features.Carrito;
 using IMT_Reservas.Server.Application.Features.Categoria;
 using IMT_Reservas.Server.Application.Features.Categoria.Dtos;
 using IMT_Reservas.Server.Application.Features.Comentario;
@@ -31,8 +29,11 @@ using IMT_Reservas.Server.Application.Features.Prestamo;
 using IMT_Reservas.Server.Application.Features.Prestamo.Dtos;
 using IMT_Reservas.Server.Application.Features.Usuario;
 using IMT_Reservas.Server.Application.Features.Usuario.Dtos;
-using IMT_Reservas.Server.Application.Features.Carrito;
-using AutoMapper;
+using IMT_Reservas.Server.Core.Abstractions;
+using IMT_Reservas.Server.Infrastructure.MongoDb;
+using IMT_Reservas.Server.Infrastructure.PostgreSQL;
+using IMT_Reservas.Server.Infrastructure.Repositories;
+using IMT_Reservas.Server.Infrastructure.Repositories.Implementations;
 using Microsoft.Extensions.DependencyInjection;
 
 namespace IMT_Reservas.Server.Core.Config;
@@ -46,50 +47,64 @@ public static class DependencyInjection
 
         services.AddAutoMapper(typeof(DependencyInjection).Assembly);
 
-        services.AddScoped<IRepository<AccesorioListDto>, AccesorioRepository>();
+        services.AddScoped<AccesorioRepository>();
+        services.AddScoped<IRepository<AccesorioListDto>>(sp => sp.GetRequiredService<AccesorioRepository>());
         services.AddScoped<AccesorioService>();
 
-        services.AddScoped<IRepository<CarreraListDto>, CarreraRepository>();
+        services.AddScoped<CarreraRepository>();
+        services.AddScoped<IRepository<CarreraListDto>>(sp => sp.GetRequiredService<CarreraRepository>());
         services.AddScoped<CarreraService>();
 
-        services.AddScoped<IRepository<CategoriaListDto>, CategoriaRepository>();
+        services.AddScoped<CategoriaRepository>();
+        services.AddScoped<IRepository<CategoriaListDto>>(sp => sp.GetRequiredService<CategoriaRepository>());
         services.AddScoped<CategoriaService>();
 
-        services.AddScoped<IComentarioRepository, ComentarioRepository>();
+        services.AddScoped<ComentarioRepository>();
+        services.AddScoped<ComentarioRepository>(sp => sp.GetRequiredService<ComentarioRepository>());
         services.AddScoped<ComentarioService>();
 
-        services.AddScoped<IRepository<ComponenteListDto>, ComponenteRepository>();
+        services.AddScoped<ComponenteRepository>();
+        services.AddScoped<IRepository<ComponenteListDto>>(sp => sp.GetRequiredService<ComponenteRepository>());
         services.AddScoped<ComponenteService>();
 
-        services.AddScoped<IRepository<EmpresaMantenimientoListDto>, EmpresaMantenimientoRepository>();
+        services.AddScoped<EmpresaMantenimientoRepository>();
+        services.AddScoped<IRepository<EmpresaMantenimientoListDto>>(sp => sp.GetRequiredService<EmpresaMantenimientoRepository>());
         services.AddScoped<EmpresaMantenimientoService>();
 
-        services.AddScoped<IRepository<EquipoListDto>, EquipoRepository>();
+        services.AddScoped<EquipoRepository>();
+        services.AddScoped<IRepository<EquipoListDto>>(sp => sp.GetRequiredService<EquipoRepository>());
         services.AddScoped<EquipoService>();
 
-        services.AddScoped<IRepository<GaveteroListDto>, GaveteroRepository>();
+        services.AddScoped<GaveteroRepository>();
+        services.AddScoped<IRepository<GaveteroListDto>>(sp => sp.GetRequiredService<GaveteroRepository>());
         services.AddScoped<GaveteroService>();
 
-        services.AddScoped<IRepository<GrupoEquipoListDto>, GrupoEquipoRepository>();
+        services.AddScoped<GrupoEquipoRepository>();
+        services.AddScoped<IRepository<GrupoEquipoListDto>>(sp => sp.GetRequiredService<GrupoEquipoRepository>());
         services.AddScoped<GrupoEquipoService>();
 
-        services.AddScoped<IRepository<MantenimientoListDto>, MantenimientoRepository>();
+        services.AddScoped<MantenimientoRepository>();
+        services.AddScoped<IRepository<MantenimientoListDto>>(sp => sp.GetRequiredService<MantenimientoRepository>());
         services.AddScoped<MantenimientoService>();
 
-        services.AddScoped<IRepository<MuebleListDto>, MuebleRepository>();
+        services.AddScoped<MuebleRepository>();
+        services.AddScoped<IRepository<MuebleListDto>>(sp => sp.GetRequiredService<MuebleRepository>());
         services.AddScoped<MuebleService>();
 
-        services.AddScoped<INotificacionRepository, NotificacionRepository>();
+        services.AddScoped<NotificacionRepository>();
+        services.AddScoped<NotificacionRepository>(sp => sp.GetRequiredService<NotificacionRepository>());
         services.AddScoped<NotificacionService>();
 
-        services.AddScoped<IRepository<PrestamoListDto>, PrestamoRepository>();
+        services.AddScoped<PrestamoRepository>();
+        services.AddScoped<IRepository<PrestamoListDto>>(sp => sp.GetRequiredService<PrestamoRepository>());
         services.AddScoped<PrestamoService>();
 
-        services.AddScoped<IRepository<UsuarioListDto>, UsuarioRepository>();
+        services.AddScoped<UsuarioRepository>();
+        services.AddScoped<IRepository<UsuarioListDto>>(sp => sp.GetRequiredService<UsuarioRepository>());
         services.AddScoped<UsuarioService>();
 
         services.AddScoped<CarritoRepository>();
-        services.AddScoped<ICarritoRepository>(sp => sp.GetRequiredService<CarritoRepository>());
+        services.AddScoped<CarritoRepository>(sp => sp.GetRequiredService<CarritoRepository>());
         services.AddScoped<CarritoService>();
 
         return services;

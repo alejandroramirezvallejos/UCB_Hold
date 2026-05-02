@@ -1,90 +1,29 @@
 using Ardalis.Result;
-using CategoriaEntity = IMT_Reservas.Server.Core.Entities.Categoria;
-using IMT_Reservas.Server.Core.Entities;
+using AutoMapper;
+using IMT_Reservas.Server.Application.Common;
 using IMT_Reservas.Server.Application.Features.Categoria.Dtos;
 using IMT_Reservas.Server.Application.Features.Categoria.Validators;
-using IMT_Reservas.Server.Infrastructure.Repositories.Implementations;
 using IMT_Reservas.Server.Core.Abstractions;
-
-using AutoMapper;
+using CategoriaEntity = IMT_Reservas.Server.Core.Entities.Categoria;
+using IMT_Reservas.Server.Infrastructure.Repositories.Implementations;
 
 namespace IMT_Reservas.Server.Application.Features.Categoria;
 
-public class CategoriaService
+public class CategoriaService : Service<CategoriaEntity, CategoriaDetailDto, CategoriaListDto>
 {
-	private readonly CategoriaRepository _repository;
-	private readonly IMapper _mapper;
+    public CategoriaService(CategoriaRepository repository, IMapper mapper) : base(repository, mapper)
+    {
+    }
 
-	public CategoriaService(CategoriaRepository repository, IMapper mapper)
-	{
-		_repository = repository;
-		_mapper = mapper;
-	}
+    protected override Validator<CategoriaEntity> GetValidator() => new CategoriaValidator();
 
-	public async Task<Result<CategoriaDetailDto>> CreateAsync(CategoriaEntity entity)
-	{
-		var validationResult = CategoriaValidator.ValidateCreate(entity);
-		if (!validationResult.IsSuccess)
-			return Result<CategoriaDetailDto>.Error("Validation failed");
+    public new Result<CategoriaDetailDto> Create(CategoriaEntity entity) => base.Create(entity);
 
-		entity.Nombre = entity.Nombre!.Trim();
-		var result = await _repository.CreateAsync(MapEntityToParameters(entity));
+    public new Result<CategoriaDetailDto> Update(CategoriaEntity entity) => base.Update(entity);
 
-		if (!result.IsSuccess)
-			return Result<CategoriaDetailDto>.Error(result.Errors.FirstOrDefault()?.ToString() ?? "Unknown error");
+    public new Result<object> Delete(int id) => base.Delete(id);
 
-		return Result<CategoriaDetailDto>.Success(_mapper.Map<CategoriaDetailDto>(result.Value));
-	}
+    public new Result<CategoriaDetailDto> Get(int id) => base.Get(id);
 
-	public async Task<Result<CategoriaDetailDto>> UpdateAsync(CategoriaEntity entity)
-	{
-		var validationResult = CategoriaValidator.ValidateUpdate(entity);
-		if (!validationResult.IsSuccess)
-			return Result<CategoriaDetailDto>.Error("Validation failed");
-
-		entity.Nombre = entity.Nombre!.Trim();
-		var result = await _repository.UpdateAsync(MapEntityToParameters(entity));
-
-		if (!result.IsSuccess)
-			return Result<CategoriaDetailDto>.Error(result.Errors.FirstOrDefault()?.ToString() ?? "Unknown error");
-
-		return Result<CategoriaDetailDto>.Success(_mapper.Map<CategoriaDetailDto>(result.Value));
-	}
-
-	public async Task<Result<List<CategoriaListDto>>> GetAllAsync(QueryFilter? filter = null)
-	{
-		var result = await _repository.GetAllAsync(filter);
-		if (!result.IsSuccess)
-			return Result<List<CategoriaListDto>>.Error(result.Errors.FirstOrDefault()?.ToString() ?? "Unknown error");
-
-		var dtos = _mapper.Map<List<CategoriaListDto>>(result.Value);
-		return Result<List<CategoriaListDto>>.Success(dtos);
-	}
-
-	public async Task<Result<CategoriaDetailDto>> GetByIdAsync(int id)
-	{
-		var result = await _repository.GetByIdAsync(id);
-		if (!result.IsSuccess)
-			return Result<CategoriaDetailDto>.Error(result.Errors.FirstOrDefault()?.ToString() ?? "Unknown error");
-
-		return Result<CategoriaDetailDto>.Success(_mapper.Map<CategoriaDetailDto>(result.Value));
-	}
-
-	public async Task<Result<object>> DeleteAsync(int id)
-	{
-		var result = await _repository.DeleteAsync(id);
-		return result;
-	}
-
-	protected Dictionary<string, object?> MapEntityToParameters(CategoriaEntity entity)
-	{
-		return new Dictionary<string, object?>
-		{
-			["id"] = entity.Id,
-			["nombre"] = entity.Nombre ?? (object)DBNull.Value
-		};
-	}
-
-	protected int GetEntityId(CategoriaEntity entity) => entity.Id;
+    public new Result<List<CategoriaListDto>> GetAll(QueryFilter? filter = null) => base.GetAll(filter);
 }
-

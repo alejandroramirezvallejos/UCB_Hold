@@ -1,6 +1,10 @@
 using Microsoft.AspNetCore.Mvc;
 using IMT_Reservas.Server.Application.Features.Equipo;
+using IMT_Reservas.Server.Application.Common;
+using IMT_Reservas.Server.Application.Dtos;
+using IMT_Reservas.Server.Application.Features.Equipo.Dtos;
 using EquipoEntity = IMT_Reservas.Server.Core.Entities.Equipo;
+using AutoMapper;
 
 namespace IMT_Reservas.Server.Presentation.Controllers;
 
@@ -8,45 +12,50 @@ namespace IMT_Reservas.Server.Presentation.Controllers;
 [Route("api/[controller]")]
 public class EquipoController : ControllerBase
 {
-	private readonly EquipoService _service;
+    private readonly EquipoService _service;
+    private readonly IMapper _mapper;
 
-	public EquipoController(EquipoService service)
-	{
-		_service = service;
-	}
+    public EquipoController(EquipoService service, IMapper mapper)
+    {
+        _service = service;
+        _mapper = mapper;
+    }
 
-	[HttpGet]
-	public async Task<IActionResult> GetAll()
-	{
-		var result = await _service.GetAllAsync();
-		return result.IsSuccess ? Ok(result.Value) : BadRequest(result.Errors);
-	}
+    [HttpGet]
+    public IActionResult GetAll()
+    {
+        var result = _service.GetAll();
+        return result.IsSuccess ? Ok(new Response<List<EquipoListDto>> { Success = true, Data = result.Value }) : BadRequest(new Response<object> { Success = false, Errors = result.Errors.ToList() });
+    }
 
-	[HttpGet("{id}")]
-	public async Task<IActionResult> GetById(int id)
-	{
-		var result = await _service.GetByIdAsync(id);
-		return result.IsSuccess ? Ok(result.Value) : NotFound(result.Errors);
-	}
+    [HttpGet("{id}")]
+    public IActionResult Get(int id)
+    {
+        var result = _service.Get(id);
+        return result.IsSuccess ? Ok(new Response<EquipoDetailDto> { Success = true, Data = result.Value }) : NotFound(new Response<object> { Success = false, Errors = result.Errors.ToList() });
+    }
 
-	[HttpPost]
-	public async Task<IActionResult> Create([FromBody] EquipoEntity entity)
-	{
-		var result = await _service.CreateAsync(entity);
-		return result.IsSuccess ? CreatedAtAction(nameof(GetById), new { id = result.Value?.Id }, result.Value) : BadRequest(result.Errors);
-	}
+    [HttpPost]
+    public IActionResult Create([FromBody] EquipoDto dto)
+    {
+        var entity = _mapper.Map<EquipoEntity>(dto);
+        var result = _service.Create(entity);
+        return result.IsSuccess ? CreatedAtAction(nameof(Get), new { id = result.Value?.Id }, new Response<EquipoDetailDto> { Success = true, Data = result.Value }) : BadRequest(new Response<object> { Success = false, Errors = result.Errors.ToList() });
+    }
 
-	[HttpPut]
-	public async Task<IActionResult> Update([FromBody] EquipoEntity entity)
-	{
-		var result = await _service.UpdateAsync(entity);
-		return result.IsSuccess ? Ok(result.Value) : BadRequest(result.Errors);
-	}
+    [HttpPut("{id}")]
+    public IActionResult Update(int id, [FromBody] EquipoDto dto)
+    {
+        var entity = _mapper.Map<EquipoEntity>(dto);
+        entity.Id = id;
+        var result = _service.Update(entity);
+        return result.IsSuccess ? Ok(new Response<EquipoDetailDto> { Success = true, Data = result.Value }) : BadRequest(new Response<object> { Success = false, Errors = result.Errors.ToList() });
+    }
 
-	[HttpDelete("{id}")]
-	public async Task<IActionResult> Delete(int id)
-	{
-		var result = await _service.DeleteAsync(id);
-		return result.IsSuccess ? NoContent() : BadRequest(result.Errors);
-	}
+    [HttpDelete("{id}")]
+    public IActionResult Delete(int id)
+    {
+        var result = _service.Delete(id);
+        return result.IsSuccess ? NoContent() : BadRequest(new Response<object> { Success = false, Errors = result.Errors.ToList() });
+    }
 }

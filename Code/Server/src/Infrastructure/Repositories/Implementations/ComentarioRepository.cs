@@ -8,38 +8,38 @@ using IMT_Reservas.Server.Application.Features.Comentario.Dtos;
 
 namespace IMT_Reservas.Server.Infrastructure.Repositories.Implementations;
 
-public class ComentarioRepository : IComentarioRepository
+public class ComentarioRepository
 {
-	private readonly IMongoCollection<BsonDocument> _coleccion;
+    private readonly IMongoCollection<BsonDocument> _coleccion;
 
-	public ComentarioRepository(MongoDbContexto contexto)
-		=> _coleccion = contexto.BaseDeDatos.GetCollection<BsonDocument>("comentarios");
+    public ComentarioRepository(MongoDbContexto contexto)
+        => _coleccion = contexto.BaseDeDatos.GetCollection<BsonDocument>("comentarios");
 
-	public async Task<bool> ExisteActivoPorId(string id)
-	{
-		if (!ObjectId.TryParse(id, out var objectId))
-			return false;
+    public async Task<bool> ExisteActivoPorId(string id)
+    {
+        if (!ObjectId.TryParse(id, out var objectId))
+            return false;
 
-		var filtro = Builders<BsonDocument>.Filter.And(
-			Builders<BsonDocument>.Filter.Eq("_id", objectId),
-			Builders<BsonDocument>.Filter.Eq("EstadoEliminado", false)
-		);
-		var count = await _coleccion.CountDocumentsAsync(filtro);
-		return count > 0;
-	}
+        var filtro = Builders<BsonDocument>.Filter.And(
+            Builders<BsonDocument>.Filter.Eq("_id", objectId),
+            Builders<BsonDocument>.Filter.Eq("EstadoEliminado", false)
+        );
+        var count = await _coleccion.CountDocumentsAsync(filtro);
+        return count > 0;
+    }
 
-	public async Task<Result<ComentarioListDto>> CreateAsync(Dictionary<string, object?> parameters)
-		=> Result<ComentarioListDto>.Error("MongoDB CreateAsync not implemented");
+    public async Task<Result<ComentarioListDto>> CreateAsync(Dictionary<string, object?> parameters)
+        => Result<ComentarioListDto>.Error("MongoDB CreateAsync not implemented");
 
-	public async Task<Result<ComentarioListDto>> UpdateAsync(Dictionary<string, object?> parameters)
-		=> Result<ComentarioListDto>.Error("MongoDB UpdateAsync not implemented");
+    public async Task<Result<ComentarioListDto>> UpdateAsync(Dictionary<string, object?> parameters)
+        => Result<ComentarioListDto>.Error("MongoDB UpdateAsync not implemented");
 
-	public async Task<Result<List<ComentarioListDto>>> GetAllAsync(IMT_Reservas.Server.Core.Abstractions.QueryFilter? filter = null)
-		=> Result<List<ComentarioListDto>>.Error("MongoDB GetAllAsync not implemented");
+    public async Task<Result<List<ComentarioListDto>>> GetAllAsync(IMT_Reservas.Server.Core.Abstractions.QueryFilter? filter = null)
+        => Result<List<ComentarioListDto>>.Error("MongoDB GetAllAsync not implemented");
 
-	public async Task<Result<ComentarioListDto>> GetByIdAsync(int id)
-		=> Result<ComentarioListDto>.Error("MongoDB GetByIdAsync not implemented");
+    public async Task<Result<ComentarioListDto>> GetByIdAsync(int id)
+        => Result<ComentarioListDto>.Error("MongoDB GetByIdAsync not implemented");
 
-	public async Task<Result<object>> DeleteAsync(int id)
-		=> Result<object>.Error("MongoDB DeleteAsync not implemented");
+    public async Task<Result<object>> DeleteAsync(int id)
+        => Result<object>.Error("MongoDB DeleteAsync not implemented");
 }

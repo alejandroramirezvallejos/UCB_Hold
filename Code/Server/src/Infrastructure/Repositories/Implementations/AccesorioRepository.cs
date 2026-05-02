@@ -7,57 +7,57 @@ namespace IMT_Reservas.Server.Infrastructure.Repositories.Implementations;
 
 public class AccesorioRepository : Repository<AccesorioListDto>
 {
-	public AccesorioRepository(ExecuteQuery executeQuery) : base(executeQuery) { }
+    public AccesorioRepository(ExecuteQuery executeQuery) : base(executeQuery) { }
 
-	public bool ExisteActivoPorId(int id)
-	{
-		const string sql = "SELECT EXISTS(SELECT 1 FROM public.accesorios WHERE id_accesorio = @id AND estado_eliminado = FALSE)";
-		var parameters = new Dictionary<string, object?> { ["id"] = id };
-		var dt = ExecuteQuery.EjecutarFuncion(sql, parameters);
-		return dt?.Rows.Count > 0 && Convert.ToBoolean(dt.Rows[0][0]);
-	}
+    public bool ExisteActivoPorId(int id)
+    {
+        const string sql = "SELECT EXISTS(SELECT 1 FROM public.accesorios WHERE id_accesorio = @id AND estado_eliminado = FALSE)";
+        var parameters = new Dictionary<string, object?> { ["id"] = id };
+        var dt = ExecuteQuery.EjecutarFuncion(sql, parameters);
+        return dt?.Rows.Count > 0 && Convert.ToBoolean(dt.Rows[0][0]);
+    }
 
-	public int? ObtenerEquipoIdPorCodigoImt(int codigoImt)
-	{
-		const string sql = "SELECT id_equipo FROM public.equipos WHERE codigo_imt = @codigoImt AND estado_eliminado = FALSE LIMIT 1";
-		var parameters = new Dictionary<string, object?> { ["codigoImt"] = codigoImt };
-		var dt = ExecuteQuery.EjecutarFuncion(sql, parameters);
-		return dt?.Rows.Count == 0 ? null : Convert.ToInt32(dt.Rows[0][0]);
-	}
+    public int? ObtenerEquipoIdPorCodigoImt(int codigoImt)
+    {
+        const string sql = "SELECT id_equipo FROM public.equipos WHERE codigo_imt = @codigoImt AND estado_eliminado = FALSE LIMIT 1";
+        var parameters = new Dictionary<string, object?> { ["codigoImt"] = codigoImt };
+        var dt = ExecuteQuery.EjecutarFuncion(sql, parameters);
+        return dt?.Rows.Count == 0 ? null : Convert.ToInt32(dt.Rows[0][0]);
+    }
 
-	protected override string CreateStatement()
-		=> "INSERT INTO public.accesorios (id_equipo, nombre, modelo, tipo, precio, estado_eliminado) VALUES (@idEquipo, @nombre, @modelo, @tipo, @precio, FALSE)";
+    protected override string CreateStatement()
+        => "INSERT INTO public.accesorios (id_equipo, nombre, modelo, tipo, precio, estado_eliminado) VALUES (@idEquipo, @nombre, @modelo, @tipo, @precio, FALSE)";
 
-	protected override string UpdateStatement()
-		=> "UPDATE public.accesorios SET id_equipo = COALESCE(@idEquipo, id_equipo), nombre = COALESCE(@nombre, nombre), modelo = COALESCE(@modelo, modelo), tipo = COALESCE(@tipo, tipo), precio = COALESCE(@precio, precio) WHERE id_accesorio = @id AND estado_eliminado = FALSE";
+    protected override string UpdateStatement()
+        => "UPDATE public.accesorios SET id_equipo = COALESCE(@idEquipo, id_equipo), nombre = COALESCE(@nombre, nombre), modelo = COALESCE(@modelo, modelo), tipo = COALESCE(@tipo, tipo), precio = COALESCE(@precio, precio) WHERE id_accesorio = @id AND estado_eliminado = FALSE";
 
-	protected override string DeleteStatement()
-		=> "UPDATE public.accesorios SET estado_eliminado = TRUE WHERE id_accesorio = @id";
+    protected override string DeleteStatement()
+        => "UPDATE public.accesorios SET estado_eliminado = TRUE WHERE id_accesorio = @id";
 
-	protected override string SelectAll()
-		=> @"SELECT a.id_accesorio, a.nombre, a.modelo, a.tipo, a.descripcion,
+    protected override string SelectAll()
+        => @"SELECT a.id_accesorio, a.nombre, a.modelo, a.tipo, a.descripcion,
 		        a.codigo_imt, a.precio, a.url_data_sheet, e.nombre as nombre_equipo_asociado
 		     FROM public.accesorios a
 		     LEFT JOIN public.equipos e ON a.id_equipo = e.id_equipo
 		     WHERE a.estado_eliminado = FALSE";
 
-	protected override string SelectById()
-		=> @"SELECT a.id_accesorio, a.nombre, a.modelo, a.tipo, a.descripcion,
+    protected override string SelectById()
+        => @"SELECT a.id_accesorio, a.nombre, a.modelo, a.tipo, a.descripcion,
 		        a.codigo_imt, a.precio, a.url_data_sheet, e.nombre as nombre_equipo_asociado
 		     FROM public.accesorios a
 		     LEFT JOIN public.equipos e ON a.id_equipo = e.id_equipo
 		     WHERE a.id_accesorio = @id AND a.estado_eliminado = FALSE";
 
-	protected override AccesorioListDto MapRowToDto(DataRow row) => new()
-	{
-		Id = Convert.ToInt32(row["id_accesorio"]),
-		Nombre = row["nombre"] == DBNull.Value ? null : row["nombre"].ToString(),
-		Modelo = row["modelo"] == DBNull.Value ? null : row["modelo"].ToString(),
-		Tipo = row["tipo"] == DBNull.Value ? null : row["tipo"].ToString(),
-		Descripcion = row["descripcion"] == DBNull.Value ? null : row["descripcion"].ToString(),
-		CodigoImt = row["codigo_imt"] == DBNull.Value ? null : row["codigo_imt"].ToString(),
-		Precio = row["precio"] == DBNull.Value ? null : Convert.ToDecimal(row["precio"]),
-		UrlDataSheet = row["url_data_sheet"] == DBNull.Value ? null : row["url_data_sheet"].ToString(),
-		NombreEquipoAsociado = row["nombre_equipo_asociado"] == DBNull.Value ? null : row["nombre_equipo_asociado"].ToString()
-	};
+    protected override AccesorioListDto MapRowToDto(DataRow row) => new()
+    {
+        Id = Convert.ToInt32(row["id_accesorio"]),
+        Nombre = row["nombre"] == DBNull.Value ? null : row["nombre"].ToString(),
+        Modelo = row["modelo"] == DBNull.Value ? null : row["modelo"].ToString(),
+        Tipo = row["tipo"] == DBNull.Value ? null : row["tipo"].ToString(),
+        Descripcion = row["descripcion"] == DBNull.Value ? null : row["descripcion"].ToString(),
+        CodigoImt = row["codigo_imt"] == DBNull.Value ? null : row["codigo_imt"].ToString(),
+        Precio = row["precio"] == DBNull.Value ? null : Convert.ToDecimal(row["precio"]),
+        UrlDataSheet = row["url_data_sheet"] == DBNull.Value ? null : row["url_data_sheet"].ToString(),
+        NombreEquipoAsociado = row["nombre_equipo_asociado"] == DBNull.Value ? null : row["nombre_equipo_asociado"].ToString()
+    };
 }

@@ -1,63 +1,31 @@
 using Ardalis.Result;
-using IMT_Reservas.Server.Core.Entities;
-using IMT_Reservas.Server.Core.Errors;
+using IMT_Reservas.Server.Core.Abstractions;
 using UsuarioEntity = IMT_Reservas.Server.Core.Entities.Usuario;
 
 namespace IMT_Reservas.Server.Application.Features.Usuario.Validators;
 
-public static class UsuarioValidator
+public class UsuarioValidator : Validator<UsuarioEntity>
 {
-	public static Result<object> ValidateCreate(UsuarioEntity entity)
-	{
-		if (entity == null)
-			return Result<object>.Invalid(ErrorFactory.RequiredField(nameof(entity)));
+    public override Result<object> Validate(UsuarioEntity entity)
+    {
+        var validation = RequiredString(entity?.Nombre, nameof(entity.Nombre));
+        if (!validation.IsSuccess) return validation;
 
-		var nombreTrimmed = entity.Nombre?.Trim();
-		if (string.IsNullOrWhiteSpace(nombreTrimmed))
-			return Result<object>.Invalid(ErrorFactory.RequiredField(nameof(entity.Nombre)));
+        validation = MaxLength(entity.Nombre, nameof(entity.Nombre), 64);
+        if (!validation.IsSuccess) return validation;
 
-		if (nombreTrimmed.Length > 255)
-			return Result<object>.Invalid(new ValidationError(nameof(entity.Nombre), "Max 255 characters"));
+        validation = RequiredString(entity?.Email, nameof(entity.Email));
+        if (!validation.IsSuccess) return validation;
 
-		var emailTrimmed = entity.Email?.Trim();
-		if (string.IsNullOrWhiteSpace(emailTrimmed))
-			return Result<object>.Invalid(ErrorFactory.RequiredField(nameof(entity.Email)));
+        validation = ValidEmail(entity.Email);
+        if (!validation.IsSuccess) return validation;
 
-		if (emailTrimmed.Length > 255)
-			return Result<object>.Invalid(new ValidationError(nameof(entity.Email), "Max 255 characters"));
+        validation = RequiredString(entity?.Contrasena, nameof(entity.Contrasena));
+        if (!validation.IsSuccess) return validation;
 
-		var contrasena = entity.Contrasena?.Trim();
-		if (string.IsNullOrWhiteSpace(contrasena))
-			return Result<object>.Invalid(ErrorFactory.RequiredField(nameof(entity.Contrasena)));
+        validation = MinLength(entity.Contrasena, nameof(entity.Contrasena), 8);
+        if (!validation.IsSuccess) return validation;
 
-		if (contrasena.Length < 8)
-			return Result<object>.Invalid(new ValidationError(nameof(entity.Contrasena), "Min 8 characters"));
-
-		return Result<object>.Success(true);
-	}
-
-	public static Result<object> ValidateUpdate(UsuarioEntity entity)
-	{
-		if (entity == null)
-			return Result<object>.Invalid(ErrorFactory.RequiredField(nameof(entity)));
-
-		if (entity.Id <= 0)
-			return Result<object>.Invalid(ErrorFactory.InvalidField<UsuarioEntity>(nameof(entity.Id)));
-
-		var nombreTrimmed = entity.Nombre?.Trim();
-		if (string.IsNullOrWhiteSpace(nombreTrimmed))
-			return Result<object>.Invalid(ErrorFactory.RequiredField(nameof(entity.Nombre)));
-
-		if (nombreTrimmed.Length > 255)
-			return Result<object>.Invalid(new ValidationError(nameof(entity.Nombre), "Max 255 characters"));
-
-		var emailTrimmed = entity.Email?.Trim();
-		if (string.IsNullOrWhiteSpace(emailTrimmed))
-			return Result<object>.Invalid(ErrorFactory.RequiredField(nameof(entity.Email)));
-
-		if (emailTrimmed.Length > 255)
-			return Result<object>.Invalid(new ValidationError(nameof(entity.Email), "Max 255 characters"));
-
-		return Result<object>.Success(true);
-	}
+        return Result<object>.Success(null);
+    }
 }

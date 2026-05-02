@@ -1,5 +1,7 @@
 using Microsoft.AspNetCore.Mvc;
 using IMT_Reservas.Server.Application.Features.Carrito;
+using IMT_Reservas.Server.Application.Common;
+using IMT_Reservas.Server.Application.Features.Carrito.Dtos;
 
 namespace IMT_Reservas.Server.Presentation.Controllers;
 
@@ -7,24 +9,38 @@ namespace IMT_Reservas.Server.Presentation.Controllers;
 [Route("api/[controller]")]
 public class CarritoController : ControllerBase
 {
-	private readonly CarritoService _service;
+    private readonly CarritoService _service;
 
-	public CarritoController(CarritoService service)
-	{
-		_service = service;
-	}
+    public CarritoController(CarritoService service)
+    {
+        _service = service;
+    }
 
-	[HttpPost("fechasnoDisponibles")]
-	public IActionResult ObtenerFechasNoDisponibles([FromBody] dynamic request)
-	{
-		var result = _service.ObtenerFechasNoDisponibles(request.fechaInicio, request.fechaFin, request.carrito);
-		return result.IsSuccess ? Ok(result.Value) : BadRequest(result.Errors);
-	}
+    [HttpPost("fechasnoDisponibles")]
+    public IActionResult GetUnavailableDates([FromBody] GetUnavailableDatesRequest request)
+    {
+        var result = _service.GetUnavailableDates(request.FechaInicio, request.FechaFin, request.Carrito);
+        return result.IsSuccess ? Ok(new Response<List<FechaNoDisponibleDto?>> { Success = true, Data = result.Value }) : BadRequest(new Response<object> { Success = false, Errors = result.Errors.ToList() });
+    }
 
-	[HttpPost("disponibilidadEquipos")]
-	public IActionResult ObtenerDisponibilidadEquipos([FromBody] dynamic request)
-	{
-		var result = _service.ObtenerDisponibilidadEquiposPorFechasYGrupos(request.fechaInicio, request.fechaFin, request.arrayIds);
-		return result.IsSuccess ? Ok(result.Value) : BadRequest(result.Errors);
-	}
+    [HttpPost("disponibilidadEquipos")]
+    public IActionResult GetAvailability([FromBody] GetAvailabilityRequest request)
+    {
+        var result = _service.GetAvailability(request.FechaInicio, request.FechaFin, request.ArrayIds);
+        return result.IsSuccess ? Ok(new Response<List<DisponibilidadEquipoDto?>> { Success = true, Data = result.Value }) : BadRequest(new Response<object> { Success = false, Errors = result.Errors.ToList() });
+    }
+}
+
+public class GetUnavailableDatesRequest
+{
+    public DateTime FechaInicio { get; set; }
+    public DateTime FechaFin { get; set; }
+    public Dictionary<int, int>? Carrito { get; set; }
+}
+
+public class GetAvailabilityRequest
+{
+    public DateTime FechaInicio { get; set; }
+    public DateTime FechaFin { get; set; }
+    public int[]? ArrayIds { get; set; }
 }

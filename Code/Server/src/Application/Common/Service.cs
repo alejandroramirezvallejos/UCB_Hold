@@ -27,11 +27,11 @@ public abstract class Service<TEntity, TDetailDto, TListDto>
         var validation = GetValidator().Validate(entity);
         if (!validation.IsSuccess)
         {
-            var errors = validation.Errors.Cast<ValidationError>().ToList();
-            return Result<TDetailDto>.Invalid(errors);
+            var errors = validation.Errors.Cast<ValidationError>().Select(e => e.ErrorMessage ?? e.ErrorCode).ToList();
+            return Result<TDetailDto>.Error(string.Join("; ", errors));
         }
 
-        var parameters = Mapper.ToParameters(entity);
+        var parameters = IMT_Reservas.Server.Application.Common.Mapper.ToParameters(entity);
         var result = Repository.Create(parameters);
         return result.IsSuccess
             ? Result<TDetailDto>.Success(AutoMapper.Map<TDetailDto>(result.Value))
@@ -43,11 +43,11 @@ public abstract class Service<TEntity, TDetailDto, TListDto>
         var validation = GetValidator().Validate(entity);
         if (!validation.IsSuccess)
         {
-            var errors = validation.Errors.Cast<ValidationError>().ToList();
-            return Result<TDetailDto>.Invalid(errors);
+            var errors = validation.Errors.Cast<ValidationError>().Select(e => e.ErrorMessage ?? e.ErrorCode).ToList();
+            return Result<TDetailDto>.Error(string.Join("; ", errors));
         }
 
-        var parameters = Mapper.ToParameters(entity);
+        var parameters = IMT_Reservas.Server.Application.Common.Mapper.ToParameters(entity);
         var result = Repository.Update(parameters);
         if (!result.IsSuccess) return Result<TDetailDto>.Error(string.Join(", ", result.Errors));
 

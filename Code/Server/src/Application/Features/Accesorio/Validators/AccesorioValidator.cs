@@ -1,48 +1,22 @@
 using Ardalis.Result;
-using IMT_Reservas.Server.Core.Entities;
-using IMT_Reservas.Server.Core.Errors;
+using IMT_Reservas.Server.Core.Abstractions;
 using AccesorioEntity = IMT_Reservas.Server.Core.Entities.Accesorio;
 
 namespace IMT_Reservas.Server.Application.Features.Accesorio.Validators;
 
-public static class AccesorioValidator
+public class AccesorioValidator : Validator<AccesorioEntity>
 {
-	public static Result<object> ValidateCreate(AccesorioEntity entity)
-	{
-		if (entity == null)
-			return Result<object>.Invalid(ErrorFactory.RequiredField(nameof(entity)));
+    public override Result<object> Validate(AccesorioEntity entity)
+    {
+        var validation = RequiredString(entity.Nombre, nameof(entity.Nombre));
+        if (!validation.IsSuccess) return validation;
 
-		var nombreTrimmed = entity.Nombre?.Trim();
-		if (string.IsNullOrWhiteSpace(nombreTrimmed))
-			return Result<object>.Invalid(ErrorFactory.RequiredField(nameof(entity.Nombre)));
+        validation = MaxLength(entity.Nombre, nameof(entity.Nombre), 255);
+        if (!validation.IsSuccess) return validation;
 
-		if (nombreTrimmed.Length > 255)
-			return Result<object>.Invalid(new ValidationError(nameof(entity.Nombre), "Max 255 characters"));
+        validation = RequiredPositiveInt(entity.IdEquipo, nameof(entity.IdEquipo));
+        if (!validation.IsSuccess) return validation;
 
-		if (entity.IdEquipo <= 0)
-			return Result<object>.Invalid(ErrorFactory.InvalidField<AccesorioEntity>(nameof(entity.IdEquipo)));
-
-		return Result<object>.Success(true);
-	}
-
-	public static Result<object> ValidateUpdate(AccesorioEntity entity)
-	{
-		if (entity == null)
-			return Result<object>.Invalid(ErrorFactory.RequiredField(nameof(entity)));
-
-		if (entity.Id <= 0)
-			return Result<object>.Invalid(ErrorFactory.InvalidField<AccesorioEntity>(nameof(entity.Id)));
-
-		var nombreTrimmed = entity.Nombre?.Trim();
-		if (string.IsNullOrWhiteSpace(nombreTrimmed))
-			return Result<object>.Invalid(ErrorFactory.RequiredField(nameof(entity.Nombre)));
-
-		if (nombreTrimmed.Length > 255)
-			return Result<object>.Invalid(new ValidationError(nameof(entity.Nombre), "Max 255 characters"));
-
-		if (entity.IdEquipo <= 0)
-			return Result<object>.Invalid(ErrorFactory.InvalidField<AccesorioEntity>(nameof(entity.IdEquipo)));
-
-		return Result<object>.Success(true);
-	}
+        return Result<object>.Success(null);
+    }
 }

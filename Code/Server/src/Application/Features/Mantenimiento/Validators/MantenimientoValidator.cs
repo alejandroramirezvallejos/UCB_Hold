@@ -1,40 +1,19 @@
 using Ardalis.Result;
-using IMT_Reservas.Server.Core.Entities;
-using IMT_Reservas.Server.Core.Errors;
+using IMT_Reservas.Server.Core.Abstractions;
 using MantenimientoEntity = IMT_Reservas.Server.Core.Entities.Mantenimiento;
 
 namespace IMT_Reservas.Server.Application.Features.Mantenimiento.Validators;
 
-public static class MantenimientoValidator
+public class MantenimientoValidator : Validator<MantenimientoEntity>
 {
-	public static Result<object> ValidateCreate(MantenimientoEntity entity)
-	{
-		if (entity == null)
-			return Result<object>.Invalid(ErrorFactory.RequiredField(nameof(entity)));
+    public override Result<object> Validate(MantenimientoEntity entity)
+    {
+        var validation = RequiredPositiveInt(entity.IdEquipo, nameof(entity.IdEquipo));
+        if (!validation.IsSuccess) return validation;
 
-		if (entity.IdEquipo <= 0)
-			return Result<object>.Invalid(ErrorFactory.InvalidField<MantenimientoEntity>(nameof(entity.IdEquipo)));
+        validation = RequiredPositiveInt(entity.IdEmpresaMantenimiento, nameof(entity.IdEmpresaMantenimiento));
+        if (!validation.IsSuccess) return validation;
 
-		if (entity.IdEmpresaMantenimiento <= 0)
-			return Result<object>.Invalid(ErrorFactory.InvalidField<MantenimientoEntity>(nameof(entity.IdEmpresaMantenimiento)));
-
-		return Result<object>.Success(true);
-	}
-
-	public static Result<object> ValidateUpdate(MantenimientoEntity entity)
-	{
-		if (entity == null)
-			return Result<object>.Invalid(ErrorFactory.RequiredField(nameof(entity)));
-
-		if (entity.Id <= 0)
-			return Result<object>.Invalid(ErrorFactory.InvalidField<MantenimientoEntity>(nameof(entity.Id)));
-
-		if (entity.IdEquipo <= 0)
-			return Result<object>.Invalid(ErrorFactory.InvalidField<MantenimientoEntity>(nameof(entity.IdEquipo)));
-
-		if (entity.IdEmpresaMantenimiento <= 0)
-			return Result<object>.Invalid(ErrorFactory.InvalidField<MantenimientoEntity>(nameof(entity.IdEmpresaMantenimiento)));
-
-		return Result<object>.Success(true);
-	}
+        return Result<object>.Success(null);
+    }
 }

@@ -1,48 +1,22 @@
 using Ardalis.Result;
-using IMT_Reservas.Server.Core.Entities;
-using IMT_Reservas.Server.Core.Errors;
+using IMT_Reservas.Server.Core.Abstractions;
 using NotificacionEntity = IMT_Reservas.Server.Core.Entities.Notificacion;
 
 namespace IMT_Reservas.Server.Application.Features.Notificacion.Validators;
 
-public static class NotificacionValidator
+public class NotificacionValidator : Validator<NotificacionEntity>
 {
-	public static Result<object> ValidateCreate(NotificacionEntity entity)
-	{
-		if (entity == null)
-			return Result<object>.Invalid(ErrorFactory.RequiredField(nameof(entity)));
+    public override Result<object> Validate(NotificacionEntity entity)
+    {
+        var validation = RequiredPositiveInt(entity.IdUsuario, nameof(entity.IdUsuario));
+        if (!validation.IsSuccess) return validation;
 
-		if (entity.IdUsuario <= 0)
-			return Result<object>.Invalid(ErrorFactory.InvalidField<NotificacionEntity>(nameof(entity.IdUsuario)));
+        validation = RequiredString(entity.Titulo, nameof(entity.Titulo));
+        if (!validation.IsSuccess) return validation;
 
-		var tituloTrimmed = entity.Titulo?.Trim();
-		if (string.IsNullOrWhiteSpace(tituloTrimmed))
-			return Result<object>.Invalid(ErrorFactory.RequiredField(nameof(entity.Titulo)));
+        validation = MaxLength(entity.Titulo, nameof(entity.Titulo), 255);
+        if (!validation.IsSuccess) return validation;
 
-		if (tituloTrimmed.Length > 255)
-			return Result<object>.Invalid(new ValidationError(nameof(entity.Titulo), "Max 255 characters"));
-
-		return Result<object>.Success(true);
-	}
-
-	public static Result<object> ValidateUpdate(NotificacionEntity entity)
-	{
-		if (entity == null)
-			return Result<object>.Invalid(ErrorFactory.RequiredField(nameof(entity)));
-
-		if (entity.Id <= 0)
-			return Result<object>.Invalid(ErrorFactory.InvalidField<NotificacionEntity>(nameof(entity.Id)));
-
-		if (entity.IdUsuario <= 0)
-			return Result<object>.Invalid(ErrorFactory.InvalidField<NotificacionEntity>(nameof(entity.IdUsuario)));
-
-		var tituloTrimmed = entity.Titulo?.Trim();
-		if (string.IsNullOrWhiteSpace(tituloTrimmed))
-			return Result<object>.Invalid(ErrorFactory.RequiredField(nameof(entity.Titulo)));
-
-		if (tituloTrimmed.Length > 255)
-			return Result<object>.Invalid(new ValidationError(nameof(entity.Titulo), "Max 255 characters"));
-
-		return Result<object>.Success(true);
-	}
+        return Result<object>.Success(null);
+    }
 }
