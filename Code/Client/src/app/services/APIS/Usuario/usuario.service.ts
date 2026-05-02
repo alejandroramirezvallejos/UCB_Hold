@@ -66,12 +66,19 @@ export class UsuarioServiceAPI {
   obtenerUsuarios() {
     return this.http.get<any[]>(this.apiUrl).pipe(
       map(data => data.map(item => ({
-        id: item.Id,
+        id: item.Carnet,
         carnet: item.Carnet,
         nombre: item.Nombre,
+        apellido_materno: item.ApellidoMaterno,
+        apellido_paterno: item.ApellidoPaterno,
         rol: item.Rol,
         correo: item.Email,
-        carrera_Id: item.IdCarrera
+        telefono: item.Telefono,
+        telefono_referencia: item.TelefonoReferencia,
+        nombre_referencia: item.NombreReferencia,
+        email_referencia: item.EmailReferencia,
+        carrera_Id: item.CarreraId,
+        carrera: item.CarreraNombre,
       })))
     );
   }

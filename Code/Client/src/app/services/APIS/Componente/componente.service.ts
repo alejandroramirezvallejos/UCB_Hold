@@ -27,9 +27,12 @@ export class ComponenteService {
         Id: item.Id,
         Nombre: item.Nombre,
         Modelo: item.Modelo,
+        Tipo: item.Tipo,
         Descripcion: item.Descripcion,
-        Precio: item.Precio,
-        IdEquipo: item.IdEquipo
+        PrecioReferencia: item.PrecioReferencia,
+        NombreEquipo: item.NombreEquipo,
+        CodigoImtEquipo: item.CodigoImtEquipo,
+        UrlDataSheet: item.UrlDataSheet
       })))
     );
   }

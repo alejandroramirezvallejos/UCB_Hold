@@ -33,7 +33,7 @@ export class EquipoService {
         NombreGrupoEquipo: item.NombreGrupoEquipo,
         Modelo: item.Modelo,
         Marca: item.Marca,
-        CodigoImt: item.CodigoImt,
+        CodigoImt : item.CodigoImt,
         CodigoUcb: item.CodigoUcb,
         NumeroSerial: item.NumeroSerial,
         EstadoEquipo: item.EstadoEquipo,
@@ -42,7 +42,7 @@ export class EquipoService {
         CostoReferencia: item.CostoReferencia,
         Descripcion: item.Descripcion,
         TiempoMaximoPrestamo: item.TiempoMaximoPrestamo,
-        Procedencia: item.Procedencia
+        Procedencia: item.Procedencia,
       })))
     );
   }

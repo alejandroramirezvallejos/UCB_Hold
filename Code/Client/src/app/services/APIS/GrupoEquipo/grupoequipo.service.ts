@@ -24,16 +24,15 @@ export class GrupoequipoService {
   obtenersinfiltroGruposEquipos() {
     return this.http.get<any[]>(this.apiUrl).pipe(
       map(data => data.map(item => ({
-        id: item.id,
-        nombre: item.nombre,
-        modelo: item.modelo,
-        marca: item.marca,
+        id: item.Id,
+        nombre: item.Nombre ,
+        descripcion : item.Descripcion  , 
+        modelo: item.Modelo ,
+        url_data_sheet: item.UrlDataSheet  ,
+        marca: item.Marca ,
+        link: item.UrlImagen ,
+        nombreCategoria: item.NombreCategoria ,
         Cantidad: item.Cantidad,
-        IdCategoria: item.IdCategoria,
-        descripcion: item.descripcion,
-        url_data_sheet: item.url_data_sheet,
-        link: item.link,
-        nombreCategoria: item.nombreCategoria,
         CostoPromedio: item.CostoPromedio
       })))
     );
@@ -42,17 +41,16 @@ export class GrupoequipoService {
     var url : string   = this.apiUrl +'/buscar' + '?nombre=' + producto + '&categoria=' + categoria;
     return this.http.get<any[]>(url).pipe(
       map(data => data.map(item => ({
-        id: item.id,
-        nombre: item.nombre,
-        modelo: item.modelo || '',
-        marca: item.marca || '',
+        id: item.Id,
+        nombre: item.Nombre ,
+        descripcion : item.Descripcion  || '', 
+        modelo: ' '+item.Modelo || '',
+        url_data_sheet: item.UrlDataSheet || '' ,
+        marca: ' '+item.Marca || '',
+        link: item.UrlImagen ,
+        nombreCategoria: item.NombreCategoria || '',
         Cantidad: item.Cantidad || 0,
-        IdCategoria: item.IdCategoria,
-        descripcion: item.descripcion,
-        url_data_sheet: item.url_data_sheet,
-        link: item.link,
-        nombreCategoria: item.nombreCategoria,
-        CostoPromedio: item.CostoPromedio
+        CostoPromedio: item.CostoPromedio || 0
       })))
     );
   }
@@ -60,17 +58,15 @@ export class GrupoequipoService {
     const url = `${this.apiUrl}/${id}`;
     return this.http.get<any>(url).pipe(
       map(item => ({
-        id: item.id,
-        nombre: item.nombre,
-        modelo: item.modelo || '',
-        marca: item.marca || '',
-        Cantidad: item.Cantidad || 0,
-        IdCategoria: item.IdCategoria,
-        descripcion: item.descripcion,
-        url_data_sheet: item.url_data_sheet,
-        link: item.link,
-        nombreCategoria: item.nombreCategoria,
-        CostoPromedio: item.CostoPromedio
+        id: item.Id,
+        descripcion: item.Descripcion,
+        nombre: item.Nombre,
+        modelo: ' ' + item.Modelo || '',
+        marca: ' ' + item.Marca || '',
+        url_data_sheet: item.UrlDataSheet,
+        link: item.UrlImagen,
+        Cantidad : item.Cantidad || 0,
+        CostoPromedio : item.CostoPromedio || 0
       }))
     );
   }

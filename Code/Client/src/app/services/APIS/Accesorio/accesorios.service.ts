@@ -13,14 +13,14 @@ export class AccesoriosService {
     return this.http.get<any[]>(this.apiurl).pipe(
       map(data => data.map(item => ({
         Id: item.Id,
-        nombre: item.nombre,
-        modelo: item.modelo,
-        tipo: item.tipo,
-        precio: item.precio,
-        descripcion: item.descripcion,
-        codigo_imt: item.codigo_imt,
-        url_data_sheet: item.url_data_sheet,
-        nombreEquipoAsociado: item.nombreEquipoAsociado
+        nombre: item.Nombre,
+        modelo: item.Modelo,
+        tipo: item.Tipo,
+        descripcion: item.Descripcion,
+        codigo_imt: item.CodigoImtEquipoAsociado,
+        precio: item.Precio,
+        url_data_sheet: item.UrlDataSheet,
+        nombreEquipoAsociado: item.NombreEquipoAsociado
       })))
     );
   }
@@ -29,10 +29,10 @@ export class AccesoriosService {
       Nombre: accesorio.nombre,
       Modelo: accesorio.modelo,
       Tipo: accesorio.tipo,
+      CodigoIMT: accesorio.codigo_imt,
       Descripcion: accesorio.descripcion,
       Precio: accesorio.precio,
-      UrlDataSheet: accesorio.url_data_sheet,
-      IdEquipo: accesorio.codigo_imt || 0
+      UrlDataSheet: accesorio.url_data_sheet
     }
     return this.http.post<any>(this.apiurl, envio);
   }
@@ -45,10 +45,10 @@ export class AccesoriosService {
       Nombre: accesorio.nombre,
       Modelo: accesorio.modelo,
       Tipo: accesorio.tipo,
+      CodigoIMT: accesorio.codigo_imt,
       Descripcion: accesorio.descripcion,
       Precio: accesorio.precio,
-      UrlDataSheet: accesorio.url_data_sheet,
-      IdEquipo: accesorio.codigo_imt || 0
+      UrlDataSheet: accesorio.url_data_sheet
     };
     return this.http.put(`${this.apiurl}`, envio );
 }
