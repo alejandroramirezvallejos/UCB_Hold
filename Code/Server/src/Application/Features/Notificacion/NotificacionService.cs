@@ -4,17 +4,18 @@ using NotificacionEntity = IMT_Reservas.Server.Core.Entities.Notificacion;
 using IMT_Reservas.Server.Core.Entities;
 using IMT_Reservas.Server.Application.Features.Notificacion.Dtos;
 using IMT_Reservas.Server.Application.Features.Notificacion.Validators;
+using IMT_Reservas.Server.Infrastructure.Repositories;
 
 using AutoMapper;
 
 namespace IMT_Reservas.Server.Application.Features.Notificacion;
 
-public class NotificacionService 
+public class NotificacionService
 {
-private readonly IRepository<NotificacionListDto> _repository;
+	private readonly INotificacionRepository _repository;
 	private readonly IMapper _mapper;
 
-	public NotificacionService(IRepository<NotificacionListDto> repository, IMapper mapper) 
+	public NotificacionService(INotificacionRepository repository, IMapper mapper)
 	{
 		_repository = repository;
 		_mapper = mapper;

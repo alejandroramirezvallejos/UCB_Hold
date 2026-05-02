@@ -4,17 +4,18 @@ using ComentarioEntity = IMT_Reservas.Server.Core.Entities.Comentario;
 using IMT_Reservas.Server.Core.Entities;
 using IMT_Reservas.Server.Application.Features.Comentario.Dtos;
 using IMT_Reservas.Server.Application.Features.Comentario.Validators;
+using IMT_Reservas.Server.Infrastructure.Repositories;
 
 using AutoMapper;
 
 namespace IMT_Reservas.Server.Application.Features.Comentario;
 
-public class ComentarioService 
+public class ComentarioService
 {
-	private readonly IRepository<ComentarioListDto> _repository;
+	private readonly IComentarioRepository _repository;
 	private readonly IMapper _mapper;
 
-	public ComentarioService(IRepository<ComentarioListDto> repository, IMapper mapper) 
+	public ComentarioService(IComentarioRepository repository, IMapper mapper)
 	{
 		_repository = repository;
 		_mapper = mapper;

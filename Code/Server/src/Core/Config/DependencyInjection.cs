@@ -88,8 +88,9 @@ public static class DependencyInjection
         services.AddScoped<IRepository<UsuarioListDto>, UsuarioRepository>();
         services.AddScoped<UsuarioService>();
 
+        services.AddScoped<CarritoRepository>();
+        services.AddScoped<ICarritoRepository>(sp => sp.GetRequiredService<CarritoRepository>());
         services.AddScoped<CarritoService>();
-        services.AddScoped<ICarritoRepository, CarritoRepository>();
 
         return services;
     }

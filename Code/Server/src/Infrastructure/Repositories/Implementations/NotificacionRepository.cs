@@ -1,6 +1,8 @@
 using MongoDB.Bson;
 using MongoDB.Driver;
 using IMT_Reservas.Server.Infrastructure.MongoDb;
+using Ardalis.Result;
+using IMT_Reservas.Server.Application.Features.Notificacion.Dtos;
 
 namespace IMT_Reservas.Server.Infrastructure.Repositories.Implementations;
 
@@ -23,4 +25,19 @@ public class NotificacionRepository : INotificacionRepository
 		var count = await _coleccion.CountDocumentsAsync(filtro);
 		return count > 0;
 	}
+
+	public async Task<Result<NotificacionListDto>> CreateAsync(Dictionary<string, object?> parameters)
+		=> Result<NotificacionListDto>.Error("MongoDB CreateAsync not implemented");
+
+	public async Task<Result<NotificacionListDto>> UpdateAsync(Dictionary<string, object?> parameters)
+		=> Result<NotificacionListDto>.Error("MongoDB UpdateAsync not implemented");
+
+	public async Task<Result<List<NotificacionListDto>>> GetAllAsync(IMT_Reservas.Server.Core.Abstractions.QueryFilter? filter = null)
+		=> Result<List<NotificacionListDto>>.Error("MongoDB GetAllAsync not implemented");
+
+	public async Task<Result<NotificacionListDto>> GetByIdAsync(int id)
+		=> Result<NotificacionListDto>.Error("MongoDB GetByIdAsync not implemented");
+
+	public async Task<Result<object>> DeleteAsync(int id)
+		=> Result<object>.Error("MongoDB DeleteAsync not implemented");
 }
