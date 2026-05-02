@@ -35,10 +35,18 @@ public class AccesorioRepository : Repository<AccesorioListDto>
 		=> "UPDATE public.accesorios SET estado_eliminado = TRUE WHERE id_accesorio = @id";
 
 	protected override string SelectAll()
-		=> "SELECT id_accesorio, nombre, modelo, tipo, precio FROM public.accesorios WHERE estado_eliminado = FALSE";
+		=> @"SELECT a.id_accesorio, a.nombre, a.modelo, a.tipo, a.descripcion,
+		        a.codigo_imt, a.precio, a.url_data_sheet, e.nombre as nombre_equipo_asociado
+		     FROM public.accesorios a
+		     LEFT JOIN public.equipos e ON a.id_equipo = e.id_equipo
+		     WHERE a.estado_eliminado = FALSE";
 
 	protected override string SelectById()
-		=> "SELECT id_accesorio, nombre, modelo, tipo, precio FROM public.accesorios WHERE id_accesorio = @id AND estado_eliminado = FALSE";
+		=> @"SELECT a.id_accesorio, a.nombre, a.modelo, a.tipo, a.descripcion,
+		        a.codigo_imt, a.precio, a.url_data_sheet, e.nombre as nombre_equipo_asociado
+		     FROM public.accesorios a
+		     LEFT JOIN public.equipos e ON a.id_equipo = e.id_equipo
+		     WHERE a.id_accesorio = @id AND a.estado_eliminado = FALSE";
 
 	protected override AccesorioListDto MapRowToDto(DataRow row) => new()
 	{
@@ -46,6 +54,10 @@ public class AccesorioRepository : Repository<AccesorioListDto>
 		Nombre = row["nombre"] == DBNull.Value ? null : row["nombre"].ToString(),
 		Modelo = row["modelo"] == DBNull.Value ? null : row["modelo"].ToString(),
 		Tipo = row["tipo"] == DBNull.Value ? null : row["tipo"].ToString(),
-		Precio = row["precio"] == DBNull.Value ? null : Convert.ToDecimal(row["precio"])
+		Descripcion = row["descripcion"] == DBNull.Value ? null : row["descripcion"].ToString(),
+		CodigoImt = row["codigo_imt"] == DBNull.Value ? null : row["codigo_imt"].ToString(),
+		Precio = row["precio"] == DBNull.Value ? null : Convert.ToDecimal(row["precio"]),
+		UrlDataSheet = row["url_data_sheet"] == DBNull.Value ? null : row["url_data_sheet"].ToString(),
+		NombreEquipoAsociado = row["nombre_equipo_asociado"] == DBNull.Value ? null : row["nombre_equipo_asociado"].ToString()
 	};
 }
