@@ -27,24 +27,38 @@ public class EquipoRepository : Repository<EquipoListDto>
 		=> "UPDATE public.equipos SET estado_eliminado = TRUE WHERE id_equipo = @id";
 
 	protected override string SelectAll()
-		=> "SELECT id_equipo, id_grupo_equipo, codigo_imt, descripcion, numero_serial, ubicacion, costo_referencia, tiempo_max_prestamo, procedencia, id_gavetero, estado_equipo, codigo_ucb FROM public.equipos WHERE estado_eliminado = FALSE";
+		=> @"SELECT e.id_equipo, ge.nombre as nombre_grupo_equipo, ge.modelo, ge.marca,
+		        e.codigo_imt, e.codigo_ucb, e.numero_serial, e.estado_equipo, e.ubicacion,
+		        g.nombre as nombre_gavetero, e.costo_referencia, e.descripcion, e.tiempo_max_prestamo, e.procedencia
+		     FROM public.equipos e
+		     LEFT JOIN public.grupo_equipos ge ON e.id_grupo_equipo = ge.id_grupo_equipo
+		     LEFT JOIN public.gaveteros g ON e.id_gavetero = g.id_gavetero
+		     WHERE e.estado_eliminado = FALSE";
 
 	protected override string SelectById()
-		=> "SELECT id_equipo, id_grupo_equipo, codigo_imt, descripcion, numero_serial, ubicacion, costo_referencia, tiempo_max_prestamo, procedencia, id_gavetero, estado_equipo, codigo_ucb FROM public.equipos WHERE id_equipo = @id AND estado_eliminado = FALSE";
+		=> @"SELECT e.id_equipo, ge.nombre as nombre_grupo_equipo, ge.modelo, ge.marca,
+		        e.codigo_imt, e.codigo_ucb, e.numero_serial, e.estado_equipo, e.ubicacion,
+		        g.nombre as nombre_gavetero, e.costo_referencia, e.descripcion, e.tiempo_max_prestamo, e.procedencia
+		     FROM public.equipos e
+		     LEFT JOIN public.grupo_equipos ge ON e.id_grupo_equipo = ge.id_grupo_equipo
+		     LEFT JOIN public.gaveteros g ON e.id_gavetero = g.id_gavetero
+		     WHERE e.id_equipo = @id AND e.estado_eliminado = FALSE";
 
 	protected override EquipoListDto MapRowToDto(DataRow row) => new()
 	{
 		Id = Convert.ToInt32(row["id_equipo"]),
-		IdGrupoEquipo = Convert.ToInt32(row["id_grupo_equipo"]),
+		NombreGrupoEquipo = row["nombre_grupo_equipo"] == DBNull.Value ? null : row["nombre_grupo_equipo"].ToString(),
+		Modelo = row["modelo"] == DBNull.Value ? null : row["modelo"].ToString(),
+		Marca = row["marca"] == DBNull.Value ? null : row["marca"].ToString(),
 		CodigoImt = row["codigo_imt"] == DBNull.Value ? null : Convert.ToInt32(row["codigo_imt"]),
-		Descripcion = row["descripcion"] == DBNull.Value ? null : row["descripcion"].ToString(),
+		CodigoUcb = row["codigo_ucb"] == DBNull.Value ? null : row["codigo_ucb"].ToString(),
 		NumeroSerial = row["numero_serial"] == DBNull.Value ? null : row["numero_serial"].ToString(),
-		Ubicacion = row["ubicacion"] == DBNull.Value ? null : row["ubicacion"].ToString(),
-		CostoReferencia = row["costo_referencia"] == DBNull.Value ? null : Convert.ToDecimal(row["costo_referencia"]),
-		TiempoMaxPrestamo = row["tiempo_max_prestamo"] == DBNull.Value ? null : Convert.ToInt32(row["tiempo_max_prestamo"]),
-		Procedencia = row["procedencia"] == DBNull.Value ? null : row["procedencia"].ToString(),
-		IdGavetero = row["id_gavetero"] == DBNull.Value ? null : Convert.ToInt32(row["id_gavetero"]),
 		EstadoEquipo = row["estado_equipo"] == DBNull.Value ? null : row["estado_equipo"].ToString(),
-		CodigoUcb = row["codigo_ucb"] == DBNull.Value ? null : row["codigo_ucb"].ToString()
+		Ubicacion = row["ubicacion"] == DBNull.Value ? null : row["ubicacion"].ToString(),
+		NombreGavetero = row["nombre_gavetero"] == DBNull.Value ? null : row["nombre_gavetero"].ToString(),
+		CostoReferencia = row["costo_referencia"] == DBNull.Value ? null : Convert.ToDecimal(row["costo_referencia"]),
+		Descripcion = row["descripcion"] == DBNull.Value ? null : row["descripcion"].ToString(),
+		TiempoMaximoPrestamo = row["tiempo_max_prestamo"] == DBNull.Value ? null : Convert.ToInt32(row["tiempo_max_prestamo"]),
+		Procedencia = row["procedencia"] == DBNull.Value ? null : row["procedencia"].ToString()
 	};
 }
