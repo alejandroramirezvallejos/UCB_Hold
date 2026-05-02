@@ -14,24 +14,10 @@ export class PrestamosAPIService {
     return {
        Id: item.Id,
         CarnetUsuario: item.CarnetUsuario,
-        NombreUsuario: item.NombreUsuario,
-        ApellidoPaternoUsuario: item.ApellidoPaternoUsuario,
-        TelefonoUsuario: item.TelefonoUsuario,
-        NombreGrupoEquipo: item.NombreGrupoEquipo,
-        CodigoImt: item.CodigoImt,
-        FechaSolicitud: item.FechaSolicitud ? new Date(item.FechaSolicitud) : null,
-        FechaPrestamoEsperada: item.FechaPrestamoEsperada ? new Date(item.FechaPrestamoEsperada) : null,
-        FechaPrestamo: item.FechaPrestamo ? new Date(item.FechaPrestamo) : null,
-        FechaDevolucionEsperada: item.FechaDevolucionEsperada ? new Date(item.FechaDevolucionEsperada) : null,
-        FechaDevolucion: item.FechaDevolucion ? new Date(item.FechaDevolucion) : null,
-        Observacion: item.Observacion,
         EstadoPrestamo: item.EstadoPrestamo,
-        IdContrato: item.IdContrato,
-        FileId: item.FileId,
-         Ubicacion_Equipo : item. Ubicacion_Equipo,
-        Nombre_Gavetero : item.Nombre_Gavetero,
-        Nombre_Mueble : item.Nombre_Mueble,
-        Ubicacion_Mueble : item.Ubicacion_Mueble
+        FechaSolicitud: item.FechaSolicitud ? new Date(item.FechaSolicitud) : null,
+        IdGrupoEquipo: item.IdGrupoEquipo,
+        FechaDevolucionEsperada: item.FechaDevolucionEsperada ? new Date(item.FechaDevolucionEsperada) : null
     } as Prestamos;
   }
   obtenerPrestamos() {

@@ -24,16 +24,12 @@ export class GrupoequipoService {
   obtenersinfiltroGruposEquipos() {
     return this.http.get<any[]>(this.apiUrl).pipe(
       map(data => data.map(item => ({
-        id: item.Id,
-        nombre: item.Nombre ,
-        descripcion : item.Descripcion  , 
-        modelo: item.Modelo ,
-        url_data_sheet: item.UrlDataSheet  ,
-        marca: item.Marca ,
-        link: item.UrlImagen ,
-        nombreCategoria: item.NombreCategoria ,
+        Id: item.Id,
+        Nombre: item.Nombre,
+        Modelo: item.Modelo,
+        Marca: item.Marca,
         Cantidad: item.Cantidad,
-        CostoPromedio: item.CostoPromedio
+        IdCategoria: item.IdCategoria
       })))
     );
   }
@@ -41,16 +37,12 @@ export class GrupoequipoService {
     var url : string   = this.apiUrl +'/buscar' + '?nombre=' + producto + '&categoria=' + categoria;
     return this.http.get<any[]>(url).pipe(
       map(data => data.map(item => ({
-        id: item.Id,
-        nombre: item.Nombre ,
-        descripcion : item.Descripcion  || '', 
-        modelo: ' '+item.Modelo || '',
-        url_data_sheet: item.UrlDataSheet || '' ,
-        marca: ' '+item.Marca || '',
-        link: item.UrlImagen ,
-        nombreCategoria: item.NombreCategoria || '',
+        Id: item.Id,
+        Nombre: item.Nombre,
+        Modelo: item.Modelo || '',
+        Marca: item.Marca || '',
         Cantidad: item.Cantidad || 0,
-        CostoPromedio: item.CostoPromedio || 0
+        IdCategoria: item.IdCategoria
       })))
     );
   }
@@ -58,15 +50,12 @@ export class GrupoequipoService {
     const url = `${this.apiUrl}/${id}`;
     return this.http.get<any>(url).pipe(
       map(item => ({
-        id: item.Id,
-        descripcion: item.Descripcion,
-        nombre: item.Nombre,
-        modelo: ' ' + item.Modelo || '',
-        marca: ' ' + item.Marca || '',
-        url_data_sheet: item.UrlDataSheet,
-        link: item.UrlImagen,
-        Cantidad : item.Cantidad || 0,
-        CostoPromedio : item.CostoPromedio || 0
+        Id: item.Id,
+        Nombre: item.Nombre,
+        Modelo: item.Modelo || '',
+        Marca: item.Marca || '',
+        Cantidad: item.Cantidad || 0,
+        IdCategoria: item.IdCategoria
       }))
     );
   }

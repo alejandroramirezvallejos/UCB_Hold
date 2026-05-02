@@ -33,15 +33,11 @@ export class MantenimientoService {
     return this.http.get<any[]>(this.apiUrl).pipe(
       map(data => data.map(item => ({
         Id: item.Id,
-        NombreEmpresaMantenimiento: item.NombreEmpresaMantenimiento,
         FechaMantenimiento: item.FechaMantenimiento,
-        FechaFinalDeMantenimiento: item.FechaFinalDeMantenimiento,
-        Costo: item.Costo,
+        FechaFinalMantenimiento: item.FechaFinalMantenimiento,
+        IdEmpresa: item.IdEmpresa,
         Descripcion: item.Descripcion,
-        TipoMantenimiento: item.TipoMantenimiento,
-        NombreGrupoEquipo: item.NombreGrupoEquipo,
-        CodigoImtEquipo: item.CodigoImtEquipo,
-        DescripcionEquipo: item.DescripcionEquipo
+        Costo: item.Costo
       })))
     );
   }

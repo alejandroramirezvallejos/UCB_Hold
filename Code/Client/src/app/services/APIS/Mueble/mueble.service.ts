@@ -26,13 +26,7 @@ export class MuebleService {
       map(data => data.map(item => ({
         Id: item.Id,
         Nombre: item.Nombre,
-        NumeroGaveteros: item.NumeroGaveteros,
-        Ubicacion: item.Ubicacion,
-        Tipo: item.Tipo,
-        Costo: item.Costo,
-        Longitud: item.Longitud,
-        Profundidad: item.Profundidad,
-        Altura: item.Altura
+        Ubicacion: item.Ubicacion
       })))
     );
   }

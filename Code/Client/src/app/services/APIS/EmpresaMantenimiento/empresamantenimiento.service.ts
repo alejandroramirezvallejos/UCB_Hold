@@ -23,13 +23,11 @@ export class EmpresamantenimientoService {
   obtenerEmpresaMantenimiento(){
     return this.http.get<any[]>(this.apiUrl).pipe(
       map(data => data.map(item => ({
-        Id : item.Id,
-        NombreEmpresa: item.NombreEmpresa,
-        NombreResponsable: item.NombreResponsable,
-        ApellidoResponsable: item.ApellidoResponsable,
-        Telefono: item.Telefono,
-        Nit: item.Nit,
-        Direccion: item.Direccion
+        Id: item.Id,
+        Email: item.Email,
+        Nombre: item.Nombre,
+        Contacto: item.Contacto,
+        Telefono: item.Telefono
       })))
     );
   }
