@@ -69,6 +69,12 @@ public class CategoriaService
 		return Result<CategoriaDetailDto>.Success(_mapper.Map<CategoriaDetailDto>(result.Value));
 	}
 
+	public async Task<Result<object>> DeleteAsync(int id)
+	{
+		var result = await _repository.DeleteAsync(id);
+		return result;
+	}
+
 	protected Dictionary<string, object?> MapEntityToParameters(CategoriaEntity entity)
 	{
 		return new Dictionary<string, object?>
@@ -80,3 +86,4 @@ public class CategoriaService
 
 	protected int GetEntityId(CategoriaEntity entity) => entity.Id;
 }
+

@@ -70,6 +70,12 @@ public class AccesorioService
 		return Result<AccesorioDetailDto>.Success(_mapper.Map<AccesorioDetailDto>(result.Value));
 	}
 
+	public async Task<Result<object>> DeleteAsync(int id)
+	{
+		var result = await _repository.DeleteAsync(id);
+		return result;
+	}
+
 	protected Dictionary<string, object?> MapEntityToParameters(AccesorioEntity entity)
 	{
 		return new Dictionary<string, object?>

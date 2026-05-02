@@ -13,4 +13,18 @@ public class CarritoController : ControllerBase
 	{
 		_service = service;
 	}
+
+	[HttpPost("fechasnoDisponibles")]
+	public IActionResult ObtenerFechasNoDisponibles([FromBody] dynamic request)
+	{
+		var result = _service.ObtenerFechasNoDisponibles(request.fechaInicio, request.fechaFin, request.carrito);
+		return result.IsSuccess ? Ok(result.Value) : BadRequest(result.Errors);
+	}
+
+	[HttpPost("disponibilidadEquipos")]
+	public IActionResult ObtenerDisponibilidadEquipos([FromBody] dynamic request)
+	{
+		var result = _service.ObtenerDisponibilidadEquiposPorFechasYGrupos(request.fechaInicio, request.fechaFin, request.arrayIds);
+		return result.IsSuccess ? Ok(result.Value) : BadRequest(result.Errors);
+	}
 }

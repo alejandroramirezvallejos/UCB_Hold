@@ -69,6 +69,12 @@ private readonly IRepository<MuebleListDto> _repository;
 		return Result<MuebleDetailDto>.Success(_mapper.Map<MuebleDetailDto>(result.Value));
 	}
 
+	public async Task<Result<object>> DeleteAsync(int id)
+	{
+		var result = await _repository.DeleteAsync(id);
+		return result;
+	}
+
 	protected Dictionary<string, object?> MapEntityToParameters(MuebleEntity entity)
 	{
 		return new Dictionary<string, object?>
@@ -81,3 +87,4 @@ private readonly IRepository<MuebleListDto> _repository;
 
 	protected int GetEntityId(MuebleEntity entity) => entity.Id;
 }
+

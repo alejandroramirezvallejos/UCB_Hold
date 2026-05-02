@@ -67,6 +67,12 @@ private readonly IRepository<EquipoListDto> _repository;
 		return Result<EquipoDetailDto>.Success(_mapper.Map<EquipoDetailDto>(result.Value));
 	}
 
+	public async Task<Result<object>> DeleteAsync(int id)
+	{
+		var result = await _repository.DeleteAsync(id);
+		return result;
+	}
+
 	protected Dictionary<string, object?> MapEntityToParameters(EquipoEntity entity)
 	{
 		return new Dictionary<string, object?>
@@ -90,3 +96,4 @@ private readonly IRepository<EquipoListDto> _repository;
 
 	protected int GetEntityId(EquipoEntity entity) => entity.Id;
 }
+

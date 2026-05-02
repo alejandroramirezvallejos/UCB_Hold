@@ -69,6 +69,12 @@ private readonly IRepository<GaveteroListDto> _repository;
 		return Result<GaveteroDetailDto>.Success(_mapper.Map<GaveteroDetailDto>(result.Value));
 	}
 
+	public async Task<Result<object>> DeleteAsync(int id)
+	{
+		var result = await _repository.DeleteAsync(id);
+		return result;
+	}
+
 	protected Dictionary<string, object?> MapEntityToParameters(GaveteroEntity entity)
 	{
 		return new Dictionary<string, object?>
@@ -81,3 +87,4 @@ private readonly IRepository<GaveteroListDto> _repository;
 
 	protected int GetEntityId(GaveteroEntity entity) => entity.Id;
 }
+

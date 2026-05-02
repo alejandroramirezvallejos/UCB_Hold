@@ -16,11 +16,7 @@ export class AccesoriosService {
         nombre: item.Nombre,
         modelo: item.Modelo,
         tipo: item.Tipo,
-        descripcion: item.Descripcion,
-        codigo_imt: item.CodigoImtEquipoAsociado,
-        precio: item.Precio,
-        url_data_sheet: item.UrlDataSheet,
-        nombreEquipoAsociado: item.NombreEquipoAsociado
+        precio: item.Precio
       })))
     );
   }
@@ -29,10 +25,10 @@ export class AccesoriosService {
       Nombre: accesorio.nombre,
       Modelo: accesorio.modelo,
       Tipo: accesorio.tipo,
-      CodigoIMT: accesorio.codigo_imt,
       Descripcion: accesorio.descripcion,
       Precio: accesorio.precio,
-      UrlDataSheet: accesorio.url_data_sheet
+      UrlDataSheet: accesorio.url_data_sheet,
+      IdEquipo: accesorio.codigo_imt || 0
     }
     return this.http.post<any>(this.apiurl, envio);
   }
@@ -45,10 +41,10 @@ export class AccesoriosService {
       Nombre: accesorio.nombre,
       Modelo: accesorio.modelo,
       Tipo: accesorio.tipo,
-      CodigoIMT: accesorio.codigo_imt,
       Descripcion: accesorio.descripcion,
       Precio: accesorio.precio,
-      UrlDataSheet: accesorio.url_data_sheet
+      UrlDataSheet: accesorio.url_data_sheet,
+      IdEquipo: accesorio.codigo_imt || 0
     };
     return this.http.put(`${this.apiurl}`, envio );
 }

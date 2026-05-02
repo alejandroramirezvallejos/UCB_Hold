@@ -67,6 +67,12 @@ private readonly IRepository<MantenimientoListDto> _repository;
 		return Result<MantenimientoDetailDto>.Success(_mapper.Map<MantenimientoDetailDto>(result.Value));
 	}
 
+	public async Task<Result<object>> DeleteAsync(int id)
+	{
+		var result = await _repository.DeleteAsync(id);
+		return result;
+	}
+
 	protected Dictionary<string, object?> MapEntityToParameters(MantenimientoEntity entity)
 	{
 		return new Dictionary<string, object?>
@@ -83,3 +89,4 @@ private readonly IRepository<MantenimientoListDto> _repository;
 
 	protected int GetEntityId(MantenimientoEntity entity) => entity.Id;
 }
+

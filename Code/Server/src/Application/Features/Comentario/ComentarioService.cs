@@ -67,6 +67,12 @@ public class ComentarioService
 		return Result<ComentarioDetailDto>.Success(_mapper.Map<ComentarioDetailDto>(result.Value));
 	}
 
+	public async Task<Result<object>> DeleteAsync(int id)
+	{
+		var result = await _repository.DeleteAsync(id);
+		return result;
+	}
+
 	protected Dictionary<string, object?> MapEntityToParameters(ComentarioEntity entity)
 	{
 		return new Dictionary<string, object?>
@@ -82,3 +88,4 @@ public class ComentarioService
 
 	protected int GetEntityId(ComentarioEntity entity) => entity.Id;
 }
+

@@ -69,6 +69,12 @@ public class CarreraService
 		return Result<CarreraDetailDto>.Success(_mapper.Map<CarreraDetailDto>(result.Value));
 	}
 
+	public async Task<Result<object>> DeleteAsync(int id)
+	{
+		var result = await _repository.DeleteAsync(id);
+		return result;
+	}
+
 	protected Dictionary<string, object?> MapEntityToParameters(CarreraEntity entity)
 	{
 		return new Dictionary<string, object?>
@@ -80,3 +86,4 @@ public class CarreraService
 
 	protected int GetEntityId(CarreraEntity entity) => entity.Id;
 }
+

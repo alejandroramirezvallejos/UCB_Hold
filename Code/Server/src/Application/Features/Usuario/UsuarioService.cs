@@ -71,6 +71,12 @@ public class UsuarioService
 		return Result<UsuarioDetailDto>.Success(_mapper.Map<UsuarioDetailDto>(result.Value));
 	}
 
+	public async Task<Result<object>> DeleteAsync(int id)
+	{
+		var result = await _repository.DeleteAsync(id);
+		return result;
+	}
+
 	protected Dictionary<string, object?> MapEntityToParameters(UsuarioEntity entity)
 	{
 		return new Dictionary<string, object?>
@@ -86,3 +92,4 @@ public class UsuarioService
 
 	protected int GetEntityId(UsuarioEntity entity) => entity.Id;
 }
+
