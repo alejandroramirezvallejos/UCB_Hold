@@ -1,7 +1,10 @@
 using AutoMapper;
+using Microsoft.EntityFrameworkCore;
 using IMT_Reservas.Server.Application.Features.Accesorio;
 using IMT_Reservas.Server.Application.Features.Carrera;
 using IMT_Reservas.Server.Application.Features.Categoria;
+using IMT_Reservas.Server.Application.Features.Carrito;
+using IMT_Reservas.Server.Application.Features.Componente;
 using IMT_Reservas.Server.Application.Features.Equipo;
 using IMT_Reservas.Server.Application.Features.EmpresaMantenimiento;
 using IMT_Reservas.Server.Application.Features.Gavetero;
@@ -18,6 +21,10 @@ var builder = WebApplication.CreateBuilder(args);
 
 builder.Services.Configure<IMT_Reservas.Server.Infrastructure.MongoDb.MongoDbConfiguracion>(
     builder.Configuration.GetSection("MongoDbSettings"));
+
+var connectionString = builder.Configuration.GetConnectionString("PostgreSQL");
+builder.Services.AddDbContext<IMT_Reservas.Server.Infrastructure.PostgreSQL.ApplicationDbContext>(options =>
+    options.UseNpgsql(connectionString));
 
 builder.Services.AddControllers();
 builder.Services.AddEndpointsApiExplorer();
@@ -47,6 +54,11 @@ builder.Services.AddScoped<MantenimientoService>();
 builder.Services.AddScoped<EmpresaMantenimientoService>();
 builder.Services.AddScoped<GaveteroService>();
 builder.Services.AddScoped<MuebleService>();
+builder.Services.AddScoped<ComponenteRepository>();
+builder.Services.AddScoped<ComponenteService>();
+builder.Services.AddScoped<CarritoRepository>();
+builder.Services.AddScoped<CarritoService>();
+builder.Services.AddScoped<MantenimientoEquipoService>();
 
 var app = builder.Build();
 

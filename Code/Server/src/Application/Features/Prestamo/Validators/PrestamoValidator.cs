@@ -9,20 +9,20 @@ public class PrestamoValidator : Validator<PrestamoEntity>
 {
     public override Result<object> Validate(PrestamoEntity entity)
     {
-        var validation = RequiredPositiveInt(entity.IdUsuario, nameof(entity.IdUsuario));
-        if (!validation.IsSuccess) return validation;
+        if (string.IsNullOrEmpty(entity.Carnet))
+            return Result<object>.Invalid(ErrorFactory.RequiredField(nameof(entity.Carnet)));
 
         if (entity.FechaSolicitud == default)
             return Result<object>.Invalid(ErrorFactory.RequiredField(nameof(entity.FechaSolicitud)));
 
-        if (entity.FechaInicio == default)
-            return Result<object>.Invalid(ErrorFactory.RequiredField(nameof(entity.FechaInicio)));
+        if (entity.FechaPrestamoEsperada == default)
+            return Result<object>.Invalid(ErrorFactory.RequiredField(nameof(entity.FechaPrestamoEsperada)));
 
-        if (entity.FechaFin == default)
-            return Result<object>.Invalid(ErrorFactory.RequiredField(nameof(entity.FechaFin)));
+        if (entity.FechaDevolucionEsperada == default)
+            return Result<object>.Invalid(ErrorFactory.RequiredField(nameof(entity.FechaDevolucionEsperada)));
 
-        if (entity.FechaFin <= entity.FechaInicio)
-            return Result<object>.Invalid(new ValidationError(nameof(entity.FechaFin), "FechaFin must be after FechaInicio"));
+        if (entity.FechaDevolucionEsperada <= entity.FechaPrestamoEsperada)
+            return Result<object>.Invalid(new ValidationError(nameof(entity.FechaDevolucionEsperada), "La fecha de devolución debe ser posterior a la fecha de préstamo"));
 
         return Result<object>.Success(null);
     }

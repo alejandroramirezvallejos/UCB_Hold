@@ -1,29 +1,71 @@
 using Ardalis.Result;
-using AutoMapper;
-using IMT_Reservas.Server.Application.Common;
 using IMT_Reservas.Server.Application.Features.Carrera.Dtos;
-using IMT_Reservas.Server.Application.Features.Carrera.Validators;
-using IMT_Reservas.Server.Core.Abstractions;
 using CarreraEntity = IMT_Reservas.Server.Core.Entities.Carrera;
 using IMT_Reservas.Server.Infrastructure.Repositories.Implementations;
+using IMT_Reservas.Server.Core.Abstractions;
 
 namespace IMT_Reservas.Server.Application.Features.Carrera;
 
-public class CarreraService : Service<CarreraEntity, CarreraDetailDto, CarreraListDto>
+public class CarreraService
 {
-    public CarreraService(CarreraRepository repository, IMapper mapper) : base(repository, mapper)
+    private readonly CarreraRepository _repository;
+
+    public CarreraService(CarreraRepository repository)
     {
+        _repository = repository;
     }
 
-    protected override Validator<CarreraEntity> GetValidator() => new CarreraValidator();
+    public async Task<Result<CarreraDetailDto>> Create(CarreraEntity entity)
+    {
+        var result = await _repository.Create(entity);
+        return !result.IsSuccess
+            ? Result<CarreraDetailDto>.Error("Error al crear carrera")
+            : Result<CarreraDetailDto>.Created(MapListDtoToDetailDto(result.Value));
+    }
 
-    public new Result<CarreraDetailDto> Create(CarreraEntity entity) => base.Create(entity);
+    public async Task<Result<CarreraDetailDto>> Update(CarreraEntity entity)
+    {
+        var result = await _repository.Update(entity);
+        return !result.IsSuccess
+            ? Result<CarreraDetailDto>.Error("Error al actualizar carrera")
+            : Result<CarreraDetailDto>.Success(MapListDtoToDetailDto(result.Value));
+    }
 
-    public new Result<CarreraDetailDto> Update(CarreraEntity entity) => base.Update(entity);
+    public async Task<Result<object>> Delete(int id)
+    {
+        var result = await _repository.Delete(id);
+        return result.IsSuccess
+            ? Result<object>.Success(null)
+            : Result<object>.Error("Error al eliminar carrera");
+    }
 
-    public new Result<object> Delete(int id) => base.Delete(id);
+    public async Task<Result<CarreraDetailDto>> Get(int id)
+    {
+        var carrera = await _repository.Get(id);
+        return !carrera.IsSuccess
+            ? Result<CarreraDetailDto>.NotFound()
+            : Result<CarreraDetailDto>.Success(MapListDtoToDetailDto(carrera.Value));
+    }
 
-    public new Result<CarreraDetailDto> Get(int id) => base.Get(id);
+    public async Task<Result<List<CarreraListDto>>> GetAll(QueryFilter? filter = null)
+    {
+        var result = await _repository.GetAll(filter);
+        return result.IsSuccess
+            ? Result<List<CarreraListDto>>.Success(result.Value)
+            : Result<List<CarreraListDto>>.Error("Error al obtener carreras");
+    }
 
-    public new Result<List<CarreraListDto>> GetAll(QueryFilter? filter = null) => base.GetAll(filter);
+    private static CarreraDetailDto MapEntityToDetailDto(CarreraEntity entity) => new()
+    {
+        Id = entity.Id,
+        Nombre = entity.Nombre,
+        EstadoEliminado = entity.EstadoEliminado
+    };
+
+    private static CarreraDetailDto MapListDtoToDetailDto(CarreraListDto dto) => new()
+    {
+        Id = dto.Id,
+        Nombre = dto.Nombre,
+        EstadoEliminado = false
+    };
 }

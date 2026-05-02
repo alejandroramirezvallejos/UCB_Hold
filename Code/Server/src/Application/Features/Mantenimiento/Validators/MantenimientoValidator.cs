@@ -8,11 +8,14 @@ public class MantenimientoValidator : Validator<MantenimientoEntity>
 {
     public override Result<object> Validate(MantenimientoEntity entity)
     {
-        var validation = RequiredPositiveInt(entity.IdEquipo, nameof(entity.IdEquipo));
+        var validation = RequiredPositiveInt(entity.IdEmpresa, nameof(entity.IdEmpresa));
         if (!validation.IsSuccess) return validation;
 
-        validation = RequiredPositiveInt(entity.IdEmpresaMantenimiento, nameof(entity.IdEmpresaMantenimiento));
-        if (!validation.IsSuccess) return validation;
+        if (entity.FechaMantenimiento == default)
+            return Result<object>.Invalid(Core.Errors.ErrorFactory.RequiredField(nameof(entity.FechaMantenimiento)));
+
+        if (entity.FechaFinalMantenimiento == default)
+            return Result<object>.Invalid(Core.Errors.ErrorFactory.RequiredField(nameof(entity.FechaFinalMantenimiento)));
 
         return Result<object>.Success(null);
     }

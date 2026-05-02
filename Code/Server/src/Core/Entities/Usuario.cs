@@ -1,11 +1,20 @@
 namespace IMT_Reservas.Server.Core.Entities;
 
-public class Usuario : Entity
+public class Usuario
 {
-    public string? Nombre { get; set; }
-    public string? Email { get; set; }
-    public string? Contrasena { get; set; }
-    public int? IdCarrera { get; set; }
-    public string? Rol { get; set; }
+    public string Carnet { get; set; } = string.Empty;
+    public string Nombre { get; set; } = string.Empty;
+    public string ApellidoPaterno { get; set; } = string.Empty;
+    public string ApellidoMaterno { get; set; } = string.Empty;
+    public string Rol { get; set; } = "estudiante";
+    public string Contrasena { get; set; } = string.Empty;
+    public string Email { get; set; } = string.Empty;
+    public string Telefono { get; set; } = string.Empty;
+    public string? TelefonoReferencia { get; set; }
+    public string? NombreReferencia { get; set; }
+    public string? EmailReferencia { get; set; }
+    public int IdCarrera { get; set; }
+    public byte[]? ImagenFrenteCarnet { get; set; }
+    public byte[]? ImagenAtrasCarnet { get; set; }
     public bool EstadoEliminado { get; set; }
 }

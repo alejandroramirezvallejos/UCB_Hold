@@ -22,40 +22,40 @@ public class EquipoController : ControllerBase
     }
 
     [HttpGet]
-    public IActionResult GetAll()
+    public async Task<IActionResult> GetAll()
     {
-        var result = _service.GetAll();
+        var result = await _service.GetAll();
         return result.IsSuccess ? Ok(new Response<List<EquipoListDto>> { Success = true, Data = result.Value }) : BadRequest(new Response<object> { Success = false, Errors = result.Errors.ToList() });
     }
 
     [HttpGet("{id}")]
-    public IActionResult Get(int id)
+    public async Task<IActionResult> Get(int id)
     {
-        var result = _service.Get(id);
+        var result = await _service.Get(id);
         return result.IsSuccess ? Ok(new Response<EquipoDetailDto> { Success = true, Data = result.Value }) : NotFound(new Response<object> { Success = false, Errors = result.Errors.ToList() });
     }
 
     [HttpPost]
-    public IActionResult Create([FromBody] EquipoDto dto)
+    public async Task<IActionResult> Create([FromBody] EquipoDto dto)
     {
         var entity = _mapper.Map<EquipoEntity>(dto);
-        var result = _service.Create(entity);
+        var result = await _service.Create(entity);
         return result.IsSuccess ? CreatedAtAction(nameof(Get), new { id = result.Value?.Id }, new Response<EquipoDetailDto> { Success = true, Data = result.Value }) : BadRequest(new Response<object> { Success = false, Errors = result.Errors.ToList() });
     }
 
     [HttpPut("{id}")]
-    public IActionResult Update(int id, [FromBody] EquipoDto dto)
+    public async Task<IActionResult> Update(int id, [FromBody] EquipoDto dto)
     {
         var entity = _mapper.Map<EquipoEntity>(dto);
         entity.Id = id;
-        var result = _service.Update(entity);
+        var result = await _service.Update(entity);
         return result.IsSuccess ? Ok(new Response<EquipoDetailDto> { Success = true, Data = result.Value }) : BadRequest(new Response<object> { Success = false, Errors = result.Errors.ToList() });
     }
 
     [HttpDelete("{id}")]
-    public IActionResult Delete(int id)
+    public async Task<IActionResult> Delete(int id)
     {
-        var result = _service.Delete(id);
+        var result = await _service.Delete(id);
         return result.IsSuccess ? NoContent() : BadRequest(new Response<object> { Success = false, Errors = result.Errors.ToList() });
     }
 }

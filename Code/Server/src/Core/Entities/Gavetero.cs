@@ -2,7 +2,11 @@ namespace IMT_Reservas.Server.Core.Entities;
 
 public class Gavetero : Entity
 {
-    public string? Nombre { get; set; }
+    public string Nombre { get; set; } = string.Empty;
+    public string? Tipo { get; set; }
     public int IdMueble { get; set; }
+    public double? Longitud { get; set; }
+    public double? Profundidad { get; set; }
+    public double? Altura { get; set; }
     public bool EstadoEliminado { get; set; }
 }

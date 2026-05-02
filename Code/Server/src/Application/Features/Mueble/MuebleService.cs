@@ -1,29 +1,73 @@
 using Ardalis.Result;
-using AutoMapper;
-using IMT_Reservas.Server.Application.Common;
 using IMT_Reservas.Server.Application.Features.Mueble.Dtos;
-using IMT_Reservas.Server.Application.Features.Mueble.Validators;
-using IMT_Reservas.Server.Core.Abstractions;
 using MuebleEntity = IMT_Reservas.Server.Core.Entities.Mueble;
 using IMT_Reservas.Server.Infrastructure.Repositories.Implementations;
+using IMT_Reservas.Server.Core.Abstractions;
 
 namespace IMT_Reservas.Server.Application.Features.Mueble;
 
-public class MuebleService : Service<MuebleEntity, MuebleDetailDto, MuebleListDto>
+public class MuebleService
 {
-    public MuebleService(MuebleRepository repository, IMapper mapper) : base(repository, mapper)
+    private readonly MuebleRepository _repository;
+
+    public MuebleService(MuebleRepository repository)
     {
+        _repository = repository;
     }
 
-    protected override Validator<MuebleEntity> GetValidator() => new MuebleValidator();
+    public async Task<Result<MuebleDetailDto>> Create(MuebleEntity entity)
+    {
+        var result = await _repository.Create(entity);
+        return !result.IsSuccess
+            ? Result<MuebleDetailDto>.Error("Error al crear mueble")
+            : Result<MuebleDetailDto>.Created(MapListDtoToDetailDto(result.Value));
+    }
 
-    public new Result<MuebleDetailDto> Create(MuebleEntity entity) => base.Create(entity);
+    public async Task<Result<MuebleDetailDto>> Update(MuebleEntity entity)
+    {
+        var result = await _repository.Update(entity);
+        return !result.IsSuccess
+            ? Result<MuebleDetailDto>.Error("Error al actualizar mueble")
+            : Result<MuebleDetailDto>.Success(MapListDtoToDetailDto(result.Value));
+    }
 
-    public new Result<MuebleDetailDto> Update(MuebleEntity entity) => base.Update(entity);
+    public async Task<Result<object>> Delete(int id)
+    {
+        var result = await _repository.Delete(id);
+        return result.IsSuccess
+            ? Result<object>.Success(null)
+            : Result<object>.Error("Error al eliminar mueble");
+    }
 
-    public new Result<object> Delete(int id) => base.Delete(id);
+    public async Task<Result<MuebleDetailDto>> Get(int id)
+    {
+        var mueble = await _repository.Get(id);
+        return !mueble.IsSuccess
+            ? Result<MuebleDetailDto>.NotFound()
+            : Result<MuebleDetailDto>.Success(MapListDtoToDetailDto(mueble.Value));
+    }
 
-    public new Result<MuebleDetailDto> Get(int id) => base.Get(id);
+    public async Task<Result<List<MuebleListDto>>> GetAll(QueryFilter? filter = null)
+    {
+        var result = await _repository.GetAll(filter);
+        return result.IsSuccess
+            ? Result<List<MuebleListDto>>.Success(result.Value)
+            : Result<List<MuebleListDto>>.Error("Error al obtener muebles");
+    }
 
-    public new Result<List<MuebleListDto>> GetAll(QueryFilter? filter = null) => base.GetAll(filter);
+    private static MuebleDetailDto MapEntityToDetailDto(MuebleEntity entity) => new()
+    {
+        Id = entity.Id,
+        Nombre = entity.Nombre,
+        Ubicacion = entity.Ubicacion,
+        EstadoEliminado = entity.EstadoEliminado
+    };
+
+    private static MuebleDetailDto MapListDtoToDetailDto(MuebleListDto dto) => new()
+    {
+        Id = dto.Id,
+        Nombre = dto.Nombre,
+        Ubicacion = dto.Ubicacion,
+        EstadoEliminado = false
+    };
 }

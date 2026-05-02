@@ -1,15 +1,16 @@
 using IMT_Reservas.Server.Application.Features.Carrito.Dtos;
-using System.Data;
-using Ardalis.Result;
+using IMT_Reservas.Server.Infrastructure.PostgreSQL;
+using Microsoft.EntityFrameworkCore;
 
 namespace IMT_Reservas.Server.Infrastructure.Repositories.Implementations;
 
 public class CarritoRepository
 {
-    private readonly IExecuteQuery _executeQuery;
-    public CarritoRepository(IExecuteQuery executeQuery) => _executeQuery = executeQuery;
+    private readonly ApplicationDbContext _dbContext;
 
-    public IEnumerable<FechaNoDisponibleDto> GetUnavailableDates(DateTime fechaInicio, DateTime fechaFin, Dictionary<int, int> carrito)
+    public CarritoRepository(ApplicationDbContext dbContext) => _dbContext = dbContext;
+
+    public async Task<IEnumerable<FechaNoDisponibleDto>> GetUnavailableDates(DateTime fechaInicio, DateTime fechaFin, Dictionary<int, int> carrito)
     {
         var resultado = new List<FechaNoDisponibleDto>();
         var diasSolicitados = (fechaFin.Date - fechaInicio.Date).Days;
@@ -18,7 +19,7 @@ public class CarritoRepository
         {
             for (var fecha = fechaInicio.Date; fecha <= fechaFin.Date; fecha = fecha.AddDays(1))
             {
-                var disponibles = GetAvailableEquipmentCount(idGrupoEquipo, fecha, diasSolicitados);
+                var disponibles = await GetAvailableEquipmentCount(idGrupoEquipo, fecha, diasSolicitados);
 
                 if (disponibles < cantidadSolicitada)
                 {
@@ -34,7 +35,7 @@ public class CarritoRepository
         return resultado;
     }
 
-    public IEnumerable<DisponibilidadEquipoDto> GetAvailability(DateTime fechaInicio, DateTime fechaFin, int[] arrayIds)
+    public async Task<IEnumerable<DisponibilidadEquipoDto>> GetAvailability(DateTime fechaInicio, DateTime fechaFin, int[] arrayIds)
     {
         var resultado = new List<DisponibilidadEquipoDto>();
         var diasSolicitados = (fechaFin.Date - fechaInicio.Date).Days;
@@ -43,7 +44,7 @@ public class CarritoRepository
         {
             for (var fecha = fechaInicio.Date; fecha <= fechaFin.Date; fecha = fecha.AddDays(1))
             {
-                var disponibles = GetAvailableEquipmentCount(idGrupoEquipo, fecha, diasSolicitados);
+                var disponibles = await GetAvailableEquipmentCount(idGrupoEquipo, fecha, diasSolicitados);
 
                 resultado.Add(new DisponibilidadEquipoDto
                 {
@@ -56,45 +57,49 @@ public class CarritoRepository
         return resultado;
     }
 
-    private int GetAvailableEquipmentCount(int idGrupoEquipo, DateTime fecha, int diasSolicitados)
+    private async Task<int> GetAvailableEquipmentCount(int idGrupoEquipo, DateTime fecha, int diasSolicitados)
     {
-        const string sqlDisponibles = @"SELECT COUNT(*)
-            FROM (
-                SELECT e.id_equipo
-                FROM public.equipos e
-                WHERE e.id_grupo_equipo = @idGrupoEquipo
-                  AND e.estado_eliminado = FALSE
-                  AND e.estado_equipo = 'operativo'
-                  AND @diasSolicitados <= e.tiempo_max_prestamo
+        var equiposOperativos = await _dbContext.Equipos
+            .Where(e => e.IdGrupoEquipo == idGrupoEquipo
+                && !e.EstadoEliminado
+                && e.EstadoEquipo == "operativo"
+                && diasSolicitados <= e.TiempoMaximoPrestamo)
+            .Select(e => e.Id)
+            .ToListAsync();
 
-                EXCEPT
+        var prestamosEnFecha = await _dbContext.Prestamos
+            .Where(p => !p.EstadoEliminado
+                && (p.EstadoPrestamo == "pendiente" || p.EstadoPrestamo == "aprobado" || p.EstadoPrestamo == "activo")
+                && p.FechaPrestamoEsperada.Date <= fecha.Date
+                && p.FechaDevolucionEsperada.Date >= fecha.Date)
+            .Select(p => p.Id)
+            .ToListAsync();
 
-                SELECT DISTINCT dp.id_equipo
-                FROM public.detalles_prestamos dp
-                INNER JOIN public.prestamos p ON dp.id_prestamo = p.id_prestamo
-                WHERE p.estado_eliminado = FALSE
-                  AND dp.estado_eliminado = FALSE
-                  AND p.estado_prestamo IN ('pendiente', 'aprobado', 'activo')
-                  AND @fechaActual BETWEEN p.fecha_prestamo_esperada::date AND p.fecha_devolucion_esperada::date
+        var equiposEnPrestamo = await _dbContext.DetallesPrestamos
+            .Where(dp => !dp.EstadoEliminado && prestamosEnFecha.Contains(dp.IdPrestamo))
+            .Select(dp => dp.IdEquipo)
+            .Distinct()
+            .ToListAsync();
 
-                EXCEPT
+        var mantenimientosEnFecha = await _dbContext.Mantenimientos
+            .Where(m => !m.EstadoEliminado
+                && m.FechaMantenimiento.Date <= fecha.Date
+                && m.FechaFinalMantenimiento.Date >= fecha.Date)
+            .Select(m => m.Id)
+            .ToListAsync();
 
-                SELECT DISTINCT dm.id_equipo
-                FROM public.detalles_mantenimientos dm
-                INNER JOIN public.mantenimientos m ON dm.id_mantenimiento = m.id_mantenimiento
-                WHERE m.estado_eliminado = FALSE
-                  AND @fechaActual BETWEEN m.fecha_mantenimiento AND m.fecha_final_mantenimiento
-            ) AS equipos_disponibles";
+        var equiposEnMantenimiento = await _dbContext.DetallesMantenimientos
+            .Where(dm => mantenimientosEnFecha.Contains(dm.IdMantenimiento))
+            .Select(dm => dm.IdEquipo)
+            .Distinct()
+            .ToListAsync();
 
-        var parametros = new Dictionary<string, object?>
-        {
-            ["idGrupoEquipo"] = idGrupoEquipo,
-            ["fechaActual"] = fecha,
-            ["diasSolicitados"] = diasSolicitados
-        };
+        var equiposDisponibles = equiposOperativos
+            .Except(equiposEnPrestamo)
+            .Except(equiposEnMantenimiento)
+            .Count();
 
-        var dtDisponibles = _executeQuery.EjecutarFuncion(sqlDisponibles, parametros);
-        return Convert.ToInt32(dtDisponibles.Rows[0][0]);
+        return equiposDisponibles;
     }
 }
 

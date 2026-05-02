@@ -2,11 +2,14 @@ namespace IMT_Reservas.Server.Core.Entities;
 
 public class Prestamo : Entity
 {
-    public int IdUsuario { get; set; }
     public DateTime FechaSolicitud { get; set; }
-    public DateTime FechaInicio { get; set; }
-    public DateTime FechaFin { get; set; }
+    public DateTime FechaPrestamoEsperada { get; set; }
+    public DateTime? FechaPrestamo { get; set; }
+    public DateTime FechaDevolucionEsperada { get; set; }
+    public DateTime? FechaDevolucion { get; set; }
+    public string Carnet { get; set; } = string.Empty;
     public string? EstadoPrestamo { get; set; }
-    public string? Observaciones { get; set; }
+    public string? Observacion { get; set; }
+    public string? IdContrato { get; set; }
     public bool EstadoEliminado { get; set; }
 }

@@ -22,56 +22,68 @@ public class UsuarioController : ControllerBase
     }
 
     [HttpGet]
-    public IActionResult GetAll()
+    public async Task<IActionResult> GetAll()
     {
-        var result = _service.GetAllUsuarios();
-        return result.IsSuccess ? Ok(new Response<List<UsuarioListDto>> { Success = true, Data = result.Value }) : BadRequest(new Response<object> { Success = false, Errors = result.Errors.ToList() });
+        var result = await _service.GetAllUsers();
+        return result.IsSuccess
+            ? Ok(new Response<List<UsuarioListDto>> { Success = true, Data = result.Value })
+            : BadRequest(new Response<object> { Success = false, Errors = result.Errors.ToList() });
     }
 
-    [HttpGet("{id}")]
-    public IActionResult Get(int id)
+    [HttpGet("{carnet}")]
+    public async Task<IActionResult> Get(string carnet)
     {
-        var result = _service.Get(id);
-        return result.IsSuccess ? Ok(new Response<UsuarioDetailDto> { Success = true, Data = result.Value }) : NotFound(new Response<object> { Success = false, Errors = result.Errors.ToList() });
+        var result = await _service.Get(carnet);
+        return result.IsSuccess
+            ? Ok(new Response<UsuarioDetailDto> { Success = true, Data = result.Value })
+            : NotFound(new Response<object> { Success = false, Errors = result.Errors.ToList() });
     }
 
     [HttpPost]
-    public IActionResult Create([FromBody] UsuarioDto dto)
+    public async Task<IActionResult> Create([FromBody] UsuarioDto dto)
     {
         var entity = _mapper.Map<UsuarioEntity>(dto);
-        var result = _service.Create(entity);
-        return result.IsSuccess ? CreatedAtAction(nameof(Get), new { id = result.Value?.Id }, new Response<UsuarioDetailDto> { Success = true, Data = result.Value }) : BadRequest(new Response<object> { Success = false, Errors = result.Errors.ToList() });
+        var result = await _service.Create(entity);
+        return result.IsSuccess
+            ? CreatedAtAction(nameof(Get), new { carnet = result.Value?.Carnet }, new Response<UsuarioDetailDto> { Success = true, Data = result.Value })
+            : BadRequest(new Response<object> { Success = false, Errors = result.Errors.ToList() });
     }
 
-    [HttpPut("{id}")]
-    public IActionResult Update(int id, [FromBody] UsuarioDto dto)
+    [HttpPut("{carnet}")]
+    public async Task<IActionResult> Update(string carnet, [FromBody] UsuarioDto dto)
     {
         var entity = _mapper.Map<UsuarioEntity>(dto);
-        entity.Id = id;
-        var result = _service.Update(entity);
-        return result.IsSuccess ? Ok(new Response<UsuarioDetailDto> { Success = true, Data = result.Value }) : BadRequest(new Response<object> { Success = false, Errors = result.Errors.ToList() });
+        entity.Carnet = carnet;
+        var result = await _service.Update(entity);
+        return result.IsSuccess
+            ? Ok(new Response<UsuarioDetailDto> { Success = true, Data = result.Value })
+            : BadRequest(new Response<object> { Success = false, Errors = result.Errors.ToList() });
     }
 
-    [HttpDelete("{id}")]
-    public IActionResult Delete(int id)
+    [HttpDelete("{carnet}")]
+    public async Task<IActionResult> Delete(string carnet)
     {
-        var result = _service.Delete(id);
-        return result.IsSuccess ? NoContent() : BadRequest(new Response<object> { Success = false, Errors = result.Errors.ToList() });
+        var result = await _service.Delete(carnet);
+        return result.IsSuccess
+            ? NoContent()
+            : BadRequest(new Response<object> { Success = false, Errors = result.Errors.ToList() });
     }
 
-    [HttpPost("iniciarSesion")]
-    public IActionResult InitiateSession([FromBody] LoginRequest request)
+    [HttpPost("login")]
+    public async Task<IActionResult> InitiateSession([FromBody] LoginRequest request)
     {
-        if (string.IsNullOrWhiteSpace(request?.Email) || string.IsNullOrWhiteSpace(request?.Contrasena))
-            return BadRequest(new Response<object> { Success = false, Errors = new List<string> { "Email y contraseña son requeridos" } });
+        if (string.IsNullOrWhiteSpace(request?.Email) || string.IsNullOrWhiteSpace(request?.Password))
+            return BadRequest(new Response<object> { Success = false, Errors = new List<string> { "Email and password are required" } });
 
-        var result = _service.InitiateSession(request.Email, request.Contrasena);
-        return result.IsSuccess ? Ok(new Response<UsuarioDetailDto> { Success = true, Data = result.Value }) : Unauthorized(new Response<object> { Success = false, Errors = result.Errors.ToList() });
+        var result = await _service.InitiateSession(request.Email, request.Password);
+        return result.IsSuccess
+            ? Ok(new Response<UsuarioDetailDto> { Success = true, Data = result.Value })
+            : Unauthorized(new Response<object> { Success = false, Errors = result.Errors.ToList() });
     }
 }
 
 public class LoginRequest
 {
     public string? Email { get; set; }
-    public string? Contrasena { get; set; }
+    public string? Password { get; set; }
 }
