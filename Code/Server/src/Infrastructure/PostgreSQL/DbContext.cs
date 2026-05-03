@@ -125,8 +125,10 @@ public class ApplicationDbContext : DbContext
             entity.Property(e => e.CodigoUcb).HasMaxLength(256).HasColumnName("codigo_ucb");
             entity.Property(e => e.NumeroSerial).HasMaxLength(255).HasColumnName("numero_serial");
             entity.Property(e => e.Ubicacion).HasMaxLength(255).HasColumnName("ubicacion");
+            entity.Property(e => e.Descripcion).HasColumnName("descripcion");
             entity.Property(e => e.CostoReferencia).HasColumnName("costo_referencia");
             entity.Property(e => e.TiempoMaximoPrestamo).HasColumnName("tiempo_max_prestamo");
+            entity.Property(e => e.Procedencia).HasMaxLength(255).HasColumnName("procedencia");
             entity.Property(e => e.FechaIngresoEquipo).HasDefaultValue(DateOnly.FromDateTime(DateTime.UtcNow)).HasColumnName("fecha_ingreso_equipo");
             entity.Property(e => e.EstadoEquipo).HasDefaultValue("operativo").HasColumnName("estado_equipo");
             entity.Property(e => e.IdGrupoEquipo).HasColumnName("id_grupo_equipo");
@@ -238,8 +240,11 @@ public class ApplicationDbContext : DbContext
             entity.HasKey(e => e.Id);
             entity.Property(e => e.Id).HasColumnName("id_prestamo");
             entity.Property(e => e.FechaSolicitud).HasDefaultValueSql("now() AT TIME ZONE 'America/La_Paz'").HasColumnName("fecha_solicitud");
+            entity.Property(e => e.FechaPrestamo).HasColumnName("fecha_prestamo");
             entity.Property(e => e.FechaPrestamoEsperada).IsRequired().HasColumnName("fecha_prestamo_esperada");
+            entity.Property(e => e.FechaDevolucion).HasColumnName("fecha_devolucion");
             entity.Property(e => e.FechaDevolucionEsperada).IsRequired().HasColumnName("fecha_devolucion_esperada");
+            entity.Property(e => e.Observacion).HasColumnName("observacion");
             entity.Property(e => e.EstadoPrestamo).HasDefaultValue("pendiente").HasColumnName("estado_prestamo");
             entity.Property(e => e.IdContrato).HasColumnName("id_contrato");
             entity.Property(e => e.Carnet).HasColumnName("carnet");
