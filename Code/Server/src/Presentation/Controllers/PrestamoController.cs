@@ -37,11 +37,23 @@ public class PrestamoController : ControllerBase
     }
 
     [HttpPost]
-    public async Task<IActionResult> Create([FromBody] PrestamoDto dto)
+    public async Task<IActionResult> Create([FromForm] CreatePrestamoRequest request)
     {
-        var entity = _mapper.Map<PrestamoEntity>(dto);
-        var result = await _service.Create(entity);
-        
+        var entity = _mapper.Map<PrestamoEntity>(request);
+
+        Stream? contratoStream = null;
+        string? contratoFileName = null;
+
+        if (request.Contrato != null && request.Contrato.Length > 0)
+        {
+            contratoStream = request.Contrato.OpenReadStream();
+            contratoFileName = request.Contrato.FileName;
+        }
+
+        var result = await _service.Create(entity, request.EquipoIds, contratoStream, contratoFileName);
+
+        contratoStream?.Dispose();
+
         return result.IsSuccess ? CreatedAtAction(nameof(Get), new { id = result.Value?.Id }, new Response<PrestamoDetailDto> { Success = true, Data = result.Value }) : BadRequest(new Response<object> { Success = false, Errors = result.Errors.ToList() });
     }
 

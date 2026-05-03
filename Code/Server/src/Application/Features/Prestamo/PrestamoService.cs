@@ -21,10 +21,31 @@ public class PrestamoService
         _contratoService = contratoService;
     }
 
-    public async Task<Result<PrestamoDetailDto>> Create(PrestamoEntity entity)
+    public async Task<Result<PrestamoDetailDto>> Create(PrestamoEntity entity, int[]? equipoIds = null, Stream? contratoStream = null, string? contratoFileName = null)
     {
+        double totalPrice = 0;
+
+        if (equipoIds != null && equipoIds.Length > 0)
+        {
+            var equipos = await _dbContext.Equipos
+                .Where(e => equipoIds.Contains(e.Id) && !e.EstadoEliminado)
+                .ToListAsync();
+
+            totalPrice = equipos.Sum(e => e.CostoReferencia ?? 0);
+        }
+
+        if (totalPrice >= 1000 && (contratoStream == null || string.IsNullOrEmpty(contratoFileName)))
+            return Result<PrestamoDetailDto>.Error("Contrato requerido para préstamos >= 1000");
+
+        if (contratoStream != null && !string.IsNullOrEmpty(contratoFileName))
+        {
+            var contratoUpload = await _contratoService.Create(entity.Id, contratoStream, contratoFileName);
+            if (!contratoUpload.IsSuccess)
+                return Result<PrestamoDetailDto>.Error("Error al crear contrato: " + string.Join(", ", contratoUpload.Errors));
+        }
+
         var result = await _repository.Create(entity);
-        
+
         return !result.IsSuccess
             ? Result<PrestamoDetailDto>.Error("Error al crear prestamo")
             : Result<PrestamoDetailDto>.Created(MapListDtoToDetailDto(result.Value));
