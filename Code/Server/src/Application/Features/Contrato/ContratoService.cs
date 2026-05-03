@@ -2,7 +2,6 @@ using Ardalis.Result;
 using IMT_Reservas.Server.Application.Features.Contrato.Dtos;
 using ContratoEntity = IMT_Reservas.Server.Core.Entities.Contrato;
 using IMT_Reservas.Server.Infrastructure.Repositories.Implementations;
-using IMT_Reservas.Server.Core.Common;
 namespace IMT_Reservas.Server.Application.Features.Contrato;
 
 public class ContratoService
@@ -17,6 +16,7 @@ public class ContratoService
     public async Task<Result<ContratoDto>> Create(ContratoEntity entity)
     {
         var result = await _repository.Create(entity);
+        
         return result.IsSuccess
             ? Result<ContratoDto>.Success(new ContratoDto { Id = result.Value.Id })
             : Result<ContratoDto>.Error(result.Errors.FirstOrDefault() ?? "Error al crear");

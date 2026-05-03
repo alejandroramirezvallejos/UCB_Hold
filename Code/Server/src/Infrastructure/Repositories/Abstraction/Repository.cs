@@ -14,6 +14,7 @@ public abstract class Repository<TEntity, TDto> where TEntity : class where TDto
     {
         DbContext.Add(entity);
         await DbContext.SaveChangesAsync();
+        
         return Result<TDto>.Created(MapToDto(entity));
     }
 
@@ -21,6 +22,7 @@ public abstract class Repository<TEntity, TDto> where TEntity : class where TDto
     {
         DbContext.Update(entity);
         await DbContext.SaveChangesAsync();
+        
         return Result<TDto>.Success(MapToDto(entity));
     }
 
@@ -33,12 +35,14 @@ public abstract class Repository<TEntity, TDto> where TEntity : class where TDto
 
         DbContext.Remove(entity);
         await DbContext.SaveChangesAsync();
+        
         return Result<object>.Success(null!);
     }
 
     public virtual async Task<Result<TDto>> Get(int id)
     {
         var entity = await DbContext.FindAsync(typeof(TEntity), id);
+        
         return entity == null
             ? Result<TDto>.NotFound()
             : Result<TDto>.Success(MapToDto((TEntity)entity));
@@ -49,6 +53,7 @@ public abstract class Repository<TEntity, TDto> where TEntity : class where TDto
         var query = DbContext.Set<TEntity>().AsQueryable();
         var entities = await query.ToListAsync();
         var dtos = entities.Select(MapToDto).ToList();
+        
         return dtos.Count == 0
             ? Result<List<TDto>>.NotFound()
             : Result<List<TDto>>.Success(dtos);
@@ -64,6 +69,7 @@ public abstract class Repository<TEntity, TDto> where TEntity : class where TDto
     protected virtual int GetIdValue(TEntity entity)
     {
         var idProp = typeof(TEntity).GetProperty("Id");
+        
         return idProp != null ? (int)idProp.GetValue(entity)! : 0;
     }
 }

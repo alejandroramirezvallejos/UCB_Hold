@@ -14,7 +14,6 @@ using IMT_Reservas.Server.Application.Features.Mueble;
 using IMT_Reservas.Server.Application.Features.Prestamo;
 using IMT_Reservas.Server.Application.Features.Usuario;
 using IMT_Reservas.Server.Application.Features.Contrato;
-using IMT_Reservas.Server.Application.Features.Archivo;
 using IMT_Reservas.Server.Infrastructure.PostgreSQL;
 using IMT_Reservas.Server.Infrastructure.Repositories.Implementations;
 using IMT_Reservas.Server.Infrastructure.MongoDb;
@@ -66,7 +65,6 @@ builder.Services.AddScoped<CarritoRepository>();
 builder.Services.AddScoped<CarritoService>();
 builder.Services.AddScoped<ContratoRepository>();
 builder.Services.AddScoped<ContratoService>();
-builder.Services.AddScoped<ArchivoService>();
 
 builder.Services.AddSingleton<IMongoClient>(new MongoClient("mongodb://localhost:27018/"));
 

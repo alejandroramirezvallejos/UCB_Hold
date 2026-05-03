@@ -1,6 +1,5 @@
 using IMT_Reservas.Server.Application.Abstraction;
 using System.Text.Json;
-
 namespace IMT_Reservas.Server.Presentation.Middleware;
 
 public class ExceptionMiddleware

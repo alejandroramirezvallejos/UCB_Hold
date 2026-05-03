@@ -35,7 +35,7 @@ public class UsuarioService
         => await _repository.GetAll(filter);
 
     public async Task<Result<List<UsuarioDto>>> GetAllUsers()
-        => await _repository.GetAll(null);
+        => await _repository.GetAll();
 
     public async Task<Result<UsuarioDto>> InitiateSession(string email, string password)
     {
