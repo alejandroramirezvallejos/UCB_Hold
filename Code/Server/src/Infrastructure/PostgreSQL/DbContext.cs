@@ -93,6 +93,10 @@ public class ApplicationDbContext : DbContext
             entity.Property(e => e.Tipo).HasMaxLength(255).HasColumnName("tipo");
             entity.Property(e => e.Ubicacion).HasMaxLength(255).HasColumnName("ubicacion");
             entity.Property(e => e.NumeroGaveteros).HasDefaultValue(0).HasColumnName("numero_gaveteros");
+            entity.Property(e => e.Longitud).HasColumnName("longitud");
+            entity.Property(e => e.Profundidad).HasColumnName("profundidad");
+            entity.Property(e => e.Altura).HasColumnName("altura");
+            entity.Property(e => e.Costo).HasColumnName("costo");
             entity.Property(e => e.EstadoEliminado).HasColumnName("estado_eliminado");
             entity.HasIndex(e => new { e.Nombre, e.EstadoEliminado });
             entity.HasIndex(e => e.Nombre).IsUnique();
