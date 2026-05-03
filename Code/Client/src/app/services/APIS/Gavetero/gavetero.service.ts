@@ -22,7 +22,7 @@ export class GaveteroService {
   }
   obtenerGaveteros() {
     return this.http.get<Gaveteros[]>(this.apiUrl).pipe(
-      map(data => data.map(item => ({
+      map(data => data.Value.map(item => ({
         Id: item.Id,
         Nombre: item.Nombre,
         Tipo: item.Tipo,

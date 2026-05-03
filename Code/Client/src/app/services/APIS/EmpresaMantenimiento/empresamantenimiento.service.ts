@@ -21,8 +21,8 @@ export class EmpresamantenimientoService {
     return this.http.post<any>(this.apiUrl, envio);
   }
   obtenerEmpresaMantenimiento(){
-    return this.http.get<any[]>(this.apiUrl).pipe(
-      map(data => data.map(item => ({
+    return this.http.get<any>(this.apiUrl).pipe(
+      map(data => data.Value.map(item => ({
         Id : item.Id,
         NombreEmpresa: item.NombreEmpresa,
         NombreResponsable: item.NombreResponsable,

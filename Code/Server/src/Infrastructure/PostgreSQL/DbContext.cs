@@ -18,7 +18,6 @@ public class ApplicationDbContext : DbContext
     public DbSet<DetalleMantenimiento> DetallesMantenimientos { get; set; }
     public DbSet<Prestamo> Prestamos { get; set; }
     public DbSet<DetallePrestamo> DetallesPrestamos { get; set; }
-    public DbSet<Contrato> Contratos { get; set; }
 
     public ApplicationDbContext(DbContextOptions<ApplicationDbContext> options) : base(options) { }
 
@@ -273,16 +272,6 @@ public class ApplicationDbContext : DbContext
             entity.HasOne<Prestamo>().WithMany().HasForeignKey(e => e.IdPrestamo).IsRequired();
             entity.HasOne<Equipo>().WithMany().HasForeignKey(e => e.IdEquipo).IsRequired();
             entity.HasIndex(e => new { e.IdPrestamo, e.EstadoEliminado });
-            entity.HasQueryFilter(e => !e.EstadoEliminado);
-        });
-
-        modelBuilder.Entity<Contrato>(entity =>
-        {
-            entity.ToTable("contratos");
-            entity.HasKey(e => e.Id);
-            entity.Property(e => e.Id).HasColumnName("id");
-            entity.Property(e => e.PrestamoId).IsRequired().HasColumnName("prestamo_id");
-            entity.Property(e => e.EstadoEliminado).HasColumnName("estado_eliminado");
             entity.HasQueryFilter(e => !e.EstadoEliminado);
         });
     }

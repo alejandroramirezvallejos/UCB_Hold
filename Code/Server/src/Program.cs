@@ -79,10 +79,6 @@ builder.Services.AddScoped<GaveteroService>();
 builder.Services.AddScoped<MuebleService>();
 builder.Services.AddScoped<ComponenteRepository>();
 builder.Services.AddScoped<ComponenteService>();
-builder.Services.AddScoped<CarritoRepository>();
-builder.Services.AddScoped<CarritoService>();
-builder.Services.AddScoped<ContratoRepository>();
-builder.Services.AddScoped<ContratoService>();
 
 var mongoDbConfig = builder.Configuration.GetSection("MongoDbSettings").Get<MongoDbConfiguracion>();
 builder.Services.AddSingleton<IMongoClient>(new MongoClient(mongoDbConfig?.ConnectionString ?? "mongodb://localhost:27018"));

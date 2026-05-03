@@ -10,8 +10,8 @@ export class AccesoriosService {
     private apiurl = environment.apiUrl + '/api/Accesorio'; 
   constructor(private http : HttpClient) { }
   obtenerAccesorios() {
-    return this.http.get<any[]>(this.apiurl).pipe(
-      map(data => data.map(item => ({
+    return this.http.get<any>(this.apiurl).pipe(
+      map(data => data.Value.map(item => ({
         Id: item.Id,
         nombre: item.Nombre,
         modelo: item.Modelo,

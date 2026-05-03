@@ -32,7 +32,7 @@ public class GrupoEquipoController : ControllerBase
     {
         var result = await _service.Search(nombre, categoria);
 
-        return result.IsSuccess ? Ok(result.Value) : BadRequest(new Response<object> { Status = 400, Errors = result.Errors.ToList() });
+        return result.IsSuccess ? Ok(new Response<List<GrupoEquipoDto>> { Status = 200, Value = result.Value }) : BadRequest(new Response<object> { Status = 400, Errors = result.Errors.ToList() });
     }
 
     [HttpGet("{id:int}")]

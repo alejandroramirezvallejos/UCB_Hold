@@ -22,11 +22,11 @@ export class GrupoequipoService {
     return this.http.post<any>(this.apiUrl, envio);
   }
   obtenersinfiltroGruposEquipos() {
-    return this.http.get<any[]>(this.apiUrl).pipe(
-      map(data => data.map(item => ({
+    return this.http.get<any>(this.apiUrl).pipe(
+      map(data => data.Value.map(item => ({
         id: item.Id,
         nombre: item.Nombre ,
-        descripcion : item.Descripcion  , 
+        descripcion : item.Descripcion  ,
         modelo: item.Modelo ,
         url_data_sheet: item.UrlDataSheet  ,
         marca: item.Marca ,
@@ -39,11 +39,11 @@ export class GrupoequipoService {
   }
   getGrupoEquipo(categoria : string , producto : string): Observable<GrupoEquipo[]>  {
     var url : string   = this.apiUrl +'/buscar' + '?nombre=' + producto + '&categoria=' + categoria;
-    return this.http.get<any[]>(url).pipe(
-      map(data => data.map(item => ({
+    return this.http.get<any>(url).pipe(
+      map(data => data.Value.map(item => ({
         id: item.Id,
         nombre: item.Nombre ,
-        descripcion : item.Descripcion  || '', 
+        descripcion : item.Descripcion  || '',
         modelo: ' '+item.Modelo || '',
         url_data_sheet: item.UrlDataSheet || '' ,
         marca: ' '+item.Marca || '',
@@ -57,16 +57,16 @@ export class GrupoequipoService {
   getproducto(id: string): Observable<GrupoEquipo> {
     const url = `${this.apiUrl}/${id}`;
     return this.http.get<any>(url).pipe(
-      map(item => ({
-        id: item.Id,
-        descripcion: item.Descripcion,
-        nombre: item.Nombre,
-        modelo: ' ' + item.Modelo || '',
-        marca: ' ' + item.Marca || '',
-        url_data_sheet: item.UrlDataSheet,
-        link: item.UrlImagen,
-        Cantidad : item.Cantidad || 0,
-        CostoPromedio : item.CostoPromedio || 0
+      map(data => ({
+        id: data.Value.Id,
+        descripcion: data.Value.Descripcion,
+        nombre: data.Value.Nombre,
+        modelo: ' ' + data.Value.Modelo || '',
+        marca: ' ' + data.Value.Marca || '',
+        url_data_sheet: data.Value.UrlDataSheet,
+        link: data.Value.UrlImagen,
+        Cantidad : data.Value.Cantidad || 0,
+        CostoPromedio : data.Value.CostoPromedio || 0
       }))
     );
   }

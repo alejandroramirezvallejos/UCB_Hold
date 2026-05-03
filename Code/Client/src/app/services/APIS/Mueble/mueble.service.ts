@@ -22,8 +22,8 @@ export class MuebleService {
     return this.http.post(this.apiUrl, enviar);
   }
   obtenerMuebles() {
-    return this.http.get<any[]>(this.apiUrl).pipe(
-      map(data => data.map(item => ({
+    return this.http.get<any>(this.apiUrl).pipe(
+      map(data => data.Value.map(item => ({
         Id: item.Id,
         Nombre: item.Nombre,
         NumeroGaveteros: item.NumeroGaveteros,
