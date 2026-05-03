@@ -5,6 +5,7 @@ using IMT_Reservas.Server.Application.Dtos;
 using IMT_Reservas.Server.Application.Features.Usuario.Dtos;
 using UsuarioEntity = IMT_Reservas.Server.Core.Entities.Usuario;
 using AutoMapper;
+
 namespace IMT_Reservas.Server.Presentation.Controllers;
 
 [ApiController]
@@ -85,10 +86,4 @@ public class UsuarioController : ControllerBase
             ? Ok(new Response<UsuarioDetailDto> { Success = true, Data = result.Value })
             : Unauthorized(new Response<object> { Success = false, Errors = result.Errors.ToList() });
     }
-}
-
-public class LoginRequest
-{
-    public string? Email { get; set; }
-    public string? Password { get; set; }
 }
