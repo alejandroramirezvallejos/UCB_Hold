@@ -1,4 +1,7 @@
-namespace IMT_Reservas.Server.Application.Dtos;
+namespace IMT_Reservas.Server.Application.Features.Gavetero.Dtos;
+
+// Create/Update Request DTO for Gavetero
+
 
 public class GaveteroDto
 {
@@ -9,3 +12,4 @@ public class GaveteroDto
     public decimal? Profundidad { get; set; }
     public decimal? Altura { get; set; }
 }
+

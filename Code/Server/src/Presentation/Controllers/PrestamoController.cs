@@ -1,7 +1,6 @@
 using Microsoft.AspNetCore.Mvc;
 using IMT_Reservas.Server.Application.Features.Prestamo;
 using IMT_Reservas.Server.Application.Common;
-using IMT_Reservas.Server.Application.Dtos;
 using IMT_Reservas.Server.Application.Features.Prestamo.Dtos;
 using PrestamoEntity = IMT_Reservas.Server.Core.Entities.Prestamo;
 using AutoMapper;

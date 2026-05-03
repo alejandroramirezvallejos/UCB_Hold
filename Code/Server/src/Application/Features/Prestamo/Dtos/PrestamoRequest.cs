@@ -11,3 +11,11 @@ public class CreatePrestamoRequest
     public int[]? EquipoIds { get; set; }
     public IFormFile? Contrato { get; set; }
 }
+
+public class PrestamoDto
+{
+    public DateTime? FechaDevolucionEsperada { get; set; }
+    public string? Observacion { get; set; }
+    public string? Carnet { get; set; }
+    public DateTime? FechaPrestamoEsperada { get; set; }
+}

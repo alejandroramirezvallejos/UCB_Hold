@@ -1,4 +1,7 @@
-namespace IMT_Reservas.Server.Application.Dtos;
+namespace IMT_Reservas.Server.Application.Features.Mueble.Dtos;
+
+// Create/Update Request DTO for Mueble
+
 
 public class MuebleDto
 {
@@ -10,3 +13,4 @@ public class MuebleDto
     public decimal? Profundidad { get; set; }
     public decimal? Altura { get; set; }
 }
+

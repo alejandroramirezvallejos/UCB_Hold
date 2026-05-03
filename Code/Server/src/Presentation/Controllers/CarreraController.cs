@@ -1,7 +1,6 @@
 using Microsoft.AspNetCore.Mvc;
 using IMT_Reservas.Server.Application.Features.Carrera;
 using IMT_Reservas.Server.Application.Common;
-using IMT_Reservas.Server.Application.Dtos;
 using IMT_Reservas.Server.Application.Features.Carrera.Dtos;
 using CarreraEntity = IMT_Reservas.Server.Core.Entities.Carrera;
 using AutoMapper;

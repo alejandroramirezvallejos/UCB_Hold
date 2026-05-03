@@ -1,4 +1,7 @@
-namespace IMT_Reservas.Server.Application.Dtos;
+namespace IMT_Reservas.Server.Application.Features.GrupoEquipo.Dtos;
+
+// Create/Update Request DTO for GrupoEquipo
+
 
 public class GrupoEquipoDto
 {
@@ -10,3 +13,4 @@ public class GrupoEquipoDto
     public string? UrlDataSheet { get; set; }
     public string? UrlImagen { get; set; }
 }
+

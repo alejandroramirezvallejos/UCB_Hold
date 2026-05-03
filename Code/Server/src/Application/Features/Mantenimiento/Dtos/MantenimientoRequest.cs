@@ -1,4 +1,7 @@
-namespace IMT_Reservas.Server.Application.Dtos;
+namespace IMT_Reservas.Server.Application.Features.Mantenimiento.Dtos;
+
+// Create/Update Request DTO for Mantenimiento
+
 
 public class MantenimientoDto
 {
@@ -8,3 +11,4 @@ public class MantenimientoDto
     public int? IdEmpresa { get; set; }
     public DateTime? FechaFinalMantenimiento { get; set; }
 }
+

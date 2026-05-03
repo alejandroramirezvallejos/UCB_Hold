@@ -1,4 +1,7 @@
-namespace IMT_Reservas.Server.Application.Dtos;
+namespace IMT_Reservas.Server.Application.Features.EmpresaMantenimiento.Dtos;
+
+// Create/Update Request DTO for EmpresaMantenimiento
+
 
 public class EmpresaMantenimientoDto
 {
@@ -9,3 +12,4 @@ public class EmpresaMantenimientoDto
     public string? Direccion { get; set; }
     public string? Nit { get; set; }
 }
+

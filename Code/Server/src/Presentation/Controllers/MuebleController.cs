@@ -1,7 +1,6 @@
 using Microsoft.AspNetCore.Mvc;
 using IMT_Reservas.Server.Application.Features.Mueble;
 using IMT_Reservas.Server.Application.Common;
-using IMT_Reservas.Server.Application.Dtos;
 using IMT_Reservas.Server.Application.Features.Mueble.Dtos;
 using MuebleEntity = IMT_Reservas.Server.Core.Entities.Mueble;
 using AutoMapper;

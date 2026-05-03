@@ -1,7 +1,10 @@
 namespace IMT_Reservas.Server.Application.Features.Carrera.Dtos;
 
-public class CarreraListDto
+// Create/Update Request DTO for Carrera
+
+
+public class CarreraDto
 {
-    public int Id { get; set; }
     public string? Nombre { get; set; }
 }
+

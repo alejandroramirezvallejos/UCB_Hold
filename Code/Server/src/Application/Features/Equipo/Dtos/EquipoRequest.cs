@@ -1,4 +1,7 @@
-namespace IMT_Reservas.Server.Application.Dtos;
+namespace IMT_Reservas.Server.Application.Features.Equipo.Dtos;
+
+// Create/Update Request DTO for Equipo
+
 
 public class EquipoDto
 {
@@ -15,3 +18,4 @@ public class EquipoDto
     public string? NombreGavetero { get; set; }
     public string? EstadoEquipo { get; set; }
 }
+

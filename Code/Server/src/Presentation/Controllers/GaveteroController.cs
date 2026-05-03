@@ -1,7 +1,6 @@
 using Microsoft.AspNetCore.Mvc;
 using IMT_Reservas.Server.Application.Features.Gavetero;
 using IMT_Reservas.Server.Application.Common;
-using IMT_Reservas.Server.Application.Dtos;
 using IMT_Reservas.Server.Application.Features.Gavetero.Dtos;
 using GaveteroEntity = IMT_Reservas.Server.Core.Entities.Gavetero;
 using AutoMapper;
