@@ -16,58 +16,37 @@ public class ContratoRepository
 
     public async Task<Result<Contrato>> Create(Contrato contrato)
     {
-        try
-        {
-            await _mongoContext.GetContratos.InsertOneAsync(contrato);
-            return Result<Contrato>.Success(contrato);
-        }
-        catch (Exception ex)
-        {
-            return Result<Contrato>.Error(ex.Message);
-        }
+        await _mongoContext.GetContratos.InsertOneAsync(contrato);
+        return Result<Contrato>.Success(contrato);
     }
 
     public async Task<Result<Contrato>> GetByPrestamoId(int prestamoId)
     {
-        try
-        {
-            var contrato = await _mongoContext.GetContratos
-                .Find(c => c.PrestamoId == prestamoId && !c.EstadoEliminado)
-                .FirstOrDefaultAsync();
+        var contrato = await _mongoContext.GetContratos
+            .Find(c => c.PrestamoId == prestamoId && !c.EstadoEliminado)
+            .FirstOrDefaultAsync();
 
-            if (contrato == null)
-                return Result<Contrato>.Error("Contrato no encontrado");
+        if (contrato == null)
+            return Result<Contrato>.Error("Contrato no encontrado");
 
-            return Result<Contrato>.Success(contrato);
-        }
-        catch (Exception ex)
-        {
-            return Result<Contrato>.Error(ex.Message);
-        }
+        return Result<Contrato>.Success(contrato);
     }
 
     public async Task<Result<object>> Delete(int prestamoId)
     {
-        try
-        {
-            var contrato = await _mongoContext.GetContratos
-                .Find(c => c.PrestamoId == prestamoId && !c.EstadoEliminado)
-                .FirstOrDefaultAsync();
+        var contrato = await _mongoContext.GetContratos
+            .Find(c => c.PrestamoId == prestamoId && !c.EstadoEliminado)
+            .FirstOrDefaultAsync();
 
-            if (contrato == null)
-                return Result<object>.Error("Contrato no encontrado");
+        if (contrato == null)
+            return Result<object>.Error("Contrato no encontrado");
 
-            contrato.EstadoEliminado = true;
-            await _mongoContext.GetContratos.ReplaceOneAsync(
-                c => c.Id == contrato.Id,
-                contrato
-            );
+        contrato.EstadoEliminado = true;
+        await _mongoContext.GetContratos.ReplaceOneAsync(
+            c => c.Id == contrato.Id,
+            contrato
+        );
 
-            return Result<object>.Success(new { });
-        }
-        catch (Exception ex)
-        {
-            return Result<object>.Error(ex.Message);
-        }
+        return Result<object>.Success(new { });
     }
 }

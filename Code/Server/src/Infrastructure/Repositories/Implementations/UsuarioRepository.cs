@@ -30,23 +30,16 @@ public class UsuarioRepository : Repository<UsuarioEntity, UsuarioListDto>
 
     public async Task<Result<object>> Delete(string carnet)
     {
-        try
-        {
-            var entity = await DbContext.Usuarios
-                .FirstOrDefaultAsync(u => u.Carnet == carnet && !u.EstadoEliminado);
-            
-            if (entity == null)
-                return Result<object>.NotFound();
+        var entity = await DbContext.Usuarios
+            .FirstOrDefaultAsync(u => u.Carnet == carnet && !u.EstadoEliminado);
 
-            entity.EstadoEliminado = true;
-            DbContext.Update(entity);
-            await DbContext.SaveChangesAsync();
-            return Result<object>.Success(null!);
-        }
-        catch (DbUpdateException ex)
-        {
-            return Result<object>.Error($"Database error: {ex.InnerException?.Message}");
-        }
+        if (entity == null)
+            return Result<object>.NotFound();
+
+        entity.EstadoEliminado = true;
+        DbContext.Update(entity);
+        await DbContext.SaveChangesAsync();
+        return Result<object>.Success(null!);
     }
 
     protected override UsuarioListDto MapToDto(UsuarioEntity entity) => new()
