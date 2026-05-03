@@ -1,5 +1,6 @@
 using Microsoft.EntityFrameworkCore;
 using MongoDB.Driver;
+using AutoMapper;
 using IMT_Reservas.Server.Application.Features.Accesorio;
 using IMT_Reservas.Server.Application.Features.Carrera;
 using IMT_Reservas.Server.Application.Features.Categoria;
@@ -46,7 +47,11 @@ builder.Services.AddCors(options =>
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 builder.Services.AddScoped<MongoDbContexto>();
-builder.Services.AddAutoMapper(typeof(Program));
+
+var mapperConfig = new MapperConfiguration(cfg => cfg.AddMaps(typeof(Program)), null);
+var mapper = mapperConfig.CreateMapper();
+
+builder.Services.AddSingleton(mapper);
 builder.Services.AddScoped<UsuarioRepository>();
 builder.Services.AddScoped<PrestamoRepository>();
 builder.Services.AddScoped<EquipoRepository>();
