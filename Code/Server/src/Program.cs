@@ -76,7 +76,8 @@ builder.Services.AddScoped<CarritoService>();
 builder.Services.AddScoped<ContratoRepository>();
 builder.Services.AddScoped<ContratoService>();
 
-builder.Services.AddSingleton<IMongoClient>(new MongoClient("mongodb://localhost:27018/"));
+var mongoDbConfig = builder.Configuration.GetSection("MongoDbSettings").Get<MongoDbConfiguracion>();
+builder.Services.AddSingleton<IMongoClient>(new MongoClient(mongoDbConfig?.ConnectionString ?? "mongodb://localhost:27018"));
 
 var app = builder.Build();
 
@@ -89,6 +90,7 @@ if (app.Environment.IsDevelopment())
     app.UseSwaggerUI();
 }
 
+app.UseAuthentication();
 app.UseAuthorization();
 app.MapControllers();
 app.Run();

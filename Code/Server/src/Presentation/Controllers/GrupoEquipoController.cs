@@ -27,6 +27,14 @@ public class GrupoEquipoController : ControllerBase
         return result.IsSuccess ? Ok(new Response<List<GrupoEquipoDto>> { Status = 200, Value = result.Value }) : BadRequest(new Response<object> { Status = 400, Errors = result.Errors.ToList() });
     }
 
+    [HttpGet("buscar")]
+    public async Task<IActionResult> Buscar([FromQuery] string? nombre = null, [FromQuery] string? categoria = null)
+    {
+        var result = await _service.Search(nombre, categoria);
+
+        return result.IsSuccess ? Ok(result.Value) : BadRequest(new Response<object> { Status = 400, Errors = result.Errors.ToList() });
+    }
+
     [HttpGet("{id:int}")]
     public async Task<IActionResult> Get(int id)
     {

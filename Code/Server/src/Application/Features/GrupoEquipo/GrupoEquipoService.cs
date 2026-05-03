@@ -33,10 +33,16 @@ public class GrupoEquipoService : Service<GrupoEquipoEntity, GrupoEquipoReposito
             return Result<GrupoEquipoDto>.Error("Nombre, modelo y marca son requeridos");
 
         var existing = await _grupoRepository.GetByNombreModeloMarca(entity.Nombre, entity.Modelo, entity.Marca);
-        
+
         if (existing != null && existing.Id != entity.Id)
             return Result<GrupoEquipoDto>.Error($"Ya existe otro grupo con nombre '{entity.Nombre}', modelo '{entity.Modelo}' y marca '{entity.Marca}'");
 
         return await base.Update(entity);
+    }
+
+    public async Task<Result<List<GrupoEquipoDto>>> Search(string? nombre = null, string? categoria = null)
+    {
+        var results = await _grupoRepository.Search(nombre, categoria);
+        return Result<List<GrupoEquipoDto>>.Success(results);
     }
 }

@@ -27,7 +27,10 @@ public class UsuarioService : Service<UsuarioEntity, UsuarioRepository, UsuarioD
         var usuario = await Repository.GetByEmail(email);
 
         if (usuario == null)
-            return Result<UsuarioDto>.NotFound();
+            return Result<UsuarioDto>.Unauthorized("Invalid credentials");
+
+        if (usuario.Contrasena != password)
+            return Result<UsuarioDto>.Unauthorized("Invalid credentials");
 
         return Result<UsuarioDto>.Success(MapToDto(usuario));
     }

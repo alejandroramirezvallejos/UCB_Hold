@@ -53,10 +53,8 @@ public abstract class Repository<TEntity, TDto> where TEntity : class where TDto
         var query = DbContext.Set<TEntity>().AsQueryable();
         var entities = await query.ToListAsync();
         var dtos = entities.Select(MapToDto).ToList();
-        
-        return dtos.Count == 0
-            ? Result<List<TDto>>.NotFound()
-            : Result<List<TDto>>.Success(dtos);
+
+        return Result<List<TDto>>.Success(dtos);
     }
 
     public virtual bool Exists(int id)

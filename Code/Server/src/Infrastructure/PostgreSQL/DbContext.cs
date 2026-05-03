@@ -28,42 +28,55 @@ public class ApplicationDbContext : DbContext
 
         modelBuilder.Entity<Carrera>(entity =>
         {
+            entity.ToTable("carreras");
             entity.HasKey(e => e.Id);
-            entity.Property(e => e.Nombre).IsRequired().HasMaxLength(255);
+            entity.Property(e => e.Id).HasColumnName("id_carrera");
+            entity.Property(e => e.Nombre).IsRequired().HasMaxLength(255).HasColumnName("nombre");
+            entity.Property(e => e.EstadoEliminado).HasColumnName("estado_eliminado");
             entity.HasIndex(e => new { e.Nombre, e.EstadoEliminado });
             entity.HasQueryFilter(e => !e.EstadoEliminado);
         });
 
         modelBuilder.Entity<Categoria>(entity =>
         {
+            entity.ToTable("categorias");
             entity.HasKey(e => e.Id);
-            entity.Property(e => e.Nombre).IsRequired().HasMaxLength(255);
+            entity.Property(e => e.Id).HasColumnName("id_categoria");
+            entity.Property(e => e.Nombre).IsRequired().HasMaxLength(255).HasColumnName("nombre");
+            entity.Property(e => e.EstadoEliminado).HasColumnName("estado_eliminado");
             entity.HasIndex(e => new { e.Nombre, e.EstadoEliminado });
             entity.HasQueryFilter(e => !e.EstadoEliminado);
         });
 
         modelBuilder.Entity<EmpresaMantenimiento>(entity =>
         {
+            entity.ToTable("empresas_mantenimiento");
             entity.HasKey(e => e.Id);
-            entity.Property(e => e.Nombre).IsRequired().HasMaxLength(255);
-            entity.Property(e => e.Direccion).HasMaxLength(512);
-            entity.Property(e => e.Telefono).HasMaxLength(64);
-            entity.Property(e => e.NombreResponsable).HasMaxLength(64);
-            entity.Property(e => e.ApellidoResponsable).HasMaxLength(64);
+            entity.Property(e => e.Id).HasColumnName("id_empresa_mantenimiento");
+            entity.Property(e => e.Nombre).IsRequired().HasMaxLength(255).HasColumnName("nombre");
+            entity.Property(e => e.Direccion).HasMaxLength(512).HasColumnName("direccion");
+            entity.Property(e => e.Telefono).HasMaxLength(64).HasColumnName("telefono");
+            entity.Property(e => e.NombreResponsable).HasMaxLength(64).HasColumnName("nombre_responsable");
+            entity.Property(e => e.ApellidoResponsable).HasMaxLength(64).HasColumnName("apellido_responsable");
+            entity.Property(e => e.EstadoEliminado).HasColumnName("estado_eliminado");
             entity.HasIndex(e => new { e.Nombre, e.EstadoEliminado });
             entity.HasQueryFilter(e => !e.EstadoEliminado);
         });
 
         modelBuilder.Entity<GrupoEquipo>(entity =>
         {
+            entity.ToTable("grupos_equipos");
             entity.HasKey(e => e.Id);
-            entity.Property(e => e.Nombre).IsRequired().HasMaxLength(256);
-            entity.Property(e => e.Modelo).IsRequired().HasMaxLength(512);
-            entity.Property(e => e.Marca).IsRequired().HasMaxLength(256);
-            entity.Property(e => e.Descripcion).IsRequired();
-            entity.Property(e => e.UrlImagen).IsRequired();
-            entity.Property(e => e.CostoPromedio).HasPrecision(10, 2);
-            entity.Property(e => e.Cantidad).HasDefaultValue(0);
+            entity.Property(e => e.Id).HasColumnName("id_grupo_equipo");
+            entity.Property(e => e.Nombre).IsRequired().HasMaxLength(256).HasColumnName("nombre");
+            entity.Property(e => e.Modelo).IsRequired().HasMaxLength(512).HasColumnName("modelo");
+            entity.Property(e => e.Marca).IsRequired().HasMaxLength(256).HasColumnName("marca");
+            entity.Property(e => e.Descripcion).IsRequired().HasColumnName("descripcion");
+            entity.Property(e => e.UrlImagen).IsRequired().HasColumnName("url_imagen");
+            entity.Property(e => e.CostoPromedio).HasPrecision(10, 2).HasColumnName("costo_promedio");
+            entity.Property(e => e.Cantidad).HasDefaultValue(0).HasColumnName("cantidad");
+            entity.Property(e => e.IdCategoria).HasColumnName("id_categoria");
+            entity.Property(e => e.EstadoEliminado).HasColumnName("estado_eliminado");
             entity.HasOne<Categoria>().WithMany().HasForeignKey(e => e.IdCategoria).IsRequired();
             entity.HasIndex(e => new { e.IdCategoria, e.Nombre, e.Modelo, e.Marca, e.EstadoEliminado });
             entity.HasIndex(e => new { e.Nombre, e.Modelo, e.Marca }).IsUnique();
@@ -72,11 +85,14 @@ public class ApplicationDbContext : DbContext
 
         modelBuilder.Entity<Mueble>(entity =>
         {
+            entity.ToTable("muebles");
             entity.HasKey(e => e.Id);
-            entity.Property(e => e.Nombre).IsRequired().HasMaxLength(255);
-            entity.Property(e => e.Tipo).HasMaxLength(255);
-            entity.Property(e => e.Ubicacion).HasMaxLength(255);
-            entity.Property(e => e.NumeroGaveteros).HasDefaultValue(0);
+            entity.Property(e => e.Id).HasColumnName("id_mueble");
+            entity.Property(e => e.Nombre).IsRequired().HasMaxLength(255).HasColumnName("nombre");
+            entity.Property(e => e.Tipo).HasMaxLength(255).HasColumnName("tipo");
+            entity.Property(e => e.Ubicacion).HasMaxLength(255).HasColumnName("ubicacion");
+            entity.Property(e => e.NumeroGaveteros).HasDefaultValue(0).HasColumnName("numero_gaveteros");
+            entity.Property(e => e.EstadoEliminado).HasColumnName("estado_eliminado");
             entity.HasIndex(e => new { e.Nombre, e.EstadoEliminado });
             entity.HasIndex(e => e.Nombre).IsUnique();
             entity.HasQueryFilter(e => !e.EstadoEliminado);
@@ -84,9 +100,13 @@ public class ApplicationDbContext : DbContext
 
         modelBuilder.Entity<Gavetero>(entity =>
         {
+            entity.ToTable("gaveteros");
             entity.HasKey(e => e.Id);
-            entity.Property(e => e.Nombre).IsRequired().HasMaxLength(255);
-            entity.Property(e => e.Tipo).HasMaxLength(255);
+            entity.Property(e => e.Id).HasColumnName("id_gavetero");
+            entity.Property(e => e.Nombre).IsRequired().HasMaxLength(255).HasColumnName("nombre");
+            entity.Property(e => e.Tipo).HasMaxLength(255).HasColumnName("tipo");
+            entity.Property(e => e.IdMueble).HasColumnName("id_mueble");
+            entity.Property(e => e.EstadoEliminado).HasColumnName("estado_eliminado");
             entity.HasOne<Mueble>().WithMany().HasForeignKey(e => e.IdMueble).IsRequired();
             entity.HasIndex(e => new { e.Nombre, e.IdMueble, e.EstadoEliminado });
             entity.HasIndex(e => e.Nombre).IsUnique();
@@ -95,17 +115,22 @@ public class ApplicationDbContext : DbContext
 
         modelBuilder.Entity<Equipo>(entity =>
         {
+            entity.ToTable("equipos");
             entity.HasKey(e => e.Id);
-            entity.Property(e => e.CodigoImt).IsRequired();
-            entity.Property(e => e.Modelo).HasMaxLength(255);
-            entity.Property(e => e.Marca).HasMaxLength(255);
-            entity.Property(e => e.CodigoUcb).HasMaxLength(256);
-            entity.Property(e => e.NumeroSerial).HasMaxLength(255);
-            entity.Property(e => e.Ubicacion).HasMaxLength(255);
-            entity.Property(e => e.CostoReferencia);
-            entity.Property(e => e.TiempoMaximoPrestamo);
-            entity.Property(e => e.FechaIngresoEquipo).HasDefaultValue(DateOnly.FromDateTime(DateTime.UtcNow));
-            entity.Property(e => e.EstadoEquipo).HasDefaultValue("operativo");
+            entity.Property(e => e.Id).HasColumnName("id_equipo");
+            entity.Property(e => e.CodigoImt).IsRequired().HasColumnName("codigo_imt");
+            entity.Property(e => e.Modelo).HasMaxLength(255).HasColumnName("modelo");
+            entity.Property(e => e.Marca).HasMaxLength(255).HasColumnName("marca");
+            entity.Property(e => e.CodigoUcb).HasMaxLength(256).HasColumnName("codigo_ucb");
+            entity.Property(e => e.NumeroSerial).HasMaxLength(255).HasColumnName("numero_serial");
+            entity.Property(e => e.Ubicacion).HasMaxLength(255).HasColumnName("ubicacion");
+            entity.Property(e => e.CostoReferencia).HasColumnName("costo_referencia");
+            entity.Property(e => e.TiempoMaximoPrestamo).HasColumnName("tiempo_max_prestamo");
+            entity.Property(e => e.FechaIngresoEquipo).HasDefaultValue(DateOnly.FromDateTime(DateTime.UtcNow)).HasColumnName("fecha_ingreso_equipo");
+            entity.Property(e => e.EstadoEquipo).HasDefaultValue("operativo").HasColumnName("estado_equipo");
+            entity.Property(e => e.IdGrupoEquipo).HasColumnName("id_grupo_equipo");
+            entity.Property(e => e.IdGavetero).HasColumnName("id_gavetero");
+            entity.Property(e => e.EstadoEliminado).HasColumnName("estado_eliminado");
             entity.HasOne<GrupoEquipo>().WithMany().HasForeignKey(e => e.IdGrupoEquipo).IsRequired();
             entity.HasOne<Gavetero>().WithMany().HasForeignKey(e => e.IdGavetero);
             entity.HasIndex(e => new { e.IdGrupoEquipo, e.CodigoImt, e.EstadoEliminado });
@@ -115,10 +140,14 @@ public class ApplicationDbContext : DbContext
 
         modelBuilder.Entity<Accesorio>(entity =>
         {
+            entity.ToTable("accesorios");
             entity.HasKey(e => e.Id);
-            entity.Property(e => e.Nombre).IsRequired().HasMaxLength(255);
-            entity.Property(e => e.Modelo).IsRequired().HasMaxLength(255);
-            entity.Property(e => e.Tipo).HasMaxLength(255);
+            entity.Property(e => e.Id).HasColumnName("id_accesorio");
+            entity.Property(e => e.Nombre).IsRequired().HasMaxLength(255).HasColumnName("nombre");
+            entity.Property(e => e.Modelo).IsRequired().HasMaxLength(255).HasColumnName("modelo");
+            entity.Property(e => e.Tipo).HasMaxLength(255).HasColumnName("tipo");
+            entity.Property(e => e.IdEquipo).HasColumnName("id_equipo");
+            entity.Property(e => e.EstadoEliminado).HasColumnName("estado_eliminado");
             entity.HasOne<Equipo>().WithMany().HasForeignKey(e => e.IdEquipo).IsRequired();
             entity.HasIndex(e => new { e.Nombre, e.IdEquipo, e.EstadoEliminado });
             entity.HasQueryFilter(e => !e.EstadoEliminado);
@@ -126,10 +155,14 @@ public class ApplicationDbContext : DbContext
 
         modelBuilder.Entity<Componente>(entity =>
         {
+            entity.ToTable("componentes");
             entity.HasKey(e => e.Id);
-            entity.Property(e => e.Nombre).IsRequired().HasMaxLength(255);
-            entity.Property(e => e.Modelo).IsRequired().HasMaxLength(255);
-            entity.Property(e => e.Tipo).HasMaxLength(255);
+            entity.Property(e => e.Id).HasColumnName("id_componente");
+            entity.Property(e => e.Nombre).IsRequired().HasMaxLength(255).HasColumnName("nombre");
+            entity.Property(e => e.Modelo).IsRequired().HasMaxLength(255).HasColumnName("modelo");
+            entity.Property(e => e.Tipo).HasMaxLength(255).HasColumnName("tipo");
+            entity.Property(e => e.IdEquipo).HasColumnName("id_equipo");
+            entity.Property(e => e.EstadoEliminado).HasColumnName("estado_eliminado");
             entity.HasOne<Equipo>().WithMany().HasForeignKey(e => e.IdEquipo).IsRequired();
             entity.HasIndex(e => new { e.Nombre, e.IdEquipo, e.EstadoEliminado });
             entity.HasQueryFilter(e => !e.EstadoEliminado);
@@ -137,9 +170,13 @@ public class ApplicationDbContext : DbContext
 
         modelBuilder.Entity<Mantenimiento>(entity =>
         {
+            entity.ToTable("mantenimientos");
             entity.HasKey(e => e.Id);
-            entity.Property(e => e.FechaMantenimiento).IsRequired();
-            entity.Property(e => e.FechaFinalMantenimiento).IsRequired();
+            entity.Property(e => e.Id).HasColumnName("id_mantenimiento");
+            entity.Property(e => e.FechaMantenimiento).IsRequired().HasColumnName("fecha_mantenimiento");
+            entity.Property(e => e.FechaFinalMantenimiento).IsRequired().HasColumnName("fecha_final_mantenimiento");
+            entity.Property(e => e.IdEmpresa).HasColumnName("id_empresa");
+            entity.Property(e => e.EstadoEliminado).HasColumnName("estado_eliminado");
             entity.HasOne<EmpresaMantenimiento>().WithMany().HasForeignKey(e => e.IdEmpresa).IsRequired();
             entity.HasIndex(e => new { e.FechaMantenimiento, e.FechaFinalMantenimiento, e.IdEmpresa, e.EstadoEliminado });
             entity.HasQueryFilter(e => !e.EstadoEliminado);
@@ -147,8 +184,13 @@ public class ApplicationDbContext : DbContext
 
         modelBuilder.Entity<DetalleMantenimiento>(entity =>
         {
+            entity.ToTable("detalles_mantenimientos");
             entity.HasKey(e => e.Id);
-            entity.Property(e => e.TipoMantenimiento).HasMaxLength(256);
+            entity.Property(e => e.Id).HasColumnName("id_detalle_mantenimiento");
+            entity.Property(e => e.TipoMantenimiento).HasMaxLength(256).HasColumnName("tipo_mantenimiento");
+            entity.Property(e => e.IdMantenimiento).HasColumnName("id_mantenimiento");
+            entity.Property(e => e.IdEquipo).HasColumnName("id_equipo");
+            entity.Property(e => e.EstadoEliminado).HasColumnName("estado_eliminado");
             entity.HasOne<Mantenimiento>().WithMany().HasForeignKey(e => e.IdMantenimiento).IsRequired();
             entity.HasOne<Equipo>().WithMany().HasForeignKey(e => e.IdEquipo).IsRequired();
             entity.HasIndex(e => new { e.IdMantenimiento, e.EstadoEliminado });
@@ -157,17 +199,23 @@ public class ApplicationDbContext : DbContext
 
         modelBuilder.Entity<Usuario>(entity =>
         {
+            entity.ToTable("usuarios");
             entity.HasKey(e => e.Carnet);
-            entity.Property(e => e.Nombre).IsRequired().HasMaxLength(64);
-            entity.Property(e => e.ApellidoPaterno).IsRequired().HasMaxLength(64);
-            entity.Property(e => e.ApellidoMaterno).IsRequired().HasMaxLength(64);
-            entity.Property(e => e.Email).IsRequired().HasMaxLength(255);
-            entity.Property(e => e.Contrasena).IsRequired();
-            entity.Property(e => e.Telefono).IsRequired().HasMaxLength(32);
-            entity.Property(e => e.TelefonoReferencia).HasMaxLength(32);
-            entity.Property(e => e.NombreReferencia).HasMaxLength(32);
-            entity.Property(e => e.EmailReferencia).HasMaxLength(255);
-            entity.Property(e => e.Rol).HasDefaultValue("estudiante");
+            entity.Property(e => e.Carnet).HasColumnName("carnet");
+            entity.Property(e => e.Nombre).IsRequired().HasMaxLength(64).HasColumnName("nombre");
+            entity.Property(e => e.ApellidoPaterno).IsRequired().HasMaxLength(64).HasColumnName("apellido_paterno");
+            entity.Property(e => e.ApellidoMaterno).IsRequired().HasMaxLength(64).HasColumnName("apellido_materno");
+            entity.Property(e => e.Email).IsRequired().HasMaxLength(255).HasColumnName("email");
+            entity.Property(e => e.Contrasena).IsRequired().HasColumnName("contrasena");
+            entity.Property(e => e.Telefono).IsRequired().HasMaxLength(32).HasColumnName("telefono");
+            entity.Property(e => e.TelefonoReferencia).HasMaxLength(32).HasColumnName("telefono_referencia");
+            entity.Property(e => e.NombreReferencia).HasMaxLength(32).HasColumnName("nombre_referencia");
+            entity.Property(e => e.EmailReferencia).HasMaxLength(255).HasColumnName("email_referencia");
+            entity.Property(e => e.Rol).HasDefaultValue("estudiante").HasColumnName("rol");
+            entity.Property(e => e.IdCarrera).HasColumnName("id_carrera");
+            entity.Property(e => e.EstadoEliminado).HasColumnName("estado_eliminado");
+            entity.Property(e => e.ImagenFrenteCarnet).HasColumnName("imagen_frente_carnet");
+            entity.Property(e => e.ImagenAtrasCarnet).HasColumnName("imagen_atras_carnet");
             entity.HasOne<Carrera>().WithMany().HasForeignKey(e => e.IdCarrera).IsRequired();
             entity.HasIndex(e => new { e.Nombre, e.EstadoEliminado });
             entity.HasIndex(e => e.Email).IsUnique();
@@ -176,12 +224,16 @@ public class ApplicationDbContext : DbContext
 
         modelBuilder.Entity<Prestamo>(entity =>
         {
+            entity.ToTable("prestamos");
             entity.HasKey(e => e.Id);
-            entity.Property(e => e.FechaSolicitud).HasDefaultValueSql("now() AT TIME ZONE 'America/La_Paz'");
-            entity.Property(e => e.FechaPrestamoEsperada).IsRequired();
-            entity.Property(e => e.FechaDevolucionEsperada).IsRequired();
-            entity.Property(e => e.EstadoPrestamo).HasDefaultValue("pendiente");
-            entity.Property(e => e.IdContrato);
+            entity.Property(e => e.Id).HasColumnName("id_prestamo");
+            entity.Property(e => e.FechaSolicitud).HasDefaultValueSql("now() AT TIME ZONE 'America/La_Paz'").HasColumnName("fecha_solicitud");
+            entity.Property(e => e.FechaPrestamoEsperada).IsRequired().HasColumnName("fecha_prestamo_esperada");
+            entity.Property(e => e.FechaDevolucionEsperada).IsRequired().HasColumnName("fecha_devolucion_esperada");
+            entity.Property(e => e.EstadoPrestamo).HasDefaultValue("pendiente").HasColumnName("estado_prestamo");
+            entity.Property(e => e.IdContrato).HasColumnName("id_contrato");
+            entity.Property(e => e.Carnet).HasColumnName("carnet");
+            entity.Property(e => e.EstadoEliminado).HasColumnName("estado_eliminado");
             entity.HasOne<Usuario>().WithMany().HasForeignKey(e => e.Carnet).IsRequired();
             entity.HasIndex(e => e.IdContrato);
             entity.HasIndex(e => new { e.FechaPrestamoEsperada, e.FechaDevolucionEsperada, e.Carnet, e.EstadoEliminado });
@@ -190,7 +242,12 @@ public class ApplicationDbContext : DbContext
 
         modelBuilder.Entity<DetallePrestamo>(entity =>
         {
+            entity.ToTable("detalles_prestamos");
             entity.HasKey(e => e.Id);
+            entity.Property(e => e.Id).HasColumnName("id_detalle_prestamo");
+            entity.Property(e => e.IdPrestamo).HasColumnName("id_prestamo");
+            entity.Property(e => e.IdEquipo).HasColumnName("id_equipo");
+            entity.Property(e => e.EstadoEliminado).HasColumnName("estado_eliminado");
             entity.HasOne<Prestamo>().WithMany().HasForeignKey(e => e.IdPrestamo).IsRequired();
             entity.HasOne<Equipo>().WithMany().HasForeignKey(e => e.IdEquipo).IsRequired();
             entity.HasIndex(e => new { e.IdPrestamo, e.EstadoEliminado });
@@ -199,8 +256,11 @@ public class ApplicationDbContext : DbContext
 
         modelBuilder.Entity<Contrato>(entity =>
         {
+            entity.ToTable("contratos");
             entity.HasKey(e => e.Id);
-            entity.Property(e => e.PrestamoId).IsRequired();
+            entity.Property(e => e.Id).HasColumnName("id");
+            entity.Property(e => e.PrestamoId).IsRequired().HasColumnName("prestamo_id");
+            entity.Property(e => e.EstadoEliminado).HasColumnName("estado_eliminado");
             entity.HasQueryFilter(e => !e.EstadoEliminado);
         });
     }
