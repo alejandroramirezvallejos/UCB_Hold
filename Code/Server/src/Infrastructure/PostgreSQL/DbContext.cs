@@ -72,6 +72,7 @@ public class ApplicationDbContext : DbContext
             entity.Property(e => e.Modelo).IsRequired().HasMaxLength(512).HasColumnName("modelo");
             entity.Property(e => e.Marca).IsRequired().HasMaxLength(256).HasColumnName("marca");
             entity.Property(e => e.Descripcion).IsRequired().HasColumnName("descripcion");
+            entity.Property(e => e.UrlDataSheet).HasColumnName("url_data_sheet");
             entity.Property(e => e.UrlImagen).IsRequired().HasColumnName("url_imagen");
             entity.Property(e => e.CostoPromedio).HasPrecision(10, 2).HasColumnName("costo_promedio");
             entity.Property(e => e.Cantidad).HasDefaultValue(0).HasColumnName("cantidad");
