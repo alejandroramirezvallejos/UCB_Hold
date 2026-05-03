@@ -17,8 +17,8 @@ public class PrestamoDto
     public int? IdContrato { get; set; }
     public string? NombreGrupoEquipo { get; set; }
     public string? CodigoImt { get; set; }
-    public string? Ubicacion_Equipo { get; set; }
-    public string? Nombre_Gavetero { get; set; }
-    public string? Nombre_Mueble { get; set; }
-    public string? Ubicacion_Mueble { get; set; }
+    public string? UbicacionEquipo { get; set; }
+    public string? NombreGavetero { get; set; }
+    public string? NombreMueble { get; set; }
+    public string? UbicacionMueble { get; set; }
 }

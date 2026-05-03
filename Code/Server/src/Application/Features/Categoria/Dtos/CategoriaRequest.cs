@@ -1,6 +1,0 @@
-namespace IMT_Reservas.Server.Application.Features.Categoria.Dtos;
-
-public class CategoriaRequest
-{
-    public string? Nombre { get; set; }
-}

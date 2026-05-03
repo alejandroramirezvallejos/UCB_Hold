@@ -36,7 +36,7 @@ public class GaveteroController : ControllerBase
     }
 
     [HttpPost]
-    public async Task<IActionResult> Create([FromBody] GaveteroRequest dto)
+    public async Task<IActionResult> Create([FromBody] GaveteroDto dto)
     {
         var entity = _mapper.Map<GaveteroEntity>(dto);
         var result = await _service.Create(entity);
@@ -45,7 +45,7 @@ public class GaveteroController : ControllerBase
     }
 
     [HttpPut("{id:int}")]
-    public async Task<IActionResult> Update(int id, [FromBody] GaveteroRequest dto)
+    public async Task<IActionResult> Update(int id, [FromBody] GaveteroDto dto)
     {
         var entity = _mapper.Map<GaveteroEntity>(dto);
         entity.Id = id;

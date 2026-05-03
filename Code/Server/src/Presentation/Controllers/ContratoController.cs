@@ -3,7 +3,6 @@ using IMT_Reservas.Server.Application.Features.Contrato;
 using IMT_Reservas.Server.Application.Features.Contrato.Dtos;
 using IMT_Reservas.Server.Application.Abstraction;
 using ContratoEntity = IMT_Reservas.Server.Core.Entities.Contrato;
-
 namespace IMT_Reservas.Server.Presentation.Controllers;
 
 [ApiController]

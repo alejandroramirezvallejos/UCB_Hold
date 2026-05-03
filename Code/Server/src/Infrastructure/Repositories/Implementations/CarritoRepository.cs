@@ -9,9 +9,9 @@ public class CarritoRepository
 
     public CarritoRepository(ApplicationDbContext dbContext) => _dbContext = dbContext;
 
-    public async Task<IEnumerable<FechasNoDisponiblesDto>> GetUnavailableDates(DateTime fechaInicio, DateTime fechaFin, Dictionary<int, int>? carrito)
+    public async Task<IEnumerable<CarritoDto>> GetUnavailableDates(DateTime fechaInicio, DateTime fechaFin, Dictionary<int, int>? carrito)
     {
-        var resultado = new List<FechasNoDisponiblesDto>();
+        var resultado = new List<CarritoDto>();
 
         if (carrito == null)
             return resultado;
@@ -26,7 +26,7 @@ public class CarritoRepository
 
                 if (disponibles < cantidadSolicitada)
                 {
-                    resultado.Add(new FechasNoDisponiblesDto
+                    resultado.Add(new CarritoDto
                     {
                         IdGrupoEquipo = idGrupoEquipo,
                         FechaNoDisponible = fecha,
@@ -35,13 +35,14 @@ public class CarritoRepository
                 }
             }
         }
+        
         return resultado;
     }
 
-    public async Task<IEnumerable<DisponibilidadDto>> GetAvailability(DateTime fechaInicio, DateTime fechaFin,
+    public async Task<IEnumerable<CarritoDto>> GetAvailability(DateTime fechaInicio, DateTime fechaFin,
         int[]? arrayIds)
     {
-        var resultado = new List<DisponibilidadDto>();
+        var resultado = new List<CarritoDto>();
 
         if (arrayIds == null)
             return resultado;
@@ -54,7 +55,7 @@ public class CarritoRepository
             {
                 var disponibles = await GetAvailableEquipmentCount(idGrupoEquipo, fecha, diasSolicitados);
 
-                resultado.Add(new DisponibilidadDto
+                resultado.Add(new CarritoDto
                 {
                     Fecha = fecha,
                     IdGrupoEquipo = idGrupoEquipo,

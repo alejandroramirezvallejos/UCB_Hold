@@ -1,31 +1,42 @@
 using Ardalis.Result;
+using IMT_Reservas.Server.Application.Abstraction;
 using IMT_Reservas.Server.Application.Features.Categoria.Dtos;
 using CategoriaEntity = IMT_Reservas.Server.Core.Entities.Categoria;
 using IMT_Reservas.Server.Infrastructure.Repositories.Implementations;
-using IMT_Reservas.Server.Core.Common;
 namespace IMT_Reservas.Server.Application.Features.Categoria;
 
-public class CategoriaService
+public class CategoriaService : Service<CategoriaEntity, CategoriaRepository, CategoriaDto>
 {
-    private readonly CategoriaRepository _repository;
+    private readonly CategoriaRepository _categoriaRepository;
 
-    public CategoriaService(CategoriaRepository repository)
+    public CategoriaService(CategoriaRepository repository) : base(repository)
     {
-        _repository = repository;
+        _categoriaRepository = repository;
     }
 
-    public async Task<Result<CategoriaDto>> Create(CategoriaEntity entity)
-        => await _repository.Create(entity);
+    public override async Task<Result<CategoriaDto>> Create(CategoriaEntity entity)
+    {
+        if (string.IsNullOrWhiteSpace(entity.Nombre))
+            return Result<CategoriaDto>.Error("Nombre de categoría es requerido");
 
-    public async Task<Result<CategoriaDto>> Update(CategoriaEntity entity)
-        => await _repository.Update(entity);
+        var existing = await _categoriaRepository.GetByNombre(entity.Nombre);
+        
+        if (existing != null)
+            return Result<CategoriaDto>.Error($"Ya existe una categoría con nombre '{entity.Nombre}'");
 
-    public async Task<Result<object>> Delete(int id)
-        => await _repository.Delete(id);
+        return await base.Create(entity);
+    }
 
-    public async Task<Result<CategoriaDto>> Get(int id)
-        => await _repository.Get(id);
+    public override async Task<Result<CategoriaDto>> Update(CategoriaEntity entity)
+    {
+        if (string.IsNullOrWhiteSpace(entity.Nombre))
+            return Result<CategoriaDto>.Error("Nombre de categoría es requerido");
 
-    public async Task<Result<List<CategoriaDto>>> GetAll(QueryFilter? filter = null)
-        => await _repository.GetAll(filter);
+        var existing = await _categoriaRepository.GetByNombre(entity.Nombre);
+        
+        if (existing != null && existing.Id != entity.Id)
+            return Result<CategoriaDto>.Error($"Ya existe otra categoría con nombre '{entity.Nombre}'");
+
+        return await base.Update(entity);
+    }
 }

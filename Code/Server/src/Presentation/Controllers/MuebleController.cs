@@ -36,7 +36,7 @@ public class MuebleController : ControllerBase
     }
 
     [HttpPost]
-    public async Task<IActionResult> Create([FromBody] MuebleRequest dto)
+    public async Task<IActionResult> Create([FromBody] MuebleDto dto)
     {
         var entity = _mapper.Map<MuebleEntity>(dto);
         var result = await _service.Create(entity);
@@ -45,7 +45,7 @@ public class MuebleController : ControllerBase
     }
 
     [HttpPut("{id:int}")]
-    public async Task<IActionResult> Update(int id, [FromBody] MuebleRequest dto)
+    public async Task<IActionResult> Update(int id, [FromBody] MuebleDto dto)
     {
         var entity = _mapper.Map<MuebleEntity>(dto);
         entity.Id = id;

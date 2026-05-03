@@ -37,12 +37,12 @@ public class PrestamoRepository : Repository<PrestamoEntity, PrestamoDto>
         FechaPrestamo = entity.FechaPrestamo,
         FechaDevolucion = entity.FechaDevolucion,
         Observacion = entity.Observacion,
-        Ubicacion_Equipo = null,
-        Nombre_Mueble = null,
-        Ubicacion_Mueble = null,
+        UbicacionEquipo = null,
+        NombreMueble = null,
+        UbicacionMueble = null,
         IdContrato = int.TryParse(entity.IdContrato, out var id) ? id : null,
         NombreGrupoEquipo = null,
-        Nombre_Gavetero = null
+        NombreGavetero = null
     };
 }
 

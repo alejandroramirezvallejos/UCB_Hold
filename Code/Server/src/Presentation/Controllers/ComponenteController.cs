@@ -36,7 +36,7 @@ public class ComponenteController : ControllerBase
     }
 
     [HttpPost]
-    public async Task<IActionResult> Create([FromBody] ComponenteRequest dto)
+    public async Task<IActionResult> Create([FromBody] ComponenteDto dto)
     {
         var entity = _mapper.Map<ComponenteEntity>(dto);
         var result = await _service.Create(entity);
@@ -45,7 +45,7 @@ public class ComponenteController : ControllerBase
     }
 
     [HttpPut("{id:int}")]
-    public async Task<IActionResult> Update(int id, [FromBody] ComponenteRequest dto)
+    public async Task<IActionResult> Update(int id, [FromBody] ComponenteDto dto)
     {
         var entity = _mapper.Map<ComponenteEntity>(dto);
         entity.Id = id;

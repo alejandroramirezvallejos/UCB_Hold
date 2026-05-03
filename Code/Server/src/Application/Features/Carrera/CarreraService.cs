@@ -1,31 +1,42 @@
 using Ardalis.Result;
+using IMT_Reservas.Server.Application.Abstraction;
 using IMT_Reservas.Server.Application.Features.Carrera.Dtos;
 using CarreraEntity = IMT_Reservas.Server.Core.Entities.Carrera;
 using IMT_Reservas.Server.Infrastructure.Repositories.Implementations;
-using IMT_Reservas.Server.Core.Common;
 namespace IMT_Reservas.Server.Application.Features.Carrera;
 
-public class CarreraService
+public class CarreraService : Service<CarreraEntity, CarreraRepository, CarreraDto>
 {
-    private readonly CarreraRepository _repository;
+    private readonly CarreraRepository _carreraRepository;
 
-    public CarreraService(CarreraRepository repository)
+    public CarreraService(CarreraRepository repository) : base(repository)
     {
-        _repository = repository;
+        _carreraRepository = repository;
     }
 
-    public async Task<Result<CarreraDto>> Create(CarreraEntity entity)
-        => await _repository.Create(entity);
+    public override async Task<Result<CarreraDto>> Create(CarreraEntity entity)
+    {
+        if (string.IsNullOrWhiteSpace(entity.Nombre))
+            return Result<CarreraDto>.Error("Nombre de carrera es requerido");
 
-    public async Task<Result<CarreraDto>> Update(CarreraEntity entity)
-        => await _repository.Update(entity);
+        var existing = await _carreraRepository.GetByNombre(entity.Nombre);
+        
+        if (existing != null)
+            return Result<CarreraDto>.Error($"Ya existe una carrera con nombre '{entity.Nombre}'");
 
-    public async Task<Result<object>> Delete(int id)
-        => await _repository.Delete(id);
+        return await base.Create(entity);
+    }
 
-    public async Task<Result<CarreraDto>> Get(int id)
-        => await _repository.Get(id);
+    public override async Task<Result<CarreraDto>> Update(CarreraEntity entity)
+    {
+        if (string.IsNullOrWhiteSpace(entity.Nombre))
+            return Result<CarreraDto>.Error("Nombre de carrera es requerido");
 
-    public async Task<Result<List<CarreraDto>>> GetAll(QueryFilter? filter = null)
-        => await _repository.GetAll(filter);
+        var existing = await _carreraRepository.GetByNombre(entity.Nombre);
+        
+        if (existing != null && existing.Id != entity.Id)
+            return Result<CarreraDto>.Error($"Ya existe otra carrera con nombre '{entity.Nombre}'");
+
+        return await base.Update(entity);
+    }
 }

@@ -36,7 +36,7 @@ public class MantenimientoController : ControllerBase
     }
 
     [HttpPost]
-    public async Task<IActionResult> Create([FromBody] MantenimientoRequest dto)
+    public async Task<IActionResult> Create([FromBody] MantenimientoDto dto)
     {
         var entity = _mapper.Map<MantenimientoEntity>(dto);
         var result = await _service.Create(entity);
@@ -45,7 +45,7 @@ public class MantenimientoController : ControllerBase
     }
 
     [HttpPut("{id:int}")]
-    public async Task<IActionResult> Update(int id, [FromBody] MantenimientoRequest dto)
+    public async Task<IActionResult> Update(int id, [FromBody] MantenimientoDto dto)
     {
         var entity = _mapper.Map<MantenimientoEntity>(dto);
         entity.Id = id;

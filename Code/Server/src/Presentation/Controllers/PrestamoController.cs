@@ -36,7 +36,7 @@ public class PrestamoController : ControllerBase
     }
 
     [HttpPost]
-    public async Task<IActionResult> Create([FromBody] PrestamoRequest request)
+    public async Task<IActionResult> Create([FromBody] PrestamoDto request)
     {
         var entity = _mapper.Map<PrestamoEntity>(request);
         var result = await _service.Create(entity);
@@ -47,7 +47,7 @@ public class PrestamoController : ControllerBase
     }
 
     [HttpPut("{id:int}")]
-    public async Task<IActionResult> Update(int id, [FromBody] PrestamoRequest dto)
+    public async Task<IActionResult> Update(int id, [FromBody] PrestamoDto dto)
     {
         var entity = _mapper.Map<PrestamoEntity>(dto);
         entity.Id = id;

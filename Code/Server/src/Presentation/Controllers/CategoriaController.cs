@@ -34,7 +34,7 @@ public class CategoriaController : ControllerBase
     }
 
     [HttpPost]
-    public async Task<IActionResult> Create([FromBody] CategoriaRequest dto)
+    public async Task<IActionResult> Create([FromBody] CategoriaDto dto)
     {
         var entity = _mapper.Map<CategoriaEntity>(dto);
         var result = await _service.Create(entity);
@@ -43,7 +43,7 @@ public class CategoriaController : ControllerBase
     }
 
     [HttpPut("{id:int}")]
-    public async Task<IActionResult> Update(int id, [FromBody] CategoriaRequest dto)
+    public async Task<IActionResult> Update(int id, [FromBody] CategoriaDto dto)
     {
         var entity = _mapper.Map<CategoriaEntity>(dto);
         entity.Id = id;

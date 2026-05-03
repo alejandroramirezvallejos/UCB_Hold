@@ -8,10 +8,7 @@ public class ContratoService
 {
     private readonly ContratoRepository _repository;
 
-    public ContratoService(ContratoRepository repository)
-    {
-        _repository = repository;
-    }
+    public ContratoService(ContratoRepository repository) => _repository = repository;
 
     public async Task<Result<ContratoDto>> Create(ContratoEntity entity)
     {
@@ -19,7 +16,7 @@ public class ContratoService
         
         return result.IsSuccess
             ? Result<ContratoDto>.Success(new ContratoDto { Id = result.Value.Id })
-            : Result<ContratoDto>.Error(result.Errors.FirstOrDefault() ?? "Error al crear");
+            : Result<ContratoDto>.Error(result.Errors.FirstOrDefault() ?? "Error");
     }
 
     public async Task<Result<object>> Delete(int prestamoId)
@@ -28,6 +25,7 @@ public class ContratoService
     public async Task<Result<ContratoDto>> GetByPrestamoId(int prestamoId)
     {
         var result = await _repository.GetByPrestamoId(prestamoId);
+        
         return result.IsSuccess
             ? Result<ContratoDto>.Success(new ContratoDto { Id = result.Value.Id })
             : Result<ContratoDto>.Error(result.Errors.FirstOrDefault() ?? "No encontrado");

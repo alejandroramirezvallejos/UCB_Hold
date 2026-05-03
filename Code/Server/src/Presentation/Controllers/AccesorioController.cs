@@ -36,7 +36,7 @@ public class AccesorioController : ControllerBase
     }
 
     [HttpPost]
-    public async Task<IActionResult> Create([FromBody] AccesorioRequest dto)
+    public async Task<IActionResult> Create([FromBody] AccesorioDto dto)
     {
         var entity = _mapper.Map<AccesorioEntity>(dto);
         var result = await _service.Create(entity);
@@ -45,7 +45,7 @@ public class AccesorioController : ControllerBase
     }
 
     [HttpPut("{id:int}")]
-    public async Task<IActionResult> Update(int id, [FromBody] AccesorioRequest dto)
+    public async Task<IActionResult> Update(int id, [FromBody] AccesorioDto dto)
     {
         var entity = _mapper.Map<AccesorioEntity>(dto);
         entity.Id = id;

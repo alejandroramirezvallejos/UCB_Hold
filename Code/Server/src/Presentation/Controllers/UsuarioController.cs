@@ -40,7 +40,7 @@ public class UsuarioController : ControllerBase
     }
 
     [HttpPost]
-    public async Task<IActionResult> Create([FromBody] UsuarioRequest dto)
+    public async Task<IActionResult> Create([FromBody] UsuarioDto dto)
     {
         var entity = _mapper.Map<UsuarioEntity>(dto);
         var result = await _service.Create(entity);
@@ -51,7 +51,7 @@ public class UsuarioController : ControllerBase
     }
 
     [HttpPut("{carnet}")]
-    public async Task<IActionResult> Update(string carnet, [FromBody] UsuarioRequest dto)
+    public async Task<IActionResult> Update(string carnet, [FromBody] UsuarioDto dto)
     {
         var entity = _mapper.Map<UsuarioEntity>(dto);
         entity.Carnet = carnet;
@@ -65,7 +65,10 @@ public class UsuarioController : ControllerBase
     [HttpDelete("{carnet}")]
     public async Task<IActionResult> Delete(string carnet)
     {
-        var result = await _service.Delete(carnet);
+        var usuario = await _service.Get(carnet);
+        if (!usuario.IsSuccess)
+            return NotFound();
+        var result = await _service.Delete(usuario.Value?.Id ?? 0);
 
         return result.IsSuccess
             ? NoContent()
@@ -73,7 +76,7 @@ public class UsuarioController : ControllerBase
     }
 
     [HttpPost("login")]
-    public async Task<IActionResult> InitiateSession([FromBody] LoginRequest request)
+    public async Task<IActionResult> InitiateSession([FromBody] UsuarioDto request)
     {
         if (string.IsNullOrWhiteSpace(request.Email) || string.IsNullOrWhiteSpace(request.Password))
             return BadRequest(new Response<object> { Status = 400, Errors = new List<string> { "Email and password are required" } });

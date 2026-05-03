@@ -1,6 +1,0 @@
-namespace IMT_Reservas.Server.Application.Features.Carrera.Dtos;
-
-public class CarreraRequest
-{
-    public string? Nombre { get; set; }
-}
