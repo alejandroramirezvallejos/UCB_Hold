@@ -11,7 +11,7 @@ export class AccesoriosService {
   constructor(private http : HttpClient) { }
   obtenerAccesorios() {
     return this.http.get<any>(this.apiurl).pipe(
-      map(data => data.Value.map(item => ({
+      map((data: any) => data.Value.map((item: any) => ({
         Id: item.Id,
         nombre: item.Nombre,
         modelo: item.Modelo,

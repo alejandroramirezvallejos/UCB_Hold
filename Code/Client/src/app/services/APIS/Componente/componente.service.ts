@@ -23,7 +23,7 @@ export class ComponenteService {
   }
   obtenerComponentes (){
     return this.http.get<any>(this.apiUrl).pipe(
-      map(data => data.Value.map(item => ({
+      map((data: any) => data.Value.map((item: any) => ({
         Id: item.Id,
         Nombre: item.Nombre,
         Modelo: item.Modelo,

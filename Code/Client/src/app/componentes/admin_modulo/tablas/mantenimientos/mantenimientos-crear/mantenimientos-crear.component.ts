@@ -64,7 +64,7 @@ export class MantenimientosCrearComponent extends BaseTablaComponent{
   obtenereempresasMantenimiento() {
     this.empresa.obtenerEmpresaMantenimiento().subscribe({
       next: (empresas) => {
-        this.empresas = empresas.map(empresa => empresa.NombreEmpresa);
+        this.empresas = empresas.map((empresa: any) => empresa.NombreEmpresa);
       },
       error: (error) => {
         this.mensajeerror = "Error al cargar las empresas de mantenimiento. Por favor, inténtelo de nuevo más tarde.";

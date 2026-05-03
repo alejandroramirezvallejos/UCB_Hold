@@ -25,7 +25,7 @@ export class GaveterosEditarComponent extends BaseTablaComponent {
   cargarMuebles(){
     this.mueblesAPI.obtenerMuebles().subscribe({
       next: (data) => {
-        this.muebles = data.map(mueble => mueble.Nombre);
+        this.muebles = data.map((mueble: any) => mueble.Nombre);
       },
       error: (error) => {
         this.mensajeerror = "Error al cargar los muebles, intente mas tarde";

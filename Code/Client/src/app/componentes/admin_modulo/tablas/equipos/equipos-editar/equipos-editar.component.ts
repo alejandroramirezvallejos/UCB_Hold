@@ -32,7 +32,7 @@ export class EquiposEditarComponent extends BaseTablaComponent{
   cargarGaveteros() {
     this.gaveterosAPI.obtenerGaveteros().subscribe({
       next: (data) => {
-        this.Gaveteros = data.map(gavetero => gavetero.Nombre!);
+        this.Gaveteros = data.map((gavetero: any) => gavetero.Nombre!);
       },
       error: (error) => {
         this.mensajeerror = "Error al cargar gaveteros";

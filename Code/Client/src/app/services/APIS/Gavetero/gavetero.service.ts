@@ -21,8 +21,8 @@ export class GaveteroService {
     return this.http.post<any>(this.apiUrl, envio);
   }
   obtenerGaveteros() {
-    return this.http.get<Gaveteros[]>(this.apiUrl).pipe(
-      map(data => data.Value.map(item => ({
+    return this.http.get<any>(this.apiUrl).pipe(
+      map((data: any) => data.Value.map((item: any) => ({
         Id: item.Id,
         Nombre: item.Nombre,
         Tipo: item.Tipo,

@@ -31,7 +31,7 @@ export class MantenimientoService {
   }
   obtenerMantenimientos() {
     return this.http.get<any>(this.apiUrl).pipe(
-      map(data => data.Value.map(item => ({
+      map((data: any) => data.Value.map((item: any) => ({
         Id: item.Id,
         NombreEmpresaMantenimiento: item.NombreEmpresaMantenimiento,
         FechaMantenimiento: item.FechaMantenimiento,

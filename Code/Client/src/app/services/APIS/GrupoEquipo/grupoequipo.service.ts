@@ -23,7 +23,7 @@ export class GrupoequipoService {
   }
   obtenersinfiltroGruposEquipos() {
     return this.http.get<any>(this.apiUrl).pipe(
-      map(data => data.Value.map(item => ({
+      map((data: any) => data.Value.map((item: any) => ({
         id: item.Id,
         nombre: item.Nombre ,
         descripcion : item.Descripcion  ,
@@ -40,7 +40,7 @@ export class GrupoequipoService {
   getGrupoEquipo(categoria : string , producto : string): Observable<GrupoEquipo[]>  {
     var url : string   = this.apiUrl +'/buscar' + '?nombre=' + producto + '&categoria=' + categoria;
     return this.http.get<any>(url).pipe(
-      map(data => data.Value.map(item => ({
+      map((data: any) => data.Value.map((item: any) => ({
         id: item.Id,
         nombre: item.Nombre ,
         descripcion : item.Descripcion  || '',
@@ -57,7 +57,7 @@ export class GrupoequipoService {
   getproducto(id: string): Observable<GrupoEquipo> {
     const url = `${this.apiUrl}/${id}`;
     return this.http.get<any>(url).pipe(
-      map(data => ({
+      map((data: any) => ({
         id: data.Value.Id,
         descripcion: data.Value.Descripcion,
         nombre: data.Value.Nombre,

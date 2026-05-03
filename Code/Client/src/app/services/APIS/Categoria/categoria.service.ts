@@ -11,7 +11,7 @@ export class CategoriaService {
   constructor(private http : HttpClient) { }
   obtenercategorias(){
     return this.http.get<any>(this.apiurl).pipe(
-          map(data => data.Value.map(item => ({
+          map((data: any) => data.Value.map((item: any) => ({
             Id : item.Id,
             Nombre: item.Nombre,
           })))
