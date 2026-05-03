@@ -14,22 +14,22 @@ public class GaveteroService
         _repository = repository;
     }
 
-    public async Task<Result<GaveteroDetailDto>> Create(GaveteroEntity entity)
+    public async Task<Result<GaveteroDetail>> Create(GaveteroEntity entity)
     {
         var result = await _repository.Create(entity);
         
         return !result.IsSuccess
-            ? Result<GaveteroDetailDto>.Error("Error al crear gavetero")
-            : Result<GaveteroDetailDto>.Created(MapListDtoToDetailDto(result.Value));
+            ? Result<GaveteroDetail>.Error("Error al crear gavetero")
+            : Result<GaveteroDetail>.Created(MapListToDetail(result.Value));
     }
 
-    public async Task<Result<GaveteroDetailDto>> Update(GaveteroEntity entity)
+    public async Task<Result<GaveteroDetail>> Update(GaveteroEntity entity)
     {
         var result = await _repository.Update(entity);
         
         return !result.IsSuccess
-            ? Result<GaveteroDetailDto>.Error("Error al actualizar gavetero")
-            : Result<GaveteroDetailDto>.Success(MapListDtoToDetailDto(result.Value));
+            ? Result<GaveteroDetail>.Error("Error al actualizar gavetero")
+            : Result<GaveteroDetail>.Success(MapListToDetail(result.Value));
     }
 
     public async Task<Result<object>> Delete(int id)
@@ -41,25 +41,25 @@ public class GaveteroService
             : Result<object>.Error("Error al eliminar gavetero");
     }
 
-    public async Task<Result<GaveteroDetailDto>> Get(int id)
+    public async Task<Result<GaveteroDetail>> Get(int id)
     {
         var gavetero = await _repository.Get(id);
         
         return !gavetero.IsSuccess
-            ? Result<GaveteroDetailDto>.NotFound()
-            : Result<GaveteroDetailDto>.Success(MapListDtoToDetailDto(gavetero.Value));
+            ? Result<GaveteroDetail>.NotFound()
+            : Result<GaveteroDetail>.Success(MapListToDetail(gavetero.Value));
     }
 
-    public async Task<Result<List<GaveteroListDto>>> GetAll(QueryFilter? filter = null)
+    public async Task<Result<List<GaveteroList>>> GetAll(QueryFilter? filter = null)
     {
         var result = await _repository.GetAll(filter);
         
         return result.IsSuccess
-            ? Result<List<GaveteroListDto>>.Success(result.Value)
-            : Result<List<GaveteroListDto>>.Error("Error al obtener gaveteros");
+            ? Result<List<GaveteroList>>.Success(result.Value)
+            : Result<List<GaveteroList>>.Error("Error al obtener gaveteros");
     }
 
-    private static GaveteroDetailDto MapListDtoToDetailDto(GaveteroListDto dto) => new()
+    private static GaveteroDetail MapListToDetail(GaveteroList dto) => new()
     {
         Id = dto.Id,
         Nombre = dto.Nombre,

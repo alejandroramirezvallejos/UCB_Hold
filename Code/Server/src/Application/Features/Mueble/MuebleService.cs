@@ -14,22 +14,22 @@ public class MuebleService
         _repository = repository;
     }
 
-    public async Task<Result<MuebleDetailDto>> Create(MuebleEntity entity)
+    public async Task<Result<MuebleDetail>> Create(MuebleEntity entity)
     {
         var result = await _repository.Create(entity);
         
         return !result.IsSuccess
-            ? Result<MuebleDetailDto>.Error("Error al crear mueble")
-            : Result<MuebleDetailDto>.Created(MapListDtoToDetailDto(result.Value));
+            ? Result<MuebleDetail>.Error("Error al crear mueble")
+            : Result<MuebleDetail>.Created(MapListToDetail(result.Value));
     }
 
-    public async Task<Result<MuebleDetailDto>> Update(MuebleEntity entity)
+    public async Task<Result<MuebleDetail>> Update(MuebleEntity entity)
     {
         var result = await _repository.Update(entity);
         
         return !result.IsSuccess
-            ? Result<MuebleDetailDto>.Error("Error al actualizar mueble")
-            : Result<MuebleDetailDto>.Success(MapListDtoToDetailDto(result.Value));
+            ? Result<MuebleDetail>.Error("Error al actualizar mueble")
+            : Result<MuebleDetail>.Success(MapListToDetail(result.Value));
     }
 
     public async Task<Result<object>> Delete(int id)
@@ -41,25 +41,25 @@ public class MuebleService
             : Result<object>.Error("Error al eliminar mueble");
     }
 
-    public async Task<Result<MuebleDetailDto>> Get(int id)
+    public async Task<Result<MuebleDetail>> Get(int id)
     {
         var mueble = await _repository.Get(id);
         
         return !mueble.IsSuccess
-            ? Result<MuebleDetailDto>.NotFound()
-            : Result<MuebleDetailDto>.Success(MapListDtoToDetailDto(mueble.Value));
+            ? Result<MuebleDetail>.NotFound()
+            : Result<MuebleDetail>.Success(MapListToDetail(mueble.Value));
     }
 
-    public async Task<Result<List<MuebleListDto>>> GetAll(QueryFilter? filter = null)
+    public async Task<Result<List<MuebleList>>> GetAll(QueryFilter? filter = null)
     {
         var result = await _repository.GetAll(filter);
         
         return result.IsSuccess
-            ? Result<List<MuebleListDto>>.Success(result.Value)
-            : Result<List<MuebleListDto>>.Error("Error al obtener muebles");
+            ? Result<List<MuebleList>>.Success(result.Value)
+            : Result<List<MuebleList>>.Error("Error al obtener muebles");
     }
     
-    private static MuebleDetailDto MapListDtoToDetailDto(MuebleListDto dto) => new()
+    private static MuebleDetail MapListToDetail(MuebleList dto) => new()
     {
         Id = dto.Id,
         Nombre = dto.Nombre,

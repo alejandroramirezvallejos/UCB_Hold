@@ -14,22 +14,22 @@ public class CarreraService
         _repository = repository;
     }
 
-    public async Task<Result<CarreraDetailDto>> Create(CarreraEntity entity)
+    public async Task<Result<CarreraDetail>> Create(CarreraEntity entity)
     {
         var result = await _repository.Create(entity);
         
         return !result.IsSuccess
-            ? Result<CarreraDetailDto>.Error("Error al crear carrera")
-            : Result<CarreraDetailDto>.Created(MapListDtoToDetailDto(result.Value));
+            ? Result<CarreraDetail>.Error("Error al crear carrera")
+            : Result<CarreraDetail>.Created(MapListToDetail(result.Value));
     }
 
-    public async Task<Result<CarreraDetailDto>> Update(CarreraEntity entity)
+    public async Task<Result<CarreraDetail>> Update(CarreraEntity entity)
     {
         var result = await _repository.Update(entity);
         
         return !result.IsSuccess
-            ? Result<CarreraDetailDto>.Error("Error al actualizar carrera")
-            : Result<CarreraDetailDto>.Success(MapListDtoToDetailDto(result.Value));
+            ? Result<CarreraDetail>.Error("Error al actualizar carrera")
+            : Result<CarreraDetail>.Success(MapListToDetail(result.Value));
     }
 
     public async Task<Result<object>> Delete(int id)
@@ -41,25 +41,25 @@ public class CarreraService
             : Result<object>.Error("Error al eliminar carrera");
     }
 
-    public async Task<Result<CarreraDetailDto>> Get(int id)
+    public async Task<Result<CarreraDetail>> Get(int id)
     {
         var carrera = await _repository.Get(id);
         
         return !carrera.IsSuccess
-            ? Result<CarreraDetailDto>.NotFound()
-            : Result<CarreraDetailDto>.Success(MapListDtoToDetailDto(carrera.Value));
+            ? Result<CarreraDetail>.NotFound()
+            : Result<CarreraDetail>.Success(MapListToDetail(carrera.Value));
     }
 
-    public async Task<Result<List<CarreraListDto>>> GetAll(QueryFilter? filter = null)
+    public async Task<Result<List<CarreraList>>> GetAll(QueryFilter? filter = null)
     {
         var result = await _repository.GetAll(filter);
         
         return result.IsSuccess
-            ? Result<List<CarreraListDto>>.Success(result.Value)
-            : Result<List<CarreraListDto>>.Error("Error al obtener carreras");
+            ? Result<List<CarreraList>>.Success(result.Value)
+            : Result<List<CarreraList>>.Error("Error al obtener carreras");
     }
 
-    private static CarreraDetailDto MapListDtoToDetailDto(CarreraListDto dto) => new()
+    private static CarreraDetail MapListToDetail(CarreraList dto) => new()
     {
         Id = dto.Id,
         Nombre = dto.Nombre,

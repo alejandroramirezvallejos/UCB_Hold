@@ -6,7 +6,7 @@ using Microsoft.EntityFrameworkCore;
 using MuebleEntity = IMT_Reservas.Server.Core.Entities.Mueble;
 namespace IMT_Reservas.Server.Infrastructure.Repositories.Implementations;
 
-public class MuebleRepository : Repository<MuebleEntity, MuebleListDto>
+public class MuebleRepository : Repository<MuebleEntity, MuebleList>
 {
     public MuebleRepository(ApplicationDbContext dbContext) : base(dbContext) { }
 
@@ -29,7 +29,7 @@ public class MuebleRepository : Repository<MuebleEntity, MuebleListDto>
         return Result<object>.Success(null!);
     }
 
-    protected override MuebleListDto MapToDto(MuebleEntity entity) => new()
+    protected override MuebleList MapToDto(MuebleEntity entity) => new()
     {
         Id = entity.Id,
         Nombre = entity.Nombre,

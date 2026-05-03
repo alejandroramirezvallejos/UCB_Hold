@@ -1,6 +1,6 @@
 namespace IMT_Reservas.Server.Application.Features.Carrito.Dtos;
 
-public class ObtenerDisponibilidadRequest
+public class DisponibilidadRequest
 {
     public DateTime FechaInicio { get; set; }
     public DateTime FechaFin { get; set; }

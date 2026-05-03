@@ -1,6 +1,6 @@
 namespace IMT_Reservas.Server.Application.Features.Componente.Dtos;
 
-public class ComponenteDto
+public class ComponenteRequest
 {
     public string? Nombre { get; set; }
     public string? Modelo { get; set; }

@@ -14,22 +14,22 @@ public class AccesorioService
         _repository = repository;
     }
 
-    public async Task<Result<AccesorioDetailDto>> Create(AccesorioEntity entity)
+    public async Task<Result<AccesorioDetail>> Create(AccesorioEntity entity)
     {
         var result = await _repository.Create(entity);
         
         return !result.IsSuccess
-            ? Result<AccesorioDetailDto>.Error("Error al crear accesorio")
-            : Result<AccesorioDetailDto>.Created(MapListDtoToDetailDto(result.Value));
+            ? Result<AccesorioDetail>.Error("Error al crear accesorio")
+            : Result<AccesorioDetail>.Created(MapListToDetail(result.Value));
     }
 
-    public async Task<Result<AccesorioDetailDto>> Update(AccesorioEntity entity)
+    public async Task<Result<AccesorioDetail>> Update(AccesorioEntity entity)
     {
         var result = await _repository.Update(entity);
         
         return !result.IsSuccess
-            ? Result<AccesorioDetailDto>.Error("Error al actualizar accesorio")
-            : Result<AccesorioDetailDto>.Success(MapListDtoToDetailDto(result.Value));
+            ? Result<AccesorioDetail>.Error("Error al actualizar accesorio")
+            : Result<AccesorioDetail>.Success(MapListToDetail(result.Value));
     }
 
     public async Task<Result<object>> Delete(int id)
@@ -41,34 +41,34 @@ public class AccesorioService
             : Result<object>.Error("Error al eliminar accesorio");
     }
 
-    public async Task<Result<AccesorioDetailDto>> Get(int id)
+    public async Task<Result<AccesorioDetail>> Get(int id)
     {
         var accesorio = await _repository.Get(id);
         
         return !accesorio.IsSuccess
-            ? Result<AccesorioDetailDto>.NotFound()
-            : Result<AccesorioDetailDto>.Success(MapListDtoToDetailDto(accesorio.Value));
+            ? Result<AccesorioDetail>.NotFound()
+            : Result<AccesorioDetail>.Success(MapListToDetail(accesorio.Value));
     }
 
-    public async Task<Result<List<AccesorioListDto>>> GetAll(QueryFilter? filter = null)
+    public async Task<Result<List<AccesorioList>>> GetAll(QueryFilter? filter = null)
     {
         var result = await _repository.GetAll(filter);
         
         return result.IsSuccess
-            ? Result<List<AccesorioListDto>>.Success(result.Value)
-            : Result<List<AccesorioListDto>>.Error("Error al obtener accesorios");
+            ? Result<List<AccesorioList>>.Success(result.Value)
+            : Result<List<AccesorioList>>.Error("Error al obtener accesorios");
     }
 
-    private static AccesorioDetailDto MapListDtoToDetailDto(AccesorioListDto dto) => new()
+    private static AccesorioDetail MapListToDetail(AccesorioList dto) => new()
     {
         Id = dto.Id,
         Nombre = dto.Nombre,
-        Descripcion = dto.Descripcion,
         Modelo = dto.Modelo,
-        UrlDataSheet = dto.UrlDataSheet,
-        Precio = dto.Precio,
-        IdEquipo = 0,
         Tipo = dto.Tipo,
+        CodigoImt = null,
+        Descripcion = dto.Descripcion,
+        Precio = dto.Precio,
+        UrlDataSheet = dto.UrlDataSheet,
         EstadoEliminado = false
     };
 }

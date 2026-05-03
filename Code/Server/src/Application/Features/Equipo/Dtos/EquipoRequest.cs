@@ -1,6 +1,6 @@
 namespace IMT_Reservas.Server.Application.Features.Equipo.Dtos;
 
-public class EquipoDto
+public class EquipoRequest
 {
     public string? NombreGrupoEquipo { get; set; }
     public string? ModeloGrupoEquipo { get; set; }

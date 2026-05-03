@@ -64,7 +64,6 @@ builder.Services.AddScoped<ComponenteRepository>();
 builder.Services.AddScoped<ComponenteService>();
 builder.Services.AddScoped<CarritoRepository>();
 builder.Services.AddScoped<CarritoService>();
-builder.Services.AddScoped<MantenimientoEquipoService>();
 builder.Services.AddScoped<ContratoRepository>();
 builder.Services.AddScoped<ContratoService>();
 builder.Services.AddScoped<ArchivoService>();

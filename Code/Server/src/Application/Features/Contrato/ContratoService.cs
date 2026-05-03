@@ -17,17 +17,17 @@ public class ContratoService
         _prestamoRepository = prestamoRepository;
     }
 
-    public async Task<Result<ContratoResponse>> Create(int prestamoId, Stream fileStream, string filename)
+    public async Task<Result<ContratoDetail>> Create(int prestamoId, Stream fileStream, string filename)
     {
         var prestamoExiste = await _prestamoRepository.ExisteActivoPorId(prestamoId);
         
         if (!prestamoExiste)
-            return Result<ContratoResponse>.Error("Préstamo no encontrado");
+            return Result<ContratoDetail>.Error("Préstamo no encontrado");
 
         var uploadResultado = await _archivoService.Upload(fileStream, filename);
         
         if (!uploadResultado.IsSuccess)
-            return Result<ContratoResponse>.Error(uploadResultado.Errors.FirstOrDefault() ?? "Error al subir archivo");
+            return Result<ContratoDetail>.Error(uploadResultado.Errors.FirstOrDefault() ?? "Error al subir archivo");
 
         var contrato = new Core.Entities.Contrato
         {
@@ -42,10 +42,10 @@ public class ContratoService
         if (!crearResultado.IsSuccess)
         {
             await _archivoService.Delete(uploadResultado.Value);
-            return Result<ContratoResponse>.Error(crearResultado.Errors.FirstOrDefault() ?? "Error al crear contrato");
+            return Result<ContratoDetail>.Error(crearResultado.Errors.FirstOrDefault() ?? "Error al crear contrato");
         }
 
-        var respuesta = new ContratoResponse
+        var respuesta = new ContratoDetail
         {
             Id = crearResultado.Value.Id.ToString(),
             PrestamoId = crearResultado.Value.PrestamoId,
@@ -53,17 +53,17 @@ public class ContratoService
             FechaCreacion = crearResultado.Value.FechaCreacion
         };
 
-        return Result<ContratoResponse>.Success(respuesta);
+        return Result<ContratoDetail>.Success(respuesta);
     }
 
-    public async Task<Result<ContratoResponse>> Get(int prestamoId)
+    public async Task<Result<ContratoDetail>> Get(int prestamoId)
     {
         var obtenerResultado = await _contratoRepository.GetByPrestamoId(prestamoId);
         
         if (!obtenerResultado.IsSuccess)
-            return Result<ContratoResponse>.Error(obtenerResultado.Errors.FirstOrDefault() ?? "Contrato no encontrado");
+            return Result<ContratoDetail>.Error(obtenerResultado.Errors.FirstOrDefault() ?? "Contrato no encontrado");
 
-        var respuesta = new ContratoResponse
+        var respuesta = new ContratoDetail
         {
             Id = obtenerResultado.Value.Id.ToString(),
             PrestamoId = obtenerResultado.Value.PrestamoId,
@@ -71,7 +71,7 @@ public class ContratoService
             FechaCreacion = obtenerResultado.Value.FechaCreacion
         };
 
-        return Result<ContratoResponse>.Success(respuesta);
+        return Result<ContratoDetail>.Success(respuesta);
     }
 
     public async Task<Result<object>> Delete(int prestamoId)

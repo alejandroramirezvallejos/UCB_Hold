@@ -1,11 +1,10 @@
 namespace IMT_Reservas.Server.Application.Features.Mantenimiento.Dtos;
 
-public class MantenimientoDto
+public class MantenimientoRequest
 {
-    public string? Descripcion { get; set; }
-    public decimal? Costo { get; set; }
     public DateTime? FechaMantenimiento { get; set; }
-    public int? IdEmpresa { get; set; }
     public DateTime? FechaFinalMantenimiento { get; set; }
+    public string? TipoMantenimiento { get; set; }
+    public string? Descripcion { get; set; }
+    public int? IdEmpresaMantenimiento { get; set; }
 }
-

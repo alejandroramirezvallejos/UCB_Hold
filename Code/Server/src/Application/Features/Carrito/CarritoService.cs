@@ -12,17 +12,17 @@ public class CarritoService
         _repository = repository;
     }
 
-    public async Task<Result<List<FechaNoDisponibleResponse?>>> GetUnavailableDates(DateTime fechaInicio, DateTime fechaFin, Dictionary<int, int>? carrito)
+    public async Task<Result<List<FechasNoDisponiblesDetail?>>> GetUnavailableDates(DateTime fechaInicio, DateTime fechaFin, Dictionary<int, int>? carrito)
     {
         var result = await _repository.GetUnavailableDates(fechaInicio, fechaFin, carrito);
 
-        return Result<List<FechaNoDisponibleResponse?>>.Success(result.Cast<FechaNoDisponibleResponse?>().ToList());
+        return Result<List<FechasNoDisponiblesDetail?>>.Success(result.Cast<FechasNoDisponiblesDetail?>().ToList());
     }
 
-    public async Task<Result<List<DisponibilidadEquipoResponse?>>> GetAvailability(DateTime fechaInicio, DateTime fechaFin, int[]? arrayIds)
+    public async Task<Result<List<DisponibilidadDetail?>>> GetAvailability(DateTime fechaInicio, DateTime fechaFin, int[]? arrayIds)
     {
         var result = await _repository.GetAvailability(fechaInicio, fechaFin, arrayIds);
 
-        return Result<List<DisponibilidadEquipoResponse?>>.Success(result.Cast<DisponibilidadEquipoResponse?>().ToList());
+        return Result<List<DisponibilidadDetail?>>.Success(result.Cast<DisponibilidadDetail?>().ToList());
     }
 }

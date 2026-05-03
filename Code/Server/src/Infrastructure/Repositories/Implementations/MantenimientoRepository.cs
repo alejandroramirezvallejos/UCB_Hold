@@ -5,7 +5,7 @@ using Microsoft.EntityFrameworkCore;
 using MantenimientoEntity = IMT_Reservas.Server.Core.Entities.Mantenimiento;
 namespace IMT_Reservas.Server.Infrastructure.Repositories.Implementations;
 
-public class MantenimientoRepository : Repository<MantenimientoEntity, MantenimientoListDto>
+public class MantenimientoRepository : Repository<MantenimientoEntity, MantenimientoList>
 {
     public MantenimientoRepository(ApplicationDbContext dbContext) : base(dbContext) { }
 
@@ -22,7 +22,7 @@ public class MantenimientoRepository : Repository<MantenimientoEntity, Mantenimi
             .Where(m => m.FechaMantenimiento >= fechaInicio && m.FechaMantenimiento <= fechaFin && !m.EstadoEliminado)
             .ToListAsync();
 
-    protected override MantenimientoListDto MapToDto(MantenimientoEntity entity) => new()
+    protected override MantenimientoList MapToDto(MantenimientoEntity entity) => new()
     {
         Id = entity.Id,
         FechaMantenimiento = entity.FechaMantenimiento,

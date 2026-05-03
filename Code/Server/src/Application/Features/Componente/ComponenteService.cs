@@ -14,22 +14,22 @@ public class ComponenteService
         _repository = repository;
     }
 
-    public async Task<Result<ComponenteDetailDto>> Create(ComponenteEntity entity)
+    public async Task<Result<ComponenteDetail>> Create(ComponenteEntity entity)
     {
         var result = await _repository.Create(entity);
         
         return !result.IsSuccess
-            ? Result<ComponenteDetailDto>.Error("Error al crear componente")
-            : Result<ComponenteDetailDto>.Created(MapListDtoToDetailDto(result.Value));
+            ? Result<ComponenteDetail>.Error("Error al crear componente")
+            : Result<ComponenteDetail>.Created(MapListToDetail(result.Value));
     }
 
-    public async Task<Result<ComponenteDetailDto>> Update(ComponenteEntity entity)
+    public async Task<Result<ComponenteDetail>> Update(ComponenteEntity entity)
     {
         var result = await _repository.Update(entity);
         
         return !result.IsSuccess
-            ? Result<ComponenteDetailDto>.Error("Error al actualizar componente")
-            : Result<ComponenteDetailDto>.Success(MapListDtoToDetailDto(result.Value));
+            ? Result<ComponenteDetail>.Error("Error al actualizar componente")
+            : Result<ComponenteDetail>.Success(MapListToDetail(result.Value));
     }
 
     public async Task<Result<object>> Delete(int id)
@@ -41,32 +41,31 @@ public class ComponenteService
             : Result<object>.Error("Error al eliminar componente");
     }
 
-    public async Task<Result<ComponenteDetailDto>> Get(int id)
+    public async Task<Result<ComponenteDetail>> Get(int id)
     {
         var componente = await _repository.Get(id);
         
         return !componente.IsSuccess
-            ? Result<ComponenteDetailDto>.NotFound()
-            : Result<ComponenteDetailDto>.Success(MapListDtoToDetailDto(componente.Value));
+            ? Result<ComponenteDetail>.NotFound()
+            : Result<ComponenteDetail>.Success(MapListToDetail(componente.Value));
     }
 
-    public async Task<Result<List<ComponenteListDto>>> GetAll(QueryFilter? filter = null)
+    public async Task<Result<List<ComponenteList>>> GetAll(QueryFilter? filter = null)
     {
         var result = await _repository.GetAll(filter);
         
         return result.IsSuccess
-            ? Result<List<ComponenteListDto>>.Success(result.Value)
-            : Result<List<ComponenteListDto>>.Error("Error al obtener componentes");
+            ? Result<List<ComponenteList>>.Success(result.Value)
+            : Result<List<ComponenteList>>.Error("Error al obtener componentes");
     }
 
-    private static ComponenteDetailDto MapListDtoToDetailDto(ComponenteListDto dto) => new()
+    private static ComponenteDetail MapListToDetail(ComponenteList dto) => new()
     {
         Id = dto.Id,
         Nombre = dto.Nombre,
-        Descripcion = dto.Descripcion,
         Modelo = dto.Modelo,
-        Precio = dto.Precio,
-        IdEquipo = dto.IdEquipo,
+        Descripcion = dto.Descripcion,
+        PrecioReferencia = dto.Precio,
         EstadoEliminado = false
     };
 }

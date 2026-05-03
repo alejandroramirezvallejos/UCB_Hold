@@ -5,7 +5,7 @@ using Microsoft.EntityFrameworkCore;
 using EmpresaMantenimientoEntity = IMT_Reservas.Server.Core.Entities.EmpresaMantenimiento;
 namespace IMT_Reservas.Server.Infrastructure.Repositories.Implementations;
 
-public class EmpresaMantenimientoRepository : Repository<EmpresaMantenimientoEntity, EmpresaMantenimientoListDto>
+public class EmpresaMantenimientoRepository : Repository<EmpresaMantenimientoEntity, EmpresaMantenimientoList>
 {
     public EmpresaMantenimientoRepository(ApplicationDbContext dbContext) : base(dbContext) { }
 
@@ -15,7 +15,7 @@ public class EmpresaMantenimientoRepository : Repository<EmpresaMantenimientoEnt
     public async Task<bool> ExistsActive(int id)
         => await DbContext.EmpresasMantenimiento.AnyAsync(e => e.Id == id && !e.EstadoEliminado);
 
-    protected override EmpresaMantenimientoListDto MapToDto(EmpresaMantenimientoEntity entity) => new()
+    protected override EmpresaMantenimientoList MapToDto(EmpresaMantenimientoEntity entity) => new()
     {
         Id = entity.Id,
         NombreEmpresa = entity.Nombre,

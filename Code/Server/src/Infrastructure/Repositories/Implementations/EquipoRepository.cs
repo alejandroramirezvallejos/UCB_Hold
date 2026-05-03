@@ -5,20 +5,20 @@ using Microsoft.EntityFrameworkCore;
 using EquipoEntity = IMT_Reservas.Server.Core.Entities.Equipo;
 namespace IMT_Reservas.Server.Infrastructure.Repositories.Implementations;
 
-public class EquipoRepository : Repository<EquipoEntity, EquipoListDto>
+public class EquipoRepository : Repository<EquipoEntity, EquipoList>
 {
     public EquipoRepository(ApplicationDbContext dbContext) : base(dbContext) { }
 
     public async Task<bool> ExisteActivoPorId(int id)
         => await DbContext.Equipos.AnyAsync(e => e.Id == id && !e.EstadoEliminado);
 
-    protected override EquipoListDto MapToDto(EquipoEntity entity) => new()
+    protected override EquipoList MapToDto(EquipoEntity entity) => new()
     {
         Id = entity.Id,
         NombreGrupoEquipo = null,
         Modelo = null,
         Marca = null,
-        CodigoImt = entity.CodigoImt,
+        CodigoImt = entity.CodigoImt.ToString(),
         CodigoUcb = entity.CodigoUcb,
         NumeroSerial = entity.NumeroSerial,
         EstadoEquipo = entity.EstadoEquipo,

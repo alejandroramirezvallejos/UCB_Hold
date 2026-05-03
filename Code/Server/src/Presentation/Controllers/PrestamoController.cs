@@ -24,7 +24,7 @@ public class PrestamoController : ControllerBase
     {
         var result = await _service.GetAll();
         
-        return result.IsSuccess ? Ok(new Response<List<PrestamoListDto>> { Success = true, Data = result.Value }) : BadRequest(new Response<object> { Success = false, Errors = result.Errors.ToList() });
+        return result.IsSuccess ? Ok(new Response<List<PrestamoList>> { Success = true, Data = result.Value }) : BadRequest(new Response<object> { Success = false, Errors = result.Errors.ToList() });
     }
 
     [HttpGet("{id:int}")]
@@ -32,11 +32,11 @@ public class PrestamoController : ControllerBase
     {
         var result = await _service.Get(id);
         
-        return result.IsSuccess ? Ok(new Response<PrestamoDetailDto> { Success = true, Data = result.Value }) : NotFound(new Response<object> { Success = false, Errors = result.Errors.ToList() });
+        return result.IsSuccess ? Ok(new Response<PrestamoDetail> { Success = true, Data = result.Value }) : NotFound(new Response<object> { Success = false, Errors = result.Errors.ToList() });
     }
 
     [HttpPost]
-    public async Task<IActionResult> Create([FromForm] CreatePrestamoRequest request)
+    public async Task<IActionResult> Create([FromForm] PrestamoRequest request)
     {
         var entity = _mapper.Map<PrestamoEntity>(request);
 
@@ -53,17 +53,17 @@ public class PrestamoController : ControllerBase
 
         contratoStream?.Dispose();
 
-        return result.IsSuccess ? CreatedAtAction(nameof(Get), new { id = result.Value?.Id }, new Response<PrestamoDetailDto> { Success = true, Data = result.Value }) : BadRequest(new Response<object> { Success = false, Errors = result.Errors.ToList() });
+        return result.IsSuccess ? CreatedAtAction(nameof(Get), new { id = result.Value?.Id }, new Response<PrestamoDetail> { Success = true, Data = result.Value }) : BadRequest(new Response<object> { Success = false, Errors = result.Errors.ToList() });
     }
 
     [HttpPut("{id:int}")]
-    public async Task<IActionResult> Update(int id, [FromBody] PrestamoDto dto)
+    public async Task<IActionResult> Update(int id, [FromBody] PrestamoRequest dto)
     {
         var entity = _mapper.Map<PrestamoEntity>(dto);
         entity.Id = id;
         var result = await _service.Update(entity);
         
-        return result.IsSuccess ? Ok(new Response<PrestamoDetailDto> { Success = true, Data = result.Value }) : BadRequest(new Response<object> { Success = false, Errors = result.Errors.ToList() });
+        return result.IsSuccess ? Ok(new Response<PrestamoDetail> { Success = true, Data = result.Value }) : BadRequest(new Response<object> { Success = false, Errors = result.Errors.ToList() });
     }
 
     [HttpDelete("{id:int}")]

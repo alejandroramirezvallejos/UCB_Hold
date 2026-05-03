@@ -24,7 +24,7 @@ public class ComponenteController : ControllerBase
     {
         var result = await _service.GetAll();
         
-        return result.IsSuccess ? Ok(new Response<List<ComponenteListDto>> { Success = true, Data = result.Value }) : BadRequest(new Response<object> { Success = false, Errors = result.Errors.ToList() });
+        return result.IsSuccess ? Ok(new Response<List<ComponenteList>> { Success = true, Data = result.Value }) : BadRequest(new Response<object> { Success = false, Errors = result.Errors.ToList() });
     }
 
     [HttpGet("{id:int}")]
@@ -32,26 +32,26 @@ public class ComponenteController : ControllerBase
     {
         var result = await _service.Get(id);
         
-        return result.IsSuccess ? Ok(new Response<ComponenteDetailDto> { Success = true, Data = result.Value }) : NotFound(new Response<object> { Success = false, Errors = result.Errors.ToList() });
+        return result.IsSuccess ? Ok(new Response<ComponenteDetail> { Success = true, Data = result.Value }) : NotFound(new Response<object> { Success = false, Errors = result.Errors.ToList() });
     }
 
     [HttpPost]
-    public async Task<IActionResult> Create([FromBody] ComponenteDto dto)
+    public async Task<IActionResult> Create([FromBody] ComponenteRequest dto)
     {
         var entity = _mapper.Map<ComponenteEntity>(dto);
         var result = await _service.Create(entity);
         
-        return result.IsSuccess ? CreatedAtAction(nameof(Get), new { id = result.Value?.Id }, new Response<ComponenteDetailDto> { Success = true, Data = result.Value }) : BadRequest(new Response<object> { Success = false, Errors = result.Errors.ToList() });
+        return result.IsSuccess ? CreatedAtAction(nameof(Get), new { id = result.Value?.Id }, new Response<ComponenteDetail> { Success = true, Data = result.Value }) : BadRequest(new Response<object> { Success = false, Errors = result.Errors.ToList() });
     }
 
     [HttpPut("{id:int}")]
-    public async Task<IActionResult> Update(int id, [FromBody] ComponenteDto dto)
+    public async Task<IActionResult> Update(int id, [FromBody] ComponenteRequest dto)
     {
         var entity = _mapper.Map<ComponenteEntity>(dto);
         entity.Id = id;
         var result = await _service.Update(entity);
         
-        return result.IsSuccess ? Ok(new Response<ComponenteDetailDto> { Success = true, Data = result.Value }) : BadRequest(new Response<object> { Success = false, Errors = result.Errors.ToList() });
+        return result.IsSuccess ? Ok(new Response<ComponenteDetail> { Success = true, Data = result.Value }) : BadRequest(new Response<object> { Success = false, Errors = result.Errors.ToList() });
     }
 
     [HttpDelete("{id:int}")]

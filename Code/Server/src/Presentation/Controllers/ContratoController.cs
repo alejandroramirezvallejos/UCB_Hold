@@ -19,7 +19,7 @@ public class ContratoController : ControllerBase
     }
 
     [HttpPost("upload")]
-    public async Task<IActionResult> Upload(int prestamoId, IFormFile archivo)
+    public async Task<IActionResult> Upload(int prestamoId, IFormFile? archivo)
     {
         if (archivo == null || archivo.Length == 0)
             return BadRequest(new Response<object> { Success = false, Errors = new List<string> { "Archivo requerido" } });
@@ -27,7 +27,7 @@ public class ContratoController : ControllerBase
         var resultado = await _contratoService.Create(prestamoId, archivo.OpenReadStream(), archivo.FileName);
         
         return resultado.IsSuccess
-            ? Ok(new Response<ContratoResponse> { Success = true, Data = resultado.Value })
+            ? Ok(new Response<ContratoDetail> { Success = true, Data = resultado.Value })
             : BadRequest(new Response<object> { Success = false, Errors = resultado.Errors.ToList() });
     }
 
@@ -37,7 +37,7 @@ public class ContratoController : ControllerBase
         var resultado = await _contratoService.Get(prestamoId);
         
         return resultado.IsSuccess
-            ? Ok(new Response<ContratoResponse> { Success = true, Data = resultado.Value })
+            ? Ok(new Response<ContratoDetail> { Success = true, Data = resultado.Value })
             : NotFound(new Response<object> { Success = false, Errors = resultado.Errors.ToList() });
     }
 

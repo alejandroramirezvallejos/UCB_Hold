@@ -24,7 +24,7 @@ public class GrupoEquipoController : ControllerBase
     {
         var result = await _service.GetAll();
         
-        return result.IsSuccess ? Ok(new Response<List<GrupoEquipoListDto>> { Success = true, Data = result.Value }) : BadRequest(new Response<object> { Success = false, Errors = result.Errors.ToList() });
+        return result.IsSuccess ? Ok(new Response<List<GrupoEquipoList>> { Success = true, Data = result.Value }) : BadRequest(new Response<object> { Success = false, Errors = result.Errors.ToList() });
     }
 
     [HttpGet("{id:int}")]
@@ -32,26 +32,26 @@ public class GrupoEquipoController : ControllerBase
     {
         var result = await _service.Get(id);
         
-        return result.IsSuccess ? Ok(new Response<GrupoEquipoDetailDto> { Success = true, Data = result.Value }) : NotFound(new Response<object> { Success = false, Errors = result.Errors.ToList() });
+        return result.IsSuccess ? Ok(new Response<GrupoEquipoDetail> { Success = true, Data = result.Value }) : NotFound(new Response<object> { Success = false, Errors = result.Errors.ToList() });
     }
 
     [HttpPost]
-    public async Task<IActionResult> Create([FromBody] GrupoEquipoDto dto)
+    public async Task<IActionResult> Create([FromBody] GrupoEquipoRequest dto)
     {
         var entity = _mapper.Map<GrupoEquipoEntity>(dto);
         var result = await _service.Create(entity);
         
-        return result.IsSuccess ? CreatedAtAction(nameof(Get), new { id = result.Value?.Id }, new Response<GrupoEquipoDetailDto> { Success = true, Data = result.Value }) : BadRequest(new Response<object> { Success = false, Errors = result.Errors.ToList() });
+        return result.IsSuccess ? CreatedAtAction(nameof(Get), new { id = result.Value?.Id }, new Response<GrupoEquipoDetail> { Success = true, Data = result.Value }) : BadRequest(new Response<object> { Success = false, Errors = result.Errors.ToList() });
     }
 
     [HttpPut("{id:int}")]
-    public async Task<IActionResult> Update(int id, [FromBody] GrupoEquipoDto dto)
+    public async Task<IActionResult> Update(int id, [FromBody] GrupoEquipoRequest dto)
     {
         var entity = _mapper.Map<GrupoEquipoEntity>(dto);
         entity.Id = id;
         var result = await _service.Update(entity);
         
-        return result.IsSuccess ? Ok(new Response<GrupoEquipoDetailDto> { Success = true, Data = result.Value }) : BadRequest(new Response<object> { Success = false, Errors = result.Errors.ToList() });
+        return result.IsSuccess ? Ok(new Response<GrupoEquipoDetail> { Success = true, Data = result.Value }) : BadRequest(new Response<object> { Success = false, Errors = result.Errors.ToList() });
     }
 
     [HttpDelete("{id:int}")]

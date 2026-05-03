@@ -24,7 +24,7 @@ public class CarreraController : ControllerBase
     {
         var result = await _service.GetAll();
         
-        return result.IsSuccess ? Ok(new Response<List<CarreraListDto>> { Success = true, Data = result.Value }) : BadRequest(new Response<object> { Success = false, Errors = result.Errors.ToList() });
+        return result.IsSuccess ? Ok(new Response<List<CarreraList>> { Success = true, Data = result.Value }) : BadRequest(new Response<object> { Success = false, Errors = result.Errors.ToList() });
     }
 
     [HttpGet("{id:int}")]
@@ -32,26 +32,26 @@ public class CarreraController : ControllerBase
     {
         var result = await _service.Get(id);
         
-        return result.IsSuccess ? Ok(new Response<CarreraDetailDto> { Success = true, Data = result.Value }) : NotFound(new Response<object> { Success = false, Errors = result.Errors.ToList() });
+        return result.IsSuccess ? Ok(new Response<CarreraDetail> { Success = true, Data = result.Value }) : NotFound(new Response<object> { Success = false, Errors = result.Errors.ToList() });
     }
 
     [HttpPost]
-    public async Task<IActionResult> Create([FromBody] CarreraDto dto)
+    public async Task<IActionResult> Create([FromBody] CarreraRequest dto)
     {
         var entity = _mapper.Map<CarreraEntity>(dto);
         var result = await _service.Create(entity);
         
-        return result.IsSuccess ? CreatedAtAction(nameof(Get), new { id = result.Value?.Id }, new Response<CarreraDetailDto> { Success = true, Data = result.Value }) : BadRequest(new Response<object> { Success = false, Errors = result.Errors.ToList() });
+        return result.IsSuccess ? CreatedAtAction(nameof(Get), new { id = result.Value?.Id }, new Response<CarreraDetail> { Success = true, Data = result.Value }) : BadRequest(new Response<object> { Success = false, Errors = result.Errors.ToList() });
     }
 
     [HttpPut("{id:int}")]
-    public async Task<IActionResult> Update(int id, [FromBody] CarreraDto dto)
+    public async Task<IActionResult> Update(int id, [FromBody] CarreraRequest dto)
     {
         var entity = _mapper.Map<CarreraEntity>(dto);
         entity.Id = id;
         var result = await _service.Update(entity);
        
-        return result.IsSuccess ? Ok(new Response<CarreraDetailDto> { Success = true, Data = result.Value }) : BadRequest(new Response<object> { Success = false, Errors = result.Errors.ToList() });
+        return result.IsSuccess ? Ok(new Response<CarreraDetail> { Success = true, Data = result.Value }) : BadRequest(new Response<object> { Success = false, Errors = result.Errors.ToList() });
     }
 
     [HttpDelete("{id:int}")]

@@ -24,7 +24,7 @@ public class EmpresaMantenimientoController : ControllerBase
     {
         var result = await _service.GetAll();
         
-        return result.IsSuccess ? Ok(new Response<List<EmpresaMantenimientoListDto>> { Success = true, Data = result.Value }) : BadRequest(new Response<object> { Success = false, Errors = result.Errors.ToList() });
+        return result.IsSuccess ? Ok(new Response<List<EmpresaMantenimientoList>> { Success = true, Data = result.Value }) : BadRequest(new Response<object> { Success = false, Errors = result.Errors.ToList() });
     }
 
     [HttpGet("{id:int}")]
@@ -32,26 +32,26 @@ public class EmpresaMantenimientoController : ControllerBase
     {
         var result = await _service.Get(id);
         
-        return result.IsSuccess ? Ok(new Response<EmpresaMantenimientoDetailDto> { Success = true, Data = result.Value }) : NotFound(new Response<object> { Success = false, Errors = result.Errors.ToList() });
+        return result.IsSuccess ? Ok(new Response<EmpresaMantenimientoDetail> { Success = true, Data = result.Value }) : NotFound(new Response<object> { Success = false, Errors = result.Errors.ToList() });
     }
 
     [HttpPost]
-    public async Task<IActionResult> Create([FromBody] EmpresaMantenimientoDto dto)
+    public async Task<IActionResult> Create([FromBody] EmpresaMantenimientoRequest dto)
     {
         var entity = _mapper.Map<EmpresaMantenimientoEntity>(dto);
         var result = await _service.Create(entity);
         
-        return result.IsSuccess ? CreatedAtAction(nameof(Get), new { id = result.Value?.Id }, new Response<EmpresaMantenimientoDetailDto> { Success = true, Data = result.Value }) : BadRequest(new Response<object> { Success = false, Errors = result.Errors.ToList() });
+        return result.IsSuccess ? CreatedAtAction(nameof(Get), new { id = result.Value?.Id }, new Response<EmpresaMantenimientoDetail> { Success = true, Data = result.Value }) : BadRequest(new Response<object> { Success = false, Errors = result.Errors.ToList() });
     }
 
     [HttpPut("{id:int}")]
-    public async Task<IActionResult> Update(int id, [FromBody] EmpresaMantenimientoDto dto)
+    public async Task<IActionResult> Update(int id, [FromBody] EmpresaMantenimientoRequest dto)
     {
         var entity = _mapper.Map<EmpresaMantenimientoEntity>(dto);
         entity.Id = id;
         var result = await _service.Update(entity);
         
-        return result.IsSuccess ? Ok(new Response<EmpresaMantenimientoDetailDto> { Success = true, Data = result.Value }) : BadRequest(new Response<object> { Success = false, Errors = result.Errors.ToList() });
+        return result.IsSuccess ? Ok(new Response<EmpresaMantenimientoDetail> { Success = true, Data = result.Value }) : BadRequest(new Response<object> { Success = false, Errors = result.Errors.ToList() });
     }
 
     [HttpDelete("{id:int}")]

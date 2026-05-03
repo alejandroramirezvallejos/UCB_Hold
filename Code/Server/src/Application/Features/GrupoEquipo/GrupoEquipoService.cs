@@ -14,22 +14,22 @@ public class GrupoEquipoService
         _repository = repository;
     }
 
-    public async Task<Result<GrupoEquipoDetailDto>> Create(GrupoEquipoEntity entity)
+    public async Task<Result<GrupoEquipoDetail>> Create(GrupoEquipoEntity entity)
     {
         var result = await _repository.Create(entity);
         
         return !result.IsSuccess
-            ? Result<GrupoEquipoDetailDto>.Error("Error al crear grupo de equipo")
-            : Result<GrupoEquipoDetailDto>.Created(MapListDtoToDetailDto(result.Value));
+            ? Result<GrupoEquipoDetail>.Error("Error al crear grupo de equipo")
+            : Result<GrupoEquipoDetail>.Created(MapListToDetail(result.Value));
     }
 
-    public async Task<Result<GrupoEquipoDetailDto>> Update(GrupoEquipoEntity entity)
+    public async Task<Result<GrupoEquipoDetail>> Update(GrupoEquipoEntity entity)
     {
         var result = await _repository.Update(entity);
         
         return !result.IsSuccess
-            ? Result<GrupoEquipoDetailDto>.Error("Error al actualizar grupo de equipo")
-            : Result<GrupoEquipoDetailDto>.Success(MapListDtoToDetailDto(result.Value));
+            ? Result<GrupoEquipoDetail>.Error("Error al actualizar grupo de equipo")
+            : Result<GrupoEquipoDetail>.Success(MapListToDetail(result.Value));
     }
 
     public async Task<Result<object>> Delete(int id)
@@ -41,25 +41,25 @@ public class GrupoEquipoService
             : Result<object>.Error("Error al eliminar grupo de equipo");
     }
 
-    public async Task<Result<GrupoEquipoDetailDto>> Get(int id)
+    public async Task<Result<GrupoEquipoDetail>> Get(int id)
     {
         var grupoEquipo = await _repository.Get(id);
         
         return !grupoEquipo.IsSuccess
-            ? Result<GrupoEquipoDetailDto>.NotFound()
-            : Result<GrupoEquipoDetailDto>.Success(MapListDtoToDetailDto(grupoEquipo.Value));
+            ? Result<GrupoEquipoDetail>.NotFound()
+            : Result<GrupoEquipoDetail>.Success(MapListToDetail(grupoEquipo.Value));
     }
 
-    public async Task<Result<List<GrupoEquipoListDto>>> GetAll(QueryFilter? filter = null)
+    public async Task<Result<List<GrupoEquipoList>>> GetAll(QueryFilter? filter = null)
     {
         var result = await _repository.GetAll(filter);
        
         return result.IsSuccess
-            ? Result<List<GrupoEquipoListDto>>.Success(result.Value)
-            : Result<List<GrupoEquipoListDto>>.Error("Error al obtener grupos de equipo");
+            ? Result<List<GrupoEquipoList>>.Success(result.Value)
+            : Result<List<GrupoEquipoList>>.Error("Error al obtener grupos de equipo");
     }
     
-    private static GrupoEquipoDetailDto MapListDtoToDetailDto(GrupoEquipoListDto dto) => new()
+    private static GrupoEquipoDetail MapListToDetail(GrupoEquipoList dto) => new()
     {
         Id = dto.Id,
         Nombre = dto.Nombre,

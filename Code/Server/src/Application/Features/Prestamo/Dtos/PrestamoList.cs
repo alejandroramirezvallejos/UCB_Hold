@@ -1,6 +1,6 @@
 namespace IMT_Reservas.Server.Application.Features.Prestamo.Dtos;
 
-public class PrestamoListDto
+public class PrestamoList
 {
     public int Id { get; set; }
     public string? CarnetUsuario { get; set; }
@@ -22,17 +22,5 @@ public class PrestamoListDto
     public string? NombreMueble { get; set; }
     public string? UbicacionMueble { get; set; }
     public int? IdContrato { get; set; }
-    public int? FileId { get; set; }
-}
-
-public class PrestamoDetailDto
-{
-    public int Id { get; set; }
-    public int IdUsuario { get; set; }
-    public DateTime FechaSolicitud { get; set; }
-    public DateTime FechaInicio { get; set; }
-    public DateTime FechaFin { get; set; }
-    public string? EstadoPrestamo { get; set; }
-    public string? Observaciones { get; set; }
-    public bool EstadoEliminado { get; set; }
+    public string? FileId { get; set; }
 }

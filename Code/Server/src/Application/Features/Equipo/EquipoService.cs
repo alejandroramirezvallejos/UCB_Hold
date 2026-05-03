@@ -14,22 +14,22 @@ public class EquipoService
         _repository = repository;
     }
 
-    public async Task<Result<EquipoDetailDto>> Create(EquipoEntity entity)
+    public async Task<Result<EquipoDetail>> Create(EquipoEntity entity)
     {
         var result = await _repository.Create(entity);
         
         return !result.IsSuccess
-            ? Result<EquipoDetailDto>.Error("Error al crear equipo")
-            : Result<EquipoDetailDto>.Created(MapListDtoToDetailDto(result.Value));
+            ? Result<EquipoDetail>.Error("Error al crear equipo")
+            : Result<EquipoDetail>.Created(MapListToDetail(result.Value));
     }
 
-    public async Task<Result<EquipoDetailDto>> Update(EquipoEntity entity)
+    public async Task<Result<EquipoDetail>> Update(EquipoEntity entity)
     {
         var result = await _repository.Update(entity);
         
         return !result.IsSuccess
-            ? Result<EquipoDetailDto>.Error("Error al actualizar equipo")
-            : Result<EquipoDetailDto>.Success(MapListDtoToDetailDto(result.Value));
+            ? Result<EquipoDetail>.Error("Error al actualizar equipo")
+            : Result<EquipoDetail>.Success(MapListToDetail(result.Value));
     }
 
     public async Task<Result<object>> Delete(int id)
@@ -41,37 +41,37 @@ public class EquipoService
             : Result<object>.Error("Error al eliminar equipo");
     }
 
-    public async Task<Result<EquipoDetailDto>> Get(int id)
+    public async Task<Result<EquipoDetail>> Get(int id)
     {
         var equipo = await _repository.Get(id);
         
         return !equipo.IsSuccess
-            ? Result<EquipoDetailDto>.NotFound()
-            : Result<EquipoDetailDto>.Success(MapListDtoToDetailDto(equipo.Value));
+            ? Result<EquipoDetail>.NotFound()
+            : Result<EquipoDetail>.Success(MapListToDetail(equipo.Value));
     }
 
-    public async Task<Result<List<EquipoListDto>>> GetAll(QueryFilter? filter = null)
+    public async Task<Result<List<EquipoList>>> GetAll(QueryFilter? filter = null)
     {
         var result = await _repository.GetAll(filter);
         
         return result.IsSuccess
-            ? Result<List<EquipoListDto>>.Success(result.Value)
-            : Result<List<EquipoListDto>>.Error("Error al obtener equipos");
+            ? Result<List<EquipoList>>.Success(result.Value)
+            : Result<List<EquipoList>>.Error("Error al obtener equipos");
     }
 
-    private static EquipoDetailDto MapListDtoToDetailDto(EquipoListDto dto) => new()
+    private static EquipoDetail MapListToDetail(EquipoList dto) => new()
     {
         Id = dto.Id,
-        IdGrupoEquipo = 0,
-        CodigoImt = dto.CodigoImt ?? 0,
-        IdGavetero = null,
+        NombreGrupoEquipo = dto.NombreGrupoEquipo,
         Modelo = dto.Modelo,
         Marca = dto.Marca,
+        CodigoImt = dto.CodigoImt,
         CodigoUcb = dto.CodigoUcb,
         NumeroSerial = dto.NumeroSerial,
-        EstadoEquipo = dto.EstadoEquipo,
         Ubicacion = dto.Ubicacion,
-        CostoReferencia = dto.CostoReferencia.HasValue ? (double)dto.CostoReferencia.Value : null,
+        EstadoEquipo = dto.EstadoEquipo,
+        NombreGavetero = dto.NombreGavetero,
+        CostoReferencia = dto.CostoReferencia,
         Descripcion = dto.Descripcion,
         TiempoMaximoPrestamo = dto.TiempoMaximoPrestamo,
         Procedencia = dto.Procedencia,

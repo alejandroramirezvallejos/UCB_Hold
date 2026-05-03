@@ -14,22 +14,22 @@ public class CategoriaService
         _repository = repository;
     }
 
-    public async Task<Result<CategoriaDetailDto>> Create(CategoriaEntity entity)
+    public async Task<Result<CategoriaDetail>> Create(CategoriaEntity entity)
     {
         var result = await _repository.Create(entity);
         
         return !result.IsSuccess
-            ? Result<CategoriaDetailDto>.Error("Error al crear categoría")
-            : Result<CategoriaDetailDto>.Created(MapListDtoToDetailDto(result.Value));
+            ? Result<CategoriaDetail>.Error("Error al crear categoría")
+            : Result<CategoriaDetail>.Created(MapListToDetail(result.Value));
     }
 
-    public async Task<Result<CategoriaDetailDto>> Update(CategoriaEntity entity)
+    public async Task<Result<CategoriaDetail>> Update(CategoriaEntity entity)
     {
         var result = await _repository.Update(entity);
         
         return !result.IsSuccess
-            ? Result<CategoriaDetailDto>.Error("Error al actualizar categoría")
-            : Result<CategoriaDetailDto>.Success(MapListDtoToDetailDto(result.Value));
+            ? Result<CategoriaDetail>.Error("Error al actualizar categoría")
+            : Result<CategoriaDetail>.Success(MapListToDetail(result.Value));
     }
 
     public async Task<Result<object>> Delete(int id)
@@ -41,25 +41,25 @@ public class CategoriaService
             : Result<object>.Error("Error al eliminar categoría");
     }
 
-    public async Task<Result<CategoriaDetailDto>> Get(int id)
+    public async Task<Result<CategoriaDetail>> Get(int id)
     {
         var categoria = await _repository.Get(id);
         
         return !categoria.IsSuccess
-            ? Result<CategoriaDetailDto>.NotFound()
-            : Result<CategoriaDetailDto>.Success(MapListDtoToDetailDto(categoria.Value));
+            ? Result<CategoriaDetail>.NotFound()
+            : Result<CategoriaDetail>.Success(MapListToDetail(categoria.Value));
     }
 
-    public async Task<Result<List<CategoriaListDto>>> GetAll(QueryFilter? filter = null)
+    public async Task<Result<List<CategoriaList>>> GetAll(QueryFilter? filter = null)
     {
         var result = await _repository.GetAll(filter);
         
         return result.IsSuccess
-            ? Result<List<CategoriaListDto>>.Success(result.Value)
-            : Result<List<CategoriaListDto>>.Error("Error al obtener categorías");
+            ? Result<List<CategoriaList>>.Success(result.Value)
+            : Result<List<CategoriaList>>.Error("Error al obtener categorías");
     }
 
-    private static CategoriaDetailDto MapListDtoToDetailDto(CategoriaListDto dto) => new()
+    private static CategoriaDetail MapListToDetail(CategoriaList dto) => new()
     {
         Id = dto.Id,
         Nombre = dto.Nombre,

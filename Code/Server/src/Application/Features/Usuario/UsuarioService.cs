@@ -13,22 +13,22 @@ public class UsuarioService
         _repository = repository;
     }
 
-    public async Task<Result<UsuarioDetailDto>> Create(UsuarioEntity entity)
+    public async Task<Result<UsuarioDetail>> Create(UsuarioEntity entity)
     {
         var result = await _repository.Create(entity);
         
         return !result.IsSuccess
-            ? Result<UsuarioDetailDto>.Error("Error al crear usuario")
-            : Result<UsuarioDetailDto>.Created(MapListDtoToDetailDto(result.Value));
+            ? Result<UsuarioDetail>.Error("Error al crear usuario")
+            : Result<UsuarioDetail>.Created(MapListToDetail(result.Value));
     }
 
-    public async Task<Result<UsuarioDetailDto>> Update(UsuarioEntity entity)
+    public async Task<Result<UsuarioDetail>> Update(UsuarioEntity entity)
     {
         var result = await _repository.Update(entity);
         
         return !result.IsSuccess
-            ? Result<UsuarioDetailDto>.Error("Error al actualizar usuario")
-            : Result<UsuarioDetailDto>.Success(MapListDtoToDetailDto(result.Value));
+            ? Result<UsuarioDetail>.Error("Error al actualizar usuario")
+            : Result<UsuarioDetail>.Success(MapListToDetail(result.Value));
     }
 
     public async Task<Result<object>> Delete(string carnet)
@@ -40,40 +40,40 @@ public class UsuarioService
             : Result<object>.Error("Error al eliminar usuario");
     }
 
-    public async Task<Result<UsuarioDetailDto>> Get(string carnet)
+    public async Task<Result<UsuarioDetail>> Get(string carnet)
     {
         var usuario = await _repository.GetByCarnet(carnet);
         
         if (usuario == null)
-            return Result<UsuarioDetailDto>.NotFound();
+            return Result<UsuarioDetail>.NotFound();
 
-        var detailDto = MapEntityToDetailDto(usuario);
+        var detailDto = MapEntityToDetail(usuario);
         
-        return Result<UsuarioDetailDto>.Success(detailDto);
+        return Result<UsuarioDetail>.Success(detailDto);
     }
 
-    public async Task<Result<List<UsuarioListDto>>> GetAllUsers()
+    public async Task<Result<List<UsuarioList>>> GetAllUsers()
     {
         var result = await _repository.GetAll();
         
         return result.IsSuccess
-            ? Result<List<UsuarioListDto>>.Success(result.Value)
-            : Result<List<UsuarioListDto>>.Error("Error al obtener usuarios");
+            ? Result<List<UsuarioList>>.Success(result.Value)
+            : Result<List<UsuarioList>>.Error("Error al obtener usuarios");
     }
 
-    public async Task<Result<UsuarioDetailDto>> InitiateSession(string email, string password)
+    public async Task<Result<UsuarioDetail>> InitiateSession(string email, string password)
     {
         var usuario = await _repository.GetByEmail(email);
         
         if (usuario == null)
-            return Result<UsuarioDetailDto>.NotFound();
+            return Result<UsuarioDetail>.NotFound();
 
         return usuario.Contrasena != password
-            ? Result<UsuarioDetailDto>.Error("Credenciales inválidas")
-            : Result<UsuarioDetailDto>.Success(MapEntityToDetailDto(usuario));
+            ? Result<UsuarioDetail>.Error("Credenciales inválidas")
+            : Result<UsuarioDetail>.Success(MapEntityToDetail(usuario));
     }
 
-    private static UsuarioDetailDto MapEntityToDetailDto(UsuarioEntity entity) => new()
+    private static UsuarioDetail MapEntityToDetail(UsuarioEntity entity) => new()
     {
         Carnet = entity.Carnet,
         Nombre = entity.Nombre,
@@ -88,7 +88,7 @@ public class UsuarioService
         EmailReferencia = entity.EmailReferencia
     };
 
-    private static UsuarioDetailDto MapListDtoToDetailDto(UsuarioListDto dto) => new()
+    private static UsuarioDetail MapListToDetail(UsuarioList dto) => new()
     {
         Carnet = dto.Carnet,
         Nombre = dto.Nombre,

@@ -5,7 +5,7 @@ using Microsoft.EntityFrameworkCore;
 using GaveteroEntity = IMT_Reservas.Server.Core.Entities.Gavetero;
 namespace IMT_Reservas.Server.Infrastructure.Repositories.Implementations;
 
-public class GaveteroRepository : Repository<GaveteroEntity, GaveteroListDto>
+public class GaveteroRepository : Repository<GaveteroEntity, GaveteroList>
 {
     public GaveteroRepository(ApplicationDbContext dbContext) : base(dbContext) { }
 
@@ -30,7 +30,7 @@ public class GaveteroRepository : Repository<GaveteroEntity, GaveteroListDto>
             .Select(g => g.IdMueble)
             .FirstOrDefaultAsync();
 
-    protected override GaveteroListDto MapToDto(GaveteroEntity entity) => new()
+    protected override GaveteroList MapToDto(GaveteroEntity entity) => new()
     {
         Id = entity.Id,
         Nombre = entity.Nombre,

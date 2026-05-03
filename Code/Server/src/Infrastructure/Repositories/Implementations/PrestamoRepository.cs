@@ -5,7 +5,7 @@ using Microsoft.EntityFrameworkCore;
 using PrestamoEntity = IMT_Reservas.Server.Core.Entities.Prestamo;
 namespace IMT_Reservas.Server.Infrastructure.Repositories.Implementations;
 
-public class PrestamoRepository : Repository<PrestamoEntity, PrestamoListDto>
+public class PrestamoRepository : Repository<PrestamoEntity, PrestamoList>
 {
     public PrestamoRepository(ApplicationDbContext dbContext) : base(dbContext) { }
 
@@ -22,7 +22,7 @@ public class PrestamoRepository : Repository<PrestamoEntity, PrestamoListDto>
             .Where(p => p.EstadoPrestamo == estadoPrestamo && !p.EstadoEliminado)
             .ToListAsync();
 
-    protected override PrestamoListDto MapToDto(PrestamoEntity entity) => new()
+    protected override PrestamoList MapToDto(PrestamoEntity entity) => new()
     {
         Id = entity.Id,
         CarnetUsuario = entity.Carnet ?? "",

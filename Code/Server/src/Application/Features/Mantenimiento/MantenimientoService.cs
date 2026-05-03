@@ -14,22 +14,22 @@ public class MantenimientoService
         _repository = repository;
     }
 
-    public async Task<Result<MantenimientoDetailDto>> Create(MantenimientoEntity entity)
+    public async Task<Result<MantenimientoDetail>> Create(MantenimientoEntity entity)
     {
         var result = await _repository.Create(entity);
         
         return !result.IsSuccess
-            ? Result<MantenimientoDetailDto>.Error("Error al crear mantenimiento")
-            : Result<MantenimientoDetailDto>.Created(MapListDtoToDetailDto(result.Value));
+            ? Result<MantenimientoDetail>.Error("Error al crear mantenimiento")
+            : Result<MantenimientoDetail>.Created(MapListToDetail(result.Value));
     }
 
-    public async Task<Result<MantenimientoDetailDto>> Update(MantenimientoEntity entity)
+    public async Task<Result<MantenimientoDetail>> Update(MantenimientoEntity entity)
     {
         var result = await _repository.Update(entity);
         
         return !result.IsSuccess
-            ? Result<MantenimientoDetailDto>.Error("Error al actualizar mantenimiento")
-            : Result<MantenimientoDetailDto>.Success(MapListDtoToDetailDto(result.Value));
+            ? Result<MantenimientoDetail>.Error("Error al actualizar mantenimiento")
+            : Result<MantenimientoDetail>.Success(MapListToDetail(result.Value));
     }
 
     public async Task<Result<object>> Delete(int id)
@@ -41,33 +41,32 @@ public class MantenimientoService
             : Result<object>.Error("Error al eliminar mantenimiento");
     }
 
-    public async Task<Result<MantenimientoDetailDto>> Get(int id)
+    public async Task<Result<MantenimientoDetail>> Get(int id)
     {
         var mantenimiento = await _repository.Get(id);
         
         return !mantenimiento.IsSuccess
-            ? Result<MantenimientoDetailDto>.NotFound()
-            : Result<MantenimientoDetailDto>.Success(MapListDtoToDetailDto(mantenimiento.Value));
+            ? Result<MantenimientoDetail>.NotFound()
+            : Result<MantenimientoDetail>.Success(MapListToDetail(mantenimiento.Value));
     }
 
-    public async Task<Result<List<MantenimientoListDto>>> GetAll(QueryFilter? filter = null)
+    public async Task<Result<List<MantenimientoList>>> GetAll(QueryFilter? filter = null)
     {
         var result = await _repository.GetAll(filter);
         
         return result.IsSuccess
-            ? Result<List<MantenimientoListDto>>.Success(result.Value)
-            : Result<List<MantenimientoListDto>>.Error("Error al obtener mantenimientos");
+            ? Result<List<MantenimientoList>>.Success(result.Value)
+            : Result<List<MantenimientoList>>.Error("Error al obtener mantenimientos");
     }
     
-    private static MantenimientoDetailDto MapListDtoToDetailDto(MantenimientoListDto dto) => new()
+    private static MantenimientoDetail MapListToDetail(MantenimientoList dto) => new()
     {
         Id = dto.Id,
-        IdEquipo = 0,
-        IdEmpresaMantenimiento = dto.IdEmpresa ?? 0,
-        FechaInicio = dto.FechaMantenimiento ?? DateTime.Now,
-        FechaFin = dto.FechaFinalDeMantenimiento ?? DateTime.Now,
-        Descripcion = dto.Descripcion,
+        FechaMantenimiento = dto.FechaMantenimiento,
+        FechaFinalDeMantenimiento = dto.FechaFinalDeMantenimiento,
+        IdEmpresa = dto.IdEmpresa,
         Costo = dto.Costo,
+        Descripcion = dto.Descripcion,
         EstadoEliminado = false
     };
 }
