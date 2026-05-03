@@ -1,4 +1,5 @@
 using Microsoft.EntityFrameworkCore;
+using MongoDB.Driver;
 using IMT_Reservas.Server.Application.Features.Accesorio;
 using IMT_Reservas.Server.Application.Features.Carrera;
 using IMT_Reservas.Server.Application.Features.Categoria;
@@ -12,6 +13,8 @@ using IMT_Reservas.Server.Application.Features.Mantenimiento;
 using IMT_Reservas.Server.Application.Features.Mueble;
 using IMT_Reservas.Server.Application.Features.Prestamo;
 using IMT_Reservas.Server.Application.Features.Usuario;
+using IMT_Reservas.Server.Application.Features.Contrato;
+using IMT_Reservas.Server.Application.Features.Archivo;
 using IMT_Reservas.Server.Infrastructure.PostgreSQL;
 using IMT_Reservas.Server.Infrastructure.Repositories.Implementations;
 using IMT_Reservas.Server.Infrastructure.MongoDb;
@@ -26,7 +29,10 @@ var connectionString = builder.Configuration.GetConnectionString("PostgreSQL");
 builder.Services.AddDbContext<ApplicationDbContext>(options =>
     options.UseNpgsql(connectionString));
 
-builder.Services.AddControllers();
+builder.Services.AddControllers().AddJsonOptions(options =>
+{
+    options.JsonSerializerOptions.PropertyNamingPolicy = null;
+});
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 builder.Services.AddScoped<ExecuteQuery>();
@@ -59,6 +65,11 @@ builder.Services.AddScoped<ComponenteService>();
 builder.Services.AddScoped<CarritoRepository>();
 builder.Services.AddScoped<CarritoService>();
 builder.Services.AddScoped<MantenimientoEquipoService>();
+builder.Services.AddScoped<ContratoRepository>();
+builder.Services.AddScoped<ContratoService>();
+builder.Services.AddScoped<ArchivoService>();
+
+builder.Services.AddSingleton<IMongoClient>(new MongoClient("mongodb://localhost:27018/"));
 
 var app = builder.Build();
 

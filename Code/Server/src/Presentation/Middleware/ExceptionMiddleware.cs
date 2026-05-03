@@ -44,11 +44,3 @@ public class ExceptionMiddleware
         return context.Response.WriteAsync(JsonSerializer.Serialize(response, options));
     }
 }
-
-public static class GlobalExceptionMiddlewareExtensions
-{
-    public static IApplicationBuilder UseGlobalExceptionMiddleware(this IApplicationBuilder app)
-    {
-        return app.UseMiddleware<ExceptionMiddleware>();
-    }
-}

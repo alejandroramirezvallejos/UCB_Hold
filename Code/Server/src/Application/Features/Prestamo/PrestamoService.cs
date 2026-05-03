@@ -4,6 +4,7 @@ using PrestamoEntity = IMT_Reservas.Server.Core.Entities.Prestamo;
 using IMT_Reservas.Server.Infrastructure.Repositories.Implementations;
 using IMT_Reservas.Server.Core.Abstractions;
 using IMT_Reservas.Server.Infrastructure.PostgreSQL;
+using IMT_Reservas.Server.Application.Features.Contrato;
 using Microsoft.EntityFrameworkCore;
 namespace IMT_Reservas.Server.Application.Features.Prestamo;
 
@@ -11,11 +12,13 @@ public class PrestamoService
 {
     private readonly PrestamoRepository _repository;
     private readonly ApplicationDbContext _dbContext;
+    private readonly ContratoService _contratoService;
 
-    public PrestamoService(PrestamoRepository repository, ApplicationDbContext dbContext)
+    public PrestamoService(PrestamoRepository repository, ApplicationDbContext dbContext, ContratoService contratoService)
     {
         _repository = repository;
         _dbContext = dbContext;
+        _contratoService = contratoService;
     }
 
     public async Task<Result<PrestamoDetailDto>> Create(PrestamoEntity entity)
@@ -38,8 +41,15 @@ public class PrestamoService
 
     public async Task<Result<object>> Delete(int id)
     {
+        var prestamo = await _repository.Get(id);
+
+        if (prestamo.IsSuccess && prestamo.Value?.IdContrato != null)
+        {
+            await _contratoService.Delete(id);
+        }
+
         var result = await _repository.Delete(id);
-        
+
         return result.IsSuccess
             ? Result<object>.Success(null!)
             : Result<object>.Error("Error al eliminar prestamo");
