@@ -1,4 +1,4 @@
-namespace IMT_Reservas.Server.Presentations.Middleware;
+namespace IMT_Reservas.Server.Presentation.Middleware;
 
 public static class GlobalExceptionMiddlewareExtensions
 {

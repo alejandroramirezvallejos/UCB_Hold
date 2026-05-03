@@ -18,6 +18,7 @@ using IMT_Reservas.Server.Application.Features.Archivo;
 using IMT_Reservas.Server.Infrastructure.PostgreSQL;
 using IMT_Reservas.Server.Infrastructure.Repositories.Implementations;
 using IMT_Reservas.Server.Infrastructure.MongoDb;
+using IMT_Reservas.Server.Presentation.Middleware;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -72,6 +73,8 @@ builder.Services.AddScoped<ArchivoService>();
 builder.Services.AddSingleton<IMongoClient>(new MongoClient("mongodb://localhost:27018/"));
 
 var app = builder.Build();
+
+app.UseGlobalExceptionMiddleware();
 
 if (app.Environment.IsDevelopment())
 {
