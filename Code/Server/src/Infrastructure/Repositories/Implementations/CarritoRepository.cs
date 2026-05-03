@@ -9,13 +9,13 @@ public class CarritoRepository
 
     public CarritoRepository(ApplicationDbContext dbContext) => _dbContext = dbContext;
 
-    public async Task<IEnumerable<FechaNoDisponibleDto>> GetUnavailableDates(DateTime fechaInicio, DateTime fechaFin, Dictionary<int, int>? carrito)
+    public async Task<IEnumerable<FechaNoDisponibleResponse>> GetUnavailableDates(DateTime fechaInicio, DateTime fechaFin, Dictionary<int, int>? carrito)
     {
-        var resultado = new List<FechaNoDisponibleDto>();
-        
-        if (carrito == null) 
+        var resultado = new List<FechaNoDisponibleResponse>();
+
+        if (carrito == null)
             return resultado;
-        
+
         var diasSolicitados = (fechaFin.Date - fechaInicio.Date).Days;
 
         foreach (var (idGrupoEquipo, cantidadSolicitada) in carrito)
@@ -26,7 +26,7 @@ public class CarritoRepository
 
                 if (disponibles < cantidadSolicitada)
                 {
-                    resultado.Add(new FechaNoDisponibleDto
+                    resultado.Add(new FechaNoDisponibleResponse
                     {
                         IdGrupoEquipo = idGrupoEquipo,
                         FechaNoDisponible = fecha,
@@ -38,14 +38,14 @@ public class CarritoRepository
         return resultado;
     }
 
-    public async Task<IEnumerable<DisponibilidadEquipoDto>> GetAvailability(DateTime fechaInicio, DateTime fechaFin,
+    public async Task<IEnumerable<DisponibilidadEquipoResponse>> GetAvailability(DateTime fechaInicio, DateTime fechaFin,
         int[]? arrayIds)
     {
-        var resultado = new List<DisponibilidadEquipoDto>();
-        
-        if (arrayIds == null) 
+        var resultado = new List<DisponibilidadEquipoResponse>();
+
+        if (arrayIds == null)
             return resultado;
-        
+
         var diasSolicitados = (fechaFin.Date - fechaInicio.Date).Days;
 
         foreach (var idGrupoEquipo in arrayIds)
@@ -54,7 +54,7 @@ public class CarritoRepository
             {
                 var disponibles = await GetAvailableEquipmentCount(idGrupoEquipo, fecha, diasSolicitados);
 
-                resultado.Add(new DisponibilidadEquipoDto
+                resultado.Add(new DisponibilidadEquipoResponse
                 {
                     Fecha = fecha,
                     IdGrupoEquipo = idGrupoEquipo,
@@ -62,7 +62,7 @@ public class CarritoRepository
                 });
             }
         }
-        
+
         return resultado;
     }
 

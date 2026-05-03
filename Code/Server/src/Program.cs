@@ -36,7 +36,6 @@ builder.Services.AddControllers().AddJsonOptions(options =>
 });
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
-builder.Services.AddScoped<ExecuteQuery>();
 builder.Services.AddScoped<MongoDbContexto>();
 builder.Services.AddAutoMapper(typeof(Program));
 builder.Services.AddScoped<UsuarioRepository>();

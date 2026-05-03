@@ -16,18 +16,18 @@ public class CarritoController : ControllerBase
     }
 
     [HttpPost("fechasnoDisponibles")]
-    public async Task<IActionResult> GetUnavailableDates([FromBody] GetUnavailableDatesRequest request)
+    public async Task<IActionResult> GetUnavailableDates([FromBody] ObtenerFechasNoDisponiblesRequest request)
     {
         var result = await _service.GetUnavailableDates(request.FechaInicio, request.FechaFin, request.Carrito);
 
-        return result.IsSuccess ? Ok(new Response<List<FechaNoDisponibleDto?>> { Success = true, Data = result.Value }) : BadRequest(new Response<object> { Success = false, Errors = result.Errors.ToList() });
+        return result.IsSuccess ? Ok(new Response<List<FechaNoDisponibleResponse?>> { Success = true, Data = result.Value }) : BadRequest(new Response<object> { Success = false, Errors = result.Errors.ToList() });
     }
 
     [HttpPost("disponibilidadEquipos")]
-    public async Task<IActionResult> GetAvailability([FromBody] GetAvailabilityRequest request)
+    public async Task<IActionResult> GetAvailability([FromBody] ObtenerDisponibilidadRequest request)
     {
         var result = await _service.GetAvailability(request.FechaInicio, request.FechaFin, request.ArrayIds);
 
-        return result.IsSuccess ? Ok(new Response<List<DisponibilidadEquipoDto?>> { Success = true, Data = result.Value }) : BadRequest(new Response<object> { Success = false, Errors = result.Errors.ToList() });
+        return result.IsSuccess ? Ok(new Response<List<DisponibilidadEquipoResponse?>> { Success = true, Data = result.Value }) : BadRequest(new Response<object> { Success = false, Errors = result.Errors.ToList() });
     }
 }
