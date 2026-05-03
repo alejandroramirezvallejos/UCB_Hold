@@ -107,6 +107,9 @@ public class ApplicationDbContext : DbContext
             entity.Property(e => e.Nombre).IsRequired().HasMaxLength(255).HasColumnName("nombre");
             entity.Property(e => e.Tipo).HasMaxLength(255).HasColumnName("tipo");
             entity.Property(e => e.IdMueble).HasColumnName("id_mueble");
+            entity.Property(e => e.Longitud).HasColumnName("longitud");
+            entity.Property(e => e.Profundidad).HasColumnName("profundidad");
+            entity.Property(e => e.Altura).HasColumnName("altura");
             entity.Property(e => e.EstadoEliminado).HasColumnName("estado_eliminado");
             entity.HasOne<Mueble>().WithMany().HasForeignKey(e => e.IdMueble).IsRequired();
             entity.HasIndex(e => new { e.Nombre, e.IdMueble, e.EstadoEliminado });
