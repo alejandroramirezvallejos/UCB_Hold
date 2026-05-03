@@ -5,7 +5,7 @@ using Microsoft.EntityFrameworkCore;
 using CategoriaEntity = IMT_Reservas.Server.Core.Entities.Categoria;
 namespace IMT_Reservas.Server.Infrastructure.Repositories.Implementations;
 
-public class CategoriaRepository : Repository<CategoriaEntity, CategoriaList>
+public class CategoriaRepository : Repository<CategoriaEntity, CategoriaDto>
 {
     public CategoriaRepository(ApplicationDbContext dbContext) : base(dbContext) { }
 
@@ -15,10 +15,11 @@ public class CategoriaRepository : Repository<CategoriaEntity, CategoriaList>
     public async Task<bool> ExistsActive(int id)
         => await DbContext.Categorias.AnyAsync(c => c.Id == id && !c.EstadoEliminado);
 
-    protected override CategoriaList MapToDto(CategoriaEntity entity) => new()
+    protected override CategoriaDto MapToDto(CategoriaEntity entity) => new()
     {
         Id = entity.Id,
         Nombre = entity.Nombre
     };
 }
+
 

@@ -5,7 +5,7 @@ using Microsoft.EntityFrameworkCore;
 using CarreraEntity = IMT_Reservas.Server.Core.Entities.Carrera;
 namespace IMT_Reservas.Server.Infrastructure.Repositories.Implementations;
 
-public class CarreraRepository : Repository<CarreraEntity, CarreraList>
+public class CarreraRepository : Repository<CarreraEntity, CarreraDto>
 {
     public CarreraRepository(ApplicationDbContext dbContext) : base(dbContext) { }
 
@@ -15,10 +15,11 @@ public class CarreraRepository : Repository<CarreraEntity, CarreraList>
     public async Task<bool> ExistsActive(int id)
         => await DbContext.Carreras.AnyAsync(c => c.Id == id && !c.EstadoEliminado);
 
-    protected override CarreraList MapToDto(CarreraEntity entity) => new()
+    protected override CarreraDto MapToDto(CarreraEntity entity) => new()
     {
         Id = entity.Id,
         Nombre = entity.Nombre
     };
 }
+
 

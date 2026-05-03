@@ -1,6 +1,6 @@
 using Microsoft.AspNetCore.Mvc;
 using IMT_Reservas.Server.Application.Features.Prestamo;
-using IMT_Reservas.Server.Application.Common;
+using IMT_Reservas.Server.Application.Abstraction;
 using IMT_Reservas.Server.Application.Features.Prestamo.Dtos;
 using PrestamoEntity = IMT_Reservas.Server.Core.Entities.Prestamo;
 using AutoMapper;
@@ -23,37 +23,27 @@ public class PrestamoController : ControllerBase
     public async Task<IActionResult> GetAll()
     {
         var result = await _service.GetAll();
-        
-        return result.IsSuccess ? Ok(new Response<List<PrestamoList>> { Success = true, Data = result.Value }) : BadRequest(new Response<object> { Success = false, Errors = result.Errors.ToList() });
+
+        return result.IsSuccess ? Ok(new Response<List<PrestamoDto>> { Status = 200, Value = result.Value }) : BadRequest(new Response<object> { Status = 400, Errors = result.Errors.ToList() });
     }
 
     [HttpGet("{id:int}")]
     public async Task<IActionResult> Get(int id)
     {
         var result = await _service.Get(id);
-        
-        return result.IsSuccess ? Ok(new Response<PrestamoDetail> { Success = true, Data = result.Value }) : NotFound(new Response<object> { Success = false, Errors = result.Errors.ToList() });
+
+        return result.IsSuccess ? Ok(new Response<PrestamoDto> { Status = 200, Value = result.Value }) : NotFound(new Response<object> { Status = 404, Errors = result.Errors.ToList() });
     }
 
     [HttpPost]
-    public async Task<IActionResult> Create([FromForm] PrestamoRequest request)
+    public async Task<IActionResult> Create([FromBody] PrestamoRequest request)
     {
         var entity = _mapper.Map<PrestamoEntity>(request);
+        var result = await _service.Create(entity);
 
-        Stream? contratoStream = null;
-        string? contratoFileName = null;
-
-        if (request.Contrato != null && request.Contrato.Length > 0)
-        {
-            contratoStream = request.Contrato.OpenReadStream();
-            contratoFileName = request.Contrato.FileName;
-        }
-
-        var result = await _service.Create(entity, request.EquipoIds, contratoStream, contratoFileName);
-
-        contratoStream?.Dispose();
-
-        return result.IsSuccess ? CreatedAtAction(nameof(Get), new { id = result.Value?.Id }, new Response<PrestamoDetail> { Success = true, Data = result.Value }) : BadRequest(new Response<object> { Success = false, Errors = result.Errors.ToList() });
+        return result.IsSuccess
+            ? CreatedAtAction(nameof(Get), new { id = result.Value?.Id }, new Response<PrestamoDto> { Status = 201, Value = result.Value })
+            : BadRequest(new Response<object> { Status = 400, Errors = result.Errors.ToList() });
     }
 
     [HttpPut("{id:int}")]
@@ -62,15 +52,15 @@ public class PrestamoController : ControllerBase
         var entity = _mapper.Map<PrestamoEntity>(dto);
         entity.Id = id;
         var result = await _service.Update(entity);
-        
-        return result.IsSuccess ? Ok(new Response<PrestamoDetail> { Success = true, Data = result.Value }) : BadRequest(new Response<object> { Success = false, Errors = result.Errors.ToList() });
+
+        return result.IsSuccess ? Ok(new Response<PrestamoDto> { Status = 200, Value = result.Value }) : BadRequest(new Response<object> { Status = 400, Errors = result.Errors.ToList() });
     }
 
     [HttpDelete("{id:int}")]
     public async Task<IActionResult> Delete(int id)
     {
         var result = await _service.Delete(id);
-       
-        return result.IsSuccess ? NoContent() : BadRequest(new Response<object> { Success = false, Errors = result.Errors.ToList() });
+
+        return result.IsSuccess ? NoContent() : BadRequest(new Response<object> { Status = 400, Errors = result.Errors.ToList() });
     }
 }

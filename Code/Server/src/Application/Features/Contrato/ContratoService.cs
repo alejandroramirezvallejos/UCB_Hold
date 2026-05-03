@@ -1,91 +1,35 @@
 using Ardalis.Result;
 using IMT_Reservas.Server.Application.Features.Contrato.Dtos;
+using ContratoEntity = IMT_Reservas.Server.Core.Entities.Contrato;
 using IMT_Reservas.Server.Infrastructure.Repositories.Implementations;
-using IMT_Reservas.Server.Application.Features.Archivo;
+using IMT_Reservas.Server.Core.Common;
 namespace IMT_Reservas.Server.Application.Features.Contrato;
 
 public class ContratoService
 {
-    private readonly ArchivoService _archivoService;
-    private readonly ContratoRepository _contratoRepository;
-    private readonly PrestamoRepository _prestamoRepository;
+    private readonly ContratoRepository _repository;
 
-    public ContratoService(ArchivoService archivoService, ContratoRepository contratoRepository, PrestamoRepository prestamoRepository)
+    public ContratoService(ContratoRepository repository)
     {
-        _archivoService = archivoService;
-        _contratoRepository = contratoRepository;
-        _prestamoRepository = prestamoRepository;
+        _repository = repository;
     }
 
-    public async Task<Result<ContratoDetail>> Create(int prestamoId, Stream fileStream, string filename)
+    public async Task<Result<ContratoDto>> Create(ContratoEntity entity)
     {
-        var prestamoExiste = await _prestamoRepository.ExisteActivoPorId(prestamoId);
-        
-        if (!prestamoExiste)
-            return Result<ContratoDetail>.Error("Préstamo no encontrado");
-
-        var uploadResultado = await _archivoService.Upload(fileStream, filename);
-        
-        if (!uploadResultado.IsSuccess)
-            return Result<ContratoDetail>.Error(uploadResultado.Errors.FirstOrDefault() ?? "Error al subir archivo");
-
-        var contrato = new Core.Entities.Contrato
-        {
-            PrestamoId = prestamoId,
-            FileId = uploadResultado.Value,
-            FechaCreacion = DateTime.UtcNow,
-            EstadoEliminado = false
-        };
-
-        var crearResultado = await _contratoRepository.Create(contrato);
-        
-        if (!crearResultado.IsSuccess)
-        {
-            await _archivoService.Delete(uploadResultado.Value);
-            return Result<ContratoDetail>.Error(crearResultado.Errors.FirstOrDefault() ?? "Error al crear contrato");
-        }
-
-        var respuesta = new ContratoDetail
-        {
-            Id = crearResultado.Value.Id.ToString(),
-            PrestamoId = crearResultado.Value.PrestamoId,
-            FileId = crearResultado.Value.FileId,
-            FechaCreacion = crearResultado.Value.FechaCreacion
-        };
-
-        return Result<ContratoDetail>.Success(respuesta);
-    }
-
-    public async Task<Result<ContratoDetail>> Get(int prestamoId)
-    {
-        var obtenerResultado = await _contratoRepository.GetByPrestamoId(prestamoId);
-        
-        if (!obtenerResultado.IsSuccess)
-            return Result<ContratoDetail>.Error(obtenerResultado.Errors.FirstOrDefault() ?? "Contrato no encontrado");
-
-        var respuesta = new ContratoDetail
-        {
-            Id = obtenerResultado.Value.Id.ToString(),
-            PrestamoId = obtenerResultado.Value.PrestamoId,
-            FileId = obtenerResultado.Value.FileId,
-            FechaCreacion = obtenerResultado.Value.FechaCreacion
-        };
-
-        return Result<ContratoDetail>.Success(respuesta);
+        var result = await _repository.Create(entity);
+        return result.IsSuccess
+            ? Result<ContratoDto>.Success(new ContratoDto { Id = result.Value.Id })
+            : Result<ContratoDto>.Error(result.Errors.FirstOrDefault() ?? "Error al crear");
     }
 
     public async Task<Result<object>> Delete(int prestamoId)
+        => await _repository.Delete(prestamoId);
+
+    public async Task<Result<ContratoDto>> GetByPrestamoId(int prestamoId)
     {
-        var obtenerResultado = await _contratoRepository.GetByPrestamoId(prestamoId);
-        
-        if (obtenerResultado.IsSuccess && obtenerResultado.Value.FileId != null)
-            await _archivoService.Delete(obtenerResultado.Value.FileId);
-
-        var eliminarResultado = await _contratoRepository.Delete(prestamoId);
-        
-        if (!eliminarResultado.IsSuccess)
-            return Result<object>.Error(eliminarResultado.Errors.FirstOrDefault() ?? "Error al eliminar contrato");
-
-        return Result<object>.Success(new { });
+        var result = await _repository.GetByPrestamoId(prestamoId);
+        return result.IsSuccess
+            ? Result<ContratoDto>.Success(new ContratoDto { Id = result.Value.Id })
+            : Result<ContratoDto>.Error(result.Errors.FirstOrDefault() ?? "No encontrado");
     }
 }

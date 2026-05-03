@@ -6,7 +6,7 @@ using Microsoft.EntityFrameworkCore;
 using UsuarioEntity = IMT_Reservas.Server.Core.Entities.Usuario;
 namespace IMT_Reservas.Server.Infrastructure.Repositories.Implementations;
 
-public class UsuarioRepository : Repository<UsuarioEntity, UsuarioList>
+public class UsuarioRepository : Repository<UsuarioEntity, UsuarioDto>
 {
     public UsuarioRepository(ApplicationDbContext dbContext) : base(dbContext) { }
 
@@ -43,20 +43,17 @@ public class UsuarioRepository : Repository<UsuarioEntity, UsuarioList>
         return Result<object>.Success(null!);
     }
 
-    protected override UsuarioList MapToDto(UsuarioEntity entity) => new()
+    protected override UsuarioDto MapToDto(UsuarioEntity entity) => new()
     {
-        Id = 0,
         Carnet = entity.Carnet,
         Nombre = entity.Nombre,
         ApellidoPaterno = entity.ApellidoPaterno,
         ApellidoMaterno = entity.ApellidoMaterno,
-        Email = entity.Email,
-        IdCarrera = entity.IdCarrera,
         Rol = entity.Rol,
         Telefono = entity.Telefono,
         TelefonoReferencia = entity.TelefonoReferencia,
-        NombreReferencia = entity.NombreReferencia,
-        EmailReferencia = entity.EmailReferencia
+        NombreReferencia = entity.NombreReferencia
     };
 }
+
 

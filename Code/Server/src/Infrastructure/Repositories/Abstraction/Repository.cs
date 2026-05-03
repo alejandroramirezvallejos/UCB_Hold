@@ -1,5 +1,5 @@
 using Ardalis.Result;
-using IMT_Reservas.Server.Core.Abstractions;
+using IMT_Reservas.Server.Core.Common;
 using IMT_Reservas.Server.Infrastructure.PostgreSQL;
 using Microsoft.EntityFrameworkCore;
 namespace IMT_Reservas.Server.Infrastructure.Repositories.Abstraction;

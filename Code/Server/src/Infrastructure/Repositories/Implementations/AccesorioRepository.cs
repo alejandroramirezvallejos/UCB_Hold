@@ -5,7 +5,7 @@ using Microsoft.EntityFrameworkCore;
 using AccesorioEntity = IMT_Reservas.Server.Core.Entities.Accesorio;
 namespace IMT_Reservas.Server.Infrastructure.Repositories.Implementations;
 
-public class AccesorioRepository : Repository<AccesorioEntity, AccesorioList>
+public class AccesorioRepository : Repository<AccesorioEntity, AccesorioDto>
 {
     public AccesorioRepository(ApplicationDbContext dbContext) : base(dbContext) { }
 
@@ -18,7 +18,7 @@ public class AccesorioRepository : Repository<AccesorioEntity, AccesorioList>
             .Select(e => e.Id)
             .FirstOrDefaultAsync();
 
-    protected override AccesorioList MapToDto(AccesorioEntity entity) => new()
+    protected override AccesorioDto MapToDto(AccesorioEntity entity) => new()
     {
         Id = entity.Id,
         Nombre = entity.Nombre,
@@ -26,8 +26,8 @@ public class AccesorioRepository : Repository<AccesorioEntity, AccesorioList>
         Tipo = entity.Tipo,
         Descripcion = entity.Descripcion,
         CodigoImt = null,
-        Precio = (decimal?)entity.Precio,
         UrlDataSheet = entity.UrlDataSheet,
         NombreEquipoAsociado = null
     };
 }
+

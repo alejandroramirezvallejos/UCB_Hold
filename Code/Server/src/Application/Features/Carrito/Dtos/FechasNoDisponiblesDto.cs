@@ -1,6 +1,6 @@
 namespace IMT_Reservas.Server.Application.Features.Carrito.Dtos;
 
-public class FechasNoDisponiblesDetail
+public class FechasNoDisponiblesDto
 {
     public int IdGrupoEquipo { get; set; }
     public DateTime FechaNoDisponible { get; set; }

@@ -2,7 +2,7 @@ using Ardalis.Result;
 using IMT_Reservas.Server.Application.Features.Carrera.Dtos;
 using CarreraEntity = IMT_Reservas.Server.Core.Entities.Carrera;
 using IMT_Reservas.Server.Infrastructure.Repositories.Implementations;
-using IMT_Reservas.Server.Core.Abstractions;
+using IMT_Reservas.Server.Core.Common;
 namespace IMT_Reservas.Server.Application.Features.Carrera;
 
 public class CarreraService
@@ -14,55 +14,18 @@ public class CarreraService
         _repository = repository;
     }
 
-    public async Task<Result<CarreraDetail>> Create(CarreraEntity entity)
-    {
-        var result = await _repository.Create(entity);
-        
-        return !result.IsSuccess
-            ? Result<CarreraDetail>.Error("Error al crear carrera")
-            : Result<CarreraDetail>.Created(MapListToDetail(result.Value));
-    }
+    public async Task<Result<CarreraDto>> Create(CarreraEntity entity)
+        => await _repository.Create(entity);
 
-    public async Task<Result<CarreraDetail>> Update(CarreraEntity entity)
-    {
-        var result = await _repository.Update(entity);
-        
-        return !result.IsSuccess
-            ? Result<CarreraDetail>.Error("Error al actualizar carrera")
-            : Result<CarreraDetail>.Success(MapListToDetail(result.Value));
-    }
+    public async Task<Result<CarreraDto>> Update(CarreraEntity entity)
+        => await _repository.Update(entity);
 
     public async Task<Result<object>> Delete(int id)
-    {
-        var result = await _repository.Delete(id);
-        
-        return result.IsSuccess
-            ? Result<object>.Success(null!)
-            : Result<object>.Error("Error al eliminar carrera");
-    }
+        => await _repository.Delete(id);
 
-    public async Task<Result<CarreraDetail>> Get(int id)
-    {
-        var carrera = await _repository.Get(id);
-        
-        return !carrera.IsSuccess
-            ? Result<CarreraDetail>.NotFound()
-            : Result<CarreraDetail>.Success(MapListToDetail(carrera.Value));
-    }
+    public async Task<Result<CarreraDto>> Get(int id)
+        => await _repository.Get(id);
 
-    public async Task<Result<List<CarreraList>>> GetAll(QueryFilter? filter = null)
-    {
-        var result = await _repository.GetAll(filter);
-        
-        return result.IsSuccess
-            ? Result<List<CarreraList>>.Success(result.Value)
-            : Result<List<CarreraList>>.Error("Error al obtener carreras");
-    }
-
-    private static CarreraDetail MapListToDetail(CarreraList dto) => new()
-    {
-        Id = dto.Id,
-        Nombre = dto.Nombre,
-        EstadoEliminado = false
-    };
+    public async Task<Result<List<CarreraDto>>> GetAll(QueryFilter? filter = null)
+        => await _repository.GetAll(filter);
 }

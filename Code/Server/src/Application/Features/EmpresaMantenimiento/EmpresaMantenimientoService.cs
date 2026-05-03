@@ -2,7 +2,7 @@ using Ardalis.Result;
 using IMT_Reservas.Server.Application.Features.EmpresaMantenimiento.Dtos;
 using EmpresaMantenimientoEntity = IMT_Reservas.Server.Core.Entities.EmpresaMantenimiento;
 using IMT_Reservas.Server.Infrastructure.Repositories.Implementations;
-using IMT_Reservas.Server.Core.Abstractions;
+using IMT_Reservas.Server.Core.Common;
 namespace IMT_Reservas.Server.Application.Features.EmpresaMantenimiento;
 
 public class EmpresaMantenimientoService
@@ -14,61 +14,18 @@ public class EmpresaMantenimientoService
         _repository = repository;
     }
 
-    public async Task<Result<EmpresaMantenimientoDetail>> Create(EmpresaMantenimientoEntity entity)
-    {
-        var result = await _repository.Create(entity);
-        
-        return !result.IsSuccess
-            ? Result<EmpresaMantenimientoDetail>.Error("Error al crear empresa de mantenimiento")
-            : Result<EmpresaMantenimientoDetail>.Created(MapListToDetail(result.Value));
-    }
+    public async Task<Result<EmpresaMantenimientoDto>> Create(EmpresaMantenimientoEntity entity)
+        => await _repository.Create(entity);
 
-    public async Task<Result<EmpresaMantenimientoDetail>> Update(EmpresaMantenimientoEntity entity)
-    {
-        var result = await _repository.Update(entity);
-        
-        return !result.IsSuccess
-            ? Result<EmpresaMantenimientoDetail>.Error("Error al actualizar empresa de mantenimiento")
-            : Result<EmpresaMantenimientoDetail>.Success(MapListToDetail(result.Value));
-    }
+    public async Task<Result<EmpresaMantenimientoDto>> Update(EmpresaMantenimientoEntity entity)
+        => await _repository.Update(entity);
 
     public async Task<Result<object>> Delete(int id)
-    {
-        var result = await _repository.Delete(id);
-        
-        return result.IsSuccess
-            ? Result<object>.Success(null!)
-            : Result<object>.Error("Error al eliminar empresa de mantenimiento");
-    }
+        => await _repository.Delete(id);
 
-    public async Task<Result<EmpresaMantenimientoDetail>> Get(int id)
-    {
-        var empresa = await _repository.Get(id);
-       
-        return !empresa.IsSuccess
-            ? Result<EmpresaMantenimientoDetail>.NotFound()
-            : Result<EmpresaMantenimientoDetail>.Success(MapListToDetail(empresa.Value));
-    }
+    public async Task<Result<EmpresaMantenimientoDto>> Get(int id)
+        => await _repository.Get(id);
 
-    public async Task<Result<List<EmpresaMantenimientoList>>> GetAll(QueryFilter? filter = null)
-    {
-        var result = await _repository.GetAll(filter);
-        
-        return result.IsSuccess
-            ? Result<List<EmpresaMantenimientoList>>.Success(result.Value)
-            : Result<List<EmpresaMantenimientoList>>.Error("Error al obtener empresas de mantenimiento");
-    }
-
-    private static EmpresaMantenimientoDetail MapListToDetail(EmpresaMantenimientoList dto) => new()
-    {
-        Id = dto.Id,
-        Nombre = dto.NombreEmpresa,
-        NombreResponsable = dto.NombreResponsable,
-        ApellidoResponsable = dto.ApellidoResponsable,
-        Telefono = dto.Telefono,
-        Email = dto.Email,
-        Nit = dto.Nit,
-        Direccion = dto.Direccion,
-        EstadoEliminado = false
-    };
+    public async Task<Result<List<EmpresaMantenimientoDto>>> GetAll(QueryFilter? filter = null)
+        => await _repository.GetAll(filter);
 }

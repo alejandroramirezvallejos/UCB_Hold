@@ -5,7 +5,7 @@ using Microsoft.EntityFrameworkCore;
 using ComponenteEntity = IMT_Reservas.Server.Core.Entities.Componente;
 namespace IMT_Reservas.Server.Infrastructure.Repositories.Implementations;
 
-public class ComponenteRepository : Repository<ComponenteEntity, ComponenteList>
+public class ComponenteRepository : Repository<ComponenteEntity, ComponenteDto>
 {
     public ComponenteRepository(ApplicationDbContext dbContext) : base(dbContext) { }
 
@@ -18,14 +18,13 @@ public class ComponenteRepository : Repository<ComponenteEntity, ComponenteList>
             .Select(e => e.Id)
             .FirstOrDefaultAsync();
 
-    protected override ComponenteList MapToDto(ComponenteEntity entity) => new()
+    protected override ComponenteDto MapToDto(ComponenteEntity entity) => new()
     {
         Id = entity.Id,
         Nombre = entity.Nombre,
         Modelo = entity.Modelo,
         Descripcion = entity.Descripcion,
-        Precio = (decimal?)(entity.PrecioReferencia ?? 0),
-        IdEquipo = entity.IdEquipo
+        PrecioReferencia = entity.PrecioReferencia.HasValue ? (decimal?)entity.PrecioReferencia.Value : null
     };
 }
 

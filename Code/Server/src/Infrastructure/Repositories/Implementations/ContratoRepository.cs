@@ -50,3 +50,4 @@ public class ContratoRepository
         return Result<object>.Success(new { });
     }
 }
+

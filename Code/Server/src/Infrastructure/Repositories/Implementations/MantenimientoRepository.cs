@@ -5,7 +5,7 @@ using Microsoft.EntityFrameworkCore;
 using MantenimientoEntity = IMT_Reservas.Server.Core.Entities.Mantenimiento;
 namespace IMT_Reservas.Server.Infrastructure.Repositories.Implementations;
 
-public class MantenimientoRepository : Repository<MantenimientoEntity, MantenimientoList>
+public class MantenimientoRepository : Repository<MantenimientoEntity, MantenimientoDto>
 {
     public MantenimientoRepository(ApplicationDbContext dbContext) : base(dbContext) { }
 
@@ -14,7 +14,6 @@ public class MantenimientoRepository : Repository<MantenimientoEntity, Mantenimi
 
     public async Task<IEnumerable<MantenimientoEntity>> GetByEmpresa(int idEmpresa)
         => await DbContext.Mantenimientos
-            .Where(m => m.IdEmpresa == idEmpresa && !m.EstadoEliminado)
             .ToListAsync();
 
     public async Task<IEnumerable<MantenimientoEntity>> GetByDateRange(DateTime fechaInicio, DateTime fechaFin)
@@ -22,18 +21,15 @@ public class MantenimientoRepository : Repository<MantenimientoEntity, Mantenimi
             .Where(m => m.FechaMantenimiento >= fechaInicio && m.FechaMantenimiento <= fechaFin && !m.EstadoEliminado)
             .ToListAsync();
 
-    protected override MantenimientoList MapToDto(MantenimientoEntity entity) => new()
+    protected override MantenimientoDto MapToDto(MantenimientoEntity entity) => new()
     {
         Id = entity.Id,
         FechaMantenimiento = entity.FechaMantenimiento,
-        FechaFinalDeMantenimiento = entity.FechaFinalMantenimiento,
-        IdEmpresa = entity.IdEmpresa,
         Costo = (decimal?)entity.Costo,
         Descripcion = entity.Descripcion,
-        NombreEmpresaMantenimiento = null,
         TipoMantenimiento = null,
-        NombreGrupoEquipo = null,
         CodigoImtEquipo = null,
         DescripcionEquipo = null
     };
 }
+

@@ -1,6 +1,6 @@
 using Microsoft.AspNetCore.Mvc;
 using IMT_Reservas.Server.Application.Features.Usuario;
-using IMT_Reservas.Server.Application.Common;
+using IMT_Reservas.Server.Application.Abstraction;
 using IMT_Reservas.Server.Application.Features.Usuario.Dtos;
 using UsuarioEntity = IMT_Reservas.Server.Core.Entities.Usuario;
 using AutoMapper;
@@ -23,20 +23,20 @@ public class UsuarioController : ControllerBase
     public async Task<IActionResult> GetAll()
     {
         var result = await _service.GetAllUsers();
-        
+
         return result.IsSuccess
-            ? Ok(new Response<List<UsuarioList>> { Success = true, Data = result.Value })
-            : BadRequest(new Response<object> { Success = false, Errors = result.Errors.ToList() });
+            ? Ok(new Response<List<UsuarioDto>> { Status = 200, Value = result.Value })
+            : BadRequest(new Response<object> { Status = 400, Errors = result.Errors.ToList() });
     }
 
     [HttpGet("{carnet}")]
     public async Task<IActionResult> Get(string carnet)
     {
         var result = await _service.Get(carnet);
-        
+
         return result.IsSuccess
-            ? Ok(new Response<UsuarioDetail> { Success = true, Data = result.Value })
-            : NotFound(new Response<object> { Success = false, Errors = result.Errors.ToList() });
+            ? Ok(new Response<UsuarioDto> { Status = 200, Value = result.Value })
+            : NotFound(new Response<object> { Status = 404, Errors = result.Errors.ToList() });
     }
 
     [HttpPost]
@@ -44,10 +44,10 @@ public class UsuarioController : ControllerBase
     {
         var entity = _mapper.Map<UsuarioEntity>(dto);
         var result = await _service.Create(entity);
-        
+
         return result.IsSuccess
-            ? CreatedAtAction(nameof(Get), new { carnet = result.Value?.Carnet }, new Response<UsuarioDetail> { Success = true, Data = result.Value })
-            : BadRequest(new Response<object> { Success = false, Errors = result.Errors.ToList() });
+            ? CreatedAtAction(nameof(Get), new { carnet = result.Value?.Carnet }, new Response<UsuarioDto> { Status = 201, Value = result.Value })
+            : BadRequest(new Response<object> { Status = 400, Errors = result.Errors.ToList() });
     }
 
     [HttpPut("{carnet}")]
@@ -56,32 +56,32 @@ public class UsuarioController : ControllerBase
         var entity = _mapper.Map<UsuarioEntity>(dto);
         entity.Carnet = carnet;
         var result = await _service.Update(entity);
-        
+
         return result.IsSuccess
-            ? Ok(new Response<UsuarioDetail> { Success = true, Data = result.Value })
-            : BadRequest(new Response<object> { Success = false, Errors = result.Errors.ToList() });
+            ? Ok(new Response<UsuarioDto> { Status = 200, Value = result.Value })
+            : BadRequest(new Response<object> { Status = 400, Errors = result.Errors.ToList() });
     }
 
     [HttpDelete("{carnet}")]
     public async Task<IActionResult> Delete(string carnet)
     {
         var result = await _service.Delete(carnet);
-        
+
         return result.IsSuccess
             ? NoContent()
-            : BadRequest(new Response<object> { Success = false, Errors = result.Errors.ToList() });
+            : BadRequest(new Response<object> { Status = 400, Errors = result.Errors.ToList() });
     }
 
     [HttpPost("login")]
     public async Task<IActionResult> InitiateSession([FromBody] LoginRequest request)
     {
         if (string.IsNullOrWhiteSpace(request.Email) || string.IsNullOrWhiteSpace(request.Password))
-            return BadRequest(new Response<object> { Success = false, Errors = new List<string> { "Email and password are required" } });
+            return BadRequest(new Response<object> { Status = 400, Errors = new List<string> { "Email and password are required" } });
 
         var result = await _service.InitiateSession(request.Email, request.Password);
-        
+
         return result.IsSuccess
-            ? Ok(new Response<UsuarioDetail> { Success = true, Data = result.Value })
-            : Unauthorized(new Response<object> { Success = false, Errors = result.Errors.ToList() });
+            ? Ok(new Response<UsuarioDto> { Status = 200, Value = result.Value })
+            : Unauthorized(new Response<object> { Status = 401, Errors = result.Errors.ToList() });
     }
 }

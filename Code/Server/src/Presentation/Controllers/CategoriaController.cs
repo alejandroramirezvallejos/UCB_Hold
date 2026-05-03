@@ -1,6 +1,6 @@
 using Microsoft.AspNetCore.Mvc;
 using IMT_Reservas.Server.Application.Features.Categoria;
-using IMT_Reservas.Server.Application.Common;
+using IMT_Reservas.Server.Application.Abstraction;
 using IMT_Reservas.Server.Application.Features.Categoria.Dtos;
 using CategoriaEntity = IMT_Reservas.Server.Core.Entities.Categoria;
 using AutoMapper;
@@ -23,14 +23,14 @@ public class CategoriaController : ControllerBase
     public async Task<IActionResult> GetAll()
     {
         var result = await _service.GetAll();
-        return result.IsSuccess ? Ok(new Response<List<CategoriaList>> { Success = true, Data = result.Value }) : BadRequest(new Response<object> { Success = false, Errors = result.Errors.ToList() });
+        return result.IsSuccess ? Ok(new Response<List<CategoriaDto>> { Status = 200, Value = result.Value }) : BadRequest(new Response<object> { Status = 400, Errors = result.Errors.ToList() });
     }
 
     [HttpGet("{id:int}")]
     public async Task<IActionResult> Get(int id)
     {
         var result = await _service.Get(id);
-        return result.IsSuccess ? Ok(new Response<CategoriaDetail> { Success = true, Data = result.Value }) : NotFound(new Response<object> { Success = false, Errors = result.Errors.ToList() });
+        return result.IsSuccess ? Ok(new Response<CategoriaDto> { Status = 200, Value = result.Value }) : NotFound(new Response<object> { Status = 404, Errors = result.Errors.ToList() });
     }
 
     [HttpPost]
@@ -38,8 +38,8 @@ public class CategoriaController : ControllerBase
     {
         var entity = _mapper.Map<CategoriaEntity>(dto);
         var result = await _service.Create(entity);
-        
-        return result.IsSuccess ? CreatedAtAction(nameof(Get), new { id = result.Value?.Id }, new Response<CategoriaDetail> { Success = true, Data = result.Value }) : BadRequest(new Response<object> { Success = false, Errors = result.Errors.ToList() });
+
+        return result.IsSuccess ? CreatedAtAction(nameof(Get), new { id = result.Value?.Id }, new Response<CategoriaDto> { Status = 201, Value = result.Value }) : BadRequest(new Response<object> { Status = 400, Errors = result.Errors.ToList() });
     }
 
     [HttpPut("{id:int}")]
@@ -48,15 +48,15 @@ public class CategoriaController : ControllerBase
         var entity = _mapper.Map<CategoriaEntity>(dto);
         entity.Id = id;
         var result = await _service.Update(entity);
-        
-        return result.IsSuccess ? Ok(new Response<CategoriaDetail> { Success = true, Data = result.Value }) : BadRequest(new Response<object> { Success = false, Errors = result.Errors.ToList() });
+
+        return result.IsSuccess ? Ok(new Response<CategoriaDto> { Status = 200, Value = result.Value }) : BadRequest(new Response<object> { Status = 400, Errors = result.Errors.ToList() });
     }
 
     [HttpDelete("{id:int}")]
     public async Task<IActionResult> Delete(int id)
     {
         var result = await _service.Delete(id);
-       
-        return result.IsSuccess ? NoContent() : BadRequest(new Response<object> { Success = false, Errors = result.Errors.ToList() });
+
+        return result.IsSuccess ? NoContent() : BadRequest(new Response<object> { Status = 400, Errors = result.Errors.ToList() });
     }
 }

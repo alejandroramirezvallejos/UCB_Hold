@@ -1,6 +1,6 @@
 using Microsoft.AspNetCore.Mvc;
 using IMT_Reservas.Server.Application.Features.Carrito;
-using IMT_Reservas.Server.Application.Common;
+using IMT_Reservas.Server.Application.Abstraction;
 using IMT_Reservas.Server.Application.Features.Carrito.Dtos;
 namespace IMT_Reservas.Server.Presentation.Controllers;
 
@@ -20,7 +20,7 @@ public class CarritoController : ControllerBase
     {
         var result = await _service.GetUnavailableDates(request.FechaInicio, request.FechaFin, request.Carrito);
 
-        return result.IsSuccess ? Ok(new Response<List<FechasNoDisponiblesDetail?>> { Success = true, Data = result.Value }) : BadRequest(new Response<object> { Success = false, Errors = result.Errors.ToList() });
+        return result.IsSuccess ? Ok(new Response<List<FechasNoDisponiblesDto>> { Status = 200, Value = result.Value }) : BadRequest(new Response<object> { Status = 400, Errors = result.Errors.ToList() });
     }
 
     [HttpPost("disponibilidadEquipos")]
@@ -28,6 +28,6 @@ public class CarritoController : ControllerBase
     {
         var result = await _service.GetAvailability(request.FechaInicio, request.FechaFin, request.ArrayIds);
 
-        return result.IsSuccess ? Ok(new Response<List<DisponibilidadDetail?>> { Success = true, Data = result.Value }) : BadRequest(new Response<object> { Success = false, Errors = result.Errors.ToList() });
+        return result.IsSuccess ? Ok(new Response<List<DisponibilidadDto>> { Status = 200, Value = result.Value }) : BadRequest(new Response<object> { Status = 400, Errors = result.Errors.ToList() });
     }
 }

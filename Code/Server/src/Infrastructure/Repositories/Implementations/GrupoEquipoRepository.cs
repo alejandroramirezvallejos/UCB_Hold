@@ -5,7 +5,7 @@ using Microsoft.EntityFrameworkCore;
 using GrupoEquipoEntity = IMT_Reservas.Server.Core.Entities.GrupoEquipo;
 namespace IMT_Reservas.Server.Infrastructure.Repositories.Implementations;
 
-public class GrupoEquipoRepository : Repository<GrupoEquipoEntity, GrupoEquipoList>
+public class GrupoEquipoRepository : Repository<GrupoEquipoEntity, GrupoEquipoDto>
 {
     public GrupoEquipoRepository(ApplicationDbContext dbContext) : base(dbContext) { }
 
@@ -16,18 +16,14 @@ public class GrupoEquipoRepository : Repository<GrupoEquipoEntity, GrupoEquipoLi
         => await DbContext.GruposEquipos
             .FirstOrDefaultAsync(g => g.Nombre == nombre && g.Modelo == modelo && g.Marca == marca && !g.EstadoEliminado);
 
-    protected override GrupoEquipoList MapToDto(GrupoEquipoEntity entity) => new()
+    protected override GrupoEquipoDto MapToDto(GrupoEquipoEntity entity) => new()
     {
         Id = entity.Id,
-        IdCategoria = entity.IdCategoria,
         Nombre = entity.Nombre,
         Modelo = entity.Modelo,
         Marca = entity.Marca,
-        Cantidad = entity.Cantidad,
         Descripcion = entity.Descripcion,
         UrlDataSheet = entity.UrlDataSheet,
-        Link = null,
-        NombreCategoria = null,
-        CostoPromedio = entity.CostoPromedio
     };
 }
+

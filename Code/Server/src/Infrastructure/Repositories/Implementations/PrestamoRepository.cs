@@ -5,7 +5,7 @@ using Microsoft.EntityFrameworkCore;
 using PrestamoEntity = IMT_Reservas.Server.Core.Entities.Prestamo;
 namespace IMT_Reservas.Server.Infrastructure.Repositories.Implementations;
 
-public class PrestamoRepository : Repository<PrestamoEntity, PrestamoList>
+public class PrestamoRepository : Repository<PrestamoEntity, PrestamoDto>
 {
     public PrestamoRepository(ApplicationDbContext dbContext) : base(dbContext) { }
 
@@ -22,28 +22,27 @@ public class PrestamoRepository : Repository<PrestamoEntity, PrestamoList>
             .Where(p => p.EstadoPrestamo == estadoPrestamo && !p.EstadoEliminado)
             .ToListAsync();
 
-    protected override PrestamoList MapToDto(PrestamoEntity entity) => new()
+    protected override PrestamoDto MapToDto(PrestamoEntity entity) => new()
     {
         Id = entity.Id,
         CarnetUsuario = entity.Carnet ?? "",
         EstadoPrestamo = entity.EstadoPrestamo,
         FechaSolicitud = entity.FechaSolicitud,
-        IdGrupoEquipo = null,
         FechaDevolucionEsperada = entity.FechaDevolucionEsperada,
         NombreUsuario = null,
         ApellidoPaternoUsuario = null,
         TelefonoUsuario = null,
-        NombreGrupoEquipo = null,
-        CodigoImtEquipo = null,
+        CodigoImt = null,
         FechaPrestamoEsperada = entity.FechaPrestamoEsperada,
         FechaPrestamo = entity.FechaPrestamo,
         FechaDevolucion = entity.FechaDevolucion,
         Observacion = entity.Observacion,
-        UbicacionEquipo = null,
-        NombreGavetero = null,
-        NombreMueble = null,
-        UbicacionMueble = null,
+        Ubicacion_Equipo = null,
+        Nombre_Mueble = null,
+        Ubicacion_Mueble = null,
         IdContrato = int.TryParse(entity.IdContrato, out var id) ? id : null,
-        FileId = null
+        NombreGrupoEquipo = null,
+        Nombre_Gavetero = null
     };
 }
+
