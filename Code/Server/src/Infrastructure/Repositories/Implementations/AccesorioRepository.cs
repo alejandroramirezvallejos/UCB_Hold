@@ -25,8 +25,10 @@ public class AccesorioRepository : Repository<AccesorioEntity, AccesorioDto>
         Modelo = entity.Modelo,
         Tipo = entity.Tipo,
         Descripcion = entity.Descripcion,
-        CodigoImt = null,
+        Precio = entity.Precio,
         UrlDataSheet = entity.UrlDataSheet,
+        IdEquipo = entity.IdEquipo,
+        CodigoImtEquipoAsociado = null,
         NombreEquipoAsociado = null
     };
 }

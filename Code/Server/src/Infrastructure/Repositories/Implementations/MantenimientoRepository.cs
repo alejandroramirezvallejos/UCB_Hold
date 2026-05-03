@@ -24,12 +24,11 @@ public class MantenimientoRepository : Repository<MantenimientoEntity, Mantenimi
     protected override MantenimientoDto MapToDto(MantenimientoEntity entity) => new()
     {
         Id = entity.Id,
+        IdEmpresa = entity.IdEmpresa,
         FechaMantenimiento = entity.FechaMantenimiento,
-        Costo = (decimal?)entity.Costo,
-        Descripcion = entity.Descripcion,
-        TipoMantenimiento = null,
-        CodigoImtEquipo = null,
-        DescripcionEquipo = null
+        FechaFinalMantenimiento = entity.FechaFinalMantenimiento,
+        Costo = entity.Costo,
+        Descripcion = entity.Descripcion
     };
 }
 

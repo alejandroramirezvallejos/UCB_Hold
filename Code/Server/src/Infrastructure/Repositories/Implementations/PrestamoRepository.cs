@@ -32,15 +32,11 @@ public class PrestamoRepository : Repository<PrestamoEntity, PrestamoDto>
         NombreUsuario = null,
         ApellidoPaternoUsuario = null,
         TelefonoUsuario = null,
-        CodigoImt = null,
         FechaPrestamoEsperada = entity.FechaPrestamoEsperada,
         FechaPrestamo = entity.FechaPrestamo,
         FechaDevolucion = entity.FechaDevolucion,
         Observacion = entity.Observacion,
-        UbicacionEquipo = null,
-        NombreMueble = null,
-        UbicacionMueble = null,
-        IdContrato = int.TryParse(entity.IdContrato, out var id) ? id : null,
+        IdContrato = entity.IdContrato,
         NombreGrupoEquipo = null,
         NombreGavetero = null
     };

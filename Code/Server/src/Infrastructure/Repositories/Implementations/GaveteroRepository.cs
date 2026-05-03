@@ -36,9 +36,9 @@ public class GaveteroRepository : Repository<GaveteroEntity, GaveteroDto>
         Nombre = entity.Nombre,
         Tipo = entity.Tipo,
         NombreMueble = null,
-        Longitud = (decimal?)entity.Longitud,
-        Profundidad = (decimal?)entity.Profundidad,
-        Altura = (decimal?)entity.Altura
+        Longitud = entity.Longitud,
+        Profundidad = entity.Profundidad,
+        Altura = entity.Altura
     };
 }
 

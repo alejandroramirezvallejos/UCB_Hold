@@ -33,6 +33,16 @@ builder.Services.AddControllers().AddJsonOptions(options =>
 {
     options.JsonSerializerOptions.PropertyNamingPolicy = null;
 });
+builder.Services.AddCors(options =>
+{
+    options.AddPolicy("AllowFrontend", builder =>
+    {
+        builder.WithOrigins("http://localhost:4200", "https://localhost:4200")
+               .AllowAnyMethod()
+               .AllowAnyHeader()
+               .AllowCredentials();
+    });
+});
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 builder.Services.AddScoped<MongoDbContexto>();
@@ -71,6 +81,7 @@ builder.Services.AddSingleton<IMongoClient>(new MongoClient("mongodb://localhost
 var app = builder.Build();
 
 app.UseGlobalExceptionMiddleware();
+app.UseCors("AllowFrontend");
 
 if (app.Environment.IsDevelopment())
 {

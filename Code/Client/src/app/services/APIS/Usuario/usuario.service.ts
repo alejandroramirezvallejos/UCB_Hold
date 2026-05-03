@@ -21,7 +21,8 @@ export class UsuarioServiceAPI {
     Rol: rol,
     Email: usuario.correo,
     Contrasena: contrasena,
-    NombreCarrera: usuario.carrera,
+    CarreraNombre: usuario.carrera,
+    IdCarrera: 0,
     Telefono: usuario.telefono,
     TelefonoReferencia: usuario.telefono_referencia,
     NombreReferencia: usuario.nombre_referencia,
@@ -30,22 +31,22 @@ export class UsuarioServiceAPI {
     return this.http.post(this.apiUrl, envio)
   }
   iniciarsesion(correo: string, contraseña: string) {
-    const api = `${this.apiUrl}/iniciarSesion`;
+    const api = `${this.apiUrl}/login`;
     const body = { email: correo, contrasena: contraseña };
     return this.http.post<any>(api, body).pipe(
-      map(item=>({
-        id : item.Carnet,
-        carnet: item.Carnet,
-        nombre: item.Nombre,
-        apellido_materno: item.ApellidoMaterno,
-        apellido_paterno: item.ApellidoPaterno,
-        rol: item.Rol,
-        carrera: item.CarreraNombre,
-        correo: item.Email,
-        telefono: item.Telefono,
-        nombre_referencia: item.NombreReferencia,
-        telefono_referencia: item.TelefonoReferencia,
-        email_referencia: item.EmailReferencia
+      map(response=>({
+        id : response.Value.Carnet,
+        carnet: response.Value.Carnet,
+        nombre: response.Value.Nombre,
+        apellido_materno: response.Value.ApellidoMaterno,
+        apellido_paterno: response.Value.ApellidoPaterno,
+        rol: response.Value.Rol,
+        carrera: response.Value.CarreraNombre,
+        correo: response.Value.Email,
+        telefono: response.Value.Telefono,
+        nombre_referencia: response.Value.NombreReferencia,
+        telefono_referencia: response.Value.TelefonoReferencia,
+        email_referencia: response.Value.EmailReferencia
       })));
   }
   actualizarUsuario(usuario: Usuario) {
@@ -55,7 +56,8 @@ export class UsuarioServiceAPI {
       ApellidoPaterno: usuario.apellido_paterno,
       ApellidoMaterno: usuario.apellido_materno,
       Email: usuario.correo,
-      NombreCarrera: usuario.carrera,
+      CarreraNombre: usuario.carrera,
+      IdCarrera: usuario.carrera_Id || 0,
       Telefono: usuario.telefono,
       TelefonoReferencia: usuario.telefono_referencia,
       NombreReferencia: usuario.nombre_referencia,
@@ -64,8 +66,8 @@ export class UsuarioServiceAPI {
     return this.http.put<Usuario>(`${this.apiUrl}`, envio);
   }
   obtenerUsuarios() {
-    return this.http.get<any[]>(this.apiUrl).pipe(
-      map(data => data.map(item => ({
+    return this.http.get<any>(this.apiUrl).pipe(
+      map(response => response.Value.map((item: any) => ({
         id: item.Carnet,
         carnet: item.Carnet,
         nombre: item.Nombre,
@@ -77,7 +79,7 @@ export class UsuarioServiceAPI {
         telefono_referencia: item.TelefonoReferencia,
         nombre_referencia: item.NombreReferencia,
         email_referencia: item.EmailReferencia,
-        carrera_Id: item.CarreraId,
+        carrera_Id: item.IdCarrera,
         carrera: item.CarreraNombre,
       })))
     );
@@ -98,7 +100,8 @@ export class UsuarioServiceAPI {
       Email: usuario.correo,
       Contrasena: contrasena,
       Rol: usuario.rol,
-      NombreCarrera: usuario.carrera,
+      CarreraNombre: usuario.carrera,
+      IdCarrera: usuario.carrera_Id || 0,
       Telefono: usuario.telefono,
       TelefonoReferencia: usuario.telefono_referencia,
       NombreReferencia: usuario.nombre_referencia,

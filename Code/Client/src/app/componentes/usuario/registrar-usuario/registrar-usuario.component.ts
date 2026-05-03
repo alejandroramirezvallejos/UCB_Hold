@@ -43,7 +43,7 @@ export class RegistrarUsuarioComponent {
   ngOnInit() {
     this.carrerasS.obtenerCarreras().subscribe({
       next: (response) => {
-         this.carreras = response.map(carrera => carrera.nombre);
+         this.carreras = response.map((carrera: any) => carrera.nombre);
          if (this.carreras.includes("Ingeniería de Software")) {
             this.nuevoUsuario.carrera = "Ingeniería de Software";
          } else {

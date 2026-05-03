@@ -9,4 +9,8 @@ public class GrupoEquipoDto
     public string? Descripcion { get; set; }
     public string? UrlDataSheet { get; set; }
     public string? UrlImagen { get; set; }
+    public int? IdCategoria { get; set; }
+    public string? NombreCategoria { get; set; }
+    public int? Cantidad { get; set; }
+    public decimal? CostoPromedio { get; set; }
 }

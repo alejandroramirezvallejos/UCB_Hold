@@ -65,10 +65,11 @@ public class UsuarioController : ControllerBase
     [HttpDelete("{carnet}")]
     public async Task<IActionResult> Delete(string carnet)
     {
-        var usuario = await _service.Get(carnet);
-        if (!usuario.IsSuccess)
+        var usuarioResult = await _service.Get(carnet);
+        if (!usuarioResult.IsSuccess)
             return NotFound();
-        var result = await _service.Delete(usuario.Value?.Id ?? 0);
+
+        var result = await _service.Delete(carnet);
 
         return result.IsSuccess
             ? NoContent()
@@ -78,10 +79,10 @@ public class UsuarioController : ControllerBase
     [HttpPost("login")]
     public async Task<IActionResult> InitiateSession([FromBody] UsuarioDto request)
     {
-        if (string.IsNullOrWhiteSpace(request.Email) || string.IsNullOrWhiteSpace(request.Password))
+        if (string.IsNullOrWhiteSpace(request.Email) || string.IsNullOrWhiteSpace(request.Contrasena))
             return BadRequest(new Response<object> { Status = 400, Errors = new List<string> { "Email and password are required" } });
 
-        var result = await _service.InitiateSession(request.Email, request.Password);
+        var result = await _service.InitiateSession(request.Email, request.Contrasena);
 
         return result.IsSuccess
             ? Ok(new Response<UsuarioDto> { Status = 200, Value = result.Value })

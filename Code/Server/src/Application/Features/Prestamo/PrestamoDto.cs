@@ -14,7 +14,7 @@ public class PrestamoDto
     public DateTime? FechaDevolucion { get; set; }
     public string? Observacion { get; set; }
     public string? EstadoPrestamo { get; set; }
-    public int? IdContrato { get; set; }
+    public string? IdContrato { get; set; }
     public string? NombreGrupoEquipo { get; set; }
     public string? CodigoImt { get; set; }
     public string? UbicacionEquipo { get; set; }

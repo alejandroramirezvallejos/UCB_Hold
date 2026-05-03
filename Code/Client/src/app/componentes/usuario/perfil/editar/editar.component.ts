@@ -43,7 +43,7 @@ export class EditarComponent {
   cargarcarrera() {
     this.carrerasAPI.obtenerCarreras().subscribe({
         next: (data) => {
-          this.carreras = data.map(carrera => carrera.nombre);
+          this.carreras = data.map((carrera: any) => carrera.nombre);
         },
         error: (error) => {
           this.mensajeerror = "Error al obtener las carreras , intente mas tarde";

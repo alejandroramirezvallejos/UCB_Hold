@@ -7,8 +7,8 @@ public class MuebleDto
     public int? NumeroGaveteros { get; set; }
     public string? Ubicacion { get; set; }
     public string? Tipo { get; set; }
-    public decimal? Costo { get; set; }
-    public decimal? Longitud { get; set; }
-    public decimal? Profundidad { get; set; }
-    public decimal? Altura { get; set; }
+    public double? Costo { get; set; }
+    public double? Longitud { get; set; }
+    public double? Profundidad { get; set; }
+    public double? Altura { get; set; }
 }

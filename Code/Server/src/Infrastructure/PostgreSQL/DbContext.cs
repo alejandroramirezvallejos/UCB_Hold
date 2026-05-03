@@ -62,7 +62,7 @@ public class ApplicationDbContext : DbContext
             entity.Property(e => e.Marca).IsRequired().HasMaxLength(256);
             entity.Property(e => e.Descripcion).IsRequired();
             entity.Property(e => e.UrlImagen).IsRequired();
-            entity.Property(e => e.CostoPromedio).HasPrecision(10, 2).HasDefaultValue(0);
+            entity.Property(e => e.CostoPromedio).HasPrecision(10, 2);
             entity.Property(e => e.Cantidad).HasDefaultValue(0);
             entity.HasOne<Categoria>().WithMany().HasForeignKey(e => e.IdCategoria).IsRequired();
             entity.HasIndex(e => new { e.IdCategoria, e.Nombre, e.Modelo, e.Marca, e.EstadoEliminado });
@@ -102,8 +102,8 @@ public class ApplicationDbContext : DbContext
             entity.Property(e => e.CodigoUcb).HasMaxLength(256);
             entity.Property(e => e.NumeroSerial).HasMaxLength(255);
             entity.Property(e => e.Ubicacion).HasMaxLength(255);
-            entity.Property(e => e.CostoReferencia).HasDefaultValue(0);
-            entity.Property(e => e.TiempoMaximoPrestamo).HasDefaultValue(9999);
+            entity.Property(e => e.CostoReferencia);
+            entity.Property(e => e.TiempoMaximoPrestamo);
             entity.Property(e => e.FechaIngresoEquipo).HasDefaultValue(DateOnly.FromDateTime(DateTime.UtcNow));
             entity.Property(e => e.EstadoEquipo).HasDefaultValue("operativo");
             entity.HasOne<GrupoEquipo>().WithMany().HasForeignKey(e => e.IdGrupoEquipo).IsRequired();

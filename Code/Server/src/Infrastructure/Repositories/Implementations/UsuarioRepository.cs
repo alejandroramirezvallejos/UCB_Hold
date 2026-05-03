@@ -50,9 +50,16 @@ public class UsuarioRepository : Repository<UsuarioEntity, UsuarioDto>
         ApellidoPaterno = entity.ApellidoPaterno,
         ApellidoMaterno = entity.ApellidoMaterno,
         Rol = entity.Rol,
+        Email = entity.Email,
+        Contrasena = entity.Contrasena,
+        CarreraNombre = null,
+        IdCarrera = entity.IdCarrera,
         Telefono = entity.Telefono,
         TelefonoReferencia = entity.TelefonoReferencia,
-        NombreReferencia = entity.NombreReferencia
+        NombreReferencia = entity.NombreReferencia,
+        EmailReferencia = entity.EmailReferencia,
+        ImagenFrenteCarnet = entity.ImagenFrenteCarnet,
+        ImagenAtrasCarnet = entity.ImagenAtrasCarnet
     };
 }
 

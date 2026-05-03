@@ -10,8 +10,8 @@ export class CarreraService {
   private apiUrl = environment.apiUrl + '/api/Carrera'; 
   constructor(private http: HttpClient) { }
   obtenerCarreras() {
-    return this.http.get<any[]>(this.apiUrl).pipe(
-      map(data => data.map(item => ({
+    return this.http.get<any>(this.apiUrl).pipe(
+      map(response => response.Value.map((item: any) => ({
         id: item.Id,
         nombre: item.Nombre
       })))

@@ -25,12 +25,15 @@ public class UsuarioService : Service<UsuarioEntity, UsuarioRepository, UsuarioD
     public async Task<Result<UsuarioDto>> InitiateSession(string email, string password)
     {
         var usuario = await Repository.GetByEmail(email);
-        
+
         if (usuario == null)
             return Result<UsuarioDto>.NotFound();
-        
+
         return Result<UsuarioDto>.Success(MapToDto(usuario));
     }
+
+    public async Task<Result<object>> Delete(string carnet)
+        => await Repository.Delete(carnet);
 
     private UsuarioDto MapToDto(UsuarioEntity entity) => new()
     {
@@ -39,8 +42,15 @@ public class UsuarioService : Service<UsuarioEntity, UsuarioRepository, UsuarioD
         ApellidoPaterno = entity.ApellidoPaterno,
         ApellidoMaterno = entity.ApellidoMaterno,
         Rol = entity.Rol,
+        Email = entity.Email,
+        Contrasena = entity.Contrasena,
+        IdCarrera = entity.IdCarrera,
+        CarreraNombre = null,
         Telefono = entity.Telefono,
         TelefonoReferencia = entity.TelefonoReferencia,
-        NombreReferencia = entity.NombreReferencia
+        NombreReferencia = entity.NombreReferencia,
+        EmailReferencia = entity.EmailReferencia,
+        ImagenFrenteCarnet = entity.ImagenFrenteCarnet,
+        ImagenAtrasCarnet = entity.ImagenAtrasCarnet
     };
 }

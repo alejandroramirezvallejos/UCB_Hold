@@ -23,8 +23,13 @@ public class ComponenteRepository : Repository<ComponenteEntity, ComponenteDto>
         Id = entity.Id,
         Nombre = entity.Nombre,
         Modelo = entity.Modelo,
+        Tipo = entity.Tipo,
         Descripcion = entity.Descripcion,
-        PrecioReferencia = entity.PrecioReferencia.HasValue ? (decimal?)entity.PrecioReferencia.Value : null
+        PrecioReferencia = entity.PrecioReferencia,
+        IdEquipo = entity.IdEquipo,
+        NombreEquipo = null,
+        CodigoImtEquipo = null,
+        UrlDataSheet = entity.UrlDataSheet
     };
 }
 

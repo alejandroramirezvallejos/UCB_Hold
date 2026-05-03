@@ -36,10 +36,10 @@ public class MuebleRepository : Repository<MuebleEntity, MuebleDto>
         Ubicacion = entity.Ubicacion,
         NumeroGaveteros = entity.NumeroGaveteros,
         Tipo = entity.Tipo,
-        Costo = (decimal?)entity.Costo,
-        Longitud = (decimal?)entity.Longitud,
-        Profundidad = (decimal?)entity.Profundidad,
-        Altura = (decimal?)entity.Altura
+        Costo = entity.Costo,
+        Longitud = entity.Longitud,
+        Profundidad = entity.Profundidad,
+        Altura = entity.Altura
     };
 }
 

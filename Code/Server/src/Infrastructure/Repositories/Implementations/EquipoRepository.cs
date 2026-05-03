@@ -17,15 +17,18 @@ public class EquipoRepository : Repository<EquipoEntity, EquipoDto>
         Id = entity.Id,
         Modelo = null,
         Marca = null,
-        CodigoImt = entity.CodigoImt.ToString(),
+        CodigoImt = entity.CodigoImt,
         CodigoUcb = entity.CodigoUcb,
         NumeroSerial = entity.NumeroSerial,
         EstadoEquipo = entity.EstadoEquipo,
         Ubicacion = entity.Ubicacion,
-        CostoReferencia = (decimal?)entity.CostoReferencia,
+        CostoReferencia = entity.CostoReferencia,
         Descripcion = entity.Descripcion,
         TiempoMaximoPrestamo = entity.TiempoMaximoPrestamo,
-        Procedencia = entity.Procedencia
+        Procedencia = entity.Procedencia,
+        IdGrupoEquipo = entity.IdGrupoEquipo,
+        IdGavetero = entity.IdGavetero,
+        FechaIngresoEquipo = entity.FechaIngresoEquipo.ToDateTime(TimeOnly.MinValue)
     };
 }
 

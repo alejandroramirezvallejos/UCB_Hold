@@ -24,6 +24,11 @@ public class GrupoEquipoRepository : Repository<GrupoEquipoEntity, GrupoEquipoDt
         Marca = entity.Marca,
         Descripcion = entity.Descripcion,
         UrlDataSheet = entity.UrlDataSheet,
+        UrlImagen = entity.UrlImagen,
+        IdCategoria = entity.IdCategoria,
+        NombreCategoria = null,
+        Cantidad = entity.Cantidad,
+        CostoPromedio = entity.CostoPromedio
     };
 }
 
