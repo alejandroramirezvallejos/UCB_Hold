@@ -1,8 +1,5 @@
 namespace IMT_Reservas.Server.Application.Features.Gavetero.Dtos;
 
-// Create/Update Request DTO for Gavetero
-
-
 public class GaveteroDto
 {
     public string? Nombre { get; set; }

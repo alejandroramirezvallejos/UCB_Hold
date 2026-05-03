@@ -1,8 +1,5 @@
 namespace IMT_Reservas.Server.Application.Features.Accesorio.Dtos;
 
-// Create/Update Request DTO for Accesorio
-
-
 public class AccesorioDto
 {
     public string? Nombre { get; set; }

@@ -39,6 +39,7 @@ public class UsuarioRepository : Repository<UsuarioEntity, UsuarioListDto>
         entity.EstadoEliminado = true;
         DbContext.Update(entity);
         await DbContext.SaveChangesAsync();
+        
         return Result<object>.Success(null!);
     }
 

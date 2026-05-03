@@ -27,6 +27,7 @@ public abstract class Repository<TEntity, TDto> where TEntity : class where TDto
     public virtual async Task<Result<object>> Delete(int id)
     {
         var entity = await DbContext.FindAsync(typeof(TEntity), id);
+        
         if (entity == null)
             return Result<object>.NotFound();
 

@@ -1,6 +1,5 @@
 namespace IMT_Reservas.Server.Application.Features.GrupoEquipo.Dtos;
 
-
 public class GrupoEquipoListDto
 {
     public int Id { get; set; }
@@ -15,9 +14,6 @@ public class GrupoEquipoListDto
     public string? NombreCategoria { get; set; }
     public decimal? CostoPromedio { get; set; }
 }
-
-
-
 
 public class GrupoEquipoDetailDto
 {

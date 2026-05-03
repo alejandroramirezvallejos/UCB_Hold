@@ -1,6 +1,5 @@
 namespace IMT_Reservas.Server.Application.Features.Usuario.Dtos;
 
-
 public class UsuarioListDto
 {
     public int Id { get; set; }
@@ -16,9 +15,6 @@ public class UsuarioListDto
     public string? NombreReferencia { get; set; }
     public string? EmailReferencia { get; set; }
 }
-
-
-
 
 public class UsuarioDetailDto
 {

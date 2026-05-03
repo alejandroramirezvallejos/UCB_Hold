@@ -1,8 +1,5 @@
 namespace IMT_Reservas.Server.Application.Features.Usuario.Dtos;
 
-// Create/Update Request DTO for Usuario
-
-
 public class UsuarioDto
 {
     public string? Nombre { get; set; }

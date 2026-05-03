@@ -1,6 +1,5 @@
 namespace IMT_Reservas.Server.Application.Features.Equipo.Dtos;
 
-
 public class EquipoListDto
 {
     public int Id { get; set; }
@@ -18,9 +17,6 @@ public class EquipoListDto
     public int? TiempoMaximoPrestamo { get; set; }
     public string? Procedencia { get; set; }
 }
-
-
-
 
 public class EquipoDetailDto
 {

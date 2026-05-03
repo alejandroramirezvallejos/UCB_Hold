@@ -54,6 +54,7 @@ public class MantenimientoEquipoService
             grupo.Cantidad--;
 
         await _dbContext.SaveChangesAsync();
+       
         return Result<object>.Success(null!);
     }
 

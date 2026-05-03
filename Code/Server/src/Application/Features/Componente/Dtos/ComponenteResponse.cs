@@ -1,6 +1,5 @@
 namespace IMT_Reservas.Server.Application.Features.Componente.Dtos;
 
-
 public class ComponenteListDto
 {
     public int Id { get; set; }
@@ -10,9 +9,6 @@ public class ComponenteListDto
     public decimal? Precio { get; set; }
     public int IdEquipo { get; set; }
 }
-
-
-
 
 public class ComponenteDetailDto
 {

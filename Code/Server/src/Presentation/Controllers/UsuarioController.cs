@@ -4,7 +4,6 @@ using IMT_Reservas.Server.Application.Common;
 using IMT_Reservas.Server.Application.Features.Usuario.Dtos;
 using UsuarioEntity = IMT_Reservas.Server.Core.Entities.Usuario;
 using AutoMapper;
-
 namespace IMT_Reservas.Server.Presentation.Controllers;
 
 [ApiController]

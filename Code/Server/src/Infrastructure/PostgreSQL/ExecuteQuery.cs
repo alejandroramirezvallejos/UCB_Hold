@@ -72,9 +72,7 @@ public class ExecuteQuery {
                 cmd.Parameters.Add(npgsqlParam);
             }
             else
-            {
                 cmd.Parameters.AddWithValue(param.Key, param.Value ?? DBNull.Value);
-            }
         }
     }
 

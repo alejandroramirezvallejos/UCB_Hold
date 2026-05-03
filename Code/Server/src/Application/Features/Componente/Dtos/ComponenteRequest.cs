@@ -1,8 +1,5 @@
 namespace IMT_Reservas.Server.Application.Features.Componente.Dtos;
 
-// Create/Update Request DTO for Componente
-
-
 public class ComponenteDto
 {
     public string? Nombre { get; set; }

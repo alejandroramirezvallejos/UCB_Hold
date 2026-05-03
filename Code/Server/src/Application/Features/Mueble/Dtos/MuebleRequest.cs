@@ -1,8 +1,5 @@
 namespace IMT_Reservas.Server.Application.Features.Mueble.Dtos;
 
-// Create/Update Request DTO for Mueble
-
-
 public class MuebleDto
 {
     public string? Nombre { get; set; }

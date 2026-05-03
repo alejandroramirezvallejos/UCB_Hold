@@ -1,6 +1,5 @@
 namespace IMT_Reservas.Server.Application.Features.Mantenimiento.Dtos;
 
-
 public class MantenimientoListDto
 {
     public int Id { get; set; }
@@ -15,9 +14,6 @@ public class MantenimientoListDto
     public int? CodigoImtEquipo { get; set; }
     public string? DescripcionEquipo { get; set; }
 }
-
-
-
 
 public class MantenimientoDetailDto
 {

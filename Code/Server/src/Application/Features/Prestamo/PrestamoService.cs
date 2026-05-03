@@ -40,6 +40,7 @@ public class PrestamoService
         if (contratoStream != null && !string.IsNullOrEmpty(contratoFileName))
         {
             var contratoUpload = await _contratoService.Create(entity.Id, contratoStream, contratoFileName);
+            
             if (!contratoUpload.IsSuccess)
                 return Result<PrestamoDetailDto>.Error("Error al crear contrato: " + string.Join(", ", contratoUpload.Errors));
         }
@@ -65,9 +66,7 @@ public class PrestamoService
         var prestamo = await _repository.Get(id);
 
         if (prestamo.IsSuccess && prestamo.Value?.IdContrato != null)
-        {
             await _contratoService.Delete(id);
-        }
 
         var result = await _repository.Delete(id);
 

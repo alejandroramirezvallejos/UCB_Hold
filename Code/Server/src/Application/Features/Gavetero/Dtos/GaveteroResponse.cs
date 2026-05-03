@@ -1,6 +1,5 @@
 namespace IMT_Reservas.Server.Application.Features.Gavetero.Dtos;
 
-
 public class GaveteroListDto
 {
     public int Id { get; set; }
@@ -12,9 +11,6 @@ public class GaveteroListDto
     public decimal? Profundidad { get; set; }
     public decimal? Altura { get; set; }
 }
-
-
-
 
 public class GaveteroDetailDto
 {

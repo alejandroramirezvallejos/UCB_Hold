@@ -2,7 +2,6 @@ using Microsoft.AspNetCore.Mvc;
 using IMT_Reservas.Server.Application.Features.Carrito;
 using IMT_Reservas.Server.Application.Common;
 using IMT_Reservas.Server.Application.Features.Carrito.Dtos;
-
 namespace IMT_Reservas.Server.Presentation.Controllers;
 
 [ApiController]

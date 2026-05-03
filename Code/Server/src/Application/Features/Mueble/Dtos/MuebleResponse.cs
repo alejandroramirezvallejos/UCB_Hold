@@ -1,6 +1,5 @@
 namespace IMT_Reservas.Server.Application.Features.Mueble.Dtos;
 
-
 public class MuebleListDto
 {
     public int Id { get; set; }
@@ -13,9 +12,6 @@ public class MuebleListDto
     public decimal? Profundidad { get; set; }
     public decimal? Altura { get; set; }
 }
-
-
-
 
 public class MuebleDetailDto
 {

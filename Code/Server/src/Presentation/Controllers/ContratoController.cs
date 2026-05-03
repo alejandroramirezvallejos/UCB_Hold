@@ -3,7 +3,6 @@ using IMT_Reservas.Server.Application.Features.Contrato;
 using IMT_Reservas.Server.Application.Features.Contrato.Dtos;
 using IMT_Reservas.Server.Application.Common;
 using IMT_Reservas.Server.Application.Features.Archivo;
-
 namespace IMT_Reservas.Server.Presentation.Controllers;
 
 [ApiController]
@@ -26,6 +25,7 @@ public class ContratoController : ControllerBase
             return BadRequest(new Response<object> { Success = false, Errors = new List<string> { "Archivo requerido" } });
 
         var resultado = await _contratoService.Create(prestamoId, archivo.OpenReadStream(), archivo.FileName);
+        
         return resultado.IsSuccess
             ? Ok(new Response<ContratoResponse> { Success = true, Data = resultado.Value })
             : BadRequest(new Response<object> { Success = false, Errors = resultado.Errors.ToList() });
@@ -35,6 +35,7 @@ public class ContratoController : ControllerBase
     public async Task<IActionResult> Get(int prestamoId)
     {
         var resultado = await _contratoService.Get(prestamoId);
+        
         return resultado.IsSuccess
             ? Ok(new Response<ContratoResponse> { Success = true, Data = resultado.Value })
             : NotFound(new Response<object> { Success = false, Errors = resultado.Errors.ToList() });
@@ -44,6 +45,7 @@ public class ContratoController : ControllerBase
     public async Task<IActionResult> Delete(int prestamoId)
     {
         var resultado = await _contratoService.Delete(prestamoId);
+        
         return resultado.IsSuccess
             ? Ok(new Response<object> { Success = true })
             : BadRequest(new Response<object> { Success = false, Errors = resultado.Errors.ToList() });
@@ -53,6 +55,7 @@ public class ContratoController : ControllerBase
     public async Task<IActionResult> Download(int prestamoId)
     {
         var obtenerResultado = await _contratoService.Get(prestamoId);
+        
         if (!obtenerResultado.IsSuccess)
             return NotFound();
 
@@ -60,6 +63,7 @@ public class ContratoController : ControllerBase
             return BadRequest();
 
         var descargarResultado = await _archivoService.Download(obtenerResultado.Value.FileId);
+        
         if (!descargarResultado.IsSuccess)
             return BadRequest();
 

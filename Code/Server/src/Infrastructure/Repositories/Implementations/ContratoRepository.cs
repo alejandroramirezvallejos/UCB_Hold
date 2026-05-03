@@ -2,7 +2,6 @@ using Ardalis.Result;
 using IMT_Reservas.Server.Core.Entities;
 using IMT_Reservas.Server.Infrastructure.MongoDb;
 using MongoDB.Driver;
-
 namespace IMT_Reservas.Server.Infrastructure.Repositories.Implementations;
 
 public class ContratoRepository
@@ -17,6 +16,7 @@ public class ContratoRepository
     public async Task<Result<Contrato>> Create(Contrato contrato)
     {
         await _mongoContext.GetContratos.InsertOneAsync(contrato);
+        
         return Result<Contrato>.Success(contrato);
     }
 

@@ -2,7 +2,6 @@ using MongoDB.Driver;
 using MongoDB.Driver.GridFS;
 using MongoDB.Bson;
 using Ardalis.Result;
-
 namespace IMT_Reservas.Server.Application.Features.Archivo;
 
 public class ArchivoService
@@ -20,8 +19,8 @@ public class ArchivoService
     {
         var database = _mongoClient.GetDatabase(DatabaseName);
         var bucket = new GridFSBucket(database, new GridFSBucketOptions { BucketName = BucketName });
-
         var fileId = await bucket.UploadFromStreamAsync(filename, stream);
+        
         return Result<string>.Success(fileId.ToString());
     }
 
@@ -49,6 +48,7 @@ public class ArchivoService
             return Result<object>.Error("FileId inválido");
 
         await bucket.DeleteAsync(objectId);
+        
         return Result<object>.Success(new { });
     }
 }

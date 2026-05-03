@@ -1,8 +1,5 @@
 namespace IMT_Reservas.Server.Application.Features.Mantenimiento.Dtos;
 
-// Create/Update Request DTO for Mantenimiento
-
-
 public class MantenimientoDto
 {
     public string? Descripcion { get; set; }

@@ -4,7 +4,6 @@ using IMT_Reservas.Server.Application.Common;
 using IMT_Reservas.Server.Application.Features.Categoria.Dtos;
 using CategoriaEntity = IMT_Reservas.Server.Core.Entities.Categoria;
 using AutoMapper;
-
 namespace IMT_Reservas.Server.Presentation.Controllers;
 
 [ApiController]

@@ -1,8 +1,5 @@
 namespace IMT_Reservas.Server.Application.Features.Equipo.Dtos;
 
-// Create/Update Request DTO for Equipo
-
-
 public class EquipoDto
 {
     public string? NombreGrupoEquipo { get; set; }
