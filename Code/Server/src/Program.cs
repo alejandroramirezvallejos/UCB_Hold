@@ -48,7 +48,10 @@ builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 builder.Services.AddScoped<MongoDbContexto>();
 
-var mapperConfig = new MapperConfiguration(cfg => cfg.AddMaps(typeof(Program)), null);
+// Initialize AutoMapper with proper ILoggerFactory
+var serviceProvider = builder.Services.BuildServiceProvider();
+var loggerFactory = serviceProvider.GetService<ILoggerFactory>() ?? new Microsoft.Extensions.Logging.Abstractions.NullLoggerFactory();
+var mapperConfig = new MapperConfiguration(cfg => cfg.AddMaps(typeof(Program)), loggerFactory);
 var mapper = mapperConfig.CreateMapper();
 
 builder.Services.AddSingleton(mapper);
