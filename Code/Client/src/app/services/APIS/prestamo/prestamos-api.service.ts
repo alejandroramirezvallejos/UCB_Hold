@@ -5,11 +5,11 @@ import { map } from 'rxjs';
 import { Carrito } from '../../../models/carrito';
 import { Prestamos } from '../../../models/admin/Prestamos';
 @Injectable({
-  providedIn: 'root'
+  providedIn: 'root',
 })
 export class PrestamosAPIService {
   private url = environment.apiUrl + '/api/Prestamo';
-  constructor(private http: HttpClient) { }
+  constructor(private http: HttpClient) {}
   private mapearPrestamo(item: any): Prestamos {
     return {
       Id: item.Id,
@@ -19,11 +19,19 @@ export class PrestamosAPIService {
       TelefonoUsuario: item.TelefonoUsuario,
       NombreGrupoEquipo: item.NombreGrupoEquipo,
       CodigoImt: item.CodigoImt,
-      FechaSolicitud: item.FechaSolicitud ? new Date(item.FechaSolicitud) : null,
-      FechaPrestamoEsperada: item.FechaPrestamoEsperada ? new Date(item.FechaPrestamoEsperada) : null,
+      FechaSolicitud: item.FechaSolicitud
+        ? new Date(item.FechaSolicitud)
+        : null,
+      FechaPrestamoEsperada: item.FechaPrestamoEsperada
+        ? new Date(item.FechaPrestamoEsperada)
+        : null,
       FechaPrestamo: item.FechaPrestamo ? new Date(item.FechaPrestamo) : null,
-      FechaDevolucionEsperada: item.FechaDevolucionEsperada ? new Date(item.FechaDevolucionEsperada) : null,
-      FechaDevolucion: item.FechaDevolucion ? new Date(item.FechaDevolucion) : null,
+      FechaDevolucionEsperada: item.FechaDevolucionEsperada
+        ? new Date(item.FechaDevolucionEsperada)
+        : null,
+      FechaDevolucion: item.FechaDevolucion
+        ? new Date(item.FechaDevolucion)
+        : null,
       Observacion: item.Observacion,
       EstadoPrestamo: item.EstadoPrestamo,
       IdContrato: item.IdContrato,
@@ -31,15 +39,19 @@ export class PrestamosAPIService {
       Ubicacion_Equipo: item.Ubicacion_Equipo,
       Nombre_Gavetero: item.Nombre_Gavetero,
       Nombre_Mueble: item.Nombre_Mueble,
-      Ubicacion_Mueble: item.Ubicacion_Mueble
+      Ubicacion_Mueble: item.Ubicacion_Mueble,
     } as Prestamos;
   }
   obtenerPrestamos() {
-    return this.http.get<any>(this.url).pipe(
-      map((data: any) => (data.Value || data).map((item: any) => this.mapearPrestamo(item)))
-    );
+    return this.http
+      .get<any>(this.url)
+      .pipe(
+        map((data: any) =>
+          (data.Value || data).map((item: any) => this.mapearPrestamo(item)),
+        ),
+      );
   }
-  crearPrestamo(carrito: Carrito, carnet: string, contrato: (Blob | null)) {
+  crearPrestamo(carrito: Carrito, carnet: string, contrato: Blob | null) {
     const grupoid: number[] = [];
     for (const [key, value] of Object.entries(carrito)) {
       if (carrito[Number(key)].cantidad > 0) {
@@ -48,18 +60,19 @@ export class PrestamosAPIService {
         }
       }
     }
+    const envio = {
+      CarnetUsuario: carnet,
+      FechaPrestamoEsperada: carrito[grupoid[0]].fecha_inicio || '',
+      FechaDevolucionEsperada: carrito[grupoid[0]].fecha_final || '',
+      Observacion: '',
+    };
+    return this.http.post<any>(this.url, envio);
+  }
+  guardarContratoPrestamo(prestamoId: number, contrato: Blob) {
     const formData = new FormData();
-    grupoid.forEach(id => {
-      formData.append('GrupoEquipoId', id.toString());
-    });
-    formData.append('FechaPrestamoEsperada', carrito[grupoid[0]].fecha_inicio || '');
-    formData.append('FechaDevolucionEsperada', carrito[grupoid[0]].fecha_final || '');
-    formData.append('CarnetUsuario', carnet);
-    formData.append('Observacion', '');
-    if (contrato) {
-      formData.append('Contrato', contrato, 'contrato.html');
-    }
-    return this.http.post(this.url, formData);
+    formData.append('Contrato', contrato, 'contrato.html');
+    const url = `${this.url}/${prestamoId}/contrato`;
+    return this.http.post(url, formData);
   }
   eliminarPrestamo(id: number) {
     return this.http.delete(`${this.url}/${id}`);
@@ -68,9 +81,9 @@ export class PrestamosAPIService {
     const APIurl = `${this.url}/estadoPrestamo`;
     const envio = {
       Id: Id,
-      EstadoPrestamo: estado
-    }
-    return this.http.put(APIurl, envio)
+      EstadoPrestamo: estado,
+    };
+    return this.http.put(APIurl, envio);
   }
   obtenerPrestamosPorUsuario(carnet: string, estadoPrestamo: string) {
     const APIurl = `${this.url}/historial?carnetUsuario=${carnet}&estadoPrestamo=${estadoPrestamo}`;
@@ -81,26 +94,29 @@ export class PrestamosAPIService {
           return [];
         }
         return list.map((item: any) => this.mapearPrestamo(item));
-      })
+      }),
     );
   }
   obtenercontratoPrestamo(id: number) {
     const APIurl = `${this.url}/contrato/${id}`;
     return this.http.get<string[]>(APIurl).pipe(
-      map(response => {
-        if (!response || !Array.isArray(response) || response.length === 0) return '';
+      map((response) => {
+        if (!response || !Array.isArray(response) || response.length === 0)
+          return '';
         const base64String = response[0] || '';
         if (!base64String) return '';
         try {
           const raw = atob(base64String);
           const htmlContent = decodeURIComponent(escape(raw));
-          const cleaned = htmlContent.replace(/undefined(,\s*undefined)?/g, '').replace(/\[\[\s*\w+\s*\]\]/g, '');
+          const cleaned = htmlContent
+            .replace(/undefined(,\s*undefined)?/g, '')
+            .replace(/\[\[\s*\w+\s*\]\]/g, '');
           return cleaned;
         } catch (e) {
           console.error('Error decoding contrato base64', e);
           return '';
         }
-      })
-    )
+      }),
+    );
   }
 }

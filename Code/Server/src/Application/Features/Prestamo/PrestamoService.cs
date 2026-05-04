@@ -3,6 +3,7 @@ using IMT_Reservas.Server.Application.Abstraction;
 using IMT_Reservas.Server.Application.Features.Prestamo.Dtos;
 using IMT_Reservas.Server.Infrastructure.PostgreSQL;
 using IMT_Reservas.Server.Infrastructure.Repositories.Implementations;
+using IMT_Reservas.Server.Infrastructure.MongoDb;
 using Microsoft.EntityFrameworkCore;
 using PrestamoEntity = IMT_Reservas.Server.Core.Entities.Prestamo;
 namespace IMT_Reservas.Server.Application.Features.Prestamo;
@@ -10,9 +11,10 @@ namespace IMT_Reservas.Server.Application.Features.Prestamo;
 public class PrestamoService : Service<PrestamoEntity, PrestamoRepository, PrestamoDto>
 {
     private readonly ApplicationDbContext _dbContext;
+    private readonly MongoDbContext _mongoDbContext;
 
-    public PrestamoService(PrestamoRepository repository, ApplicationDbContext dbContext)
-        : base(repository) => _dbContext = dbContext;
+    public PrestamoService(PrestamoRepository repository, ApplicationDbContext dbContext, MongoDbContext mongoDbContext)
+        : base(repository) => (_dbContext, _mongoDbContext) = (dbContext, mongoDbContext);
 
     public override async Task<Result<PrestamoDto>> Create(PrestamoEntity entity)
     {
@@ -100,7 +102,7 @@ public class PrestamoService : Service<PrestamoEntity, PrestamoRepository, Prest
         return Result<decimal>.Success((decimal)monto);
     }
 
-    public bool NeedsContrato(decimal monto) => monto > 1000;
+    public bool NeedsContrato(decimal monto) => monto >= 1000;
 
     public async Task<Result<List<PrestamoDto>>> GetHistorial(string carnetUsuario, string estadoPrestamo)
     {
@@ -115,6 +117,35 @@ public class PrestamoService : Service<PrestamoEntity, PrestamoRepository, Prest
         var dtos = prestamos.Select(p => Repository.ConvertToDto(p)).ToList();
 
         return Result<List<PrestamoDto>>.Success(dtos);
+    }
+
+    public async Task<Result<PrestamoDto>> SaveContrato(int prestamoId, byte[] contratoBytes)
+    {
+        if (contratoBytes == null || contratoBytes.Length == 0)
+            return Result<PrestamoDto>.Error("Contenido de contrato vacío");
+
+        var prestamo = await _dbContext.Prestamos.FirstOrDefaultAsync(p => p.Id == prestamoId);
+        
+        if (prestamo == null)
+            return Result<PrestamoDto>.Error("Préstamo no encontrado");
+
+        var contratoBase64 = Convert.ToBase64String(contratoBytes);
+        var contrato = new Core.Entities.Contrato
+        {
+            PrestamoId = prestamoId,
+            FileId = contratoBase64.Substring(0, Math.Min(24, contratoBase64.Length)),
+            FechaCreacion = DateTime.Now,
+            EstadoEliminado = false
+        };
+
+        var coleccion = _mongoDbContext.GetContratos;
+        await coleccion.InsertOneAsync(contrato);
+
+        prestamo.IdContrato = contrato.Id.ToString();
+        _dbContext.Prestamos.Update(prestamo);
+        await _dbContext.SaveChangesAsync();
+
+        return await Get(prestamoId);
     }
 
     private Result<object> ValidateDates(DateTime? fechaPrestamo, DateTime? fechaDevolucion)

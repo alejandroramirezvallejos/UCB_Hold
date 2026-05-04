@@ -67,4 +67,26 @@ public class PrestamoController : ControllerBase
             ? Ok(new Response<List<PrestamoDto>> { Status = 200, Value = result.Value }) 
             : BadRequest(new Response<object> { Status = 400, Errors = result.Errors.ToList() });
     }
+
+    [HttpPost("{id:int}/contrato")]
+    [Consumes("multipart/form-data")]
+    public async Task<IActionResult> SaveContrato(int id, [FromForm] ContratoPrestamoDto request)
+    {
+        if (request?.Contrato == null || request.Contrato.Length == 0)
+            return BadRequest(new Response<object> { Status = 400, Errors = new List<string> { "Archivo de contrato requerido" } });
+
+        byte[] contratoBytes;
+        
+        using (var ms = new MemoryStream())
+        {
+            await request.Contrato.CopyToAsync(ms);
+            contratoBytes = ms.ToArray();
+        }
+
+        var result = await _service.SaveContrato(id, contratoBytes);
+        
+        return result.IsSuccess
+            ? Ok(new Response<PrestamoDto> { Status = 200, Value = result.Value })
+            : BadRequest(new Response<object> { Status = 400, Errors = result.Errors.ToList() });
+    }
 }
