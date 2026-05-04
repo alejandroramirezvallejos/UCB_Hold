@@ -7,6 +7,8 @@ import { Router, ActivatedRoute } from '@angular/router';
 import { UsuarioService } from '../../../services/usuario/usuario.service';
 import { MostrarerrorComponent } from '../../pantallas_avisos/mostrarerror/mostrarerror.component';
 import { CalendarioComponent } from './calendario/calendario.component';
+import { PrestamosAPIService } from '../../../services/APIS/prestamo/prestamos-api.service';
+import { finalize } from 'rxjs';
 @Component({
   selector: 'app-carrito',
   standalone: true ,
@@ -24,8 +26,15 @@ export class CarritoComponent {
   fecha_inicio: WritableSignal<Date | null> = signal(null);
   fecha_final: WritableSignal<Date | null> = signal(null);
   carrito: Carrito = {};
-  constructor(public carritoS: CarritoService , private router : Router, private route: ActivatedRoute , private usuario : UsuarioService) {
-    this.carrito  = this.carritoS.obtenercarrito();
+  cargando: boolean = false;
+  constructor(
+    public carritoS: CarritoService,
+    private router: Router,
+    private route: ActivatedRoute,
+    private usuario: UsuarioService,
+    private prestamosAPI: PrestamosAPIService
+  ) {
+    this.carrito = this.carritoS.obtenercarrito();
     this.hoy.setHours(0, 0, 0, 0);
     this.route.queryParams.subscribe(params => {
       this.step = params['step'] ? Number(params['step']) : 1;
@@ -97,14 +106,43 @@ export class CarritoComponent {
     if (this.error) {
       this.errorboton.set(true);
     }
-    else if(this.usuario.vacio()){
-        this.router.navigate(['/Iniciar-Sesion']);
+    else if (this.usuario.vacio()) {
+      this.router.navigate(['/Iniciar-Sesion']);
     }
-    else{
-        this.cambiarfechainicio(this.fechaInicioStr);
-        this.cambiarfechafinal(this.fechaFinalStr);
-       this.router.navigate(['/Formulario']);
+    else {
+      this.cambiarfechainicio(this.fechaInicioStr);
+      this.cambiarfechafinal(this.fechaFinalStr);
+
+      const monto = this.carritoS.preciototal();
+
+      if (monto >= 1000) {
+        this.router.navigate(['/Formulario']);
+      } else {
+        this.crearPrestamoAutomatico();
+      }
     }
+  }
+
+  private crearPrestamoAutomatico() {
+    this.cargando = true;
+    const carnet = this.usuario.obtenerDatosUsuario().carnet!;
+
+    this.prestamosAPI.crearPrestamo(this.carrito, carnet, null)
+      .pipe(
+        finalize(() => (this.cargando = false))
+      )
+      .subscribe({
+        next: (response) => {
+          console.log('Préstamo creado exitosamente:', response);
+          this.carritoS.vaciarcarrito();
+          this.router.navigate(['/home']);
+        },
+        error: (error) => {
+          console.error('Error al crear préstamo:', error);
+          this.mensajeerror = error.error?.error + ' - ' + error.error?.mensaje || error.message;
+          this.errorboton.set(true);
+        }
+      });
   }
   carritovacio(){
     if (Object.keys(this.carrito).length==0){
