@@ -28,6 +28,8 @@ using AccesorioEntity = IMT_Reservas.Server.Core.Entities.Accesorio;
 using ComponenteEntity = IMT_Reservas.Server.Core.Entities.Componente;
 using EmpresaMantenimientoEntity = IMT_Reservas.Server.Core.Entities.EmpresaMantenimiento;
 
+AppContext.SetSwitch("Npgsql.EnableLegacyTimestampBehavior", true);
+
 var builder = WebApplication.CreateBuilder(args);
 
 builder.Services.Configure<MongoDbConfig>(

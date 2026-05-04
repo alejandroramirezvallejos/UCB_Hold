@@ -22,9 +22,7 @@ export class ObjetoComponent {
   error : WritableSignal<boolean> = signal(false);
   mensajeerror : string = "";
   desabilitarboton: boolean = false;
-  constructor(private route: ActivatedRoute , private servicio : GrupoequipoService, private carrito : CarritoService, private Sdisponibilidad : DisponibilidadService
-    ,private SDisponibilidad : DisponibilidadService
-  ) { }
+  constructor(private route: ActivatedRoute , private servicio : GrupoequipoService, private carrito : CarritoService, private SDisponibilidad : DisponibilidadService) { }
   ngOnInit(): void {
     const routeId = this.route.snapshot.paramMap.get('id');
     if (!routeId) {
@@ -35,12 +33,16 @@ export class ObjetoComponent {
     this.servicio.getproducto(routeId).subscribe({
       next: (data) => {
         this.producto = data;
-        this.obtenerDisponibilidad();
+        if (this.producto && this.producto.id) {
+            this.obtenerDisponibilidad();
+        } else {
+            this.cargando = false;
+        }
       },
       error: (error) => {
         this.desabilitarboton = true;
-        this.mensajeerror = "Error al cargar el producto , intente mas tarde";
-        console.error('Error completo del backend:', error.error.mensaje);
+        this.mensajeerror = "Error al cargar el producto, intente mas tarde";
+        console.error('Error completo del backend:', error.error?.Errors || error.message);
         this.producto = {
           id: 0,
           nombre: 'Error de carga',
@@ -58,14 +60,16 @@ export class ObjetoComponent {
   obtenerDisponibilidad(){
     this.SDisponibilidad.obtenerDisponibilidad(new Date(), new Date() , [this.producto.id]).subscribe({
       next: (data) => {
-        if(data.length > 0){
+        if(data && data.length > 0){
           this.cantidadDisponible = data[0].CantidadDisponible;
-          this.cargando = false;
         }
+        this.cargando = false;
       },
       error: (error) => {
+        console.error('Error disponibilidad:', error.error?.Errors || error.message);
         this.mensajeerror = "Error al obtener la disponibilidad del producto";
         this.error.set(true);
+        this.cargando = false;
       }
     });
   }
