@@ -141,8 +141,11 @@ export class FormularioComponent implements OnInit {
       .pipe(
         finalize(() => (this.cargando = false)),
         switchMap((response: any) => {
-          const prestamoId = response.Id;
-          // Si monto >= 1000 bs, guardar contrato
+          const prestamoId =
+            response?.Id ?? response?.id ?? response?.Value?.Id;
+          if (!prestamoId) {
+            return of(response);
+          }
           if (contratoblob && this.calcularMonto() >= 1000) {
             return this.mandarprestamo
               .guardarContratoPrestamo(prestamoId, contratoblob)

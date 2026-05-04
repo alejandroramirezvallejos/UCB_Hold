@@ -111,7 +111,7 @@ export class PrestamosAPIService {
     );
   }
   obtenercontratoPrestamo(id: number) {
-    const APIurl = `${this.url}/contrato/${id}`;
+    const APIurl = `${environment.apiUrl}/api/Contrato/${id}`;
     return this.http.get<string[]>(APIurl).pipe(
       map((response) => {
         if (!response || !Array.isArray(response) || response.length === 0)
