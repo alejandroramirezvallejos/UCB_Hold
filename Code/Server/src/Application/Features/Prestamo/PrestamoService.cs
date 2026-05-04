@@ -20,13 +20,13 @@ public class PrestamoService : Service<PrestamoEntity, PrestamoRepository, Prest
     public override async Task<Result<PrestamoDto>> Create(PrestamoEntity entity)
     {
         var dateValidation = ValidateDates(entity.FechaPrestamo, entity.FechaDevolucionEsperada);
-        
+
         if (!dateValidation.IsSuccess)
             return Result<PrestamoDto>.Error(dateValidation.Errors.FirstOrDefault() ?? "Error en fechas");
 
         var usuarioExists = await _dbContext.Usuarios
             .AnyAsync(u => u.Carnet == entity.Carnet && !u.EstadoEliminado);
-        
+
         if (!usuarioExists)
             return Result<PrestamoDto>.Error("Usuario no existe o está inactivo");
 
@@ -34,7 +34,7 @@ public class PrestamoService : Service<PrestamoEntity, PrestamoRepository, Prest
             .AnyAsync(p => p.Carnet == entity.Carnet
                         && (p.EstadoPrestamo == "activo" || p.EstadoPrestamo == "pendiente")
                         && !p.EstadoEliminado);
-       
+
         if (activePrestamoExists)
             return Result<PrestamoDto>.Error("Usuario tiene préstamo activo o pendiente");
 

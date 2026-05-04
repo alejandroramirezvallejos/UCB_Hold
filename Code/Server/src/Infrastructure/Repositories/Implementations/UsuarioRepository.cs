@@ -16,7 +16,7 @@ public class UsuarioRepository : Repository<UsuarioEntity, UsuarioDto>
         var entities = await DbContext.Usuarios
             .AsNoTracking()
             .ToListAsync();
-        
+
         return Result<List<UsuarioDto>>.Success(entities.Select(MapToDto).ToList());
     }
 
@@ -49,7 +49,7 @@ public class UsuarioRepository : Repository<UsuarioEntity, UsuarioDto>
         entity.EstadoEliminado = true;
         DbContext.Update(entity);
         await DbContext.SaveChangesAsync();
-        
+
         return Result<object>.Success(null!);
     }
 

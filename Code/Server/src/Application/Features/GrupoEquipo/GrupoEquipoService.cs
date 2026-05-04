@@ -59,7 +59,7 @@ public class GrupoEquipoService
     public async Task<Result<List<GrupoEquipoDto>>> Search(string? nombre = null, string? categoria = null)
     {
         var results = await _grupoRepository.Search(nombre, categoria);
-        
+
         return Result<List<GrupoEquipoDto>>.Success(results);
     }
 }

@@ -53,7 +53,7 @@ public class ContratoService
     public async Task<Result<ContratoDto>> GetByPrestamoId(int prestamoId)
     {
         var resultado = await _repository.GetByPrestamoId(prestamoId);
-        
+
         if (!resultado.IsSuccess)
             return Result<ContratoDto>.Error("Contrato no encontrado");
 

@@ -20,7 +20,7 @@ public class CarreraService : Service<CarreraEntity, CarreraRepository, CarreraD
             return Result<CarreraDto>.Error("Nombre de carrera es requerido");
 
         var existing = await _carreraRepository.GetByNombre(entity.Nombre);
-        
+
         if (existing != null)
             return Result<CarreraDto>.Error($"Ya existe una carrera con nombre '{entity.Nombre}'");
 
@@ -33,7 +33,7 @@ public class CarreraService : Service<CarreraEntity, CarreraRepository, CarreraD
             return Result<CarreraDto>.Error("Nombre de carrera es requerido");
 
         var existing = await _carreraRepository.GetByNombre(entity.Nombre);
-        
+
         if (existing != null && existing.Id != entity.Id)
             return Result<CarreraDto>.Error($"Ya existe otra carrera con nombre '{entity.Nombre}'");
 

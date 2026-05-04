@@ -16,7 +16,7 @@ public class EmpresaMantenimientoRepository : Repository<EmpresaMantenimientoEnt
         var entities = await DbContext.EmpresasMantenimiento
             .AsNoTracking()
             .ToListAsync();
-        
+
         return Result<List<EmpresaMantenimientoDto>>.Success(entities.Select(MapToDto).ToList());
     }
 

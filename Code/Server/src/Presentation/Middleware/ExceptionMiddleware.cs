@@ -56,7 +56,7 @@ public class ExceptionMiddleware
         };
 
         var options = new JsonSerializerOptions { PropertyNamingPolicy = null };
-        
+
         return context.Response.WriteAsync(JsonSerializer.Serialize(response, options));
     }
 }

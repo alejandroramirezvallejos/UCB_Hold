@@ -16,7 +16,7 @@ public class CategoriaRepository : Repository<CategoriaEntity, CategoriaDto>
         var entities = await DbContext.Categorias
             .AsNoTracking()
             .ToListAsync();
-        
+
         return Result<List<CategoriaDto>>.Success(entities.Select(MapToDto).ToList());
     }
 

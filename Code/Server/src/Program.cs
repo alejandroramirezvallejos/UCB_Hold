@@ -17,6 +17,7 @@ using IMT_Reservas.Server.Application.Features.Mantenimiento;
 using IMT_Reservas.Server.Application.Features.Mueble;
 using IMT_Reservas.Server.Application.Features.Prestamo;
 using IMT_Reservas.Server.Application.Features.Usuario;
+using IMT_Reservas.Server.Application.Features.Carrito;
 using IMT_Reservas.Server.Application.Features.Contrato;
 using IMT_Reservas.Server.Core.Entities;
 using IMT_Reservas.Server.Infrastructure.PostgreSQL;
@@ -74,6 +75,7 @@ builder.Services.AddScoped<GaveteroRepository>();
 builder.Services.AddScoped<MuebleRepository>();
 builder.Services.AddScoped<ContratoRepository>();
 builder.Services.AddScoped<UsuarioService>();
+builder.Services.AddScoped<CarritoService>();
 builder.Services.AddScoped<PrestamoService>();
 builder.Services.AddScoped<EquipoService>();
 builder.Services.AddScoped(sp => new Service<AccesorioEntity, AccesorioRepository, AccesorioDto>(
@@ -96,8 +98,8 @@ builder.Services.AddSingleton<IMongoClient>(new MongoClient(mongoDbConfig?.Conne
 
 var app = builder.Build();
 
-app.UseExceptionMiddleware();
 app.UseCors("AllowFrontend");
+app.UseExceptionMiddleware();
 
 if (app.Environment.IsDevelopment())
 {

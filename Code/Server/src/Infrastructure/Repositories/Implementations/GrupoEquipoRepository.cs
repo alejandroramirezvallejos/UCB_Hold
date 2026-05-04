@@ -17,8 +17,34 @@ public class GrupoEquipoRepository : Repository<GrupoEquipoEntity, GrupoEquipoDt
             .AsNoTracking()
             .ToListAsync();
 
-        var dtos = entities.Select(MapToDto).ToList();
+        var categories = await DbContext.Categorias.AsNoTracking().ToListAsync();
+
+        var dtos = entities.Select(e =>
+        {
+            var dto = MapToDto(e);
+            dto.NombreCategoria = categories.FirstOrDefault(c => c.Id == e.IdCategoria)?.Nombre;
+            return dto;
+        }).ToList();
+
         return Result<List<GrupoEquipoDto>>.Success(dtos);
+    }
+
+    public override async Task<Result<GrupoEquipoDto>> Get(int id)
+    {
+        var entity = await DbContext.GruposEquipos
+            .AsNoTracking()
+            .FirstOrDefaultAsync(g => g.Id == id && !g.EstadoEliminado);
+
+        if (entity == null) return Result<GrupoEquipoDto>.NotFound();
+
+        var category = await DbContext.Categorias
+            .AsNoTracking()
+            .FirstOrDefaultAsync(c => c.Id == entity.IdCategoria);
+
+        var dto = MapToDto(entity);
+        dto.NombreCategoria = category?.Nombre;
+
+        return Result<GrupoEquipoDto>.Success(dto);
     }
 
     public async Task<bool> ExistsActive(int id)
@@ -41,7 +67,7 @@ public class GrupoEquipoRepository : Repository<GrupoEquipoEntity, GrupoEquipoDt
         var result = entities.Select(e =>
         {
             var cat = categorias.FirstOrDefault(c => c.Id == e.IdCategoria);
-            
+
             return new GrupoEquipoDto
             {
                 Id = e.Id,

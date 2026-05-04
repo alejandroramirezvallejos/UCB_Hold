@@ -14,7 +14,7 @@ public abstract class Repository<TEntity, TDto> where TEntity : class where TDto
     {
         DbContext.Add(entity);
         await DbContext.SaveChangesAsync();
-        
+
         return Result<TDto>.Created(MapToDto(entity));
     }
 
@@ -22,27 +22,27 @@ public abstract class Repository<TEntity, TDto> where TEntity : class where TDto
     {
         DbContext.Update(entity);
         await DbContext.SaveChangesAsync();
-        
+
         return Result<TDto>.Success(MapToDto(entity));
     }
 
     public virtual async Task<Result<object>> Delete(int id)
     {
         var entity = await DbContext.FindAsync(typeof(TEntity), id);
-        
+
         if (entity == null)
             return Result<object>.NotFound();
 
         DbContext.Remove(entity);
         await DbContext.SaveChangesAsync();
-        
+
         return Result<object>.Success(null!);
     }
 
     public virtual async Task<Result<TDto>> Get(int id)
     {
         var entity = await DbContext.FindAsync(typeof(TEntity), id);
-        
+
         return entity == null
             ? Result<TDto>.NotFound()
             : Result<TDto>.Success(MapToDto((TEntity)entity));

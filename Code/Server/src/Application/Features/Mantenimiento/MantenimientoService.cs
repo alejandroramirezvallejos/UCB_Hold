@@ -27,7 +27,7 @@ public class MantenimientoService : Service<MantenimientoEntity, MantenimientoRe
 
         var empresaExists = await _dbContext.EmpresasMantenimiento
             .AnyAsync(e => e.Id == entity.IdEmpresa && !e.EstadoEliminado);
-        
+
         if (!empresaExists)
             return Result<MantenimientoDto>.Error("Empresa mantenimiento no existe");
 

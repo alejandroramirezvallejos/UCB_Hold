@@ -16,7 +16,7 @@ public class MantenimientoRepository : Repository<MantenimientoEntity, Mantenimi
         var entities = await DbContext.Mantenimientos
             .AsNoTracking()
             .ToListAsync();
-        
+
         return Result<List<MantenimientoDto>>.Success(entities.Select(MapToDto).ToList());
     }
 

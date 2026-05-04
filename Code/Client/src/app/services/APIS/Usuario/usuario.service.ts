@@ -32,7 +32,7 @@ export class UsuarioServiceAPI {
   }
   iniciarsesion(correo: string, contraseña: string) {
     const api = `${this.apiUrl}/login`;
-    const body = { email: correo, contrasena: contraseña };
+    const body = { Email: correo, Contrasena: contraseña };
     return this.http.post<any>(api, body).pipe(
       map(response=>({
         id : response.Value.Carnet,

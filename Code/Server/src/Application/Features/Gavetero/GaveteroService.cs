@@ -21,7 +21,7 @@ public class GaveteroService : Service<GaveteroEntity, GaveteroRepository, Gavet
     {
         var muebleExists = await _dbContext.Muebles
             .AnyAsync(m => m.Id == entity.IdMueble && !m.EstadoEliminado);
-       
+
         if (!muebleExists)
             return Result<GaveteroDto>.Error("Mueble no existe");
 

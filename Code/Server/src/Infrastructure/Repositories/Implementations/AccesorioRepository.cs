@@ -16,7 +16,7 @@ public class AccesorioRepository : Repository<AccesorioEntity, AccesorioDto>
         var entities = await DbContext.Accesorios
             .AsNoTracking()
             .ToListAsync();
-        
+
         return Result<List<AccesorioDto>>.Success(entities.Select(MapToDto).ToList());
     }
 

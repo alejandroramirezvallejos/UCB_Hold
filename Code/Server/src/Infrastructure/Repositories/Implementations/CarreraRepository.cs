@@ -16,7 +16,7 @@ public class CarreraRepository : Repository<CarreraEntity, CarreraDto>
         var entities = await DbContext.Carreras
             .AsNoTracking()
             .ToListAsync();
-        
+
         return Result<List<CarreraDto>>.Success(entities.Select(MapToDto).ToList());
     }
 

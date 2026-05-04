@@ -20,7 +20,7 @@ public class CategoriaService : Service<CategoriaEntity, CategoriaRepository, Ca
             return Result<CategoriaDto>.Error("Nombre de categoría es requerido");
 
         var existing = await _categoriaRepository.GetByNombre(entity.Nombre);
-        
+
         if (existing != null)
             return Result<CategoriaDto>.Error($"Ya existe una categoría con nombre '{entity.Nombre}'");
 
@@ -33,7 +33,7 @@ public class CategoriaService : Service<CategoriaEntity, CategoriaRepository, Ca
             return Result<CategoriaDto>.Error("Nombre de categoría es requerido");
 
         var existing = await _categoriaRepository.GetByNombre(entity.Nombre);
-        
+
         if (existing != null && existing.Id != entity.Id)
             return Result<CategoriaDto>.Error($"Ya existe otra categoría con nombre '{entity.Nombre}'");
 

@@ -16,7 +16,7 @@ public class ContratoRepository
     public async Task<Result<Contrato>> Create(Contrato contrato)
     {
         await _mongoContext.GetContratos.InsertOneAsync(contrato);
-        
+
         return Result<Contrato>.Success(contrato);
     }
 

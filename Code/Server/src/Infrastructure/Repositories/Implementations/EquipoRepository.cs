@@ -14,7 +14,7 @@ public class EquipoRepository : Repository<EquipoEntity, EquipoDto>
     public override async Task<Result<List<EquipoDto>>> GetAll(QueryFilter? filter = null)
     {
         var entities = await DbContext.Equipos.AsNoTracking().ToListAsync();
-        
+
         return Result<List<EquipoDto>>.Success(entities.Select(MapToDto).ToList());
     }
 

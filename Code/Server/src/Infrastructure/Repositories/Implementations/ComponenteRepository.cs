@@ -16,7 +16,7 @@ public class ComponenteRepository : Repository<ComponenteEntity, ComponenteDto>
         var entities = await DbContext.Componentes
             .AsNoTracking()
             .ToListAsync();
-     
+
         return Result<List<ComponenteDto>>.Success(entities.Select(MapToDto).ToList());
     }
 
