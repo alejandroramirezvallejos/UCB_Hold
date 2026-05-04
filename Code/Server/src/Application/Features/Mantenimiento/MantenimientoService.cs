@@ -9,13 +9,11 @@ namespace IMT_Reservas.Server.Application.Features.Mantenimiento;
 
 public class MantenimientoService : Service<MantenimientoEntity, MantenimientoRepository, MantenimientoDto>
 {
-    private readonly MantenimientoRepository _repository;
     private readonly ApplicationDbContext _dbContext;
 
     public MantenimientoService(MantenimientoRepository repository, ApplicationDbContext dbContext)
         : base(repository)
     {
-        _repository = repository;
         _dbContext = dbContext;
     }
 

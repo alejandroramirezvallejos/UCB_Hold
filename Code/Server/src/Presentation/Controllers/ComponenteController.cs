@@ -1,7 +1,7 @@
 using Microsoft.AspNetCore.Mvc;
-using IMT_Reservas.Server.Application.Features.Componente;
 using IMT_Reservas.Server.Application.Abstraction;
 using IMT_Reservas.Server.Application.Features.Componente.Dtos;
+using IMT_Reservas.Server.Infrastructure.Repositories.Implementations;
 using ComponenteEntity = IMT_Reservas.Server.Core.Entities.Componente;
 using AutoMapper;
 namespace IMT_Reservas.Server.Presentation.Controllers;
@@ -10,10 +10,10 @@ namespace IMT_Reservas.Server.Presentation.Controllers;
 [Route("api/[controller]")]
 public class ComponenteController : ControllerBase
 {
-    private readonly ComponenteService _service;
+    private readonly Service<ComponenteEntity, ComponenteRepository, ComponenteDto> _service;
     private readonly IMapper _mapper;
 
-    public ComponenteController(ComponenteService service, IMapper mapper)
+    public ComponenteController(Service<ComponenteEntity, ComponenteRepository, ComponenteDto> service, IMapper mapper)
     {
         _service = service;
         _mapper = mapper;

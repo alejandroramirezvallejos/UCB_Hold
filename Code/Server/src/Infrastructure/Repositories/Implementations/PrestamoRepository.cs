@@ -12,16 +12,6 @@ public class PrestamoRepository : Repository<PrestamoEntity, PrestamoDto>
     public async Task<bool> ExistsActive(int id)
         => await DbContext.Prestamos.AnyAsync(p => p.Id == id && !p.EstadoEliminado);
 
-    public async Task<IEnumerable<PrestamoEntity>> GetByCarnet(string carnet)
-        => await DbContext.Prestamos
-            .Where(p => p.Carnet == carnet && !p.EstadoEliminado)
-            .ToListAsync();
-
-    public async Task<IEnumerable<PrestamoEntity>> GetByState(string estadoPrestamo)
-        => await DbContext.Prestamos
-            .Where(p => p.EstadoPrestamo == estadoPrestamo && !p.EstadoEliminado)
-            .ToListAsync();
-
     protected override PrestamoDto MapToDto(PrestamoEntity entity) => new()
     {
         Id = entity.Id,

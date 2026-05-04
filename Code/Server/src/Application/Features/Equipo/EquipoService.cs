@@ -9,13 +9,11 @@ namespace IMT_Reservas.Server.Application.Features.Equipo;
 
 public class EquipoService : Service<EquipoEntity, EquipoRepository, EquipoDto>
 {
-    private readonly EquipoRepository _repository;
     private readonly ApplicationDbContext _dbContext;
 
     public EquipoService(EquipoRepository repository, ApplicationDbContext dbContext)
         : base(repository)
     {
-        _repository = repository;
         _dbContext = dbContext;
     }
 

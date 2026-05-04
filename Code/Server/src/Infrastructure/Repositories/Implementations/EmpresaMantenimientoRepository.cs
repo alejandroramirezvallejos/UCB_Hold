@@ -1,4 +1,6 @@
+using Ardalis.Result;
 using IMT_Reservas.Server.Application.Features.EmpresaMantenimiento.Dtos;
+using IMT_Reservas.Server.Core.Common;
 using IMT_Reservas.Server.Infrastructure.PostgreSQL;
 using IMT_Reservas.Server.Infrastructure.Repositories.Abstraction;
 using Microsoft.EntityFrameworkCore;
@@ -8,6 +10,26 @@ namespace IMT_Reservas.Server.Infrastructure.Repositories.Implementations;
 public class EmpresaMantenimientoRepository : Repository<EmpresaMantenimientoEntity, EmpresaMantenimientoDto>
 {
     public EmpresaMantenimientoRepository(ApplicationDbContext dbContext) : base(dbContext) { }
+
+    public override async Task<Result<List<EmpresaMantenimientoDto>>> GetAll(QueryFilter? filter = null)
+    {
+        var entities = await DbContext.EmpresasMantenimiento
+            .AsNoTracking()
+            .ToListAsync();
+        
+        return Result<List<EmpresaMantenimientoDto>>.Success(entities.Select(MapToDto).ToList());
+    }
+
+    public override async Task<Result<EmpresaMantenimientoDto>> Get(int id)
+    {
+        var entity = await DbContext.EmpresasMantenimiento
+            .AsNoTracking()
+            .FirstOrDefaultAsync(e => e.Id == id);
+
+        return entity == null
+            ? Result<EmpresaMantenimientoDto>.NotFound()
+            : Result<EmpresaMantenimientoDto>.Success(MapToDto(entity));
+    }
 
     public async Task<EmpresaMantenimientoEntity?> GetByNombre(string nombre)
         => await DbContext.EmpresasMantenimiento.FirstOrDefaultAsync(e => e.Nombre == nombre && !e.EstadoEliminado);

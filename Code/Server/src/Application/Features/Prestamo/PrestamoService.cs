@@ -9,19 +9,18 @@ namespace IMT_Reservas.Server.Application.Features.Prestamo;
 
 public class PrestamoService : Service<PrestamoEntity, PrestamoRepository, PrestamoDto>
 {
-    private readonly PrestamoRepository _repository;
     private readonly ApplicationDbContext _dbContext;
 
     public PrestamoService(PrestamoRepository repository, ApplicationDbContext dbContext)
         : base(repository)
     {
-        _repository = repository;
         _dbContext = dbContext;
     }
 
     public override async Task<Result<PrestamoDto>> Create(PrestamoEntity entity)
     {
         var dateValidation = ValidateDates(entity.FechaPrestamo, entity.FechaDevolucionEsperada);
+        
         if (!dateValidation.IsSuccess)
             return Result<PrestamoDto>.Error(dateValidation.Errors.FirstOrDefault() ?? "Error en fechas");
 

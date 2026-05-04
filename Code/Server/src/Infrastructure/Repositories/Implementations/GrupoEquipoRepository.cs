@@ -25,6 +25,7 @@ public class GrupoEquipoRepository : Repository<GrupoEquipoEntity, GrupoEquipoDt
     {
         var entity = await DbContext.GruposEquipos
             .Include(g => g.Categoria)
+            .AsNoTracking()
             .FirstOrDefaultAsync(g => g.Id == id);
 
         return entity == null
@@ -52,6 +53,7 @@ public class GrupoEquipoRepository : Repository<GrupoEquipoEntity, GrupoEquipoDt
         var result = entities.Select(e =>
         {
             var cat = categorias.FirstOrDefault(c => c.Id == e.IdCategoria);
+            
             return new GrupoEquipoDto
             {
                 Id = e.Id,

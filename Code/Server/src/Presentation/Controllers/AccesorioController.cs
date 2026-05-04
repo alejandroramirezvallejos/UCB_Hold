@@ -1,7 +1,7 @@
 using Microsoft.AspNetCore.Mvc;
-using IMT_Reservas.Server.Application.Features.Accesorio;
 using IMT_Reservas.Server.Application.Abstraction;
 using IMT_Reservas.Server.Application.Features.Accesorio.Dtos;
+using IMT_Reservas.Server.Infrastructure.Repositories.Implementations;
 using AccesorioEntity = IMT_Reservas.Server.Core.Entities.Accesorio;
 using AutoMapper;
 namespace IMT_Reservas.Server.Presentation.Controllers;
@@ -10,10 +10,10 @@ namespace IMT_Reservas.Server.Presentation.Controllers;
 [Route("api/[controller]")]
 public class AccesorioController : ControllerBase
 {
-    private readonly AccesorioService _service;
+    private readonly Service<AccesorioEntity, AccesorioRepository, AccesorioDto> _service;
     private readonly IMapper _mapper;
 
-    public AccesorioController(AccesorioService service, IMapper mapper)
+    public AccesorioController(Service<AccesorioEntity, AccesorioRepository, AccesorioDto> service, IMapper mapper)
     {
         _service = service;
         _mapper = mapper;

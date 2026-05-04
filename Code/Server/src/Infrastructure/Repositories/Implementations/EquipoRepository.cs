@@ -1,4 +1,6 @@
+using Ardalis.Result;
 using IMT_Reservas.Server.Application.Features.Equipo.Dtos;
+using IMT_Reservas.Server.Core.Common;
 using IMT_Reservas.Server.Infrastructure.PostgreSQL;
 using IMT_Reservas.Server.Infrastructure.Repositories.Abstraction;
 using Microsoft.EntityFrameworkCore;
@@ -8,6 +10,25 @@ namespace IMT_Reservas.Server.Infrastructure.Repositories.Implementations;
 public class EquipoRepository : Repository<EquipoEntity, EquipoDto>
 {
     public EquipoRepository(ApplicationDbContext dbContext) : base(dbContext) { }
+
+    public override async Task<Result<List<EquipoDto>>> GetAll(QueryFilter? filter = null)
+    {
+        var entities = await DbContext.Equipos
+            .AsNoTracking()
+            .ToListAsync();
+        return Result<List<EquipoDto>>.Success(entities.Select(MapToDto).ToList());
+    }
+
+    public override async Task<Result<EquipoDto>> Get(int id)
+    {
+        var entity = await DbContext.Equipos
+            .AsNoTracking()
+            .FirstOrDefaultAsync(e => e.Id == id && !e.EstadoEliminado);
+
+        return entity == null
+            ? Result<EquipoDto>.NotFound()
+            : Result<EquipoDto>.Success(MapToDto(entity));
+    }
 
     public async Task<bool> ExistsActive(int id)
         => await DbContext.Equipos.AnyAsync(e => e.Id == id && !e.EstadoEliminado);

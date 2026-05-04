@@ -1,4 +1,6 @@
+using Ardalis.Result;
 using IMT_Reservas.Server.Application.Features.Gavetero.Dtos;
+using IMT_Reservas.Server.Core.Common;
 using IMT_Reservas.Server.Infrastructure.PostgreSQL;
 using IMT_Reservas.Server.Infrastructure.Repositories.Abstraction;
 using Microsoft.EntityFrameworkCore;
@@ -9,12 +11,28 @@ public class GaveteroRepository : Repository<GaveteroEntity, GaveteroDto>
 {
     public GaveteroRepository(ApplicationDbContext dbContext) : base(dbContext) { }
 
+    public override async Task<Result<List<GaveteroDto>>> GetAll(QueryFilter? filter = null)
+    {
+        var entities = await DbContext.Gaveteros
+            .AsNoTracking()
+            .ToListAsync();
+        return Result<List<GaveteroDto>>.Success(entities.Select(MapToDto).ToList());
+    }
+
+    public override async Task<Result<GaveteroDto>> Get(int id)
+    {
+        var entity = await DbContext.Gaveteros
+            .AsNoTracking()
+            .FirstOrDefaultAsync(g => g.Id == id && !g.EstadoEliminado);
+
+        return entity == null
+            ? Result<GaveteroDto>.NotFound()
+            : Result<GaveteroDto>.Success(MapToDto(entity));
+    }
+
     public async Task<bool> ExistsActive(int id)
         => await DbContext.Gaveteros.AnyAsync(g => g.Id == id && !g.EstadoEliminado);
 
-    public async Task<bool> ExistsActiveByNombre(string nombre)
-        => await DbContext.Gaveteros.AnyAsync(g => g.Nombre == nombre && !g.EstadoEliminado);
-    
     public async Task<int?> GetMuebleByNombre(string nombreMueble)
         => await DbContext.Muebles
             .Where(m => m.Nombre == nombreMueble && !m.EstadoEliminado)

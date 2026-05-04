@@ -1,5 +1,6 @@
 using IMT_Reservas.Server.Infrastructure.PostgreSQL;
 using IMT_Reservas.Server.Application.Features.Usuario.Dtos;
+using IMT_Reservas.Server.Core.Common;
 using IMT_Reservas.Server.Infrastructure.Repositories.Abstraction;
 using Ardalis.Result;
 using Microsoft.EntityFrameworkCore;
@@ -9,6 +10,15 @@ namespace IMT_Reservas.Server.Infrastructure.Repositories.Implementations;
 public class UsuarioRepository : Repository<UsuarioEntity, UsuarioDto>
 {
     public UsuarioRepository(ApplicationDbContext dbContext) : base(dbContext) { }
+
+    public override async Task<Result<List<UsuarioDto>>> GetAll(QueryFilter? filter = null)
+    {
+        var entities = await DbContext.Usuarios
+            .AsNoTracking()
+            .ToListAsync();
+        
+        return Result<List<UsuarioDto>>.Success(entities.Select(MapToDto).ToList());
+    }
 
     public async Task<UsuarioEntity?> GetByCarnet(string carnet)
     {
@@ -51,7 +61,6 @@ public class UsuarioRepository : Repository<UsuarioEntity, UsuarioDto>
         ApellidoMaterno = entity.ApellidoMaterno,
         Rol = entity.Rol,
         Email = entity.Email,
-        Contrasena = entity.Contrasena,
         CarreraNombre = null,
         IdCarrera = entity.IdCarrera,
         Telefono = entity.Telefono,

@@ -7,12 +7,7 @@ namespace IMT_Reservas.Server.Application.Features.Mueble;
 
 public class MuebleService : Service<MuebleEntity, MuebleRepository, MuebleDto>
 {
-    private readonly MuebleRepository _repository;
-
-    public MuebleService(MuebleRepository repository) : base(repository)
-    {
-        _repository = repository;
-    }
+    public MuebleService(MuebleRepository repository) : base(repository) {}
 
     public override async Task<Result<MuebleDto>> Create(MuebleEntity entity)
     {

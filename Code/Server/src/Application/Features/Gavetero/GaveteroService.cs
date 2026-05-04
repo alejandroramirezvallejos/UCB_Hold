@@ -9,13 +9,11 @@ namespace IMT_Reservas.Server.Application.Features.Gavetero;
 
 public class GaveteroService : Service<GaveteroEntity, GaveteroRepository, GaveteroDto>
 {
-    private readonly GaveteroRepository _repository;
     private readonly ApplicationDbContext _dbContext;
 
     public GaveteroService(GaveteroRepository repository, ApplicationDbContext dbContext)
         : base(repository)
     {
-        _repository = repository;
         _dbContext = dbContext;
     }
 

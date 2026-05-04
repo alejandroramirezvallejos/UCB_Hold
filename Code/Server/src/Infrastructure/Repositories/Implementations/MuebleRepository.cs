@@ -1,5 +1,6 @@
 using Ardalis.Result;
 using IMT_Reservas.Server.Application.Features.Mueble.Dtos;
+using IMT_Reservas.Server.Core.Common;
 using IMT_Reservas.Server.Infrastructure.PostgreSQL;
 using IMT_Reservas.Server.Infrastructure.Repositories.Abstraction;
 using Microsoft.EntityFrameworkCore;
@@ -10,24 +11,30 @@ public class MuebleRepository : Repository<MuebleEntity, MuebleDto>
 {
     public MuebleRepository(ApplicationDbContext dbContext) : base(dbContext) { }
 
+    public override async Task<Result<List<MuebleDto>>> GetAll(QueryFilter? filter = null)
+    {
+        var entities = await DbContext.Muebles
+            .AsNoTracking()
+            .ToListAsync();
+        return Result<List<MuebleDto>>.Success(entities.Select(MapToDto).ToList());
+    }
+
+    public override async Task<Result<MuebleDto>> Get(int id)
+    {
+        var entity = await DbContext.Muebles
+            .AsNoTracking()
+            .FirstOrDefaultAsync(m => m.Id == id);
+
+        return entity == null
+            ? Result<MuebleDto>.NotFound()
+            : Result<MuebleDto>.Success(MapToDto(entity));
+    }
+
     public async Task<MuebleEntity?> GetByNombre(string nombre)
         => await DbContext.Muebles.FirstOrDefaultAsync(m => m.Nombre == nombre && !m.EstadoEliminado);
 
     public async Task<bool> ExistsActive(int id)
         => await DbContext.Muebles.AnyAsync(m => m.Id == id && !m.EstadoEliminado);
-
-    public async Task<Result<object>> UpdateCount(int idMueble, int increment)
-    {
-        var mueble = await DbContext.Muebles.FirstOrDefaultAsync(m => m.Id == idMueble && !m.EstadoEliminado);
-        
-        if (mueble == null)
-            return Result<object>.NotFound();
-
-        mueble.NumeroGaveteros = Math.Max(0, mueble.NumeroGaveteros + increment);
-        await DbContext.SaveChangesAsync();
-        
-        return Result<object>.Success(null!);
-    }
 
     protected override MuebleDto MapToDto(MuebleEntity entity) => new()
     {

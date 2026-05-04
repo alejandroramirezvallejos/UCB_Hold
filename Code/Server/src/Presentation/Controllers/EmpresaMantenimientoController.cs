@@ -1,7 +1,7 @@
 using Microsoft.AspNetCore.Mvc;
-using IMT_Reservas.Server.Application.Features.EmpresaMantenimiento;
 using IMT_Reservas.Server.Application.Abstraction;
 using IMT_Reservas.Server.Application.Features.EmpresaMantenimiento.Dtos;
+using IMT_Reservas.Server.Infrastructure.Repositories.Implementations;
 using EmpresaMantenimientoEntity = IMT_Reservas.Server.Core.Entities.EmpresaMantenimiento;
 using AutoMapper;
 namespace IMT_Reservas.Server.Presentation.Controllers;
@@ -10,10 +10,10 @@ namespace IMT_Reservas.Server.Presentation.Controllers;
 [Route("api/[controller]")]
 public class EmpresaMantenimientoController : ControllerBase
 {
-    private readonly EmpresaMantenimientoService _service;
+    private readonly Service<EmpresaMantenimientoEntity, EmpresaMantenimientoRepository, EmpresaMantenimientoDto> _service;
     private readonly IMapper _mapper;
 
-    public EmpresaMantenimientoController(EmpresaMantenimientoService service, IMapper mapper)
+    public EmpresaMantenimientoController(Service<EmpresaMantenimientoEntity, EmpresaMantenimientoRepository, EmpresaMantenimientoDto> service, IMapper mapper)
     {
         _service = service;
         _mapper = mapper;

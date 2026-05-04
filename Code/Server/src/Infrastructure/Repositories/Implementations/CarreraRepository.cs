@@ -1,4 +1,6 @@
+using Ardalis.Result;
 using IMT_Reservas.Server.Application.Features.Carrera.Dtos;
+using IMT_Reservas.Server.Core.Common;
 using IMT_Reservas.Server.Infrastructure.PostgreSQL;
 using IMT_Reservas.Server.Infrastructure.Repositories.Abstraction;
 using Microsoft.EntityFrameworkCore;
@@ -8,6 +10,26 @@ namespace IMT_Reservas.Server.Infrastructure.Repositories.Implementations;
 public class CarreraRepository : Repository<CarreraEntity, CarreraDto>
 {
     public CarreraRepository(ApplicationDbContext dbContext) : base(dbContext) { }
+
+    public override async Task<Result<List<CarreraDto>>> GetAll(QueryFilter? filter = null)
+    {
+        var entities = await DbContext.Carreras
+            .AsNoTracking()
+            .ToListAsync();
+        
+        return Result<List<CarreraDto>>.Success(entities.Select(MapToDto).ToList());
+    }
+
+    public override async Task<Result<CarreraDto>> Get(int id)
+    {
+        var entity = await DbContext.Carreras
+            .AsNoTracking()
+            .FirstOrDefaultAsync(c => c.Id == id);
+
+        return entity == null
+            ? Result<CarreraDto>.NotFound()
+            : Result<CarreraDto>.Success(MapToDto(entity));
+    }
 
     public async Task<CarreraEntity?> GetByNombre(string nombre)
         => await DbContext.Carreras.FirstOrDefaultAsync(c => c.Nombre == nombre && !c.EstadoEliminado);

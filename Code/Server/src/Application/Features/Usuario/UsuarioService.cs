@@ -11,13 +11,11 @@ namespace IMT_Reservas.Server.Application.Features.Usuario;
 
 public class UsuarioService : Service<UsuarioEntity, UsuarioRepository, UsuarioDto>
 {
-    private readonly UsuarioRepository _repository;
     private readonly ApplicationDbContext _dbContext;
 
     public UsuarioService(UsuarioRepository repository, ApplicationDbContext dbContext)
         : base(repository)
     {
-        _repository = repository;
         _dbContext = dbContext;
     }
 
