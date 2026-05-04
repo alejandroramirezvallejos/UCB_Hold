@@ -16,15 +16,10 @@ export class DisponibilidadService {
         CantidadDisponible: item.CantidadDisponible
     } as Disponibilidad;  
   }
-   private toLocalISOString(date: Date): string {
-    const offset = date.getTimezoneOffset();
-    const localDate = new Date(date.getTime() - offset * 60000);
-    return localDate.toISOString().split('Z')[0];
-  }
   obtenerDisponibilidad(fechaInicio: Date, fechaFin: Date, grupoEquipoIds: number[]) {
     const payload = {
-      FechaInicio: this.toLocalISOString(fechaInicio),
-      FechaFin: this.toLocalISOString(fechaFin),
+      FechaInicio: fechaInicio.toISOString(),
+      FechaFin: fechaFin.toISOString(),
       ArrayIds: grupoEquipoIds
     };
     return this.http.post<any>(this.url, payload).pipe(
