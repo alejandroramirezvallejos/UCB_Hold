@@ -5,8 +5,6 @@ public class Equipo : Entity
     public int IdGrupoEquipo { get; set; }
     public int CodigoImt { get; set; }
     public int? IdGavetero { get; set; }
-    public string? Modelo { get; set; }
-    public string? Marca { get; set; }
     public string? CodigoUcb { get; set; }
     public string? NumeroSerial { get; set; }
     public string? EstadoEquipo { get; set; }

@@ -43,7 +43,6 @@ public class EmpresaMantenimientoRepository : Repository<EmpresaMantenimientoEnt
         NombreResponsable = entity.NombreResponsable,
         ApellidoResponsable = entity.ApellidoResponsable,
         Telefono = entity.Telefono,
-        Nit = entity.Nit,
         Direccion = entity.Direccion
     };
 }

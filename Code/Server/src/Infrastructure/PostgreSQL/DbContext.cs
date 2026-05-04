@@ -126,8 +126,6 @@ public class ApplicationDbContext : DbContext
             entity.HasKey(e => e.Id);
             entity.Property(e => e.Id).HasColumnName("id_equipo");
             entity.Property(e => e.CodigoImt).IsRequired().HasColumnName("codigo_imt");
-            entity.Property(e => e.Modelo).HasMaxLength(255).HasColumnName("modelo");
-            entity.Property(e => e.Marca).HasMaxLength(255).HasColumnName("marca");
             entity.Property(e => e.CodigoUcb).HasMaxLength(256).HasColumnName("codigo_ucb");
             entity.Property(e => e.NumeroSerial).HasMaxLength(255).HasColumnName("numero_serial");
             entity.Property(e => e.Ubicacion).HasMaxLength(255).HasColumnName("ubicacion");

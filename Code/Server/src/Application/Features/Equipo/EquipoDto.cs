@@ -5,8 +5,6 @@ public class EquipoDto
     public int? Id { get; set; }
     public int? CodigoImt { get; set; }
     public string? CodigoUcb { get; set; }
-    public string? Modelo { get; set; }
-    public string? Marca { get; set; }
     public string? NumeroSerial { get; set; }
     public string? EstadoEquipo { get; set; }
     public string? Ubicacion { get; set; }
