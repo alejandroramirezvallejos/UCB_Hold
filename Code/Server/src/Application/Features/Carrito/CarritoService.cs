@@ -32,11 +32,10 @@ public class CarritoService
                 join p in _dbContext.Prestamos on dp.IdPrestamo equals p.Id
                 join e in _dbContext.Equipos on dp.IdEquipo equals e.Id
                 where request.ArrayIds.Contains(e.IdGrupoEquipo) &&
-                      p.EstadoPrestamo != "cancelado" &&
-                      p.EstadoPrestamo != "rechazado" &&
+                      (p.EstadoPrestamo == "activo" || p.EstadoPrestamo == "pendiente") &&
                       p.FechaPrestamoEsperada.Date <= fechaFin &&
                       p.FechaDevolucionEsperada.Date >= fechaInicio
-                select new { IdGrupoEquipo = e.IdGrupoEquipo, FechaPrestamoEsperada = p.FechaPrestamoEsperada, FechaDevolucionEsperada = p.FechaDevolucionEsperada })
+                select new { e.IdGrupoEquipo, p.FechaPrestamoEsperada, p.FechaDevolucionEsperada })
             .ToListAsync();
 
         for (var date = fechaInicio; date <= fechaFin; date = date.AddDays(1))

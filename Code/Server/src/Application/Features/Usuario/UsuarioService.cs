@@ -68,7 +68,8 @@ public class UsuarioService : Service<UsuarioEntity, UsuarioRepository, UsuarioD
         if (usuario == null)
             return Result<UsuarioDto>.Unauthorized("Credenciales inválidas");
 
-        var passwordValid = false;
+        bool passwordValid;
+        
         if (string.IsNullOrEmpty(usuario.Contrasena))
             passwordValid = false;
         else if (usuario.Contrasena.StartsWith("$2") && usuario.Contrasena.Length == 60)
