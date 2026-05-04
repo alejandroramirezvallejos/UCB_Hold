@@ -62,6 +62,8 @@ export class ObjetoComponent {
       next: (data) => {
         if(data && data.length > 0){
           this.cantidadDisponible = data[0].CantidadDisponible;
+        } else {
+          this.cantidadDisponible = this.producto.Cantidad ?? 0;
         }
         this.cargando = false;
       },

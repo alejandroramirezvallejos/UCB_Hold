@@ -17,9 +17,16 @@ export class DisponibilidadService {
     } as Disponibilidad;  
   }
   obtenerDisponibilidad(fechaInicio: Date, fechaFin: Date, grupoEquipoIds: number[]) {
+    const toLocalDate = (date: Date): string => {
+      const year = date.getFullYear();
+      const month = String(date.getMonth() + 1).padStart(2, '0');
+      const day = String(date.getDate()).padStart(2, '0');
+      return `${year}-${month}-${day}T00:00:00Z`;
+    };
+
     const payload = {
-      FechaInicio: fechaInicio.toISOString(),
-      FechaFin: fechaFin.toISOString(),
+      FechaInicio: toLocalDate(fechaInicio),
+      FechaFin: toLocalDate(fechaFin),
       ArrayIds: grupoEquipoIds
     };
     return this.http.post<any>(this.url, payload).pipe(
