@@ -8,7 +8,7 @@ public class Prestamo : Entity
     public DateTime FechaDevolucionEsperada { get; set; }
     public DateTime? FechaDevolucion { get; set; }
     public string Carnet { get; set; } = string.Empty;
-    public string? EstadoPrestamo { get; set; }
+    public EstadoPrestamo EstadoPrestamo { get; set; }
     public string? Observacion { get; set; }
     public string? IdContrato { get; set; }
     public bool EstadoEliminado { get; set; }

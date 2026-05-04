@@ -139,7 +139,13 @@ export class CarritoComponent {
         },
         error: (error) => {
           console.error('Error al crear préstamo:', error);
-          this.mensajeerror = error.error?.error + ' - ' + error.error?.mensaje || error.message;
+          const serverErrors =
+            error?.error?.Errors || error?.error?.errors || [];
+          const validationErrors =
+            error?.error?.ValidationErrors || error?.error?.validationErrors || [];
+          const validationMsg = validationErrors[0]?.description;
+          this.mensajeerror =
+            serverErrors[0] || validationMsg || error.message || 'Error desconocido';
           this.errorboton.set(true);
         }
       });

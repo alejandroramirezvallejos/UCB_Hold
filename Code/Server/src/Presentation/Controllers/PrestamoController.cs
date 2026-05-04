@@ -2,6 +2,7 @@ using Microsoft.AspNetCore.Mvc;
 using IMT_Reservas.Server.Application.Features.Prestamo;
 using IMT_Reservas.Server.Application.Abstraction;
 using IMT_Reservas.Server.Application.Features.Prestamo.Dtos;
+using IMT_Reservas.Server.Core.Entities;
 using PrestamoEntity = IMT_Reservas.Server.Core.Entities.Prestamo;
 namespace IMT_Reservas.Server.Presentation.Controllers;
 
@@ -42,7 +43,7 @@ public class PrestamoController : ControllerBase
             FechaDevolucion = request.FechaDevolucion,
             FechaDevolucionEsperada = request.FechaDevolucionEsperada ?? DateTime.UtcNow.AddDays(7),
             Observacion = request.Observacion,
-            EstadoPrestamo = "pendiente",
+            EstadoPrestamo = EstadoPrestamo.Pendiente,
             IdContrato = request.IdContrato
         };
         var result = await _service.Create(entity);
@@ -64,7 +65,7 @@ public class PrestamoController : ControllerBase
             FechaDevolucion = dto.FechaDevolucion,
             FechaDevolucionEsperada = dto.FechaDevolucionEsperada ?? DateTime.UtcNow.AddDays(7),
             Observacion = dto.Observacion,
-            EstadoPrestamo = dto.EstadoPrestamo,
+            EstadoPrestamo = EstadoPrestamoParse.ParseOrDefault(dto.EstadoPrestamo, EstadoPrestamo.Pendiente),
             IdContrato = dto.IdContrato
         };
         var result = await _service.Update(entity);

@@ -1,7 +1,7 @@
 import { HttpClient } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { environment } from '../../../../environments/environment';
-import { map } from 'rxjs';
+import { map, throwError } from 'rxjs';
 import { Carrito } from '../../../models/carrito';
 import { Prestamos } from '../../../models/admin/Prestamos';
 @Injectable({
@@ -52,18 +52,31 @@ export class PrestamosAPIService {
       );
   }
   crearPrestamo(carrito: Carrito, carnet: string, contrato: Blob | null) {
-    const grupoid: number[] = [];
-    for (const [key, value] of Object.entries(carrito)) {
-      if (carrito[Number(key)].cantidad > 0) {
-        for (let i = 0; i < carrito[Number(key)].cantidad; i++) {
-          grupoid.push(Number(key));
-        }
-      }
+    const firstItem = Object.values(carrito).find(
+      (item) => item && item.cantidad > 0,
+    );
+    if (!firstItem?.fecha_inicio || !firstItem?.fecha_final) {
+      return throwError(
+        () => new Error('Fechas de préstamo incompletas en el carrito'),
+      );
+    }
+
+    const fechaInicio = new Date(`${firstItem.fecha_inicio}T00:00:00`);
+    const fechaFinal = new Date(`${firstItem.fecha_final}T00:00:00`);
+    if (Number.isNaN(fechaInicio.getTime()) || Number.isNaN(fechaFinal.getTime())) {
+      return throwError(
+        () => new Error('Formato de fechas inválido en el carrito'),
+      );
+    }
+    if (fechaInicio >= fechaFinal) {
+      return throwError(
+        () => new Error('La fecha de inicio debe ser menor a la fecha final'),
+      );
     }
     const envio = {
       CarnetUsuario: carnet,
-      FechaPrestamoEsperada: carrito[grupoid[0]].fecha_inicio || '',
-      FechaDevolucionEsperada: carrito[grupoid[0]].fecha_final || '',
+      FechaPrestamoEsperada: firstItem.fecha_inicio,
+      FechaDevolucionEsperada: firstItem.fecha_final,
       Observacion: '',
     };
     return this.http.post<any>(this.url, envio);

@@ -161,8 +161,18 @@ export class FormularioComponent implements OnInit {
         error: (error) => {
           console.error('Error al crear préstamo:', error);
           this.error.set(true);
+          const serverErrors =
+            error?.error?.Errors || error?.error?.errors || [];
+          const validationErrors =
+            error?.error?.ValidationErrors ||
+            error?.error?.validationErrors ||
+            [];
+          const validationMsg = validationErrors[0]?.description;
           this.mensajeerror =
-            error.error?.error + ' - ' + error.error?.mensaje || error.message;
+            serverErrors[0] ||
+            validationMsg ||
+            error.message ||
+            'Error desconocido';
         },
       });
   }

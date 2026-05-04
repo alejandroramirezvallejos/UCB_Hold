@@ -2,6 +2,7 @@ using Ardalis.Result;
 using IMT_Reservas.Server.Application.Abstraction;
 using IMT_Reservas.Server.Application.Features.Prestamo.Dtos;
 using IMT_Reservas.Server.Infrastructure.PostgreSQL;
+using IMT_Reservas.Server.Core.Entities;
 using IMT_Reservas.Server.Infrastructure.Repositories.Implementations;
 using IMT_Reservas.Server.Infrastructure.MongoDb;
 using Microsoft.EntityFrameworkCore;
@@ -28,14 +29,6 @@ public class PrestamoService : Service<PrestamoEntity, PrestamoRepository, Prest
         if (!usuarioExists)
             return Result<PrestamoDto>.Error("Usuario no existe o está inactivo");
 
-        var activePrestamoExists = await _dbContext.Prestamos
-            .AnyAsync(p => p.Carnet == entity.Carnet
-                        && (p.EstadoPrestamo == "activo" || p.EstadoPrestamo == "pendiente")
-                        && !p.EstadoEliminado);
-
-        if (activePrestamoExists)
-            return Result<PrestamoDto>.Error("Usuario tiene préstamo activo o pendiente");
-
         return await base.Create(entity);
     }
 
@@ -59,7 +52,7 @@ public class PrestamoService : Service<PrestamoEntity, PrestamoRepository, Prest
                 .Select(d => d.IdPrestamo)
                 .Contains(p.Id))
             .Where(p => p.FechaPrestamo <= fechaFin && p.FechaDevolucion >= fechaInicio)
-            .Where(p => p.EstadoPrestamo != "cancelado" && p.EstadoPrestamo != "rechazado")
+            .Where(p => p.EstadoPrestamo != EstadoPrestamo.Cancelado && p.EstadoPrestamo != EstadoPrestamo.Rechazado)
             .AnyAsync();
 
         if (prestamosEnRango)
@@ -112,7 +105,12 @@ public class PrestamoService : Service<PrestamoEntity, PrestamoRepository, Prest
         var prestamos = await _dbContext.Prestamos.Where(p => p.Carnet == carnetUsuario).ToListAsync();
 
         if (!string.IsNullOrEmpty(estadoPrestamo) && estadoPrestamo != "todos")
-            prestamos = prestamos.Where(p => p.EstadoPrestamo == estadoPrestamo).ToList();
+        {
+            if (!EstadoPrestamoParse.TryParse(estadoPrestamo, out var estado))
+                return Result<List<PrestamoDto>>.Error("Estado préstamo no válido");
+
+            prestamos = prestamos.Where(p => p.EstadoPrestamo == estado).ToList();
+        }
 
         var dtos = prestamos.Select(p => Repository.ConvertToDto(p)).ToList();
 

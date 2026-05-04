@@ -1,4 +1,5 @@
 using IMT_Reservas.Server.Infrastructure.PostgreSQL;
+using IMT_Reservas.Server.Core.Entities;
 using Microsoft.EntityFrameworkCore;
 using Ardalis.Result;
 using IMT_Reservas.Server.Application.Features.Carrito.Dtos;
@@ -32,7 +33,7 @@ public class CarritoService
                 join p in _dbContext.Prestamos on dp.IdPrestamo equals p.Id
                 join e in _dbContext.Equipos on dp.IdEquipo equals e.Id
                 where request.ArrayIds.Contains(e.IdGrupoEquipo) &&
-                      (p.EstadoPrestamo == "activo" || p.EstadoPrestamo == "pendiente") &&
+                      (p.EstadoPrestamo == EstadoPrestamo.Activo || p.EstadoPrestamo == EstadoPrestamo.Pendiente) &&
                       p.FechaPrestamoEsperada.Date <= fechaFin &&
                       p.FechaDevolucionEsperada.Date >= fechaInicio
                 select new { e.IdGrupoEquipo, p.FechaPrestamoEsperada, p.FechaDevolucionEsperada })

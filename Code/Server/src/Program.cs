@@ -1,5 +1,6 @@
 using Microsoft.EntityFrameworkCore;
 using MongoDB.Driver;
+using Npgsql;
 using AutoMapper;
 using IMT_Reservas.Server.Application.Abstraction;
 using IMT_Reservas.Server.Application.Features.Accesorio;
@@ -29,6 +30,7 @@ using ComponenteEntity = IMT_Reservas.Server.Core.Entities.Componente;
 using EmpresaMantenimientoEntity = IMT_Reservas.Server.Core.Entities.EmpresaMantenimiento;
 
 AppContext.SetSwitch("Npgsql.EnableLegacyTimestampBehavior", true);
+NpgsqlConnection.GlobalTypeMapper.MapEnum<EstadoPrestamo>();
 
 var builder = WebApplication.CreateBuilder(args);
 

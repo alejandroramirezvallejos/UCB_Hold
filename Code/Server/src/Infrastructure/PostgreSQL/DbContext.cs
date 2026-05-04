@@ -24,6 +24,7 @@ public class ApplicationDbContext : DbContext
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
         base.OnModelCreating(modelBuilder);
+        modelBuilder.HasPostgresEnum<EstadoPrestamo>();
 
          var dateTimeConverter = new Microsoft.EntityFrameworkCore.Storage.ValueConversion.ValueConverter<DateTime, DateTime>(
             v => v.Kind == DateTimeKind.Utc ? v : DateTime.SpecifyKind(v, DateTimeKind.Utc),
@@ -258,7 +259,10 @@ public class ApplicationDbContext : DbContext
             entity.Property(e => e.FechaDevolucion).HasColumnName("fecha_devolucion");
             entity.Property(e => e.FechaDevolucionEsperada).IsRequired().HasColumnName("fecha_devolucion_esperada");
             entity.Property(e => e.Observacion).HasColumnName("observacion");
-            entity.Property(e => e.EstadoPrestamo).HasDefaultValue("pendiente").HasColumnName("estado_prestamo");
+            entity.Property(e => e.EstadoPrestamo)
+                .HasColumnType("estado_prestamo")
+                .HasDefaultValue(EstadoPrestamo.Pendiente)
+                .HasColumnName("estado_prestamo");
             entity.Property(e => e.IdContrato).HasColumnName("id_contrato");
             entity.Property(e => e.Carnet).HasColumnName("carnet");
             entity.Property(e => e.EstadoEliminado).HasColumnName("estado_eliminado");

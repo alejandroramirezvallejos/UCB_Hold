@@ -1,4 +1,5 @@
 using IMT_Reservas.Server.Application.Features.Prestamo.Dtos;
+using IMT_Reservas.Server.Core.Entities;
 using IMT_Reservas.Server.Infrastructure.PostgreSQL;
 using IMT_Reservas.Server.Infrastructure.Repositories.Abstraction;
 using Microsoft.EntityFrameworkCore;
@@ -18,7 +19,7 @@ public class PrestamoRepository : Repository<PrestamoEntity, PrestamoDto>
     {
         Id = entity.Id,
         CarnetUsuario = entity.Carnet ?? "",
-        EstadoPrestamo = entity.EstadoPrestamo,
+        EstadoPrestamo = entity.EstadoPrestamo.ToDbString(),
         FechaSolicitud = entity.FechaSolicitud,
         FechaDevolucionEsperada = entity.FechaDevolucionEsperada,
         NombreUsuario = null,
