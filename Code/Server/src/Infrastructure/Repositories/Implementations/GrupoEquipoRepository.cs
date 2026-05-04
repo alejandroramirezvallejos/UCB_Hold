@@ -14,23 +14,11 @@ public class GrupoEquipoRepository : Repository<GrupoEquipoEntity, GrupoEquipoDt
     public override async Task<Result<List<GrupoEquipoDto>>> GetAll(QueryFilter? filter = null)
     {
         var entities = await DbContext.GruposEquipos
-            .Include(g => g.Categoria)
             .AsNoTracking()
             .ToListAsync();
 
-        return Result<List<GrupoEquipoDto>>.Success(entities.Select(MapToDto).ToList());
-    }
-
-    public override async Task<Result<GrupoEquipoDto>> Get(int id)
-    {
-        var entity = await DbContext.GruposEquipos
-            .Include(g => g.Categoria)
-            .AsNoTracking()
-            .FirstOrDefaultAsync(g => g.Id == id);
-
-        return entity == null
-            ? Result<GrupoEquipoDto>.NotFound()
-            : Result<GrupoEquipoDto>.Success(MapToDto(entity));
+        var dtos = entities.Select(MapToDto).ToList();
+        return Result<List<GrupoEquipoDto>>.Success(dtos);
     }
 
     public async Task<bool> ExistsActive(int id)
@@ -87,7 +75,7 @@ public class GrupoEquipoRepository : Repository<GrupoEquipoEntity, GrupoEquipoDt
             UrlDataSheet = entity.UrlDataSheet,
             UrlImagen = entity.UrlImagen,
             IdCategoria = entity.IdCategoria,
-            NombreCategoria = entity.Categoria?.Nombre ?? "",
+            NombreCategoria = null,
             Cantidad = entity.Cantidad,
             CostoPromedio = entity.CostoPromedio
         };

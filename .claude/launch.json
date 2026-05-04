@@ -2,10 +2,16 @@
   "version": "0.0.1",
   "configurations": [
     {
-      "name": "dev",
+      "name": "backend",
       "runtimeExecutable": "dotnet",
-      "runtimeArgs": ["run", "--project", "IMT_Reservas.Server.csproj"],
-      "port": 5000
+      "runtimeArgs": ["run", "--project", "Code/Server/IMT_Reservas.Server.csproj"],
+      "port": 5190
+    },
+    {
+      "name": "frontend",
+      "runtimeExecutable": "npm",
+      "runtimeArgs": ["run", "start:windows"],
+      "port": 4200
     }
   ]
 }

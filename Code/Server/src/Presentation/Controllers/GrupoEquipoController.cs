@@ -15,15 +15,14 @@ public class GrupoEquipoController : ControllerBase
 
     public GrupoEquipoController(GrupoEquipoService service, IMapper mapper)
     {
-        _service = service;
-        _mapper = mapper;
+        _service = service ?? throw new InvalidOperationException("GrupoEquipoService not registered");
+        _mapper = mapper ?? throw new InvalidOperationException("IMapper not registered");
     }
 
     [HttpGet]
     public async Task<IActionResult> GetAll()
     {
         var result = await _service.GetAll();
-
         return result.IsSuccess ? Ok(new Response<List<GrupoEquipoDto>> { Status = 200, Value = result.Value }) : BadRequest(new Response<object> { Status = 400, Errors = result.Errors.ToList() });
     }
 

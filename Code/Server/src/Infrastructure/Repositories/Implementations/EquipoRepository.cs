@@ -13,16 +13,14 @@ public class EquipoRepository : Repository<EquipoEntity, EquipoDto>
 
     public override async Task<Result<List<EquipoDto>>> GetAll(QueryFilter? filter = null)
     {
-        var entities = await DbContext.Equipos
-            .AsNoTracking()
-            .ToListAsync();
+        var entities = await DbContext.Equipos.AsNoTracking().ToListAsync();
+        
         return Result<List<EquipoDto>>.Success(entities.Select(MapToDto).ToList());
     }
 
     public override async Task<Result<EquipoDto>> Get(int id)
     {
         var entity = await DbContext.Equipos
-            .AsNoTracking()
             .FirstOrDefaultAsync(e => e.Id == id && !e.EstadoEliminado);
 
         return entity == null
@@ -49,7 +47,7 @@ public class EquipoRepository : Repository<EquipoEntity, EquipoDto>
         Procedencia = entity.Procedencia,
         IdGrupoEquipo = entity.IdGrupoEquipo,
         IdGavetero = entity.IdGavetero,
-        FechaIngresoEquipo = entity.FechaIngresoEquipo.ToDateTime(TimeOnly.MinValue)
+        FechaIngresoEquipo = new DateTime(entity.FechaIngresoEquipo.Year, entity.FechaIngresoEquipo.Month, entity.FechaIngresoEquipo.Day)
     };
 }
 
