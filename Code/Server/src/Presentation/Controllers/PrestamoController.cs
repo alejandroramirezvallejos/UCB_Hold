@@ -3,7 +3,6 @@ using IMT_Reservas.Server.Application.Features.Prestamo;
 using IMT_Reservas.Server.Application.Abstraction;
 using IMT_Reservas.Server.Application.Features.Prestamo.Dtos;
 using PrestamoEntity = IMT_Reservas.Server.Core.Entities.Prestamo;
-using AutoMapper;
 namespace IMT_Reservas.Server.Presentation.Controllers;
 
 [ApiController]
@@ -11,12 +10,10 @@ namespace IMT_Reservas.Server.Presentation.Controllers;
 public class PrestamoController : ControllerBase
 {
     private readonly PrestamoService _service;
-    private readonly IMapper _mapper;
 
-    public PrestamoController(PrestamoService service, IMapper mapper)
+    public PrestamoController(PrestamoService service)
     {
         _service = service;
-        _mapper = mapper;
     }
 
     [HttpGet]
@@ -36,7 +33,18 @@ public class PrestamoController : ControllerBase
     [HttpPost]
     public async Task<IActionResult> Create([FromBody] PrestamoDto request)
     {
-        var entity = _mapper.Map<PrestamoEntity>(request);
+        var entity = new PrestamoEntity
+        {
+            Carnet = request.CarnetUsuario,
+            FechaSolicitud = DateTime.UtcNow,
+            FechaPrestamo = request.FechaPrestamo ?? request.FechaPrestamoEsperada,
+            FechaPrestamoEsperada = request.FechaPrestamoEsperada ?? DateTime.UtcNow,
+            FechaDevolucion = request.FechaDevolucion,
+            FechaDevolucionEsperada = request.FechaDevolucionEsperada ?? DateTime.UtcNow.AddDays(7),
+            Observacion = request.Observacion,
+            EstadoPrestamo = "pendiente",
+            IdContrato = request.IdContrato
+        };
         var result = await _service.Create(entity);
         return result.IsSuccess
             ? CreatedAtAction(nameof(Get), new { id = result.Value?.Id }, new Response<PrestamoDto> { Status = 201, Value = result.Value })
@@ -46,8 +54,19 @@ public class PrestamoController : ControllerBase
     [HttpPut("{id:int}")]
     public async Task<IActionResult> Update(int id, [FromBody] PrestamoDto dto)
     {
-        var entity = _mapper.Map<PrestamoEntity>(dto);
-        entity.Id = id;
+        var entity = new PrestamoEntity
+        {
+            Id = id,
+            Carnet = dto.CarnetUsuario,
+            FechaSolicitud = dto.FechaSolicitud ?? DateTime.UtcNow,
+            FechaPrestamo = dto.FechaPrestamo ?? dto.FechaPrestamoEsperada,
+            FechaPrestamoEsperada = dto.FechaPrestamoEsperada ?? DateTime.UtcNow,
+            FechaDevolucion = dto.FechaDevolucion,
+            FechaDevolucionEsperada = dto.FechaDevolucionEsperada ?? DateTime.UtcNow.AddDays(7),
+            Observacion = dto.Observacion,
+            EstadoPrestamo = dto.EstadoPrestamo,
+            IdContrato = dto.IdContrato
+        };
         var result = await _service.Update(entity);
         return result.IsSuccess ? Ok(new Response<PrestamoDto> { Status = 200, Value = result.Value }) : BadRequest(new Response<object> { Status = 400, Errors = result.Errors.ToList() });
     }
