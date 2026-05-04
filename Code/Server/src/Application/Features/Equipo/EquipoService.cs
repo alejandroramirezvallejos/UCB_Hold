@@ -21,6 +21,7 @@ public class EquipoService : Service<EquipoEntity, EquipoRepository, EquipoDto>
     {
         var grupoExists = await _dbContext.GruposEquipos
             .AnyAsync(g => g.Id == entity.IdGrupoEquipo && !g.EstadoEliminado);
+        
         if (!grupoExists)
             return Result<EquipoDto>.Error("Grupo equipo no existe");
 

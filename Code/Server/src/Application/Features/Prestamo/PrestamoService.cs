@@ -37,7 +37,7 @@ public class PrestamoService : Service<PrestamoEntity, PrestamoRepository, Prest
         return await base.Create(entity);
     }
 
-    public async Task<Result<bool>> ValidateAvailability(int[] equipoIds, DateTime fechaInicio, DateTime fechaFin)
+    public async Task<Result<bool>> ValidateDisponibilidad(int[] equipoIds, DateTime fechaInicio, DateTime fechaFin)
     {
         if (equipoIds == null || equipoIds.Length == 0)
             return Result<bool>.Error("Seleccione al menos un equipo");
@@ -66,7 +66,7 @@ public class PrestamoService : Service<PrestamoEntity, PrestamoRepository, Prest
         return Result<bool>.Success(true);
     }
 
-    public Task<Result<object>> ValidateState(string estadoActual, string estadoNuevo)
+    public Task<Result<object>> ValidateEstado(string estadoActual, string estadoNuevo)
     {
         var estadosValidos = new[] { "pendiente", "rechazado", "aprobado", "activo", "finalizado", "cancelado" };
 
@@ -104,12 +104,14 @@ public class PrestamoService : Service<PrestamoEntity, PrestamoRepository, Prest
 
     public async Task<Result<List<PrestamoDto>>> GetHistorial(string carnetUsuario, string estadoPrestamo)
     {
-        var query = _dbContext.Prestamos.Where(p => p.Carnet == carnetUsuario && !p.EstadoEliminado);
+        if (string.IsNullOrEmpty(carnetUsuario))
+            return Result<List<PrestamoDto>>.Error("Carnet requerido");
+
+        var prestamos = await _dbContext.Prestamos.Where(p => p.Carnet == carnetUsuario).ToListAsync();
 
         if (!string.IsNullOrEmpty(estadoPrestamo) && estadoPrestamo != "todos")
-            query = query.Where(p => p.EstadoPrestamo == estadoPrestamo);
+            prestamos = prestamos.Where(p => p.EstadoPrestamo == estadoPrestamo).ToList();
 
-        var prestamos = await query.ToListAsync();
         var dtos = prestamos.Select(p => Repository.ConvertToDto(p)).ToList();
 
         return Result<List<PrestamoDto>>.Success(dtos);

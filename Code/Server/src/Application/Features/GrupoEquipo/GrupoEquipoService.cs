@@ -15,15 +15,9 @@ public class GrupoEquipoService
         _grupoRepository = repository;
     }
 
-    public async Task<Result<List<GrupoEquipoDto>>> GetAll(QueryFilter? filter = null)
-    {
-        return await _grupoRepository.GetAll(filter);
-    }
-
-    public async Task<Result<GrupoEquipoDto>> Get(int id)
-    {
-        return await _grupoRepository.Get(id);
-    }
+    public async Task<Result<List<GrupoEquipoDto>>> GetAll(QueryFilter? filter = null) => await _grupoRepository.GetAll(filter);
+    
+    public async Task<Result<GrupoEquipoDto>> Get(int id) => await _grupoRepository.Get(id);
 
     public async Task<Result<GrupoEquipoDto>> Create(GrupoEquipoEntity entity)
     {
@@ -51,10 +45,7 @@ public class GrupoEquipoService
         return await _grupoRepository.Update(entity);
     }
 
-    public async Task<Result<object>> Delete(int id)
-    {
-        return await _grupoRepository.Delete(id);
-    }
+    public async Task<Result<object>> Delete(int id) => await _grupoRepository.Delete(id);
 
     public async Task<Result<List<GrupoEquipoDto>>> Search(string? nombre = null, string? categoria = null)
     {

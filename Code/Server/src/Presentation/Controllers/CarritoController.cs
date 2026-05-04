@@ -18,7 +18,7 @@ public class CarritoController : ControllerBase
     [HttpPost("disponibilidadEquipos")]
     public async Task<IActionResult> DisponibilidadEquipos([FromBody] CarritoDto request)
     {
-        var result = await _service.ObtenerDisponibilidad(request);
+        var result = await _service.GetDisponibilidad(request);
 
         return result.IsSuccess
             ? Ok(new Response<List<CarritoDto>> { Status = 200, Value = result.Value })

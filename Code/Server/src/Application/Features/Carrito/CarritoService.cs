@@ -15,7 +15,7 @@ public class CarritoService
         _logger = logger;
     }
 
-    public async Task<Result<List<CarritoDto>>> ObtenerDisponibilidad(CarritoDto request)
+    public async Task<Result<List<CarritoDto>>> GetDisponibilidad(CarritoDto request)
     {
         if (request.FechaInicio == null || request.FechaFin == null || request.ArrayIds == null || request.ArrayIds.Count == 0)
         {
@@ -25,25 +25,28 @@ public class CarritoService
 
         var response = new List<CarritoDto>();
         var grupos = await _dbContext.GruposEquipos.Where(g => request.ArrayIds.Contains(g.Id)).ToListAsync();
+        var fechaInicio = request.FechaInicio.Value.Date;
+        var fechaFin = request.FechaFin.Value.Date;
 
         var prestamosActivos = await (from dp in _dbContext.DetallesPrestamos
                 join p in _dbContext.Prestamos on dp.IdPrestamo equals p.Id
                 join e in _dbContext.Equipos on dp.IdEquipo equals e.Id
                 where request.ArrayIds.Contains(e.IdGrupoEquipo) &&
-                      !p.EstadoEliminado &&
                       p.EstadoPrestamo != "cancelado" &&
-                      p.EstadoPrestamo != "devuelto" &&
-                      p.FechaPrestamoEsperada <= request.FechaFin.Value.ToUniversalTime() &&
-                      p.FechaDevolucionEsperada >= request.FechaInicio.Value.ToUniversalTime()
+                      p.EstadoPrestamo != "rechazado" &&
+                      p.FechaPrestamoEsperada.Date <= fechaFin &&
+                      p.FechaDevolucionEsperada.Date >= fechaInicio
                 select new { IdGrupoEquipo = e.IdGrupoEquipo, FechaPrestamoEsperada = p.FechaPrestamoEsperada, FechaDevolucionEsperada = p.FechaDevolucionEsperada })
             .ToListAsync();
 
-        for (var date = request.FechaInicio.Value.Date; date <= request.FechaFin.Value.Date; date = date.AddDays(1))
+        for (var date = fechaInicio; date <= fechaFin; date = date.AddDays(1))
         {
             foreach (var grupoId in request.ArrayIds)
             {
                 var grupo = grupos.FirstOrDefault(g => g.Id == grupoId);
-                if (grupo == null) continue;
+                
+                if (grupo == null) 
+                    continue;
 
                 var totalCantidad = grupo.Cantidad;
                 var ocupados = prestamosActivos.Count(pa =>
