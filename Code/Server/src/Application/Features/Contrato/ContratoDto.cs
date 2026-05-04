@@ -5,4 +5,5 @@ public class ContratoDto
     public int? Id { get; set; }
     public int? PrestamoId { get; set; }
     public DateTime? FechaCreacion { get; set; }
+    public IFormFile? Archivo { get; set; }
 }

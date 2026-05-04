@@ -16,7 +16,7 @@ public class ContratoService
         _postgresContext = postgresContext;
     }
 
-    public async Task<Result<ContratoDto>> Create(int prestamoId, string contenidoHtml)
+    public async Task<Result<ContratoDto>> Create(int? prestamoId, string contenidoHtml)
     {
         var prestamo = await _postgresContext.Prestamos.FindAsync(prestamoId);
 
@@ -28,7 +28,7 @@ public class ContratoService
 
         var contrato = new ContratoEntity
         {
-            PrestamoId = prestamoId,
+            PrestamoId = prestamoId.Value,
             FechaCreacion = DateTime.UtcNow,
             EstadoEliminado = false
         };

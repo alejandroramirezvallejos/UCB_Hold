@@ -15,7 +15,7 @@ public class ContratoController : ControllerBase
 
     [HttpPost("crear")]
     [Consumes("multipart/form-data")]
-    public async Task<IActionResult> Create([FromForm] ContratoCreateRequest request)
+    public async Task<IActionResult> Create([FromForm] ContratoDto request)
     {
         if (request?.Archivo == null || request.Archivo.Length == 0)
             return BadRequest(new Response<object>
