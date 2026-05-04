@@ -77,6 +77,8 @@ coverage/
 /connect.lock
 testem.log
 /typings
+.angular/
+*.tsbuildinfo
 
 ################################################################################
 # VS Code workspace settings (keep some, ignore others)
