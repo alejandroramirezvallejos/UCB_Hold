@@ -28,7 +28,7 @@ public class GrupoEquipoController : ControllerBase
     }
 
     [HttpGet("buscar")]
-    public async Task<IActionResult> Buscar([FromQuery] string? nombre = null, [FromQuery] string? categoria = null)
+    public async Task<IActionResult> Search([FromQuery] string? nombre = null, [FromQuery] string? categoria = null)
     {
         var result = await _service.Search(nombre, categoria);
 

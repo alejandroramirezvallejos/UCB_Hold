@@ -9,15 +9,12 @@ public class GaveteroRepository : Repository<GaveteroEntity, GaveteroDto>
 {
     public GaveteroRepository(ApplicationDbContext dbContext) : base(dbContext) { }
 
-    public async Task<bool> ExisteActivoPorId(int id)
+    public async Task<bool> ExistsActive(int id)
         => await DbContext.Gaveteros.AnyAsync(g => g.Id == id && !g.EstadoEliminado);
 
-    public async Task<bool> ExisteActivoPorNombre(string nombre)
+    public async Task<bool> ExistsActiveByNombre(string nombre)
         => await DbContext.Gaveteros.AnyAsync(g => g.Nombre == nombre && !g.EstadoEliminado);
-
-    public async Task<bool> ExisteActivoPorNombreExcluyendoId(string nombre, int idExcluir)
-        => await DbContext.Gaveteros.AnyAsync(g => g.Nombre == nombre && !g.EstadoEliminado && g.Id != idExcluir);
-
+    
     public async Task<int?> GetMuebleByNombre(string nombreMueble)
         => await DbContext.Muebles
             .Where(m => m.Nombre == nombreMueble && !m.EstadoEliminado)

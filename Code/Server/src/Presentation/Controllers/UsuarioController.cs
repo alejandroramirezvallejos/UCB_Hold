@@ -22,7 +22,7 @@ public class UsuarioController : ControllerBase
     [HttpGet]
     public async Task<IActionResult> GetAll()
     {
-        var result = await _service.GetAllUsers();
+        var result = await _service.GetAll();
 
         return result.IsSuccess
             ? Ok(new Response<List<UsuarioDto>> { Status = 200, Value = result.Value })
@@ -77,12 +77,12 @@ public class UsuarioController : ControllerBase
     }
 
     [HttpPost("login")]
-    public async Task<IActionResult> InitiateSession([FromBody] UsuarioDto request)
+    public async Task<IActionResult> Login([FromBody] UsuarioDto request)
     {
         if (string.IsNullOrWhiteSpace(request.Email) || string.IsNullOrWhiteSpace(request.Contrasena))
             return BadRequest(new Response<object> { Status = 400, Errors = new List<string> { "Email and password are required" } });
 
-        var result = await _service.InitiateSession(request.Email, request.Contrasena);
+        var result = await _service.Login(request.Email, request.Contrasena);
 
         return result.IsSuccess
             ? Ok(new Response<UsuarioDto> { Status = 200, Value = result.Value })

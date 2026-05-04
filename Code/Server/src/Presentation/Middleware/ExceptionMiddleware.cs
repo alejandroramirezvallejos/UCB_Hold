@@ -13,7 +13,7 @@ public class ExceptionMiddleware
         _logger = logger;
     }
 
-    public async Task InvokeAsync(HttpContext context)
+    public async Task Invoke(HttpContext context)
     {
         try
         {
@@ -22,26 +22,26 @@ public class ExceptionMiddleware
         catch (KeyNotFoundException ex)
         {
             _logger.LogWarning("Recurso no encontrado: {Message}", ex.Message);
-            await HandleExceptionAsync(context, 404, [ex.Message]);
+            await HandleException(context, 404, [ex.Message]);
         }
         catch (InvalidOperationException ex)
         {
             _logger.LogWarning("Conflicto: {Message}", ex.Message);
-            await HandleExceptionAsync(context, 409, [ex.Message]);
+            await HandleException(context, 409, [ex.Message]);
         }
         catch (ArgumentException ex)
         {
             _logger.LogWarning("Validación: {Message}", ex.Message);
-            await HandleExceptionAsync(context, 400, [ex.Message]);
+            await HandleException(context, 400, [ex.Message]);
         }
         catch (Exception ex)
         {
             _logger.LogError(ex, "Error no controlado: {Message}", ex.Message);
-            await HandleExceptionAsync(context, 500, ["Error interno del servidor. Por favor intenta de nuevo más tarde."]);
+            await HandleException(context, 500, ["Error interno del servidor. Por favor intenta de nuevo más tarde."]);
         }
     }
 
-    private Task HandleExceptionAsync(HttpContext context, int statusCode, List<string> errors)
+    private Task HandleException(HttpContext context, int statusCode, List<string> errors)
     {
         context.Response.ContentType = "application/json";
         context.Response.StatusCode = statusCode;

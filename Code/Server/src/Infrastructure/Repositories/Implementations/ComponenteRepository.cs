@@ -9,7 +9,7 @@ public class ComponenteRepository : Repository<ComponenteEntity, ComponenteDto>
 {
     public ComponenteRepository(ApplicationDbContext dbContext) : base(dbContext) { }
 
-    public async Task<bool> ExisteActivoPorId(int id)
+    public async Task<bool> ExistsActive(int id)
         => await DbContext.Componentes.AnyAsync(c => c.Id == id && !c.EstadoEliminado);
 
     public async Task<int?> GetEquipoByCodigoImt(int codigoImt)

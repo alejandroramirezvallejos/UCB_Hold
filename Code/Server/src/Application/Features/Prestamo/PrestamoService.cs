@@ -71,7 +71,7 @@ public class PrestamoService : Service<PrestamoEntity, PrestamoRepository, Prest
         return Result<bool>.Success(true);
     }
 
-    public Task<Result<object>> ValidateStateTransition(string estadoActual, string estadoNuevo)
+    public Task<Result<object>> ValidateState(string estadoActual, string estadoNuevo)
     {
         var estadosValidos = new[] { "pendiente", "rechazado", "aprobado", "activo", "finalizado", "cancelado" };
 
@@ -107,7 +107,7 @@ public class PrestamoService : Service<PrestamoEntity, PrestamoRepository, Prest
         return Result<decimal>.Success((decimal)monto);
     }
 
-    public bool RequiereContrato(decimal monto) => monto > 1000;
+    public bool NeedsContrato(decimal monto) => monto > 1000;
 
     private Result<object> ValidateDates(DateTime? fechaPrestamo, DateTime? fechaDevolucion)
     {

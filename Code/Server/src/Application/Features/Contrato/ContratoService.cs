@@ -19,9 +19,12 @@ public class ContratoService
     public async Task<Result<ContratoDto>> Create(int prestamoId, string contenidoHtml)
     {
         var prestamo = await _postgresContext.Prestamos.FindAsync(prestamoId);
-        
+
         if (prestamo == null)
             return Result<ContratoDto>.Error("Préstamo no existe");
+
+        if (!string.IsNullOrEmpty(prestamo.IdContrato))
+            return Result<ContratoDto>.Error("Contrato ya existe para este préstamo");
 
         var contrato = new ContratoEntity
         {
@@ -31,7 +34,7 @@ public class ContratoService
         };
 
         var resultado = await _repository.Create(contrato);
-        
+
         if (!resultado.IsSuccess)
             return Result<ContratoDto>.Error(resultado.Errors.FirstOrDefault() ?? "Error crear contrato");
 

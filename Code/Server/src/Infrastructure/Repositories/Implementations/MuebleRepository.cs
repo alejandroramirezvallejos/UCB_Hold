@@ -16,7 +16,7 @@ public class MuebleRepository : Repository<MuebleEntity, MuebleDto>
     public async Task<bool> ExistsActive(int id)
         => await DbContext.Muebles.AnyAsync(m => m.Id == id && !m.EstadoEliminado);
 
-    public async Task<Result<object>> UpdateGavCount(int idMueble, int increment)
+    public async Task<Result<object>> UpdateCount(int idMueble, int increment)
     {
         var mueble = await DbContext.Muebles.FirstOrDefaultAsync(m => m.Id == idMueble && !m.EstadoEliminado);
         

@@ -57,10 +57,10 @@ public class UsuarioService : Service<UsuarioEntity, UsuarioRepository, UsuarioD
             : Result<UsuarioDto>.Success(MapToDto(usuario));
     }
 
-    public async Task<Result<List<UsuarioDto>>> GetAllUsers()
+    public async Task<Result<List<UsuarioDto>>> GetAll()
         => await Repository.GetAll();
 
-    public async Task<Result<UsuarioDto>> InitiateSession(string email, string password)
+    public async Task<Result<UsuarioDto>> Login(string email, string password)
     {
         var usuario = await Repository.GetByEmail(email);
 

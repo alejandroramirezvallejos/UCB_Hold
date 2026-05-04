@@ -9,7 +9,7 @@ public class EquipoRepository : Repository<EquipoEntity, EquipoDto>
 {
     public EquipoRepository(ApplicationDbContext dbContext) : base(dbContext) { }
 
-    public async Task<bool> ExisteActivoPorId(int id)
+    public async Task<bool> ExistsActive(int id)
         => await DbContext.Equipos.AnyAsync(e => e.Id == id && !e.EstadoEliminado);
 
     protected override EquipoDto MapToDto(EquipoEntity entity) => new()

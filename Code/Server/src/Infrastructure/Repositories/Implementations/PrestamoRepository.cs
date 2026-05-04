@@ -9,7 +9,7 @@ public class PrestamoRepository : Repository<PrestamoEntity, PrestamoDto>
 {
     public PrestamoRepository(ApplicationDbContext dbContext) : base(dbContext) { }
 
-    public async Task<bool> ExisteActivoPorId(int id)
+    public async Task<bool> ExistsActive(int id)
         => await DbContext.Prestamos.AnyAsync(p => p.Id == id && !p.EstadoEliminado);
 
     public async Task<IEnumerable<PrestamoEntity>> GetByCarnet(string carnet)

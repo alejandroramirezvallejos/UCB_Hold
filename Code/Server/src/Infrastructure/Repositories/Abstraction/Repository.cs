@@ -59,15 +59,18 @@ public abstract class Repository<TEntity, TDto> where TEntity : class where TDto
 
     public virtual bool Exists(int id)
     {
-        return DbContext.Set<TEntity>().Any(e => GetIdValue(e).Equals(id));
+        return DbContext.Set<TEntity>().Any(e => GetId(e) != null && GetId(e)!.Equals(id));
     }
 
     protected abstract TDto MapToDto(TEntity entity);
 
-    protected virtual int GetIdValue(TEntity entity)
+    protected virtual object? GetId(TEntity entity)
     {
-        var idProp = typeof(TEntity).GetProperty("Id");
-        
-        return idProp != null ? (int)idProp.GetValue(entity)! : 0;
+        var idProp = typeof(TEntity).GetProperty("Id")
+                  ?? typeof(TEntity).GetProperties().FirstOrDefault(p => p.Name.EndsWith("Id"));
+
+        if (idProp == null) return null;
+
+        return idProp.GetValue(entity);
     }
 }

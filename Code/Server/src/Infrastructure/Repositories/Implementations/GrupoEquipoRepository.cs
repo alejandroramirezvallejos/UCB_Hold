@@ -1,6 +1,8 @@
+using Ardalis.Result;
 using IMT_Reservas.Server.Application.Features.GrupoEquipo.Dtos;
 using IMT_Reservas.Server.Infrastructure.PostgreSQL;
 using IMT_Reservas.Server.Infrastructure.Repositories.Abstraction;
+using IMT_Reservas.Server.Core.Common;
 using Microsoft.EntityFrameworkCore;
 using GrupoEquipoEntity = IMT_Reservas.Server.Core.Entities.GrupoEquipo;
 namespace IMT_Reservas.Server.Infrastructure.Repositories.Implementations;
@@ -9,7 +11,28 @@ public class GrupoEquipoRepository : Repository<GrupoEquipoEntity, GrupoEquipoDt
 {
     public GrupoEquipoRepository(ApplicationDbContext dbContext) : base(dbContext) { }
 
-    public async Task<bool> ExisteActivoPorId(int id)
+    public override async Task<Result<List<GrupoEquipoDto>>> GetAll(QueryFilter? filter = null)
+    {
+        var entities = await DbContext.GruposEquipos
+            .Include(g => g.Categoria)
+            .AsNoTracking()
+            .ToListAsync();
+
+        return Result<List<GrupoEquipoDto>>.Success(entities.Select(MapToDto).ToList());
+    }
+
+    public override async Task<Result<GrupoEquipoDto>> Get(int id)
+    {
+        var entity = await DbContext.GruposEquipos
+            .Include(g => g.Categoria)
+            .FirstOrDefaultAsync(g => g.Id == id);
+
+        return entity == null
+            ? Result<GrupoEquipoDto>.NotFound()
+            : Result<GrupoEquipoDto>.Success(MapToDto(entity));
+    }
+
+    public async Task<bool> ExistsActive(int id)
         => await DbContext.GruposEquipos.AnyAsync(g => g.Id == id && !g.EstadoEliminado);
 
     public async Task<GrupoEquipoEntity?> GetByNombreModeloMarca(string nombre, string modelo, string marca)
@@ -52,9 +75,7 @@ public class GrupoEquipoRepository : Repository<GrupoEquipoEntity, GrupoEquipoDt
     }
 
     protected override GrupoEquipoDto MapToDto(GrupoEquipoEntity entity)
-    {
-        var categoria = DbContext.Categorias.FirstOrDefault(c => c.Id == entity.IdCategoria);
-        return new()
+        => new()
         {
             Id = entity.Id,
             Nombre = entity.Nombre,
@@ -64,10 +85,9 @@ public class GrupoEquipoRepository : Repository<GrupoEquipoEntity, GrupoEquipoDt
             UrlDataSheet = entity.UrlDataSheet,
             UrlImagen = entity.UrlImagen,
             IdCategoria = entity.IdCategoria,
-            NombreCategoria = categoria?.Nombre,
+            NombreCategoria = entity.Categoria?.Nombre ?? "",
             Cantidad = entity.Cantidad,
             CostoPromedio = entity.CostoPromedio
         };
-    }
 }
 

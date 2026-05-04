@@ -9,7 +9,7 @@ public class MantenimientoRepository : Repository<MantenimientoEntity, Mantenimi
 {
     public MantenimientoRepository(ApplicationDbContext dbContext) : base(dbContext) { }
 
-    public async Task<bool> ExisteActivoPorId(int id)
+    public async Task<bool> ExistsActive(int id)
         => await DbContext.Mantenimientos.AnyAsync(m => m.Id == id && !m.EstadoEliminado);
 
     public async Task<IEnumerable<MantenimientoEntity>> GetByEmpresa(int idEmpresa)

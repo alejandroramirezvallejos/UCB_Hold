@@ -4,7 +4,6 @@ using AutoMapper;
 using IMT_Reservas.Server.Application.Features.Accesorio;
 using IMT_Reservas.Server.Application.Features.Carrera;
 using IMT_Reservas.Server.Application.Features.Categoria;
-using IMT_Reservas.Server.Application.Features.Carrito;
 using IMT_Reservas.Server.Application.Features.Componente;
 using IMT_Reservas.Server.Application.Features.Equipo;
 using IMT_Reservas.Server.Application.Features.EmpresaMantenimiento;
@@ -48,7 +47,6 @@ builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 builder.Services.AddScoped<MongoDbContext>();
 
-// Initialize AutoMapper with proper ILoggerFactory
 var serviceProvider = builder.Services.BuildServiceProvider();
 var loggerFactory = serviceProvider.GetService<ILoggerFactory>() ?? new Microsoft.Extensions.Logging.Abstractions.NullLoggerFactory();
 var mapperConfig = new MapperConfiguration(cfg => cfg.AddMaps(typeof(Program)), loggerFactory);
@@ -87,7 +85,7 @@ builder.Services.AddSingleton<IMongoClient>(new MongoClient(mongoDbConfig?.Conne
 
 var app = builder.Build();
 
-app.UseGlobalExceptionMiddleware();
+app.UseExceptionMiddleware();
 app.UseCors("AllowFrontend");
 
 if (app.Environment.IsDevelopment())
