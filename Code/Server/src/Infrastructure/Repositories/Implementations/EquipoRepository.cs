@@ -15,8 +15,8 @@ public class EquipoRepository : Repository<EquipoEntity, EquipoDto>
     protected override EquipoDto MapToDto(EquipoEntity entity) => new()
     {
         Id = entity.Id,
-        Modelo = null,
-        Marca = null,
+        Modelo = entity.Modelo ?? "",
+        Marca = entity.Marca ?? "",
         CodigoImt = entity.CodigoImt,
         CodigoUcb = entity.CodigoUcb,
         NumeroSerial = entity.NumeroSerial,

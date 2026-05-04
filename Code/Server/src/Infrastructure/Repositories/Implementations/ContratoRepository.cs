@@ -6,9 +6,9 @@ namespace IMT_Reservas.Server.Infrastructure.Repositories.Implementations;
 
 public class ContratoRepository
 {
-    private readonly MongoDbContexto _mongoContext;
+    private readonly MongoDbContext _mongoContext;
 
-    public ContratoRepository(MongoDbContexto mongoContext)
+    public ContratoRepository(MongoDbContext mongoContext)
     {
         _mongoContext = mongoContext;
     }

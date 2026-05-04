@@ -22,7 +22,7 @@ using IMT_Reservas.Server.Presentation.Middleware;
 
 var builder = WebApplication.CreateBuilder(args);
 
-builder.Services.Configure<MongoDbConfiguracion>(
+builder.Services.Configure<MongoDbConfig>(
     builder.Configuration.GetSection("MongoDbSettings"));
 
 var connectionString = builder.Configuration.GetConnectionString("PostgreSQL");
@@ -46,7 +46,7 @@ builder.Services.AddCors(options =>
 });
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
-builder.Services.AddScoped<MongoDbContexto>();
+builder.Services.AddScoped<MongoDbContext>();
 
 // Initialize AutoMapper with proper ILoggerFactory
 var serviceProvider = builder.Services.BuildServiceProvider();
@@ -66,6 +66,7 @@ builder.Services.AddScoped<MantenimientoRepository>();
 builder.Services.AddScoped<EmpresaMantenimientoRepository>();
 builder.Services.AddScoped<GaveteroRepository>();
 builder.Services.AddScoped<MuebleRepository>();
+builder.Services.AddScoped<ContratoRepository>();
 builder.Services.AddScoped<UsuarioService>();
 builder.Services.AddScoped<PrestamoService>();
 builder.Services.AddScoped<EquipoService>();
@@ -77,10 +78,11 @@ builder.Services.AddScoped<MantenimientoService>();
 builder.Services.AddScoped<EmpresaMantenimientoService>();
 builder.Services.AddScoped<GaveteroService>();
 builder.Services.AddScoped<MuebleService>();
+builder.Services.AddScoped<ContratoService>();
 builder.Services.AddScoped<ComponenteRepository>();
 builder.Services.AddScoped<ComponenteService>();
 
-var mongoDbConfig = builder.Configuration.GetSection("MongoDbSettings").Get<MongoDbConfiguracion>();
+var mongoDbConfig = builder.Configuration.GetSection("MongoDbSettings").Get<MongoDbConfig>();
 builder.Services.AddSingleton<IMongoClient>(new MongoClient(mongoDbConfig?.ConnectionString ?? "mongodb://localhost:27018"));
 
 var app = builder.Build();

@@ -11,7 +11,7 @@ namespace IMT_Reservas.Tests.RepositoryTests
     public class PrestamoRepositoryTest 
     {
         private Mock<IExecuteQuery>  _ejecutarConsultaMock;
-        private Mock<MongoDbContexto> _mongoDbContextoMock;
+        private Mock<MongoDbContext> _mongoDbContextoMock;
         private Mock<IGridFSBucket> _gridFsBucketMock;
         private IPrestamoRepository _prestamoRepositorio;
 
@@ -19,7 +19,7 @@ namespace IMT_Reservas.Tests.RepositoryTests
         public void Setup()
         {
             _ejecutarConsultaMock = new Mock<IExecuteQuery>();
-            _mongoDbContextoMock = new Mock<MongoDbContexto>();
+            _mongoDbContextoMock = new Mock<MongoDbContext>();
             _gridFsBucketMock = new Mock<IGridFSBucket>();
             _prestamoRepositorio  = new PrestamoRepository(_ejecutarConsultaMock.Object, _mongoDbContextoMock.Object, _gridFsBucketMock.Object);
         }

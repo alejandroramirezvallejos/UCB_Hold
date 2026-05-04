@@ -51,19 +51,23 @@ public class GrupoEquipoRepository : Repository<GrupoEquipoEntity, GrupoEquipoDt
         return result;
     }
 
-    protected override GrupoEquipoDto MapToDto(GrupoEquipoEntity entity) => new()
+    protected override GrupoEquipoDto MapToDto(GrupoEquipoEntity entity)
     {
-        Id = entity.Id,
-        Nombre = entity.Nombre,
-        Modelo = entity.Modelo,
-        Marca = entity.Marca,
-        Descripcion = entity.Descripcion,
-        UrlDataSheet = entity.UrlDataSheet,
-        UrlImagen = entity.UrlImagen,
-        IdCategoria = entity.IdCategoria,
-        NombreCategoria = null,
-        Cantidad = entity.Cantidad,
-        CostoPromedio = entity.CostoPromedio
-    };
+        var categoria = DbContext.Categorias.FirstOrDefault(c => c.Id == entity.IdCategoria);
+        return new()
+        {
+            Id = entity.Id,
+            Nombre = entity.Nombre,
+            Modelo = entity.Modelo,
+            Marca = entity.Marca,
+            Descripcion = entity.Descripcion,
+            UrlDataSheet = entity.UrlDataSheet,
+            UrlImagen = entity.UrlImagen,
+            IdCategoria = entity.IdCategoria,
+            NombreCategoria = categoria?.Nombre,
+            Cantidad = entity.Cantidad,
+            CostoPromedio = entity.CostoPromedio
+        };
+    }
 }
 

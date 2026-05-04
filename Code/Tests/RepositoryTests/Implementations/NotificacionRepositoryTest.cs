@@ -16,7 +16,7 @@ namespace IMT_Reservas.Tests.RepositoryTests
     [TestFixture]
     public class NotificacionRepositoryTest
     {
-        private Mock<MongoDbContexto> _contextoMock;
+        private Mock<MongoDbContext> _contextoMock;
         private Mock<IMongoDatabase> _databaseMock;
         private Mock<IMongoCollection<BsonDocument>> _collectionMock;
         private NotificacionRepository _notificacionRepository;
@@ -24,15 +24,15 @@ namespace IMT_Reservas.Tests.RepositoryTests
         [SetUp]
         public void Setup()
         {
-            var mockOptions = new Mock<IOptions<MongoDbConfiguracion>>();
-            mockOptions.Setup(o => o.Value).Returns(new MongoDbConfiguracion { ConnectionString = "mongodb://localhost:27017", DatabaseName = "TestDb" });
+            var mockOptions = new Mock<IOptions<MongoDbConfig>>();
+            mockOptions.Setup(o => o.Value).Returns(new MongoDbConfig { ConnectionString = "mongodb://localhost:27017", DatabaseName = "TestDb" });
 
-            _contextoMock = new Mock<MongoDbContexto>(mockOptions.Object);
+            _contextoMock = new Mock<MongoDbContext>(mockOptions.Object);
             _databaseMock = new Mock<IMongoDatabase>();
             _collectionMock = new Mock<IMongoCollection<BsonDocument>>();
 
             _databaseMock.Setup(db => db.GetCollection<BsonDocument>("notificaciones", null)).Returns(_collectionMock.Object);
-            _contextoMock.Setup(c => c.BaseDeDatos).Returns(_databaseMock.Object);
+            _contextoMock.Setup(c => c.Database).Returns(_databaseMock.Object);
 
             _notificacionRepository = new NotificacionRepository(_contextoMock.Object);
         }
