@@ -21,8 +21,8 @@ cargarDatos() {
         this.agruparPrestamos(data);
       },
       error: (error) => {
-        this.mensajeerror = "Error al cargar los prestamos , intente mas tarde";
-        console.error( error.error.error + ': ' + error.error.mensaje);
+        this.mensajeerror = "Error al cargar los prestamos, intente mas tarde";
+        console.error('Error Historial:', error.error?.mensaje || error.message);
         this.error.set(true);
       }
     }); 

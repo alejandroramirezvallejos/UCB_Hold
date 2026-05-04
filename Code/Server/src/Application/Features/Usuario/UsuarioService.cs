@@ -68,23 +68,17 @@ public class UsuarioService : Service<UsuarioEntity, UsuarioRepository, UsuarioD
         if (usuario == null)
             return Result<UsuarioDto>.Unauthorized("Credenciales inválidas");
 
-        try
-        {
-            if (BCrypt.Net.BCrypt.Verify(password, usuario.Contrasena))
-                return Result<UsuarioDto>.Success(MapToDto(usuario));
-        }
-        catch (SaltParseException)
-        {
-            if (password == usuario.Contrasena)
-                return Result<UsuarioDto>.Success(MapToDto(usuario));
-        }
-        catch (Exception ex)
-        {
-            _logger.LogError(ex, "Error verificando contraseña para el usuario {Email}", email);
-            return Result<UsuarioDto>.Unauthorized("Error en la autenticación");
-        }
+        var passwordValid = false;
+        if (string.IsNullOrEmpty(usuario.Contrasena))
+            passwordValid = false;
+        else if (usuario.Contrasena.StartsWith("$2") && usuario.Contrasena.Length == 60)
+            passwordValid = BCrypt.Net.BCrypt.Verify(password, usuario.Contrasena);
+        else
+            passwordValid = password == usuario.Contrasena;
 
-        return Result<UsuarioDto>.Unauthorized("Credenciales inválidas");
+        return passwordValid
+            ? Result<UsuarioDto>.Success(MapToDto(usuario))
+            : Result<UsuarioDto>.Unauthorized("Credenciales inválidas");
     }
 
     public async Task<Result<object>> Delete(string carnet)

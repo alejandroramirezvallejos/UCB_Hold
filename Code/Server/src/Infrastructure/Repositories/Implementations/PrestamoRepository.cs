@@ -12,6 +12,8 @@ public class PrestamoRepository : Repository<PrestamoEntity, PrestamoDto>
     public async Task<bool> ExistsActive(int id)
         => await DbContext.Prestamos.AnyAsync(p => p.Id == id && !p.EstadoEliminado);
 
+    public PrestamoDto ConvertToDto(PrestamoEntity entity) => MapToDto(entity);
+
     protected override PrestamoDto MapToDto(PrestamoEntity entity) => new()
     {
         Id = entity.Id,

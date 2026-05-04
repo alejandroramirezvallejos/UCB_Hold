@@ -36,7 +36,7 @@ export class PrestamosAPIService {
   }
   obtenerPrestamos() {
     return this.http.get<any>(this.url).pipe(
-      map((data: any) => data.map((item: any) => this.mapearPrestamo(item)))
+      map((data: any) => (data.Value || data).map((item: any) => this.mapearPrestamo(item)))
     );
   }
   crearPrestamo(carrito: Carrito, carnet: string, contrato: (Blob | null)) {
@@ -76,10 +76,11 @@ export class PrestamosAPIService {
     const APIurl = `${this.url}/historial?carnetUsuario=${carnet}&estadoPrestamo=${estadoPrestamo}`;
     return this.http.get<any>(APIurl).pipe(
       map((data: any) => {
-        if (!data || !Array.isArray(data)) {
+        const list = data.Value || data;
+        if (!list || !Array.isArray(list)) {
           return [];
         }
-        return data.map((item: any) => this.mapearPrestamo(item));
+        return list.map((item: any) => this.mapearPrestamo(item));
       })
     );
   }

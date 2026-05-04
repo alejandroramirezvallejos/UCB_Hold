@@ -12,10 +12,7 @@ public class PrestamoService : Service<PrestamoEntity, PrestamoRepository, Prest
     private readonly ApplicationDbContext _dbContext;
 
     public PrestamoService(PrestamoRepository repository, ApplicationDbContext dbContext)
-        : base(repository)
-    {
-        _dbContext = dbContext;
-    }
+        : base(repository) => _dbContext = dbContext;
 
     public override async Task<Result<PrestamoDto>> Create(PrestamoEntity entity)
     {
@@ -24,8 +21,7 @@ public class PrestamoService : Service<PrestamoEntity, PrestamoRepository, Prest
         if (!dateValidation.IsSuccess)
             return Result<PrestamoDto>.Error(dateValidation.Errors.FirstOrDefault() ?? "Error en fechas");
 
-        var usuarioExists = await _dbContext.Usuarios
-            .AnyAsync(u => u.Carnet == entity.Carnet && !u.EstadoEliminado);
+        var usuarioExists = await _dbContext.Usuarios.AnyAsync(u => u.Carnet == entity.Carnet && !u.EstadoEliminado);
 
         if (!usuarioExists)
             return Result<PrestamoDto>.Error("Usuario no existe o está inactivo");
@@ -53,7 +49,7 @@ public class PrestamoService : Service<PrestamoEntity, PrestamoRepository, Prest
             .ToListAsync();
 
         if (invalidEquipos.Any())
-            return Result<bool>.Error($"Equipos no disponibles");
+            return Result<bool>.Error("Equipos no disponibles");
 
         var prestamosEnRango = await _dbContext.Prestamos
             .Where(p => _dbContext.DetallesPrestamos
@@ -98,15 +94,26 @@ public class PrestamoService : Service<PrestamoEntity, PrestamoRepository, Prest
         if (equipoIds == null || equipoIds.Length == 0)
             return Result<decimal>.Success(0);
 
-        var equipos = await _dbContext.Equipos
-            .Where(e => equipoIds.Contains(e.Id))
-            .ToListAsync();
-
+        var equipos = await _dbContext.Equipos.Where(e => equipoIds.Contains(e.Id)).ToListAsync();
         var monto = equipos.Sum(e => e.CostoReferencia ?? 0);
+        
         return Result<decimal>.Success((decimal)monto);
     }
 
     public bool NeedsContrato(decimal monto) => monto > 1000;
+
+    public async Task<Result<List<PrestamoDto>>> GetHistorial(string carnetUsuario, string estadoPrestamo)
+    {
+        var query = _dbContext.Prestamos.Where(p => p.Carnet == carnetUsuario && !p.EstadoEliminado);
+
+        if (!string.IsNullOrEmpty(estadoPrestamo) && estadoPrestamo != "todos")
+            query = query.Where(p => p.EstadoPrestamo == estadoPrestamo);
+
+        var prestamos = await query.ToListAsync();
+        var dtos = prestamos.Select(p => Repository.ConvertToDto(p)).ToList();
+
+        return Result<List<PrestamoDto>>.Success(dtos);
+    }
 
     private Result<object> ValidateDates(DateTime? fechaPrestamo, DateTime? fechaDevolucion)
     {

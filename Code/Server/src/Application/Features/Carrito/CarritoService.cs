@@ -17,64 +17,48 @@ public class CarritoService
 
     public async Task<Result<List<CarritoDto>>> ObtenerDisponibilidad(CarritoDto request)
     {
-        try 
+        if (request.FechaInicio == null || request.FechaFin == null || request.ArrayIds == null || request.ArrayIds.Count == 0)
         {
-            var response = new List<CarritoDto>();
-            
-            if (request.FechaInicio == null || request.FechaFin == null || request.ArrayIds == null || request.ArrayIds.Count == 0)
+            _logger.LogWarning("Disponibilidad request missing fields or empty IDs: Inicio={Inicio}, Fin={Fin}, IdsCount={IdsCount}", request.FechaInicio, request.FechaFin, request.ArrayIds?.Count);
+            return Result<List<CarritoDto>>.Success(new List<CarritoDto>());
+        }
+
+        var response = new List<CarritoDto>();
+        var grupos = await _dbContext.GruposEquipos.Where(g => request.ArrayIds.Contains(g.Id)).ToListAsync();
+
+        var prestamosActivos = await (from dp in _dbContext.DetallesPrestamos
+                join p in _dbContext.Prestamos on dp.IdPrestamo equals p.Id
+                join e in _dbContext.Equipos on dp.IdEquipo equals e.Id
+                where request.ArrayIds.Contains(e.IdGrupoEquipo) &&
+                      !p.EstadoEliminado &&
+                      p.EstadoPrestamo != "cancelado" &&
+                      p.EstadoPrestamo != "devuelto" &&
+                      p.FechaPrestamoEsperada <= request.FechaFin.Value.ToUniversalTime() &&
+                      p.FechaDevolucionEsperada >= request.FechaInicio.Value.ToUniversalTime()
+                select new { IdGrupoEquipo = e.IdGrupoEquipo, FechaPrestamoEsperada = p.FechaPrestamoEsperada, FechaDevolucionEsperada = p.FechaDevolucionEsperada })
+            .ToListAsync();
+
+        for (var date = request.FechaInicio.Value.Date; date <= request.FechaFin.Value.Date; date = date.AddDays(1))
+        {
+            foreach (var grupoId in request.ArrayIds)
             {
-                _logger.LogWarning("Disponibilidad request missing fields or empty IDs: Inicio={Inicio}, Fin={Fin}, IdsCount={IdsCount}", 
-                    request.FechaInicio, request.FechaFin, request.ArrayIds?.Count);
-                return Result<List<CarritoDto>>.Success(new List<CarritoDto>());
-            }
+                var grupo = grupos.FirstOrDefault(g => g.Id == grupoId);
+                if (grupo == null) continue;
 
-            var grupos = await _dbContext.GruposEquipos
-                .Where(g => request.ArrayIds.Contains(g.Id))
-                .ToListAsync();
+                var totalCantidad = grupo.Cantidad;
+                var ocupados = prestamosActivos.Count(pa =>
+                    pa.IdGrupoEquipo == grupoId &&
+                    pa.FechaPrestamoEsperada.Date <= date &&
+                    pa.FechaDevolucionEsperada.Date >= date);
 
-            var prestamosActivos = await (from dp in _dbContext.DetallesPrestamos 
-                    join p in _dbContext.Prestamos on dp.IdPrestamo equals p.Id
-                    join e in _dbContext.Equipos on dp.IdEquipo equals e.Id
-                    where request.ArrayIds.Contains(e.IdGrupoEquipo) &&
-                          !p.EstadoEliminado &&
-                          p.EstadoPrestamo != "cancelado" &&
-                          p.EstadoPrestamo != "devuelto" &&
-                          p.FechaPrestamoEsperada <= request.FechaFin &&
-                          p.FechaDevolucionEsperada >= request.FechaInicio
-                    select new { IdGrupoEquipo = e.IdGrupoEquipo, FechaPrestamoEsperada = p.FechaPrestamoEsperada, FechaDevolucionEsperada = p.FechaDevolucionEsperada })
-                .ToListAsync();
-
-            for (var date = request.FechaInicio.Value.Date; date <= request.FechaFin.Value.Date; date = date.AddDays(1))
-            {
-                foreach (var grupoId in request.ArrayIds)
+                response.Add(new CarritoDto
                 {
-                    var grupo = grupos.FirstOrDefault(g => g.Id == grupoId);
-                    
-                    if (grupo == null) 
-                        continue;
-
-                    var totalCantidad = grupo.Cantidad;
-                    
-                    var ocupados = prestamosActivos.Count(pa => 
-                        pa.IdGrupoEquipo == grupoId &&
-                        pa.FechaPrestamoEsperada.Date <= date &&
-                        pa.FechaDevolucionEsperada.Date >= date);
-
-                    response.Add(new CarritoDto
-                    {
-                        Fecha = date,
-                        IdGrupoEquipo = grupoId,
-                        CantidadDisponible = Math.Max(0, totalCantidad - ocupados)
-                    });
-                }
+                    Fecha = date,
+                    IdGrupoEquipo = grupoId,
+                    CantidadDisponible = Math.Max(0, totalCantidad - ocupados)
+                });
             }
-
-            return Result<List<CarritoDto>>.Success(response);
         }
-        catch (Exception ex)
-        {
-            _logger.LogError(ex, "Error computing availability");
-            return Result<List<CarritoDto>>.Error(ex.Message);
-        }
+        return Result<List<CarritoDto>>.Success(response);
     }
 }
