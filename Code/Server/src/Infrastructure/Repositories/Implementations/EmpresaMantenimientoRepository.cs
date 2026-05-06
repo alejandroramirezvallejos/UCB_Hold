@@ -18,6 +18,7 @@ public class EmpresaMantenimientoRepository : Repository<EmpresaMantenimientoEnt
             .Select(e => new EmpresaMantenimientoDto
             {
                 Id = e.Id,
+                NombreEmpresa = e.Nombre,
                 NombreResponsable = e.NombreResponsable,
                 ApellidoResponsable = e.ApellidoResponsable,
                 Telefono = e.Telefono,
@@ -36,6 +37,7 @@ public class EmpresaMantenimientoRepository : Repository<EmpresaMantenimientoEnt
             .Select(e => new EmpresaMantenimientoDto
             {
                 Id = e.Id,
+                NombreEmpresa = e.Nombre,
                 NombreResponsable = e.NombreResponsable,
                 ApellidoResponsable = e.ApellidoResponsable,
                 Telefono = e.Telefono,
@@ -57,6 +59,7 @@ public class EmpresaMantenimientoRepository : Repository<EmpresaMantenimientoEnt
     protected override EmpresaMantenimientoDto MapToDto(EmpresaMantenimientoEntity entity) => new()
     {
         Id = entity.Id,
+        NombreEmpresa = entity.Nombre,
         NombreResponsable = entity.NombreResponsable,
         ApellidoResponsable = entity.ApellidoResponsable,
         Telefono = entity.Telefono,

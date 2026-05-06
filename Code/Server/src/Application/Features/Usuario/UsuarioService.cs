@@ -58,13 +58,15 @@ public class UsuarioService : Service<UsuarioEntity, UsuarioRepository, UsuarioD
 
     public async Task<Result<UsuarioDto>> Login(string email, string password)
     {
-        var usuario = await Repository.GetByEmail(email);
+        var usuario = await _dbContext.Usuarios
+            .AsNoTracking()
+            .FirstOrDefaultAsync(u => u.Email == email && !u.EstadoEliminado);
 
         if (usuario == null)
             return Result<UsuarioDto>.Unauthorized("Credenciales inválidas");
 
         bool passwordValid;
-        
+
         if (string.IsNullOrEmpty(usuario.Contrasena))
             passwordValid = false;
         else if (usuario.Contrasena.StartsWith("$2") && usuario.Contrasena.Length == 60)

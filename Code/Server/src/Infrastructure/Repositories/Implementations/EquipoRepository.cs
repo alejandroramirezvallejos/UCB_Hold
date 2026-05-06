@@ -15,6 +15,7 @@ public class EquipoRepository : Repository<EquipoEntity, EquipoDto>
     {
         var dtos = await DbContext.Equipos
             .AsNoTracking()
+            .Where(e => !e.EstadoEliminado)
             .Select(e => new EquipoDto
             {
                 Id = e.Id,
@@ -27,7 +28,9 @@ public class EquipoRepository : Repository<EquipoEntity, EquipoDto>
                 Descripcion = e.Descripcion,
                 TiempoMaximoPrestamo = e.TiempoMaximoPrestamo,
                 Procedencia = e.Procedencia,
+                NombreGrupoEquipo = DbContext.GruposEquipos.Where(g => g.Id == e.IdGrupoEquipo).Select(g => g.Nombre).FirstOrDefault(),
                 IdGrupoEquipo = e.IdGrupoEquipo,
+                NombreGavetero = DbContext.Gaveteros.Where(g => g.Id == e.IdGavetero).Select(g => g.Nombre).FirstOrDefault(),
                 IdGavetero = e.IdGavetero,
                 FechaIngresoEquipo = new DateTime(e.FechaIngresoEquipo.Year, e.FechaIngresoEquipo.Month, e.FechaIngresoEquipo.Day)
             })
@@ -53,7 +56,9 @@ public class EquipoRepository : Repository<EquipoEntity, EquipoDto>
                 Descripcion = e.Descripcion,
                 TiempoMaximoPrestamo = e.TiempoMaximoPrestamo,
                 Procedencia = e.Procedencia,
+                NombreGrupoEquipo = DbContext.GruposEquipos.Where(g => g.Id == e.IdGrupoEquipo).Select(g => g.Nombre).FirstOrDefault(),
                 IdGrupoEquipo = e.IdGrupoEquipo,
+                NombreGavetero = DbContext.Gaveteros.Where(g => g.Id == e.IdGavetero).Select(g => g.Nombre).FirstOrDefault(),
                 IdGavetero = e.IdGavetero,
                 FechaIngresoEquipo = new DateTime(e.FechaIngresoEquipo.Year, e.FechaIngresoEquipo.Month, e.FechaIngresoEquipo.Day)
             })

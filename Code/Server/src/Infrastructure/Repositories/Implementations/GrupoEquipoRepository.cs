@@ -26,7 +26,7 @@ public class GrupoEquipoRepository : Repository<GrupoEquipoEntity, GrupoEquipoDt
                 UrlDataSheet = e.UrlDataSheet,
                 UrlImagen = e.UrlImagen,
                 IdCategoria = e.IdCategoria,
-                NombreCategoria = e.Categoria.Nombre,
+                NombreCategoria = e.Categoria != null ? e.Categoria.Nombre : string.Empty,
                 Cantidad = e.Cantidad,
                 CostoPromedio = e.CostoPromedio
             })
@@ -51,7 +51,7 @@ public class GrupoEquipoRepository : Repository<GrupoEquipoEntity, GrupoEquipoDt
                 UrlDataSheet = e.UrlDataSheet,
                 UrlImagen = e.UrlImagen,
                 IdCategoria = e.IdCategoria,
-                NombreCategoria = e.Categoria.Nombre,
+                NombreCategoria = e.Categoria != null ? e.Categoria.Nombre : string.Empty,
                 Cantidad = e.Cantidad,
                 CostoPromedio = e.CostoPromedio
             })
@@ -80,7 +80,7 @@ public class GrupoEquipoRepository : Repository<GrupoEquipoEntity, GrupoEquipoDt
             query = query.Where(g => g.Nombre.Contains(nombre) || g.Modelo.Contains(nombre) || g.Marca.Contains(nombre));
 
         if (!string.IsNullOrWhiteSpace(categoria))
-            query = query.Where(g => g.Categoria.Nombre == categoria);
+            query = query.Where(g => g.Categoria != null && g.Categoria.Nombre == categoria);
 
         var result = await query
             .Select(e => new GrupoEquipoDto
@@ -93,7 +93,7 @@ public class GrupoEquipoRepository : Repository<GrupoEquipoEntity, GrupoEquipoDt
                 UrlDataSheet = e.UrlDataSheet,
                 UrlImagen = e.UrlImagen,
                 IdCategoria = e.IdCategoria,
-                NombreCategoria = e.Categoria.Nombre,
+                NombreCategoria = e.Categoria != null ? e.Categoria.Nombre : string.Empty,
                 Cantidad = e.Cantidad,
                 CostoPromedio = e.CostoPromedio
             })

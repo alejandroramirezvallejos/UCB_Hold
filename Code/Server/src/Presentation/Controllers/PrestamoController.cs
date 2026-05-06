@@ -94,11 +94,12 @@ public class PrestamoController : ControllerBase
         return result.IsSuccess ? Ok(new Response<PrestamoDto> { Status = 200, Value = result.Value }) : BadRequest(new Response<object> { Status = 400, Errors = result.Errors.ToList() });
     }
 
-    [HttpPut("estadoPrestamo")]
-    public async Task<IActionResult> UpdateEstado([FromBody] EstadoPrestamoDto dto)
+    [HttpPut("{id:int}/estado")]
+    public async Task<IActionResult> UpdateEstado(int id, [FromBody] dynamic dto)
     {
-        var result = await _service.UpdateEstado(dto.Id, dto.EstadoPrestamo);
-        
+        var estadoPrestamo = dto?.EstadoPrestamo as string ?? string.Empty;
+        var result = await _service.UpdateEstado(id, estadoPrestamo);
+
         return result.IsSuccess
             ? Ok(new Response<PrestamoDto> { Status = 200, Value = result.Value })
             : BadRequest(new Response<object> { Status = 400, Errors = result.Errors.ToList() });
@@ -124,19 +125,19 @@ public class PrestamoController : ControllerBase
 
     [HttpPost("{id:int}/contrato")]
     [Consumes("multipart/form-data")]
-    public async Task<IActionResult> SaveContrato(int id, [FromForm] ContratoPrestamoDto request)
+    public async Task<IActionResult> SaveContrato(int id, [FromForm] IFormFile contrato)
     {
         byte[]? contratoBytes = null;
-        
-        if (request?.Contrato != null)
+
+        if (contrato != null)
         {
             using var ms = new MemoryStream();
-            await request.Contrato.CopyToAsync(ms);
+            await contrato.CopyToAsync(ms);
             contratoBytes = ms.ToArray();
         }
 
         var result = await _service.SaveContrato(id, contratoBytes ?? []);
-        
+
         return result.IsSuccess
             ? Ok(new Response<PrestamoDto> { Status = 200, Value = result.Value })
             : BadRequest(new Response<object> { Status = 400, Errors = result.Errors.ToList() });
