@@ -125,14 +125,14 @@ public class PrestamoController : ControllerBase
 
     [HttpPost("{id:int}/contrato")]
     [Consumes("multipart/form-data")]
-    public async Task<IActionResult> SaveContrato(int id, [FromForm] IFormFile contrato)
+    public async Task<IActionResult> SaveContrato(int id, [FromForm] SaveContratoRequest request)
     {
         byte[]? contratoBytes = null;
 
-        if (contrato != null)
+        if (request?.Contrato != null)
         {
             using var ms = new MemoryStream();
-            await contrato.CopyToAsync(ms);
+            await request.Contrato.CopyToAsync(ms);
             contratoBytes = ms.ToArray();
         }
 

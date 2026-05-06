@@ -91,9 +91,8 @@ export class PrestamosAPIService {
     return this.http.delete(`${this.url}/${id}`);
   }
   cambiarEstadoPrestamo(Id: number, estado: string) {
-    const APIurl = `${this.url}/estadoPrestamo`;
+    const APIurl = `${this.url}/${Id}/estado`;
     const envio = {
-      Id: Id,
       EstadoPrestamo: estado,
     };
     return this.http.put(APIurl, envio);

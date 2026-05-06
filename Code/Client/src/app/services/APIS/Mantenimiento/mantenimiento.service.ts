@@ -19,7 +19,7 @@ export class MantenimientoService {
     });
     const envio = {
       FechaMantenimiento: mantenimiento.FechaMantenimiento,
-      FechaFinalDeMantenimiento: mantenimiento.FechaFinalDeMantenimiento,
+      FechaFinalMantenimiento: mantenimiento.FechaFinalDeMantenimiento,
       IdEmpresa: mantenimiento.IdEmpresa,
       Costo: mantenimiento.Costo,
       Descripcion: mantenimiento.DescripcionMantenimiento,
