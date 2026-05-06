@@ -1,7 +1,7 @@
-import { Prestamos } from "./admin/Prestamos";
+import { PrestamoDto } from "./admin/Prestamos";
 export class PrestamoAgrupados {
-    datosgrupo : Prestamos ; 
-    equipos : Prestamos[] ;  
+    datosgrupo : PrestamoDto ;
+    equipos : PrestamoDto[] ;  
     constructor(equipos : any[] ) {
         this.equipos = equipos;
         this.datosgrupo = {...equipos[0]}; 
@@ -10,7 +10,7 @@ export class PrestamoAgrupados {
             this.datosgrupo.CodigoImt = this.datosgrupo.CodigoImt + ' , ' + equipos[i].CodigoImt;
         }
     }
-    insertarEquipo(equipo: Prestamos) {
+    insertarEquipo(equipo: PrestamoDto) {
         this.equipos.push(equipo);
         this.datosgrupo.NombreGrupoEquipo = this.datosgrupo.NombreGrupoEquipo + ' , ' + equipo.NombreGrupoEquipo;
         this.datosgrupo.CodigoImt = this.datosgrupo.CodigoImt + ' , ' + equipo.CodigoImt;

@@ -20,6 +20,7 @@ public class PrestamoController : ControllerBase
     public async Task<IActionResult> GetAll()
     {
         var result = await _service.GetAll();
+        
         return result.IsSuccess ? Ok(new Response<List<PrestamoDto>> { Status = 200, Value = result.Value }) : BadRequest(new Response<object> { Status = 400, Errors = result.Errors.ToList() });
     }
 
@@ -27,6 +28,7 @@ public class PrestamoController : ControllerBase
     public async Task<IActionResult> Get(int id)
     {
         var result = await _service.Get(id);
+        
         return result.IsSuccess ? Ok(new Response<PrestamoDto> { Status = 200, Value = result.Value }) : NotFound(new Response<object> { Status = 404, Errors = result.Errors.ToList() });
     }
 
@@ -45,7 +47,9 @@ public class PrestamoController : ControllerBase
             EstadoPrestamo = EstadoPrestamo.Pendiente,
             IdContrato = request.IdContrato
         };
+        
         var result = await _service.Create(entity);
+        
         return result.IsSuccess
             ? CreatedAtAction(nameof(Get), new { id = result.Value?.Id }, new Response<PrestamoDto> { Status = 201, Value = result.Value })
             : BadRequest(new Response<object> { Status = 400, Errors = result.Errors.ToList() });
@@ -55,9 +59,11 @@ public class PrestamoController : ControllerBase
     public async Task<IActionResult> Update(int id, [FromBody] PrestamoDto dto)
     {
         var estadoPrestamo = EstadoPrestamo.Pendiente;
+        
         if (!string.IsNullOrWhiteSpace(dto.EstadoPrestamo))
         {
             var lower = dto.EstadoPrestamo.ToLowerInvariant();
+            
             estadoPrestamo = lower switch
             {
                 "aprobado" => EstadoPrestamo.Aprobado,
@@ -82,7 +88,9 @@ public class PrestamoController : ControllerBase
             EstadoPrestamo = estadoPrestamo,
             IdContrato = dto.IdContrato
         };
+        
         var result = await _service.Update(entity);
+        
         return result.IsSuccess ? Ok(new Response<PrestamoDto> { Status = 200, Value = result.Value }) : BadRequest(new Response<object> { Status = 400, Errors = result.Errors.ToList() });
     }
 
@@ -90,6 +98,7 @@ public class PrestamoController : ControllerBase
     public async Task<IActionResult> UpdateEstado([FromBody] EstadoPrestamoDto dto)
     {
         var result = await _service.UpdateEstado(dto.Id, dto.EstadoPrestamo);
+        
         return result.IsSuccess
             ? Ok(new Response<PrestamoDto> { Status = 200, Value = result.Value })
             : BadRequest(new Response<object> { Status = 400, Errors = result.Errors.ToList() });
@@ -99,6 +108,7 @@ public class PrestamoController : ControllerBase
     public async Task<IActionResult> Delete(int id)
     {
         var result = await _service.Delete(id);
+        
         return result.IsSuccess ? NoContent() : BadRequest(new Response<object> { Status = 400, Errors = result.Errors.ToList() });
     }
 
@@ -106,6 +116,7 @@ public class PrestamoController : ControllerBase
     public async Task<IActionResult> GetHistorial([FromQuery] string carnetUsuario, [FromQuery] string estadoPrestamo)
     {
         var result = await _service.GetHistorial(carnetUsuario, estadoPrestamo);
+        
         return result.IsSuccess 
             ? Ok(new Response<List<PrestamoDto>> { Status = 200, Value = result.Value }) 
             : BadRequest(new Response<object> { Status = 400, Errors = result.Errors.ToList() });
@@ -125,6 +136,7 @@ public class PrestamoController : ControllerBase
         }
 
         var result = await _service.SaveContrato(id, contratoBytes ?? []);
+        
         return result.IsSuccess
             ? Ok(new Response<PrestamoDto> { Status = 200, Value = result.Value })
             : BadRequest(new Response<object> { Status = 400, Errors = result.Errors.ToList() });

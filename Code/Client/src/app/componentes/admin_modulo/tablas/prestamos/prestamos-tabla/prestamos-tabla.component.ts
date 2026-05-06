@@ -1,7 +1,7 @@
 import { Component, OnInit, signal, WritableSignal, ViewChild } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule, ReactiveFormsModule, FormBuilder, FormGroup, Validators } from '@angular/forms';
-import { Prestamos } from '../../../../../models/admin/Prestamos';
+import { PrestamoDto } from '../../../../../models/admin/Prestamos';
 import { PrestamosAPIService } from '../../../../../services/APIS/prestamo/prestamos-api.service';
 import { PrestamoAgrupados } from '../../../../../models/PrestamoAgrupados';
 import { VercontratoComponent } from '../vercontrato/vercontrato.component';
@@ -29,7 +29,7 @@ export class PrestamosTablaComponent extends Tabla implements OnInit {
   prestamos:  Map<number, PrestamoAgrupados>= new Map<number, PrestamoAgrupados>();
   prestamoscopia: Map<number, PrestamoAgrupados> = new Map<number, PrestamoAgrupados>();
   vercontrato : WritableSignal<boolean> = signal(false);
-  prestamoSeleccionado: Prestamos =  new Prestamos();
+  prestamoSeleccionado: PrestamoDto =  new PrestamoDto();
   prestamoKeySeleccionado: number = 0;
   avisorechazar : WritableSignal<boolean> = signal(false);
   mensajeavisorechazar : string = "¿Está seguro de rechazar el préstamo seleccionado?";
@@ -41,7 +41,7 @@ export class PrestamosTablaComponent extends Tabla implements OnInit {
     filter: false
   };
   abrirVista : boolean = false;
-  prestamosVista : Prestamos[] = [];
+  prestamosVista : PrestamoDto[] = [];
   constructor(private prestamosapi: PrestamosAPIService ) {
     super();
   }
@@ -49,14 +49,14 @@ export class PrestamosTablaComponent extends Tabla implements OnInit {
     this.cargarPrestamos();
   }
   limpiarPrestamoSeleccionado() {
-    this.prestamoSeleccionado = new Prestamos();
+    this.prestamoSeleccionado = new PrestamoDto();
   }
   crearprestamo() {
     this.botoncrear.set(true);
   }
   cargarPrestamos() {
     this.prestamosapi.obtenerPrestamos().subscribe({
-      next :(data: Prestamos[]) => {
+      next :(data: PrestamoDto[]) => {
         this.agruparPrestamos(data);
         this.seleccionarEstado(this.estadoSeleccionado);
       },
@@ -67,7 +67,7 @@ export class PrestamosTablaComponent extends Tabla implements OnInit {
       }
     });
   }
- agruparPrestamos(datos: Prestamos[]) {
+ agruparPrestamos(datos: PrestamoDto[]) {
     this.prestamos.clear();
     if (datos.length === 0){
       this.prestamoscopia = new Map(this.prestamos);
@@ -84,7 +84,7 @@ export class PrestamosTablaComponent extends Tabla implements OnInit {
     }
     this.prestamoscopia = new Map(this.prestamos);
   }
-  eliminarPrestamo(prestamo: Prestamos) {
+  eliminarPrestamo(prestamo: PrestamoDto) {
     this.prestamoSeleccionado = prestamo;
     this.alertaeliminar = true;
   }
@@ -226,11 +226,11 @@ export class PrestamosTablaComponent extends Tabla implements OnInit {
     });
     this.prestamoKeySeleccionado = 0;
   }
-  cambiarestadovercontrato(prestamo : Prestamos) {
+  cambiarestadovercontrato(prestamo : PrestamoDto) {
     this.prestamoSeleccionado = prestamo;
     this.vercontrato.set(!this.vercontrato());
   }
-  abrirVistaPrestamos(prestamos : Prestamos[]) {
+  abrirVistaPrestamos(prestamos : PrestamoDto[]) {
     this.prestamosVista = prestamos;
     this.abrirVista = true;
   }

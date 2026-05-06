@@ -1,12 +1,12 @@
 import { signal, WritableSignal } from "@angular/core";
-import { Prestamos } from "../../../../models/admin/Prestamos";
+import { PrestamoDto } from "../../../../models/admin/Prestamos";
 import { PrestamoAgrupados } from "../../../../models/PrestamoAgrupados";
 import { PrestamosAPIService } from "../../../../services/APIS/prestamo/prestamos-api.service";
 import { UsuarioService } from "../../../../services/usuario/usuario.service";
 export abstract class HistorialBase {
 datos  = new Map<number, PrestamoAgrupados>;
-itemSeleccionado: Prestamos | null = null;
-prestamosVista : Prestamos[] = [];
+itemSeleccionado: PrestamoDto | null = null;
+prestamosVista : PrestamoDto[] = [];
 abrirVistaPrestamos : boolean = false;
 error : WritableSignal<boolean> = signal (false) ;
 mensajeerror : string = "" ;
@@ -28,7 +28,7 @@ cargarDatos() {
     }); 
     }
 }
- agruparPrestamos(datos: Prestamos[]) {
+ agruparPrestamos(datos: PrestamoDto[]) {
     this.datos.clear();
     for (let prestamo of datos) {
       if( this.datos.has(prestamo.Id!)) {
@@ -39,7 +39,7 @@ cargarDatos() {
       }
     }
   }
-AbrirVista(item: Prestamos[]) {
+AbrirVista(item: PrestamoDto[]) {
   this.prestamosVista = item;
   this.abrirVistaPrestamos = true;
 }

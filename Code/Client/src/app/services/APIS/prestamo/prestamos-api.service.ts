@@ -3,14 +3,14 @@ import { Injectable } from '@angular/core';
 import { environment } from '../../../../environments/environment';
 import { map, throwError } from 'rxjs';
 import { Carrito } from '../../../models/carrito';
-import { Prestamos } from '../../../models/admin/Prestamos';
+import { PrestamoDto } from '../../../models/admin/Prestamos';
 @Injectable({
   providedIn: 'root',
 })
 export class PrestamosAPIService {
   private url = environment.apiUrl + '/api/Prestamo';
   constructor(private http: HttpClient) {}
-  private mapearPrestamo(item: any): Prestamos {
+  private mapearPrestamo(item: any): PrestamoDto {
     return {
       Id: item.Id,
       CarnetUsuario: item.CarnetUsuario,
@@ -40,7 +40,7 @@ export class PrestamosAPIService {
       Nombre_Gavetero: item.Nombre_Gavetero,
       Nombre_Mueble: item.Nombre_Mueble,
       Ubicacion_Mueble: item.Ubicacion_Mueble,
-    } as Prestamos;
+    } as PrestamoDto;
   }
   obtenerPrestamos() {
     return this.http

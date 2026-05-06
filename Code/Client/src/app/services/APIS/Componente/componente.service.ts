@@ -14,10 +14,11 @@ export class ComponenteService {
       Nombre: componente.Nombre,
       Modelo: componente.Modelo,
       Tipo: componente.Tipo,
-      CodigoIMT: componente.CodigoImtEquipo,
+      CodigoImtEquipo: componente.CodigoImtEquipo,
       Descripcion: componente.Descripcion,
       PrecioReferencia: componente.PrecioReferencia,
       UrlDataSheet: componente.UrlDataSheet,
+      IdEquipo: componente.IdEquipo || 0,
     };
     return this.http.post<any>(this.apiUrl, envio);
   }
@@ -44,10 +45,11 @@ export class ComponenteService {
       Nombre: componente.Nombre,
       Modelo: componente.Modelo,
       Tipo: componente.Tipo,
-      CodigoIMT: componente.CodigoImtEquipo,
+      CodigoImtEquipo: componente.CodigoImtEquipo,
       Descripcion: componente.Descripcion,
       PrecioReferencia: componente.PrecioReferencia,
       UrlDataSheet: componente.UrlDataSheet,
+      IdEquipo: componente.IdEquipo || 0,
     };
     return this.http.put<any>(`${this.apiUrl}/${componente.Id}`, envio);
   }

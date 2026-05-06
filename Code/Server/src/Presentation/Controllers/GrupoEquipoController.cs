@@ -22,6 +22,7 @@ public class GrupoEquipoController : ControllerBase
     public async Task<IActionResult> GetAll()
     {
         var result = await _service.GetAll();
+       
         return result.IsSuccess ? Ok(new Response<List<GrupoEquipoDto>> { Status = 200, Value = result.Value }) : BadRequest(new Response<object> { Status = 400, Errors = result.Errors.ToList() });
     }
 

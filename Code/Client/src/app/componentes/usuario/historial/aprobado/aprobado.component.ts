@@ -1,5 +1,5 @@
 import { Component, signal, WritableSignal } from '@angular/core';
-import { Prestamos } from '../../../../models/admin/Prestamos';
+import { PrestamoDto } from '../../../../models/admin/Prestamos';
 import { UsuarioService } from '../../../../services/usuario/usuario.service';
 import { PrestamosAPIService } from '../../../../services/APIS/prestamo/prestamos-api.service';
 import { CommonModule } from '@angular/common';
@@ -27,11 +27,11 @@ export class AprobadoComponent extends HistorialBase {
  validarFechaRecogida(item: any): boolean {
    return item.value.datosgrupo.FechaPrestamoEsperada && item.value.datosgrupo.FechaPrestamoEsperada > new Date();
  }
-  avisocancelarf(item : Prestamos) {
+  avisocancelarf(item : PrestamoDto) {
     this.avisocancelar.set(!this.avisocancelar());
     this.itemSeleccionado = item;
   }
-  avisorecogerf(item : Prestamos){
+  avisorecogerf(item : PrestamoDto){
      this.avisoaprobar.set(!this.avisoaprobar());
      this.itemSeleccionado = item;
   }

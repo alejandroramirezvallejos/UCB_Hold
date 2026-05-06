@@ -65,6 +65,7 @@ public class UsuarioController : ControllerBase
     public async Task<IActionResult> Delete(string carnet)
     {
         var result = await _service.Delete(carnet);
+       
         return result.IsSuccess ? NoContent() : BadRequest(new Response<object> { Status = 400, Errors = result.Errors.ToList() });
     }
 

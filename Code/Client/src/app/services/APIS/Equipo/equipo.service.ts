@@ -11,9 +11,7 @@ export class EquipoService {
   constructor(private http: HttpClient) { }
   crearEquipo(equipo: any) {
     const envio = {
-      NombreGrupoEquipo: equipo.NombreGrupoEquipo,
-      Modelo: equipo.Modelo,
-      Marca: equipo.Marca,
+      IdGrupoEquipo: equipo.IdGrupoEquipo,
       CodigoUcb: equipo.CodigoUcb,
       Descripcion: equipo.Descripcion,
       NumeroSerial: equipo.NumeroSerial,
@@ -21,8 +19,9 @@ export class EquipoService {
       Procedencia: equipo.Procedencia,
       CostoReferencia: equipo.CostoReferencia,
       TiempoMaximoPrestamo: equipo.TiempoMaximoPrestamo,
-      NombreGavetero: equipo.NombreGavetero,
-      EstadoEquipo: equipo.EstadoEquipo
+      IdGavetero: equipo.IdGavetero,
+      EstadoEquipo: equipo.EstadoEquipo,
+      FechaIngresoEquipo: equipo.FechaIngresoEquipo
     };
     return this.http.post<any>(this.apiUrl, envio);
   }
@@ -47,10 +46,7 @@ export class EquipoService {
   editarEquipo(equipo: Equipos) {
     const envio = {
       Id: equipo.Id,
-      NombreGrupoEquipo: equipo.NombreGrupoEquipo,
-      Modelo: equipo.Modelo,
-      Marca: equipo.Marca,
-      CodigoImt: equipo.CodigoImt,
+      IdGrupoEquipo: equipo.IdGrupoEquipo,
       CodigoUcb: equipo.CodigoUcb,
       Descripcion: equipo.Descripcion,
       EstadoEquipo: equipo.EstadoEquipo,
@@ -59,7 +55,8 @@ export class EquipoService {
       Procedencia: equipo.Procedencia,
       CostoReferencia: equipo.CostoReferencia,
       TiempoMaximoPrestamo: equipo.TiempoMaximoPrestamo,
-      NombreGavetero: equipo.NombreGavetero
+      IdGavetero: equipo.IdGavetero,
+      FechaIngresoEquipo: equipo.FechaIngresoEquipo
     };
     return this.http.put<any>(this.apiUrl, envio);
   }

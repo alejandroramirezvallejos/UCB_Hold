@@ -17,10 +17,11 @@ public class ContratoController : ControllerBase
     public async Task<IActionResult> Create([FromForm] ContratoDto request)
     {
         string? contenido = null;
+        
         if (request?.Archivo != null)
         {
-            using (var reader = new StreamReader(request.Archivo.OpenReadStream()))
-                contenido = await reader.ReadToEndAsync();
+            using var reader = new StreamReader(request.Archivo.OpenReadStream());
+            contenido = await reader.ReadToEndAsync();
         }
 
         var resultado = await _contratoService.Create(request?.PrestamoId ?? 0, contenido ?? "");

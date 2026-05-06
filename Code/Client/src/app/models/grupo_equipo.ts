@@ -1,24 +1,13 @@
 export class GrupoEquipo {
-  id: number;
-  nombre: string | null;
-  modelo?: string | null;
-  nombreCategoria?: string | null;
-  descripcion?: string | null;
-  url_data_sheet?: string | null;
-  marca?: string | null;
-  link?: string | null;
-  Cantidad?: number | null;
-  CostoPromedio?: number | null;
-  constructor() {
-    this.id = 0;
-    this.nombre = null;
-    this.modelo = null;
-    this.nombreCategoria = null;
-    this.descripcion = null;
-    this.url_data_sheet = null;
-    this.marca = null;
-    this.link = null;
-    this.Cantidad = null;
-    this.CostoPromedio = null;
-  }
+  id: number = 0;
+  nombre: string | null = null;
+  modelo?: string | null = null;
+  nombreCategoria?: string | null = null;
+  IdCategoria?: number | null = null;
+  descripcion?: string | null = null;
+  url_data_sheet?: string | null = null;
+  marca?: string | null = null;
+  link?: string | null = null;
+  Cantidad?: number | null = null;
+  CostoPromedio?: number | null = null;
 }

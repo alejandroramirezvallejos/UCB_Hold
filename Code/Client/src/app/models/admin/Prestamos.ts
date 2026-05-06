@@ -1,5 +1,5 @@
 import { Basemodel } from "../base/Basemodel";
-export class Prestamos extends Basemodel{
+export class PrestamoDto extends Basemodel{
     CarnetUsuario: string | null = null;
     NombreUsuario: string | null = null;
     ApellidoPaternoUsuario: string | null = null;

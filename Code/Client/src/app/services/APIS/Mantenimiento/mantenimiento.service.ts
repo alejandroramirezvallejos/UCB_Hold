@@ -20,9 +20,9 @@ export class MantenimientoService {
     const envio = {
       FechaMantenimiento: mantenimiento.FechaMantenimiento,
       FechaFinalDeMantenimiento: mantenimiento.FechaFinalDeMantenimiento,
-      NombreEmpresaMantenimiento: mantenimiento.NombreEmpresaMantenimiento,
+      IdEmpresa: mantenimiento.IdEmpresa,
       Costo: mantenimiento.Costo,
-      DescripcionMantenimiento: mantenimiento.DescripcionMantenimiento,
+      Descripcion: mantenimiento.DescripcionMantenimiento,
       CodigoIMT: codigosimt,
       TipoMantenimiento: tiposmantenimiento,
       DescripcionEquipo: descripcionequipos

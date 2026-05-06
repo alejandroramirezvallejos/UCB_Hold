@@ -14,7 +14,7 @@ export class GrupoequipoService {
       Nombre: grupoEquipo.nombre,
       Modelo: grupoEquipo.modelo,
       Marca: grupoEquipo.marca,
-      NombreCategoria: grupoEquipo.nombreCategoria,
+      IdCategoria: grupoEquipo.IdCategoria,
       Descripcion: grupoEquipo.descripcion,
       UrlDataSheet: grupoEquipo.url_data_sheet,
       UrlImagen: grupoEquipo.link
@@ -76,7 +76,7 @@ export class GrupoequipoService {
       Nombre: grupoEquipo.nombre,
       Modelo: grupoEquipo.modelo,
       Marca: grupoEquipo.marca,
-      NombreCategoria: grupoEquipo.nombreCategoria,
+      IdCategoria: grupoEquipo.IdCategoria,
       Descripcion: grupoEquipo.descripcion,
       UrlDataSheet: grupoEquipo.url_data_sheet,
       UrlImagen: grupoEquipo.link

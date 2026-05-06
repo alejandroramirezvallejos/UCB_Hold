@@ -1,6 +1,6 @@
 import { Component, signal, WritableSignal } from '@angular/core';
 import { UsuarioService } from '../../../../services/usuario/usuario.service';
-import { Prestamos } from '../../../../models/admin/Prestamos';
+import { PrestamoDto } from '../../../../models/admin/Prestamos';
 import { PrestamosAPIService } from '../../../../services/APIS/prestamo/prestamos-api.service';
 import { CommonModule, DatePipe } from '@angular/common';
 import { PrestamoAgrupados } from '../../../../models/PrestamoAgrupados';
@@ -23,7 +23,7 @@ export class ActivoComponent extends HistorialBase {
   ngOnInit() {
     this.cargarDatos();
   }
-  avisoDevolver(item : Prestamos) {
+  avisoDevolver(item : PrestamoDto) {
     this.itemSeleccionado = item;
     this.aviso.set(true);
   }

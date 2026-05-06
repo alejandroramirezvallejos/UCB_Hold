@@ -2,7 +2,7 @@ import { Component, signal, WritableSignal } from '@angular/core';
 import { PrestamoAgrupados } from '../../../../models/PrestamoAgrupados';
 import { UsuarioService } from '../../../../services/usuario/usuario.service';
 import { PrestamosAPIService } from '../../../../services/APIS/prestamo/prestamos-api.service';
-import { Prestamos } from '../../../../models/admin/Prestamos';
+import { PrestamoDto } from '../../../../models/admin/Prestamos';
 import { CommonModule } from '@angular/common';
 import { HistorialBase } from '../BASE/HistorialBase';
 import { VistaPrestamosComponent } from '../../../vista-prestamos/vista-prestamos.component';
@@ -23,7 +23,7 @@ export class PendienteComponent extends HistorialBase {
   ngOnInit() {
     this.cargarDatos();
   }
-  aviso(item : Prestamos) {
+  aviso(item : PrestamoDto) {
     this.itemSeleccionado = item;
     this.avisocancelar.set(!this.avisocancelar());
   }

@@ -19,6 +19,7 @@ public class CategoriaController : ControllerBase
     public async Task<IActionResult> GetAll()
     {
         var result = await _service.GetAll();
+        
         return result.IsSuccess ? Ok(new Response<List<CategoriaDto>> { Status = 200, Value = result.Value }) : BadRequest(new Response<object> { Status = 400, Errors = result.Errors.ToList() });
     }
 
@@ -26,6 +27,7 @@ public class CategoriaController : ControllerBase
     public async Task<IActionResult> Get(int id)
     {
         var result = await _service.Get(id);
+        
         return result.IsSuccess ? Ok(new Response<CategoriaDto> { Status = 200, Value = result.Value }) : NotFound(new Response<object> { Status = 404, Errors = result.Errors.ToList() });
     }
 
