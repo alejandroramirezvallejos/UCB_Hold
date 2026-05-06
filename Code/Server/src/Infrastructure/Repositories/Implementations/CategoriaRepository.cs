@@ -13,26 +13,31 @@ public class CategoriaRepository : Repository<CategoriaEntity, CategoriaDto>
 
     public override async Task<Result<List<CategoriaDto>>> GetAll(QueryFilter? filter = null)
     {
-        var entities = await DbContext.Categorias
+        var dtos = await DbContext.Categorias
             .AsNoTracking()
+            .Select(e => new CategoriaDto { Id = e.Id, Nombre = e.Nombre })
             .ToListAsync();
 
-        return Result<List<CategoriaDto>>.Success(entities.Select(MapToDto).ToList());
+        return Result<List<CategoriaDto>>.Success(dtos);
     }
 
     public override async Task<Result<CategoriaDto>> Get(int id)
     {
-        var entity = await DbContext.Categorias
+        var dto = await DbContext.Categorias
             .AsNoTracking()
-            .FirstOrDefaultAsync(c => c.Id == id);
+            .Where(c => c.Id == id)
+            .Select(e => new CategoriaDto { Id = e.Id, Nombre = e.Nombre })
+            .FirstOrDefaultAsync();
 
-        return entity == null
+        return dto == null
             ? Result<CategoriaDto>.NotFound()
-            : Result<CategoriaDto>.Success(MapToDto(entity));
+            : Result<CategoriaDto>.Success(dto);
     }
 
     public async Task<CategoriaEntity?> GetByNombre(string nombre)
-        => await DbContext.Categorias.FirstOrDefaultAsync(c => c.Nombre == nombre && !c.EstadoEliminado);
+        => await DbContext.Categorias
+            .AsNoTracking()
+            .FirstOrDefaultAsync(c => c.Nombre == nombre && !c.EstadoEliminado);
 
     public async Task<bool> ExistsActive(int id)
         => await DbContext.Categorias.AnyAsync(c => c.Id == id && !c.EstadoEliminado);

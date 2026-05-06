@@ -13,38 +13,53 @@ public class GrupoEquipoRepository : Repository<GrupoEquipoEntity, GrupoEquipoDt
 
     public override async Task<Result<List<GrupoEquipoDto>>> GetAll(QueryFilter? filter = null)
     {
-        var entities = await DbContext.GruposEquipos
+        var dtos = await DbContext.GruposEquipos
             .AsNoTracking()
+            .Include(g => g.Categoria)
+            .Select(e => new GrupoEquipoDto
+            {
+                Id = e.Id,
+                Nombre = e.Nombre,
+                Modelo = e.Modelo,
+                Marca = e.Marca,
+                Descripcion = e.Descripcion,
+                UrlDataSheet = e.UrlDataSheet,
+                UrlImagen = e.UrlImagen,
+                IdCategoria = e.IdCategoria,
+                NombreCategoria = e.Categoria.Nombre,
+                Cantidad = e.Cantidad,
+                CostoPromedio = e.CostoPromedio
+            })
             .ToListAsync();
-
-        var categories = await DbContext.Categorias.AsNoTracking().ToListAsync();
-
-        var dtos = entities.Select(e =>
-        {
-            var dto = MapToDto(e);
-            dto.NombreCategoria = categories.FirstOrDefault(c => c.Id == e.IdCategoria)?.Nombre;
-            return dto;
-        }).ToList();
 
         return Result<List<GrupoEquipoDto>>.Success(dtos);
     }
 
     public override async Task<Result<GrupoEquipoDto>> Get(int id)
     {
-        var entity = await DbContext.GruposEquipos
+        var dto = await DbContext.GruposEquipos
             .AsNoTracking()
-            .FirstOrDefaultAsync(g => g.Id == id && !g.EstadoEliminado);
+            .Include(g => g.Categoria)
+            .Where(g => g.Id == id && !g.EstadoEliminado)
+            .Select(e => new GrupoEquipoDto
+            {
+                Id = e.Id,
+                Nombre = e.Nombre,
+                Modelo = e.Modelo,
+                Marca = e.Marca,
+                Descripcion = e.Descripcion,
+                UrlDataSheet = e.UrlDataSheet,
+                UrlImagen = e.UrlImagen,
+                IdCategoria = e.IdCategoria,
+                NombreCategoria = e.Categoria.Nombre,
+                Cantidad = e.Cantidad,
+                CostoPromedio = e.CostoPromedio
+            })
+            .FirstOrDefaultAsync();
 
-        if (entity == null) return Result<GrupoEquipoDto>.NotFound();
-
-        var category = await DbContext.Categorias
-            .AsNoTracking()
-            .FirstOrDefaultAsync(c => c.Id == entity.IdCategoria);
-
-        var dto = MapToDto(entity);
-        dto.NombreCategoria = category?.Nombre;
-
-        return Result<GrupoEquipoDto>.Success(dto);
+        return dto == null
+            ? Result<GrupoEquipoDto>.NotFound()
+            : Result<GrupoEquipoDto>.Success(dto);
     }
 
     public async Task<bool> ExistsActive(int id)
@@ -56,19 +71,19 @@ public class GrupoEquipoRepository : Repository<GrupoEquipoEntity, GrupoEquipoDt
 
     public async Task<List<GrupoEquipoDto>> Search(string? nombre = null, string? categoria = null)
     {
-        var query = DbContext.GruposEquipos.AsQueryable();
+        var query = DbContext.GruposEquipos
+            .AsNoTracking()
+            .Include(g => g.Categoria)
+            .AsQueryable();
 
         if (!string.IsNullOrWhiteSpace(nombre))
             query = query.Where(g => g.Nombre.Contains(nombre) || g.Modelo.Contains(nombre) || g.Marca.Contains(nombre));
 
-        var entities = await query.ToListAsync();
-        var categorias = await DbContext.Categorias.ToListAsync();
+        if (!string.IsNullOrWhiteSpace(categoria))
+            query = query.Where(g => g.Categoria.Nombre == categoria);
 
-        var result = entities.Select(e =>
-        {
-            var cat = categorias.FirstOrDefault(c => c.Id == e.IdCategoria);
-
-            return new GrupoEquipoDto
+        var result = await query
+            .Select(e => new GrupoEquipoDto
             {
                 Id = e.Id,
                 Nombre = e.Nombre,
@@ -78,14 +93,11 @@ public class GrupoEquipoRepository : Repository<GrupoEquipoEntity, GrupoEquipoDt
                 UrlDataSheet = e.UrlDataSheet,
                 UrlImagen = e.UrlImagen,
                 IdCategoria = e.IdCategoria,
-                NombreCategoria = cat?.Nombre,
+                NombreCategoria = e.Categoria.Nombre,
                 Cantidad = e.Cantidad,
                 CostoPromedio = e.CostoPromedio
-            };
-        }).ToList();
-
-        if (!string.IsNullOrWhiteSpace(categoria))
-            result = result.Where(g => g.NombreCategoria == categoria).ToList();
+            })
+            .ToListAsync();
 
         return result;
     }

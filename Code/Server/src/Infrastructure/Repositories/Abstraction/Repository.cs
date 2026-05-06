@@ -41,11 +41,13 @@ public abstract class Repository<TEntity, TDto> where TEntity : class where TDto
 
     public virtual async Task<Result<TDto>> Get(int id)
     {
-        var entity = await DbContext.FindAsync(typeof(TEntity), id);
+        var entity = await DbContext.Set<TEntity>()
+            .AsNoTracking()
+            .FirstOrDefaultAsync(e => GetId(e)!.Equals(id));
 
         return entity == null
             ? Result<TDto>.NotFound()
-            : Result<TDto>.Success(MapToDto((TEntity)entity));
+            : Result<TDto>.Success(MapToDto(entity));
     }
 
     public virtual async Task<Result<List<TDto>>> GetAll(QueryFilter? filter = null)

@@ -9,4 +9,5 @@ public class ContratoDto
     
     [JsonIgnore]
     public IFormFile? Archivo { get; set; }
+    public string? ContenidoBase64 { get; set; }
 }

@@ -72,6 +72,15 @@ public class PrestamoController : ControllerBase
         return result.IsSuccess ? Ok(new Response<PrestamoDto> { Status = 200, Value = result.Value }) : BadRequest(new Response<object> { Status = 400, Errors = result.Errors.ToList() });
     }
 
+    [HttpPut("estadoPrestamo")]
+    public async Task<IActionResult> UpdateEstado([FromBody] EstadoPrestamoDto dto)
+    {
+        var result = await _service.UpdateEstado(dto.Id, dto.EstadoPrestamo);
+        return result.IsSuccess
+            ? Ok(new Response<PrestamoDto> { Status = 200, Value = result.Value })
+            : BadRequest(new Response<object> { Status = 400, Errors = result.Errors.ToList() });
+    }
+
     [HttpDelete("{id:int}")]
     public async Task<IActionResult> Delete(int id)
     {
@@ -92,19 +101,17 @@ public class PrestamoController : ControllerBase
     [Consumes("multipart/form-data")]
     public async Task<IActionResult> SaveContrato(int id, [FromForm] ContratoPrestamoDto request)
     {
-        if (request?.Contrato == null || request.Contrato.Length == 0)
-            return BadRequest(new Response<object> { Status = 400, Errors = new List<string> { "Archivo de contrato requerido" } });
-
-        byte[] contratoBytes;
-        
-        using (var ms = new MemoryStream())
+        byte[]? contratoBytes = null;
+        if (request?.Contrato != null)
         {
-            await request.Contrato.CopyToAsync(ms);
-            contratoBytes = ms.ToArray();
+            using (var ms = new MemoryStream())
+            {
+                await request.Contrato.CopyToAsync(ms);
+                contratoBytes = ms.ToArray();
+            }
         }
 
-        var result = await _service.SaveContrato(id, contratoBytes);
-        
+        var result = await _service.SaveContrato(id, contratoBytes ?? []);
         return result.IsSuccess
             ? Ok(new Response<PrestamoDto> { Status = 200, Value = result.Value })
             : BadRequest(new Response<object> { Status = 400, Errors = result.Errors.ToList() });

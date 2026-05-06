@@ -3,7 +3,6 @@ using IMT_Reservas.Server.Application.Features.Categoria;
 using IMT_Reservas.Server.Application.Abstraction;
 using IMT_Reservas.Server.Application.Features.Categoria.Dtos;
 using CategoriaEntity = IMT_Reservas.Server.Core.Entities.Categoria;
-using AutoMapper;
 namespace IMT_Reservas.Server.Presentation.Controllers;
 
 [ApiController]
@@ -11,12 +10,10 @@ namespace IMT_Reservas.Server.Presentation.Controllers;
 public class CategoriaController : ControllerBase
 {
     private readonly CategoriaService _service;
-    private readonly IMapper _mapper;
 
-    public CategoriaController(CategoriaService service, IMapper mapper)
+    public CategoriaController(CategoriaService service)
     {
         _service = service;
-        _mapper = mapper;
     }
 
     [HttpGet]
@@ -36,7 +33,10 @@ public class CategoriaController : ControllerBase
     [HttpPost]
     public async Task<IActionResult> Create([FromBody] CategoriaDto dto)
     {
-        var entity = _mapper.Map<CategoriaEntity>(dto);
+        var entity = new CategoriaEntity
+        {
+            Nombre = dto.Nombre ?? string.Empty
+        };
         var result = await _service.Create(entity);
 
         return result.IsSuccess ? CreatedAtAction(nameof(Get), new { id = result.Value?.Id }, new Response<CategoriaDto> { Status = 201, Value = result.Value }) : BadRequest(new Response<object> { Status = 400, Errors = result.Errors.ToList() });
@@ -45,8 +45,11 @@ public class CategoriaController : ControllerBase
     [HttpPut("{id:int}")]
     public async Task<IActionResult> Update(int id, [FromBody] CategoriaDto dto)
     {
-        var entity = _mapper.Map<CategoriaEntity>(dto);
-        entity.Id = id;
+        var entity = new CategoriaEntity
+        {
+            Id = id,
+            Nombre = dto.Nombre ?? string.Empty
+        };
         var result = await _service.Update(entity);
 
         return result.IsSuccess ? Ok(new Response<CategoriaDto> { Status = 200, Value = result.Value }) : BadRequest(new Response<object> { Status = 400, Errors = result.Errors.ToList() });

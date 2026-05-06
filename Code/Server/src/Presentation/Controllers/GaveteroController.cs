@@ -3,7 +3,7 @@ using IMT_Reservas.Server.Application.Features.Gavetero;
 using IMT_Reservas.Server.Application.Abstraction;
 using IMT_Reservas.Server.Application.Features.Gavetero.Dtos;
 using GaveteroEntity = IMT_Reservas.Server.Core.Entities.Gavetero;
-using AutoMapper;
+using IMT_Reservas.Server.Infrastructure.Repositories.Implementations;
 namespace IMT_Reservas.Server.Presentation.Controllers;
 
 [ApiController]
@@ -11,12 +11,12 @@ namespace IMT_Reservas.Server.Presentation.Controllers;
 public class GaveteroController : ControllerBase
 {
     private readonly GaveteroService _service;
-    private readonly IMapper _mapper;
+    private readonly GaveteroRepository _repository;
 
-    public GaveteroController(GaveteroService service, IMapper mapper)
+    public GaveteroController(GaveteroService service, GaveteroRepository repository)
     {
         _service = service;
-        _mapper = mapper;
+        _repository = repository;
     }
 
     [HttpGet]
@@ -38,7 +38,25 @@ public class GaveteroController : ControllerBase
     [HttpPost]
     public async Task<IActionResult> Create([FromBody] GaveteroDto dto)
     {
-        var entity = _mapper.Map<GaveteroEntity>(dto);
+        var muebleId = await _repository.GetMuebleByNombre(dto.NombreMueble ?? string.Empty);
+        if (!muebleId.HasValue || muebleId.Value <= 0)
+        {
+            return BadRequest(new Response<object>
+            {
+                Status = 400,
+                Errors = new List<string> { "Mueble no existe" }
+            });
+        }
+
+        var entity = new GaveteroEntity
+        {
+            Nombre = dto.Nombre ?? string.Empty,
+            Tipo = dto.Tipo,
+            IdMueble = muebleId.Value,
+            Longitud = dto.Longitud,
+            Profundidad = dto.Profundidad,
+            Altura = dto.Altura
+        };
         var result = await _service.Create(entity);
 
         return result.IsSuccess ? CreatedAtAction(nameof(Get), new { id = result.Value?.Id }, new Response<GaveteroDto> { Status = 201, Value = result.Value }) : BadRequest(new Response<object> { Status = 400, Errors = result.Errors.ToList() });
@@ -47,8 +65,32 @@ public class GaveteroController : ControllerBase
     [HttpPut("{id:int}")]
     public async Task<IActionResult> Update(int id, [FromBody] GaveteroDto dto)
     {
-        var entity = _mapper.Map<GaveteroEntity>(dto);
-        entity.Id = id;
+        int? muebleId = null;
+        if (!string.IsNullOrWhiteSpace(dto.NombreMueble))
+            muebleId = await _repository.GetMuebleByNombre(dto.NombreMueble);
+
+        if (!muebleId.HasValue)
+            muebleId = await _repository.GetMuebleByGavetero(id);
+
+        if (!muebleId.HasValue || muebleId.Value <= 0)
+        {
+            return BadRequest(new Response<object>
+            {
+                Status = 400,
+                Errors = new List<string> { "Mueble no existe" }
+            });
+        }
+
+        var entity = new GaveteroEntity
+        {
+            Id = id,
+            Nombre = dto.Nombre ?? string.Empty,
+            Tipo = dto.Tipo,
+            IdMueble = muebleId.Value,
+            Longitud = dto.Longitud,
+            Profundidad = dto.Profundidad,
+            Altura = dto.Altura
+        };
         var result = await _service.Update(entity);
 
         return result.IsSuccess ? Ok(new Response<GaveteroDto> { Status = 200, Value = result.Value }) : BadRequest(new Response<object> { Status = 400, Errors = result.Errors.ToList() });

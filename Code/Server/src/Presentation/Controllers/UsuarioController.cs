@@ -65,15 +65,8 @@ public class UsuarioController : ControllerBase
     [HttpDelete("{carnet}")]
     public async Task<IActionResult> Delete(string carnet)
     {
-        var usuarioResult = await _service.Get(carnet);
-        if (!usuarioResult.IsSuccess)
-            return NotFound();
-
         var result = await _service.Delete(carnet);
-
-        return result.IsSuccess
-            ? NoContent()
-            : BadRequest(new Response<object> { Status = 400, Errors = result.Errors.ToList() });
+        return result.IsSuccess ? NoContent() : BadRequest(new Response<object> { Status = 400, Errors = result.Errors.ToList() });
     }
 
     [HttpPost("login")]

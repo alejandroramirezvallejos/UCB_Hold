@@ -4,33 +4,35 @@ import { HttpClient } from '@angular/common/http';
 import { map } from 'rxjs';
 import { Carrera } from '../../../models/admin/Carreras';
 @Injectable({
-  providedIn: 'root'
+  providedIn: 'root',
 })
 export class CarreraService {
-  private apiUrl = environment.apiUrl + '/api/Carrera'; 
-  constructor(private http: HttpClient) { }
+  private apiUrl = environment.apiUrl + '/api/Carrera';
+  constructor(private http: HttpClient) {}
   obtenerCarreras() {
     return this.http.get<any>(this.apiUrl).pipe(
-      map(response => response.Value.map((item: any) => ({
-        id: item.Id,
-        nombre: item.Nombre
-      })))
+      map((response) =>
+        response.Value.map((item: any) => ({
+          id: item.Id,
+          nombre: item.Nombre,
+        })),
+      ),
     );
   }
-  crearCarrera(carrera: string ) {
-    const envio ={
-      Nombre : carrera
-    }
+  crearCarrera(carrera: string) {
+    const envio = {
+      Nombre: carrera,
+    };
     return this.http.post<any>(this.apiUrl, envio);
   }
-  actualizarCarrera(carrera : Carrera){
+  actualizarCarrera(carrera: Carrera) {
     const envio = {
       Id: carrera.Id,
-      Nombre: carrera.Nombre
+      Nombre: carrera.Nombre,
     };
-    return this.http.put<any>(this.apiUrl, envio);
+    return this.http.put<any>(`${this.apiUrl}/${carrera.Id}`, envio);
   }
-  eliminarCarrera(id: number){
-    return this.http.delete<any>(this.apiUrl + '/' + id); 
+  eliminarCarrera(id: number) {
+    return this.http.delete<any>(this.apiUrl + '/' + id);
   }
 }

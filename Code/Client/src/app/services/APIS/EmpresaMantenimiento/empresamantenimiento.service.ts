@@ -4,11 +4,11 @@ import { environment } from '../../../../environments/environment';
 import { EmpresaMantenimiento } from '../../../models/admin/EmpresaMantenimiento';
 import { map } from 'rxjs';
 @Injectable({
-  providedIn: 'root'
+  providedIn: 'root',
 })
 export class EmpresamantenimientoService {
   private apiUrl = environment.apiUrl + '/api/EmpresaMantenimiento';
-  constructor(private http: HttpClient) { }
+  constructor(private http: HttpClient) {}
   crearEmpresaMantenimiento(empresa: EmpresaMantenimiento) {
     const envio = {
       NombreEmpresa: empresa.NombreEmpresa,
@@ -16,20 +16,22 @@ export class EmpresamantenimientoService {
       ApellidoResponsable: empresa.ApellidoResponsable,
       Telefono: empresa.Telefono,
       Nit: empresa.Nit,
-      Direccion: empresa.Direccion
+      Direccion: empresa.Direccion,
     };
     return this.http.post<any>(this.apiUrl, envio);
   }
-  obtenerEmpresaMantenimiento(){
+  obtenerEmpresaMantenimiento() {
     return this.http.get<any>(this.apiUrl).pipe(
-      map((data: any) => data.Value.map((item: any) => ({
-        Id : item.Id,
-        NombreEmpresa: item.NombreEmpresa,
-        NombreResponsable: item.NombreResponsable,
-        ApellidoResponsable: item.ApellidoResponsable,
-        Telefono: item.Telefono,
-        Direccion: item.Direccion
-      })))
+      map((data: any) =>
+        data.Value.map((item: any) => ({
+          Id: item.Id,
+          NombreEmpresa: item.NombreEmpresa,
+          NombreResponsable: item.NombreResponsable,
+          ApellidoResponsable: item.ApellidoResponsable,
+          Telefono: item.Telefono,
+          Direccion: item.Direccion,
+        })),
+      ),
     );
   }
   actualizarEmpresaMantenimiento(empresa: EmpresaMantenimiento) {
@@ -40,9 +42,9 @@ export class EmpresamantenimientoService {
       ApellidoResponsable: empresa.ApellidoResponsable,
       Telefono: empresa.Telefono,
       Nit: empresa.Nit,
-      Direccion: empresa.Direccion
+      Direccion: empresa.Direccion,
     };
-    return this.http.put<any>(this.apiUrl, envio);
+    return this.http.put<any>(`${this.apiUrl}/${empresa.Id}`, envio);
   }
   eliminarEmpresaMantenimiento(id: number) {
     return this.http.delete<any>(`${this.apiUrl}/${id}`);

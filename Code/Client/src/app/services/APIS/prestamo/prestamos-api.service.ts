@@ -112,11 +112,19 @@ export class PrestamosAPIService {
   }
   obtenercontratoPrestamo(id: number) {
     const APIurl = `${environment.apiUrl}/api/Contrato/${id}`;
-    return this.http.get<string[]>(APIurl).pipe(
+    return this.http.get<any>(APIurl).pipe(
       map((response) => {
-        if (!response || !Array.isArray(response) || response.length === 0)
-          return '';
-        const base64String = response[0] || '';
+        const wrapped = response?.Value ?? response?.value ?? response;
+        let base64String = '';
+
+        if (Array.isArray(wrapped)) {
+          base64String = wrapped[0] || '';
+        } else if (typeof wrapped === 'string') {
+          base64String = wrapped;
+        } else if (wrapped && typeof wrapped === 'object') {
+          base64String = wrapped.ContenidoBase64 || wrapped.contenidoBase64 || '';
+        }
+
         if (!base64String) return '';
         try {
           const raw = atob(base64String);

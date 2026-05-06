@@ -13,10 +13,20 @@ public class GaveteroRepository : Repository<GaveteroEntity, GaveteroDto>
 
     public override async Task<Result<List<GaveteroDto>>> GetAll(QueryFilter? filter = null)
     {
-        var entities = await DbContext.Gaveteros
+        var dtos = await DbContext.Gaveteros
             .AsNoTracking()
+            .Select(e => new GaveteroDto
+            {
+                Id = e.Id,
+                Nombre = e.Nombre,
+                Tipo = e.Tipo,
+                NombreMueble = null,
+                Longitud = e.Longitud,
+                Profundidad = e.Profundidad,
+                Altura = e.Altura
+            })
             .ToListAsync();
-        return Result<List<GaveteroDto>>.Success(entities.Select(MapToDto).ToList());
+        return Result<List<GaveteroDto>>.Success(dtos);
     }
 
     public override async Task<Result<GaveteroDto>> Get(int id)

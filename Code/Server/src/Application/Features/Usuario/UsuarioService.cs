@@ -3,23 +3,18 @@ using IMT_Reservas.Server.Application.Abstraction;
 using IMT_Reservas.Server.Application.Features.Usuario.Dtos;
 using IMT_Reservas.Server.Infrastructure.PostgreSQL;
 using IMT_Reservas.Server.Infrastructure.Repositories.Implementations;
-using IMT_Reservas.Server.Core.Common;
 using UsuarioEntity = IMT_Reservas.Server.Core.Entities.Usuario;
 using Microsoft.EntityFrameworkCore;
-using BCrypt.Net;
-using Microsoft.Extensions.Logging;
 namespace IMT_Reservas.Server.Application.Features.Usuario;
 
 public class UsuarioService : Service<UsuarioEntity, UsuarioRepository, UsuarioDto>
 {
     private readonly ApplicationDbContext _dbContext;
-    private readonly ILogger<UsuarioService> _logger;
 
-    public UsuarioService(UsuarioRepository repository, ApplicationDbContext dbContext, ILogger<UsuarioService> logger)
+    public UsuarioService(UsuarioRepository repository, ApplicationDbContext dbContext)
         : base(repository)
     {
         _dbContext = dbContext;
-        _logger = logger;
     }
 
     public override async Task<Result<UsuarioDto>> Create(UsuarioEntity entity)
@@ -41,6 +36,7 @@ public class UsuarioService : Service<UsuarioEntity, UsuarioRepository, UsuarioD
 
         var carreraExists = await _dbContext.Carreras
             .AnyAsync(c => c.Id == entity.IdCarrera && !c.EstadoEliminado);
+        
         if (!carreraExists)
             return Result<UsuarioDto>.Error("Carrera no existe");
 

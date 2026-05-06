@@ -13,22 +13,41 @@ public class MantenimientoRepository : Repository<MantenimientoEntity, Mantenimi
 
     public override async Task<Result<List<MantenimientoDto>>> GetAll(QueryFilter? filter = null)
     {
-        var entities = await DbContext.Mantenimientos
+        var dtos = await DbContext.Mantenimientos
             .AsNoTracking()
+            .Select(e => new MantenimientoDto
+            {
+                Id = e.Id,
+                IdEmpresa = e.IdEmpresa,
+                FechaMantenimiento = e.FechaMantenimiento,
+                FechaFinalMantenimiento = e.FechaFinalMantenimiento,
+                Costo = e.Costo,
+                Descripcion = e.Descripcion
+            })
             .ToListAsync();
 
-        return Result<List<MantenimientoDto>>.Success(entities.Select(MapToDto).ToList());
+        return Result<List<MantenimientoDto>>.Success(dtos);
     }
 
     public override async Task<Result<MantenimientoDto>> Get(int id)
     {
-        var entity = await DbContext.Mantenimientos
+        var dto = await DbContext.Mantenimientos
             .AsNoTracking()
-            .FirstOrDefaultAsync(m => m.Id == id);
+            .Where(m => m.Id == id)
+            .Select(e => new MantenimientoDto
+            {
+                Id = e.Id,
+                IdEmpresa = e.IdEmpresa,
+                FechaMantenimiento = e.FechaMantenimiento,
+                FechaFinalMantenimiento = e.FechaFinalMantenimiento,
+                Costo = e.Costo,
+                Descripcion = e.Descripcion
+            })
+            .FirstOrDefaultAsync();
 
-        return entity == null
+        return dto == null
             ? Result<MantenimientoDto>.NotFound()
-            : Result<MantenimientoDto>.Success(MapToDto(entity));
+            : Result<MantenimientoDto>.Success(dto);
     }
 
     public async Task<bool> ExistsActive(int id)

@@ -13,22 +13,49 @@ public class AccesorioRepository : Repository<AccesorioEntity, AccesorioDto>
 
     public override async Task<Result<List<AccesorioDto>>> GetAll(QueryFilter? filter = null)
     {
-        var entities = await DbContext.Accesorios
+        var dtos = await DbContext.Accesorios
             .AsNoTracking()
+            .Select(e => new AccesorioDto
+            {
+                Id = e.Id,
+                Nombre = e.Nombre,
+                Modelo = e.Modelo,
+                Tipo = e.Tipo,
+                Descripcion = e.Descripcion,
+                Precio = e.Precio,
+                UrlDataSheet = e.UrlDataSheet,
+                IdEquipo = e.IdEquipo,
+                CodigoImtEquipoAsociado = null,
+                NombreEquipoAsociado = null
+            })
             .ToListAsync();
 
-        return Result<List<AccesorioDto>>.Success(entities.Select(MapToDto).ToList());
+        return Result<List<AccesorioDto>>.Success(dtos);
     }
 
     public override async Task<Result<AccesorioDto>> Get(int id)
     {
-        var entity = await DbContext.Accesorios
+        var dto = await DbContext.Accesorios
             .AsNoTracking()
-            .FirstOrDefaultAsync(a => a.Id == id);
+            .Where(a => a.Id == id)
+            .Select(e => new AccesorioDto
+            {
+                Id = e.Id,
+                Nombre = e.Nombre,
+                Modelo = e.Modelo,
+                Tipo = e.Tipo,
+                Descripcion = e.Descripcion,
+                Precio = e.Precio,
+                UrlDataSheet = e.UrlDataSheet,
+                IdEquipo = e.IdEquipo,
+                CodigoImtEquipoAsociado = null,
+                NombreEquipoAsociado = null
+            })
+            .FirstOrDefaultAsync();
 
-        return entity == null
+        return dto == null
             ? Result<AccesorioDto>.NotFound()
-            : Result<AccesorioDto>.Success(MapToDto(entity));
+            : Result<AccesorioDto>.Success(dto);
     }
 
     public async Task<bool> ExistsActive(int id)

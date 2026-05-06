@@ -13,22 +13,49 @@ public class ComponenteRepository : Repository<ComponenteEntity, ComponenteDto>
 
     public override async Task<Result<List<ComponenteDto>>> GetAll(QueryFilter? filter = null)
     {
-        var entities = await DbContext.Componentes
+        var dtos = await DbContext.Componentes
             .AsNoTracking()
+            .Select(e => new ComponenteDto
+            {
+                Id = e.Id,
+                Nombre = e.Nombre,
+                Modelo = e.Modelo,
+                Tipo = e.Tipo,
+                Descripcion = e.Descripcion,
+                PrecioReferencia = e.PrecioReferencia,
+                IdEquipo = e.IdEquipo,
+                NombreEquipo = null,
+                CodigoImtEquipo = null,
+                UrlDataSheet = e.UrlDataSheet
+            })
             .ToListAsync();
 
-        return Result<List<ComponenteDto>>.Success(entities.Select(MapToDto).ToList());
+        return Result<List<ComponenteDto>>.Success(dtos);
     }
 
     public override async Task<Result<ComponenteDto>> Get(int id)
     {
-        var entity = await DbContext.Componentes
+        var dto = await DbContext.Componentes
             .AsNoTracking()
-            .FirstOrDefaultAsync(c => c.Id == id);
+            .Where(c => c.Id == id)
+            .Select(e => new ComponenteDto
+            {
+                Id = e.Id,
+                Nombre = e.Nombre,
+                Modelo = e.Modelo,
+                Tipo = e.Tipo,
+                Descripcion = e.Descripcion,
+                PrecioReferencia = e.PrecioReferencia,
+                IdEquipo = e.IdEquipo,
+                NombreEquipo = null,
+                CodigoImtEquipo = null,
+                UrlDataSheet = e.UrlDataSheet
+            })
+            .FirstOrDefaultAsync();
 
-        return entity == null
+        return dto == null
             ? Result<ComponenteDto>.NotFound()
-            : Result<ComponenteDto>.Success(MapToDto(entity));
+            : Result<ComponenteDto>.Success(dto);
     }
 
     public async Task<bool> ExistsActive(int id)

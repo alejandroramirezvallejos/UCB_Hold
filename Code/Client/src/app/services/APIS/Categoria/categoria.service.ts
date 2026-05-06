@@ -4,33 +4,35 @@ import { HttpClient } from '@angular/common/http';
 import { map } from 'rxjs';
 import { Categorias } from '../../../models/admin/Categorias';
 @Injectable({
-  providedIn: 'root'
+  providedIn: 'root',
 })
 export class CategoriaService {
   private apiurl = environment.apiUrl + '/api/Categoria';
-  constructor(private http : HttpClient) { }
-  obtenercategorias(){
+  constructor(private http: HttpClient) {}
+  obtenercategorias() {
     return this.http.get<any>(this.apiurl).pipe(
-          map((data: any) => data.Value.map((item: any) => ({
-            Id : item.Id,
-            Nombre: item.Nombre,
-          })))
-        );
+      map((data: any) =>
+        data.Value.map((item: any) => ({
+          Id: item.Id,
+          Nombre: item.Nombre,
+        })),
+      ),
+    );
   }
-  crearCategoria(categoria : Categorias){
-    const envio ={
-      Nombre : categoria.Nombre
-    }
+  crearCategoria(categoria: Categorias) {
+    const envio = {
+      Nombre: categoria.Nombre,
+    };
     return this.http.post<any>(this.apiurl, envio);
   }
-  actualizarCategoria(categoria : Categorias){
+  actualizarCategoria(categoria: Categorias) {
     const envio = {
       Id: categoria.Id,
-      Nombre: categoria.Nombre
-    }
-    return this.http.put<any>(this.apiurl, envio);
+      Nombre: categoria.Nombre,
+    };
+    return this.http.put<any>(`${this.apiurl}/${categoria.Id}`, envio);
   }
-  eliminarCategoria(id: number){
+  eliminarCategoria(id: number) {
     return this.http.delete<any>(this.apiurl + '/' + id);
   }
 }

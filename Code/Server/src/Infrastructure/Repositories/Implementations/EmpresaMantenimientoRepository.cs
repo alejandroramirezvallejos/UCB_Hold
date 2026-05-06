@@ -13,26 +13,43 @@ public class EmpresaMantenimientoRepository : Repository<EmpresaMantenimientoEnt
 
     public override async Task<Result<List<EmpresaMantenimientoDto>>> GetAll(QueryFilter? filter = null)
     {
-        var entities = await DbContext.EmpresasMantenimiento
+        var dtos = await DbContext.EmpresasMantenimiento
             .AsNoTracking()
+            .Select(e => new EmpresaMantenimientoDto
+            {
+                Id = e.Id,
+                NombreResponsable = e.NombreResponsable,
+                ApellidoResponsable = e.ApellidoResponsable,
+                Telefono = e.Telefono,
+                Direccion = e.Direccion
+            })
             .ToListAsync();
 
-        return Result<List<EmpresaMantenimientoDto>>.Success(entities.Select(MapToDto).ToList());
+        return Result<List<EmpresaMantenimientoDto>>.Success(dtos);
     }
 
     public override async Task<Result<EmpresaMantenimientoDto>> Get(int id)
     {
-        var entity = await DbContext.EmpresasMantenimiento
+        var dto = await DbContext.EmpresasMantenimiento
             .AsNoTracking()
-            .FirstOrDefaultAsync(e => e.Id == id);
+            .Where(e => e.Id == id)
+            .Select(e => new EmpresaMantenimientoDto
+            {
+                Id = e.Id,
+                NombreResponsable = e.NombreResponsable,
+                ApellidoResponsable = e.ApellidoResponsable,
+                Telefono = e.Telefono,
+                Direccion = e.Direccion
+            })
+            .FirstOrDefaultAsync();
 
-        return entity == null
+        return dto == null
             ? Result<EmpresaMantenimientoDto>.NotFound()
-            : Result<EmpresaMantenimientoDto>.Success(MapToDto(entity));
+            : Result<EmpresaMantenimientoDto>.Success(dto);
     }
 
     public async Task<EmpresaMantenimientoEntity?> GetByNombre(string nombre)
-        => await DbContext.EmpresasMantenimiento.FirstOrDefaultAsync(e => e.Nombre == nombre && !e.EstadoEliminado);
+        => await DbContext.EmpresasMantenimiento.AsNoTracking().FirstOrDefaultAsync(e => e.Nombre == nombre && !e.EstadoEliminado);
 
     public async Task<bool> ExistsActive(int id)
         => await DbContext.EmpresasMantenimiento.AnyAsync(e => e.Id == id && !e.EstadoEliminado);

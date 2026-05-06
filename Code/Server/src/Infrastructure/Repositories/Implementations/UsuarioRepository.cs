@@ -13,22 +13,41 @@ public class UsuarioRepository : Repository<UsuarioEntity, UsuarioDto>
 
     public override async Task<Result<List<UsuarioDto>>> GetAll(QueryFilter? filter = null)
     {
-        var entities = await DbContext.Usuarios
+        var dtos = await DbContext.Usuarios
             .AsNoTracking()
+            .Select(e => new UsuarioDto
+            {
+                Carnet = e.Carnet,
+                Nombre = e.Nombre,
+                ApellidoPaterno = e.ApellidoPaterno,
+                ApellidoMaterno = e.ApellidoMaterno,
+                Rol = e.Rol,
+                Email = e.Email,
+                CarreraNombre = null,
+                IdCarrera = e.IdCarrera,
+                Telefono = e.Telefono,
+                TelefonoReferencia = e.TelefonoReferencia,
+                NombreReferencia = e.NombreReferencia,
+                EmailReferencia = e.EmailReferencia,
+                ImagenFrenteCarnet = e.ImagenFrenteCarnet,
+                ImagenAtrasCarnet = e.ImagenAtrasCarnet
+            })
             .ToListAsync();
 
-        return Result<List<UsuarioDto>>.Success(entities.Select(MapToDto).ToList());
+        return Result<List<UsuarioDto>>.Success(dtos);
     }
 
     public async Task<UsuarioEntity?> GetByCarnet(string carnet)
     {
         return await DbContext.Usuarios
+            .AsNoTracking()
             .FirstOrDefaultAsync(u => u.Carnet == carnet && !u.EstadoEliminado);
     }
 
     public async Task<UsuarioEntity?> GetByEmail(string email)
     {
         return await DbContext.Usuarios
+            .AsNoTracking()
             .FirstOrDefaultAsync(u => u.Email == email && !u.EstadoEliminado);
     }
 

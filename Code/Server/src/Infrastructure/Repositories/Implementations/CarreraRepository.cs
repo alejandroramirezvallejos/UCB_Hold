@@ -13,11 +13,12 @@ public class CarreraRepository : Repository<CarreraEntity, CarreraDto>
 
     public override async Task<Result<List<CarreraDto>>> GetAll(QueryFilter? filter = null)
     {
-        var entities = await DbContext.Carreras
+        var dtos = await DbContext.Carreras
             .AsNoTracking()
+            .Select(e => new CarreraDto { Id = e.Id, Nombre = e.Nombre })
             .ToListAsync();
 
-        return Result<List<CarreraDto>>.Success(entities.Select(MapToDto).ToList());
+        return Result<List<CarreraDto>>.Success(dtos);
     }
 
     public override async Task<Result<CarreraDto>> Get(int id)

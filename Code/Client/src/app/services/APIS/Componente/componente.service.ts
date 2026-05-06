@@ -4,36 +4,38 @@ import { HttpClient } from '@angular/common/http';
 import { Componente } from '../../../models/admin/Componente';
 import { map } from 'rxjs';
 @Injectable({
-  providedIn: 'root'
+  providedIn: 'root',
 })
 export class ComponenteService {
   private apiUrl = environment.apiUrl + '/api/Componente';
-  constructor(private http : HttpClient) { }
+  constructor(private http: HttpClient) {}
   crearComponente(componente: Componente) {
     const envio = {
-      Nombre : componente.Nombre,
+      Nombre: componente.Nombre,
       Modelo: componente.Modelo,
       Tipo: componente.Tipo,
-      CodigoIMT : componente.CodigoImtEquipo,
+      CodigoIMT: componente.CodigoImtEquipo,
       Descripcion: componente.Descripcion,
       PrecioReferencia: componente.PrecioReferencia,
-      UrlDataSheet: componente.UrlDataSheet
-    }
+      UrlDataSheet: componente.UrlDataSheet,
+    };
     return this.http.post<any>(this.apiUrl, envio);
   }
-  obtenerComponentes (){
+  obtenerComponentes() {
     return this.http.get<any>(this.apiUrl).pipe(
-      map((data: any) => data.Value.map((item: any) => ({
-        Id: item.Id,
-        Nombre: item.Nombre,
-        Modelo: item.Modelo,
-        Tipo: item.Tipo,
-        Descripcion: item.Descripcion,
-        PrecioReferencia: item.PrecioReferencia,
-        NombreEquipo: item.NombreEquipo,
-        CodigoImtEquipo: item.CodigoImtEquipo,
-        UrlDataSheet: item.UrlDataSheet
-      })))
+      map((data: any) =>
+        data.Value.map((item: any) => ({
+          Id: item.Id,
+          Nombre: item.Nombre,
+          Modelo: item.Modelo,
+          Tipo: item.Tipo,
+          Descripcion: item.Descripcion,
+          PrecioReferencia: item.PrecioReferencia,
+          NombreEquipo: item.NombreEquipo,
+          CodigoImtEquipo: item.CodigoImtEquipo,
+          UrlDataSheet: item.UrlDataSheet,
+        })),
+      ),
     );
   }
   actualizarComponente(componente: Componente) {
@@ -45,9 +47,9 @@ export class ComponenteService {
       CodigoIMT: componente.CodigoImtEquipo,
       Descripcion: componente.Descripcion,
       PrecioReferencia: componente.PrecioReferencia,
-      UrlDataSheet: componente.UrlDataSheet
+      UrlDataSheet: componente.UrlDataSheet,
     };
-    return this.http.put<any>(this.apiUrl, envio);
+    return this.http.put<any>(`${this.apiUrl}/${componente.Id}`, envio);
   }
   eliminarComponente(id: number) {
     return this.http.delete<any>(this.apiUrl + '/' + id);

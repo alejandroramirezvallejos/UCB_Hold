@@ -3,7 +3,6 @@ using IMT_Reservas.Server.Application.Abstraction;
 using IMT_Reservas.Server.Application.Features.EmpresaMantenimiento.Dtos;
 using IMT_Reservas.Server.Infrastructure.Repositories.Implementations;
 using EmpresaMantenimientoEntity = IMT_Reservas.Server.Core.Entities.EmpresaMantenimiento;
-using AutoMapper;
 namespace IMT_Reservas.Server.Presentation.Controllers;
 
 [ApiController]
@@ -11,12 +10,10 @@ namespace IMT_Reservas.Server.Presentation.Controllers;
 public class EmpresaMantenimientoController : ControllerBase
 {
     private readonly Service<EmpresaMantenimientoEntity, EmpresaMantenimientoRepository, EmpresaMantenimientoDto> _service;
-    private readonly IMapper _mapper;
 
-    public EmpresaMantenimientoController(Service<EmpresaMantenimientoEntity, EmpresaMantenimientoRepository, EmpresaMantenimientoDto> service, IMapper mapper)
+    public EmpresaMantenimientoController(Service<EmpresaMantenimientoEntity, EmpresaMantenimientoRepository, EmpresaMantenimientoDto> service)
     {
         _service = service;
-        _mapper = mapper;
     }
 
     [HttpGet]
@@ -38,7 +35,14 @@ public class EmpresaMantenimientoController : ControllerBase
     [HttpPost]
     public async Task<IActionResult> Create([FromBody] EmpresaMantenimientoDto dto)
     {
-        var entity = _mapper.Map<EmpresaMantenimientoEntity>(dto);
+        var entity = new EmpresaMantenimientoEntity
+        {
+            Nombre = dto.NombreEmpresa ?? string.Empty,
+            NombreResponsable = dto.NombreResponsable,
+            ApellidoResponsable = dto.ApellidoResponsable,
+            Telefono = dto.Telefono,
+            Direccion = dto.Direccion
+        };
         var result = await _service.Create(entity);
 
         return result.IsSuccess ? CreatedAtAction(nameof(Get), new { id = result.Value?.Id }, new Response<EmpresaMantenimientoDto> { Status = 201, Value = result.Value }) : BadRequest(new Response<object> { Status = 400, Errors = result.Errors.ToList() });
@@ -47,8 +51,15 @@ public class EmpresaMantenimientoController : ControllerBase
     [HttpPut("{id:int}")]
     public async Task<IActionResult> Update(int id, [FromBody] EmpresaMantenimientoDto dto)
     {
-        var entity = _mapper.Map<EmpresaMantenimientoEntity>(dto);
-        entity.Id = id;
+        var entity = new EmpresaMantenimientoEntity
+        {
+            Id = id,
+            Nombre = dto.NombreEmpresa ?? string.Empty,
+            NombreResponsable = dto.NombreResponsable,
+            ApellidoResponsable = dto.ApellidoResponsable,
+            Telefono = dto.Telefono,
+            Direccion = dto.Direccion
+        };
         var result = await _service.Update(entity);
 
         return result.IsSuccess ? Ok(new Response<EmpresaMantenimientoDto> { Status = 200, Value = result.Value }) : BadRequest(new Response<object> { Status = 400, Errors = result.Errors.ToList() });

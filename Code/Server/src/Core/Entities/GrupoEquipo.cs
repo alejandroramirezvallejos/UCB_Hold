@@ -12,5 +12,6 @@ public class GrupoEquipo : Entity
     public int Cantidad { get; set; }
     public decimal? CostoPromedio { get; set; }
     public bool EstadoEliminado { get; set; }
+    public Categoria? Categoria { get; set; }
 }
 

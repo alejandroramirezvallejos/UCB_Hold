@@ -3,7 +3,6 @@ using IMT_Reservas.Server.Application.Abstraction;
 using IMT_Reservas.Server.Application.Features.Componente.Dtos;
 using IMT_Reservas.Server.Infrastructure.Repositories.Implementations;
 using ComponenteEntity = IMT_Reservas.Server.Core.Entities.Componente;
-using AutoMapper;
 namespace IMT_Reservas.Server.Presentation.Controllers;
 
 [ApiController]
@@ -11,12 +10,14 @@ namespace IMT_Reservas.Server.Presentation.Controllers;
 public class ComponenteController : ControllerBase
 {
     private readonly Service<ComponenteEntity, ComponenteRepository, ComponenteDto> _service;
-    private readonly IMapper _mapper;
+    private readonly ComponenteRepository _repository;
 
-    public ComponenteController(Service<ComponenteEntity, ComponenteRepository, ComponenteDto> service, IMapper mapper)
+    public ComponenteController(
+        Service<ComponenteEntity, ComponenteRepository, ComponenteDto> service,
+        ComponenteRepository repository)
     {
         _service = service;
-        _mapper = mapper;
+        _repository = repository;
     }
 
     [HttpGet]
@@ -38,7 +39,29 @@ public class ComponenteController : ControllerBase
     [HttpPost]
     public async Task<IActionResult> Create([FromBody] ComponenteDto dto)
     {
-        var entity = _mapper.Map<ComponenteEntity>(dto);
+        var equipoId = dto.IdEquipo;
+        if (!equipoId.HasValue && !string.IsNullOrWhiteSpace(dto.CodigoImtEquipo) && int.TryParse(dto.CodigoImtEquipo, out var codigoImt))
+            equipoId = await _repository.GetEquipoByCodigoImt(codigoImt);
+
+        if (!equipoId.HasValue || equipoId.Value <= 0)
+        {
+            return BadRequest(new Response<object>
+            {
+                Status = 400,
+                Errors = new List<string> { "Equipo no encontrado" }
+            });
+        }
+
+        var entity = new ComponenteEntity
+        {
+            Nombre = dto.Nombre ?? string.Empty,
+            Modelo = dto.Modelo ?? string.Empty,
+            Tipo = dto.Tipo,
+            Descripcion = dto.Descripcion,
+            PrecioReferencia = dto.PrecioReferencia,
+            IdEquipo = equipoId.Value,
+            UrlDataSheet = dto.UrlDataSheet
+        };
         var result = await _service.Create(entity);
 
         return result.IsSuccess ? CreatedAtAction(nameof(Get), new { id = result.Value?.Id }, new Response<ComponenteDto> { Status = 201, Value = result.Value }) : BadRequest(new Response<object> { Status = 400, Errors = result.Errors.ToList() });
@@ -47,8 +70,30 @@ public class ComponenteController : ControllerBase
     [HttpPut("{id:int}")]
     public async Task<IActionResult> Update(int id, [FromBody] ComponenteDto dto)
     {
-        var entity = _mapper.Map<ComponenteEntity>(dto);
-        entity.Id = id;
+        var equipoId = dto.IdEquipo;
+        if (!equipoId.HasValue && !string.IsNullOrWhiteSpace(dto.CodigoImtEquipo) && int.TryParse(dto.CodigoImtEquipo, out var codigoImt))
+            equipoId = await _repository.GetEquipoByCodigoImt(codigoImt);
+
+        if (!equipoId.HasValue || equipoId.Value <= 0)
+        {
+            return BadRequest(new Response<object>
+            {
+                Status = 400,
+                Errors = new List<string> { "Equipo no encontrado" }
+            });
+        }
+
+        var entity = new ComponenteEntity
+        {
+            Id = id,
+            Nombre = dto.Nombre ?? string.Empty,
+            Modelo = dto.Modelo ?? string.Empty,
+            Tipo = dto.Tipo,
+            Descripcion = dto.Descripcion,
+            PrecioReferencia = dto.PrecioReferencia,
+            IdEquipo = equipoId.Value,
+            UrlDataSheet = dto.UrlDataSheet
+        };
         var result = await _service.Update(entity);
 
         return result.IsSuccess ? Ok(new Response<ComponenteDto> { Status = 200, Value = result.Value }) : BadRequest(new Response<object> { Status = 400, Errors = result.Errors.ToList() });

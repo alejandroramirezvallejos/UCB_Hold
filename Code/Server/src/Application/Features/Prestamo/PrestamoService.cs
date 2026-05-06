@@ -6,6 +6,7 @@ using IMT_Reservas.Server.Core.Entities;
 using IMT_Reservas.Server.Infrastructure.Repositories.Implementations;
 using IMT_Reservas.Server.Infrastructure.MongoDb;
 using Microsoft.EntityFrameworkCore;
+using MongoDB.Bson;
 using PrestamoEntity = IMT_Reservas.Server.Core.Entities.Prestamo;
 namespace IMT_Reservas.Server.Application.Features.Prestamo;
 
@@ -95,6 +96,29 @@ public class PrestamoService : Service<PrestamoEntity, PrestamoRepository, Prest
         return Result<decimal>.Success((decimal)monto);
     }
 
+    public async Task<Result<PrestamoDto>> UpdateEstado(int id, string nuevoEstado)
+    {
+        var prestamo = await _dbContext.Prestamos.FirstOrDefaultAsync(p => p.Id == id);
+
+        if (prestamo == null)
+            return Result<PrestamoDto>.NotFound();
+
+        var estadoActual = prestamo.EstadoPrestamo.ToDbString();
+        var validacion = await ValidateEstado(estadoActual, nuevoEstado);
+
+        if (!validacion.IsSuccess)
+            return Result<PrestamoDto>.Error(validacion.Errors.FirstOrDefault() ?? "Transición no permitida");
+
+        if (!EstadoPrestamoParse.TryParse(nuevoEstado, out var estadoParsed))
+            return Result<PrestamoDto>.Error("Estado préstamo no válido");
+
+        prestamo.EstadoPrestamo = estadoParsed;
+        _dbContext.Prestamos.Update(prestamo);
+        await _dbContext.SaveChangesAsync();
+
+        return await Get(id);
+    }
+
     public bool NeedsContrato(decimal monto) => monto >= 1000;
 
     public async Task<Result<List<PrestamoDto>>> GetHistorial(string carnetUsuario, string estadoPrestamo)
@@ -122,24 +146,31 @@ public class PrestamoService : Service<PrestamoEntity, PrestamoRepository, Prest
         if (contratoBytes == null || contratoBytes.Length == 0)
             return Result<PrestamoDto>.Error("Contenido de contrato vacío");
 
+        if (contratoBytes.Length > 5_000_000)
+            return Result<PrestamoDto>.Error("Contrato excede tamaño máximo (5MB)");
+
         var prestamo = await _dbContext.Prestamos.FirstOrDefaultAsync(p => p.Id == prestamoId);
-        
+
         if (prestamo == null)
             return Result<PrestamoDto>.Error("Préstamo no encontrado");
+
+        if (prestamo.IdContrato != null)
+            return Result<PrestamoDto>.Error("Préstamo ya tiene contrato");
 
         var contratoBase64 = Convert.ToBase64String(contratoBytes);
         var contrato = new Core.Entities.Contrato
         {
+            MongoId = MongoDB.Bson.ObjectId.GenerateNewId().ToString(),
             PrestamoId = prestamoId,
-            FileId = contratoBase64.Substring(0, Math.Min(24, contratoBase64.Length)),
-            FechaCreacion = DateTime.Now,
+            ContenidoBase64 = contratoBase64,
+            FechaCreacion = DateTime.UtcNow,
             EstadoEliminado = false
         };
 
         var coleccion = _mongoDbContext.GetContratos;
         await coleccion.InsertOneAsync(contrato);
 
-        prestamo.IdContrato = contrato.Id.ToString();
+        prestamo.IdContrato = contrato.MongoId;
         _dbContext.Prestamos.Update(prestamo);
         await _dbContext.SaveChangesAsync();
 
