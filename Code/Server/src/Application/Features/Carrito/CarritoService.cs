@@ -2,7 +2,6 @@ using IMT_Reservas.Server.Infrastructure.PostgreSQL;
 using IMT_Reservas.Server.Core.Entities;
 using Microsoft.EntityFrameworkCore;
 using Ardalis.Result;
-using IMT_Reservas.Server.Application.Features.Carrito.Dtos;
 namespace IMT_Reservas.Server.Application.Features.Carrito;
 
 public class CarritoService

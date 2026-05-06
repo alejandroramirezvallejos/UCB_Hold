@@ -1,4 +1,4 @@
-namespace IMT_Reservas.Server.Application.Features.Categoria.Dtos;
+namespace IMT_Reservas.Server.Application.Features.Categoria;
 
 public class CategoriaDto
 {

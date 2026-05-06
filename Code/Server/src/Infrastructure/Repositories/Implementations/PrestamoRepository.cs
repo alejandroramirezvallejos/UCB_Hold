@@ -1,4 +1,4 @@
-using IMT_Reservas.Server.Application.Features.Prestamo.Dtos;
+using IMT_Reservas.Server.Application.Features.Prestamo;
 using IMT_Reservas.Server.Core.Entities;
 using IMT_Reservas.Server.Infrastructure.PostgreSQL;
 using IMT_Reservas.Server.Infrastructure.Repositories.Abstraction;

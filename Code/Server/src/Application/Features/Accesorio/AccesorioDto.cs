@@ -1,4 +1,4 @@
-namespace IMT_Reservas.Server.Application.Features.Accesorio.Dtos;
+namespace IMT_Reservas.Server.Application.Features.Accesorio;
 
 public class AccesorioDto
 {

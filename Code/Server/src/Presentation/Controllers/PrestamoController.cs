@@ -1,7 +1,6 @@
 using Microsoft.AspNetCore.Mvc;
 using IMT_Reservas.Server.Application.Features.Prestamo;
 using IMT_Reservas.Server.Application.Abstraction;
-using IMT_Reservas.Server.Application.Features.Prestamo.Dtos;
 using IMT_Reservas.Server.Core.Entities;
 using PrestamoEntity = IMT_Reservas.Server.Core.Entities.Prestamo;
 namespace IMT_Reservas.Server.Presentation.Controllers;
@@ -55,6 +54,21 @@ public class PrestamoController : ControllerBase
     [HttpPut("{id:int}")]
     public async Task<IActionResult> Update(int id, [FromBody] PrestamoDto dto)
     {
+        var estadoPrestamo = EstadoPrestamo.Pendiente;
+        if (!string.IsNullOrWhiteSpace(dto.EstadoPrestamo))
+        {
+            var lower = dto.EstadoPrestamo.ToLowerInvariant();
+            estadoPrestamo = lower switch
+            {
+                "aprobado" => EstadoPrestamo.Aprobado,
+                "activo" => EstadoPrestamo.Activo,
+                "rechazado" => EstadoPrestamo.Rechazado,
+                "finalizado" => EstadoPrestamo.Finalizado,
+                "cancelado" => EstadoPrestamo.Cancelado,
+                _ => EstadoPrestamo.Pendiente
+            };
+        }
+
         var entity = new PrestamoEntity
         {
             Id = id,
@@ -65,7 +79,7 @@ public class PrestamoController : ControllerBase
             FechaDevolucion = dto.FechaDevolucion,
             FechaDevolucionEsperada = dto.FechaDevolucionEsperada ?? DateTime.UtcNow.AddDays(7),
             Observacion = dto.Observacion,
-            EstadoPrestamo = EstadoPrestamoParse.ParseOrDefault(dto.EstadoPrestamo, EstadoPrestamo.Pendiente),
+            EstadoPrestamo = estadoPrestamo,
             IdContrato = dto.IdContrato
         };
         var result = await _service.Update(entity);
@@ -102,13 +116,12 @@ public class PrestamoController : ControllerBase
     public async Task<IActionResult> SaveContrato(int id, [FromForm] ContratoPrestamoDto request)
     {
         byte[]? contratoBytes = null;
+        
         if (request?.Contrato != null)
         {
-            using (var ms = new MemoryStream())
-            {
-                await request.Contrato.CopyToAsync(ms);
-                contratoBytes = ms.ToArray();
-            }
+            using var ms = new MemoryStream();
+            await request.Contrato.CopyToAsync(ms);
+            contratoBytes = ms.ToArray();
         }
 
         var result = await _service.SaveContrato(id, contratoBytes ?? []);

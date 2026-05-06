@@ -1,8 +1,8 @@
 using IMT_Reservas.Server.Infrastructure.PostgreSQL;
-using IMT_Reservas.Server.Application.Features.Usuario.Dtos;
 using IMT_Reservas.Server.Core.Common;
 using IMT_Reservas.Server.Infrastructure.Repositories.Abstraction;
 using Ardalis.Result;
+using IMT_Reservas.Server.Application.Features.Usuario;
 using Microsoft.EntityFrameworkCore;
 using UsuarioEntity = IMT_Reservas.Server.Core.Entities.Usuario;
 namespace IMT_Reservas.Server.Infrastructure.Repositories.Implementations;

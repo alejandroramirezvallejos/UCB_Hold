@@ -1,7 +1,6 @@
 using Microsoft.AspNetCore.Mvc;
 using IMT_Reservas.Server.Application.Features.Usuario;
 using IMT_Reservas.Server.Application.Abstraction;
-using IMT_Reservas.Server.Application.Features.Usuario.Dtos;
 using UsuarioEntity = IMT_Reservas.Server.Core.Entities.Usuario;
 using AutoMapper;
 namespace IMT_Reservas.Server.Presentation.Controllers;

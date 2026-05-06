@@ -1,7 +1,6 @@
 using Microsoft.AspNetCore.Mvc;
+using IMT_Reservas.Server.Application.Features.Componente;
 using IMT_Reservas.Server.Application.Abstraction;
-using IMT_Reservas.Server.Application.Features.Componente.Dtos;
-using IMT_Reservas.Server.Infrastructure.Repositories.Implementations;
 using ComponenteEntity = IMT_Reservas.Server.Core.Entities.Componente;
 namespace IMT_Reservas.Server.Presentation.Controllers;
 
@@ -9,15 +8,11 @@ namespace IMT_Reservas.Server.Presentation.Controllers;
 [Route("api/[controller]")]
 public class ComponenteController : ControllerBase
 {
-    private readonly Service<ComponenteEntity, ComponenteRepository, ComponenteDto> _service;
-    private readonly ComponenteRepository _repository;
+    private readonly ComponenteService _service;
 
-    public ComponenteController(
-        Service<ComponenteEntity, ComponenteRepository, ComponenteDto> service,
-        ComponenteRepository repository)
+    public ComponenteController(ComponenteService service)
     {
         _service = service;
-        _repository = repository;
     }
 
     [HttpGet]
@@ -39,18 +34,7 @@ public class ComponenteController : ControllerBase
     [HttpPost]
     public async Task<IActionResult> Create([FromBody] ComponenteDto dto)
     {
-        var equipoId = dto.IdEquipo;
-        if (!equipoId.HasValue && !string.IsNullOrWhiteSpace(dto.CodigoImtEquipo) && int.TryParse(dto.CodigoImtEquipo, out var codigoImt))
-            equipoId = await _repository.GetEquipoByCodigoImt(codigoImt);
-
-        if (!equipoId.HasValue || equipoId.Value <= 0)
-        {
-            return BadRequest(new Response<object>
-            {
-                Status = 400,
-                Errors = new List<string> { "Equipo no encontrado" }
-            });
-        }
+        var equipoId = await _service.ResolveEquipoId(dto.IdEquipo, dto.CodigoImtEquipo);
 
         var entity = new ComponenteEntity
         {
@@ -59,7 +43,7 @@ public class ComponenteController : ControllerBase
             Tipo = dto.Tipo,
             Descripcion = dto.Descripcion,
             PrecioReferencia = dto.PrecioReferencia,
-            IdEquipo = equipoId.Value,
+            IdEquipo = equipoId ?? 0,
             UrlDataSheet = dto.UrlDataSheet
         };
         var result = await _service.Create(entity);
@@ -70,18 +54,7 @@ public class ComponenteController : ControllerBase
     [HttpPut("{id:int}")]
     public async Task<IActionResult> Update(int id, [FromBody] ComponenteDto dto)
     {
-        var equipoId = dto.IdEquipo;
-        if (!equipoId.HasValue && !string.IsNullOrWhiteSpace(dto.CodigoImtEquipo) && int.TryParse(dto.CodigoImtEquipo, out var codigoImt))
-            equipoId = await _repository.GetEquipoByCodigoImt(codigoImt);
-
-        if (!equipoId.HasValue || equipoId.Value <= 0)
-        {
-            return BadRequest(new Response<object>
-            {
-                Status = 400,
-                Errors = new List<string> { "Equipo no encontrado" }
-            });
-        }
+        var equipoId = await _service.ResolveEquipoId(dto.IdEquipo, dto.CodigoImtEquipo);
 
         var entity = new ComponenteEntity
         {
@@ -91,7 +64,7 @@ public class ComponenteController : ControllerBase
             Tipo = dto.Tipo,
             Descripcion = dto.Descripcion,
             PrecioReferencia = dto.PrecioReferencia,
-            IdEquipo = equipoId.Value,
+            IdEquipo = equipoId ?? 0,
             UrlDataSheet = dto.UrlDataSheet
         };
         var result = await _service.Update(entity);

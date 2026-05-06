@@ -1,6 +1,5 @@
 using Ardalis.Result;
 using IMT_Reservas.Server.Application.Abstraction;
-using IMT_Reservas.Server.Application.Features.Mueble.Dtos;
 using IMT_Reservas.Server.Infrastructure.Repositories.Implementations;
 using MuebleEntity = IMT_Reservas.Server.Core.Entities.Mueble;
 namespace IMT_Reservas.Server.Application.Features.Mueble;

@@ -1,7 +1,6 @@
 using Microsoft.AspNetCore.Mvc;
 using IMT_Reservas.Server.Application.Features.Categoria;
 using IMT_Reservas.Server.Application.Abstraction;
-using IMT_Reservas.Server.Application.Features.Categoria.Dtos;
 using CategoriaEntity = IMT_Reservas.Server.Core.Entities.Categoria;
 namespace IMT_Reservas.Server.Presentation.Controllers;
 

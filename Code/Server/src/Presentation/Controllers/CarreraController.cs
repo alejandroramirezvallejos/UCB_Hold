@@ -1,7 +1,6 @@
 using Microsoft.AspNetCore.Mvc;
 using IMT_Reservas.Server.Application.Features.Carrera;
 using IMT_Reservas.Server.Application.Abstraction;
-using IMT_Reservas.Server.Application.Features.Carrera.Dtos;
 using CarreraEntity = IMT_Reservas.Server.Core.Entities.Carrera;
 namespace IMT_Reservas.Server.Presentation.Controllers;
 

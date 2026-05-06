@@ -1,6 +1,6 @@
 using Microsoft.AspNetCore.Mvc;
 using IMT_Reservas.Server.Application.Abstraction;
-using IMT_Reservas.Server.Application.Features.EmpresaMantenimiento.Dtos;
+using IMT_Reservas.Server.Application.Features.EmpresaMantenimiento;
 using IMT_Reservas.Server.Infrastructure.Repositories.Implementations;
 using EmpresaMantenimientoEntity = IMT_Reservas.Server.Core.Entities.EmpresaMantenimiento;
 namespace IMT_Reservas.Server.Presentation.Controllers;

@@ -1,12 +1,10 @@
 using Ardalis.Result;
 using IMT_Reservas.Server.Application.Abstraction;
-using IMT_Reservas.Server.Application.Features.Prestamo.Dtos;
 using IMT_Reservas.Server.Infrastructure.PostgreSQL;
 using IMT_Reservas.Server.Core.Entities;
 using IMT_Reservas.Server.Infrastructure.Repositories.Implementations;
 using IMT_Reservas.Server.Infrastructure.MongoDb;
 using Microsoft.EntityFrameworkCore;
-using MongoDB.Bson;
 using PrestamoEntity = IMT_Reservas.Server.Core.Entities.Prestamo;
 namespace IMT_Reservas.Server.Application.Features.Prestamo;
 
@@ -109,10 +107,21 @@ public class PrestamoService : Service<PrestamoEntity, PrestamoRepository, Prest
         if (!validacion.IsSuccess)
             return Result<PrestamoDto>.Error(validacion.Errors.FirstOrDefault() ?? "Transición no permitida");
 
-        if (!EstadoPrestamoParse.TryParse(nuevoEstado, out var estadoParsed))
+        var estadoParsed = nuevoEstado?.ToLowerInvariant() switch
+        {
+            "aprobado" => EstadoPrestamo.Aprobado,
+            "activo" => EstadoPrestamo.Activo,
+            "rechazado" => EstadoPrestamo.Rechazado,
+            "finalizado" => EstadoPrestamo.Finalizado,
+            "cancelado" => EstadoPrestamo.Cancelado,
+            "pendiente" => EstadoPrestamo.Pendiente,
+            _ => (EstadoPrestamo?)null
+        };
+
+        if (!estadoParsed.HasValue)
             return Result<PrestamoDto>.Error("Estado préstamo no válido");
 
-        prestamo.EstadoPrestamo = estadoParsed;
+        prestamo.EstadoPrestamo = estadoParsed.Value;
         _dbContext.Prestamos.Update(prestamo);
         await _dbContext.SaveChangesAsync();
 
@@ -130,10 +139,21 @@ public class PrestamoService : Service<PrestamoEntity, PrestamoRepository, Prest
 
         if (!string.IsNullOrEmpty(estadoPrestamo) && estadoPrestamo != "todos")
         {
-            if (!EstadoPrestamoParse.TryParse(estadoPrestamo, out var estado))
+            var estado = estadoPrestamo.ToLowerInvariant() switch
+            {
+                "aprobado" => EstadoPrestamo.Aprobado,
+                "activo" => EstadoPrestamo.Activo,
+                "rechazado" => EstadoPrestamo.Rechazado,
+                "finalizado" => EstadoPrestamo.Finalizado,
+                "cancelado" => EstadoPrestamo.Cancelado,
+                "pendiente" => EstadoPrestamo.Pendiente,
+                _ => (EstadoPrestamo?)null
+            };
+
+            if (!estado.HasValue)
                 return Result<List<PrestamoDto>>.Error("Estado préstamo no válido");
 
-            prestamos = prestamos.Where(p => p.EstadoPrestamo == estado).ToList();
+            prestamos = prestamos.Where(p => p.EstadoPrestamo == estado.Value).ToList();
         }
 
         var dtos = prestamos.Select(p => Repository.ConvertToDto(p)).ToList();

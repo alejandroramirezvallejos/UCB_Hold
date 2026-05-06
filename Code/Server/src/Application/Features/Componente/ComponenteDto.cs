@@ -1,4 +1,4 @@
-namespace IMT_Reservas.Server.Application.Features.Componente.Dtos;
+namespace IMT_Reservas.Server.Application.Features.Componente;
 
 public class ComponenteDto
 {

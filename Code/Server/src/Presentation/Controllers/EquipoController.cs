@@ -1,7 +1,6 @@
 using Microsoft.AspNetCore.Mvc;
 using IMT_Reservas.Server.Application.Features.Equipo;
 using IMT_Reservas.Server.Application.Abstraction;
-using IMT_Reservas.Server.Application.Features.Equipo.Dtos;
 using EquipoEntity = IMT_Reservas.Server.Core.Entities.Equipo;
 using AutoMapper;
 namespace IMT_Reservas.Server.Presentation.Controllers;

@@ -4,14 +4,11 @@ using Npgsql;
 using AutoMapper;
 using IMT_Reservas.Server.Application.Abstraction;
 using IMT_Reservas.Server.Application.Features.Accesorio;
-using IMT_Reservas.Server.Application.Features.Accesorio.Dtos;
 using IMT_Reservas.Server.Application.Features.Carrera;
 using IMT_Reservas.Server.Application.Features.Categoria;
 using IMT_Reservas.Server.Application.Features.Componente;
-using IMT_Reservas.Server.Application.Features.Componente.Dtos;
 using IMT_Reservas.Server.Application.Features.Equipo;
 using IMT_Reservas.Server.Application.Features.EmpresaMantenimiento;
-using IMT_Reservas.Server.Application.Features.EmpresaMantenimiento.Dtos;
 using IMT_Reservas.Server.Application.Features.Gavetero;
 using IMT_Reservas.Server.Application.Features.GrupoEquipo;
 using IMT_Reservas.Server.Application.Features.Mantenimiento;
@@ -84,8 +81,7 @@ builder.Services.AddScoped<UsuarioService>();
 builder.Services.AddScoped<CarritoService>();
 builder.Services.AddScoped<PrestamoService>();
 builder.Services.AddScoped<EquipoService>();
-builder.Services.AddScoped(sp => new Service<AccesorioEntity, AccesorioRepository, AccesorioDto>(
-    sp.GetRequiredService<AccesorioRepository>()));
+builder.Services.AddScoped<AccesorioService>();
 builder.Services.AddScoped<GrupoEquipoService>();
 builder.Services.AddScoped<CarreraService>();
 builder.Services.AddScoped<CategoriaService>();
@@ -96,8 +92,7 @@ builder.Services.AddScoped<GaveteroService>();
 builder.Services.AddScoped<MuebleService>();
 builder.Services.AddScoped<ContratoService>();
 builder.Services.AddScoped<ComponenteRepository>();
-builder.Services.AddScoped(sp => new Service<ComponenteEntity, ComponenteRepository, ComponenteDto>(
-    sp.GetRequiredService<ComponenteRepository>()));
+builder.Services.AddScoped<ComponenteService>();
 
 var mongoDbConfig = builder.Configuration.GetSection("MongoDbSettings").Get<MongoDbConfig>();
 builder.Services.AddSingleton<IMongoClient>(new MongoClient(mongoDbConfig?.ConnectionString ?? "mongodb://localhost:27018"));

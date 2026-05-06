@@ -1,4 +1,4 @@
-namespace IMT_Reservas.Server.Application.Features.Prestamo.Dtos;
+namespace IMT_Reservas.Server.Application.Features.Prestamo;
 
 public class EstadoPrestamoDto
 {

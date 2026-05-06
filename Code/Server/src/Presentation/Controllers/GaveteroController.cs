@@ -1,9 +1,7 @@
 using Microsoft.AspNetCore.Mvc;
 using IMT_Reservas.Server.Application.Features.Gavetero;
 using IMT_Reservas.Server.Application.Abstraction;
-using IMT_Reservas.Server.Application.Features.Gavetero.Dtos;
 using GaveteroEntity = IMT_Reservas.Server.Core.Entities.Gavetero;
-using IMT_Reservas.Server.Infrastructure.Repositories.Implementations;
 namespace IMT_Reservas.Server.Presentation.Controllers;
 
 [ApiController]
@@ -11,12 +9,10 @@ namespace IMT_Reservas.Server.Presentation.Controllers;
 public class GaveteroController : ControllerBase
 {
     private readonly GaveteroService _service;
-    private readonly GaveteroRepository _repository;
 
-    public GaveteroController(GaveteroService service, GaveteroRepository repository)
+    public GaveteroController(GaveteroService service)
     {
         _service = service;
-        _repository = repository;
     }
 
     [HttpGet]
@@ -38,21 +34,13 @@ public class GaveteroController : ControllerBase
     [HttpPost]
     public async Task<IActionResult> Create([FromBody] GaveteroDto dto)
     {
-        var muebleId = await _repository.GetMuebleByNombre(dto.NombreMueble ?? string.Empty);
-        if (!muebleId.HasValue || muebleId.Value <= 0)
-        {
-            return BadRequest(new Response<object>
-            {
-                Status = 400,
-                Errors = new List<string> { "Mueble no existe" }
-            });
-        }
+        var muebleId = await _service.ResolveMuebleId(dto.NombreMueble);
 
         var entity = new GaveteroEntity
         {
             Nombre = dto.Nombre ?? string.Empty,
             Tipo = dto.Tipo,
-            IdMueble = muebleId.Value,
+            IdMueble = muebleId ?? 0,
             Longitud = dto.Longitud,
             Profundidad = dto.Profundidad,
             Altura = dto.Altura
@@ -65,28 +53,14 @@ public class GaveteroController : ControllerBase
     [HttpPut("{id:int}")]
     public async Task<IActionResult> Update(int id, [FromBody] GaveteroDto dto)
     {
-        int? muebleId = null;
-        if (!string.IsNullOrWhiteSpace(dto.NombreMueble))
-            muebleId = await _repository.GetMuebleByNombre(dto.NombreMueble);
-
-        if (!muebleId.HasValue)
-            muebleId = await _repository.GetMuebleByGavetero(id);
-
-        if (!muebleId.HasValue || muebleId.Value <= 0)
-        {
-            return BadRequest(new Response<object>
-            {
-                Status = 400,
-                Errors = new List<string> { "Mueble no existe" }
-            });
-        }
+        var muebleId = await _service.ResolveMuebleId(dto.NombreMueble, id);
 
         var entity = new GaveteroEntity
         {
             Id = id,
             Nombre = dto.Nombre ?? string.Empty,
             Tipo = dto.Tipo,
-            IdMueble = muebleId.Value,
+            IdMueble = muebleId ?? 0,
             Longitud = dto.Longitud,
             Profundidad = dto.Profundidad,
             Altura = dto.Altura

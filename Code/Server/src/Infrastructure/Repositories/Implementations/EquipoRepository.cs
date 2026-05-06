@@ -1,5 +1,5 @@
 using Ardalis.Result;
-using IMT_Reservas.Server.Application.Features.Equipo.Dtos;
+using IMT_Reservas.Server.Application.Features.Equipo;
 using IMT_Reservas.Server.Core.Common;
 using IMT_Reservas.Server.Infrastructure.PostgreSQL;
 using IMT_Reservas.Server.Infrastructure.Repositories.Abstraction;

@@ -1,6 +1,5 @@
 using Ardalis.Result;
 using IMT_Reservas.Server.Application.Abstraction;
-using IMT_Reservas.Server.Application.Features.Categoria.Dtos;
 using CategoriaEntity = IMT_Reservas.Server.Core.Entities.Categoria;
 using IMT_Reservas.Server.Infrastructure.Repositories.Implementations;
 namespace IMT_Reservas.Server.Application.Features.Categoria;

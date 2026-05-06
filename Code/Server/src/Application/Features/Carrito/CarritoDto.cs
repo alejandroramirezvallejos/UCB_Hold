@@ -1,4 +1,4 @@
-﻿namespace IMT_Reservas.Server.Application.Features.Carrito.Dtos;
+﻿namespace IMT_Reservas.Server.Application.Features.Carrito;
 
 public class CarritoDto
 {

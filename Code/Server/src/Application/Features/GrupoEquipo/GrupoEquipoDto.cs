@@ -1,4 +1,4 @@
-namespace IMT_Reservas.Server.Application.Features.GrupoEquipo.Dtos;
+namespace IMT_Reservas.Server.Application.Features.GrupoEquipo;
 
 public class GrupoEquipoDto
 {

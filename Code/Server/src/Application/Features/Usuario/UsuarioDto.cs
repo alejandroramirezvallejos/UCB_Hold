@@ -1,4 +1,4 @@
-namespace IMT_Reservas.Server.Application.Features.Usuario.Dtos;
+namespace IMT_Reservas.Server.Application.Features.Usuario;
 
 public class UsuarioDto
 {

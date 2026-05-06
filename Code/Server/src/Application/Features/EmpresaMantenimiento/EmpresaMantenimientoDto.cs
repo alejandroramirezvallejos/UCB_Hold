@@ -1,4 +1,4 @@
-namespace IMT_Reservas.Server.Application.Features.EmpresaMantenimiento.Dtos;
+namespace IMT_Reservas.Server.Application.Features.EmpresaMantenimiento;
 
 public class EmpresaMantenimientoDto
 {

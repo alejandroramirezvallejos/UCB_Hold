@@ -1,5 +1,5 @@
-namespace IMT_Reservas.Server.Application.Features.Contrato.Dtos;
 using System.Text.Json.Serialization;
+namespace IMT_Reservas.Server.Application.Features.Contrato;
 
 public class ContratoDto
 {
