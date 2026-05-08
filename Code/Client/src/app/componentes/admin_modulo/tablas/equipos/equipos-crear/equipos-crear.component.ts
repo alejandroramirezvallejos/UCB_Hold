@@ -23,7 +23,8 @@ export class EquiposCrearComponent extends BaseTablaComponent {
   grupoequipo : GrupoEquipo[] = [];
   equipo : Equipos = new Equipos();
   grupoequipoSeleccionado: GrupoEquipo | null = null;
-  Gaveteros: string[] =[];
+  Gaveteros: any[] = [];
+  gaveteraSeleccionada: any = null;
   constructor(private equipoapi : EquipoService , private grupoequipoAPI : GrupoequipoService , private gaveterosAPI : GaveteroService){
     super();
   }; 
@@ -35,7 +36,7 @@ export class EquiposCrearComponent extends BaseTablaComponent {
   cargarGaveteros() {
     this.gaveterosAPI.obtenerGaveteros().subscribe({
       next: (data) => {
-        this.Gaveteros = data.map((gavetero: any) => gavetero.Nombre!);
+        this.Gaveteros = data;
       },
       error: (error) => {
         this.mensajeerror= "Error al cargar los gaveteros. Intente mas tarde";
@@ -68,6 +69,7 @@ export class EquiposCrearComponent extends BaseTablaComponent {
   registrar(){
     this.equipo.IdGrupoEquipo = this.grupoequipoSeleccionado!.id;
     this.equipo.NombreGrupoEquipo = this.grupoequipoSeleccionado!.nombre;
+    this.equipo.IdGavetero = this.gaveteraSeleccionada?.Id ?? null;
     this.equipo.Marca = this.grupoequipoSeleccionado!.marca ?? null;
     this.equipo.Modelo = this.grupoequipoSeleccionado!.modelo ?? null;
     this.equipoapi.crearEquipo(this.equipo).subscribe({

@@ -33,9 +33,27 @@ public class EquipoService : Service<EquipoEntity, EquipoRepository, EquipoDto>
                 return Result<EquipoDto>.Error("Gavetero no existe");
         }
 
+        // Auto-generate unique CodigoImt
+        var maxCodigo = await _dbContext.Equipos.MaxAsync(e => (int?)e.CodigoImt) ?? 0;
+        entity.CodigoImt = maxCodigo + 1;
+
         return await base.Create(entity);
     }
 
     public override async Task<Result<EquipoDto>> Update(EquipoEntity entity)
-        => await base.Update(entity);
+    {
+        var existing = await _dbContext.Equipos
+            .AsNoTracking()
+            .FirstOrDefaultAsync(e => e.Id == entity.Id && !e.EstadoEliminado);
+
+        if (existing == null)
+            return Result<EquipoDto>.NotFound();
+
+        // Preserve fields not editable by user
+        entity.CodigoImt = existing.CodigoImt;
+        entity.FechaIngresoEquipo = existing.FechaIngresoEquipo;
+        entity.EstadoEliminado = existing.EstadoEliminado;
+
+        return await base.Update(entity);
+    }
 }

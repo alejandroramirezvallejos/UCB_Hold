@@ -30,16 +30,19 @@ export class EquipoService {
       map((data: any) => data.Value.map((item: any) => ({
         Id: item.Id,
         NombreGrupoEquipo: item.NombreGrupoEquipo,
+        IdGrupoEquipo: item.IdGrupoEquipo,
         CodigoImt : item.CodigoImt,
         CodigoUcb: item.CodigoUcb,
         NumeroSerial: item.NumeroSerial,
         EstadoEquipo: item.EstadoEquipo,
         Ubicacion: item.Ubicacion,
         NombreGavetero: item.NombreGavetero,
+        IdGavetero: item.IdGavetero,
         CostoReferencia: item.CostoReferencia,
         Descripcion: item.Descripcion,
         TiempoMaximoPrestamo: item.TiempoMaximoPrestamo,
         Procedencia: item.Procedencia,
+        FechaIngresoEquipo: item.FechaIngresoEquipo,
       })))
     );
   }
