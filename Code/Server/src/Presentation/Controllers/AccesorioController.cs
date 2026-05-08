@@ -34,41 +34,14 @@ public class AccesorioController : ControllerBase
     [HttpPost]
     public async Task<IActionResult> Create([FromBody] AccesorioDto dto)
     {
-        var equipoId = await _service.ResolveEquipoId(dto.IdEquipo, dto.CodigoImtEquipoAsociado);
-
-        var entity = new AccesorioEntity
-        {
-            Nombre = dto.Nombre ?? string.Empty,
-            Modelo = dto.Modelo ?? string.Empty,
-            Tipo = dto.Tipo,
-            Descripcion = dto.Descripcion,
-            Precio = dto.Precio,
-            UrlDataSheet = dto.UrlDataSheet,
-            IdEquipo = equipoId ?? 0
-        };
-        var result = await _service.Create(entity);
-
+        var result = await _service.CreateFromDto(dto);
         return result.IsSuccess ? CreatedAtAction(nameof(Get), new { id = result.Value?.Id }, new Response<AccesorioDto> { Status = 201, Value = result.Value }) : BadRequest(new Response<object> { Status = 400, Errors = result.Errors.ToList() });
     }
 
     [HttpPut("{id:int}")]
     public async Task<IActionResult> Update(int id, [FromBody] AccesorioDto dto)
     {
-        var equipoId = await _service.ResolveEquipoId(dto.IdEquipo, dto.CodigoImtEquipoAsociado);
-
-        var entity = new AccesorioEntity
-        {
-            Id = id,
-            Nombre = dto.Nombre ?? string.Empty,
-            Modelo = dto.Modelo ?? string.Empty,
-            Tipo = dto.Tipo,
-            Descripcion = dto.Descripcion,
-            Precio = dto.Precio,
-            UrlDataSheet = dto.UrlDataSheet,
-            IdEquipo = equipoId ?? 0
-        };
-        var result = await _service.Update(entity);
-
+        var result = await _service.UpdateFromDto(id, dto);
         return result.IsSuccess ? Ok(new Response<AccesorioDto> { Status = 200, Value = result.Value }) : BadRequest(new Response<object> { Status = 400, Errors = result.Errors.ToList() });
     }
 

@@ -43,7 +43,7 @@ public class ContratoRepository
 
         contrato.EstadoEliminado = true;
         await _mongoContext.GetContratos.ReplaceOneAsync(
-            c => c.Id == contrato.Id,
+            c => c.MongoId == contrato.MongoId,
             contrato
         );
 

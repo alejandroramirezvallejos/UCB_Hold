@@ -31,6 +31,10 @@ export class UsuarioService {
   obtenerDatosUsuario() {
     return this.usuarioSignal();
   }
+
+  actualizarDatos(usuario: Usuario) {
+    this.usuarioSignal.set(usuario);
+  }
   
 
   obtenerrol() {

@@ -37,8 +37,7 @@ public class MantenimientoController : ControllerBase
     [HttpPost]
     public async Task<IActionResult> Create([FromBody] MantenimientoDto dto)
     {
-        var entity = _mapper.Map<MantenimientoEntity>(dto);
-        var result = await _service.Create(entity);
+        var result = await _service.CreateWithDetalles(dto);
 
         return result.IsSuccess ? CreatedAtAction(nameof(Get), new { id = result.Value?.Id }, new Response<MantenimientoDto> { Status = 201, Value = result.Value }) : BadRequest(new Response<object> { Status = 400, Errors = result.Errors.ToList() });
     }

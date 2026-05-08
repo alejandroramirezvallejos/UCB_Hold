@@ -1,3 +1,4 @@
+using System.ComponentModel.DataAnnotations.Schema;
 namespace IMT_Reservas.Server.Core.Entities;
 
 public class GrupoEquipo : Entity
@@ -12,6 +13,7 @@ public class GrupoEquipo : Entity
     public int Cantidad { get; set; }
     public decimal? CostoPromedio { get; set; }
     public bool EstadoEliminado { get; set; }
+    [ForeignKey("IdCategoria")]
     public Categoria? Categoria { get; set; }
 }
 

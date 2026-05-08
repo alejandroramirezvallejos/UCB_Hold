@@ -199,8 +199,9 @@ export class PrestamosTablaComponent extends Tabla implements OnInit {
         this.cargarPrestamos();
       },
       error: (error) => {
-        this.mensajeerror = 'Error al aprobar el préstamo. Por favor, inténtelo de nuevo más tarde.';
-        console.error(error.error.error + ':' + error.error.mensaje);
+        const errorMsg = error.error?.errors?.[0] || error.error?.message || error.message || 'Error desconocido';
+        this.mensajeerror = `Error al aprobar el préstamo: ${errorMsg}`;
+        console.error(errorMsg);
         this.error.set(true);
       }
     });
@@ -219,8 +220,9 @@ export class PrestamosTablaComponent extends Tabla implements OnInit {
         this.cargarPrestamos();
       },
       error: (error) => {
-        this.mensajeerror = 'Error al rechazar el préstamo. Por favor, inténtelo de nuevo más tarde.';
-        console.error(error.error.error + ':' + error.error.mensaje);
+        const errorMsg = error.error?.errors?.[0] || error.error?.message || error.message || 'Error desconocido';
+        this.mensajeerror = `Error al rechazar el préstamo: ${errorMsg}`;
+        console.error(errorMsg);
         this.error.set(true);
       }
     });

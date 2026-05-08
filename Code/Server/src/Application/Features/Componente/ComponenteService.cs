@@ -30,6 +30,45 @@ public class ComponenteService : Service<ComponenteEntity, ComponenteRepository,
         return await base.Update(entity);
     }
 
+    public async Task<Result<ComponenteDto>> CreateFromDto(ComponenteDto dto)
+    {
+        var equipoId = dto.IdEquipo ?? 0;
+        if (equipoId <= 0 && !string.IsNullOrWhiteSpace(dto.CodigoImtEquipo) && int.TryParse(dto.CodigoImtEquipo, out var codigoImtInt))
+            equipoId = await _repository.GetEquipoByCodigoImt(codigoImtInt) ?? 0;
+
+        var entity = new ComponenteEntity
+        {
+            Nombre = dto.Nombre ?? string.Empty,
+            Modelo = dto.Modelo ?? string.Empty,
+            Tipo = dto.Tipo,
+            Descripcion = dto.Descripcion,
+            PrecioReferencia = dto.PrecioReferencia,
+            IdEquipo = equipoId,
+            UrlDataSheet = dto.UrlDataSheet
+        };
+        return await Create(entity);
+    }
+
+    public async Task<Result<ComponenteDto>> UpdateFromDto(int id, ComponenteDto dto)
+    {
+        var equipoId = dto.IdEquipo ?? 0;
+        if (equipoId <= 0 && !string.IsNullOrWhiteSpace(dto.CodigoImtEquipo) && int.TryParse(dto.CodigoImtEquipo, out var codigoImtInt))
+            equipoId = await _repository.GetEquipoByCodigoImt(codigoImtInt) ?? 0;
+
+        var entity = new ComponenteEntity
+        {
+            Id = id,
+            Nombre = dto.Nombre ?? string.Empty,
+            Modelo = dto.Modelo ?? string.Empty,
+            Tipo = dto.Tipo,
+            Descripcion = dto.Descripcion,
+            PrecioReferencia = dto.PrecioReferencia,
+            IdEquipo = equipoId,
+            UrlDataSheet = dto.UrlDataSheet
+        };
+        return await Update(entity);
+    }
+
     public async Task<int?> ResolveEquipoId(int? equipoId, string? codigoImt)
     {
         if (equipoId.HasValue && equipoId.Value > 0)

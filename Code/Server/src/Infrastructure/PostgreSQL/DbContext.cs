@@ -87,7 +87,7 @@ public class ApplicationDbContext : DbContext
             entity.Property(e => e.Cantidad).HasDefaultValue(0).HasColumnName("cantidad");
             entity.Property(e => e.IdCategoria).HasColumnName("id_categoria");
             entity.Property(e => e.EstadoEliminado).HasColumnName("estado_eliminado");
-            entity.HasOne<Categoria>().WithMany().HasForeignKey(e => e.IdCategoria).IsRequired();
+            entity.HasOne(e => e.Categoria).WithMany().HasForeignKey(e => e.IdCategoria).IsRequired();
             entity.HasIndex(e => new { e.IdCategoria, e.Nombre, e.Modelo, e.Marca, e.EstadoEliminado });
             entity.HasIndex(e => new { e.Nombre, e.Modelo, e.Marca }).IsUnique();
             entity.HasQueryFilter(e => !e.EstadoEliminado);

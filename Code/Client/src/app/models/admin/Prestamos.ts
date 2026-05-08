@@ -17,8 +17,7 @@ export class PrestamoDto extends Basemodel{
     Nombre_Gavetero : string | null = null;
     Nombre_Mueble : string | null = null;
     Ubicacion_Mueble : string | null = null;
-    IdContrato: number | null = null;
-    FileId : number | null = null;
+    IdContrato: string | null = null;
     constructor(){
         super();
         this.CarnetUsuario = null;
@@ -35,7 +34,6 @@ export class PrestamoDto extends Basemodel{
         this.Observacion = null;
         this.EstadoPrestamo = null;
         this.IdContrato = null;
-        this.FileId = null;
         this.Ubicacion_Equipo = null;
         this.Nombre_Gavetero = null;
         this.Nombre_Mueble = null;

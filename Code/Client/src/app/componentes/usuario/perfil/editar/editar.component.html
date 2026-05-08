@@ -17,7 +17,7 @@
           type="text"
           id="nombre"
           name="nombre"
-          [(ngModel)]="usuario.nombre"
+          [(ngModel)]="localUsuario.nombre"
           required
           maxlength="30"
           placeholder="Nombre del usuario"
@@ -30,7 +30,7 @@
           type="text"
           id="apellido_paterno"
           name="apellido_paterno"
-          [(ngModel)]="usuario.apellido_paterno"
+          [(ngModel)]="localUsuario.apellido_paterno"
           required
           maxlength="30"
           placeholder="Apellido paterno del usuario"
@@ -43,7 +43,7 @@
           type="text"
           id="apellido_materno"
           name="apellido_materno"
-          [(ngModel)]="usuario.apellido_materno"
+          [(ngModel)]="localUsuario.apellido_materno"
           required
           maxlength="30"
           placeholder="Apellido materno del usuario"
@@ -56,7 +56,7 @@
           type="email"
           id="correo"
           name="correo"
-          [(ngModel)]="usuario.correo"
+          [(ngModel)]="localUsuario.correo"
           required
           maxlength="50"
           pattern="^[a-zA-Z0-9._%+-]+@ucb\.edu\.bo$"
@@ -88,7 +88,7 @@
           type="tel"
           id="telefono"
           name="telefono"
-          [(ngModel)]="usuario.telefono"
+          [(ngModel)]="localUsuario.telefono"
           required
           pattern="[0-9]{8,10}"
           maxlength="10"
@@ -100,7 +100,7 @@
         <label for="carrera">Carrera</label>
         <div class="custom-dropdown">
            <div class="dropdown-header form-input" (click)="toggleDropdown()" (mouseenter)="onMouseEnter()" (mouseleave)="onMouseLeave()">
-              <span class="current-value" [class.placeholder]="!usuario.carrera">{{ usuario.carrera || 'Selecciona una carrera' }}</span>
+              <span class="current-value" [class.placeholder]="!localUsuario.carrera">{{ localUsuario.carrera || 'Selecciona una carrera' }}</span>
               <img
                 [src]="isHovered || isOpen ? '/assets/down_solid.png' : '/assets/down_line.png'"
                 alt="Desplegar"
@@ -110,7 +110,7 @@
            @if(isOpen) {
              <ul class="dropdown-list">
                @for(item of carreras; track $index) {
-                 <li (click)="selectCarrera(item)" [class.selected]="item === usuario.carrera">
+                 <li (click)="selectCarrera(item)" [class.selected]="item === localUsuario.carrera">
                    {{ item }}
                  </li>
                }
@@ -125,7 +125,7 @@
           id="nombre_referencia"
           name="nombre_referencia"
           maxlength="30"
-          [(ngModel)]="usuario.nombre_referencia"
+          [(ngModel)]="localUsuario.nombre_referencia"
           placeholder="Nombre de referencia"
           class="form-input"
         />
@@ -138,7 +138,7 @@
           name="telefono_referencia"
           maxlength="10"
           pattern="[0-9]{8,10}"
-          [(ngModel)]="usuario.telefono_referencia"
+          [(ngModel)]="localUsuario.telefono_referencia"
           placeholder="Teléfono de referencia"
           class="form-input"
         />
@@ -151,7 +151,7 @@
           name="email_referencia"
           maxlength="50"
           pattern="[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}"
-          [(ngModel)]="usuario.email_referencia"
+          [(ngModel)]="localUsuario.email_referencia"
           placeholder="Email de referencia"
           class="form-input"
         />

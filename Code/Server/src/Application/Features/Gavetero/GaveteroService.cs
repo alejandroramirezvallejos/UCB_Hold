@@ -48,6 +48,45 @@ public class GaveteroService : Service<GaveteroEntity, GaveteroRepository, Gavet
         return await base.Update(entity);
     }
 
+    public async Task<Result<GaveteroDto>> CreateFromDto(GaveteroDto dto)
+    {
+        var muebleId = 0;
+        if (!string.IsNullOrWhiteSpace(dto.NombreMueble))
+            muebleId = await _repository.GetMuebleByNombre(dto.NombreMueble) ?? 0;
+
+        var entity = new GaveteroEntity
+        {
+            Nombre = dto.Nombre ?? string.Empty,
+            Tipo = dto.Tipo,
+            IdMueble = muebleId,
+            Longitud = dto.Longitud,
+            Profundidad = dto.Profundidad,
+            Altura = dto.Altura
+        };
+        return await Create(entity);
+    }
+
+    public async Task<Result<GaveteroDto>> UpdateFromDto(int id, GaveteroDto dto)
+    {
+        var muebleId = 0;
+        if (!string.IsNullOrWhiteSpace(dto.NombreMueble))
+            muebleId = await _repository.GetMuebleByNombre(dto.NombreMueble) ?? 0;
+        else
+            muebleId = await _repository.GetMuebleByGavetero(id) ?? 0;
+
+        var entity = new GaveteroEntity
+        {
+            Id = id,
+            Nombre = dto.Nombre ?? string.Empty,
+            Tipo = dto.Tipo,
+            IdMueble = muebleId,
+            Longitud = dto.Longitud,
+            Profundidad = dto.Profundidad,
+            Altura = dto.Altura
+        };
+        return await Update(entity);
+    }
+
     public async Task<int?> ResolveMuebleId(string? nombreMueble, int? gaveteroId = null)
     {
         if (!string.IsNullOrWhiteSpace(nombreMueble))

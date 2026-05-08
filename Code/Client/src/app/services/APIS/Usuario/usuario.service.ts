@@ -63,7 +63,7 @@ export class UsuarioServiceAPI {
       NombreReferencia: usuario.nombre_referencia,
       EmailReferencia: usuario.email_referencia,
     };
-    return this.http.put<Usuario>(`${this.apiUrl}`, envio);
+    return this.http.put<Usuario>(`${this.apiUrl}/${envio.Carnet}`, envio);
   }
   obtenerUsuarios() {
     return this.http.get<any>(this.apiUrl).pipe(
@@ -107,7 +107,7 @@ export class UsuarioServiceAPI {
       NombreReferencia: usuario.nombre_referencia,
       EmailReferencia: usuario.email_referencia
     };
-    return this.http.put<Usuario>(`${this.apiUrl}`, envio);
+    return this.http.put<Usuario>(`${this.apiUrl}/${envio.Carnet}`, envio);
   }
   eliminarUsuario(id: string) {
     return this.http.delete(`${this.apiUrl}/${id}`);

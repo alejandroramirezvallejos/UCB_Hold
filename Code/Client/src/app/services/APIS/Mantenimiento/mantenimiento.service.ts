@@ -35,7 +35,7 @@ export class MantenimientoService {
         Id: item.Id,
         NombreEmpresaMantenimiento: item.NombreEmpresaMantenimiento,
         FechaMantenimiento: item.FechaMantenimiento,
-        FechaFinalDeMantenimiento: item.FechaFinalDeMantenimiento,
+        FechaFinalDeMantenimiento: item.FechaFinalMantenimiento,
         Costo: item.Costo,
         Descripcion: item.Descripcion,
         TipoMantenimiento: item.TipoMantenimiento,

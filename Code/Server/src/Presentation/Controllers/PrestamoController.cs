@@ -95,10 +95,9 @@ public class PrestamoController : ControllerBase
     }
 
     [HttpPut("{id:int}/estado")]
-    public async Task<IActionResult> UpdateEstado(int id, [FromBody] dynamic dto)
+    public async Task<IActionResult> UpdateEstado(int id, [FromBody] UpdateEstadoRequest request)
     {
-        var estadoPrestamo = dto?.EstadoPrestamo as string ?? string.Empty;
-        var result = await _service.UpdateEstado(id, estadoPrestamo);
+        var result = await _service.UpdateEstado(id, request.EstadoPrestamo ?? string.Empty);
 
         return result.IsSuccess
             ? Ok(new Response<PrestamoDto> { Status = 200, Value = result.Value })
@@ -125,14 +124,14 @@ public class PrestamoController : ControllerBase
 
     [HttpPost("{id:int}/contrato")]
     [Consumes("multipart/form-data")]
-    public async Task<IActionResult> SaveContrato(int id, [FromForm] SaveContratoRequest request)
+    public async Task<IActionResult> SaveContrato(int id, [FromForm] SaveContratoDto dto)
     {
         byte[]? contratoBytes = null;
 
-        if (request?.Contrato != null)
+        if (dto?.Contrato != null)
         {
             using var ms = new MemoryStream();
-            await request.Contrato.CopyToAsync(ms);
+            await dto.Contrato.CopyToAsync(ms);
             contratoBytes = ms.ToArray();
         }
 
@@ -143,3 +142,5 @@ public class PrestamoController : ControllerBase
             : BadRequest(new Response<object> { Status = 400, Errors = result.Errors.ToList() });
     }
 }
+
+public record UpdateEstadoRequest(string? EstadoPrestamo);
