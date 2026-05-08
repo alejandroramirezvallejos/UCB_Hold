@@ -24,7 +24,8 @@ public class ApplicationDbContext : DbContext
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
         base.OnModelCreating(modelBuilder);
-        modelBuilder.HasPostgresEnum<EstadoPrestamo>();
+        modelBuilder.HasPostgresEnum<EstadoPrestamo>("estado_prestamo");
+        modelBuilder.HasPostgresEnum<TipoUsuario>("tipo_usuario");
 
          var dateTimeConverter = new Microsoft.EntityFrameworkCore.Storage.ValueConversion.ValueConverter<DateTime, DateTime>(
             v => v.Kind == DateTimeKind.Utc ? v : DateTime.SpecifyKind(v, DateTimeKind.Utc),
@@ -237,7 +238,7 @@ public class ApplicationDbContext : DbContext
             entity.Property(e => e.TelefonoReferencia).HasMaxLength(32).HasColumnName("telefono_referencia");
             entity.Property(e => e.NombreReferencia).HasMaxLength(32).HasColumnName("nombre_referencia");
             entity.Property(e => e.EmailReferencia).HasMaxLength(255).HasColumnName("email_referencia");
-            entity.Property(e => e.Rol).HasDefaultValue("estudiante").HasColumnName("rol");
+            entity.Property(e => e.Rol).HasColumnType("tipo_usuario").HasDefaultValue(TipoUsuario.Estudiante).HasColumnName("rol");
             entity.Property(e => e.IdCarrera).HasColumnName("id_carrera");
             entity.Property(e => e.EstadoEliminado).HasColumnName("estado_eliminado");
             entity.Property(e => e.ImagenFrenteCarnet).HasColumnName("imagen_frente_carnet");

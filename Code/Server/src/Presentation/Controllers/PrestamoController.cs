@@ -3,6 +3,7 @@ using IMT_Reservas.Server.Application.Features.Prestamo;
 using IMT_Reservas.Server.Application.Abstraction;
 using IMT_Reservas.Server.Core.Entities;
 using PrestamoEntity = IMT_Reservas.Server.Core.Entities.Prestamo;
+using UpdateEstadoDto = IMT_Reservas.Server.Application.Features.Prestamo.UpdateEstadoDto;
 namespace IMT_Reservas.Server.Presentation.Controllers;
 
 [ApiController]
@@ -95,7 +96,7 @@ public class PrestamoController : ControllerBase
     }
 
     [HttpPut("{id:int}/estado")]
-    public async Task<IActionResult> UpdateEstado(int id, [FromBody] UpdateEstadoRequest request)
+    public async Task<IActionResult> UpdateEstado(int id, [FromBody] UpdateEstadoDto request)
     {
         var result = await _service.UpdateEstado(id, request.EstadoPrestamo ?? string.Empty);
 
@@ -108,7 +109,7 @@ public class PrestamoController : ControllerBase
     public async Task<IActionResult> Delete(int id)
     {
         var result = await _service.Delete(id);
-        
+
         return result.IsSuccess ? NoContent() : BadRequest(new Response<object> { Status = 400, Errors = result.Errors.ToList() });
     }
 
@@ -116,9 +117,9 @@ public class PrestamoController : ControllerBase
     public async Task<IActionResult> GetHistorial([FromQuery] string carnetUsuario, [FromQuery] string estadoPrestamo)
     {
         var result = await _service.GetHistorial(carnetUsuario, estadoPrestamo);
-        
-        return result.IsSuccess 
-            ? Ok(new Response<List<PrestamoDto>> { Status = 200, Value = result.Value }) 
+
+        return result.IsSuccess
+            ? Ok(new Response<List<PrestamoDto>> { Status = 200, Value = result.Value })
             : BadRequest(new Response<object> { Status = 400, Errors = result.Errors.ToList() });
     }
 
@@ -142,5 +143,3 @@ public class PrestamoController : ControllerBase
             : BadRequest(new Response<object> { Status = 400, Errors = result.Errors.ToList() });
     }
 }
-
-public record UpdateEstadoRequest(string? EstadoPrestamo);

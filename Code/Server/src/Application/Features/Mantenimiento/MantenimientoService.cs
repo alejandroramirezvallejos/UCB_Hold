@@ -42,15 +42,22 @@ public class MantenimientoService : Service<MantenimientoEntity, MantenimientoRe
         if (dto.FechaMantenimiento >= dto.FechaFinalMantenimiento)
             return Result<MantenimientoDto>.Error("Fecha mantenimiento menor a final");
 
-        var empresaExists = await _dbContext.EmpresasMantenimiento
-            .AnyAsync(e => e.Id == dto.IdEmpresa && !e.EstadoEliminado);
+        // Resolve empresa by name if IdEmpresa not provided
+        var idEmpresa = dto.IdEmpresa;
+        if ((!idEmpresa.HasValue || idEmpresa == 0) && !string.IsNullOrWhiteSpace(dto.NombreEmpresaMantenimiento))
+        {
+            var empresa = await _dbContext.EmpresasMantenimiento
+                .AsNoTracking()
+                .FirstOrDefaultAsync(e => e.Nombre == dto.NombreEmpresaMantenimiento && !e.EstadoEliminado);
+            idEmpresa = empresa?.Id;
+        }
 
-        if (!empresaExists)
+        if (!idEmpresa.HasValue || idEmpresa == 0)
             return Result<MantenimientoDto>.Error("Empresa mantenimiento no existe");
 
         var entity = new MantenimientoEntity
         {
-            IdEmpresa = dto.IdEmpresa ?? 0,
+            IdEmpresa = idEmpresa.Value,
             FechaMantenimiento = dto.FechaMantenimiento ?? DateTime.UtcNow,
             FechaFinalMantenimiento = dto.FechaFinalMantenimiento ?? DateTime.UtcNow,
             Costo = dto.Costo,

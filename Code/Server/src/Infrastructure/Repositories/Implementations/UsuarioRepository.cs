@@ -15,22 +15,22 @@ public class UsuarioRepository : Repository<UsuarioEntity, UsuarioDto>
     {
         var dtos = await DbContext.Usuarios
             .AsNoTracking()
-            .Select(e => new UsuarioDto
+            .Join(DbContext.Carreras, u => u.IdCarrera, c => c.Id, (u, c) => new UsuarioDto
             {
-                Carnet = e.Carnet,
-                Nombre = e.Nombre,
-                ApellidoPaterno = e.ApellidoPaterno,
-                ApellidoMaterno = e.ApellidoMaterno,
-                Rol = e.Rol,
-                Email = e.Email,
-                CarreraNombre = null,
-                IdCarrera = e.IdCarrera,
-                Telefono = e.Telefono,
-                TelefonoReferencia = e.TelefonoReferencia,
-                NombreReferencia = e.NombreReferencia,
-                EmailReferencia = e.EmailReferencia,
-                ImagenFrenteCarnet = e.ImagenFrenteCarnet,
-                ImagenAtrasCarnet = e.ImagenAtrasCarnet
+                Carnet = u.Carnet,
+                Nombre = u.Nombre,
+                ApellidoPaterno = u.ApellidoPaterno,
+                ApellidoMaterno = u.ApellidoMaterno,
+                Rol = u.Rol.ToString().ToLowerInvariant(),
+                Email = u.Email,
+                CarreraNombre = c.Nombre,
+                IdCarrera = u.IdCarrera,
+                Telefono = u.Telefono,
+                TelefonoReferencia = u.TelefonoReferencia,
+                NombreReferencia = u.NombreReferencia,
+                EmailReferencia = u.EmailReferencia,
+                ImagenFrenteCarnet = u.ImagenFrenteCarnet,
+                ImagenAtrasCarnet = u.ImagenAtrasCarnet
             })
             .ToListAsync();
 
@@ -78,7 +78,7 @@ public class UsuarioRepository : Repository<UsuarioEntity, UsuarioDto>
         Nombre = entity.Nombre,
         ApellidoPaterno = entity.ApellidoPaterno,
         ApellidoMaterno = entity.ApellidoMaterno,
-        Rol = entity.Rol,
+        Rol = entity.Rol.ToString().ToLowerInvariant(),
         Email = entity.Email,
         CarreraNombre = null,
         IdCarrera = entity.IdCarrera,

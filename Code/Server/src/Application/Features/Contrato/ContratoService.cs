@@ -63,7 +63,6 @@ public class ContratoService
 
         return Result<ContratoDto>.Success(new ContratoDto
         {
-            Id = resultado.Value.Id,
             PrestamoId = resultado.Value.PrestamoId,
             FechaCreacion = resultado.Value.FechaCreacion,
             ContenidoBase64 = resultado.Value.ContenidoBase64

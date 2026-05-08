@@ -6,7 +6,7 @@ public class Usuario
     public string Nombre { get; set; } = string.Empty;
     public string ApellidoPaterno { get; set; } = string.Empty;
     public string ApellidoMaterno { get; set; } = string.Empty;
-    public string Rol { get; set; } = "estudiante";
+    public TipoUsuario Rol { get; set; } = TipoUsuario.Estudiante;
     public string Contrasena { get; set; } = string.Empty;
     public string Email { get; set; } = string.Empty;
     public string Telefono { get; set; } = string.Empty;

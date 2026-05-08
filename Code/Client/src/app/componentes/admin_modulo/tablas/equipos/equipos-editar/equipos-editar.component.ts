@@ -59,6 +59,7 @@ export class EquiposEditarComponent extends BaseTablaComponent{
   }
   confirmar (){
       if (this.grupoequipoSeleccionado) {
+        this.equipo.IdGrupoEquipo = this.grupoequipoSeleccionado.id;
         this.equipo.NombreGrupoEquipo = this.grupoequipoSeleccionado.nombre;
         this.equipo.Marca = this.grupoequipoSeleccionado.marca ?? null;
         this.equipo.Modelo = this.grupoequipoSeleccionado.modelo ?? null;

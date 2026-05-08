@@ -27,7 +27,8 @@ using ComponenteEntity = IMT_Reservas.Server.Core.Entities.Componente;
 using EmpresaMantenimientoEntity = IMT_Reservas.Server.Core.Entities.EmpresaMantenimiento;
 
 AppContext.SetSwitch("Npgsql.EnableLegacyTimestampBehavior", true);
-NpgsqlConnection.GlobalTypeMapper.MapEnum<EstadoPrestamo>();
+NpgsqlConnection.GlobalTypeMapper.MapEnum<EstadoPrestamo>("estado_prestamo");
+NpgsqlConnection.GlobalTypeMapper.MapEnum<TipoUsuario>("tipo_usuario");
 
 var builder = WebApplication.CreateBuilder(args);
 

@@ -8,20 +8,29 @@ import { PendienteComponent } from './pendiente/pendiente.component';
 import { RechazadoComponent } from './rechazado/rechazado.component';
 @Component({
   selector: 'app-historial',
-  imports: [ActivoComponent , AprobadoComponent, CanceladoComponent , FinalizadoComponent , PendienteComponent , RechazadoComponent],
+  imports: [ActivoComponent, AprobadoComponent, CanceladoComponent, FinalizadoComponent, PendienteComponent, RechazadoComponent],
   templateUrl: './historial.component.html',
   styleUrl: './historial.component.css'
 })
 export class HistorialComponent {
-  contenido : string[] = ["Activo","Aprobado","Pendiente","Rechazado","Finalizado", "Cancelado"];
-  item : string = "Activo";
+  contenido: string[] = ["Activo", "Aprobado", "Pendiente", "Rechazado", "Finalizado", "Cancelado"];
+  item: string = "Activo";
   isOpen: boolean = false;
   isHovered: boolean = false;
-  constructor(private usuario : UsuarioService) {  }
-  itemclick(item : string){
-    this.item=item;
+  show: boolean = true;
+
+  constructor(private usuario: UsuarioService) { }
+
+  itemclick(item: string) {
+    this.item = item;
     this.isOpen = false;
   }
+
+  recargar() {
+    this.show = false;
+    setTimeout(() => { this.show = true; }, 0);
+  }
+
   toggleDropdown() {
     this.isOpen = !this.isOpen;
   }

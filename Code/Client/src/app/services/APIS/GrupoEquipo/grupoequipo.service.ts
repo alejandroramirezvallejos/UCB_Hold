@@ -81,7 +81,7 @@ export class GrupoequipoService {
       UrlDataSheet: grupoEquipo.url_data_sheet,
       UrlImagen: grupoEquipo.link
     };
-    return this.http.put<any>(this.apiUrl, envio);
+    return this.http.put<any>(`${this.apiUrl}/${grupoEquipo.id}`, envio);
   }
   eliminarGrupoEquipo(id: number) {
     return this.http.delete<any>(`${this.apiUrl}/${id}`);

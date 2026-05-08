@@ -1,8 +1,6 @@
 using Microsoft.AspNetCore.Mvc;
 using IMT_Reservas.Server.Application.Features.Usuario;
 using IMT_Reservas.Server.Application.Abstraction;
-using UsuarioEntity = IMT_Reservas.Server.Core.Entities.Usuario;
-using AutoMapper;
 namespace IMT_Reservas.Server.Presentation.Controllers;
 
 [ApiController]
@@ -10,12 +8,10 @@ namespace IMT_Reservas.Server.Presentation.Controllers;
 public class UsuarioController : ControllerBase
 {
     private readonly UsuarioService _service;
-    private readonly IMapper _mapper;
 
-    public UsuarioController(UsuarioService service, IMapper mapper)
+    public UsuarioController(UsuarioService service)
     {
         _service = service;
-        _mapper = mapper;
     }
 
     [HttpGet]
@@ -41,8 +37,7 @@ public class UsuarioController : ControllerBase
     [HttpPost]
     public async Task<IActionResult> Create([FromBody] UsuarioDto dto)
     {
-        var entity = _mapper.Map<UsuarioEntity>(dto);
-        var result = await _service.Create(entity);
+        var result = await _service.CreateFromDto(dto);
 
         return result.IsSuccess
             ? CreatedAtAction(nameof(Get), new { carnet = result.Value?.Carnet }, new Response<UsuarioDto> { Status = 201, Value = result.Value })
@@ -52,9 +47,7 @@ public class UsuarioController : ControllerBase
     [HttpPut("{carnet}")]
     public async Task<IActionResult> Update(string carnet, [FromBody] UsuarioDto dto)
     {
-        var entity = _mapper.Map<UsuarioEntity>(dto);
-        entity.Carnet = carnet;
-        var result = await _service.Update(entity);
+        var result = await _service.UpdateFromDto(carnet, dto);
 
         return result.IsSuccess
             ? Ok(new Response<UsuarioDto> { Status = 200, Value = result.Value })

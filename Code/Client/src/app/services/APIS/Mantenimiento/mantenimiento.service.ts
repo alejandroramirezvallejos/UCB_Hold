@@ -20,12 +20,12 @@ export class MantenimientoService {
     const envio = {
       FechaMantenimiento: mantenimiento.FechaMantenimiento,
       FechaFinalMantenimiento: mantenimiento.FechaFinalDeMantenimiento,
-      IdEmpresa: mantenimiento.IdEmpresa,
+      NombreEmpresaMantenimiento: mantenimiento.NombreEmpresaMantenimiento,
       Costo: mantenimiento.Costo,
       Descripcion: mantenimiento.DescripcionMantenimiento,
       CodigoIMT: codigosimt,
-      TipoMantenimiento: tiposmantenimiento,
-      DescripcionEquipo: descripcionequipos
+      TiposMantenimiento: tiposmantenimiento,
+      DescripcionesEquipo: descripcionequipos
     };
     return this.http.post<any>(this.apiUrl, envio);
   }

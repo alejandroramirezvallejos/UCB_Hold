@@ -28,6 +28,7 @@ export class EquiposCrearComponent extends BaseTablaComponent {
     super();
   }; 
   ngOnInit() {
+    this.equipo.EstadoEquipo = 'operativo';
     this.cargarGruposEquipos();
     this.cargarGaveteros();
   }
@@ -65,10 +66,10 @@ export class EquiposCrearComponent extends BaseTablaComponent {
     this.aviso.set(true);
   }
   registrar(){
+    this.equipo.IdGrupoEquipo = this.grupoequipoSeleccionado!.id;
     this.equipo.NombreGrupoEquipo = this.grupoequipoSeleccionado!.nombre;
-    this.equipo.Marca = this.grupoequipoSeleccionado!.marca ?? null  ;
+    this.equipo.Marca = this.grupoequipoSeleccionado!.marca ?? null;
     this.equipo.Modelo = this.grupoequipoSeleccionado!.modelo ?? null;
-    console.log('Equipo a enviar:', this.equipo);
     this.equipoapi.crearEquipo(this.equipo).subscribe({
       next: () => {
         this.Actualizar.emit();

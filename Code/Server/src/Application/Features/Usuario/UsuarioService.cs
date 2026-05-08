@@ -35,13 +35,91 @@ public class UsuarioService : Service<UsuarioEntity, UsuarioRepository, UsuarioD
 
         var carreraExists = await _dbContext.Carreras
             .AnyAsync(c => c.Id == entity.IdCarrera && !c.EstadoEliminado);
-        
+
         if (!carreraExists)
             return Result<UsuarioDto>.Error("Carrera no existe");
 
         entity.Contrasena = BCrypt.Net.BCrypt.HashPassword(entity.Contrasena);
 
         return await base.Create(entity);
+    }
+
+    public async Task<Result<UsuarioDto>> CreateFromDto(UsuarioDto dto)
+    {
+        // Resolve carrera by name if IdCarrera not provided
+        var idCarrera = dto.IdCarrera ?? 0;
+        if (idCarrera == 0 && !string.IsNullOrWhiteSpace(dto.CarreraNombre))
+        {
+            var carreraPorNombre = await _dbContext.Carreras
+                .AsNoTracking()
+                .FirstOrDefaultAsync(c => c.Nombre == dto.CarreraNombre && !c.EstadoEliminado);
+            if (carreraPorNombre != null)
+                idCarrera = carreraPorNombre.Id;
+        }
+
+        var entity = new UsuarioEntity
+        {
+            Carnet = dto.Carnet ?? string.Empty,
+            Nombre = dto.Nombre ?? string.Empty,
+            ApellidoPaterno = dto.ApellidoPaterno ?? string.Empty,
+            ApellidoMaterno = dto.ApellidoMaterno ?? string.Empty,
+            Email = dto.Email ?? string.Empty,
+            Contrasena = dto.Contrasena ?? string.Empty,
+            Telefono = dto.Telefono ?? string.Empty,
+            TelefonoReferencia = dto.TelefonoReferencia,
+            NombreReferencia = dto.NombreReferencia,
+            EmailReferencia = dto.EmailReferencia,
+            IdCarrera = idCarrera,
+            Rol = dto.Rol?.ToLowerInvariant() switch
+            {
+                "docente" => Core.Entities.TipoUsuario.Docente,
+                "administrador" => Core.Entities.TipoUsuario.Administrador,
+                _ => Core.Entities.TipoUsuario.Estudiante
+            }
+        };
+
+        return await Create(entity);
+    }
+
+    public async Task<Result<UsuarioDto>> UpdateFromDto(string carnet, UsuarioDto dto)
+    {
+        var existing = await _dbContext.Usuarios
+            .FirstOrDefaultAsync(u => u.Carnet == carnet && !u.EstadoEliminado);
+
+        if (existing == null)
+            return Result<UsuarioDto>.NotFound();
+
+        // Resolve carrera by name if needed
+        var idCarrera = dto.IdCarrera ?? 0;
+        if (idCarrera == 0 && !string.IsNullOrWhiteSpace(dto.CarreraNombre))
+        {
+            var carreraPorNombre = await _dbContext.Carreras
+                .AsNoTracking()
+                .FirstOrDefaultAsync(c => c.Nombre == dto.CarreraNombre && !c.EstadoEliminado);
+            if (carreraPorNombre != null)
+                idCarrera = carreraPorNombre.Id;
+        }
+
+        existing.Nombre = dto.Nombre ?? existing.Nombre;
+        existing.ApellidoPaterno = dto.ApellidoPaterno ?? existing.ApellidoPaterno;
+        existing.ApellidoMaterno = dto.ApellidoMaterno ?? existing.ApellidoMaterno;
+        existing.Email = dto.Email ?? existing.Email;
+        existing.Telefono = dto.Telefono ?? existing.Telefono;
+        existing.TelefonoReferencia = dto.TelefonoReferencia ?? existing.TelefonoReferencia;
+        existing.NombreReferencia = dto.NombreReferencia ?? existing.NombreReferencia;
+        existing.EmailReferencia = dto.EmailReferencia ?? existing.EmailReferencia;
+        if (idCarrera > 0) existing.IdCarrera = idCarrera;
+        existing.Rol = dto.Rol?.ToLowerInvariant() switch
+        {
+            "docente" => Core.Entities.TipoUsuario.Docente,
+            "administrador" => Core.Entities.TipoUsuario.Administrador,
+            _ => existing.Rol
+        };
+        if (!string.IsNullOrWhiteSpace(dto.Contrasena))
+            existing.Contrasena = BCrypt.Net.BCrypt.HashPassword(dto.Contrasena);
+
+        await _dbContext.SaveChangesAsync();
+        return Result<UsuarioDto>.Success(MapToDto(existing));
     }
 
     public async Task<Result<UsuarioDto>> Get(string carnet)
@@ -88,7 +166,7 @@ public class UsuarioService : Service<UsuarioEntity, UsuarioRepository, UsuarioD
         Nombre = entity.Nombre,
         ApellidoPaterno = entity.ApellidoPaterno,
         ApellidoMaterno = entity.ApellidoMaterno,
-        Rol = entity.Rol,
+        Rol = entity.Rol.ToString().ToLowerInvariant(),
         Email = entity.Email,
         IdCarrera = entity.IdCarrera,
         CarreraNombre = null,
