@@ -1,6 +1,6 @@
 using Ardalis.Result;
 using IMT_Reservas.Server.Application.Features.Carrera;
-using IMT_Reservas.Server.Core.Common;
+using IMT_Reservas.Server.Core.Abstraction;
 using IMT_Reservas.Server.Infrastructure.PostgreSQL;
 using IMT_Reservas.Server.Infrastructure.Repositories.Abstraction;
 using Microsoft.EntityFrameworkCore;
@@ -34,10 +34,7 @@ public class CarreraRepository : Repository<CarreraEntity, CarreraDto>
 
     public async Task<CarreraEntity?> GetByNombre(string nombre)
         => await DbContext.Carreras.FirstOrDefaultAsync(c => c.Nombre == nombre && !c.EstadoEliminado);
-
-    public async Task<bool> ExistsActive(int id)
-        => await DbContext.Carreras.AnyAsync(c => c.Id == id && !c.EstadoEliminado);
-
+    
     protected override CarreraDto MapToDto(CarreraEntity entity) => new()
     {
         Id = entity.Id,

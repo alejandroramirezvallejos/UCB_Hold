@@ -9,12 +9,10 @@ public class MantenimientoDto
     public DateTime? FechaFinalMantenimiento { get; set; }
     public double? Costo { get; set; }
     public string? Descripcion { get; set; }
-    // Per-row fields (GET response — one row per DetalleMantenimiento)
     public string? TipoMantenimiento { get; set; }
     public string? NombreGrupoEquipo { get; set; }
     public string? CodigoImtEquipo { get; set; }
     public string? DescripcionEquipo { get; set; }
-    // Array fields (Create request — frontend sends parallel arrays)
     public int[]? CodigoIMT { get; set; }
     public string[]? TiposMantenimiento { get; set; }
     public string[]? DescripcionesEquipo { get; set; }

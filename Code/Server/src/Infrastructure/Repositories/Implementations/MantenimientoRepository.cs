@@ -1,6 +1,6 @@
 using Ardalis.Result;
 using IMT_Reservas.Server.Application.Features.Mantenimiento;
-using IMT_Reservas.Server.Core.Common;
+using IMT_Reservas.Server.Core.Abstraction;
 using IMT_Reservas.Server.Infrastructure.PostgreSQL;
 using IMT_Reservas.Server.Infrastructure.Repositories.Abstraction;
 using Microsoft.EntityFrameworkCore;
@@ -84,15 +84,7 @@ public class MantenimientoRepository : Repository<MantenimientoEntity, Mantenimi
             Descripcion = m.Descripcion
         });
     }
-
-    public async Task<bool> ExistsActive(int id)
-        => await DbContext.Mantenimientos.AnyAsync(m => m.Id == id && !m.EstadoEliminado);
-
-    public async Task<IEnumerable<MantenimientoEntity>> GetByDateRange(DateTime fechaInicio, DateTime fechaFin)
-        => await DbContext.Mantenimientos
-            .Where(m => m.FechaMantenimiento >= fechaInicio && m.FechaMantenimiento <= fechaFin && !m.EstadoEliminado)
-            .ToListAsync();
-
+    
     protected override MantenimientoDto MapToDto(MantenimientoEntity entity) => new()
     {
         Id = entity.Id,

@@ -1,6 +1,6 @@
 using Ardalis.Result;
 using IMT_Reservas.Server.Application.Features.Accesorio;
-using IMT_Reservas.Server.Core.Common;
+using IMT_Reservas.Server.Core.Abstraction;
 using IMT_Reservas.Server.Infrastructure.PostgreSQL;
 using IMT_Reservas.Server.Infrastructure.Repositories.Abstraction;
 using Microsoft.EntityFrameworkCore;
@@ -36,7 +36,9 @@ public class AccesorioRepository : Repository<AccesorioEntity, AccesorioDto>
     public override async Task<Result<AccesorioDto>> Get(int id)
     {
         var accesorio = await DbContext.Accesorios.AsNoTracking().FirstOrDefaultAsync(a => a.Id == id);
-        if (accesorio == null) return Result<AccesorioDto>.NotFound();
+        
+        if (accesorio == null)
+            return Result<AccesorioDto>.NotFound();
 
         var equipo = await DbContext.Equipos.AsNoTracking().FirstOrDefaultAsync(e => e.Id == accesorio.IdEquipo);
 
@@ -54,10 +56,7 @@ public class AccesorioRepository : Repository<AccesorioEntity, AccesorioDto>
             NombreEquipoAsociado = equipo?.Descripcion
         });
     }
-
-    public async Task<bool> ExistsActive(int id)
-        => await DbContext.Accesorios.AnyAsync(a => a.Id == id && !a.EstadoEliminado);
-
+    
     public async Task<int?> GetEquipoByCodigoImt(int codigoImt)
         => await DbContext.Equipos
             .Where(e => e.CodigoImt == codigoImt && !e.EstadoEliminado)

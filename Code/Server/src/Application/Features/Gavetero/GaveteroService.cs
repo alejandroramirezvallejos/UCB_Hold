@@ -86,15 +86,4 @@ public class GaveteroService : Service<GaveteroEntity, GaveteroRepository, Gavet
         };
         return await Update(entity);
     }
-
-    public async Task<int?> ResolveMuebleId(string? nombreMueble, int? gaveteroId = null)
-    {
-        if (!string.IsNullOrWhiteSpace(nombreMueble))
-            return await _repository.GetMuebleByNombre(nombreMueble);
-
-        if (gaveteroId.HasValue && gaveteroId.Value > 0)
-            return await _repository.GetMuebleByGavetero(gaveteroId.Value);
-
-        return null;
-    }
 }

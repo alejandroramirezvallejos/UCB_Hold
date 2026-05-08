@@ -68,15 +68,4 @@ public class AccesorioService : Service<AccesorioEntity, AccesorioRepository, Ac
         };
         return await Update(entity);
     }
-
-    public async Task<int?> ResolveEquipoId(int? equipoId, string? codigoImt)
-    {
-        if (equipoId.HasValue && equipoId.Value > 0)
-            return equipoId;
-
-        if (!string.IsNullOrWhiteSpace(codigoImt) && int.TryParse(codigoImt, out var codigoImtInt))
-            return await _repository.GetEquipoByCodigoImt(codigoImtInt);
-
-        return null;
-    }
 }

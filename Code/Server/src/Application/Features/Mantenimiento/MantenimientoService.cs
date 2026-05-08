@@ -42,8 +42,8 @@ public class MantenimientoService : Service<MantenimientoEntity, MantenimientoRe
         if (dto.FechaMantenimiento >= dto.FechaFinalMantenimiento)
             return Result<MantenimientoDto>.Error("Fecha mantenimiento menor a final");
 
-        // Resolve empresa by name if IdEmpresa not provided
         var idEmpresa = dto.IdEmpresa;
+        
         if ((!idEmpresa.HasValue || idEmpresa == 0) && !string.IsNullOrWhiteSpace(dto.NombreEmpresaMantenimiento))
         {
             var empresa = await _dbContext.EmpresasMantenimiento
@@ -66,7 +66,9 @@ public class MantenimientoService : Service<MantenimientoEntity, MantenimientoRe
         };
 
         var result = await base.Create(entity);
-        if (!result.IsSuccess) return result;
+        
+        if (!result.IsSuccess) 
+            return result;
 
         if (dto.CodigoIMT?.Length > 0)
         {

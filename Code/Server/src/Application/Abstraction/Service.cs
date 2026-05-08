@@ -1,5 +1,5 @@
 using Ardalis.Result;
-using IMT_Reservas.Server.Core.Common;
+using IMT_Reservas.Server.Core.Abstraction;
 using IMT_Reservas.Server.Infrastructure.Repositories.Abstraction;
 namespace IMT_Reservas.Server.Application.Abstraction;
 

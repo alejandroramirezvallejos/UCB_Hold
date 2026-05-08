@@ -1,6 +1,6 @@
 using Ardalis.Result;
 using IMT_Reservas.Server.Application.Features.Mueble;
-using IMT_Reservas.Server.Core.Common;
+using IMT_Reservas.Server.Core.Abstraction;
 using IMT_Reservas.Server.Infrastructure.PostgreSQL;
 using IMT_Reservas.Server.Infrastructure.Repositories.Abstraction;
 using Microsoft.EntityFrameworkCore;
@@ -54,15 +54,7 @@ public class MuebleRepository : Repository<MuebleEntity, MuebleDto>
             ? Result<MuebleDto>.NotFound()
             : Result<MuebleDto>.Success(dto);
     }
-
-    public async Task<MuebleEntity?> GetByNombre(string nombre)
-        => await DbContext.Muebles
-            .AsNoTracking()
-            .FirstOrDefaultAsync(m => m.Nombre == nombre && !m.EstadoEliminado);
-
-    public async Task<bool> ExistsActive(int id)
-        => await DbContext.Muebles.AnyAsync(m => m.Id == id && !m.EstadoEliminado);
-
+    
     protected override MuebleDto MapToDto(MuebleEntity entity) => new()
     {
         Id = entity.Id,

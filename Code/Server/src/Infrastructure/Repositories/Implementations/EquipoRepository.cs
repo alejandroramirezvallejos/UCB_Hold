@@ -1,6 +1,6 @@
 using Ardalis.Result;
 using IMT_Reservas.Server.Application.Features.Equipo;
-using IMT_Reservas.Server.Core.Common;
+using IMT_Reservas.Server.Core.Abstraction;
 using IMT_Reservas.Server.Core.Entities;
 using IMT_Reservas.Server.Infrastructure.PostgreSQL;
 using IMT_Reservas.Server.Infrastructure.Repositories.Abstraction;
@@ -85,9 +85,21 @@ public class EquipoRepository : Repository<EquipoEntity, EquipoDto>
         return Result<EquipoDto>.Success(dto);
     }
 
-    public async Task<bool> ExistsActive(int id)
-        => await DbContext.Equipos.AnyAsync(e => e.Id == id && !e.EstadoEliminado);
+    public override async Task<Result<object>> Delete(int id)
+    {
+        var entity = await DbContext.Equipos
+            .FirstOrDefaultAsync(e => e.Id == id && !e.EstadoEliminado);
 
+        if (entity == null)
+            return Result<object>.NotFound();
+
+        entity.EstadoEliminado = true;
+        DbContext.Update(entity);
+        await DbContext.SaveChangesAsync();
+
+        return Result<object>.Success(null!);
+    }
+    
     protected override EquipoDto MapToDto(EquipoEntity entity) => new()
     {
         Id = entity.Id,

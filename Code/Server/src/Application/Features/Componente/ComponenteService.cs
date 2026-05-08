@@ -33,7 +33,8 @@ public class ComponenteService : Service<ComponenteEntity, ComponenteRepository,
     public async Task<Result<ComponenteDto>> CreateFromDto(ComponenteDto dto)
     {
         var equipoId = dto.IdEquipo ?? 0;
-        if (equipoId <= 0 && !string.IsNullOrWhiteSpace(dto.CodigoImtEquipo) && int.TryParse(dto.CodigoImtEquipo, out var codigoImtInt))
+        if (equipoId <= 0 && !string.IsNullOrWhiteSpace(dto.CodigoImtEquipo) &&
+            int.TryParse(dto.CodigoImtEquipo, out var codigoImtInt))
             equipoId = await _repository.GetEquipoByCodigoImt(codigoImtInt) ?? 0;
 
         var entity = new ComponenteEntity
@@ -52,7 +53,8 @@ public class ComponenteService : Service<ComponenteEntity, ComponenteRepository,
     public async Task<Result<ComponenteDto>> UpdateFromDto(int id, ComponenteDto dto)
     {
         var equipoId = dto.IdEquipo ?? 0;
-        if (equipoId <= 0 && !string.IsNullOrWhiteSpace(dto.CodigoImtEquipo) && int.TryParse(dto.CodigoImtEquipo, out var codigoImtInt))
+        if (equipoId <= 0 && !string.IsNullOrWhiteSpace(dto.CodigoImtEquipo) &&
+            int.TryParse(dto.CodigoImtEquipo, out var codigoImtInt))
             equipoId = await _repository.GetEquipoByCodigoImt(codigoImtInt) ?? 0;
 
         var entity = new ComponenteEntity
@@ -67,16 +69,5 @@ public class ComponenteService : Service<ComponenteEntity, ComponenteRepository,
             UrlDataSheet = dto.UrlDataSheet
         };
         return await Update(entity);
-    }
-
-    public async Task<int?> ResolveEquipoId(int? equipoId, string? codigoImt)
-    {
-        if (equipoId.HasValue && equipoId.Value > 0)
-            return equipoId;
-
-        if (!string.IsNullOrWhiteSpace(codigoImt) && int.TryParse(codigoImt, out var codigoImtInt))
-            return await _repository.GetEquipoByCodigoImt(codigoImtInt);
-
-        return null;
     }
 }

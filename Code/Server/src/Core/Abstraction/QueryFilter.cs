@@ -1,4 +1,4 @@
-namespace IMT_Reservas.Server.Core.Common;
+namespace IMT_Reservas.Server.Core.Abstraction;
 
 public abstract class QueryFilter
 {

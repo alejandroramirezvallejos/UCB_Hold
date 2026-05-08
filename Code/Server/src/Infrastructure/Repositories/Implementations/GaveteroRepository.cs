@@ -1,6 +1,6 @@
 using Ardalis.Result;
 using IMT_Reservas.Server.Application.Features.Gavetero;
-using IMT_Reservas.Server.Core.Common;
+using IMT_Reservas.Server.Core.Abstraction;
 using IMT_Reservas.Server.Infrastructure.PostgreSQL;
 using IMT_Reservas.Server.Infrastructure.Repositories.Abstraction;
 using Microsoft.EntityFrameworkCore;
@@ -39,10 +39,7 @@ public class GaveteroRepository : Repository<GaveteroEntity, GaveteroDto>
             ? Result<GaveteroDto>.NotFound()
             : Result<GaveteroDto>.Success(MapToDto(entity));
     }
-
-    public async Task<bool> ExistsActive(int id)
-        => await DbContext.Gaveteros.AnyAsync(g => g.Id == id && !g.EstadoEliminado);
-
+    
     public async Task<int?> GetMuebleByNombre(string nombreMueble)
         => await DbContext.Muebles
             .Where(m => m.Nombre == nombreMueble && !m.EstadoEliminado)

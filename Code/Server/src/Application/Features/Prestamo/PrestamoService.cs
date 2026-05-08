@@ -128,8 +128,6 @@ public class PrestamoService : Service<PrestamoEntity, PrestamoRepository, Prest
         return await Get(id);
     }
 
-    public bool NeedsContrato(decimal monto) => monto >= 1000;
-
     public async Task<Result<List<PrestamoDto>>> GetHistorial(string carnetUsuario, string estadoPrestamo)
     {
         if (string.IsNullOrEmpty(carnetUsuario))
@@ -178,6 +176,7 @@ public class PrestamoService : Service<PrestamoEntity, PrestamoRepository, Prest
             return Result<PrestamoDto>.Error("Préstamo ya tiene contrato");
 
         var contratoBase64 = Convert.ToBase64String(contratoBytes);
+        
         var contrato = new Core.Entities.Contrato
         {
             MongoId = MongoDB.Bson.ObjectId.GenerateNewId().ToString(),

@@ -46,13 +46,14 @@ public class UsuarioService : Service<UsuarioEntity, UsuarioRepository, UsuarioD
 
     public async Task<Result<UsuarioDto>> CreateFromDto(UsuarioDto dto)
     {
-        // Resolve carrera by name if IdCarrera not provided
         var idCarrera = dto.IdCarrera ?? 0;
+        
         if (idCarrera == 0 && !string.IsNullOrWhiteSpace(dto.CarreraNombre))
         {
             var carreraPorNombre = await _dbContext.Carreras
                 .AsNoTracking()
                 .FirstOrDefaultAsync(c => c.Nombre == dto.CarreraNombre && !c.EstadoEliminado);
+            
             if (carreraPorNombre != null)
                 idCarrera = carreraPorNombre.Id;
         }
@@ -89,13 +90,14 @@ public class UsuarioService : Service<UsuarioEntity, UsuarioRepository, UsuarioD
         if (existing == null)
             return Result<UsuarioDto>.NotFound();
 
-        // Resolve carrera by name if needed
         var idCarrera = dto.IdCarrera ?? 0;
+        
         if (idCarrera == 0 && !string.IsNullOrWhiteSpace(dto.CarreraNombre))
         {
             var carreraPorNombre = await _dbContext.Carreras
                 .AsNoTracking()
                 .FirstOrDefaultAsync(c => c.Nombre == dto.CarreraNombre && !c.EstadoEliminado);
+            
             if (carreraPorNombre != null)
                 idCarrera = carreraPorNombre.Id;
         }
@@ -108,13 +110,17 @@ public class UsuarioService : Service<UsuarioEntity, UsuarioRepository, UsuarioD
         existing.TelefonoReferencia = dto.TelefonoReferencia ?? existing.TelefonoReferencia;
         existing.NombreReferencia = dto.NombreReferencia ?? existing.NombreReferencia;
         existing.EmailReferencia = dto.EmailReferencia ?? existing.EmailReferencia;
-        if (idCarrera > 0) existing.IdCarrera = idCarrera;
+        
+        if (idCarrera > 0) 
+            existing.IdCarrera = idCarrera;
+        
         existing.Rol = dto.Rol?.ToLowerInvariant() switch
         {
             "docente" => Core.Entities.TipoUsuario.Docente,
             "administrador" => Core.Entities.TipoUsuario.Administrador,
             _ => existing.Rol
         };
+        
         if (!string.IsNullOrWhiteSpace(dto.Contrasena))
             existing.Contrasena = BCrypt.Net.BCrypt.HashPassword(dto.Contrasena);
 

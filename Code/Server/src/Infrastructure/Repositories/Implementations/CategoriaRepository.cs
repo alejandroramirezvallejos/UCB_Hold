@@ -1,6 +1,6 @@
 using Ardalis.Result;
 using IMT_Reservas.Server.Application.Features.Categoria;
-using IMT_Reservas.Server.Core.Common;
+using IMT_Reservas.Server.Core.Abstraction;
 using IMT_Reservas.Server.Infrastructure.PostgreSQL;
 using IMT_Reservas.Server.Infrastructure.Repositories.Abstraction;
 using Microsoft.EntityFrameworkCore;
@@ -38,9 +38,6 @@ public class CategoriaRepository : Repository<CategoriaEntity, CategoriaDto>
         => await DbContext.Categorias
             .AsNoTracking()
             .FirstOrDefaultAsync(c => c.Nombre == nombre && !c.EstadoEliminado);
-
-    public async Task<bool> ExistsActive(int id)
-        => await DbContext.Categorias.AnyAsync(c => c.Id == id && !c.EstadoEliminado);
 
     protected override CategoriaDto MapToDto(CategoriaEntity entity) => new()
     {

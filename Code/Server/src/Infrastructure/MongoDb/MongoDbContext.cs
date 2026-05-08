@@ -14,8 +14,6 @@ namespace IMT_Reservas.Server.Infrastructure.MongoDb
             _database = clienteMongo.GetDatabase(configuracion.Value.DatabaseName);
         }
 
-        protected MongoDbContext() { }
-
         public virtual IMongoDatabase Database => _database;
 
         public virtual IMongoCollection<Contrato> GetContratos => _database.GetCollection<Contrato>("contratos");

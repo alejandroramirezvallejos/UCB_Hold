@@ -1,6 +1,6 @@
 using Ardalis.Result;
 using IMT_Reservas.Server.Application.Features.EmpresaMantenimiento;
-using IMT_Reservas.Server.Core.Common;
+using IMT_Reservas.Server.Core.Abstraction;
 using IMT_Reservas.Server.Infrastructure.PostgreSQL;
 using IMT_Reservas.Server.Infrastructure.Repositories.Abstraction;
 using Microsoft.EntityFrameworkCore;
@@ -49,13 +49,7 @@ public class EmpresaMantenimientoRepository : Repository<EmpresaMantenimientoEnt
             ? Result<EmpresaMantenimientoDto>.NotFound()
             : Result<EmpresaMantenimientoDto>.Success(dto);
     }
-
-    public async Task<EmpresaMantenimientoEntity?> GetByNombre(string nombre)
-        => await DbContext.EmpresasMantenimiento.AsNoTracking().FirstOrDefaultAsync(e => e.Nombre == nombre && !e.EstadoEliminado);
-
-    public async Task<bool> ExistsActive(int id)
-        => await DbContext.EmpresasMantenimiento.AnyAsync(e => e.Id == id && !e.EstadoEliminado);
-
+    
     protected override EmpresaMantenimientoDto MapToDto(EmpresaMantenimientoEntity entity) => new()
     {
         Id = entity.Id,

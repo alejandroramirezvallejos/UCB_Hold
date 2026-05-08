@@ -1,5 +1,5 @@
 using Ardalis.Result;
-using IMT_Reservas.Server.Core.Common;
+using IMT_Reservas.Server.Core.Abstraction;
 using IMT_Reservas.Server.Infrastructure.PostgreSQL;
 using Microsoft.EntityFrameworkCore;
 namespace IMT_Reservas.Server.Infrastructure.Repositories.Abstraction;
@@ -10,7 +10,7 @@ public abstract class Repository<TEntity, TDto> where TEntity : class where TDto
 
     protected Repository(ApplicationDbContext dbContext) => DbContext = dbContext;
 
-    public virtual async Task<Result<TDto>> Create(TEntity entity)
+    public async Task<Result<TDto>> Create(TEntity entity)
     {
         DbContext.Add(entity);
         await DbContext.SaveChangesAsync();
@@ -18,7 +18,7 @@ public abstract class Repository<TEntity, TDto> where TEntity : class where TDto
         return Result<TDto>.Created(MapToDto(entity));
     }
 
-    public virtual async Task<Result<TDto>> Update(TEntity entity)
+    public async Task<Result<TDto>> Update(TEntity entity)
     {
         DbContext.Update(entity);
         await DbContext.SaveChangesAsync();
@@ -59,11 +59,6 @@ public abstract class Repository<TEntity, TDto> where TEntity : class where TDto
         return Result<List<TDto>>.Success(dtos);
     }
 
-    public virtual bool Exists(int id)
-    {
-        return DbContext.Set<TEntity>().Any(e => GetId(e) != null && GetId(e)!.Equals(id));
-    }
-
     protected abstract TDto MapToDto(TEntity entity);
 
     protected virtual object? GetId(TEntity entity)
@@ -71,7 +66,8 @@ public abstract class Repository<TEntity, TDto> where TEntity : class where TDto
         var idProp = typeof(TEntity).GetProperty("Id")
                   ?? typeof(TEntity).GetProperties().FirstOrDefault(p => p.Name.EndsWith("Id"));
 
-        if (idProp == null) return null;
+        if (idProp == null) 
+            return null;
 
         return idProp.GetValue(entity);
     }

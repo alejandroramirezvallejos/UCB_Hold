@@ -1,8 +1,8 @@
 using IMT_Reservas.Server.Infrastructure.PostgreSQL;
-using IMT_Reservas.Server.Core.Common;
 using IMT_Reservas.Server.Infrastructure.Repositories.Abstraction;
 using Ardalis.Result;
 using IMT_Reservas.Server.Application.Features.Usuario;
+using IMT_Reservas.Server.Core.Abstraction;
 using Microsoft.EntityFrameworkCore;
 using UsuarioEntity = IMT_Reservas.Server.Core.Entities.Usuario;
 namespace IMT_Reservas.Server.Infrastructure.Repositories.Implementations;
@@ -42,13 +42,6 @@ public class UsuarioRepository : Repository<UsuarioEntity, UsuarioDto>
         return await DbContext.Usuarios
             .AsNoTracking()
             .FirstOrDefaultAsync(u => u.Carnet == carnet && !u.EstadoEliminado);
-    }
-
-    public async Task<UsuarioEntity?> GetByEmail(string email)
-    {
-        return await DbContext.Usuarios
-            .AsNoTracking()
-            .FirstOrDefaultAsync(u => u.Email == email && !u.EstadoEliminado);
     }
 
     public async Task<bool> ExistsActive(string carnet)

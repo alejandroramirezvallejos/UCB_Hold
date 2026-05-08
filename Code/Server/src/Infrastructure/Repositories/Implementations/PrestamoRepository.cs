@@ -1,7 +1,7 @@
 using Ardalis.Result;
 using IMT_Reservas.Server.Application.Features.Prestamo;
+using IMT_Reservas.Server.Core.Abstraction;
 using IMT_Reservas.Server.Core.Entities;
-using IMT_Reservas.Server.Core.Common;
 using IMT_Reservas.Server.Infrastructure.PostgreSQL;
 using IMT_Reservas.Server.Infrastructure.Repositories.Abstraction;
 using Microsoft.EntityFrameworkCore;
@@ -100,10 +100,7 @@ public class PrestamoRepository : Repository<PrestamoEntity, PrestamoDto>
 
         return Result<object>.Success(null!);
     }
-
-    public async Task<bool> ExistsActive(int id)
-        => await DbContext.Prestamos.AnyAsync(p => p.Id == id && !p.EstadoEliminado);
-
+    
     public PrestamoDto ConvertToDto(PrestamoEntity entity) => MapToDto(entity);
 
     protected override PrestamoDto MapToDto(PrestamoEntity entity) => new()
