@@ -7,7 +7,7 @@ public class Equipo : Entity
     public int? IdGavetero { get; set; }
     public string? CodigoUcb { get; set; }
     public string? NumeroSerial { get; set; }
-    public string? EstadoEquipo { get; set; }
+    public EstadoEquipo EstadoEquipo { get; set; } = EstadoEquipo.Operativo;
     public string? Ubicacion { get; set; }
     public double? CostoReferencia { get; set; }
     public string? Descripcion { get; set; }

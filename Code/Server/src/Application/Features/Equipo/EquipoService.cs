@@ -24,11 +24,6 @@ public class EquipoService : Service<EquipoEntity, EquipoRepository, EquipoDto>
         if (!grupoExists)
             return Result<EquipoDto>.Error("Grupo equipo no existe");
 
-        var estadosValidos = new[] { "operativo", "inoperativo", "parcialmente_operativo" };
-
-        if (!estadosValidos.Contains(entity.EstadoEquipo ?? "operativo"))
-            return Result<EquipoDto>.Error("Estado equipo inválido");
-
         if (entity.IdGavetero.HasValue)
         {
             var gaveteroExists = await _dbContext.Gaveteros
@@ -42,12 +37,5 @@ public class EquipoService : Service<EquipoEntity, EquipoRepository, EquipoDto>
     }
 
     public override async Task<Result<EquipoDto>> Update(EquipoEntity entity)
-    {
-        var estadosValidos = new[] { "operativo", "inoperativo", "parcialmente_operativo" };
-
-        if (!string.IsNullOrEmpty(entity.EstadoEquipo) && !estadosValidos.Contains(entity.EstadoEquipo))
-            return Result<EquipoDto>.Error("Estado equipo inválido");
-
-        return await base.Update(entity);
-    }
+        => await base.Update(entity);
 }

@@ -86,6 +86,21 @@ public class PrestamoRepository : Repository<PrestamoEntity, PrestamoDto>
         UbicacionMueble = mueble?.Ubicacion
     };
 
+    public override async Task<Result<object>> Delete(int id)
+    {
+        var entity = await DbContext.Prestamos
+            .FirstOrDefaultAsync(p => p.Id == id && !p.EstadoEliminado);
+
+        if (entity == null)
+            return Result<object>.NotFound();
+
+        entity.EstadoEliminado = true;
+        DbContext.Update(entity);
+        await DbContext.SaveChangesAsync();
+
+        return Result<object>.Success(null!);
+    }
+
     public async Task<bool> ExistsActive(int id)
         => await DbContext.Prestamos.AnyAsync(p => p.Id == id && !p.EstadoEliminado);
 

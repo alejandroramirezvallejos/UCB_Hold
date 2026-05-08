@@ -58,7 +58,7 @@ export class EquipoService {
       IdGavetero: equipo.IdGavetero,
       FechaIngresoEquipo: equipo.FechaIngresoEquipo
     };
-    return this.http.put<any>(this.apiUrl, envio);
+    return this.http.put<any>(`${this.apiUrl}/${equipo.Id}`, envio);
   }
   eliminarEquipo(id: number) {
     return this.http.delete<any>(`${this.apiUrl}/${id}`);

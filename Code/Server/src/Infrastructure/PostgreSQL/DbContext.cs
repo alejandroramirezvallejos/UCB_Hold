@@ -26,6 +26,7 @@ public class ApplicationDbContext : DbContext
         base.OnModelCreating(modelBuilder);
         modelBuilder.HasPostgresEnum<EstadoPrestamo>("estado_prestamo");
         modelBuilder.HasPostgresEnum<TipoUsuario>("tipo_usuario");
+        modelBuilder.HasPostgresEnum<EstadoEquipo>("estado_equipo");
 
          var dateTimeConverter = new Microsoft.EntityFrameworkCore.Storage.ValueConversion.ValueConverter<DateTime, DateTime>(
             v => v.Kind == DateTimeKind.Utc ? v : DateTime.SpecifyKind(v, DateTimeKind.Utc),
@@ -145,7 +146,7 @@ public class ApplicationDbContext : DbContext
             entity.Property(e => e.TiempoMaximoPrestamo).HasColumnName("tiempo_max_prestamo");
             entity.Property(e => e.Procedencia).HasMaxLength(255).HasColumnName("procedencia");
             entity.Property(e => e.FechaIngresoEquipo).HasDefaultValue(DateOnly.FromDateTime(DateTime.UtcNow)).HasColumnName("fecha_ingreso_equipo");
-            entity.Property(e => e.EstadoEquipo).HasDefaultValue("operativo").HasColumnName("estado_equipo");
+            entity.Property(e => e.EstadoEquipo).HasColumnType("estado_equipo").HasDefaultValue(EstadoEquipo.Operativo).HasColumnName("estado_equipo");
             entity.Property(e => e.IdGrupoEquipo).HasColumnName("id_grupo_equipo");
             entity.Property(e => e.IdGavetero).HasColumnName("id_gavetero");
             entity.Property(e => e.EstadoEliminado).HasColumnName("estado_eliminado");

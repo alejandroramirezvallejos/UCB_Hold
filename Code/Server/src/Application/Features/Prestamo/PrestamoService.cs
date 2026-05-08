@@ -38,7 +38,7 @@ public class PrestamoService : Service<PrestamoEntity, PrestamoRepository, Prest
 
         var invalidEquipos = await _dbContext.Equipos
             .Where(e => equipoIds.Contains(e.Id))
-            .Where(e => e.EstadoEquipo != "operativo" || e.EstadoEliminado)
+            .Where(e => e.EstadoEquipo != EstadoEquipo.Operativo || e.EstadoEliminado)
             .Select(e => e.Id)
             .ToListAsync();
 
