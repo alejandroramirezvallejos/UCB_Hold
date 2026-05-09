@@ -35,6 +35,7 @@ public class CategoriaController : ControllerBase
     public async Task<IActionResult> Create([FromBody] CategoriaDto dto)
     {
         var result = await _service.Create(new CategoriaEntity { Nombre = dto.Nombre ?? string.Empty });
+        
         return result.IsSuccess ? CreatedAtAction(nameof(Get), new { id = result.Value?.Id }, new Response<CategoriaDto> { Status = 201, Value = result.Value }) : BadRequest(new Response<object> { Status = 400, Errors = result.Errors.ToList() });
     }
 
@@ -42,6 +43,7 @@ public class CategoriaController : ControllerBase
     public async Task<IActionResult> Update(int id, [FromBody] CategoriaDto dto)
     {
         var result = await _service.Update(new CategoriaEntity { Id = id, Nombre = dto.Nombre ?? string.Empty });
+       
         return result.IsSuccess ? Ok(new Response<CategoriaDto> { Status = 200, Value = result.Value }) : BadRequest(new Response<object> { Status = 400, Errors = result.Errors.ToList() });
     }
 

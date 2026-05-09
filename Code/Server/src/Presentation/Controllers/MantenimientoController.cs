@@ -2,7 +2,6 @@ using Microsoft.AspNetCore.Mvc;
 using IMT_Reservas.Server.Application.Features.Mantenimiento;
 using IMT_Reservas.Server.Application.Abstraction;
 using MantenimientoEntity = IMT_Reservas.Server.Core.Entities.Mantenimiento;
-using AutoMapper;
 namespace IMT_Reservas.Server.Presentation.Controllers;
 
 [ApiController]
@@ -10,13 +9,8 @@ namespace IMT_Reservas.Server.Presentation.Controllers;
 public class MantenimientoController : ControllerBase
 {
     private readonly MantenimientoService _service;
-    private readonly IMapper _mapper;
 
-    public MantenimientoController(MantenimientoService service, IMapper mapper)
-    {
-        _service = service;
-        _mapper = mapper;
-    }
+    public MantenimientoController(MantenimientoService service) => _service = service;
 
     [HttpGet]
     public async Task<IActionResult> GetAll()
@@ -45,8 +39,15 @@ public class MantenimientoController : ControllerBase
     [HttpPut("{id:int}")]
     public async Task<IActionResult> Update(int id, [FromBody] MantenimientoDto dto)
     {
-        var entity = _mapper.Map<MantenimientoEntity>(dto);
-        entity.Id = id;
+        var entity = new MantenimientoEntity
+        {
+            Id                      = id,
+            IdEmpresa               = dto.IdEmpresa ?? 0,
+            FechaMantenimiento      = dto.FechaMantenimiento ?? DateTime.UtcNow,
+            FechaFinalMantenimiento = dto.FechaFinalMantenimiento ?? DateTime.UtcNow,
+            Descripcion             = dto.Descripcion,
+            Costo                   = dto.Costo
+        };
         var result = await _service.Update(entity);
 
         return result.IsSuccess ? Ok(new Response<MantenimientoDto> { Status = 200, Value = result.Value }) : BadRequest(new Response<object> { Status = 400, Errors = result.Errors.ToList() });

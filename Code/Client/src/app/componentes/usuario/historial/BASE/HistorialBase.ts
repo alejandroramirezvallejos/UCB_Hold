@@ -29,15 +29,16 @@ cargarDatos() {
     }
 }
  agruparPrestamos(datos: PrestamoDto[]) {
-    this.datos.clear();
+    // Nueva referencia → Angular change detection dispara
+    const nuevo = new Map<number, PrestamoAgrupados>();
     for (let prestamo of datos) {
-      if( this.datos.has(prestamo.Id!)) {
-        this.datos.get(prestamo.Id)!.insertarEquipo(prestamo);
-      }
-      else{
-        this.datos.set(prestamo.Id! , new PrestamoAgrupados([prestamo]));
+      if (nuevo.has(prestamo.Id!)) {
+        nuevo.get(prestamo.Id)!.insertarEquipo(prestamo);
+      } else {
+        nuevo.set(prestamo.Id!, new PrestamoAgrupados([prestamo]));
       }
     }
+    this.datos = nuevo;
   }
 AbrirVista(item: PrestamoDto[]) {
   this.prestamosVista = item;

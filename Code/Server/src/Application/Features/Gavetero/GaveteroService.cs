@@ -21,6 +21,7 @@ public class GaveteroService : Service<GaveteroEntity, GaveteroRepository, Gavet
     public override async Task<Result<GaveteroDto>> Create(GaveteroEntity entity)
     {
         var muebleId = entity.IdMueble;
+        
         if (muebleId <= 0)
             return Result<GaveteroDto>.Error("Mueble no existe");
 
@@ -36,6 +37,7 @@ public class GaveteroService : Service<GaveteroEntity, GaveteroRepository, Gavet
     public override async Task<Result<GaveteroDto>> Update(GaveteroEntity entity)
     {
         var muebleId = entity.IdMueble;
+        
         if (muebleId <= 0)
             return Result<GaveteroDto>.Error("Mueble no existe");
 
@@ -51,6 +53,7 @@ public class GaveteroService : Service<GaveteroEntity, GaveteroRepository, Gavet
     public async Task<Result<GaveteroDto>> CreateFromDto(GaveteroDto dto)
     {
         var muebleId = 0;
+        
         if (!string.IsNullOrWhiteSpace(dto.NombreMueble))
             muebleId = await _repository.GetMuebleByNombre(dto.NombreMueble) ?? 0;
 
@@ -63,12 +66,14 @@ public class GaveteroService : Service<GaveteroEntity, GaveteroRepository, Gavet
             Profundidad = dto.Profundidad,
             Altura = dto.Altura
         };
+        
         return await Create(entity);
     }
 
     public async Task<Result<GaveteroDto>> UpdateFromDto(int id, GaveteroDto dto)
     {
-        var muebleId = 0;
+        int muebleId;
+        
         if (!string.IsNullOrWhiteSpace(dto.NombreMueble))
             muebleId = await _repository.GetMuebleByNombre(dto.NombreMueble) ?? 0;
         else
@@ -84,6 +89,7 @@ public class GaveteroService : Service<GaveteroEntity, GaveteroRepository, Gavet
             Profundidad = dto.Profundidad,
             Altura = dto.Altura
         };
+        
         return await Update(entity);
     }
 }

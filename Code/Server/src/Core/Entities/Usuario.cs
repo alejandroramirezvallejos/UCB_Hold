@@ -1,6 +1,7 @@
+using IMT_Reservas.Server.Core.Abstraction;
 namespace IMT_Reservas.Server.Core.Entities;
 
-public class Usuario
+public class Usuario : Entity  // PK is Carnet (string); Entity.Id is ignored by EF
 {
     public string Carnet { get; set; } = string.Empty;
     public string Nombre { get; set; } = string.Empty;

@@ -43,6 +43,7 @@ public class EmpresaMantenimientoController : ControllerBase
             Telefono = dto.Telefono,
             Direccion = dto.Direccion
         };
+        
         var result = await _service.Create(entity);
 
         return result.IsSuccess ? CreatedAtAction(nameof(Get), new { id = result.Value?.Id }, new Response<EmpresaMantenimientoDto> { Status = 201, Value = result.Value }) : BadRequest(new Response<object> { Status = 400, Errors = result.Errors.ToList() });
@@ -60,6 +61,7 @@ public class EmpresaMantenimientoController : ControllerBase
             Telefono = dto.Telefono,
             Direccion = dto.Direccion
         };
+        
         var result = await _service.Update(entity);
 
         return result.IsSuccess ? Ok(new Response<EmpresaMantenimientoDto> { Status = 200, Value = result.Value }) : BadRequest(new Response<object> { Status = 400, Errors = result.Errors.ToList() });

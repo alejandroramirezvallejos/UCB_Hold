@@ -1,7 +1,6 @@
 using Microsoft.EntityFrameworkCore;
 using MongoDB.Driver;
 using Npgsql;
-using AutoMapper;
 using IMT_Reservas.Server.Application.Abstraction;
 using IMT_Reservas.Server.Application.Features.Accesorio;
 using IMT_Reservas.Server.Application.Features.Carrera;
@@ -22,8 +21,6 @@ using IMT_Reservas.Server.Infrastructure.PostgreSQL;
 using IMT_Reservas.Server.Infrastructure.Repositories.Implementations;
 using IMT_Reservas.Server.Infrastructure.MongoDb;
 using IMT_Reservas.Server.Presentation.Middleware;
-using AccesorioEntity = IMT_Reservas.Server.Core.Entities.Accesorio;
-using ComponenteEntity = IMT_Reservas.Server.Core.Entities.Componente;
 using EmpresaMantenimientoEntity = IMT_Reservas.Server.Core.Entities.EmpresaMantenimiento;
 
 AppContext.SetSwitch("Npgsql.EnableLegacyTimestampBehavior", true);
@@ -61,12 +58,6 @@ builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 builder.Services.AddScoped<MongoDbContext>();
 
-var serviceProvider = builder.Services.BuildServiceProvider();
-var loggerFactory = serviceProvider.GetService<ILoggerFactory>() ?? new Microsoft.Extensions.Logging.Abstractions.NullLoggerFactory();
-var mapperConfig = new MapperConfiguration(cfg => cfg.AddMaps(typeof(Program)), loggerFactory);
-var mapper = mapperConfig.CreateMapper();
-
-builder.Services.AddSingleton(mapper);
 builder.Services.AddScoped<UsuarioRepository>();
 builder.Services.AddScoped<PrestamoRepository>();
 builder.Services.AddScoped<EquipoRepository>();
@@ -88,8 +79,10 @@ builder.Services.AddScoped<GrupoEquipoService>();
 builder.Services.AddScoped<CarreraService>();
 builder.Services.AddScoped<CategoriaService>();
 builder.Services.AddScoped<MantenimientoService>();
+
 builder.Services.AddScoped(sp => new Service<EmpresaMantenimientoEntity, EmpresaMantenimientoRepository, EmpresaMantenimientoDto>(
     sp.GetRequiredService<EmpresaMantenimientoRepository>()));
+
 builder.Services.AddScoped<GaveteroService>();
 builder.Services.AddScoped<MuebleService>();
 builder.Services.AddScoped<ContratoService>();
@@ -97,6 +90,7 @@ builder.Services.AddScoped<ComponenteRepository>();
 builder.Services.AddScoped<ComponenteService>();
 
 var mongoDbConfig = builder.Configuration.GetSection("MongoDbSettings").Get<MongoDbConfig>();
+
 builder.Services.AddSingleton<IMongoClient>(new MongoClient(mongoDbConfig?.ConnectionString ?? "mongodb://localhost:27018"));
 
 var app = builder.Build();

@@ -1,7 +1,6 @@
 using Microsoft.AspNetCore.Mvc;
 using IMT_Reservas.Server.Application.Features.Gavetero;
 using IMT_Reservas.Server.Application.Abstraction;
-using GaveteroEntity = IMT_Reservas.Server.Core.Entities.Gavetero;
 namespace IMT_Reservas.Server.Presentation.Controllers;
 
 [ApiController]
@@ -35,6 +34,7 @@ public class GaveteroController : ControllerBase
     public async Task<IActionResult> Create([FromBody] GaveteroDto dto)
     {
         var result = await _service.CreateFromDto(dto);
+        
         return result.IsSuccess ? CreatedAtAction(nameof(Get), new { id = result.Value?.Id }, new Response<GaveteroDto> { Status = 201, Value = result.Value }) : BadRequest(new Response<object> { Status = 400, Errors = result.Errors.ToList() });
     }
 
@@ -42,6 +42,7 @@ public class GaveteroController : ControllerBase
     public async Task<IActionResult> Update(int id, [FromBody] GaveteroDto dto)
     {
         var result = await _service.UpdateFromDto(id, dto);
+        
         return result.IsSuccess ? Ok(new Response<GaveteroDto> { Status = 200, Value = result.Value }) : BadRequest(new Response<object> { Status = 400, Errors = result.Errors.ToList() });
     }
 

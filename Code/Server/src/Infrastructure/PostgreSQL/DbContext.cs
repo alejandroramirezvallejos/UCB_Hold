@@ -126,7 +126,7 @@ public class ApplicationDbContext : DbContext
             entity.Property(e => e.Profundidad).HasColumnName("profundidad");
             entity.Property(e => e.Altura).HasColumnName("altura");
             entity.Property(e => e.EstadoEliminado).HasColumnName("estado_eliminado");
-            entity.HasOne<Mueble>().WithMany().HasForeignKey(e => e.IdMueble).IsRequired();
+            entity.HasOne(e => e.Mueble).WithMany().HasForeignKey(e => e.IdMueble).IsRequired();
             entity.HasIndex(e => new { e.Nombre, e.IdMueble, e.EstadoEliminado });
             entity.HasIndex(e => e.Nombre).IsUnique();
             entity.HasQueryFilter(e => !e.EstadoEliminado);
@@ -150,8 +150,8 @@ public class ApplicationDbContext : DbContext
             entity.Property(e => e.IdGrupoEquipo).HasColumnName("id_grupo_equipo");
             entity.Property(e => e.IdGavetero).HasColumnName("id_gavetero");
             entity.Property(e => e.EstadoEliminado).HasColumnName("estado_eliminado");
-            entity.HasOne<GrupoEquipo>().WithMany().HasForeignKey(e => e.IdGrupoEquipo).IsRequired();
-            entity.HasOne<Gavetero>().WithMany().HasForeignKey(e => e.IdGavetero);
+            entity.HasOne(e => e.GrupoEquipo).WithMany().HasForeignKey(e => e.IdGrupoEquipo).IsRequired();
+            entity.HasOne(e => e.Gavetero).WithMany().HasForeignKey(e => e.IdGavetero);
             entity.HasIndex(e => new { e.IdGrupoEquipo, e.CodigoImt, e.EstadoEliminado });
             entity.HasIndex(e => e.CodigoImt).IsUnique();
             entity.HasQueryFilter(e => !e.EstadoEliminado);
@@ -229,6 +229,7 @@ public class ApplicationDbContext : DbContext
         {
             entity.ToTable("usuarios");
             entity.HasKey(e => e.Carnet);
+            entity.Ignore(e => e.Id);  // Entity.Id ignored; PK is Carnet (string)
             entity.Property(e => e.Carnet).HasColumnName("carnet");
             entity.Property(e => e.Nombre).IsRequired().HasMaxLength(64).HasColumnName("nombre");
             entity.Property(e => e.ApellidoPaterno).IsRequired().HasMaxLength(64).HasColumnName("apellido_paterno");

@@ -28,6 +28,7 @@ public class MuebleRepository : Repository<MuebleEntity, MuebleDto>
                 Altura = e.Altura
             })
             .ToListAsync();
+        
         return Result<List<MuebleDto>>.Success(dtos);
     }
 

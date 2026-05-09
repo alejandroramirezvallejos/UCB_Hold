@@ -14,7 +14,7 @@ public class ContratoController : ControllerBase
 
     [HttpPost("crear")]
     [Consumes("multipart/form-data")]
-    public async Task<IActionResult> Create([FromForm] ContratoDto request)
+    public async Task<IActionResult> Create([FromForm] ContratoDto? request)
     {
         string? contenido = null;
         

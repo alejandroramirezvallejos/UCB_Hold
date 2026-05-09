@@ -21,14 +21,17 @@ public class UsuarioService : Service<UsuarioEntity, UsuarioRepository, UsuarioD
         if (string.IsNullOrEmpty(entity.Email) || !entity.Email.Contains("@"))
             return Result<UsuarioDto>.Error("Email inválido");
 
+        // IgnoreQueryFilters: check incluye soft-deleted (evita PK duplicado en DB)
         var carnetExists = await _dbContext.Usuarios
-            .AnyAsync(u => u.Carnet == entity.Carnet && !u.EstadoEliminado);
+            .IgnoreQueryFilters()
+            .AnyAsync(u => u.Carnet == entity.Carnet);
 
         if (carnetExists)
             return Result<UsuarioDto>.Error("Carnet ya existe");
 
         var emailExists = await _dbContext.Usuarios
-            .AnyAsync(u => u.Email == entity.Email && !u.EstadoEliminado);
+            .IgnoreQueryFilters()
+            .AnyAsync(u => u.Email == entity.Email);
 
         if (emailExists)
             return Result<UsuarioDto>.Error("Email ya existe");

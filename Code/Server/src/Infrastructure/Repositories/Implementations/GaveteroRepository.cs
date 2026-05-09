@@ -26,6 +26,7 @@ public class GaveteroRepository : Repository<GaveteroEntity, GaveteroDto>
                 Altura = e.Altura
             })
             .ToListAsync();
+        
         return Result<List<GaveteroDto>>.Success(dtos);
     }
 

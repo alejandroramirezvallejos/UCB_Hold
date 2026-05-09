@@ -15,20 +15,37 @@ public class PrestamoRepository : Repository<PrestamoEntity, PrestamoDto>
     public override async Task<Result<List<PrestamoDto>>> GetAll(QueryFilter? filter = null)
     {
         var prestamos = await DbContext.Prestamos.AsNoTracking().ToListAsync();
-        var usuarios = await DbContext.Usuarios.AsNoTracking().ToListAsync();
-        var detalles = await DbContext.DetallesPrestamos.AsNoTracking().ToListAsync();
-        var equipos = await DbContext.Equipos.AsNoTracking().ToListAsync();
-        var grupos = await DbContext.GruposEquipos.AsNoTracking().ToListAsync();
-        var gaveteros = await DbContext.Gaveteros.AsNoTracking().ToListAsync();
-        var muebles = await DbContext.Muebles.AsNoTracking().ToListAsync();
+        var prestamoIds = prestamos.Select(p => p.Id).ToHashSet();
+        
+        var detalles = await DbContext.DetallesPrestamos.AsNoTracking()
+            .Where(d => prestamoIds.Contains(d.IdPrestamo))
+            .ToListAsync();
+
+        var carnets = prestamos.Select(p => p.Carnet).Where(_ => true).ToHashSet();
+        
+        var usuarioMap = await DbContext.Usuarios.AsNoTracking()
+            .Where(u => carnets.Contains(u.Carnet))
+            .ToDictionaryAsync(u => u.Carnet);
+
+        var equipoIds = detalles.Select(d => d.IdEquipo).ToHashSet();
+       
+        var equipoMap = await DbContext.Equipos.AsNoTracking()
+            .Include(e => e.GrupoEquipo)
+            .Include(e => e.Gavetero).ThenInclude(g => g!.Mueble)
+            .Where(e => equipoIds.Contains(e.Id))
+            .ToDictionaryAsync(e => e.Id);
+
+        var detallesByPrestamo = detalles
+            .GroupBy(d => d.IdPrestamo)
+            .ToDictionary(g => g.Key, g => g.ToList());
 
         var dtos = new List<PrestamoDto>();
+        
         foreach (var p in prestamos)
         {
-            var usuario = usuarios.FirstOrDefault(u => u.Carnet == p.Carnet);
-            var pDetalles = detalles.Where(d => d.IdPrestamo == p.Id).ToList();
+            var usuario = usuarioMap.GetValueOrDefault(p.Carnet);
 
-            if (!pDetalles.Any())
+            if (!detallesByPrestamo.TryGetValue(p.Id, out var pDetalles))
             {
                 dtos.Add(BuildDto(p, usuario, null, null, null, null));
                 continue;
@@ -36,11 +53,8 @@ public class PrestamoRepository : Repository<PrestamoEntity, PrestamoDto>
 
             foreach (var d in pDetalles)
             {
-                var equipo = equipos.FirstOrDefault(e => e.Id == d.IdEquipo);
-                var grupo = equipo != null ? grupos.FirstOrDefault(g => g.Id == equipo.IdGrupoEquipo) : null;
-                var gavetero = equipo?.IdGavetero != null ? gaveteros.FirstOrDefault(g => g.Id == equipo.IdGavetero) : null;
-                var mueble = gavetero != null ? muebles.FirstOrDefault(m => m.Id == gavetero.IdMueble) : null;
-                dtos.Add(BuildDto(p, usuario, equipo, grupo, gavetero, mueble));
+                equipoMap.TryGetValue(d.IdEquipo, out var equipo);
+                dtos.Add(BuildDto(p, usuario, equipo, equipo?.GrupoEquipo, equipo?.Gavetero, equipo?.Gavetero?.Mueble));
             }
         }
 
@@ -50,12 +64,24 @@ public class PrestamoRepository : Repository<PrestamoEntity, PrestamoDto>
     public override async Task<Result<PrestamoDto>> Get(int id)
     {
         var p = await DbContext.Prestamos.AsNoTracking().FirstOrDefaultAsync(x => x.Id == id);
-        if (p == null) return Result<PrestamoDto>.NotFound();
+        
+        if (p == null) 
+            return Result<PrestamoDto>.NotFound();
 
         var usuario = await DbContext.Usuarios.AsNoTracking().FirstOrDefaultAsync(u => u.Carnet == p.Carnet);
 
         return Result<PrestamoDto>.Success(BuildDto(p, usuario, null, null, null, null));
     }
+
+    private static string MapEstado(EstadoPrestamo e) => e switch
+    {
+        EstadoPrestamo.Aprobado   => "aprobado",
+        EstadoPrestamo.Activo     => "activo",
+        EstadoPrestamo.Rechazado  => "rechazado",
+        EstadoPrestamo.Finalizado => "finalizado",
+        EstadoPrestamo.Cancelado  => "cancelado",
+        _                         => "pendiente"
+    };
 
     private static PrestamoDto BuildDto(
         PrestamoEntity p,
@@ -70,7 +96,7 @@ public class PrestamoRepository : Repository<PrestamoEntity, PrestamoDto>
         NombreUsuario = usuario?.Nombre,
         ApellidoPaternoUsuario = usuario?.ApellidoPaterno,
         TelefonoUsuario = usuario?.Telefono,
-        EstadoPrestamo = p.EstadoPrestamo.ToDbString(),
+        EstadoPrestamo = MapEstado(p.EstadoPrestamo),
         FechaSolicitud = p.FechaSolicitud,
         FechaPrestamoEsperada = p.FechaPrestamoEsperada,
         FechaPrestamo = p.FechaPrestamo,
@@ -106,8 +132,8 @@ public class PrestamoRepository : Repository<PrestamoEntity, PrestamoDto>
     protected override PrestamoDto MapToDto(PrestamoEntity entity) => new()
     {
         Id = entity.Id,
-        CarnetUsuario = entity.Carnet ?? "",
-        EstadoPrestamo = entity.EstadoPrestamo.ToDbString(),
+        CarnetUsuario = entity.Carnet,
+        EstadoPrestamo = MapEstado(entity.EstadoPrestamo),
         FechaSolicitud = entity.FechaSolicitud,
         FechaDevolucionEsperada = entity.FechaDevolucionEsperada,
         NombreUsuario = null,

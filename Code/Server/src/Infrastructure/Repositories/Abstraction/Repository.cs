@@ -61,7 +61,7 @@ public abstract class Repository<TEntity, TDto> where TEntity : class where TDto
 
     protected abstract TDto MapToDto(TEntity entity);
 
-    protected virtual object? GetId(TEntity entity)
+    protected object? GetId(TEntity entity)
     {
         var idProp = typeof(TEntity).GetProperty("Id")
                   ?? typeof(TEntity).GetProperties().FirstOrDefault(p => p.Name.EndsWith("Id"));

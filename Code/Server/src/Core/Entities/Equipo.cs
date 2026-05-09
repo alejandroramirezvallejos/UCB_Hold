@@ -4,8 +4,10 @@ namespace IMT_Reservas.Server.Core.Entities;
 public class Equipo : Entity
 {
     public int IdGrupoEquipo { get; set; }
+    public GrupoEquipo? GrupoEquipo { get; set; }
     public int CodigoImt { get; set; }
     public int? IdGavetero { get; set; }
+    public Gavetero? Gavetero { get; set; }
     public string? CodigoUcb { get; set; }
     public string? NumeroSerial { get; set; }
     public EstadoEquipo EstadoEquipo { get; set; } = EstadoEquipo.Operativo;

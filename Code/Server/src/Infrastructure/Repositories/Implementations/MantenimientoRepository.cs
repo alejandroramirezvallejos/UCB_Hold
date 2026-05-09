@@ -18,7 +18,6 @@ public class MantenimientoRepository : Repository<MantenimientoEntity, Mantenimi
         var detalles = await DbContext.DetallesMantenimientos.AsNoTracking().ToListAsync();
         var equipos = await DbContext.Equipos.AsNoTracking().ToListAsync();
         var grupos = await DbContext.GruposEquipos.AsNoTracking().ToListAsync();
-
         var dtos = new List<MantenimientoDto>();
         
         foreach (var m in mantenimientos)
@@ -45,6 +44,7 @@ public class MantenimientoRepository : Repository<MantenimientoEntity, Mantenimi
             {
                 var equipo = equipos.FirstOrDefault(e => e.Id == d.IdEquipo);
                 var grupo = equipo != null ? grupos.FirstOrDefault(g => g.Id == equipo.IdGrupoEquipo) : null;
+                
                 dtos.Add(new MantenimientoDto
                 {
                     Id = m.Id,
@@ -69,7 +69,8 @@ public class MantenimientoRepository : Repository<MantenimientoEntity, Mantenimi
     {
         var m = await DbContext.Mantenimientos.AsNoTracking().FirstOrDefaultAsync(x => x.Id == id);
         
-        if (m == null) return Result<MantenimientoDto>.NotFound();
+        if (m == null) 
+            return Result<MantenimientoDto>.NotFound();
 
         var empresa = await DbContext.EmpresasMantenimiento.AsNoTracking().FirstOrDefaultAsync(e => e.Id == m.IdEmpresa);
 

@@ -33,6 +33,7 @@ public class AccesorioService : Service<AccesorioEntity, AccesorioRepository, Ac
     public async Task<Result<AccesorioDto>> CreateFromDto(AccesorioDto dto)
     {
         var equipoId = dto.IdEquipo ?? 0;
+        
         if (equipoId <= 0 && !string.IsNullOrWhiteSpace(dto.CodigoImtEquipoAsociado) && int.TryParse(dto.CodigoImtEquipoAsociado, out var codigoImtInt))
             equipoId = await _repository.GetEquipoByCodigoImt(codigoImtInt) ?? 0;
 
@@ -46,12 +47,14 @@ public class AccesorioService : Service<AccesorioEntity, AccesorioRepository, Ac
             UrlDataSheet = dto.UrlDataSheet,
             IdEquipo = equipoId
         };
+        
         return await Create(entity);
     }
 
     public async Task<Result<AccesorioDto>> UpdateFromDto(int id, AccesorioDto dto)
     {
         var equipoId = dto.IdEquipo ?? 0;
+        
         if (equipoId <= 0 && !string.IsNullOrWhiteSpace(dto.CodigoImtEquipoAsociado) && int.TryParse(dto.CodigoImtEquipoAsociado, out var codigoImtInt))
             equipoId = await _repository.GetEquipoByCodigoImt(codigoImtInt) ?? 0;
 
@@ -66,6 +69,7 @@ public class AccesorioService : Service<AccesorioEntity, AccesorioRepository, Ac
             UrlDataSheet = dto.UrlDataSheet,
             IdEquipo = equipoId
         };
+        
         return await Update(entity);
     }
 }

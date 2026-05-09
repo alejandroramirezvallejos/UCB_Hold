@@ -45,6 +45,7 @@ public class MuebleController : ControllerBase
             Altura = dto.Altura,
             Costo = dto.Costo
         };
+        
         var result = await _service.Create(entity);
 
         return result.IsSuccess ? CreatedAtAction(nameof(Get), new { id = result.Value?.Id }, new Response<MuebleDto> { Status = 201, Value = result.Value }) : BadRequest(new Response<object> { Status = 400, Errors = result.Errors.ToList() });
@@ -65,6 +66,7 @@ public class MuebleController : ControllerBase
             Altura = dto.Altura,
             Costo = dto.Costo
         };
+        
         var result = await _service.Update(entity);
 
         return result.IsSuccess ? Ok(new Response<MuebleDto> { Status = 200, Value = result.Value }) : BadRequest(new Response<object> { Status = 400, Errors = result.Errors.ToList() });

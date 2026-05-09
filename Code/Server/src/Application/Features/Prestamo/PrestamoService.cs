@@ -31,35 +31,6 @@ public class PrestamoService : Service<PrestamoEntity, PrestamoRepository, Prest
         return await base.Create(entity);
     }
 
-    public async Task<Result<bool>> ValidateDisponibilidad(int[] equipoIds, DateTime fechaInicio, DateTime fechaFin)
-    {
-        if (equipoIds == null || equipoIds.Length == 0)
-            return Result<bool>.Error("Seleccione al menos un equipo");
-
-        var invalidEquipos = await _dbContext.Equipos
-            .Where(e => equipoIds.Contains(e.Id))
-            .Where(e => e.EstadoEquipo != EstadoEquipo.Operativo || e.EstadoEliminado)
-            .Select(e => e.Id)
-            .ToListAsync();
-
-        if (invalidEquipos.Any())
-            return Result<bool>.Error("Equipos no disponibles");
-
-        var prestamosEnRango = await _dbContext.Prestamos
-            .Where(p => _dbContext.DetallesPrestamos
-                .Where(d => equipoIds.Contains(d.IdEquipo))
-                .Select(d => d.IdPrestamo)
-                .Contains(p.Id))
-            .Where(p => p.FechaPrestamo <= fechaFin && p.FechaDevolucion >= fechaInicio)
-            .Where(p => p.EstadoPrestamo != EstadoPrestamo.Cancelado && p.EstadoPrestamo != EstadoPrestamo.Rechazado)
-            .AnyAsync();
-
-        if (prestamosEnRango)
-            return Result<bool>.Error("Conflicto de fechas con otros préstamos");
-
-        return Result<bool>.Success(true);
-    }
-
     public Task<Result<object>> ValidateEstado(string estadoActual, string estadoNuevo)
     {
         var estadosValidos = new[] { "pendiente", "rechazado", "aprobado", "activo", "finalizado", "cancelado" };
@@ -83,17 +54,6 @@ public class PrestamoService : Service<PrestamoEntity, PrestamoRepository, Prest
         return Task.FromResult(Result<object>.Success(null!));
     }
 
-    public async Task<Result<decimal>> CalculateMonto(int[] equipoIds)
-    {
-        if (equipoIds == null || equipoIds.Length == 0)
-            return Result<decimal>.Success(0);
-
-        var equipos = await _dbContext.Equipos.Where(e => equipoIds.Contains(e.Id)).ToListAsync();
-        var monto = equipos.Sum(e => e.CostoReferencia ?? 0);
-        
-        return Result<decimal>.Success((decimal)monto);
-    }
-
     public async Task<Result<PrestamoDto>> UpdateEstado(int id, string nuevoEstado)
     {
         var prestamo = await _dbContext.Prestamos.FirstOrDefaultAsync(p => p.Id == id);
@@ -101,13 +61,21 @@ public class PrestamoService : Service<PrestamoEntity, PrestamoRepository, Prest
         if (prestamo == null)
             return Result<PrestamoDto>.NotFound();
 
-        var estadoActual = prestamo.EstadoPrestamo.ToDbString();
+        var estadoActual = prestamo.EstadoPrestamo switch
+        {
+            EstadoPrestamo.Aprobado   => "aprobado",
+            EstadoPrestamo.Activo     => "activo",
+            EstadoPrestamo.Rechazado  => "rechazado",
+            EstadoPrestamo.Finalizado => "finalizado",
+            EstadoPrestamo.Cancelado  => "cancelado",
+            _                         => "pendiente"
+        };
         var validacion = await ValidateEstado(estadoActual, nuevoEstado);
 
         if (!validacion.IsSuccess)
             return Result<PrestamoDto>.Error(validacion.Errors.FirstOrDefault() ?? "Transición no permitida");
 
-        var estadoParsed = nuevoEstado?.ToLowerInvariant() switch
+        var estadoParsed = nuevoEstado.ToLowerInvariant() switch
         {
             "aprobado" => EstadoPrestamo.Aprobado,
             "activo" => EstadoPrestamo.Activo,

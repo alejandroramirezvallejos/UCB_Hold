@@ -3,7 +3,6 @@ using IMT_Reservas.Server.Application.Features.Prestamo;
 using IMT_Reservas.Server.Application.Abstraction;
 using IMT_Reservas.Server.Core.Entities;
 using PrestamoEntity = IMT_Reservas.Server.Core.Entities.Prestamo;
-using UpdateEstadoDto = IMT_Reservas.Server.Application.Features.Prestamo.UpdateEstadoDto;
 namespace IMT_Reservas.Server.Presentation.Controllers;
 
 [ApiController]
@@ -96,7 +95,7 @@ public class PrestamoController : ControllerBase
     }
 
     [HttpPut("{id:int}/estado")]
-    public async Task<IActionResult> UpdateEstado(int id, [FromBody] UpdateEstadoDto request)
+    public async Task<IActionResult> UpdateEstado(int id, [FromBody] EstadoRequest request)
     {
         var result = await _service.UpdateEstado(id, request.EstadoPrestamo ?? string.Empty);
 
@@ -125,21 +124,29 @@ public class PrestamoController : ControllerBase
 
     [HttpPost("{id:int}/contrato")]
     [Consumes("multipart/form-data")]
-    public async Task<IActionResult> SaveContrato(int id, [FromForm] SaveContratoDto dto)
+    public async Task<IActionResult> SaveContrato(int id, [FromForm] SaveContratoForm form)
     {
-        byte[]? contratoBytes = null;
+        byte[] contratoBytes = [];
 
-        if (dto?.Contrato != null)
+        if (form.Contrato != null)
         {
             using var ms = new MemoryStream();
-            await dto.Contrato.CopyToAsync(ms);
+            await form.Contrato.CopyToAsync(ms);
             contratoBytes = ms.ToArray();
         }
 
-        var result = await _service.SaveContrato(id, contratoBytes ?? []);
+        var result = await _service.SaveContrato(id, contratoBytes);
 
         return result.IsSuccess
             ? Ok(new Response<PrestamoDto> { Status = 200, Value = result.Value })
             : BadRequest(new Response<object> { Status = 400, Errors = result.Errors.ToList() });
     }
+}
+
+public sealed record EstadoRequest(string? EstadoPrestamo);
+
+// Wrapper para IFormFile — Swashbuckle no genera schema para IFormFile como param directo
+public sealed class SaveContratoForm
+{
+    public IFormFile? Contrato { get; set; }
 }
