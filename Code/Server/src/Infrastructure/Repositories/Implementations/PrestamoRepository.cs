@@ -61,6 +61,58 @@ public class PrestamoRepository : Repository<PrestamoEntity, PrestamoDto>
         return Result<List<PrestamoDto>>.Success(dtos);
     }
 
+    public async Task<Result<List<PrestamoDto>>> GetHistorialWithDetalles(string carnetUsuario, EstadoPrestamo? estado)
+    {
+        var prestamosQuery = DbContext.Prestamos.AsNoTracking().Where(p => p.Carnet == carnetUsuario);
+        
+        if (estado.HasValue)
+        {
+            prestamosQuery = prestamosQuery.Where(p => p.EstadoPrestamo == estado.Value);
+        }
+
+        var prestamos = await prestamosQuery.ToListAsync();
+        if (!prestamos.Any()) return Result<List<PrestamoDto>>.Success(new List<PrestamoDto>());
+
+        var prestamoIds = prestamos.Select(p => p.Id).ToHashSet();
+        
+        var detalles = await DbContext.DetallesPrestamos.AsNoTracking()
+            .Where(d => prestamoIds.Contains(d.IdPrestamo))
+            .ToListAsync();
+
+        var usuario = await DbContext.Usuarios.AsNoTracking().FirstOrDefaultAsync(u => u.Carnet == carnetUsuario);
+
+        var equipoIds = detalles.Select(d => d.IdEquipo).ToHashSet();
+       
+        var equipoMap = await DbContext.Equipos.AsNoTracking()
+            .Include(e => e.GrupoEquipo)
+            .Include(e => e.Gavetero).ThenInclude(g => g!.Mueble)
+            .Where(e => equipoIds.Contains(e.Id))
+            .ToDictionaryAsync(e => e.Id);
+
+        var detallesByPrestamo = detalles
+            .GroupBy(d => d.IdPrestamo)
+            .ToDictionary(g => g.Key, g => g.ToList());
+
+        var dtos = new List<PrestamoDto>();
+        
+        foreach (var p in prestamos)
+        {
+            if (!detallesByPrestamo.TryGetValue(p.Id, out var pDetalles))
+            {
+                dtos.Add(BuildDto(p, usuario, null, null, null, null));
+                continue;
+            }
+
+            foreach (var d in pDetalles)
+            {
+                equipoMap.TryGetValue(d.IdEquipo, out var equipo);
+                dtos.Add(BuildDto(p, usuario, equipo, equipo?.GrupoEquipo, equipo?.Gavetero, equipo?.Gavetero?.Mueble));
+            }
+        }
+
+        return Result<List<PrestamoDto>>.Success(dtos);
+    }
+
     public override async Task<Result<PrestamoDto>> Get(int id)
     {
         var p = await DbContext.Prestamos.AsNoTracking().FirstOrDefaultAsync(x => x.Id == id);

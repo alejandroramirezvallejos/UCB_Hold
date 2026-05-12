@@ -173,11 +173,11 @@ public class PrestamoService : Service<PrestamoEntity, PrestamoRepository, Prest
         if (string.IsNullOrEmpty(carnetUsuario))
             return Result<List<PrestamoDto>>.Error("Carnet requerido");
 
-        var prestamos = await _dbContext.Prestamos.Where(p => p.Carnet == carnetUsuario).ToListAsync();
+        EstadoPrestamo? estado = null;
 
         if (!string.IsNullOrEmpty(estadoPrestamo) && estadoPrestamo != "todos")
         {
-            var estado = estadoPrestamo.ToLowerInvariant() switch
+            estado = estadoPrestamo.ToLowerInvariant() switch
             {
                 "aprobado" => EstadoPrestamo.Aprobado,
                 "activo" => EstadoPrestamo.Activo,
@@ -185,18 +185,14 @@ public class PrestamoService : Service<PrestamoEntity, PrestamoRepository, Prest
                 "finalizado" => EstadoPrestamo.Finalizado,
                 "cancelado" => EstadoPrestamo.Cancelado,
                 "pendiente" => EstadoPrestamo.Pendiente,
-                _ => (EstadoPrestamo?)null
+                _ => null
             };
 
             if (!estado.HasValue)
                 return Result<List<PrestamoDto>>.Error("Estado préstamo no válido");
-
-            prestamos = prestamos.Where(p => p.EstadoPrestamo == estado.Value).ToList();
         }
 
-        var dtos = prestamos.Select(p => Repository.ConvertToDto(p)).ToList();
-
-        return Result<List<PrestamoDto>>.Success(dtos);
+        return await Repository.GetHistorialWithDetalles(carnetUsuario, estado);
     }
 
     public async Task<Result<PrestamoDto>> SaveContrato(int prestamoId, byte[] contratoBytes)
