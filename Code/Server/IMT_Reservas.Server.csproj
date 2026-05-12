@@ -4,9 +4,6 @@
     <TargetFramework>net8.0</TargetFramework>
     <Nullable>enable</Nullable>
     <ImplicitUsings>enable</ImplicitUsings>
-    <SpaRoot>..\Client\</SpaRoot>
-    <SpaProxyLaunchCommand>npm start</SpaProxyLaunchCommand>
-    <SpaProxyServerUrl>https://localhost:61829</SpaProxyServerUrl>
     <UserSecretsId>f0c04fca-857a-4561-b11d-4d4f6d738ecd</UserSecretsId>
   </PropertyGroup>
 
@@ -14,14 +11,10 @@
   <PropertyGroup Condition=" '$(RunConfiguration)' == 'http' " />
   <ItemGroup>
     <PackageReference Include="BCrypt.Net-Next" Version="4.0.3" />
-    <PackageReference Include="Microsoft.AspNetCore.SpaProxy" Version="8.*-*">
-    </PackageReference>
     <PackageReference Include="Microsoft.EntityFrameworkCore" Version="8.0.4" />
     <PackageReference Include="Microsoft.EntityFrameworkCore.Tools" Version="8.0.4" />
     <PackageReference Include="Microsoft.EntityFrameworkCore.Relational" Version="8.0.4" />
     <PackageReference Include="Npgsql.EntityFrameworkCore.PostgreSQL" Version="8.0.4" />
-    <PackageReference Include="MongoDB.Driver" Version="2.25.0" />
-    <PackageReference Include="MongoDB.Driver.GridFS" Version="2.25.0" />
     <PackageReference Include="Npgsql" Version="8.0.4" />
     <PackageReference Include="Swashbuckle.AspNetCore" Version="6.6.2" />
     <PackageReference Include="Swashbuckle.AspNetCore.SwaggerUI" Version="6.6.2" />
@@ -31,9 +24,6 @@
   </ItemGroup>
   
   <ItemGroup>
-    <ProjectReference Include="..\Client\IMT_Reservas.Client.esproj">
-      <ReferenceOutputAssembly>false</ReferenceOutputAssembly>
-    </ProjectReference>
   </ItemGroup>
 
 </Project>

@@ -1,5 +1,4 @@
 using Microsoft.EntityFrameworkCore;
-using MongoDB.Driver;
 using Npgsql;
 using IMT_Reservas.Server.Application.Abstraction;
 using IMT_Reservas.Server.Application.Features.Accesorio;
@@ -19,7 +18,6 @@ using IMT_Reservas.Server.Application.Features.Contrato;
 using IMT_Reservas.Server.Core.Entities;
 using IMT_Reservas.Server.Infrastructure.PostgreSQL;
 using IMT_Reservas.Server.Infrastructure.Repositories.Implementations;
-using IMT_Reservas.Server.Infrastructure.MongoDb;
 using IMT_Reservas.Server.Presentation.Middleware;
 using EmpresaMantenimientoEntity = IMT_Reservas.Server.Core.Entities.EmpresaMantenimiento;
 
@@ -29,9 +27,6 @@ NpgsqlConnection.GlobalTypeMapper.MapEnum<TipoUsuario>("tipo_usuario");
 NpgsqlConnection.GlobalTypeMapper.MapEnum<EstadoEquipo>("estado_equipo");
 
 var builder = WebApplication.CreateBuilder(args);
-
-builder.Services.Configure<MongoDbConfig>(
-    builder.Configuration.GetSection("MongoDbSettings"));
 
 var connectionString = builder.Configuration.GetConnectionString("PostgreSQL");
 
@@ -56,7 +51,6 @@ builder.Services.AddCors(options =>
 
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
-builder.Services.AddScoped<MongoDbContext>();
 
 builder.Services.AddScoped<UsuarioRepository>();
 builder.Services.AddScoped<PrestamoRepository>();
@@ -88,10 +82,6 @@ builder.Services.AddScoped<MuebleService>();
 builder.Services.AddScoped<ContratoService>();
 builder.Services.AddScoped<ComponenteRepository>();
 builder.Services.AddScoped<ComponenteService>();
-
-var mongoDbConfig = builder.Configuration.GetSection("MongoDbSettings").Get<MongoDbConfig>();
-
-builder.Services.AddSingleton<IMongoClient>(new MongoClient(mongoDbConfig?.ConnectionString ?? "mongodb://localhost:27018"));
 
 var app = builder.Build();
 

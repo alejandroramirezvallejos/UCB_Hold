@@ -14,11 +14,15 @@ public class PrestamoDto
     public DateTime? FechaDevolucion { get; set; }
     public string? Observacion { get; set; }
     public string? EstadoPrestamo { get; set; }
-    public string? IdContrato { get; set; }
+    public int? IdContrato { get; set; }
     public string? NombreGrupoEquipo { get; set; }
     public string? CodigoImt { get; set; }
     public string? UbicacionEquipo { get; set; }
     public string? NombreGavetero { get; set; }
     public string? NombreMueble { get; set; }
     public string? UbicacionMueble { get; set; }
+    
+    // Properties for creation
+    public List<int>? GrupoEquipoId { get; set; }
+    public string? Contrato { get; set; }
 }

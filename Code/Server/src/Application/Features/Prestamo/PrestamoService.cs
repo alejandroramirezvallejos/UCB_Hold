@@ -3,7 +3,6 @@ using IMT_Reservas.Server.Application.Abstraction;
 using IMT_Reservas.Server.Infrastructure.PostgreSQL;
 using IMT_Reservas.Server.Core.Entities;
 using IMT_Reservas.Server.Infrastructure.Repositories.Implementations;
-using IMT_Reservas.Server.Infrastructure.MongoDb;
 using Microsoft.EntityFrameworkCore;
 using PrestamoEntity = IMT_Reservas.Server.Core.Entities.Prestamo;
 namespace IMT_Reservas.Server.Application.Features.Prestamo;
@@ -11,10 +10,8 @@ namespace IMT_Reservas.Server.Application.Features.Prestamo;
 public class PrestamoService : Service<PrestamoEntity, PrestamoRepository, PrestamoDto>
 {
     private readonly ApplicationDbContext _dbContext;
-    private readonly MongoDbContext _mongoDbContext;
-
-    public PrestamoService(PrestamoRepository repository, ApplicationDbContext dbContext, MongoDbContext mongoDbContext)
-        : base(repository) => (_dbContext, _mongoDbContext) = (dbContext, mongoDbContext);
+    public PrestamoService(PrestamoRepository repository, ApplicationDbContext dbContext)
+        : base(repository) => _dbContext = dbContext;
 
     public override async Task<Result<PrestamoDto>> Create(PrestamoEntity entity)
     {
@@ -30,7 +27,82 @@ public class PrestamoService : Service<PrestamoEntity, PrestamoRepository, Prest
 
         return await base.Create(entity);
     }
+    public async Task<Result<PrestamoDto>> CreateFromDto(PrestamoDto request)
+    {
+        var entity = new PrestamoEntity
+        {
+            Carnet = request.CarnetUsuario,
+            FechaSolicitud = request.FechaSolicitud ?? DateTime.UtcNow,
+            FechaPrestamo = request.FechaPrestamo ?? request.FechaPrestamoEsperada,
+            FechaPrestamoEsperada = request.FechaPrestamoEsperada ?? DateTime.UtcNow,
+            FechaDevolucion = request.FechaDevolucion,
+            FechaDevolucionEsperada = request.FechaDevolucionEsperada ?? DateTime.UtcNow.AddDays(7),
+            Observacion = request.Observacion,
+            EstadoPrestamo = EstadoPrestamo.Pendiente,
+            IdContrato = request.IdContrato
+        };
 
+        var dateValidation = ValidateDates(entity.FechaPrestamo, entity.FechaDevolucionEsperada);
+
+        if (!dateValidation.IsSuccess)
+            return Result<PrestamoDto>.Error(dateValidation.Errors.FirstOrDefault() ?? "Error en fechas");
+
+        var usuarioExists = await _dbContext.Usuarios.AnyAsync(u => u.Carnet == entity.Carnet && !u.EstadoEliminado);
+
+        if (!usuarioExists)
+            return Result<PrestamoDto>.Error("Usuario no existe o estÃ¡ inactivo");
+
+        _dbContext.Prestamos.Add(entity);
+        await _dbContext.SaveChangesAsync();
+
+        if (request.GrupoEquipoId != null && request.GrupoEquipoId.Any())
+        {
+            foreach (var groupId in request.GrupoEquipoId)
+            {
+                var prestadosIds = await _dbContext.DetallesPrestamos
+                    .Join(_dbContext.Prestamos, dp => dp.IdPrestamo, p => p.Id, (dp, p) => new { dp, p })
+                    .Where(x => x.p.EstadoPrestamo == EstadoPrestamo.Pendiente || x.p.EstadoPrestamo == EstadoPrestamo.Aprobado || x.p.EstadoPrestamo == EstadoPrestamo.Activo)
+                    .Select(x => x.dp.IdEquipo)
+                    .ToListAsync();
+
+                var equipoDisponible = await _dbContext.Equipos
+                    .FirstOrDefaultAsync(e => e.IdGrupoEquipo == groupId 
+                        && !e.EstadoEliminado 
+                        && e.EstadoEquipo == EstadoEquipo.Operativo
+                        && !prestadosIds.Contains(e.Id));
+                        
+                if (equipoDisponible != null)
+                {
+                    _dbContext.DetallesPrestamos.Add(new Core.Entities.DetallePrestamo
+                    {
+                        IdPrestamo = entity.Id,
+                        IdEquipo = equipoDisponible.Id,
+                        EstadoEliminado = false
+                    });
+                }
+            }
+            await _dbContext.SaveChangesAsync();
+        }
+
+        if (!string.IsNullOrEmpty(request.Contrato))
+        {
+            var contratoHtml = request.Contrato;
+            var contrato = new Core.Entities.Contrato
+            {
+                ContratoHtml = contratoHtml
+            };
+            _dbContext.Contratos.Add(contrato);
+            await _dbContext.SaveChangesAsync();
+
+            entity.IdContrato = contrato.Id;
+            _dbContext.Prestamos.Update(entity);
+            await _dbContext.SaveChangesAsync();
+        }
+
+        var all = await Repository.GetAll();
+        var resultDto = all.Value.FirstOrDefault(p => p.Id == entity.Id);
+        return Result<PrestamoDto>.Success(resultDto ?? Repository.ConvertToDto(entity));
+    }
     public Task<Result<object>> ValidateEstado(string estadoActual, string estadoNuevo)
     {
         var estadosValidos = new[] { "pendiente", "rechazado", "aprobado", "activo", "finalizado", "cancelado" };
@@ -143,21 +215,17 @@ public class PrestamoService : Service<PrestamoEntity, PrestamoRepository, Prest
         if (prestamo.IdContrato != null)
             return Result<PrestamoDto>.Error("Préstamo ya tiene contrato");
 
-        var contratoBase64 = Convert.ToBase64String(contratoBytes);
+        var contratoHtml = System.Text.Encoding.UTF8.GetString(contratoBytes);
         
         var contrato = new Core.Entities.Contrato
         {
-            MongoId = MongoDB.Bson.ObjectId.GenerateNewId().ToString(),
-            PrestamoId = prestamoId,
-            ContenidoBase64 = contratoBase64,
-            FechaCreacion = DateTime.UtcNow,
-            EstadoEliminado = false
+            ContratoHtml = contratoHtml
         };
 
-        var coleccion = _mongoDbContext.GetContratos;
-        await coleccion.InsertOneAsync(contrato);
+        _dbContext.Contratos.Add(contrato);
+        await _dbContext.SaveChangesAsync();
 
-        prestamo.IdContrato = contrato.MongoId;
+        prestamo.IdContrato = contrato.Id;
         _dbContext.Prestamos.Update(prestamo);
         await _dbContext.SaveChangesAsync();
 

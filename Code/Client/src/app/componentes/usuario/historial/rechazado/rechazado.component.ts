@@ -17,6 +17,9 @@ export class RechazadoComponent extends HistorialBase {
   override estado: string = 'rechazado';
   constructor( protected override usuario : UsuarioService ,  protected override  prestamoApi : PrestamosAPIService)
   {super(prestamoApi, usuario);}; 
+
+
+  
   ngOnInit() {
     this.cargarDatos();
   }

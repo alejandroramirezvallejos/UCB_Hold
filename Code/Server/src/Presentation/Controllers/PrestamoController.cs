@@ -10,10 +10,12 @@ namespace IMT_Reservas.Server.Presentation.Controllers;
 public class PrestamoController : ControllerBase
 {
     private readonly PrestamoService _service;
+    private readonly IMT_Reservas.Server.Application.Features.Contrato.ContratoService _contratoService;
 
-    public PrestamoController(PrestamoService service)
+    public PrestamoController(PrestamoService service, IMT_Reservas.Server.Application.Features.Contrato.ContratoService contratoService)
     {
         _service = service;
+        _contratoService = contratoService;
     }
 
     [HttpGet]
@@ -35,20 +37,7 @@ public class PrestamoController : ControllerBase
     [HttpPost]
     public async Task<IActionResult> Create([FromBody] PrestamoDto request)
     {
-        var entity = new PrestamoEntity
-        {
-            Carnet = request.CarnetUsuario,
-            FechaSolicitud = DateTime.UtcNow,
-            FechaPrestamo = request.FechaPrestamo ?? request.FechaPrestamoEsperada,
-            FechaPrestamoEsperada = request.FechaPrestamoEsperada ?? DateTime.UtcNow,
-            FechaDevolucion = request.FechaDevolucion,
-            FechaDevolucionEsperada = request.FechaDevolucionEsperada ?? DateTime.UtcNow.AddDays(7),
-            Observacion = request.Observacion,
-            EstadoPrestamo = EstadoPrestamo.Pendiente,
-            IdContrato = request.IdContrato
-        };
-        
-        var result = await _service.Create(entity);
+        var result = await _service.CreateFromDto(request);
         
         return result.IsSuccess
             ? CreatedAtAction(nameof(Get), new { id = result.Value?.Id }, new Response<PrestamoDto> { Status = 201, Value = result.Value })
@@ -123,16 +112,13 @@ public class PrestamoController : ControllerBase
     }
 
     [HttpPost("{id:int}/contrato")]
-    [Consumes("multipart/form-data")]
-    public async Task<IActionResult> SaveContrato(int id, [FromForm] SaveContratoForm form)
+    public async Task<IActionResult> SaveContrato(int id, [FromBody] SaveContratoForm form)
     {
         byte[] contratoBytes = [];
 
-        if (form.Contrato != null)
+        if (!string.IsNullOrEmpty(form.ContratoHtml))
         {
-            using var ms = new MemoryStream();
-            await form.Contrato.CopyToAsync(ms);
-            contratoBytes = ms.ToArray();
+            contratoBytes = System.Text.Encoding.UTF8.GetBytes(form.ContratoHtml);
         }
 
         var result = await _service.SaveContrato(id, contratoBytes);
@@ -141,12 +127,23 @@ public class PrestamoController : ControllerBase
             ? Ok(new Response<PrestamoDto> { Status = 200, Value = result.Value })
             : BadRequest(new Response<object> { Status = 400, Errors = result.Errors.ToList() });
     }
+
+    [HttpGet("contrato/{prestamoId}")]
+    public async Task<IActionResult> ObtenerContratoPorPrestamo(int prestamoId)
+    {
+        var result = await _contratoService.GetByPrestamoId(prestamoId);
+
+        if (!result.IsSuccess)
+            return NotFound(new { mensaje = $"No se encontró contrato para el préstamo {prestamoId}" });
+
+        return Ok(new { contrato = result.Value.ContratoHtml });
+    }
 }
 
 public sealed record EstadoRequest(string? EstadoPrestamo);
 
-// Wrapper para IFormFile — Swashbuckle no genera schema para IFormFile como param directo
+// Wrapper para el string HTML
 public sealed class SaveContratoForm
 {
-    public IFormFile? Contrato { get; set; }
+    public string? ContratoHtml { get; set; }
 }

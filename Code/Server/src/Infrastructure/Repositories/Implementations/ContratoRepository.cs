@@ -1,30 +1,34 @@
 using Ardalis.Result;
 using IMT_Reservas.Server.Core.Entities;
-using IMT_Reservas.Server.Infrastructure.MongoDb;
-using MongoDB.Driver;
+using IMT_Reservas.Server.Infrastructure.PostgreSQL;
+using Microsoft.EntityFrameworkCore;
 namespace IMT_Reservas.Server.Infrastructure.Repositories.Implementations;
 
 public class ContratoRepository
 {
-    private readonly MongoDbContext _mongoContext;
+    private readonly ApplicationDbContext _dbContext;
 
-    public ContratoRepository(MongoDbContext mongoContext)
+    public ContratoRepository(ApplicationDbContext dbContext)
     {
-        _mongoContext = mongoContext;
+        _dbContext = dbContext;
     }
 
     public async Task<Result<Contrato>> Create(Contrato contrato)
     {
-        await _mongoContext.GetContratos.InsertOneAsync(contrato);
+        _dbContext.Contratos.Add(contrato);
+        await _dbContext.SaveChangesAsync();
 
         return Result<Contrato>.Success(contrato);
     }
 
     public async Task<Result<Contrato>> GetByPrestamoId(int prestamoId)
     {
-        var contrato = await _mongoContext.GetContratos
-            .Find(c => c.PrestamoId == prestamoId && !c.EstadoEliminado)
-            .FirstOrDefaultAsync();
+        var prestamo = await _dbContext.Prestamos.FirstOrDefaultAsync(p => p.Id == prestamoId);
+        if (prestamo == null || !prestamo.IdContrato.HasValue)
+            return Result<Contrato>.Error("Préstamo no encontrado o no tiene contrato");
+
+        var contrato = await _dbContext.Contratos
+            .FirstOrDefaultAsync(c => c.Id == prestamo.IdContrato.Value);
 
         if (contrato == null)
             return Result<Contrato>.Error("Contrato no encontrado");
@@ -34,20 +38,21 @@ public class ContratoRepository
 
     public async Task<Result<object>> Delete(int prestamoId)
     {
-        var contrato = await _mongoContext.GetContratos
-            .Find(c => c.PrestamoId == prestamoId && !c.EstadoEliminado)
-            .FirstOrDefaultAsync();
+        var prestamo = await _dbContext.Prestamos.FirstOrDefaultAsync(p => p.Id == prestamoId);
+        if (prestamo == null || !prestamo.IdContrato.HasValue)
+            return Result<object>.Error("Préstamo no encontrado o no tiene contrato");
+
+        var contrato = await _dbContext.Contratos
+            .FirstOrDefaultAsync(c => c.Id == prestamo.IdContrato.Value);
 
         if (contrato == null)
             return Result<object>.Error("Contrato no encontrado");
 
-        contrato.EstadoEliminado = true;
-        await _mongoContext.GetContratos.ReplaceOneAsync(
-            c => c.MongoId == contrato.MongoId,
-            contrato
-        );
+        _dbContext.Contratos.Remove(contrato);
+        prestamo.IdContrato = null;
+        _dbContext.Prestamos.Update(prestamo);
+        await _dbContext.SaveChangesAsync();
 
         return Result<object>.Success(new { });
     }
 }
-

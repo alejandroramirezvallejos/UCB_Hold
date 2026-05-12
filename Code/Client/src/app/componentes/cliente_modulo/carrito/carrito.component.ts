@@ -6,13 +6,16 @@ import { FormsModule } from '@angular/forms';
 import { Router, ActivatedRoute } from '@angular/router';
 import { UsuarioService } from '../../../services/usuario/usuario.service';
 import { MostrarerrorComponent } from '../../pantallas_avisos/mostrarerror/mostrarerror.component';
+import { Aviso } from '../../pantallas_avisos/aviso/aviso.component';
+import { AvisoExitoComponent } from '../../pantallas_avisos/aviso-exito/aviso-exito.component';
+import { PantallaCargaComponent } from '../../pantallas_avisos/pantalla-carga/pantalla-carga.component';
 import { CalendarioComponent } from './calendario/calendario.component';
 import { PrestamosAPIService } from '../../../services/APIS/prestamo/prestamos-api.service';
 import { finalize } from 'rxjs';
 @Component({
   selector: 'app-carrito',
   standalone: true ,
-  imports: [CommonModule,FormsModule , MostrarerrorComponent , CalendarioComponent],
+  imports: [CommonModule,FormsModule , MostrarerrorComponent , Aviso , AvisoExitoComponent , PantallaCargaComponent , CalendarioComponent],
   templateUrl: './carrito.component.html',
   styleUrl: './carrito.component.css'
 })
@@ -21,6 +24,8 @@ export class CarritoComponent {
   public step: number = 1;
   public errorboton : WritableSignal<boolean> = signal(false);
   public mensajeerror: string = "Datos insertados no validos";
+  aviso : WritableSignal<boolean> = signal(false);
+  exito : WritableSignal<boolean> = signal(false);
   hoy : Date= new Date();
   hoystr : string = this.toLocalISOString(this.hoy);
   fecha_inicio: WritableSignal<Date | null> = signal(null);
@@ -118,12 +123,12 @@ export class CarritoComponent {
       if (monto >= 1000) {
         this.router.navigate(['/Formulario']);
       } else {
-        this.crearPrestamoAutomatico();
+        this.aviso.set(true);
       }
     }
   }
 
-  private crearPrestamoAutomatico() {
+  realizarPrestamo() {
     this.cargando = true;
     const carnet = this.usuario.obtenerDatosUsuario().carnet!;
 
@@ -135,7 +140,7 @@ export class CarritoComponent {
         next: (response) => {
           console.log('Préstamo creado exitosamente:', response);
           this.carritoS.vaciarcarrito();
-          this.router.navigate(['/home']);
+          this.exito.set(true);
         },
         error: (error) => {
           console.error('Error al crear préstamo:', error);
@@ -149,6 +154,10 @@ export class CarritoComponent {
           this.errorboton.set(true);
         }
       });
+  }
+
+  redirigirHome() {
+    this.router.navigate(['/home']);
   }
   carritovacio(){
     if (Object.keys(this.carrito).length==0){

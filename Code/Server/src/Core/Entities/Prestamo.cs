@@ -11,6 +11,6 @@ public class Prestamo : Entity
     public string? Carnet { get; set; } = string.Empty;
     public EstadoPrestamo EstadoPrestamo { get; set; }
     public string? Observacion { get; set; }
-    public string? IdContrato { get; set; }
+    public int? IdContrato { get; set; }
     public bool EstadoEliminado { get; set; }
 }

@@ -70,7 +70,28 @@ public class PrestamoRepository : Repository<PrestamoEntity, PrestamoDto>
 
         var usuario = await DbContext.Usuarios.AsNoTracking().FirstOrDefaultAsync(u => u.Carnet == p.Carnet);
 
-        return Result<PrestamoDto>.Success(BuildDto(p, usuario, null, null, null, null));
+        var detalle = await DbContext.DetallesPrestamos.AsNoTracking().FirstOrDefaultAsync(d => d.IdPrestamo == id);
+        Equipo? equipo = null;
+        GrupoEquipo? grupo = null;
+        Gavetero? gavetero = null;
+        Mueble? mueble = null;
+
+        if (detalle != null)
+        {
+            equipo = await DbContext.Equipos.AsNoTracking()
+                .Include(e => e.GrupoEquipo)
+                .Include(e => e.Gavetero).ThenInclude(g => g!.Mueble)
+                .FirstOrDefaultAsync(e => e.Id == detalle.IdEquipo);
+
+            if (equipo != null)
+            {
+                grupo = equipo.GrupoEquipo;
+                gavetero = equipo.Gavetero;
+                mueble = gavetero?.Mueble;
+            }
+        }
+
+        return Result<PrestamoDto>.Success(BuildDto(p, usuario, equipo, grupo, gavetero, mueble));
     }
 
     private static string MapEstado(EstadoPrestamo e) => e switch

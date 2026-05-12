@@ -25,16 +25,12 @@ public class ContratoService
         if (prestamo == null)
             return Result<ContratoDto>.Error("Préstamo no existe");
 
-        if (!string.IsNullOrEmpty(prestamo.IdContrato))
+        if (prestamo.IdContrato.HasValue)
             return Result<ContratoDto>.Error("Contrato ya existe para este préstamo");
 
         var contrato = new ContratoEntity
         {
-            MongoId = MongoDB.Bson.ObjectId.GenerateNewId().ToString(),
-            PrestamoId = prestamoId.Value,
-            ContenidoBase64 = contenidoHtml,
-            FechaCreacion = DateTime.UtcNow,
-            EstadoEliminado = false
+            ContratoHtml = contenidoHtml
         };
 
         var resultado = await _repository.Create(contrato);
@@ -42,15 +38,14 @@ public class ContratoService
         if (!resultado.IsSuccess)
             return Result<ContratoDto>.Error(resultado.Errors.FirstOrDefault() ?? "Error crear contrato");
 
-        prestamo.IdContrato = resultado.Value.MongoId;
+        prestamo.IdContrato = resultado.Value.Id;
         _postgresContext.Prestamos.Update(prestamo);
         await _postgresContext.SaveChangesAsync();
 
         return Result<ContratoDto>.Success(new ContratoDto
         {
-            PrestamoId = prestamoId,
-            FechaCreacion = contrato.FechaCreacion,
-            ContenidoBase64 = contenidoHtml
+            Id = resultado.Value.Id,
+            ContratoHtml = contenidoHtml
         });
     }
 
@@ -63,9 +58,8 @@ public class ContratoService
 
         return Result<ContratoDto>.Success(new ContratoDto
         {
-            PrestamoId = resultado.Value.PrestamoId,
-            FechaCreacion = resultado.Value.FechaCreacion,
-            ContenidoBase64 = resultado.Value.ContenidoBase64
+            Id = resultado.Value.Id,
+            ContratoHtml = resultado.Value.ContratoHtml
         });
     }
 

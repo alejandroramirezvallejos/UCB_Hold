@@ -18,6 +18,7 @@ public class ApplicationDbContext : DbContext
     public DbSet<DetalleMantenimiento> DetallesMantenimientos { get; set; }
     public DbSet<Prestamo> Prestamos { get; set; }
     public DbSet<DetallePrestamo> DetallesPrestamos { get; set; }
+    public DbSet<Contrato> Contratos { get; set; }
 
     public ApplicationDbContext(DbContextOptions<ApplicationDbContext> options) : base(options) { }
 
@@ -270,9 +271,18 @@ public class ApplicationDbContext : DbContext
             entity.Property(e => e.Carnet).HasColumnName("carnet");
             entity.Property(e => e.EstadoEliminado).HasColumnName("estado_eliminado");
             entity.HasOne<Usuario>().WithMany().HasForeignKey(e => e.Carnet).IsRequired();
+            entity.HasOne<Contrato>().WithMany().HasForeignKey(e => e.IdContrato);
             entity.HasIndex(e => e.IdContrato);
             entity.HasIndex(e => new { e.FechaPrestamoEsperada, e.FechaDevolucionEsperada, e.Carnet, e.EstadoEliminado });
             entity.HasQueryFilter(e => !e.EstadoEliminado);
+        });
+
+        modelBuilder.Entity<Contrato>(entity =>
+        {
+            entity.ToTable("contratos");
+            entity.HasKey(e => e.Id);
+            entity.Property(e => e.Id).HasColumnName("id");
+            entity.Property(e => e.ContratoHtml).HasColumnName("contrato");
         });
 
         modelBuilder.Entity<DetallePrestamo>(entity =>
