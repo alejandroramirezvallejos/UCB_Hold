@@ -44,7 +44,14 @@ public class UsuarioService : Service<UsuarioEntity, UsuarioRepository, UsuarioD
 
         entity.Contrasena = BCrypt.Net.BCrypt.HashPassword(entity.Contrasena);
 
-        return await base.Create(entity);
+        var result = await base.Create(entity);
+        if (result.IsSuccess && result.Value != null)
+        {
+            var carreraResult = await _dbContext.Carreras.AsNoTracking().FirstOrDefaultAsync(c => c.Id == entity.IdCarrera);
+            if (carreraResult != null)
+                result.Value.CarreraNombre = carreraResult.Nombre;
+        }
+        return result;
     }
 
     public async Task<Result<UsuarioDto>> CreateFromDto(UsuarioDto dto)
@@ -128,16 +135,28 @@ public class UsuarioService : Service<UsuarioEntity, UsuarioRepository, UsuarioD
             existing.Contrasena = BCrypt.Net.BCrypt.HashPassword(dto.Contrasena);
 
         await _dbContext.SaveChangesAsync();
-        return Result<UsuarioDto>.Success(MapToDto(existing));
+
+        var resultDto = MapToDto(existing);
+        var carreraFinal = await _dbContext.Carreras.AsNoTracking().FirstOrDefaultAsync(c => c.Id == existing.IdCarrera);
+        if (carreraFinal != null)
+            resultDto.CarreraNombre = carreraFinal.Nombre;
+
+        return Result<UsuarioDto>.Success(resultDto);
     }
 
     public async Task<Result<UsuarioDto>> Get(string carnet)
     {
         var usuario = await Repository.GetByCarnet(carnet);
 
-        return usuario == null
-            ? Result<UsuarioDto>.NotFound()
-            : Result<UsuarioDto>.Success(MapToDto(usuario));
+        if (usuario == null)
+            return Result<UsuarioDto>.NotFound();
+
+        var dto = MapToDto(usuario);
+        var carrera = await _dbContext.Carreras.AsNoTracking().FirstOrDefaultAsync(c => c.Id == usuario.IdCarrera);
+        if (carrera != null)
+            dto.CarreraNombre = carrera.Nombre;
+
+        return Result<UsuarioDto>.Success(dto);
     }
 
     public async Task<Result<List<UsuarioDto>>> GetAll()
@@ -161,9 +180,15 @@ public class UsuarioService : Service<UsuarioEntity, UsuarioRepository, UsuarioD
         else
             passwordValid = password == usuario.Contrasena;
 
-        return passwordValid
-            ? Result<UsuarioDto>.Success(MapToDto(usuario))
-            : Result<UsuarioDto>.Unauthorized("Credenciales inválidas");
+        if (!passwordValid)
+            return Result<UsuarioDto>.Unauthorized("Credenciales inválidas");
+
+        var dto = MapToDto(usuario);
+        var carrera = await _dbContext.Carreras.AsNoTracking().FirstOrDefaultAsync(c => c.Id == usuario.IdCarrera);
+        if (carrera != null)
+            dto.CarreraNombre = carrera.Nombre;
+
+        return Result<UsuarioDto>.Success(dto);
     }
 
     public async Task<Result<object>> Delete(string carnet)

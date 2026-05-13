@@ -7,35 +7,39 @@ import { map } from 'rxjs';
   providedIn: 'root'
 })
 export class UsuarioServiceAPI {
- private apiUrl = environment.apiUrl + '/api/Usuario';
-  constructor(private http : HttpClient) { }
-  registrarCuenta(usuario : Usuario , contrasena : string , rol : string  | null){
-    if(!rol) {
+  private apiUrl = environment.apiUrl + '/api/Usuario';
+  constructor(private http: HttpClient) { }
+
+
+  registrarCuenta(usuario: Usuario, contrasena: string, rol: string | null) {
+    if (!rol) {
       rol = 'Estudiante';
     }
-    const envio={
-    Carnet: usuario.carnet,
-    Nombre: usuario.nombre,
-    ApellidoPaterno: usuario.apellido_paterno,
-    ApellidoMaterno: usuario.apellido_materno,
-    Rol: rol,
-    Email: usuario.correo,
-    Contrasena: contrasena,
-    CarreraNombre: usuario.carrera,
-    IdCarrera: 0,
-    Telefono: usuario.telefono,
-    TelefonoReferencia: usuario.telefono_referencia,
-    NombreReferencia: usuario.nombre_referencia,
-    EmailReferencia: usuario.email_referencia
+    const envio = {
+      Carnet: usuario.carnet,
+      Nombre: usuario.nombre,
+      ApellidoPaterno: usuario.apellido_paterno,
+      ApellidoMaterno: usuario.apellido_materno,
+      Rol: rol,
+      Email: usuario.correo,
+      Contrasena: contrasena,
+      CarreraNombre: usuario.carrera,
+      IdCarrera: 0,
+      Telefono: usuario.telefono,
+      TelefonoReferencia: usuario.telefono_referencia,
+      NombreReferencia: usuario.nombre_referencia,
+      EmailReferencia: usuario.email_referencia
     }
     return this.http.post(this.apiUrl, envio)
   }
+
+
   iniciarsesion(correo: string, contraseña: string) {
     const api = `${this.apiUrl}/login`;
     const body = { Email: correo, Contrasena: contraseña };
     return this.http.post<any>(api, body).pipe(
-      map(response=>({
-        id : response.Value.Carnet,
+      map(response => ({
+        id: response.Value.Carnet,
         carnet: response.Value.Carnet,
         nombre: response.Value.Nombre,
         apellido_materno: response.Value.ApellidoMaterno,
@@ -49,6 +53,9 @@ export class UsuarioServiceAPI {
         email_referencia: response.Value.EmailReferencia
       })));
   }
+
+
+
   actualizarUsuario(usuario: Usuario) {
     const envio = {
       Carnet: usuario.carnet,
@@ -65,6 +72,8 @@ export class UsuarioServiceAPI {
     };
     return this.http.put<Usuario>(`${this.apiUrl}/${envio.Carnet}`, envio);
   }
+
+
   obtenerUsuarios() {
     return this.http.get<any>(this.apiUrl).pipe(
       map(response => response.Value.map((item: any) => ({
@@ -84,12 +93,14 @@ export class UsuarioServiceAPI {
       })))
     );
   }
-  editarUsuario(usuario: Usuario , entrada: string) {
-    let contrasena ;
-    if(entrada === '') {
+
+
+  editarUsuario(usuario: Usuario, entrada: string) {
+    let contrasena;
+    if (entrada === '') {
       contrasena = null;
     }
-    else{
+    else {
       contrasena = entrada;
     }
     const envio = {
@@ -109,6 +120,9 @@ export class UsuarioServiceAPI {
     };
     return this.http.put<Usuario>(`${this.apiUrl}/${envio.Carnet}`, envio);
   }
+
+
+
   eliminarUsuario(id: string) {
     return this.http.delete(`${this.apiUrl}/${id}`);
   }
