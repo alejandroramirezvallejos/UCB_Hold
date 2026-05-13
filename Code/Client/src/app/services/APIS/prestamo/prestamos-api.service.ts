@@ -28,10 +28,10 @@ export class PrestamosAPIService {
       EstadoPrestamo: item.EstadoPrestamo,
       IdContrato: item.IdContrato,
       FileId: item.FileId,
-      Ubicacion_Equipo: item.Ubicacion_Equipo,
-      Nombre_Gavetero: item.Nombre_Gavetero,
-      Nombre_Mueble: item.Nombre_Mueble,
-      Ubicacion_Mueble: item.Ubicacion_Mueble
+      Ubicacion_Equipo: item.UbicacionEquipo || item.Ubicacion_Equipo,
+      Nombre_Gavetero: item.NombreGavetero || item.Nombre_Gavetero,
+      Nombre_Mueble: item.NombreMueble || item.Nombre_Mueble,
+      Ubicacion_Mueble: item.UbicacionMueble || item.Ubicacion_Mueble
     } as PrestamoDto;
   }
 
