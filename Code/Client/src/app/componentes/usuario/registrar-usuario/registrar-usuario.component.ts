@@ -10,7 +10,7 @@ import { MostrarerrorComponent } from '../../pantallas_avisos/mostrarerror/mostr
 import { AvisoExitoComponent } from '../../pantallas_avisos/aviso-exito/aviso-exito.component';
 @Component({
   selector: 'app-registrar-usuario',
-  imports: [FormsModule, CommonModule , MostrarerrorComponent,AvisoExitoComponent],
+  imports: [FormsModule, CommonModule, MostrarerrorComponent, AvisoExitoComponent],
   templateUrl: './registrar-usuario.component.html',
   styleUrl: './registrar-usuario.component.css'
 })
@@ -22,11 +22,11 @@ export class RegistrarUsuarioComponent {
   isOpen: boolean = false;
   isHovered: boolean = false;
   submitted: boolean = false;
-  error : WritableSignal<boolean> = signal(false);
-  mensajeerror : string = "";
-  aviso : WritableSignal<boolean> = signal(false);
-  mensajeaviso : string = "Aviso desconocido , si ve esto es un error , avise al soporte si puede o intente mas tarde";
-  constructor(private usuarioS: UsuarioService, private router: Router , private registrarcuenta : UsuarioServiceAPI , private carrerasS : CarreraService) {}
+  error: WritableSignal<boolean> = signal(false);
+  mensajeerror: string = "";
+  aviso: WritableSignal<boolean> = signal(false);
+  mensajeaviso: string = "Aviso desconocido , si ve esto es un error , avise al soporte si puede o intente mas tarde";
+  constructor(private usuarioS: UsuarioService, private router: Router, private registrarcuenta: UsuarioServiceAPI, private carrerasS: CarreraService) { }
   toggleDropdown() {
     this.isOpen = !this.isOpen;
   }
@@ -43,12 +43,7 @@ export class RegistrarUsuarioComponent {
   ngOnInit() {
     this.carrerasS.obtenerCarreras().subscribe({
       next: (response) => {
-         this.carreras = response.map((carrera: any) => carrera.nombre);
-         if (this.carreras.includes("Ingeniería de Software")) {
-            this.nuevoUsuario.carrera = "Ingeniería de Software";
-         } else {
-             this.nuevoUsuario.carrera = "Ingeniería de Software";
-         }
+        this.carreras = response.map((carrera: any) => carrera.nombre);
       },
       error: (error) => {
         this.mensajeerror = "Error al obtener las carreras intente mas tarde";
@@ -59,11 +54,11 @@ export class RegistrarUsuarioComponent {
   }
   registrar(form: any) { // Change signature to accept form
     this.submitted = true;
-    if (form.invalid || this.password !== this.confirmPassword || this.validartelefono(this.nuevoUsuario.telefono)) {
-        return;
+    if (form.invalid || this.password !== this.confirmPassword || this.validartelefono(this.nuevoUsuario.telefono) || !this.nuevoUsuario.carrera) {
+      return;
     }
     this.nuevoUsuario.rol = 'usuario';
-    this.registrarcuenta.registrarCuenta(this.nuevoUsuario,this.password, "estudiante").subscribe({
+    this.registrarcuenta.registrarCuenta(this.nuevoUsuario, this.password, "estudiante").subscribe({
       next: (response) => {
         this.mensajeaviso = "Usuario registrado exitosamente";
         this.usuarioS.iniciarsesion(this.nuevoUsuario);
@@ -79,8 +74,8 @@ export class RegistrarUsuarioComponent {
   irALogin() {
     this.router.navigate(['/Iniciar-Sesion']);
   }
-  validartelefono(telefono: string | null | undefined) : boolean{
+  validartelefono(telefono: string | null | undefined): boolean {
     const regex = /^[-+0-9]+$/;
-   return !regex.test(<string>telefono);
+    return !regex.test(<string>telefono);
   }
 }

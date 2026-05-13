@@ -26,24 +26,32 @@
             <input
               type="text"
               name="apellidoPaterno"
-               maxlength="50"
+              maxlength="50"
               [(ngModel)]="nuevoUsuario.apellido_paterno"
               required
               placeholder="Apellido paterno"
               class="form-input"
+              #apellidoPaternoInput="ngModel"
             >
+            @if (apellidoPaternoInput.invalid && (apellidoPaternoInput.dirty || apellidoPaternoInput.touched || submitted)) {
+              <div class="error-message">El apellido paterno es requerido</div>
+            }
           </div>
           <div class="form-group">
             <label for="apellidoMaterno">Apellido materno</label>
             <input
               type="text"
               name="apellidoMaterno"
-               maxlength="50"
+              maxlength="50"
               [(ngModel)]="nuevoUsuario.apellido_materno"
               required
               placeholder="Apellido materno"
               class="form-input"
+              #apellidoMaternoInput="ngModel"
             >
+            @if (apellidoMaternoInput.invalid && (apellidoMaternoInput.dirty || apellidoMaternoInput.touched || submitted)) {
+              <div class="error-message">El apellido materno es requerido</div>
+            }
           </div>
         </div>
         <div class="form-group">
@@ -111,7 +119,7 @@
       <div class="form-group">
         <label for="carrera">Elige tu carrera</label>
         <div class="custom-dropdown">
-           <div class="dropdown-header form-input" (click)="toggleDropdown()" (mouseenter)="onMouseEnter()" (mouseleave)="onMouseLeave()">
+           <div class="dropdown-header form-input" [class.error]="submitted && !nuevoUsuario.carrera" (click)="toggleDropdown()" (mouseenter)="onMouseEnter()" (mouseleave)="onMouseLeave()">
               <span class="current-value" [class.placeholder]="!nuevoUsuario.carrera">{{ nuevoUsuario.carrera || 'Selecciona una carrera' }}</span>
               <img
                 [src]="isHovered || isOpen ? '/assets/down_solid.png' : '/assets/down_line.png'"
