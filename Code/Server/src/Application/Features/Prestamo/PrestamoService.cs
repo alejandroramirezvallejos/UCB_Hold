@@ -57,6 +57,8 @@ public class PrestamoService : Service<PrestamoEntity, PrestamoRepository, Prest
 
         if (request.GrupoEquipoId != null && request.GrupoEquipoId.Any())
         {
+            var equiposAsignadosEnEstaSolicitud = new List<int>();
+            
             foreach (var groupId in request.GrupoEquipoId)
             {
                 var prestadosIds = await _dbContext.DetallesPrestamos
@@ -64,6 +66,8 @@ public class PrestamoService : Service<PrestamoEntity, PrestamoRepository, Prest
                     .Where(x => x.p.EstadoPrestamo == EstadoPrestamo.Pendiente || x.p.EstadoPrestamo == EstadoPrestamo.Aprobado || x.p.EstadoPrestamo == EstadoPrestamo.Activo)
                     .Select(x => x.dp.IdEquipo)
                     .ToListAsync();
+
+                prestadosIds.AddRange(equiposAsignadosEnEstaSolicitud);
 
                 var equipoDisponible = await _dbContext.Equipos
                     .FirstOrDefaultAsync(e => e.IdGrupoEquipo == groupId 
@@ -79,6 +83,7 @@ public class PrestamoService : Service<PrestamoEntity, PrestamoRepository, Prest
                         IdEquipo = equipoDisponible.Id,
                         EstadoEliminado = false
                     });
+                    equiposAsignadosEnEstaSolicitud.Add(equipoDisponible.Id);
                 }
             }
             await _dbContext.SaveChangesAsync();
