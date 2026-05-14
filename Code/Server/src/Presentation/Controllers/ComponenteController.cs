@@ -9,11 +9,9 @@ public class ComponenteController : ControllerBase
 {
     private readonly ComponenteService _service;
 
-    public ComponenteController(ComponenteService service)
-    {
+    public ComponenteController(ComponenteService service) => 
         _service = service;
-    }
-
+    
     [HttpGet]
     public async Task<IActionResult> GetAll()
     {

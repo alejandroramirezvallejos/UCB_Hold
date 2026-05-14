@@ -1,5 +1,5 @@
-﻿<component name="ProjectRunConfigurationManager">
-  <configuration default="false" name="IMT_Reservas.Client" type="js.build_tools.npm" factoryName="npm">
+<component name="ProjectRunConfigurationManager">
+  <configuration default="false" name="IMT_Reservas.Client" type="js.build_tools.npm" factoryName="npm" singleton="false">
     <package-json value="$PROJECT_DIR$/Client/package.json" />
     <command value="run" />
     <scripts>
@@ -9,4 +9,3 @@
     <method v="2" />
   </configuration>
 </component>
-

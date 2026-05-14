@@ -10,10 +10,8 @@ public class CategoriaController : ControllerBase
 {
     private readonly CategoriaService _service;
 
-    public CategoriaController(CategoriaService service)
-    {
+    public CategoriaController(CategoriaService service) => 
         _service = service;
-    }
 
     [HttpGet]
     public async Task<IActionResult> GetAll()

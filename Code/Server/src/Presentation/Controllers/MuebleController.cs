@@ -10,10 +10,8 @@ public class MuebleController : ControllerBase
 {
     private readonly MuebleService _service;
 
-    public MuebleController(MuebleService service)
-    {
+    public MuebleController(MuebleService service) =>
         _service = service;
-    }
 
     [HttpGet]
     public async Task<IActionResult> GetAll()

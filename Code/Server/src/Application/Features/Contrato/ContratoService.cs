@@ -1,5 +1,5 @@
 using Ardalis.Result;
-using IMT_Reservas.Server.Infrastructure.PostgreSQL;
+using IMT_Reservas.Server.Infrastructure.Config;
 using IMT_Reservas.Server.Infrastructure.Repositories.Implementations;
 using ContratoEntity = IMT_Reservas.Server.Core.Entities.Contrato;
 namespace IMT_Reservas.Server.Application.Features.Contrato;

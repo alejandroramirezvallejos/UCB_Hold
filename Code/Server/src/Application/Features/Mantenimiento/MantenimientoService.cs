@@ -1,6 +1,6 @@
 using Ardalis.Result;
 using IMT_Reservas.Server.Application.Abstraction;
-using IMT_Reservas.Server.Infrastructure.PostgreSQL;
+using IMT_Reservas.Server.Infrastructure.Config;
 using IMT_Reservas.Server.Infrastructure.Repositories.Implementations;
 using MantenimientoEntity = IMT_Reservas.Server.Core.Entities.Mantenimiento;
 using DetalleMantenimientoEntity = IMT_Reservas.Server.Core.Entities.DetalleMantenimiento;
@@ -12,10 +12,7 @@ public class MantenimientoService : Service<MantenimientoEntity, MantenimientoRe
     private readonly ApplicationDbContext _dbContext;
 
     public MantenimientoService(MantenimientoRepository repository, ApplicationDbContext dbContext)
-        : base(repository)
-    {
-        _dbContext = dbContext;
-    }
+        : base(repository) => _dbContext = dbContext;
 
     public override async Task<Result<MantenimientoDto>> Create(MantenimientoEntity entity)
     {

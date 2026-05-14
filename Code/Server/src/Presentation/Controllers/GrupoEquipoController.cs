@@ -9,10 +9,8 @@ public class GrupoEquipoController : ControllerBase
 {
     private readonly GrupoEquipoService _service;
 
-    public GrupoEquipoController(GrupoEquipoService service)
-    {
+    public GrupoEquipoController(GrupoEquipoService service) => 
         _service = service ?? throw new InvalidOperationException("GrupoEquipoService not registered");
-    }
 
     [HttpGet]
     public async Task<IActionResult> GetAll()

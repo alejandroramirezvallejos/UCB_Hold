@@ -1,6 +1,5 @@
 using System.ComponentModel.DataAnnotations.Schema;
 using IMT_Reservas.Server.Core.Abstraction;
-
 namespace IMT_Reservas.Server.Core.Entities;
 
 public class GrupoEquipo : Entity

@@ -1,6 +1,6 @@
 using Ardalis.Result;
 using IMT_Reservas.Server.Application.Abstraction;
-using IMT_Reservas.Server.Infrastructure.PostgreSQL;
+using IMT_Reservas.Server.Infrastructure.Config;
 using IMT_Reservas.Server.Infrastructure.Repositories.Implementations;
 using EquipoEntity = IMT_Reservas.Server.Core.Entities.Equipo;
 using Microsoft.EntityFrameworkCore;
@@ -11,11 +11,8 @@ public class EquipoService : Service<EquipoEntity, EquipoRepository, EquipoDto>
     private readonly ApplicationDbContext _dbContext;
 
     public EquipoService(EquipoRepository repository, ApplicationDbContext dbContext)
-        : base(repository)
-    {
-        _dbContext = dbContext;
-    }
-
+        : base(repository) => _dbContext = dbContext;
+    
     public override async Task<Result<EquipoDto>> Create(EquipoEntity entity)
     {
         var grupoExists = await _dbContext.GruposEquipos

@@ -9,10 +9,7 @@ public class AccesorioService : Service<AccesorioEntity, AccesorioRepository, Ac
     private readonly AccesorioRepository _repository;
 
     public AccesorioService(AccesorioRepository repository)
-        : base(repository)
-    {
-        _repository = repository;
-    }
+        : base(repository) => _repository = repository;
 
     public override async Task<Result<AccesorioDto>> Create(AccesorioEntity entity)
     {

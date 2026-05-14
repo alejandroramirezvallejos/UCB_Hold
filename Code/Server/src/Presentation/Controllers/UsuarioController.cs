@@ -9,10 +9,8 @@ public class UsuarioController : ControllerBase
 {
     private readonly UsuarioService _service;
 
-    public UsuarioController(UsuarioService service)
-    {
+    public UsuarioController(UsuarioService service) =>
         _service = service;
-    }
 
     [HttpGet]
     public async Task<IActionResult> GetAll()

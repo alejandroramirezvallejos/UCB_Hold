@@ -16,7 +16,7 @@ using IMT_Reservas.Server.Application.Features.Usuario;
 using IMT_Reservas.Server.Application.Features.Carrito;
 using IMT_Reservas.Server.Application.Features.Contrato;
 using IMT_Reservas.Server.Core.Entities;
-using IMT_Reservas.Server.Infrastructure.PostgreSQL;
+using IMT_Reservas.Server.Infrastructure.Config;
 using IMT_Reservas.Server.Infrastructure.Repositories.Implementations;
 using IMT_Reservas.Server.Presentation.Middleware;
 using EmpresaMantenimientoEntity = IMT_Reservas.Server.Core.Entities.EmpresaMantenimiento;
@@ -38,11 +38,13 @@ builder.Services.AddControllers().AddJsonOptions(options =>
     options.JsonSerializerOptions.PropertyNamingPolicy = null;
 });
 
+var allowedOrigins = builder.Configuration.GetSection("AllowedOrigins").Get<string[]>() ?? [];
+
 builder.Services.AddCors(options =>
 {
-    options.AddPolicy("AllowFrontend", builder =>
+    options.AddPolicy("AllowFrontend", corsBuilder =>
     {
-        builder.WithOrigins("http://localhost:4200", "https://localhost:4200")
+        corsBuilder.WithOrigins(allowedOrigins)
                .AllowAnyMethod()
                .AllowAnyHeader()
                .AllowCredentials();

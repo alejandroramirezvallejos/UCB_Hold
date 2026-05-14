@@ -8,10 +8,8 @@ public class CategoriaService : Service<CategoriaEntity, CategoriaRepository, Ca
 {
     private readonly CategoriaRepository _categoriaRepository;
 
-    public CategoriaService(CategoriaRepository repository) : base(repository)
-    {
+    public CategoriaService(CategoriaRepository repository) : base(repository) =>
         _categoriaRepository = repository;
-    }
 
     public override async Task<Result<CategoriaDto>> Create(CategoriaEntity entity)
     {

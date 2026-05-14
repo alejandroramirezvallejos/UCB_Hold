@@ -1,6 +1,6 @@
-using Microsoft.EntityFrameworkCore;
 using IMT_Reservas.Server.Core.Entities;
-namespace IMT_Reservas.Server.Infrastructure.PostgreSQL;
+using Microsoft.EntityFrameworkCore;
+namespace IMT_Reservas.Server.Infrastructure.Config;
 
 public class ApplicationDbContext : DbContext
 {

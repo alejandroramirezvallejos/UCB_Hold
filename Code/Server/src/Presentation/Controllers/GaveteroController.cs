@@ -9,10 +9,7 @@ public class GaveteroController : ControllerBase
 {
     private readonly GaveteroService _service;
 
-    public GaveteroController(GaveteroService service)
-    {
-        _service = service;
-    }
+    public GaveteroController(GaveteroService service) => _service = service;
 
     [HttpGet]
     public async Task<IActionResult> GetAll()

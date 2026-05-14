@@ -8,10 +8,8 @@ public class CarreraService : Service<CarreraEntity, CarreraRepository, CarreraD
 {
     private readonly CarreraRepository _carreraRepository;
 
-    public CarreraService(CarreraRepository repository) : base(repository)
-    {
+    public CarreraService(CarreraRepository repository) : base(repository) =>
         _carreraRepository = repository;
-    }
 
     public override async Task<Result<CarreraDto>> Create(CarreraEntity entity)
     {

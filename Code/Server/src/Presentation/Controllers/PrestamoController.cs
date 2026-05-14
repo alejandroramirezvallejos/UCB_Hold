@@ -84,9 +84,9 @@ public class PrestamoController : ControllerBase
     }
 
     [HttpPut("{id:int}/estado")]
-    public async Task<IActionResult> UpdateEstado(int id, [FromBody] EstadoRequest request)
+    public async Task<IActionResult> UpdateEstado(int id, [FromBody] string estadoPrestamo)
     {
-        var result = await _service.UpdateEstado(id, request.EstadoPrestamo ?? string.Empty);
+        var result = await _service.UpdateEstado(id, estadoPrestamo ?? string.Empty);
 
         return result.IsSuccess
             ? Ok(new Response<PrestamoDto> { Status = 200, Value = result.Value })
@@ -140,10 +140,3 @@ public class PrestamoController : ControllerBase
     }
 }
 
-public sealed record EstadoRequest(string? EstadoPrestamo);
-
-// Wrapper para el string HTML
-public sealed class SaveContratoForm
-{
-    public string? ContratoHtml { get; set; }
-}

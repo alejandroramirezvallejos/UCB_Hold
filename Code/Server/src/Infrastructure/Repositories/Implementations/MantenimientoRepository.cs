@@ -1,7 +1,7 @@
 using Ardalis.Result;
 using IMT_Reservas.Server.Application.Features.Mantenimiento;
 using IMT_Reservas.Server.Core.Abstraction;
-using IMT_Reservas.Server.Infrastructure.PostgreSQL;
+using IMT_Reservas.Server.Infrastructure.Config;
 using IMT_Reservas.Server.Infrastructure.Repositories.Abstraction;
 using Microsoft.EntityFrameworkCore;
 using MantenimientoEntity = IMT_Reservas.Server.Core.Entities.Mantenimiento;

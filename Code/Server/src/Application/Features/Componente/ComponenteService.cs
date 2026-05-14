@@ -9,10 +9,7 @@ public class ComponenteService : Service<ComponenteEntity, ComponenteRepository,
     private readonly ComponenteRepository _repository;
 
     public ComponenteService(ComponenteRepository repository)
-        : base(repository)
-    {
-        _repository = repository;
-    }
+        : base(repository) => _repository = repository;
 
     public override async Task<Result<ComponenteDto>> Create(ComponenteEntity entity)
     {

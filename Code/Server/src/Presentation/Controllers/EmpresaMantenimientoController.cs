@@ -11,11 +11,9 @@ public class EmpresaMantenimientoController : ControllerBase
 {
     private readonly Service<EmpresaMantenimientoEntity, EmpresaMantenimientoRepository, EmpresaMantenimientoDto> _service;
 
-    public EmpresaMantenimientoController(Service<EmpresaMantenimientoEntity, EmpresaMantenimientoRepository, EmpresaMantenimientoDto> service)
-    {
+    public EmpresaMantenimientoController(Service<EmpresaMantenimientoEntity, EmpresaMantenimientoRepository, EmpresaMantenimientoDto> service) => 
         _service = service;
-    }
-
+    
     [HttpGet]
     public async Task<IActionResult> GetAll()
     {

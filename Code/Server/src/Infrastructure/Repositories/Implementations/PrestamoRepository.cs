@@ -2,7 +2,7 @@ using Ardalis.Result;
 using IMT_Reservas.Server.Application.Features.Prestamo;
 using IMT_Reservas.Server.Core.Abstraction;
 using IMT_Reservas.Server.Core.Entities;
-using IMT_Reservas.Server.Infrastructure.PostgreSQL;
+using IMT_Reservas.Server.Infrastructure.Config;
 using IMT_Reservas.Server.Infrastructure.Repositories.Abstraction;
 using Microsoft.EntityFrameworkCore;
 using PrestamoEntity = IMT_Reservas.Server.Core.Entities.Prestamo;
@@ -15,46 +15,46 @@ public class PrestamoRepository : Repository<PrestamoEntity, PrestamoDto>
     public override async Task<Result<List<PrestamoDto>>> GetAll(QueryFilter? filter = null)
     {
         var prestamos = await DbContext.Prestamos.AsNoTracking().ToListAsync();
-        var prestamoIds = prestamos.Select(p => p.Id).ToHashSet();
-        
+        var prestamoIds = prestamos.Select(prestamo => prestamo.Id).ToHashSet();
+
         var detalles = await DbContext.DetallesPrestamos.AsNoTracking()
-            .Where(d => prestamoIds.Contains(d.IdPrestamo))
+            .Where(detalle => prestamoIds.Contains(detalle.IdPrestamo))
             .ToListAsync();
 
-        var carnets = prestamos.Select(p => p.Carnet).Where(_ => true).ToHashSet();
-        
-        var usuarioMap = await DbContext.Usuarios.AsNoTracking()
-            .Where(u => carnets.Contains(u.Carnet))
-            .ToDictionaryAsync(u => u.Carnet);
+        var carnets = prestamos.Select(prestamo => prestamo.Carnet).Where(_ => true).ToHashSet();
 
-        var equipoIds = detalles.Select(d => d.IdEquipo).ToHashSet();
-       
+        var usuarioMap = await DbContext.Usuarios.AsNoTracking()
+            .Where(usuario => carnets.Contains(usuario.Carnet))
+            .ToDictionaryAsync(usuario => usuario.Carnet);
+
+        var equipoIds = detalles.Select(detalle => detalle.IdEquipo).ToHashSet();
+
         var equipoMap = await DbContext.Equipos.AsNoTracking()
-            .Include(e => e.GrupoEquipo)
-            .Include(e => e.Gavetero).ThenInclude(g => g!.Mueble)
-            .Where(e => equipoIds.Contains(e.Id))
-            .ToDictionaryAsync(e => e.Id);
+            .Include(equipo => equipo.GrupoEquipo)
+            .Include(equipo => equipo.Gavetero).ThenInclude(gavetero => gavetero!.Mueble)
+            .Where(equipo => equipoIds.Contains(equipo.Id))
+            .ToDictionaryAsync(equipo => equipo.Id);
 
         var detallesByPrestamo = detalles
-            .GroupBy(d => d.IdPrestamo)
-            .ToDictionary(g => g.Key, g => g.ToList());
+            .GroupBy(detalle => detalle.IdPrestamo)
+            .ToDictionary(agrupacion => agrupacion.Key, agrupacion => agrupacion.ToList());
 
         var dtos = new List<PrestamoDto>();
-        
-        foreach (var p in prestamos)
-        {
-            var usuario = usuarioMap.GetValueOrDefault(p.Carnet);
 
-            if (!detallesByPrestamo.TryGetValue(p.Id, out var pDetalles))
+        foreach (var prestamo in prestamos)
+        {
+            var usuario = usuarioMap.GetValueOrDefault(prestamo.Carnet);
+
+            if (!detallesByPrestamo.TryGetValue(prestamo.Id, out var pDetalles))
             {
-                dtos.Add(BuildDto(p, usuario, null, null, null, null));
+                dtos.Add(BuildDto(prestamo, usuario, null, null, null, null));
                 continue;
             }
 
-            foreach (var d in pDetalles)
+            foreach (var detalle in pDetalles)
             {
-                equipoMap.TryGetValue(d.IdEquipo, out var equipo);
-                dtos.Add(BuildDto(p, usuario, equipo, equipo?.GrupoEquipo, equipo?.Gavetero, equipo?.Gavetero?.Mueble));
+                equipoMap.TryGetValue(detalle.IdEquipo, out var equipo);
+                dtos.Add(BuildDto(prestamo, usuario, equipo, equipo?.GrupoEquipo, equipo?.Gavetero, equipo?.Gavetero?.Mueble));
             }
         }
 
@@ -63,50 +63,48 @@ public class PrestamoRepository : Repository<PrestamoEntity, PrestamoDto>
 
     public async Task<Result<List<PrestamoDto>>> GetHistorialWithDetalles(string carnetUsuario, EstadoPrestamo? estado)
     {
-        var prestamosQuery = DbContext.Prestamos.AsNoTracking().Where(p => p.Carnet == carnetUsuario);
-        
+        var prestamosQuery = DbContext.Prestamos.AsNoTracking().Where(prestamo => prestamo.Carnet == carnetUsuario);
+
         if (estado.HasValue)
-        {
-            prestamosQuery = prestamosQuery.Where(p => p.EstadoPrestamo == estado.Value);
-        }
+            prestamosQuery = prestamosQuery.Where(prestamo => prestamo.EstadoPrestamo == estado.Value);
 
         var prestamos = await prestamosQuery.ToListAsync();
         if (!prestamos.Any()) return Result<List<PrestamoDto>>.Success(new List<PrestamoDto>());
 
-        var prestamoIds = prestamos.Select(p => p.Id).ToHashSet();
-        
+        var prestamoIds = prestamos.Select(prestamo => prestamo.Id).ToHashSet();
+
         var detalles = await DbContext.DetallesPrestamos.AsNoTracking()
-            .Where(d => prestamoIds.Contains(d.IdPrestamo))
+            .Where(detalle => prestamoIds.Contains(detalle.IdPrestamo))
             .ToListAsync();
 
-        var usuario = await DbContext.Usuarios.AsNoTracking().FirstOrDefaultAsync(u => u.Carnet == carnetUsuario);
+        var usuario = await DbContext.Usuarios.AsNoTracking().FirstOrDefaultAsync(usuario => usuario.Carnet == carnetUsuario);
 
-        var equipoIds = detalles.Select(d => d.IdEquipo).ToHashSet();
-       
+        var equipoIds = detalles.Select(detalle => detalle.IdEquipo).ToHashSet();
+
         var equipoMap = await DbContext.Equipos.AsNoTracking()
-            .Include(e => e.GrupoEquipo)
-            .Include(e => e.Gavetero).ThenInclude(g => g!.Mueble)
-            .Where(e => equipoIds.Contains(e.Id))
-            .ToDictionaryAsync(e => e.Id);
+            .Include(equipo => equipo.GrupoEquipo)
+            .Include(equipo => equipo.Gavetero).ThenInclude(gavetero => gavetero!.Mueble)
+            .Where(equipo => equipoIds.Contains(equipo.Id))
+            .ToDictionaryAsync(equipo => equipo.Id);
 
         var detallesByPrestamo = detalles
-            .GroupBy(d => d.IdPrestamo)
-            .ToDictionary(g => g.Key, g => g.ToList());
+            .GroupBy(detalle => detalle.IdPrestamo)
+            .ToDictionary(agrupacion => agrupacion.Key, agrupacion => agrupacion.ToList());
 
         var dtos = new List<PrestamoDto>();
-        
-        foreach (var p in prestamos)
+
+        foreach (var prestamo in prestamos)
         {
-            if (!detallesByPrestamo.TryGetValue(p.Id, out var pDetalles))
+            if (!detallesByPrestamo.TryGetValue(prestamo.Id, out var pDetalles))
             {
-                dtos.Add(BuildDto(p, usuario, null, null, null, null));
+                dtos.Add(BuildDto(prestamo, usuario, null, null, null, null));
                 continue;
             }
 
-            foreach (var d in pDetalles)
+            foreach (var detalle in pDetalles)
             {
-                equipoMap.TryGetValue(d.IdEquipo, out var equipo);
-                dtos.Add(BuildDto(p, usuario, equipo, equipo?.GrupoEquipo, equipo?.Gavetero, equipo?.Gavetero?.Mueble));
+                equipoMap.TryGetValue(detalle.IdEquipo, out var equipo);
+                dtos.Add(BuildDto(prestamo, usuario, equipo, equipo?.GrupoEquipo, equipo?.Gavetero, equipo?.Gavetero?.Mueble));
             }
         }
 
@@ -115,14 +113,14 @@ public class PrestamoRepository : Repository<PrestamoEntity, PrestamoDto>
 
     public override async Task<Result<PrestamoDto>> Get(int id)
     {
-        var p = await DbContext.Prestamos.AsNoTracking().FirstOrDefaultAsync(x => x.Id == id);
-        
-        if (p == null) 
+        var prestamo = await DbContext.Prestamos.AsNoTracking().FirstOrDefaultAsync(prestamo => prestamo.Id == id);
+
+        if (prestamo == null)
             return Result<PrestamoDto>.NotFound();
 
-        var usuario = await DbContext.Usuarios.AsNoTracking().FirstOrDefaultAsync(u => u.Carnet == p.Carnet);
+        var usuario = await DbContext.Usuarios.AsNoTracking().FirstOrDefaultAsync(usuario => usuario.Carnet == prestamo.Carnet);
 
-        var detalle = await DbContext.DetallesPrestamos.AsNoTracking().FirstOrDefaultAsync(d => d.IdPrestamo == id);
+        var detalle = await DbContext.DetallesPrestamos.AsNoTracking().FirstOrDefaultAsync(detalle => detalle.IdPrestamo == id);
         Equipo? equipo = null;
         GrupoEquipo? grupo = null;
         Gavetero? gavetero = null;
@@ -131,9 +129,9 @@ public class PrestamoRepository : Repository<PrestamoEntity, PrestamoDto>
         if (detalle != null)
         {
             equipo = await DbContext.Equipos.AsNoTracking()
-                .Include(e => e.GrupoEquipo)
-                .Include(e => e.Gavetero).ThenInclude(g => g!.Mueble)
-                .FirstOrDefaultAsync(e => e.Id == detalle.IdEquipo);
+                .Include(equipo => equipo.GrupoEquipo)
+                .Include(equipo => equipo.Gavetero).ThenInclude(gavetero => gavetero!.Mueble)
+                .FirstOrDefaultAsync(equipo => equipo.Id == detalle.IdEquipo);
 
             if (equipo != null)
             {
@@ -143,10 +141,10 @@ public class PrestamoRepository : Repository<PrestamoEntity, PrestamoDto>
             }
         }
 
-        return Result<PrestamoDto>.Success(BuildDto(p, usuario, equipo, grupo, gavetero, mueble));
+        return Result<PrestamoDto>.Success(BuildDto(prestamo, usuario, equipo, grupo, gavetero, mueble));
     }
 
-    private static string MapEstado(EstadoPrestamo e) => e switch
+    private static string MapEstado(EstadoPrestamo estado) => estado switch
     {
         EstadoPrestamo.Aprobado   => "aprobado",
         EstadoPrestamo.Activo     => "activo",
@@ -188,7 +186,7 @@ public class PrestamoRepository : Repository<PrestamoEntity, PrestamoDto>
     public override async Task<Result<object>> Delete(int id)
     {
         var entity = await DbContext.Prestamos
-            .FirstOrDefaultAsync(p => p.Id == id && !p.EstadoEliminado);
+            .FirstOrDefaultAsync(prestamo => prestamo.Id == id && !prestamo.EstadoEliminado);
 
         if (entity == null)
             return Result<object>.NotFound();

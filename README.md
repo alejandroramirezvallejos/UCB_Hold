@@ -100,21 +100,21 @@ En todos los procedures tenemos principios ACID con atomicidad y transacciones
 ## 6. 💬 Colección Comentarios
 
 ### Estructura de documento
+
 ```json
 {
   "_id": "ObjectId",
   "CarnetUsuario": "string",
   "IdGrupoEquipo": "int",
   "Contenido": "string",
-  "Likes": [
-    { "CarnetUsuario": "string", "Fecha": "ISODate" }
-  ],
+  "Likes": [{ "CarnetUsuario": "string", "Fecha": "ISODate" }],
   "FechaCreacion": "ISODate",
   "EstadoEliminado": "bool"
 }
 ```
 
 **Nota importante:**
+
 - En la base de datos MongoDB, el campo `Likes` es un array de objetos, donde cada objeto representa un like dado por un usuario (identificado por `CarnetUsuario`) y la fecha en que se dio el like. Esto permite controlar que un usuario no pueda dar más de un like a un mismo comentario (se verifica por `CarnetUsuario` antes de agregar un nuevo like).
 - Sin embargo, en la respuesta de la API (ver `ComentarioDto`), el campo `Likes` es un entero que representa únicamente el conteo de likes (es decir, la cantidad de elementos en el array `Likes`), y **no** se retorna el array completo de likes.
 - Esta conversión de array a conteo se realiza en el servicio `ComentarioService`, específicamente en el método `MapearFilaADto`, donde se asigna el valor de `Likes` como un entero.
@@ -122,36 +122,42 @@ En todos los procedures tenemos principios ACID con atomicidad y transacciones
   ```js
   db.comentarios.find(
     { IdGrupoEquipo: 20, EstadoEliminado: false },
-    { Likes: 1 }
-  )
+    { Likes: 1 },
+  );
   ```
 
 ### Inserción
+
 La inserción de un comentario se realiza en la clase `ComentarioRepository`, método `Crear`, mediante la construcción de un documento BSON y el uso de `InsertOne`.
 
 #### En C#
+
 ```csharp
 coleccion.InsertOne(doc);
 ```
+
 Clase: ComentarioRepository  
 Método: Crear
 
 #### En MongoDB shell
+
 ```js
 db.comentarios.insertOne({
-  CarnetUsuario: "12890061",
+  CarnetUsuario: '12890061',
   IdGrupoEquipo: 20,
-  Contenido: "No suelda bien",
+  Contenido: 'No suelda bien',
   Likes: [],
   FechaCreacion: new Date(),
-  EstadoEliminado: false
-})
+  EstadoEliminado: false,
+});
 ```
 
 ### Consulta
+
 Para obtener comentarios de un grupo:
 
 #### En C#
+
 ```csharp
 var filtro = Builders<BsonDocument>.Filter.And(
     Builders<BsonDocument>.Filter.Eq("IdGrupoEquipo", idGrupoEquipo),
@@ -159,64 +165,84 @@ var filtro = Builders<BsonDocument>.Filter.And(
 );
 coleccion.Find(filtro).SortByDescending(x => x["FechaCreacion"]);
 ```
+
 Clase: ComentarioRepository  
 Método: ObtenerPorGrupoEquipo
 
 #### En MongoDB shell
+
 ```js
-db.comentarios.find({ IdGrupoEquipo: 20, EstadoEliminado: false }).sort({ FechaCreacion: -1 })
+db.comentarios
+  .find({ IdGrupoEquipo: 20, EstadoEliminado: false })
+  .sort({ FechaCreacion: -1 });
 ```
 
 ### Eliminación lógica
+
 Para eliminar un comentario (soft delete):
 
 #### En C#
+
 ```csharp
 coleccion.UpdateOne(filtro, Builders<BsonDocument>.Update.Set("EstadoEliminado", true));
 ```
+
 Clase: ComentarioRepository  
 Método: Eliminar
 
 #### En MongoDB shell
+
 ```js
-db.comentarios.updateOne({ _id: ObjectId(id), EstadoEliminado: false }, { $set: { EstadoEliminado: true } })
+db.comentarios.updateOne(
+  { _id: ObjectId(id), EstadoEliminado: false },
+  { $set: { EstadoEliminado: true } },
+);
 ```
 
 ### Likes
+
 Agregar un like:
 
 #### En C#
+
 ```csharp
 coleccion.UpdateOne(filtro, Builders<BsonDocument>.Update.Push("Likes", likeObj));
 ```
+
 Clase: ComentarioRepository  
 Método: AgregarLike
 
 #### En MongoDB shell
+
 ```js
 db.comentarios.updateOne(
   { _id: ObjectId(id), EstadoEliminado: false },
-  { $push: { Likes: { CarnetUsuario: carnet, Fecha: new Date() } } }
-)
+  { $push: { Likes: { CarnetUsuario: carnet, Fecha: new Date() } } },
+);
 ```
+
 Quitar un like:
 
 #### En C#
+
 ```csharp
 coleccion.UpdateOne(filtro, Builders<BsonDocument>.Update.PullFilter("Likes", Builders<BsonDocument>.Filter.Eq("CarnetUsuario", comando.CarnetUsuario)));
 ```
+
 Clase: ComentarioRepository  
 Método: QuitarLike
 
 #### En MongoDB shell
+
 ```js
 db.comentarios.updateOne(
   { _id: ObjectId(id), EstadoEliminado: false },
-  { $pull: { Likes: { CarnetUsuario: carnet } } }
-)
+  { $pull: { Likes: { CarnetUsuario: carnet } } },
+);
 ```
 
 ### Justificación de índices
+
 - `_id`: Identificador único por defecto.
 - `CarnetUsuario_1_IdGrupoEquipo_1`: Permite búsquedas eficientes por usuario y grupo, útil para filtrar comentarios de un usuario en un grupo de equipos.
 - `IdGrupoEquipo_1`: Optimiza la consulta principal de comentarios por grupo.
@@ -226,6 +252,7 @@ db.comentarios.updateOne(
 ## 7. 📝 Colección contratos (MongoDB) y tabla prestamos (PostgreSQL)
 
 ### Estructura de documento en MongoDB
+
 ```json
 {
   "_id": "ObjectId",
@@ -237,61 +264,70 @@ db.comentarios.updateOne(
 
 ### Estructura de tabla en PostgreSQL
 
-| Campo                   | Tipo de dato   | Descripción                                 |
-|------------------------|----------------|---------------------------------------------|
-| id_prestamo            | int            | Identificador único del préstamo            |
-| fecha_solicitud        | timestamp      | Fecha en que se solicitó el préstamo        |
-| fecha_prestamo         | timestamp      | Fecha en que se realizó el préstamo         |
-| fecha_devolucion_esperada | timestamp   | Fecha esperada de devolución                |
-| observacion            | text           | Observaciones adicionales                   |
-| estado_prestamo        | text           | Estado actual del préstamo                  |
-| carnet                 | text           | Carnet del usuario solicitante              |
-| estado_eliminado       | boolean        | Indica si el préstamo fue eliminado         |
-| fecha_devolucion       | timestamp      | Fecha real de devolución                    |
-| fecha_prestamo_esperada| timestamp      | Fecha esperada para el inicio del préstamo  |
-| id_contrato            | text           | Id del contrato en MongoDB (índice único)   |
-
+| Campo                     | Tipo de dato | Descripción                                |
+| ------------------------- | ------------ | ------------------------------------------ |
+| id_prestamo               | int          | Identificador único del préstamo           |
+| fecha_solicitud           | timestamp    | Fecha en que se solicitó el préstamo       |
+| fecha_prestamo            | timestamp    | Fecha en que se realizó el préstamo        |
+| fecha_devolucion_esperada | timestamp    | Fecha esperada de devolución               |
+| observacion               | text         | Observaciones adicionales                  |
+| estado_prestamo           | text         | Estado actual del préstamo                 |
+| carnet                    | text         | Carnet del usuario solicitante             |
+| estado_eliminado          | boolean      | Indica si el préstamo fue eliminado        |
+| fecha_devolucion          | timestamp    | Fecha real de devolución                   |
+| fecha_prestamo_esperada   | timestamp    | Fecha esperada para el inicio del préstamo |
+| id_contrato               | text         | Id del contrato en MongoDB (índice único)  |
 
 ### Consulta de préstamos
 
 #### En C# (PostgreSQL)
+
 ```csharp
 const string sql = @"SELECT id_prestamo, fecha_solicitud, fecha_prestamo, fecha_devolucion_esperada, observacion, estado_prestamo, carnet, estado_eliminado, fecha_devolucion, fecha_prestamo_esperada, id_contrato FROM public.prestamos;";
 var resultado = _ejecutarConsulta.EjecutarFuncion(sql, new Dictionary<string, object?>());
 ```
+
 Clase: PrestamoRepository  
 Método: ObtenerTodos
 
 ### Inserción de préstamo y contrato
+
 La inserción de un préstamo y su contrato se realiza en la clase `PrestamoRepository`, método `Crear`.
 
 #### Ejemplo en C#
+
 ```csharp
 var fileId = gridFsBucket.UploadFromStream(...);
 coleccionContratos.InsertOne({ prestamoId, fileId, EstadoEliminado: false });
 var prestamo = new Prestamo { /* ... */ , IdContrato = fileId };
 prestamoRepository.Insert(prestamo);
 ```
+
 Clase: PrestamoRepository  
 Método: Crear
 
 #### Ejemplo equivalente en MongoDB shell y SQL
+
 1. Subir archivo a GridFS usando la herramienta de línea de comandos:
    - `mongofiles -d <database> put <archivo>`
 2. Insertar la referencia del contrato en la colección de MongoDB:
+
 ```js
 db.contratos.insertOne({
   prestamoId: 101,
-  fileId: "685c1ad76215783d3b996ccc",
-  EstadoEliminado: false
-})
+  fileId: '685c1ad76215783d3b996ccc',
+  EstadoEliminado: false,
+});
 ```
+
 3. Insertar el préstamo en PostgreSQL:
+
 ```sql
 INSERT INTO public.prestamos (/* campos */) VALUES (/* valores */) RETURNING id_prestamo;
 ```
 
-### Consulta 
+### Consulta
+
 - El servicio consulta la tabla de préstamos en PostgreSQL.
 - Si existe `id_contrato`, se puede consultar el contrato en MongoDB.
 - El DTO de respuesta (`PrestamoDto`) incluye ambos datos.
@@ -299,6 +335,7 @@ INSERT INTO public.prestamos (/* campos */) VALUES (/* valores */) RETURNING id_
 #### Ejemplo de consulta de contrato
 
 En C#:
+
 ```csharp
 var prestamo = prestamoRepository.GetById(id);
 if (prestamo != null && prestamo.IdContrato != null) {
@@ -307,13 +344,18 @@ if (prestamo != null && prestamo.IdContrato != null) {
 ```
 
 Traduccion en MongoDB Shell:
+
 ```js
 if (prestamo && prestamo.id_contrato) {
-    var contrato = db.contratos.findOne({ fileId: prestamo.id_contrato, EstadoEliminado: false });
+  var contrato = db.contratos.findOne({
+    fileId: prestamo.id_contrato,
+    EstadoEliminado: false,
+  });
 }
 ```
 
 ### Justificación de índices
+
 - `_id`: Único por documento.
 - `prestamoId_1`: Único, garantiza un contrato por préstamo y búsquedas rápidas.
 - En la tabla `prestamos` de PostgreSQL, el campo `id_contrato` tiene un índice único, lo que garantiza que cada contrato esté asociado a un solo préstamo y no se repitan referencias de contrato.
@@ -323,6 +365,7 @@ if (prestamo && prestamo.id_contrato) {
 ## 8. 🚨 Colección notificaciones
 
 ### Estructura de documento
+
 ```json
 {
   "_id": "ObjectId",
@@ -336,16 +379,20 @@ if (prestamo && prestamo.id_contrato) {
 ```
 
 ### Inserción
+
 La inserción de una notificación se realiza en la clase `NotificacionRepository`, método `Crear`.
 
 #### En C#
+
 ```csharp
 coleccion.InsertOne(doc);
 ```
+
 Clase: NotificacionRepository  
 Método: Crear
 
 #### En MongoDB shell
+
 ```js
 db.notificaciones.insertOne({
   CarnetUsuario: carnet,
@@ -353,64 +400,87 @@ db.notificaciones.insertOne({
   Contenido: contenido,
   FechaEnvio: new Date(),
   Leido: false,
-  EstadoEliminado: false
-})
+  EstadoEliminado: false,
+});
 ```
 
 ### Consulta
+
 Obtener notificaciones de un usuario:
 
 #### En C#
+
 ```csharp
 coleccion.Find(filtro).SortByDescending(x => x["FechaEnvio"]);
 ```
+
 Clase: NotificacionRepository  
 Método: ObtenerPorUsuario
 
 #### En MongoDB shell
+
 ```js
-db.notificaciones.find({ CarnetUsuario: carnet, EstadoEliminado: false }).sort({ FechaEnvio: -1 })
+db.notificaciones
+  .find({ CarnetUsuario: carnet, EstadoEliminado: false })
+  .sort({ FechaEnvio: -1 });
 ```
+
 Verificar si hay no leídas:
 
 #### En C#
+
 ```csharp
 coleccion.Find(filtro).Limit(1);
 ```
+
 Clase: NotificacionRepository  
 Método: TieneNotificacionesNoLeidas
 
 #### En MongoDB shell
+
 ```js
-db.notificaciones.find({ CarnetUsuario: carnet, Leido: false, EstadoEliminado: false }).limit(1)
+db.notificaciones
+  .find({ CarnetUsuario: carnet, Leido: false, EstadoEliminado: false })
+  .limit(1);
 ```
 
 ### Actualización
+
 Marcar como leída:
 
 #### En C#
+
 ```csharp
 coleccion.UpdateOne(filtro, Builders<BsonDocument>.Update.Set("Leido", true));
 ```
+
 Clase: NotificacionRepository  
 Método: MarcarComoLeida
 
 #### En MongoDB shell
+
 ```js
-db.notificaciones.updateOne({ _id: ObjectId(id) }, { $set: { Leido: true } })
+db.notificaciones.updateOne({ _id: ObjectId(id) }, { $set: { Leido: true } });
 ```
+
 Eliminar lógicamente:
 
 #### En C#
+
 ```csharp
 coleccion.UpdateOne(filtro, Builders<BsonDocument>.Update.Set("EstadoEliminado", true));
 ```
+
 Clase: NotificacionRepository  
 Método: Eliminar
 
 #### En MongoDB shell
+
 ```js
-db.notificaciones.updateOne({ _id: ObjectId(id) }, { $set: { EstadoEliminado: true } })
+db.notificaciones.updateOne(
+  { _id: ObjectId(id) },
+  { $set: { EstadoEliminado: true } },
+);
 ```
 
 ---
@@ -418,18 +488,20 @@ db.notificaciones.updateOne({ _id: ObjectId(id) }, { $set: { EstadoEliminado: tr
 ## 8. 🔔 Inserción directa de notificaciones en MongoDB (Simulación de notificaciones automáticas)
 
 ### Ejemplo de inserción directa en MongoDB shell
+
 ```js
 db.notificaciones.insertOne({
-  CarnetUsuario: "12345678",
-  Titulo: "Notificación automática",
-  Contenido: "Esta es una notificación generada automáticamente.",
+  CarnetUsuario: '12345678',
+  Titulo: 'Notificación automática',
+  Contenido: 'Esta es una notificación generada automáticamente.',
   FechaEnvio: new Date(),
   Leido: false,
-  EstadoEliminado: false
-})
+  EstadoEliminado: false,
+});
 ```
 
 ### Ejemplo de inserción directa en C#
+
 ```csharp
 var coleccion = mongoDbContext.BaseDeDatos.GetCollection<BsonDocument>("notificaciones");
 var notificacion = new BsonDocument {
@@ -471,10 +543,11 @@ El sistema dispone de endpoints y lógica de servicios que permiten el envío au
         |
         v
     [MongoDB]
-       
+
 ```
 
 ### Controlador (NotificacionController)
+
 ```csharp
 [HttpGet("{carnetUsuario}/tiene-no-leidas")]
 public IActionResult TieneNoLeidas(string carnetUsuario)
@@ -493,6 +566,7 @@ public IActionResult TieneNoLeidas(string carnetUsuario)
 ```
 
 ### Servicio (NotificacionService)
+
 ```csharp
 public bool TieneNotificacionesNoLeidas(TieneNotificacionesNoLeidasConsulta consulta)
 {
@@ -501,6 +575,7 @@ public bool TieneNotificacionesNoLeidas(TieneNotificacionesNoLeidasConsulta cons
 ```
 
 ### Repositorio (NotificacionRepository)
+
 ```csharp
 public bool TieneNotificacionesNoLeidas(TieneNotificacionesNoLeidasConsulta consulta)
 {
@@ -515,19 +590,23 @@ public bool TieneNotificacionesNoLeidas(TieneNotificacionesNoLeidasConsulta cons
 ```
 
 ### NotificacionController
+
 - `POST /api/notificacion/enviar-retrasos` → Llama a `EnviarNotificacionesRetraso()` en el servicio.
 - `POST /api/notificacion/enviar-penalizaciones` → Llama a `EnviarPenalizaciones()` en el servicio.
 - `POST /api/notificacion/enviar-estado-prestamo` → Llama a `EnviarEstadoDelPrestamo()` en el servicio.
 
 ### NotificacionService
+
 - `EnviarNotificacionesRetraso()`: Busca préstamos retrasados y genera notificaciones automáticas para los usuarios que no devolvieron a tiempo.
 - `EnviarPenalizaciones()`: Busca préstamos con penalización y genera notificaciones automáticas.
 - `EnviarEstadoDelPrestamo()`: Notifica automáticamente a los usuarios cuando su préstamo es aprobado o rechazado.
 
 **Importante:**
+
 - Antes de crear una notificación automática, el servicio verifica si ya existe una notificación con el mismo título y contenido para el usuario. Si ya existe, **no se vuelve a crear**. Esto evita notificaciones duplicadas.
 
 #### Ejemplo de verificación en C# (NotificacionService):
+
 ```csharp
 private bool NotificacionYaExiste(string carnet, string titulo, string contenido)
 {
@@ -547,16 +626,19 @@ private bool NotificacionYaExiste(string carnet, string titulo, string contenido
 Esta sección documenta el proceso completo para levantar el entorno local en arquitecturas macOS (Intel o Apple Silicon), cubriendo la configuración de infraestructura, variables de entorno y la resolución de problemas de permisos y rutas experimentados durante el desarrollo.
 
 ### 9.1. Prerrequisitos de Software
+
 Instala las siguientes herramientas antes de iniciar:
-* **Docker Desktop:** [Descargar](https://www.docker.com/products/docker-desktop/)
-* **.NET 8 SDK:** [Descargar](https://dotnet.microsoft.com/download)
-* **MongoDB Compass:** [Descargar](https://www.mongodb.com/try/download/compass)
+
+- **Docker Desktop:** [Descargar](https://www.docker.com/products/docker-desktop/)
+- **.NET 8 SDK:** [Descargar](https://dotnet.microsoft.com/download)
+- **MongoDB Compass:** [Descargar](https://www.mongodb.com/try/download/compass)
 
 > **⚠️ NOTA CRÍTICA - Motor de Docker:** Si al ejecutar comandos de Docker recibes el error `failed to connect to the docker API`, asegúrate de que la aplicación **Docker Desktop** esté abierta y el ícono de la ballena en la barra de menú esté estático. El motor no corre como servicio de fondo automático en macOS si la app está cerrada.
 
 ---
 
 ### 9.2. Variables de Entorno (User Secrets)
+
 Utilizamos `user-secrets` para manejar credenciales locales sin exponerlas en el repositorio. Ejecuta los siguientes comandos desde el directorio `Server`:
 
 ```bash
@@ -570,11 +652,15 @@ dotnet user-secrets set "ConnectionStrings:DefaultConnection" "Host=localhost;Po
 dotnet user-secrets set "ConnectionStrings:MongoDb" "mongodb://localhost:27018"
 dotnet user-secrets set "MongoDbSettings:ConnectionString" "mongodb://localhost:27018"
 dotnet user-secrets set "MongoDbSettings:DatabaseName" "UCB_Hold"
+
+# Para desarrollo correr
+dotnet user-secrets set "ConnectionStrings:PostgreSQL" "Host=localhost;Port=5432;Database=IMT_Reservas;Username=TU_USUARIO;Password=TU_CONTRASENA"
 ```
 
 ---
 
 ### 9.3. Infraestructura NoSQL (Docker)
+
 Levantamos el contenedor de MongoDB mapeando el puerto externo **27018** para evitar conflictos con servicios locales.
 
 ```bash
@@ -584,27 +670,30 @@ docker run -d \
   -v ucbhold-data:/data/db \
   mongo
 ```
-* **Puerto:** Acceso desde la app mediante `localhost:27018`.
-* **Persistencia:** El volumen `ucbhold-data` mantiene los datos aunque se borre el contenedor.
+
+- **Puerto:** Acceso desde la app mediante `localhost:27018`.
+- **Persistencia:** El volumen `ucbhold-data` mantiene los datos aunque se borre el contenedor.
 
 ---
 
 ### 9.4. Instalación Manual de MongoDB Database Tools
+
 Para importar datos (`mongorestore`), macOS requiere una instalación manual de las herramientas de base de datos.
 
 1.  **Descarga:** Obtén el ZIP desde [MongoDB Database Tools](https://www.mongodb.com/try/download/database-tools) (Versión macOS arm64).
 2.  **Ubicación:** Descomprime y mueve la carpeta a un directorio permanente (ej: `~/mongo-tools`).
 3.  **Configuración del PATH:** Para solucionar el error `command not found: mongorestore`, agrega los binarios a tu perfil de Zsh:
-    * Ejecuta: `nano ~/.zshrc`
-    * Agrega al final: `export PATH="$PATH:/Users/tu_usuario/ruta/a/mongo-tools/bin"`
-    * Guarda (`Ctrl+O`, `Enter`) y sal (`Ctrl+X`).
-    * Refresca con: `source ~/.zshrc`
+    - Ejecuta: `nano ~/.zshrc`
+    - Agrega al final: `export PATH="$PATH:/Users/tu_usuario/ruta/a/mongo-tools/bin"`
+    - Guarda (`Ctrl+O`, `Enter`) y sal (`Ctrl+X`).
+    - Refresca con: `source ~/.zshrc`
 
 > **⚠️ SEGURIDAD DE MACOS:** Al ejecutar `mongorestore` por primera vez, Apple lo bloqueará. Ve a **Ajustes del Sistema > Privacidad y Seguridad > Seguridad** y selecciona **"Permitir de todos modos"**.
 
 ---
 
 ### 9.5. Restauración de la Base de Datos Inicial
+
 Importa la estructura y datos desde la carpeta del repositorio. Si la base de datos `UCB_Hold` no existe, el comando la creará automáticamente:
 
 ```bash

@@ -10,10 +10,8 @@ public class CarreraController : ControllerBase
 {
     private readonly CarreraService _service;
 
-    public CarreraController(CarreraService service)
-    {
+    public CarreraController(CarreraService service) =>
         _service = service;
-    }
 
     [HttpGet]
     public async Task<IActionResult> GetAll()

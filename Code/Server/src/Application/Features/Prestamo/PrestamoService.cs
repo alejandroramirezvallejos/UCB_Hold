@@ -1,7 +1,7 @@
 using Ardalis.Result;
 using IMT_Reservas.Server.Application.Abstraction;
-using IMT_Reservas.Server.Infrastructure.PostgreSQL;
 using IMT_Reservas.Server.Core.Entities;
+using IMT_Reservas.Server.Infrastructure.Config;
 using IMT_Reservas.Server.Infrastructure.Repositories.Implementations;
 using Microsoft.EntityFrameworkCore;
 using PrestamoEntity = IMT_Reservas.Server.Core.Entities.Prestamo;
@@ -20,7 +20,7 @@ public class PrestamoService : Service<PrestamoEntity, PrestamoRepository, Prest
         if (!dateValidation.IsSuccess)
             return Result<PrestamoDto>.Error(dateValidation.Errors.FirstOrDefault() ?? "Error en fechas");
 
-        var usuarioExists = await _dbContext.Usuarios.AnyAsync(u => u.Carnet == entity.Carnet && !u.EstadoEliminado);
+        var usuarioExists = await _dbContext.Usuarios.AnyAsync(usuario => usuario.Carnet == entity.Carnet && !usuario.EstadoEliminado);
 
         if (!usuarioExists)
             return Result<PrestamoDto>.Error("Usuario no existe o está inactivo");
@@ -47,7 +47,7 @@ public class PrestamoService : Service<PrestamoEntity, PrestamoRepository, Prest
         if (!dateValidation.IsSuccess)
             return Result<PrestamoDto>.Error(dateValidation.Errors.FirstOrDefault() ?? "Error en fechas");
 
-        var usuarioExists = await _dbContext.Usuarios.AnyAsync(u => u.Carnet == entity.Carnet && !u.EstadoEliminado);
+        var usuarioExists = await _dbContext.Usuarios.AnyAsync(usuario => usuario.Carnet == entity.Carnet && !usuario.EstadoEliminado);
 
         if (!usuarioExists)
             return Result<PrestamoDto>.Error("Usuario no existe o estÃ¡ inactivo");
@@ -62,18 +62,18 @@ public class PrestamoService : Service<PrestamoEntity, PrestamoRepository, Prest
             foreach (var groupId in request.GrupoEquipoId)
             {
                 var prestadosIds = await _dbContext.DetallesPrestamos
-                    .Join(_dbContext.Prestamos, dp => dp.IdPrestamo, p => p.Id, (dp, p) => new { dp, p })
-                    .Where(x => x.p.EstadoPrestamo == EstadoPrestamo.Pendiente || x.p.EstadoPrestamo == EstadoPrestamo.Aprobado || x.p.EstadoPrestamo == EstadoPrestamo.Activo)
-                    .Select(x => x.dp.IdEquipo)
+                    .Join(_dbContext.Prestamos, detalle => detalle.IdPrestamo, prestamo => prestamo.Id, (detalle, prestamo) => new { detalle, prestamo })
+                    .Where(x => x.prestamo.EstadoPrestamo == EstadoPrestamo.Pendiente || x.prestamo.EstadoPrestamo == EstadoPrestamo.Aprobado || x.prestamo.EstadoPrestamo == EstadoPrestamo.Activo)
+                    .Select(x => x.detalle.IdEquipo)
                     .ToListAsync();
 
                 prestadosIds.AddRange(equiposAsignadosEnEstaSolicitud);
 
                 var equipoDisponible = await _dbContext.Equipos
-                    .FirstOrDefaultAsync(e => e.IdGrupoEquipo == groupId 
-                        && !e.EstadoEliminado 
-                        && e.EstadoEquipo == EstadoEquipo.Operativo
-                        && !prestadosIds.Contains(e.Id));
+                    .FirstOrDefaultAsync(equipo => equipo.IdGrupoEquipo == groupId
+                        && !equipo.EstadoEliminado
+                        && equipo.EstadoEquipo == EstadoEquipo.Operativo
+                        && !prestadosIds.Contains(equipo.Id));
                         
                 if (equipoDisponible != null)
                 {
@@ -108,6 +108,7 @@ public class PrestamoService : Service<PrestamoEntity, PrestamoRepository, Prest
         var resultDto = all.Value.FirstOrDefault(p => p.Id == entity.Id);
         return Result<PrestamoDto>.Success(resultDto ?? Repository.ConvertToDto(entity));
     }
+    
     public Task<Result<object>> ValidateEstado(string estadoActual, string estadoNuevo)
     {
         var estadosValidos = new[] { "pendiente", "rechazado", "aprobado", "activo", "finalizado", "cancelado" };
@@ -133,7 +134,7 @@ public class PrestamoService : Service<PrestamoEntity, PrestamoRepository, Prest
 
     public async Task<Result<PrestamoDto>> UpdateEstado(int id, string nuevoEstado)
     {
-        var prestamo = await _dbContext.Prestamos.FirstOrDefaultAsync(p => p.Id == id);
+        var prestamo = await _dbContext.Prestamos.FirstOrDefaultAsync(prestamo => prestamo.Id == id);
 
         if (prestamo == null)
             return Result<PrestamoDto>.NotFound();
@@ -208,7 +209,7 @@ public class PrestamoService : Service<PrestamoEntity, PrestamoRepository, Prest
         if (contratoBytes.Length > 5_000_000)
             return Result<PrestamoDto>.Error("Contrato excede tamaño máximo (5MB)");
 
-        var prestamo = await _dbContext.Prestamos.FirstOrDefaultAsync(p => p.Id == prestamoId);
+        var prestamo = await _dbContext.Prestamos.FirstOrDefaultAsync(prestamo => prestamo.Id == prestamoId);
 
         if (prestamo == null)
             return Result<PrestamoDto>.Error("Préstamo no encontrado");

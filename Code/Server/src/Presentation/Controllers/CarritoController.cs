@@ -9,10 +9,8 @@ public class CarritoController : ControllerBase
 {
     private readonly CarritoService _service;
 
-    public CarritoController(CarritoService service)
-    {
+    public CarritoController(CarritoService service) => 
         _service = service;
-    }
 
     [HttpPost("disponibilidadEquipos")]
     public async Task<IActionResult> DisponibilidadEquipos([FromBody] CarritoDto request)

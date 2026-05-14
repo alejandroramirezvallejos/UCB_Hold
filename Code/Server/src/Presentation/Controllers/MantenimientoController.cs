@@ -10,7 +10,8 @@ public class MantenimientoController : ControllerBase
 {
     private readonly MantenimientoService _service;
 
-    public MantenimientoController(MantenimientoService service) => _service = service;
+    public MantenimientoController(MantenimientoService service) => 
+        _service = service;
 
     [HttpGet]
     public async Task<IActionResult> GetAll()
@@ -48,6 +49,7 @@ public class MantenimientoController : ControllerBase
             Descripcion             = dto.Descripcion,
             Costo                   = dto.Costo
         };
+        
         var result = await _service.Update(entity);
 
         return result.IsSuccess ? Ok(new Response<MantenimientoDto> { Status = 200, Value = result.Value }) : BadRequest(new Response<object> { Status = 400, Errors = result.Errors.ToList() });

@@ -21,8 +21,6 @@ public class PrestamoDto
     public string? NombreGavetero { get; set; }
     public string? NombreMueble { get; set; }
     public string? UbicacionMueble { get; set; }
-    
-    // Properties for creation
     public List<int>? GrupoEquipoId { get; set; }
     public string? Contrato { get; set; }
 }

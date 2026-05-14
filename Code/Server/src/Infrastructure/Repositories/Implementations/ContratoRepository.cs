@@ -1,6 +1,6 @@
 using Ardalis.Result;
 using IMT_Reservas.Server.Core.Entities;
-using IMT_Reservas.Server.Infrastructure.PostgreSQL;
+using IMT_Reservas.Server.Infrastructure.Config;
 using Microsoft.EntityFrameworkCore;
 namespace IMT_Reservas.Server.Infrastructure.Repositories.Implementations;
 
@@ -8,10 +8,7 @@ public class ContratoRepository
 {
     private readonly ApplicationDbContext _dbContext;
 
-    public ContratoRepository(ApplicationDbContext dbContext)
-    {
-        _dbContext = dbContext;
-    }
+    public ContratoRepository(ApplicationDbContext dbContext) => _dbContext = dbContext;
 
     public async Task<Result<Contrato>> Create(Contrato contrato)
     {
@@ -24,6 +21,7 @@ public class ContratoRepository
     public async Task<Result<Contrato>> GetByPrestamoId(int prestamoId)
     {
         var prestamo = await _dbContext.Prestamos.FirstOrDefaultAsync(p => p.Id == prestamoId);
+        
         if (prestamo == null || !prestamo.IdContrato.HasValue)
             return Result<Contrato>.Error("Préstamo no encontrado o no tiene contrato");
 
@@ -39,6 +37,7 @@ public class ContratoRepository
     public async Task<Result<object>> Delete(int prestamoId)
     {
         var prestamo = await _dbContext.Prestamos.FirstOrDefaultAsync(p => p.Id == prestamoId);
+        
         if (prestamo == null || !prestamo.IdContrato.HasValue)
             return Result<object>.Error("Préstamo no encontrado o no tiene contrato");
 

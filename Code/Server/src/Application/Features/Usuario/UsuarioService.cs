@@ -1,6 +1,6 @@
 using Ardalis.Result;
 using IMT_Reservas.Server.Application.Abstraction;
-using IMT_Reservas.Server.Infrastructure.PostgreSQL;
+using IMT_Reservas.Server.Infrastructure.Config;
 using IMT_Reservas.Server.Infrastructure.Repositories.Implementations;
 using UsuarioEntity = IMT_Reservas.Server.Core.Entities.Usuario;
 using Microsoft.EntityFrameworkCore;
@@ -11,33 +11,29 @@ public class UsuarioService : Service<UsuarioEntity, UsuarioRepository, UsuarioD
     private readonly ApplicationDbContext _dbContext;
 
     public UsuarioService(UsuarioRepository repository, ApplicationDbContext dbContext)
-        : base(repository)
-    {
-        _dbContext = dbContext;
-    }
+        : base(repository) => _dbContext = dbContext;
 
     public override async Task<Result<UsuarioDto>> Create(UsuarioEntity entity)
     {
         if (string.IsNullOrEmpty(entity.Email) || !entity.Email.Contains("@"))
             return Result<UsuarioDto>.Error("Email inválido");
 
-        // IgnoreQueryFilters: check incluye soft-deleted (evita PK duplicado en DB)
         var carnetExists = await _dbContext.Usuarios
             .IgnoreQueryFilters()
-            .AnyAsync(u => u.Carnet == entity.Carnet);
+            .AnyAsync(usuario => usuario.Carnet == entity.Carnet);
 
         if (carnetExists)
             return Result<UsuarioDto>.Error("Carnet ya existe");
 
         var emailExists = await _dbContext.Usuarios
             .IgnoreQueryFilters()
-            .AnyAsync(u => u.Email == entity.Email);
+            .AnyAsync(usuario => usuario.Email == entity.Email);
 
         if (emailExists)
             return Result<UsuarioDto>.Error("Email ya existe");
 
         var carreraExists = await _dbContext.Carreras
-            .AnyAsync(c => c.Id == entity.IdCarrera && !c.EstadoEliminado);
+            .AnyAsync(carrera => carrera.Id == entity.IdCarrera && !carrera.EstadoEliminado);
 
         if (!carreraExists)
             return Result<UsuarioDto>.Error("Carrera no existe");
@@ -45,12 +41,14 @@ public class UsuarioService : Service<UsuarioEntity, UsuarioRepository, UsuarioD
         entity.Contrasena = BCrypt.Net.BCrypt.HashPassword(entity.Contrasena);
 
         var result = await base.Create(entity);
+        
         if (result.IsSuccess && result.Value != null)
         {
-            var carreraResult = await _dbContext.Carreras.AsNoTracking().FirstOrDefaultAsync(c => c.Id == entity.IdCarrera);
+            var carreraResult = await _dbContext.Carreras.AsNoTracking().FirstOrDefaultAsync(carrera => carrera.Id == entity.IdCarrera);
             if (carreraResult != null)
                 result.Value.CarreraNombre = carreraResult.Nombre;
         }
+        
         return result;
     }
 
@@ -62,7 +60,7 @@ public class UsuarioService : Service<UsuarioEntity, UsuarioRepository, UsuarioD
         {
             var carreraPorNombre = await _dbContext.Carreras
                 .AsNoTracking()
-                .FirstOrDefaultAsync(c => c.Nombre == dto.CarreraNombre && !c.EstadoEliminado);
+                .FirstOrDefaultAsync(carrera => carrera.Nombre == dto.CarreraNombre && !carrera.EstadoEliminado);
             
             if (carreraPorNombre != null)
                 idCarrera = carreraPorNombre.Id;
@@ -95,7 +93,7 @@ public class UsuarioService : Service<UsuarioEntity, UsuarioRepository, UsuarioD
     public async Task<Result<UsuarioDto>> UpdateFromDto(string carnet, UsuarioDto dto)
     {
         var existing = await _dbContext.Usuarios
-            .FirstOrDefaultAsync(u => u.Carnet == carnet && !u.EstadoEliminado);
+            .FirstOrDefaultAsync(usuario => usuario.Carnet == carnet && !usuario.EstadoEliminado);
 
         if (existing == null)
             return Result<UsuarioDto>.NotFound();
@@ -106,7 +104,7 @@ public class UsuarioService : Service<UsuarioEntity, UsuarioRepository, UsuarioD
         {
             var carreraPorNombre = await _dbContext.Carreras
                 .AsNoTracking()
-                .FirstOrDefaultAsync(c => c.Nombre == dto.CarreraNombre && !c.EstadoEliminado);
+                .FirstOrDefaultAsync(carrera => carrera.Nombre == dto.CarreraNombre && !carrera.EstadoEliminado);
             
             if (carreraPorNombre != null)
                 idCarrera = carreraPorNombre.Id;
@@ -135,9 +133,9 @@ public class UsuarioService : Service<UsuarioEntity, UsuarioRepository, UsuarioD
             existing.Contrasena = BCrypt.Net.BCrypt.HashPassword(dto.Contrasena);
 
         await _dbContext.SaveChangesAsync();
-
         var resultDto = MapToDto(existing);
-        var carreraFinal = await _dbContext.Carreras.AsNoTracking().FirstOrDefaultAsync(c => c.Id == existing.IdCarrera);
+        var carreraFinal = await _dbContext.Carreras.AsNoTracking().FirstOrDefaultAsync(carrera => carrera.Id == existing.IdCarrera);
+        
         if (carreraFinal != null)
             resultDto.CarreraNombre = carreraFinal.Nombre;
 
@@ -152,7 +150,8 @@ public class UsuarioService : Service<UsuarioEntity, UsuarioRepository, UsuarioD
             return Result<UsuarioDto>.NotFound();
 
         var dto = MapToDto(usuario);
-        var carrera = await _dbContext.Carreras.AsNoTracking().FirstOrDefaultAsync(c => c.Id == usuario.IdCarrera);
+        var carrera = await _dbContext.Carreras.AsNoTracking().FirstOrDefaultAsync(carrera => carrera.Id == usuario.IdCarrera);
+        
         if (carrera != null)
             dto.CarreraNombre = carrera.Nombre;
 
@@ -166,7 +165,7 @@ public class UsuarioService : Service<UsuarioEntity, UsuarioRepository, UsuarioD
     {
         var usuario = await _dbContext.Usuarios
             .AsNoTracking()
-            .FirstOrDefaultAsync(u => u.Email == email && !u.EstadoEliminado);
+            .FirstOrDefaultAsync(usuario => usuario.Email == email && !usuario.EstadoEliminado);
 
         if (usuario == null)
             return Result<UsuarioDto>.Unauthorized("Credenciales inválidas");
@@ -184,7 +183,7 @@ public class UsuarioService : Service<UsuarioEntity, UsuarioRepository, UsuarioD
             return Result<UsuarioDto>.Unauthorized("Credenciales inválidas");
 
         var dto = MapToDto(usuario);
-        var carrera = await _dbContext.Carreras.AsNoTracking().FirstOrDefaultAsync(c => c.Id == usuario.IdCarrera);
+        var carrera = await _dbContext.Carreras.AsNoTracking().FirstOrDefaultAsync(carrera => carrera.Id == usuario.IdCarrera);
         if (carrera != null)
             dto.CarreraNombre = carrera.Nombre;
 

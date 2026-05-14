@@ -9,10 +9,8 @@ public class AccesorioController : ControllerBase
 {
     private readonly AccesorioService _service;
 
-    public AccesorioController(AccesorioService service)
-    {
+    public AccesorioController(AccesorioService service) => 
         _service = service;
-    }
 
     [HttpGet]
     public async Task<IActionResult> GetAll()

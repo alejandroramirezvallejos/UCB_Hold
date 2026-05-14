@@ -1,8 +1,11 @@
-﻿<component name="ProjectRunConfigurationManager">
-  <configuration default="false" name="IMT_Reservas.Server" type="DotNetProject" factoryName=".NET Project">
+<component name="ProjectRunConfigurationManager">
+  <configuration default="false" name="IMT_Reservas.Server" type="DotNetProject" factoryName=".NET Project" singleton="false">
     <option name="PROJECT_PATH" value="$PROJECT_DIR$/Server/IMT_Reservas.Server.csproj" />
     <option name="CONFIGURATION" value="Debug" />
+    <option name="PASS_PARENT_ENVS" value="1" />
+    <envs>
+      <env name="ASPNETCORE_ENVIRONMENT" value="Development" />
+    </envs>
     <method v="2" />
   </configuration>
 </component>
-
