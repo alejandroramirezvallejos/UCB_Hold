@@ -1,0 +1,8 @@
+﻿<component name="ProjectRunConfigurationManager">
+  <configuration default="false" name="IMT_Reservas.Server" type="DotNetProject" factoryName=".NET Project">
+    <option name="PROJECT_PATH" value="$PROJECT_DIR$/Server/IMT_Reservas.Server.csproj" />
+    <option name="CONFIGURATION" value="Debug" />
+    <method v="2" />
+  </configuration>
+</component>
+

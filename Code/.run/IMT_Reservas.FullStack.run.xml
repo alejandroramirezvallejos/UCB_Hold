@@ -1,0 +1,8 @@
+﻿<component name="ProjectRunConfigurationManager">
+  <configuration default="false" name="IMT_Reservas.FullStack" type="CompoundRunConfigurationType" factoryName="Compound">
+    <toRun name="IMT_Reservas.Server" type="DotNetProject" />
+    <toRun name="IMT_Reservas.Client" type="js.build_tools.npm" />
+    <method v="2" />
+  </configuration>
+</component>
+

@@ -1,5 +1,13 @@
 # UCB Hold: Reservas y Gestion de Articulos de Mecatronica
 
+## Ejecución en JetBrains Rider
+
+Si abres la carpeta `Code` en Rider, tendrás disponibles las configuraciones compartidas en `Code/.run`:
+
+- `IMT_Reservas.Server`: levanta la API .NET.
+- `IMT_Reservas.Client`: levanta Angular con `npm start`.
+- `IMT_Reservas.FullStack`: configuración compuesta para ejecutar ambos al mismo tiempo.
+
 ## 1. 🛢️ Modelo Entidad–Relación
 
 ![Image](/Images/bd.png)
