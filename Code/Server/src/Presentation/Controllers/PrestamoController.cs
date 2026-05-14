@@ -22,7 +22,7 @@ public class PrestamoController : ControllerBase
     public async Task<IActionResult> GetAll()
     {
         var result = await _service.GetAll();
-        
+
         return result.IsSuccess ? Ok(new Response<List<PrestamoDto>> { Status = 200, Value = result.Value }) : BadRequest(new Response<object> { Status = 400, Errors = result.Errors.ToList() });
     }
 
@@ -30,7 +30,7 @@ public class PrestamoController : ControllerBase
     public async Task<IActionResult> Get(int id)
     {
         var result = await _service.Get(id);
-        
+
         return result.IsSuccess ? Ok(new Response<PrestamoDto> { Status = 200, Value = result.Value }) : NotFound(new Response<object> { Status = 404, Errors = result.Errors.ToList() });
     }
 
@@ -38,7 +38,7 @@ public class PrestamoController : ControllerBase
     public async Task<IActionResult> Create([FromBody] PrestamoDto request)
     {
         var result = await _service.CreateFromDto(request);
-        
+
         return result.IsSuccess
             ? CreatedAtAction(nameof(Get), new { id = result.Value?.Id }, new Response<PrestamoDto> { Status = 201, Value = result.Value })
             : BadRequest(new Response<object> { Status = 400, Errors = result.Errors.ToList() });
@@ -47,22 +47,7 @@ public class PrestamoController : ControllerBase
     [HttpPut("{id:int}")]
     public async Task<IActionResult> Update(int id, [FromBody] PrestamoDto dto)
     {
-        var estadoPrestamo = EstadoPrestamo.Pendiente;
-        
-        if (!string.IsNullOrWhiteSpace(dto.EstadoPrestamo))
-        {
-            var lower = dto.EstadoPrestamo.ToLowerInvariant();
-            
-            estadoPrestamo = lower switch
-            {
-                "aprobado" => EstadoPrestamo.Aprobado,
-                "activo" => EstadoPrestamo.Activo,
-                "rechazado" => EstadoPrestamo.Rechazado,
-                "finalizado" => EstadoPrestamo.Finalizado,
-                "cancelado" => EstadoPrestamo.Cancelado,
-                _ => EstadoPrestamo.Pendiente
-            };
-        }
+        var estadoPrestamo = EstadoPrestamoState.Parse(dto.EstadoPrestamo) ?? EstadoPrestamo.Pendiente;
 
         var entity = new PrestamoEntity
         {
@@ -77,9 +62,9 @@ public class PrestamoController : ControllerBase
             EstadoPrestamo = estadoPrestamo,
             IdContrato = dto.IdContrato
         };
-        
+
         var result = await _service.Update(entity);
-        
+
         return result.IsSuccess ? Ok(new Response<PrestamoDto> { Status = 200, Value = result.Value }) : BadRequest(new Response<object> { Status = 400, Errors = result.Errors.ToList() });
     }
 
@@ -111,32 +96,14 @@ public class PrestamoController : ControllerBase
             : BadRequest(new Response<object> { Status = 400, Errors = result.Errors.ToList() });
     }
 
-    [HttpPost("{id:int}/contrato")]
-    public async Task<IActionResult> SaveContrato(int id, [FromBody] SaveContratoForm form)
-    {
-        byte[] contratoBytes = [];
-
-        if (!string.IsNullOrEmpty(form.ContratoHtml))
-        {
-            contratoBytes = System.Text.Encoding.UTF8.GetBytes(form.ContratoHtml);
-        }
-
-        var result = await _service.SaveContrato(id, contratoBytes);
-
-        return result.IsSuccess
-            ? Ok(new Response<PrestamoDto> { Status = 200, Value = result.Value })
-            : BadRequest(new Response<object> { Status = 400, Errors = result.Errors.ToList() });
-    }
-
     [HttpGet("contrato/{prestamoId}")]
     public async Task<IActionResult> ObtenerContratoPorPrestamo(int prestamoId)
     {
         var result = await _contratoService.GetByPrestamoId(prestamoId);
 
         if (!result.IsSuccess)
-            return NotFound(new { mensaje = $"No se encontró contrato para el préstamo {prestamoId}" });
+            return NotFound(new Response<object> { Status = 404, Errors = result.Errors.ToList() });
 
-        return Ok(new { contrato = result.Value.ContratoHtml });
+        return Ok(new Response<object> { Status = 200, Value = new { contrato = result.Value.ContratoHtml } });
     }
 }
-

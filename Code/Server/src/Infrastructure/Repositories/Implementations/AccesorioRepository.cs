@@ -13,54 +13,60 @@ public class AccesorioRepository : Repository<AccesorioEntity, AccesorioDto>
 
     public override async Task<Result<List<AccesorioDto>>> GetAll(QueryFilter? filter = null)
     {
-        var accesorios = await DbContext.Accesorios.AsNoTracking().ToListAsync();
-        var equipos = await DbContext.Equipos.AsNoTracking().ToListAsync();
-
-        var dtos = accesorios.Select(e => new AccesorioDto
-        {
-            Id = e.Id,
-            Nombre = e.Nombre,
-            Modelo = e.Modelo,
-            Tipo = e.Tipo,
-            Descripcion = e.Descripcion,
-            Precio = e.Precio,
-            UrlDataSheet = e.UrlDataSheet,
-            IdEquipo = e.IdEquipo,
-            CodigoImtEquipoAsociado = equipos.FirstOrDefault(eq => eq.Id == e.IdEquipo)?.CodigoImt.ToString(),
-            NombreEquipoAsociado = equipos.FirstOrDefault(eq => eq.Id == e.IdEquipo)?.Descripcion
-        }).ToList();
+        var dtos = await DbContext.Accesorios
+            .AsNoTracking()
+            .Join(DbContext.Equipos,
+                accesorio => accesorio.IdEquipo,
+                equipo => equipo.Id,
+                (accesorio, equipo) => new AccesorioDto
+                {
+                    Id = accesorio.Id,
+                    Nombre = accesorio.Nombre,
+                    Modelo = accesorio.Modelo,
+                    Tipo = accesorio.Tipo,
+                    Descripcion = accesorio.Descripcion,
+                    Precio = accesorio.Precio,
+                    UrlDataSheet = accesorio.UrlDataSheet,
+                    IdEquipo = accesorio.IdEquipo,
+                    CodigoImtEquipoAsociado = equipo.CodigoImt.ToString(),
+                    NombreEquipoAsociado = equipo.Descripcion
+                })
+            .ToListAsync();
 
         return Result<List<AccesorioDto>>.Success(dtos);
     }
 
     public override async Task<Result<AccesorioDto>> Get(int id)
     {
-        var accesorio = await DbContext.Accesorios.AsNoTracking().FirstOrDefaultAsync(a => a.Id == id);
-        
-        if (accesorio == null)
-            return Result<AccesorioDto>.NotFound();
+        var dto = await DbContext.Accesorios
+            .AsNoTracking()
+            .Where(accesorio => accesorio.Id == id)
+            .Join(DbContext.Equipos,
+                accesorio => accesorio.IdEquipo,
+                equipo => equipo.Id,
+                (accesorio, equipo) => new AccesorioDto
+                {
+                    Id = accesorio.Id,
+                    Nombre = accesorio.Nombre,
+                    Modelo = accesorio.Modelo,
+                    Tipo = accesorio.Tipo,
+                    Descripcion = accesorio.Descripcion,
+                    Precio = accesorio.Precio,
+                    UrlDataSheet = accesorio.UrlDataSheet,
+                    IdEquipo = accesorio.IdEquipo,
+                    CodigoImtEquipoAsociado = equipo.CodigoImt.ToString(),
+                    NombreEquipoAsociado = equipo.Descripcion
+                })
+            .FirstOrDefaultAsync();
 
-        var equipo = await DbContext.Equipos.AsNoTracking().FirstOrDefaultAsync(e => e.Id == accesorio.IdEquipo);
-
-        return Result<AccesorioDto>.Success(new AccesorioDto
-        {
-            Id = accesorio.Id,
-            Nombre = accesorio.Nombre,
-            Modelo = accesorio.Modelo,
-            Tipo = accesorio.Tipo,
-            Descripcion = accesorio.Descripcion,
-            Precio = accesorio.Precio,
-            UrlDataSheet = accesorio.UrlDataSheet,
-            IdEquipo = accesorio.IdEquipo,
-            CodigoImtEquipoAsociado = equipo?.CodigoImt.ToString(),
-            NombreEquipoAsociado = equipo?.Descripcion
-        });
+        return dto == null ? Result<AccesorioDto>.NotFound() : Result<AccesorioDto>.Success(dto);
     }
-    
+
     public async Task<int?> GetEquipoByCodigoImt(int codigoImt)
         => await DbContext.Equipos
-            .Where(e => e.CodigoImt == codigoImt && !e.EstadoEliminado)
-            .Select(e => e.Id)
+            .AsNoTracking()
+            .Where(equipo => equipo.CodigoImt == codigoImt && !equipo.EstadoEliminado)
+            .Select(equipo => equipo.Id)
             .FirstOrDefaultAsync();
 
     protected override AccesorioDto MapToDto(AccesorioEntity entity) => new()
@@ -77,4 +83,3 @@ public class AccesorioRepository : Repository<AccesorioEntity, AccesorioDto>
         NombreEquipoAsociado = null
     };
 }
-

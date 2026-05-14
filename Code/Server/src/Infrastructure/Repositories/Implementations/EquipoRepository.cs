@@ -12,7 +12,7 @@ public class EquipoRepository : Repository<EquipoEntity, EquipoDto>
 {
     public EquipoRepository(ApplicationDbContext dbContext) : base(dbContext) { }
 
-    private static string MapEstado(EstadoEquipo estado) => estado switch
+    private static string EstadoEquipoToText(EstadoEquipo estado) => estado switch
     {
         EstadoEquipo.ParcialmenteOperativo => "parcialmente_operativo",
         EstadoEquipo.Inoperativo => "inoperativo",
@@ -51,7 +51,7 @@ public class EquipoRepository : Repository<EquipoEntity, EquipoDto>
         CodigoImt = e.CodigoImt,
         CodigoUcb = e.CodigoUcb,
         NumeroSerial = e.NumeroSerial,
-        EstadoEquipo = MapEstado(e.EstadoEquipo),
+        EstadoEquipo = EstadoEquipoToText(e.EstadoEquipo),
         Ubicacion = e.Ubicacion,
         CostoReferencia = e.CostoReferencia,
         Descripcion = e.Descripcion,
@@ -84,7 +84,7 @@ public class EquipoRepository : Repository<EquipoEntity, EquipoDto>
         CodigoImt = entity.CodigoImt,
         CodigoUcb = entity.CodigoUcb,
         NumeroSerial = entity.NumeroSerial,
-        EstadoEquipo = MapEstado(entity.EstadoEquipo),
+        EstadoEquipo = EstadoEquipoToText(entity.EstadoEquipo),
         Ubicacion = entity.Ubicacion,
         CostoReferencia = entity.CostoReferencia,
         Descripcion = entity.Descripcion,

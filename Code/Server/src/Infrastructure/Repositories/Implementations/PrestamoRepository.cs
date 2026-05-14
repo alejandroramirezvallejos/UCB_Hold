@@ -144,37 +144,27 @@ public class PrestamoRepository : Repository<PrestamoEntity, PrestamoDto>
         return Result<PrestamoDto>.Success(BuildDto(prestamo, usuario, equipo, grupo, gavetero, mueble));
     }
 
-    private static string MapEstado(EstadoPrestamo estado) => estado switch
-    {
-        EstadoPrestamo.Aprobado   => "aprobado",
-        EstadoPrestamo.Activo     => "activo",
-        EstadoPrestamo.Rechazado  => "rechazado",
-        EstadoPrestamo.Finalizado => "finalizado",
-        EstadoPrestamo.Cancelado  => "cancelado",
-        _                         => "pendiente"
-    };
-
     private static PrestamoDto BuildDto(
-        PrestamoEntity p,
+        PrestamoEntity prestamo,
         Usuario? usuario,
         Equipo? equipo,
         GrupoEquipo? grupo,
         Gavetero? gavetero,
         Mueble? mueble) => new()
     {
-        Id = p.Id,
-        CarnetUsuario = p.Carnet,
+        Id = prestamo.Id,
+        CarnetUsuario = prestamo.Carnet,
         NombreUsuario = usuario?.Nombre,
         ApellidoPaternoUsuario = usuario?.ApellidoPaterno,
         TelefonoUsuario = usuario?.Telefono,
-        EstadoPrestamo = MapEstado(p.EstadoPrestamo),
-        FechaSolicitud = p.FechaSolicitud,
-        FechaPrestamoEsperada = p.FechaPrestamoEsperada,
-        FechaPrestamo = p.FechaPrestamo,
-        FechaDevolucionEsperada = p.FechaDevolucionEsperada,
-        FechaDevolucion = p.FechaDevolucion,
-        Observacion = p.Observacion,
-        IdContrato = p.IdContrato,
+        EstadoPrestamo = EstadoPrestamoState.ToText(prestamo.EstadoPrestamo),
+        FechaSolicitud = prestamo.FechaSolicitud,
+        FechaPrestamoEsperada = prestamo.FechaPrestamoEsperada,
+        FechaPrestamo = prestamo.FechaPrestamo,
+        FechaDevolucionEsperada = prestamo.FechaDevolucionEsperada,
+        FechaDevolucion = prestamo.FechaDevolucion,
+        Observacion = prestamo.Observacion,
+        IdContrato = prestamo.IdContrato,
         NombreGrupoEquipo = grupo?.Nombre,
         CodigoImt = equipo?.CodigoImt.ToString(),
         UbicacionEquipo = equipo?.Ubicacion,
@@ -204,7 +194,7 @@ public class PrestamoRepository : Repository<PrestamoEntity, PrestamoDto>
     {
         Id = entity.Id,
         CarnetUsuario = entity.Carnet,
-        EstadoPrestamo = MapEstado(entity.EstadoPrestamo),
+        EstadoPrestamo = EstadoPrestamoState.ToText(entity.EstadoPrestamo),
         FechaSolicitud = entity.FechaSolicitud,
         FechaDevolucionEsperada = entity.FechaDevolucionEsperada,
         NombreUsuario = null,

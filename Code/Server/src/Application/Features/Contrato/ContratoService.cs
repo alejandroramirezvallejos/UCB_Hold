@@ -1,26 +1,24 @@
 using Ardalis.Result;
+using IMT_Reservas.Server.Application.Abstraction;
 using IMT_Reservas.Server.Infrastructure.Config;
 using IMT_Reservas.Server.Infrastructure.Repositories.Implementations;
+using Microsoft.EntityFrameworkCore;
 using ContratoEntity = IMT_Reservas.Server.Core.Entities.Contrato;
 namespace IMT_Reservas.Server.Application.Features.Contrato;
 
-public class ContratoService
+public class ContratoService : Service<ContratoEntity, ContratoRepository, ContratoDto>
 {
-    private readonly ContratoRepository _repository;
-    private readonly ApplicationDbContext _postgresContext;
+    private readonly ApplicationDbContext _dbContext;
 
-    public ContratoService(ContratoRepository repository, ApplicationDbContext postgresContext)
-    {
-        _repository = repository;
-        _postgresContext = postgresContext;
-    }
+    public ContratoService(ContratoRepository repository, ApplicationDbContext dbContext)
+        : base(repository) => _dbContext = dbContext;
 
-    public async Task<Result<ContratoDto>> Create(int? prestamoId, string contenidoHtml)
+    public async Task<Result<ContratoDto>> CreateForPrestamo(int prestamoId, string contenidoHtml)
     {
         if (string.IsNullOrEmpty(contenidoHtml))
             return Result<ContratoDto>.Error("Contenido de contrato requerido");
 
-        var prestamo = await _postgresContext.Prestamos.FindAsync(prestamoId);
+        var prestamo = await _dbContext.Prestamos.FirstOrDefaultAsync(prestamo => prestamo.Id == prestamoId);
 
         if (prestamo == null)
             return Result<ContratoDto>.Error("Préstamo no existe");
@@ -28,40 +26,33 @@ public class ContratoService
         if (prestamo.IdContrato.HasValue)
             return Result<ContratoDto>.Error("Contrato ya existe para este préstamo");
 
-        var contrato = new ContratoEntity
-        {
-            ContratoHtml = contenidoHtml
-        };
+        var contrato = new ContratoEntity { ContratoHtml = contenidoHtml };
+        var result = await Repository.Create(contrato);
 
-        var resultado = await _repository.Create(contrato);
+        if (!result.IsSuccess)
+            return Result<ContratoDto>.Error(result.Errors.FirstOrDefault() ?? "Error al crear contrato");
 
-        if (!resultado.IsSuccess)
-            return Result<ContratoDto>.Error(resultado.Errors.FirstOrDefault() ?? "Error crear contrato");
+        prestamo.IdContrato = result.Value.Id;
+        _dbContext.Prestamos.Update(prestamo);
+        await _dbContext.SaveChangesAsync();
 
-        prestamo.IdContrato = resultado.Value.Id;
-        _postgresContext.Prestamos.Update(prestamo);
-        await _postgresContext.SaveChangesAsync();
-
-        return Result<ContratoDto>.Success(new ContratoDto
-        {
-            Id = resultado.Value.Id,
-            ContratoHtml = contenidoHtml
-        });
+        return result;
     }
 
     public async Task<Result<ContratoDto>> GetByPrestamoId(int prestamoId)
     {
-        var resultado = await _repository.GetByPrestamoId(prestamoId);
+        var result = await Repository.GetEntityByPrestamoId(prestamoId);
 
-        if (!resultado.IsSuccess)
-            return Result<ContratoDto>.Error("Contrato no encontrado");
+        if (!result.IsSuccess)
+            return Result<ContratoDto>.Error(result.Errors.FirstOrDefault() ?? "Contrato no encontrado");
 
         return Result<ContratoDto>.Success(new ContratoDto
         {
-            Id = resultado.Value.Id,
-            ContratoHtml = resultado.Value.ContratoHtml
+            Id = result.Value.Id,
+            ContratoHtml = result.Value.ContratoHtml
         });
     }
 
-    public async Task<Result<object>> Delete(int prestamoId) => await _repository.Delete(prestamoId);
+    public async Task<Result<object>> DeleteByPrestamoId(int prestamoId)
+        => await Repository.DeleteByPrestamoId(prestamoId);
 }

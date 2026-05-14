@@ -24,7 +24,7 @@ public class ContratoController : ControllerBase
             contenido = await reader.ReadToEndAsync();
         }
 
-        var resultado = await _contratoService.Create(request?.PrestamoId ?? 0, contenido ?? "");
+        var resultado = await _contratoService.CreateForPrestamo(request?.PrestamoId ?? 0, contenido ?? "");
 
         return resultado.IsSuccess
             ? Ok(new Response<object> { Status = 200, Value = resultado.Value })
@@ -44,7 +44,7 @@ public class ContratoController : ControllerBase
     [HttpDelete("{prestamoId}")]
     public async Task<IActionResult> Delete(int prestamoId)
     {
-        var resultado = await _contratoService.Delete(prestamoId);
+        var resultado = await _contratoService.DeleteByPrestamoId(prestamoId);
 
         return resultado.IsSuccess
             ? NoContent()

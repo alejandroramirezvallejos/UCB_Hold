@@ -158,34 +158,38 @@ public class UsuarioService : Service<UsuarioEntity, UsuarioRepository, UsuarioD
         return Result<UsuarioDto>.Success(dto);
     }
 
-    public async Task<Result<List<UsuarioDto>>> GetAll()
-        => await Repository.GetAll();
-
     public async Task<Result<UsuarioDto>> Login(string email, string password)
     {
-        var usuario = await _dbContext.Usuarios
-            .AsNoTracking()
-            .FirstOrDefaultAsync(usuario => usuario.Email == email && !usuario.EstadoEliminado);
+        if (string.IsNullOrWhiteSpace(email) || string.IsNullOrWhiteSpace(password))
+            return Result<UsuarioDto>.Unauthorized("Credenciales requeridas");
 
-        if (usuario == null)
+        var loginData = await _dbContext.Usuarios
+            .AsNoTracking()
+            .Where(usuario => usuario.Email == email && !usuario.EstadoEliminado)
+            .Select(usuario => new
+            {
+                Usuario = usuario,
+                CarreraNombre = _dbContext.Carreras
+                    .Where(carrera => carrera.Id == usuario.IdCarrera)
+                    .Select(carrera => carrera.Nombre)
+                    .FirstOrDefault()
+            })
+            .FirstOrDefaultAsync();
+
+        if (loginData == null)
             return Result<UsuarioDto>.Unauthorized("Credenciales inválidas");
 
-        bool passwordValid;
-
-        if (string.IsNullOrEmpty(usuario.Contrasena))
-            passwordValid = false;
-        else if (usuario.Contrasena.StartsWith("$2") && usuario.Contrasena.Length == 60)
-            passwordValid = BCrypt.Net.BCrypt.Verify(password, usuario.Contrasena);
-        else
-            passwordValid = password == usuario.Contrasena;
+        var usuario = loginData.Usuario;
+        bool passwordValid = !string.IsNullOrEmpty(usuario.Contrasena)
+                          && usuario.Contrasena.StartsWith("$2")
+                          && usuario.Contrasena.Length == 60
+                          && BCrypt.Net.BCrypt.Verify(password, usuario.Contrasena);
 
         if (!passwordValid)
             return Result<UsuarioDto>.Unauthorized("Credenciales inválidas");
 
         var dto = MapToDto(usuario);
-        var carrera = await _dbContext.Carreras.AsNoTracking().FirstOrDefaultAsync(carrera => carrera.Id == usuario.IdCarrera);
-        if (carrera != null)
-            dto.CarreraNombre = carrera.Nombre;
+        dto.CarreraNombre = loginData.CarreraNombre;
 
         return Result<UsuarioDto>.Success(dto);
     }

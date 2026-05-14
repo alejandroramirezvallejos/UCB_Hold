@@ -1,4 +1,5 @@
 using IMT_Reservas.Server.Application.Abstraction;
+using Microsoft.EntityFrameworkCore;
 using System.Text.Json;
 namespace IMT_Reservas.Server.Presentation.Middleware;
 
@@ -23,6 +24,11 @@ public class ExceptionMiddleware
         {
             _logger.LogWarning("Recurso no encontrado: {Message}", ex.Message);
             await HandleException(context, 404, [ex.Message]);
+        }
+        catch (DbUpdateException ex)
+        {
+            _logger.LogWarning(ex, "Conflicto de base de datos: {Message}", ex.Message);
+            await HandleException(context, 409, ["Conflicto al guardar: registro duplicado o restricción violada"]);
         }
         catch (InvalidOperationException ex)
         {

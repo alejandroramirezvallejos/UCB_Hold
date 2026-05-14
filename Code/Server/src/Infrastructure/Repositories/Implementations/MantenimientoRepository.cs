@@ -13,79 +13,62 @@ public class MantenimientoRepository : Repository<MantenimientoEntity, Mantenimi
 
     public override async Task<Result<List<MantenimientoDto>>> GetAll(QueryFilter? filter = null)
     {
-        var mantenimientos = await DbContext.Mantenimientos.AsNoTracking().ToListAsync();
-        var empresas = await DbContext.EmpresasMantenimiento.AsNoTracking().ToListAsync();
-        var detalles = await DbContext.DetallesMantenimientos.AsNoTracking().ToListAsync();
-        var equipos = await DbContext.Equipos.AsNoTracking().ToListAsync();
-        var grupos = await DbContext.GruposEquipos.AsNoTracking().ToListAsync();
-        var dtos = new List<MantenimientoDto>();
-        
-        foreach (var m in mantenimientos)
-        {
-            var empresa = empresas.FirstOrDefault(e => e.Id == m.IdEmpresa);
-            var mDetalles = detalles.Where(d => d.IdMantenimiento == m.Id).ToList();
-
-            if (!mDetalles.Any())
+        var rows = await (
+            from mantenimiento in DbContext.Mantenimientos.AsNoTracking()
+            join empresa in DbContext.EmpresasMantenimiento.AsNoTracking()
+                on mantenimiento.IdEmpresa equals empresa.Id into empresaJoin
+            from empresa in empresaJoin.DefaultIfEmpty()
+            join detalle in DbContext.DetallesMantenimientos.AsNoTracking()
+                on mantenimiento.Id equals detalle.IdMantenimiento into detalleJoin
+            from detalle in detalleJoin.DefaultIfEmpty()
+            join equipo in DbContext.Equipos.AsNoTracking()
+                on detalle.IdEquipo equals equipo.Id into equipoJoin
+            from equipo in equipoJoin.DefaultIfEmpty()
+            join grupo in DbContext.GruposEquipos.AsNoTracking()
+                on equipo.IdGrupoEquipo equals grupo.Id into grupoJoin
+            from grupo in grupoJoin.DefaultIfEmpty()
+            select new MantenimientoDto
             {
-                dtos.Add(new MantenimientoDto
-                {
-                    Id = m.Id,
-                    IdEmpresa = m.IdEmpresa,
-                    NombreEmpresaMantenimiento = empresa?.Nombre,
-                    FechaMantenimiento = m.FechaMantenimiento,
-                    FechaFinalMantenimiento = m.FechaFinalMantenimiento,
-                    Costo = m.Costo,
-                    Descripcion = m.Descripcion
-                });
-                continue;
+                Id = mantenimiento.Id,
+                IdEmpresa = mantenimiento.IdEmpresa,
+                NombreEmpresaMantenimiento = empresa != null ? empresa.Nombre : null,
+                FechaMantenimiento = mantenimiento.FechaMantenimiento,
+                FechaFinalMantenimiento = mantenimiento.FechaFinalMantenimiento,
+                Costo = mantenimiento.Costo,
+                Descripcion = mantenimiento.Descripcion,
+                TipoMantenimiento = detalle != null ? detalle.TipoMantenimiento : null,
+                CodigoImtEquipo = equipo != null ? equipo.CodigoImt.ToString() : null,
+                NombreGrupoEquipo = grupo != null ? grupo.Nombre : null,
+                DescripcionEquipo = detalle != null ? detalle.Descripcion : null
             }
+        ).ToListAsync();
 
-            foreach (var d in mDetalles)
-            {
-                var equipo = equipos.FirstOrDefault(e => e.Id == d.IdEquipo);
-                var grupo = equipo != null ? grupos.FirstOrDefault(g => g.Id == equipo.IdGrupoEquipo) : null;
-                
-                dtos.Add(new MantenimientoDto
-                {
-                    Id = m.Id,
-                    IdEmpresa = m.IdEmpresa,
-                    NombreEmpresaMantenimiento = empresa?.Nombre,
-                    FechaMantenimiento = m.FechaMantenimiento,
-                    FechaFinalMantenimiento = m.FechaFinalMantenimiento,
-                    Costo = m.Costo,
-                    Descripcion = m.Descripcion,
-                    TipoMantenimiento = d.TipoMantenimiento,
-                    CodigoImtEquipo = equipo?.CodigoImt.ToString(),
-                    NombreGrupoEquipo = grupo?.Nombre,
-                    DescripcionEquipo = d.Descripcion
-                });
-            }
-        }
-
-        return Result<List<MantenimientoDto>>.Success(dtos);
+        return Result<List<MantenimientoDto>>.Success(rows);
     }
 
     public override async Task<Result<MantenimientoDto>> Get(int id)
     {
-        var m = await DbContext.Mantenimientos.AsNoTracking().FirstOrDefaultAsync(x => x.Id == id);
-        
-        if (m == null) 
-            return Result<MantenimientoDto>.NotFound();
+        var dto = await (
+            from mantenimiento in DbContext.Mantenimientos.AsNoTracking()
+            where mantenimiento.Id == id
+            join empresa in DbContext.EmpresasMantenimiento.AsNoTracking()
+                on mantenimiento.IdEmpresa equals empresa.Id into empresaJoin
+            from empresa in empresaJoin.DefaultIfEmpty()
+            select new MantenimientoDto
+            {
+                Id = mantenimiento.Id,
+                IdEmpresa = mantenimiento.IdEmpresa,
+                NombreEmpresaMantenimiento = empresa != null ? empresa.Nombre : null,
+                FechaMantenimiento = mantenimiento.FechaMantenimiento,
+                FechaFinalMantenimiento = mantenimiento.FechaFinalMantenimiento,
+                Costo = mantenimiento.Costo,
+                Descripcion = mantenimiento.Descripcion
+            }
+        ).FirstOrDefaultAsync();
 
-        var empresa = await DbContext.EmpresasMantenimiento.AsNoTracking().FirstOrDefaultAsync(e => e.Id == m.IdEmpresa);
-
-        return Result<MantenimientoDto>.Success(new MantenimientoDto
-        {
-            Id = m.Id,
-            IdEmpresa = m.IdEmpresa,
-            NombreEmpresaMantenimiento = empresa?.Nombre,
-            FechaMantenimiento = m.FechaMantenimiento,
-            FechaFinalMantenimiento = m.FechaFinalMantenimiento,
-            Costo = m.Costo,
-            Descripcion = m.Descripcion
-        });
+        return dto == null ? Result<MantenimientoDto>.NotFound() : Result<MantenimientoDto>.Success(dto);
     }
-    
+
     protected override MantenimientoDto MapToDto(MantenimientoEntity entity) => new()
     {
         Id = entity.Id,
@@ -96,4 +79,3 @@ public class MantenimientoRepository : Repository<MantenimientoEntity, Mantenimi
         Descripcion = entity.Descripcion
     };
 }
-
