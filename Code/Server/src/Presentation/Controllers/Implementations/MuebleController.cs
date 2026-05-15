@@ -1,14 +1,17 @@
+using IMT_Reservas.Server.Application.Abstraction;
 using IMT_Reservas.Server.Application.Features.Mueble;
+using IMT_Reservas.Server.Infrastructure.Repositories.Implementations;
 using Controller = IMT_Reservas.Server.Presentation.Controllers.Abstraction.Controller;
 using Microsoft.AspNetCore.Mvc;
+using MuebleEntity = IMT_Reservas.Server.Core.Entities.Mueble;
 namespace IMT_Reservas.Server.Presentation.Controllers.Implementations;
 
 [Route("api/[controller]")]
 public class MuebleController : Controller
 {
-    private readonly MuebleService _service;
+    private readonly Service<MuebleEntity, MuebleRepository, MuebleDto> _service;
 
-    public MuebleController(MuebleService service) => _service = service;
+    public MuebleController(Service<MuebleEntity, MuebleRepository, MuebleDto> service) => _service = service;
 
     [HttpGet]
     public async Task<IActionResult> GetAll()
@@ -22,7 +25,7 @@ public class MuebleController : Controller
     public async Task<IActionResult> Create([FromBody] MuebleDto dto)
     {
         var result = await _service.Create(dto);
-       
+        
         return ToCreatedResponse(result, nameof(Get), new { id = result.Value?.Id });
     }
 

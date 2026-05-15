@@ -9,13 +9,14 @@ namespace IMT_Reservas.Server.Infrastructure.Repositories.Implementations;
 
 public class ComponenteRepository : Repository<ComponenteEntity, ComponenteDto>
 {
-    public ComponenteRepository(ApplicationDbContext dbContext) : base(dbContext) { }
+    public ComponenteRepository(ApplicationDbContext dbContext, ComponenteMapper mapper)
+        : base(dbContext, mapper) { }
 
     public override async Task<Result<ComponenteDto>> Create(ComponenteEntity entity)
     {
         DbContext.Add(entity);
         await DbContext.SaveChangesAsync();
-        
+
         return await Get(entity.Id);
     }
 
@@ -23,7 +24,7 @@ public class ComponenteRepository : Repository<ComponenteEntity, ComponenteDto>
     {
         DbContext.Update(entity);
         await DbContext.SaveChangesAsync();
-        
+
         return await Get(entity.Id);
     }
 
@@ -55,7 +56,7 @@ public class ComponenteRepository : Repository<ComponenteEntity, ComponenteDto>
     public override async Task<Result<ComponenteDto>> Get(int id)
     {
         var dto = await (
-            from componente in DbContext.Componentes.AsNoTracking().Where(componente => componente.Id == id)
+            from componente in DbContext.Componentes.AsNoTracking().Where(c => c.Id == id)
             join equipo in DbContext.Equipos.AsNoTracking()
                 on componente.IdEquipo equals equipo.Id into equipoJoin
             from equipo in equipoJoin.DefaultIfEmpty()
@@ -84,5 +85,4 @@ public class ComponenteRepository : Repository<ComponenteEntity, ComponenteDto>
             .Where(equipo => equipo.CodigoImt == codigoImt && !equipo.EstadoEliminado)
             .Select(equipo => equipo.Id)
             .FirstOrDefaultAsync();
-
 }

@@ -7,21 +7,17 @@ namespace IMT_Reservas.Server.Application.Features.Accesorio;
 
 public class AccesorioService : Service<AccesorioEntity, AccesorioRepository, AccesorioDto>
 {
-    private readonly AccesorioMapper _mapper;
-
     public AccesorioService(AccesorioRepository repository, AccesorioMapper mapper, IValidator<AccesorioDto> validator)
-        : base(repository, validator) { _mapper = mapper; }
+        : base(repository, validator, mapper) { }
 
-    protected override AccesorioEntity MapToEntity(AccesorioDto dto) => _mapper.ToEntity(dto);
-
-    public async Task<Result<AccesorioDto>> Create(AccesorioDto dto)
+    public override async Task<Result<AccesorioDto>> Create(AccesorioDto dto)
     {
         await ResolveEquipoId(dto);
         
         return await ValidateAndCreate(dto);
     }
 
-    public async Task<Result<AccesorioDto>> Update(int id, AccesorioDto dto)
+    public override async Task<Result<AccesorioDto>> Update(int id, AccesorioDto dto)
     {
         await ResolveEquipoId(dto);
         

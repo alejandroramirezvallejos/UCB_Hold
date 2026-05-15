@@ -1,6 +1,4 @@
-using Ardalis.Result;
 using IMT_Reservas.Server.Application.Features.GrupoEquipo;
-using IMT_Reservas.Server.Core.Abstraction;
 using IMT_Reservas.Server.Infrastructure.Config;
 using IMT_Reservas.Server.Infrastructure.Repositories.Abstraction;
 using Microsoft.EntityFrameworkCore;
@@ -9,93 +7,26 @@ namespace IMT_Reservas.Server.Infrastructure.Repositories.Implementations;
 
 public class GrupoEquipoRepository : Repository<GrupoEquipoEntity, GrupoEquipoDto>
 {
-    private readonly GrupoEquipoMapper _mapper;
-
     public GrupoEquipoRepository(ApplicationDbContext dbContext, GrupoEquipoMapper mapper)
-        : base(dbContext)
-    {
-        _mapper = mapper;
-    }
-
-    protected override GrupoEquipoDto MapToDto(GrupoEquipoEntity entity) => _mapper.ToDto(entity);
-
-    public override async Task<Result<List<GrupoEquipoDto>>> GetAll(QueryFilter? filter = null)
-    {
-        var dtos = await DbContext.GruposEquipos
-            .AsNoTracking()
-            .Select(grupoEquipo => new GrupoEquipoDto
-            {
-                Id = grupoEquipo.Id,
-                Nombre = grupoEquipo.Nombre,
-                Modelo = grupoEquipo.Modelo,
-                Marca = grupoEquipo.Marca,
-                Descripcion = grupoEquipo.Descripcion,
-                UrlDataSheet = grupoEquipo.UrlDataSheet,
-                UrlImagen = grupoEquipo.UrlImagen,
-                IdCategoria = grupoEquipo.IdCategoria,
-                NombreCategoria = grupoEquipo.Categoria != null ? grupoEquipo.Categoria.Nombre : string.Empty,
-                Cantidad = grupoEquipo.Cantidad,
-                CostoPromedio = grupoEquipo.CostoPromedio
-            })
-            .ToListAsync();
-
-        return Result<List<GrupoEquipoDto>>.Success(dtos);
-    }
-
-    public override async Task<Result<GrupoEquipoDto>> Get(int id)
-    {
-        var dto = await DbContext.GruposEquipos
-            .AsNoTracking()
-            .Where(grupoEquipo => grupoEquipo.Id == id && !grupoEquipo.EstadoEliminado)
-            .Select(grupoEquipo => new GrupoEquipoDto
-            {
-                Id = grupoEquipo.Id,
-                Nombre = grupoEquipo.Nombre,
-                Modelo = grupoEquipo.Modelo,
-                Marca = grupoEquipo.Marca,
-                Descripcion = grupoEquipo.Descripcion,
-                UrlDataSheet = grupoEquipo.UrlDataSheet,
-                UrlImagen = grupoEquipo.UrlImagen,
-                IdCategoria = grupoEquipo.IdCategoria,
-                NombreCategoria = grupoEquipo.Categoria != null ? grupoEquipo.Categoria.Nombre : string.Empty,
-                Cantidad = grupoEquipo.Cantidad,
-                CostoPromedio = grupoEquipo.CostoPromedio
-            })
-            .FirstOrDefaultAsync();
-
-        return dto == null
-            ? Result<GrupoEquipoDto>.NotFound()
-            : Result<GrupoEquipoDto>.Success(dto);
-    }
+        : base(dbContext, mapper) { }
 
     public async Task<List<GrupoEquipoDto>> Search(string? nombre = null, string? categoria = null)
     {
-        var query = DbContext.GruposEquipos
-            .AsNoTracking()
-            .AsQueryable();
+        var query = DbContext.GruposEquipos.AsNoTracking().AsQueryable();
 
         if (!string.IsNullOrWhiteSpace(nombre))
-            query = query.Where(grupoEquipo => grupoEquipo.Nombre.Contains(nombre) || grupoEquipo.Modelo.Contains(nombre) || grupoEquipo.Marca.Contains(nombre));
+            query = query.Where(g => g.Nombre.Contains(nombre) || g.Modelo.Contains(nombre) || g.Marca.Contains(nombre));
 
         if (!string.IsNullOrWhiteSpace(categoria))
-            query = query.Where(grupoEquipo => grupoEquipo.Categoria != null && grupoEquipo.Categoria.Nombre == categoria);
+            query = query.Where(g => g.Categoria != null && g.Categoria.Nombre == categoria);
 
-        return await query
-            .Select(grupoEquipo => new GrupoEquipoDto
-            {
-                Id = grupoEquipo.Id,
-                Nombre = grupoEquipo.Nombre,
-                Modelo = grupoEquipo.Modelo,
-                Marca = grupoEquipo.Marca,
-                Descripcion = grupoEquipo.Descripcion,
-                UrlDataSheet = grupoEquipo.UrlDataSheet,
-                UrlImagen = grupoEquipo.UrlImagen,
-                IdCategoria = grupoEquipo.IdCategoria,
-                NombreCategoria = grupoEquipo.Categoria != null ? grupoEquipo.Categoria.Nombre : string.Empty,
-                Cantidad = grupoEquipo.Cantidad,
-                CostoPromedio = grupoEquipo.CostoPromedio
-            })
-            .ToListAsync();
+        return await ProjectTo(query).ToListAsync();
     }
 
+    public async Task<int?> FindCategoriaIdByNombre(string nombre)
+        => await DbContext.Categorias
+            .AsNoTracking()
+            .Where(c => c.Nombre == nombre && !c.EstadoEliminado)
+            .Select(c => (int?)c.Id)
+            .FirstOrDefaultAsync();
 }

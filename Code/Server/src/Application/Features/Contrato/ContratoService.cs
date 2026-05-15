@@ -10,16 +10,10 @@ namespace IMT_Reservas.Server.Application.Features.Contrato;
 public class ContratoService : Service<ContratoEntity, ContratoRepository, ContratoDto>
 {
     private readonly ApplicationDbContext _dbContext;
-    private readonly ContratoMapper _mapper;
 
     public ContratoService(ContratoRepository repository, ApplicationDbContext dbContext, ContratoMapper mapper, IValidator<ContratoDto> validator)
-        : base(repository, validator)
-    {
+        : base(repository, validator, mapper) =>
         _dbContext = dbContext;
-        _mapper = mapper;
-    }
-
-    protected override ContratoEntity MapToEntity(ContratoDto dto) => _mapper.ToEntity(dto);
 
     public async Task<Result<ContratoDto>> CreateForPrestamo(int prestamoId, string contenidoHtml)
     {
@@ -29,11 +23,11 @@ public class ContratoService : Service<ContratoEntity, ContratoRepository, Contr
         if (!validation.IsValid)
             return validation.ToResult<ContratoDto>();
 
-        var prestamo = await _dbContext.Prestamos.FirstOrDefaultAsync(prestamo => prestamo.Id == prestamoId);
+        var prestamo = await _dbContext.Prestamos.FirstOrDefaultAsync(p => p.Id == prestamoId);
 
         if (prestamo == null)
             return Result<ContratoDto>.Error("Préstamo no existe");
-        
+
         if (prestamo.IdContrato.HasValue)
             return Result<ContratoDto>.Error("Contrato ya existe para este préstamo");
 
@@ -57,6 +51,6 @@ public class ContratoService : Service<ContratoEntity, ContratoRepository, Contr
         if (!result.IsSuccess)
             return Result<ContratoDto>.Error(result.Errors.FirstOrDefault() ?? "Contrato no encontrado");
 
-        return Result<ContratoDto>.Success(_mapper.ToDto(result.Value));
+        return Result<ContratoDto>.Success(MapToDto(result.Value));
     }
 }

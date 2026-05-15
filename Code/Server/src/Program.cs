@@ -20,6 +20,10 @@ using IMT_Reservas.Server.Core.Entities;
 using IMT_Reservas.Server.Infrastructure.Config;
 using IMT_Reservas.Server.Infrastructure.Repositories.Implementations;
 using IMT_Reservas.Server.Presentation.Middleware;
+using CarreraEntity = IMT_Reservas.Server.Core.Entities.Carrera;
+using CategoriaEntity = IMT_Reservas.Server.Core.Entities.Categoria;
+using MuebleEntity = IMT_Reservas.Server.Core.Entities.Mueble;
+using EmpresaMantenimientoEntity = IMT_Reservas.Server.Core.Entities.EmpresaMantenimiento;
 
 AppContext.SetSwitch("Npgsql.EnableLegacyTimestampBehavior", true);
 NpgsqlConnection.GlobalTypeMapper.MapEnum<EstadoPrestamo>("estado_prestamo");
@@ -53,6 +57,7 @@ builder.Services.AddCors(options =>
 
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
+builder.Services.AddHealthChecks();
 
 builder.Services.AddScoped<UsuarioRepository>();
 builder.Services.AddScoped<PrestamoRepository>();
@@ -66,23 +71,23 @@ builder.Services.AddScoped<EmpresaMantenimientoRepository>();
 builder.Services.AddScoped<GaveteroRepository>();
 builder.Services.AddScoped<MuebleRepository>();
 builder.Services.AddScoped<ContratoRepository>();
+builder.Services.AddScoped<ComponenteRepository>();
+
 builder.Services.AddScoped<UsuarioService>();
 builder.Services.AddScoped<CarritoService>();
 builder.Services.AddScoped<PrestamoService>();
 builder.Services.AddScoped<EquipoService>();
 builder.Services.AddScoped<AccesorioService>();
 builder.Services.AddScoped<GrupoEquipoService>();
-builder.Services.AddScoped<CarreraService>();
-builder.Services.AddScoped<CategoriaService>();
 builder.Services.AddScoped<MantenimientoService>();
-
-builder.Services.AddScoped<EmpresaMantenimientoService>();
-
 builder.Services.AddScoped<GaveteroService>();
-builder.Services.AddScoped<MuebleService>();
 builder.Services.AddScoped<ContratoService>();
-builder.Services.AddScoped<ComponenteRepository>();
 builder.Services.AddScoped<ComponenteService>();
+
+builder.Services.AddScoped<Service<CarreraEntity, CarreraRepository, CarreraDto>>();
+builder.Services.AddScoped<Service<CategoriaEntity, CategoriaRepository, CategoriaDto>>();
+builder.Services.AddScoped<Service<MuebleEntity, MuebleRepository, MuebleDto>>();
+builder.Services.AddScoped<Service<EmpresaMantenimientoEntity, EmpresaMantenimientoRepository, EmpresaMantenimientoDto>>();
 
 builder.Services.AddSingleton<UsuarioMapper>();
 builder.Services.AddSingleton<PrestamoMapper>();
@@ -97,6 +102,33 @@ builder.Services.AddSingleton<EmpresaMantenimientoMapper>();
 builder.Services.AddSingleton<AccesorioMapper>();
 builder.Services.AddSingleton<ComponenteMapper>();
 builder.Services.AddSingleton<ContratoMapper>();
+
+builder.Services.AddSingleton<IMapper<IMT_Reservas.Server.Core.Entities.Usuario, UsuarioDto>>(
+    sp => sp.GetRequiredService<UsuarioMapper>());
+builder.Services.AddSingleton<IMapper<IMT_Reservas.Server.Core.Entities.Prestamo, PrestamoDto>>(
+    sp => sp.GetRequiredService<PrestamoMapper>());
+builder.Services.AddSingleton<IMapper<IMT_Reservas.Server.Core.Entities.Equipo, EquipoDto>>(
+    sp => sp.GetRequiredService<EquipoMapper>());
+builder.Services.AddSingleton<IMapper<CarreraEntity, CarreraDto>>(
+    sp => sp.GetRequiredService<CarreraMapper>());
+builder.Services.AddSingleton<IMapper<CategoriaEntity, CategoriaDto>>(
+    sp => sp.GetRequiredService<CategoriaMapper>());
+builder.Services.AddSingleton<IMapper<IMT_Reservas.Server.Core.Entities.GrupoEquipo, GrupoEquipoDto>>(
+    sp => sp.GetRequiredService<GrupoEquipoMapper>());
+builder.Services.AddSingleton<IMapper<IMT_Reservas.Server.Core.Entities.Gavetero, GaveteroDto>>(
+    sp => sp.GetRequiredService<GaveteroMapper>());
+builder.Services.AddSingleton<IMapper<MuebleEntity, MuebleDto>>(
+    sp => sp.GetRequiredService<MuebleMapper>());
+builder.Services.AddSingleton<IMapper<IMT_Reservas.Server.Core.Entities.Mantenimiento, MantenimientoDto>>(
+    sp => sp.GetRequiredService<MantenimientoMapper>());
+builder.Services.AddSingleton<IMapper<EmpresaMantenimientoEntity, EmpresaMantenimientoDto>>(
+    sp => sp.GetRequiredService<EmpresaMantenimientoMapper>());
+builder.Services.AddSingleton<IMapper<IMT_Reservas.Server.Core.Entities.Accesorio, AccesorioDto>>(
+    sp => sp.GetRequiredService<AccesorioMapper>());
+builder.Services.AddSingleton<IMapper<IMT_Reservas.Server.Core.Entities.Componente, ComponenteDto>>(
+    sp => sp.GetRequiredService<ComponenteMapper>());
+builder.Services.AddSingleton<IMapper<IMT_Reservas.Server.Core.Entities.Contrato, ContratoDto>>(
+    sp => sp.GetRequiredService<ContratoMapper>());
 
 builder.Services.AddScoped<IValidator<AccesorioDto>, AccesorioValidator>();
 builder.Services.AddScoped<IValidator<CarreraDto>, CarreraValidator>();
@@ -126,4 +158,5 @@ if (app.Environment.IsDevelopment())
 app.UseAuthentication();
 app.UseAuthorization();
 app.MapControllers();
+app.MapHealthChecks("/api/health");
 app.Run();

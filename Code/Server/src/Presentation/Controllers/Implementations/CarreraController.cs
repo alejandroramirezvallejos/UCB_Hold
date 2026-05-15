@@ -1,14 +1,17 @@
+using IMT_Reservas.Server.Application.Abstraction;
 using IMT_Reservas.Server.Application.Features.Carrera;
+using IMT_Reservas.Server.Infrastructure.Repositories.Implementations;
 using Controller = IMT_Reservas.Server.Presentation.Controllers.Abstraction.Controller;
 using Microsoft.AspNetCore.Mvc;
+using CarreraEntity = IMT_Reservas.Server.Core.Entities.Carrera;
 namespace IMT_Reservas.Server.Presentation.Controllers.Implementations;
 
 [Route("api/[controller]")]
 public class CarreraController : Controller
 {
-    private readonly CarreraService _service;
+    private readonly Service<CarreraEntity, CarreraRepository, CarreraDto> _service;
 
-    public CarreraController(CarreraService service) => _service = service;
+    public CarreraController(Service<CarreraEntity, CarreraRepository, CarreraDto> service) => _service = service;
 
     [HttpGet]
     public async Task<IActionResult> GetAll()

@@ -9,13 +9,14 @@ namespace IMT_Reservas.Server.Infrastructure.Repositories.Implementations;
 
 public class AccesorioRepository : Repository<AccesorioEntity, AccesorioDto>
 {
-    public AccesorioRepository(ApplicationDbContext dbContext) : base(dbContext) { }
+    public AccesorioRepository(ApplicationDbContext dbContext, AccesorioMapper mapper)
+        : base(dbContext, mapper) { }
 
     public override async Task<Result<AccesorioDto>> Create(AccesorioEntity entity)
     {
         DbContext.Add(entity);
         await DbContext.SaveChangesAsync();
-        
+
         return await Get(entity.Id);
     }
 
@@ -23,7 +24,7 @@ public class AccesorioRepository : Repository<AccesorioEntity, AccesorioDto>
     {
         DbContext.Update(entity);
         await DbContext.SaveChangesAsync();
-        
+
         return await Get(entity.Id);
     }
 
@@ -84,5 +85,4 @@ public class AccesorioRepository : Repository<AccesorioEntity, AccesorioDto>
             .Where(equipo => equipo.CodigoImt == codigoImt && !equipo.EstadoEliminado)
             .Select(equipo => equipo.Id)
             .FirstOrDefaultAsync();
-
 }

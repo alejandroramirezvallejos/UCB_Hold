@@ -1,14 +1,19 @@
+using IMT_Reservas.Server.Application.Abstraction;
 using IMT_Reservas.Server.Application.Features.EmpresaMantenimiento;
+using IMT_Reservas.Server.Infrastructure.Repositories.Implementations;
 using Controller = IMT_Reservas.Server.Presentation.Controllers.Abstraction.Controller;
 using Microsoft.AspNetCore.Mvc;
+using EmpresaMantenimientoEntity = IMT_Reservas.Server.Core.Entities.EmpresaMantenimiento;
 namespace IMT_Reservas.Server.Presentation.Controllers.Implementations;
 
 [Route("api/[controller]")]
 public class EmpresaMantenimientoController : Controller
 {
-    private readonly EmpresaMantenimientoService _service;
+    private readonly Service<EmpresaMantenimientoEntity, EmpresaMantenimientoRepository, EmpresaMantenimientoDto> _service;
 
-    public EmpresaMantenimientoController(EmpresaMantenimientoService service) => _service = service;
+    public EmpresaMantenimientoController(
+        Service<EmpresaMantenimientoEntity, EmpresaMantenimientoRepository, EmpresaMantenimientoDto> service)
+        => _service = service;
 
     [HttpGet]
     public async Task<IActionResult> GetAll()
@@ -22,7 +27,6 @@ public class EmpresaMantenimientoController : Controller
     public async Task<IActionResult> Create([FromBody] EmpresaMantenimientoDto dto)
     {
         var result = await _service.Create(dto);
-        
         return ToCreatedResponse(result, nameof(Get), new { id = result.Value?.Id });
     }
 

@@ -1,4 +1,5 @@
 using Ardalis.Result;
+using IMT_Reservas.Server.Application.Abstraction;
 using IMT_Reservas.Server.Core.Abstraction;
 using IMT_Reservas.Server.Infrastructure.Config;
 using Microsoft.EntityFrameworkCore;
@@ -7,12 +8,17 @@ namespace IMT_Reservas.Server.Infrastructure.Repositories.Abstraction;
 public abstract class Repository<TEntity, TDto> where TEntity : class where TDto : class
 {
     protected readonly ApplicationDbContext DbContext;
+    private readonly IMapper<TEntity, TDto> _mapper;
 
-    protected Repository(ApplicationDbContext dbContext) => 
+    protected Repository(ApplicationDbContext dbContext, IMapper<TEntity, TDto> mapper)
+    {
         DbContext = dbContext;
-    
-    protected virtual TDto MapToDto(TEntity entity) =>
-        throw new NotSupportedException($"{GetType().Name} must override MapToDto.");
+        _mapper = mapper;
+    }
+
+    protected TDto MapToDto(TEntity entity) => _mapper.ToDto(entity);
+
+    protected IQueryable<TDto> ProjectTo(IQueryable<TEntity> source) => _mapper.ProjectTo(source);
 
     public virtual async Task<Result<TDto>> Create(TEntity entity)
     {
@@ -45,19 +51,19 @@ public abstract class Repository<TEntity, TDto> where TEntity : class where TDto
 
     public virtual async Task<Result<TDto>> Get(int id)
     {
-        var entity = await DbContext.Set<TEntity>()
-            .AsNoTracking()
-            .FirstOrDefaultAsync(e => GetId(e)!.Equals(id));
+        var dto = await _mapper.ProjectTo(
+                DbContext.Set<TEntity>().AsNoTracking().Where(e => GetId(e)!.Equals(id)))
+            .FirstOrDefaultAsync();
 
-        return entity == null
+        return dto == null
             ? Result<TDto>.NotFound()
-            : Result<TDto>.Success(MapToDto(entity));
+            : Result<TDto>.Success(dto);
     }
 
     public virtual async Task<Result<List<TDto>>> GetAll(QueryFilter? filter = null)
     {
-        var entities = await DbContext.Set<TEntity>().ToListAsync();
-        return Result<List<TDto>>.Success(entities.Select(MapToDto).ToList());
+        var dtos = await _mapper.ProjectTo(DbContext.Set<TEntity>().AsNoTracking()).ToListAsync();
+        return Result<List<TDto>>.Success(dtos);
     }
 
     protected object? GetId(TEntity entity)

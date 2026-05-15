@@ -11,21 +11,28 @@ public class Service<TEntity, TRepository, TDto>
 {
     protected readonly TRepository Repository;
     protected readonly IValidator<TDto> Validator;
+    private readonly IMapper<TEntity, TDto> _mapper;
 
-    protected Service(TRepository repository, IValidator<TDto> validator)
+    public Service(TRepository repository, IValidator<TDto> validator, IMapper<TEntity, TDto> mapper)
     {
         Repository = repository;
         Validator = validator;
+        _mapper = mapper;
     }
 
-    protected virtual TEntity MapToEntity(TDto dto) =>
-        throw new NotSupportedException($"{GetType().Name} must override MapToEntity.");
+    protected TEntity MapToEntity(TDto dto) => _mapper.ToEntity(dto);
 
-    public virtual async Task<Result<TDto>> Create(TEntity entity)
+    protected TDto MapToDto(TEntity entity) => _mapper.ToDto(entity);
+
+    protected async Task<Result<TDto>> CreateEntity(TEntity entity)
         => await Repository.Create(entity);
 
-    public virtual async Task<Result<TDto>> Update(TEntity entity)
+    protected async Task<Result<TDto>> UpdateEntity(TEntity entity)
         => await Repository.Update(entity);
+
+    public virtual Task<Result<TDto>> Create(TDto dto) => ValidateAndCreate(dto);
+
+    public virtual Task<Result<TDto>> Update(int id, TDto dto) => ValidateAndUpdate(id, dto);
 
     public virtual async Task<Result<object>> Delete(int id)
         => await Repository.Delete(id);
@@ -43,7 +50,7 @@ public class Service<TEntity, TRepository, TDto>
         if (!validation.IsValid)
             return validation.ToResult<TDto>();
 
-        return await Create(MapToEntity(dto));
+        return await CreateEntity(MapToEntity(dto));
     }
 
     protected async Task<Result<TDto>> ValidateAndUpdate(int id, TDto dto)
@@ -55,7 +62,7 @@ public class Service<TEntity, TRepository, TDto>
 
         var entity = MapToEntity(dto);
         entity.Id = id;
-        
-        return await Update(entity);
+
+        return await UpdateEntity(entity);
     }
 }

@@ -1,51 +1,40 @@
 using Ardalis.Result;
 using FluentValidation;
 using IMT_Reservas.Server.Application.Abstraction;
-using IMT_Reservas.Server.Infrastructure.Config;
 using IMT_Reservas.Server.Infrastructure.Repositories.Implementations;
-using Microsoft.EntityFrameworkCore;
 using GaveteroEntity = IMT_Reservas.Server.Core.Entities.Gavetero;
 namespace IMT_Reservas.Server.Application.Features.Gavetero;
 
 public class GaveteroService : Service<GaveteroEntity, GaveteroRepository, GaveteroDto>
 {
-    private readonly ApplicationDbContext _dbContext;
-    private readonly GaveteroMapper _mapper;
+    public GaveteroService(GaveteroRepository repository, GaveteroMapper mapper, IValidator<GaveteroDto> validator)
+        : base(repository, validator, mapper) { }
 
-    public GaveteroService(GaveteroRepository repository, ApplicationDbContext dbContext, GaveteroMapper mapper, IValidator<GaveteroDto> validator)
-        : base(repository, validator)
-    {
-        _dbContext = dbContext;
-        _mapper = mapper;
-    }
-
-    protected override GaveteroEntity MapToEntity(GaveteroDto dto) => _mapper.ToEntity(dto);
-
-    public async Task<Result<GaveteroDto>> Create(GaveteroDto dto)
+    public override async Task<Result<GaveteroDto>> Create(GaveteroDto dto)
     {
         var validation = await Validator.ValidateAsync(dto);
-        
-        if (!validation.IsValid) 
+
+        if (!validation.IsValid)
             return validation.ToResult<GaveteroDto>();
 
         var muebleId = await Repository.GetMuebleByNombre(dto.NombreMueble!) ?? 0;
 
-        var entity = _mapper.ToEntity(dto);
+        var entity = MapToEntity(dto);
         entity.IdMueble = muebleId;
 
-        var result = await base.Create(entity);
-        
-        if (result.IsSuccess) 
-            await RecalcMuebleCount(muebleId);
-        
+        var result = await CreateEntity(entity);
+
+        if (result.IsSuccess)
+            await Repository.RecalcMuebleCount(muebleId);
+
         return result;
     }
 
-    public async Task<Result<GaveteroDto>> Update(int id, GaveteroDto dto)
+    public override async Task<Result<GaveteroDto>> Update(int id, GaveteroDto dto)
     {
         var validation = await Validator.ValidateAsync(dto);
-        
-        if (!validation.IsValid) 
+
+        if (!validation.IsValid)
             return validation.ToResult<GaveteroDto>();
 
         var muebleId = !string.IsNullOrWhiteSpace(dto.NombreMueble)
@@ -53,19 +42,19 @@ public class GaveteroService : Service<GaveteroEntity, GaveteroRepository, Gavet
             : await Repository.GetMuebleByGavetero(id) ?? 0;
 
         var previousMuebleId = await Repository.GetMuebleByGavetero(id);
-        var entity = _mapper.ToEntity(dto);
+        var entity = MapToEntity(dto);
         entity.Id = id;
         entity.IdMueble = muebleId;
 
-        var result = await base.Update(entity);
-        
-        if (!result.IsSuccess) 
+        var result = await UpdateEntity(entity);
+
+        if (!result.IsSuccess)
             return result;
 
-        await RecalcMuebleCount(muebleId);
-        
+        await Repository.RecalcMuebleCount(muebleId);
+
         if (previousMuebleId.HasValue && previousMuebleId.Value != muebleId)
-            await RecalcMuebleCount(previousMuebleId.Value);
+            await Repository.RecalcMuebleCount(previousMuebleId.Value);
 
         return result;
     }
@@ -74,23 +63,10 @@ public class GaveteroService : Service<GaveteroEntity, GaveteroRepository, Gavet
     {
         var muebleId = await Repository.GetMuebleByGavetero(id);
         var result = await base.Delete(id);
-        
-        if (result.IsSuccess && muebleId.HasValue) 
-            await RecalcMuebleCount(muebleId.Value);
-        
+
+        if (result.IsSuccess && muebleId.HasValue)
+            await Repository.RecalcMuebleCount(muebleId.Value);
+
         return result;
-    }
-
-    private async Task RecalcMuebleCount(int muebleId)
-    {
-        var mueble = await _dbContext.Muebles.FirstOrDefaultAsync(mueble => mueble.Id == muebleId);
-        
-        if (mueble == null) 
-            return;
-
-        mueble.NumeroGaveteros = await _dbContext.Gaveteros
-            .CountAsync(gavetero => gavetero.IdMueble == muebleId && !gavetero.EstadoEliminado);
-
-        await _dbContext.SaveChangesAsync();
     }
 }

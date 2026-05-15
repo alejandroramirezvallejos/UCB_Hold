@@ -1,14 +1,17 @@
+using IMT_Reservas.Server.Application.Abstraction;
 using IMT_Reservas.Server.Application.Features.Categoria;
+using IMT_Reservas.Server.Infrastructure.Repositories.Implementations;
 using Controller = IMT_Reservas.Server.Presentation.Controllers.Abstraction.Controller;
 using Microsoft.AspNetCore.Mvc;
+using CategoriaEntity = IMT_Reservas.Server.Core.Entities.Categoria;
 namespace IMT_Reservas.Server.Presentation.Controllers.Implementations;
 
 [Route("api/[controller]")]
 public class CategoriaController : Controller
 {
-    private readonly CategoriaService _service;
+    private readonly Service<CategoriaEntity, CategoriaRepository, CategoriaDto> _service;
 
-    public CategoriaController(CategoriaService service) => _service = service;
+    public CategoriaController(Service<CategoriaEntity, CategoriaRepository, CategoriaDto> service) => _service = service;
 
     [HttpGet]
     public async Task<IActionResult> GetAll()

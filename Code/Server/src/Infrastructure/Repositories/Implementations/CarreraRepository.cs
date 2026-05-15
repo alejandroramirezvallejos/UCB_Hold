@@ -1,42 +1,11 @@
-using Ardalis.Result;
 using IMT_Reservas.Server.Application.Features.Carrera;
-using IMT_Reservas.Server.Core.Abstraction;
 using IMT_Reservas.Server.Infrastructure.Config;
 using IMT_Reservas.Server.Infrastructure.Repositories.Abstraction;
-using Microsoft.EntityFrameworkCore;
 using CarreraEntity = IMT_Reservas.Server.Core.Entities.Carrera;
 namespace IMT_Reservas.Server.Infrastructure.Repositories.Implementations;
 
 public class CarreraRepository : Repository<CarreraEntity, CarreraDto>
 {
-    private readonly CarreraMapper _mapper;
-
     public CarreraRepository(ApplicationDbContext dbContext, CarreraMapper mapper)
-        : base(dbContext) { _mapper = mapper; }
-
-    protected override CarreraDto MapToDto(CarreraEntity entity) => _mapper.ToDto(entity);
-
-    public override async Task<Result<List<CarreraDto>>> GetAll(QueryFilter? filter = null)
-    {
-        var dtos = await DbContext.Carreras
-            .AsNoTracking()
-            .Select(e => new CarreraDto { Id = e.Id, Nombre = e.Nombre })
-            .ToListAsync();
-
-        return Result<List<CarreraDto>>.Success(dtos);
-    }
-
-    public override async Task<Result<CarreraDto>> Get(int id)
-    {
-        var entity = await DbContext.Carreras
-            .AsNoTracking()
-            .FirstOrDefaultAsync(c => c.Id == id);
-
-        return entity == null
-            ? Result<CarreraDto>.NotFound()
-            : Result<CarreraDto>.Success(MapToDto(entity));
-    }
-
+        : base(dbContext, mapper) { }
 }
-
-

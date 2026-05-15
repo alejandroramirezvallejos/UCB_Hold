@@ -9,15 +9,8 @@ namespace IMT_Reservas.Server.Infrastructure.Repositories.Implementations;
 
 public class UsuarioRepository : Repository<UsuarioEntity, UsuarioDto>
 {
-    private readonly UsuarioMapper _mapper;
-
     public UsuarioRepository(ApplicationDbContext dbContext, UsuarioMapper mapper)
-        : base(dbContext)
-    {
-        _mapper = mapper;
-    }
-
-    protected override UsuarioDto MapToDto(UsuarioEntity entity) => _mapper.ToDto(entity);
+        : base(dbContext, mapper) { }
 
     public override async Task<Result<List<UsuarioDto>>> GetAll(QueryFilter? filter = null)
     {
@@ -46,16 +39,17 @@ public class UsuarioRepository : Repository<UsuarioEntity, UsuarioDto>
     }
 
     public async Task<UsuarioEntity?> GetByCarnet(string carnet)
-    {
-        return await DbContext.Usuarios
-            .AsNoTracking()
-            .FirstOrDefaultAsync(usuario => usuario.Carnet == carnet && !usuario.EstadoEliminado);
-    }
+        => await DbContext.Usuarios.AsNoTracking()
+            .FirstOrDefaultAsync(u => u.Carnet == carnet && !u.EstadoEliminado);
+
+    public async Task<UsuarioEntity?> GetTrackedByCarnet(string carnet)
+        => await DbContext.Usuarios
+            .FirstOrDefaultAsync(u => u.Carnet == carnet && !u.EstadoEliminado);
 
     public async Task<Result<object>> Delete(string carnet)
     {
         var entity = await DbContext.Usuarios
-            .FirstOrDefaultAsync(usuario => usuario.Carnet == carnet && !usuario.EstadoEliminado);
+            .FirstOrDefaultAsync(u => u.Carnet == carnet && !u.EstadoEliminado);
 
         if (entity == null)
             return Result<object>.NotFound();
@@ -67,6 +61,46 @@ public class UsuarioRepository : Repository<UsuarioEntity, UsuarioDto>
         return Result<object>.Success(null!);
     }
 
+    public async Task<bool> ExistsByCarnet(string carnet)
+        => await DbContext.Usuarios.IgnoreQueryFilters()
+            .AnyAsync(u => u.Carnet == carnet);
+
+    public async Task<bool> ExistsByEmail(string email)
+        => await DbContext.Usuarios.IgnoreQueryFilters()
+            .AnyAsync(u => u.Email == email);
+
+    public async Task<int?> FindCarreraIdByNombre(string nombre)
+        => await DbContext.Carreras.AsNoTracking()
+            .Where(c => c.Nombre == nombre && !c.EstadoEliminado)
+            .Select(c => (int?)c.Id)
+            .FirstOrDefaultAsync();
+
+    public async Task<string?> GetCarreraNombre(int idCarrera)
+        => await DbContext.Carreras.AsNoTracking()
+            .Where(c => c.Id == idCarrera)
+            .Select(c => c.Nombre)
+            .FirstOrDefaultAsync();
+
+    public async Task<(UsuarioEntity? Usuario, string? CarreraNombre)> GetByEmailWithCarrera(string email)
+    {
+        var result = await DbContext.Usuarios.AsNoTracking()
+            .Where(u => u.Email == email && !u.EstadoEliminado)
+            .Select(u => new
+            {
+                Usuario = u,
+                CarreraNombre = DbContext.Carreras
+                    .Where(c => c.Id == u.IdCarrera)
+                    .Select(c => c.Nombre)
+                    .FirstOrDefault()
+            })
+            .FirstOrDefaultAsync();
+
+        return result == null ? (null, null) : (result.Usuario, result.CarreraNombre);
+    }
+
+    public async Task UpdateEntity(UsuarioEntity entity)
+    {
+        DbContext.Usuarios.Update(entity);
+        await DbContext.SaveChangesAsync();
+    }
 }
-
-

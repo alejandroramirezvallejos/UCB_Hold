@@ -1,6 +1,7 @@
 using Ardalis.Result;
 using IMT_Reservas.Server.Application.Features.Mantenimiento;
 using IMT_Reservas.Server.Core.Abstraction;
+using IMT_Reservas.Server.Core.Entities;
 using IMT_Reservas.Server.Infrastructure.Config;
 using IMT_Reservas.Server.Infrastructure.Repositories.Abstraction;
 using Microsoft.EntityFrameworkCore;
@@ -9,15 +10,8 @@ namespace IMT_Reservas.Server.Infrastructure.Repositories.Implementations;
 
 public class MantenimientoRepository : Repository<MantenimientoEntity, MantenimientoDto>
 {
-    private readonly MantenimientoMapper _mapper;
-
     public MantenimientoRepository(ApplicationDbContext dbContext, MantenimientoMapper mapper)
-        : base(dbContext)
-    {
-        _mapper = mapper;
-    }
-
-    protected override MantenimientoDto MapToDto(MantenimientoEntity entity) => _mapper.ToDto(entity);
+        : base(dbContext, mapper) { }
 
     public override async Task<Result<List<MantenimientoDto>>> GetAll(QueryFilter? filter = null)
     {
@@ -77,4 +71,41 @@ public class MantenimientoRepository : Repository<MantenimientoEntity, Mantenimi
         return dto == null ? Result<MantenimientoDto>.NotFound() : Result<MantenimientoDto>.Success(dto);
     }
 
+    public override async Task<Result<object>> Delete(int id)
+    {
+        var entity = await DbContext.Mantenimientos
+            .FirstOrDefaultAsync(m => m.Id == id && !m.EstadoEliminado);
+
+        if (entity == null)
+            return Result<object>.NotFound();
+
+        entity.EstadoEliminado = true;
+        DbContext.Update(entity);
+        await DbContext.SaveChangesAsync();
+
+        return Result<object>.Success(null!);
+    }
+
+    public async Task AddDetalles(int mantenimientoId, int[] codigosImt, string[]? tipos, string[]? descripciones)
+    {
+        for (var i = 0; i < codigosImt.Length; i++)
+        {
+            var equipo = await DbContext.Equipos
+                .FirstOrDefaultAsync(e => e.CodigoImt == codigosImt[i] && !e.EstadoEliminado);
+
+            if (equipo == null)
+                continue;
+
+            DbContext.DetallesMantenimientos.Add(new DetalleMantenimiento
+            {
+                IdMantenimiento = mantenimientoId,
+                IdEquipo = equipo.Id,
+                TipoMantenimiento = tipos?.ElementAtOrDefault(i),
+                Descripcion = descripciones?.ElementAtOrDefault(i),
+                EstadoEliminado = false
+            });
+        }
+
+        await DbContext.SaveChangesAsync();
+    }
 }
