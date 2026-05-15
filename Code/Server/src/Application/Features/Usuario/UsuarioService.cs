@@ -15,6 +15,9 @@ public class UsuarioService : Service<UsuarioEntity, UsuarioRepository, UsuarioD
 
     public override async Task<Result<UsuarioDto>> Create(UsuarioDto dto)
     {
+        if (string.IsNullOrWhiteSpace(dto.Contrasena))
+            return Result<UsuarioDto>.Error("Contraseña requerida");
+
         await ResolveCarrera(dto);
 
         var validation = await Validator.ValidateAsync(dto);

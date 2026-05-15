@@ -40,5 +40,5 @@ public partial class PrestamoMapper : IMapper<PrestamoEntity, PrestamoDto>
 
     public partial IQueryable<PrestamoDto> ProjectTo(IQueryable<PrestamoEntity> source);
 
-    private static string EstadoPrestamoToString(EstadoPrestamo estado) => EstadoPrestamoState.ToText(estado);
+    private static string EstadoPrestamoToString(EstadoPrestamo estado) => PrestamoState.ToText(estado);
 }

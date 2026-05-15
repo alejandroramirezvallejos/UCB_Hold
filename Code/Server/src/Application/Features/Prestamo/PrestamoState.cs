@@ -1,7 +1,7 @@
 using IMT_Reservas.Server.Core.Entities;
 namespace IMT_Reservas.Server.Application.Features.Prestamo;
 
-public static class EstadoPrestamoState
+public static class PrestamoState
 {
     private static readonly Dictionary<EstadoPrestamo, EstadoPrestamo[]> _transitions = new()
     {

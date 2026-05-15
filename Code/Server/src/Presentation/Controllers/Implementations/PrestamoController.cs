@@ -37,8 +37,8 @@ public class PrestamoController : Controller
         => ToResponse(await _service.Update(id, dto));
 
     [HttpPut("{id:int}/estado")]
-    public async Task<IActionResult> UpdateEstado(int id, [FromBody] string estadoPrestamo)
-        => ToResponse(await _service.UpdateEstado(id, estadoPrestamo ?? string.Empty));
+    public async Task<IActionResult> UpdateEstado(int id, [FromBody] UpdateEstadoRequest request)
+        => ToResponse(await _service.UpdateEstado(id, request.EstadoPrestamo ?? string.Empty));
 
     [HttpDelete("{id:int}")]
     public async Task<IActionResult> Delete(int id)
@@ -52,10 +52,12 @@ public class PrestamoController : Controller
     public async Task<IActionResult> ObtenerContratoPorPrestamo(int prestamoId)
     {
         var result = await _contratoService.GetByPrestamoId(prestamoId);
-        
-        if (!result.IsSuccess) 
+
+        if (!result.IsSuccess)
             return ToResponse(result);
-       
+
         return Ok(new Response<object> { Status = 200, Value = new { contrato = result.Value!.ContratoHtml } });
     }
 }
+
+public record UpdateEstadoRequest(string? EstadoPrestamo);

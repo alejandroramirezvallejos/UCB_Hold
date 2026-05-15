@@ -180,7 +180,7 @@ public class PrestamoRepository : Repository<PrestamoEntity, PrestamoDto>
             NombreUsuario = r.UsuarioNombre,
             ApellidoPaternoUsuario = r.UsuarioApellido,
             TelefonoUsuario = r.UsuarioTelefono,
-            EstadoPrestamo = EstadoPrestamoState.ToText(r.EstadoPrestamo),
+            EstadoPrestamo = PrestamoState.ToText(r.EstadoPrestamo),
             FechaSolicitud = r.FechaSolicitud,
             FechaPrestamoEsperada = r.FechaPrestamoEsperada,
             FechaPrestamo = r.FechaPrestamo,

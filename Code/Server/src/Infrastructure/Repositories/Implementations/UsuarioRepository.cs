@@ -83,19 +83,43 @@ public class UsuarioRepository : Repository<UsuarioEntity, UsuarioDto>
 
     public async Task<(UsuarioEntity? Usuario, string? CarreraNombre)> GetByEmailWithCarrera(string email)
     {
-        var result = await DbContext.Usuarios.AsNoTracking()
+        var result = await DbContext.Usuarios
+            .AsNoTracking()
+            .IgnoreQueryFilters()
             .Where(u => u.Email == email && !u.EstadoEliminado)
             .Select(u => new
             {
-                Usuario = u,
+                u.Carnet, u.Nombre, u.ApellidoPaterno, u.ApellidoMaterno,
+                u.Email, u.Contrasena, u.Rol, u.Telefono,
+                u.TelefonoReferencia, u.NombreReferencia, u.EmailReferencia,
+                u.IdCarrera, u.EstadoEliminado,
                 CarreraNombre = DbContext.Carreras
-                    .Where(c => c.Id == u.IdCarrera)
+                    .Where(c => c.Id == u.IdCarrera && !c.EstadoEliminado)
                     .Select(c => c.Nombre)
                     .FirstOrDefault()
             })
             .FirstOrDefaultAsync();
 
-        return result == null ? (null, null) : (result.Usuario, result.CarreraNombre);
+        if (result == null) return (null, null);
+
+        var entity = new UsuarioEntity
+        {
+            Carnet            = result.Carnet,
+            Nombre            = result.Nombre,
+            ApellidoPaterno   = result.ApellidoPaterno,
+            ApellidoMaterno   = result.ApellidoMaterno,
+            Email             = result.Email,
+            Contrasena        = result.Contrasena,
+            Rol               = result.Rol,
+            Telefono          = result.Telefono,
+            TelefonoReferencia = result.TelefonoReferencia,
+            NombreReferencia  = result.NombreReferencia,
+            EmailReferencia   = result.EmailReferencia,
+            IdCarrera         = result.IdCarrera,
+            EstadoEliminado   = result.EstadoEliminado
+        };
+
+        return (entity, result.CarreraNombre);
     }
 
     public async Task UpdateEntity(UsuarioEntity entity)

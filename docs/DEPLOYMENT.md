@@ -12,7 +12,7 @@ Production topology: 2 VMs on Oracle Cloud Always Free.
                           ▼
                ┌─────────────────────────┐
                │   VM #1 (App Server)    │
-               │   Ubuntu 22.04          │
+               │   Ubuntu 24.04.4        │
                │                         │
                │  nginx :80/:443         │  ← reverse proxy
                │     ↓                   │

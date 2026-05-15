@@ -60,13 +60,13 @@ public class PrestamoService : Service<PrestamoEntity, PrestamoRepository, Prest
         if (prestamo == null)
             return Result<PrestamoDto>.NotFound();
 
-        var parsedState = EstadoPrestamoState.Parse(nuevoEstado);
+        var parsedState = PrestamoState.Parse(nuevoEstado);
 
         if (!parsedState.HasValue)
             return Result<PrestamoDto>.Error($"Estado '{nuevoEstado}' no reconocido");
 
-        if (!EstadoPrestamoState.CanTransition(prestamo.EstadoPrestamo, parsedState.Value))
-            return Result<PrestamoDto>.Error($"Transición '{EstadoPrestamoState.ToText(prestamo.EstadoPrestamo)}' → '{nuevoEstado}' no permitida");
+        if (!PrestamoState.CanTransition(prestamo.EstadoPrestamo, parsedState.Value))
+            return Result<PrestamoDto>.Error($"Transición '{PrestamoState.ToText(prestamo.EstadoPrestamo)}' → '{nuevoEstado}' no permitida");
 
         prestamo.EstadoPrestamo = parsedState.Value;
         await Repository.UpdateTracked(prestamo);
@@ -83,7 +83,7 @@ public class PrestamoService : Service<PrestamoEntity, PrestamoRepository, Prest
 
         if (!string.IsNullOrEmpty(estadoPrestamo) && estadoPrestamo != "todos")
         {
-            estado = EstadoPrestamoState.Parse(estadoPrestamo);
+            estado = PrestamoState.Parse(estadoPrestamo);
 
             if (!estado.HasValue)
                 return Result<List<PrestamoDto>>.Error("Estado préstamo no válido");

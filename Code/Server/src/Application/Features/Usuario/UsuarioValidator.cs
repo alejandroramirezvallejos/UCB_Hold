@@ -11,7 +11,9 @@ public class UsuarioValidator : AbstractValidator<UsuarioDto>
         RuleFor(usuario => usuario.Nombre).NotEmpty().WithMessage("Nombre requerido");
         RuleFor(usuario => usuario.ApellidoPaterno).NotEmpty().WithMessage("Apellido paterno requerido");
         RuleFor(usuario => usuario.Email).NotEmpty().EmailAddress().WithMessage("Email inválido");
-        RuleFor(usuario => usuario.Contrasena).NotEmpty().MinimumLength(6).WithMessage("Contraseña mínimo 6 caracteres");
+        RuleFor(usuario => usuario.Contrasena)
+            .MinimumLength(6).WithMessage("Contraseña mínimo 6 caracteres")
+            .When(usuario => !string.IsNullOrWhiteSpace(usuario.Contrasena));
 
         RuleFor(usuario => usuario.IdCarrera)
             .MustAsync(async (id, _) => await dbContext.Carreras.AnyAsync(c => c.Id == id && !c.EstadoEliminado))

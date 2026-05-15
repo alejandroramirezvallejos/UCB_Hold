@@ -1,3 +1,4 @@
+using Ardalis.Result;
 using IMT_Reservas.Server.Application.Features.EmpresaMantenimiento;
 using IMT_Reservas.Server.Infrastructure.Config;
 using IMT_Reservas.Server.Infrastructure.Repositories.Abstraction;
@@ -16,4 +17,19 @@ public class EmpresaMantenimientoRepository : Repository<EmpresaMantenimientoEnt
             .Where(e => e.Nombre == nombre && !e.EstadoEliminado)
             .Select(e => (int?)e.Id)
             .FirstOrDefaultAsync();
+
+    public override async Task<Result<object>> Delete(int id)
+    {
+        var entity = await DbContext.EmpresasMantenimiento
+            .FirstOrDefaultAsync(e => e.Id == id && !e.EstadoEliminado);
+
+        if (entity == null)
+            return Result<object>.NotFound();
+
+        entity.EstadoEliminado = true;
+        DbContext.Update(entity);
+        await DbContext.SaveChangesAsync();
+
+        return Result<object>.Success(null!);
+    }
 }
