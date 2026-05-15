@@ -1,19 +1,14 @@
 using Ardalis.Result;
 using FluentValidation;
 using IMT_Reservas.Server.Application.Abstraction;
-using IMT_Reservas.Server.Infrastructure.Config;
 using IMT_Reservas.Server.Infrastructure.Repositories.Implementations;
-using Microsoft.EntityFrameworkCore;
 using EquipoEntity = IMT_Reservas.Server.Core.Entities.Equipo;
 namespace IMT_Reservas.Server.Application.Features.Equipo;
 
 public class EquipoService : Service<EquipoEntity, EquipoRepository, EquipoDto>
 {
-    private readonly ApplicationDbContext _dbContext;
-
-    public EquipoService(EquipoRepository repository, ApplicationDbContext dbContext, EquipoMapper mapper, IValidator<EquipoDto> validator)
-        : base(repository, validator, mapper) =>
-        _dbContext = dbContext;
+    public EquipoService(EquipoRepository repository, EquipoMapper mapper, IValidator<EquipoDto> validator)
+        : base(repository, validator, mapper) { }
 
     public override async Task<Result<EquipoDto>> Create(EquipoDto dto)
     {
@@ -23,14 +18,13 @@ public class EquipoService : Service<EquipoEntity, EquipoRepository, EquipoDto>
             return validation.ToResult<EquipoDto>();
 
         var entity = MapToEntity(dto);
-        var maxCodigo = await _dbContext.Equipos.MaxAsync(equipo => (int?)equipo.CodigoImt) ?? 0;
-        entity.CodigoImt = maxCodigo + 1;
+        entity.CodigoImt = await Repository.GetMaxCodigoImt() + 1;
         entity.FechaIngresoEquipo = DateOnly.FromDateTime(DateTime.Now);
 
         var result = await CreateEntity(entity);
 
         if (result.IsSuccess)
-            await RecalcGrupoStats(entity.IdGrupoEquipo);
+            await Repository.RecalcGrupoStats(entity.IdGrupoEquipo);
 
         return result;
     }
@@ -42,9 +36,7 @@ public class EquipoService : Service<EquipoEntity, EquipoRepository, EquipoDto>
         if (!validation.IsValid)
             return validation.ToResult<EquipoDto>();
 
-        var existing = await _dbContext.Equipos
-            .AsNoTracking()
-            .FirstOrDefaultAsync(equipo => equipo.Id == id && !equipo.EstadoEliminado);
+        var existing = await Repository.FindById(id);
 
         if (existing == null)
             return Result<EquipoDto>.NotFound();
@@ -60,49 +52,26 @@ public class EquipoService : Service<EquipoEntity, EquipoRepository, EquipoDto>
         if (!result.IsSuccess)
             return result;
 
-        await RecalcGrupoStats(entity.IdGrupoEquipo);
-        
+        await Repository.RecalcGrupoStats(entity.IdGrupoEquipo);
+
         if (existing.IdGrupoEquipo != entity.IdGrupoEquipo)
-            await RecalcGrupoStats(existing.IdGrupoEquipo);
+            await Repository.RecalcGrupoStats(existing.IdGrupoEquipo);
 
         return result;
     }
 
     public override async Task<Result<object>> Delete(int id)
     {
-        var existing = await _dbContext.Equipos
-            .AsNoTracking()
-            .FirstOrDefaultAsync(equipo => equipo.Id == id);
+        var existing = await Repository.FindById(id);
 
-        if (existing == null) 
+        if (existing == null)
             return Result<object>.NotFound();
 
         var result = await base.Delete(id);
 
         if (result.IsSuccess)
-            await RecalcGrupoStats(existing.IdGrupoEquipo);
+            await Repository.RecalcGrupoStats(existing.IdGrupoEquipo);
 
         return result;
-    }
-
-    private async Task RecalcGrupoStats(int idGrupoEquipo)
-    {
-        var grupo = await _dbContext.GruposEquipos
-            .FirstOrDefaultAsync(g => g.Id == idGrupoEquipo);
-
-        if (grupo == null)
-            return;
-
-        var stats = await _dbContext.Equipos
-            .Where(e => e.IdGrupoEquipo == idGrupoEquipo && !e.EstadoEliminado)
-            .Select(e => new { e.CostoReferencia })
-            .ToListAsync();
-
-        grupo.Cantidad = stats.Count;
-        grupo.CostoPromedio = stats.Count == 0
-            ? 0
-            : (decimal)(stats.Where(e => e.CostoReferencia.HasValue).Sum(e => e.CostoReferencia ?? 0) / Math.Max(1, stats.Count));
-
-        await _dbContext.SaveChangesAsync();
     }
 }

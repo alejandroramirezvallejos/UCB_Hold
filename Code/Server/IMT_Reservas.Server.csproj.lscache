@@ -71,7 +71,6 @@ src/Application/Features/Accesorio/
 src/Application/Features/Carrera/
  CarreraDto.cs
  CarreraMapper.cs
- CarreraService.cs
  CarreraValidator.cs
 src/Application/Features/Carrito/
  CarritoDto.cs
@@ -79,7 +78,6 @@ src/Application/Features/Carrito/
 src/Application/Features/Categoria/
  CategoriaDto.cs
  CategoriaMapper.cs
- CategoriaService.cs
  CategoriaValidator.cs
 src/Application/Features/Componente/
  ComponenteDto.cs
@@ -94,7 +92,6 @@ src/Application/Features/Contrato/
 src/Application/Features/EmpresaMantenimiento/
  EmpresaMantenimientoDto.cs
  EmpresaMantenimientoMapper.cs
- EmpresaMantenimientoService.cs
  EmpresaMantenimientoValidator.cs
 src/Application/Features/Equipo/
  EquipoDto.cs
@@ -119,7 +116,6 @@ src/Application/Features/Mantenimiento/
 src/Application/Features/Mueble/
  MuebleDto.cs
  MuebleMapper.cs
- MuebleService.cs
  MuebleValidator.cs
 src/Application/Features/Prestamo/
  EstadoPrestamoState.cs
@@ -160,8 +156,7 @@ src/Infrastructure/
   Abstraction/Repository.cs
   Implementations/
    AccesorioRepository.cs
-   CarreraRepository.cs
-   CategoriaRepository.cs
+   CarritoRepository.cs
    ComponenteRepository.cs
    ContratoRepository.cs
    EmpresaMantenimientoRepository.cs
@@ -169,7 +164,6 @@ src/Infrastructure/
    GaveteroRepository.cs
    GrupoEquipoRepository.cs
    MantenimientoRepository.cs
-   MuebleRepository.cs
    PrestamoRepository.cs
    UsuarioRepository.cs
 src/Presentation/Controllers/

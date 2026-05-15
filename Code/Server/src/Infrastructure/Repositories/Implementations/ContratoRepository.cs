@@ -4,6 +4,7 @@ using IMT_Reservas.Server.Infrastructure.Config;
 using IMT_Reservas.Server.Infrastructure.Repositories.Abstraction;
 using Microsoft.EntityFrameworkCore;
 using ContratoEntity = IMT_Reservas.Server.Core.Entities.Contrato;
+using PrestamoEntity = IMT_Reservas.Server.Core.Entities.Prestamo;
 namespace IMT_Reservas.Server.Infrastructure.Repositories.Implementations;
 
 public class ContratoRepository : Repository<ContratoEntity, ContratoDto>
@@ -45,5 +46,14 @@ public class ContratoRepository : Repository<ContratoEntity, ContratoDto>
         await DbContext.SaveChangesAsync();
 
         return Result<object>.Success(new { });
+    }
+
+    public async Task<PrestamoEntity?> FindPrestamoById(int prestamoId)
+        => await DbContext.Prestamos.FirstOrDefaultAsync(p => p.Id == prestamoId);
+
+    public async Task SavePrestamo(PrestamoEntity prestamo)
+    {
+        DbContext.Prestamos.Update(prestamo);
+        await DbContext.SaveChangesAsync();
     }
 }

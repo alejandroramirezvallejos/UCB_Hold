@@ -1,19 +1,14 @@
 using Ardalis.Result;
 using FluentValidation;
 using IMT_Reservas.Server.Application.Abstraction;
-using IMT_Reservas.Server.Infrastructure.Config;
 using IMT_Reservas.Server.Infrastructure.Repositories.Implementations;
-using Microsoft.EntityFrameworkCore;
 using ContratoEntity = IMT_Reservas.Server.Core.Entities.Contrato;
 namespace IMT_Reservas.Server.Application.Features.Contrato;
 
 public class ContratoService : Service<ContratoEntity, ContratoRepository, ContratoDto>
 {
-    private readonly ApplicationDbContext _dbContext;
-
-    public ContratoService(ContratoRepository repository, ApplicationDbContext dbContext, ContratoMapper mapper, IValidator<ContratoDto> validator)
-        : base(repository, validator, mapper) =>
-        _dbContext = dbContext;
+    public ContratoService(ContratoRepository repository, ContratoMapper mapper, IValidator<ContratoDto> validator)
+        : base(repository, validator, mapper) { }
 
     public async Task<Result<ContratoDto>> CreateForPrestamo(int prestamoId, string contenidoHtml)
     {
@@ -23,7 +18,7 @@ public class ContratoService : Service<ContratoEntity, ContratoRepository, Contr
         if (!validation.IsValid)
             return validation.ToResult<ContratoDto>();
 
-        var prestamo = await _dbContext.Prestamos.FirstOrDefaultAsync(p => p.Id == prestamoId);
+        var prestamo = await Repository.FindPrestamoById(prestamoId);
 
         if (prestamo == null)
             return Result<ContratoDto>.Error("Préstamo no existe");
@@ -38,8 +33,7 @@ public class ContratoService : Service<ContratoEntity, ContratoRepository, Contr
             return Result<ContratoDto>.Error(result.Errors.FirstOrDefault() ?? "Error al crear contrato");
 
         prestamo.IdContrato = result.Value.Id;
-        _dbContext.Prestamos.Update(prestamo);
-        await _dbContext.SaveChangesAsync();
+        await Repository.SavePrestamo(prestamo);
 
         return result;
     }

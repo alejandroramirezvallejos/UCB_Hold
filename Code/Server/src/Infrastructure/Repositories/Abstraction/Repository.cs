@@ -1,3 +1,4 @@
+using System.Linq.Expressions;
 using Ardalis.Result;
 using IMT_Reservas.Server.Application.Abstraction;
 using IMT_Reservas.Server.Core.Abstraction;
@@ -5,7 +6,7 @@ using IMT_Reservas.Server.Infrastructure.Config;
 using Microsoft.EntityFrameworkCore;
 namespace IMT_Reservas.Server.Infrastructure.Repositories.Abstraction;
 
-public abstract class Repository<TEntity, TDto> where TEntity : class where TDto : class
+public class Repository<TEntity, TDto> where TEntity : class where TDto : class
 {
     protected readonly ApplicationDbContext DbContext;
     private readonly IMapper<TEntity, TDto> _mapper;
@@ -51,8 +52,15 @@ public abstract class Repository<TEntity, TDto> where TEntity : class where TDto
 
     public virtual async Task<Result<TDto>> Get(int id)
     {
+        var param = Expression.Parameter(typeof(TEntity), "e");
+        var predicate = Expression.Lambda<Func<TEntity, bool>>(
+            Expression.Equal(
+                Expression.Property(param, "Id"),
+                Expression.Constant(id)),
+            param);
+
         var dto = await _mapper.ProjectTo(
-                DbContext.Set<TEntity>().AsNoTracking().Where(e => GetId(e)!.Equals(id)))
+                DbContext.Set<TEntity>().AsNoTracking().Where(predicate))
             .FirstOrDefaultAsync();
 
         return dto == null
@@ -64,16 +72,5 @@ public abstract class Repository<TEntity, TDto> where TEntity : class where TDto
     {
         var dtos = await _mapper.ProjectTo(DbContext.Set<TEntity>().AsNoTracking()).ToListAsync();
         return Result<List<TDto>>.Success(dtos);
-    }
-
-    protected object? GetId(TEntity entity)
-    {
-        var idProp = typeof(TEntity).GetProperty("Id")
-                  ?? typeof(TEntity).GetProperties().FirstOrDefault(p => p.Name.EndsWith("Id"));
-
-        if (idProp == null)
-            return null;
-
-        return idProp.GetValue(entity);
     }
 }
