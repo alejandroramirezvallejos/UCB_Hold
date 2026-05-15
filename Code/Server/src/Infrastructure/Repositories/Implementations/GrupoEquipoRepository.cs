@@ -9,7 +9,10 @@ namespace IMT_Reservas.Server.Infrastructure.Repositories.Implementations;
 
 public class GrupoEquipoRepository : Repository<GrupoEquipoEntity, GrupoEquipoDto>
 {
-    public GrupoEquipoRepository(ApplicationDbContext dbContext) : base(dbContext) { }
+    private readonly GrupoEquipoMapper _mapper;
+
+    public GrupoEquipoRepository(ApplicationDbContext dbContext, GrupoEquipoMapper mapper)
+        : base(dbContext) => _mapper = mapper;
 
     public override async Task<Result<List<GrupoEquipoDto>>> GetAll(QueryFilter? filter = null)
     {
@@ -94,19 +97,5 @@ public class GrupoEquipoRepository : Repository<GrupoEquipoEntity, GrupoEquipoDt
             .ToListAsync();
     }
 
-    protected override GrupoEquipoDto MapToDto(GrupoEquipoEntity entity)
-        => new()
-        {
-            Id = entity.Id,
-            Nombre = entity.Nombre,
-            Modelo = entity.Modelo,
-            Marca = entity.Marca,
-            Descripcion = entity.Descripcion,
-            UrlDataSheet = entity.UrlDataSheet,
-            UrlImagen = entity.UrlImagen,
-            IdCategoria = entity.IdCategoria,
-            NombreCategoria = null,
-            Cantidad = entity.Cantidad,
-            CostoPromedio = entity.CostoPromedio
-        };
+    protected override GrupoEquipoDto MapToDto(GrupoEquipoEntity entity) => _mapper.ToDto(entity);
 }

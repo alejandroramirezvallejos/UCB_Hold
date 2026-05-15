@@ -19,17 +19,23 @@ public class EquipoService : Service<EquipoEntity, EquipoRepository, EquipoDto>
     public async Task<Result<EquipoDto>> Create(EquipoDto dto)
     {
         var validation = await _validator.ValidateAsync(dto);
-        if (!validation.IsValid) return validation.ToResult<EquipoDto>();
+        
+        if (!validation.IsValid) 
+            return validation.ToResult<EquipoDto>();
 
         var grupoExists = await _dbContext.GruposEquipos
             .AnyAsync(grupoEquipo => grupoEquipo.Id == dto.IdGrupoEquipo && !grupoEquipo.EstadoEliminado);
-        if (!grupoExists) return Result<EquipoDto>.Error("Grupo equipo no existe");
+        
+        if (!grupoExists) 
+            return Result<EquipoDto>.Error("Grupo equipo no existe");
 
         if (dto.IdGavetero.HasValue)
         {
             var gaveteroExists = await _dbContext.Gaveteros
                 .AnyAsync(gavetero => gavetero.Id == dto.IdGavetero && !gavetero.EstadoEliminado);
-            if (!gaveteroExists) return Result<EquipoDto>.Error("Gavetero no existe");
+            
+            if (!gaveteroExists) 
+                return Result<EquipoDto>.Error("Gavetero no existe");
         }
 
         var entity = _mapper.ToEntity(dto);
@@ -38,19 +44,26 @@ public class EquipoService : Service<EquipoEntity, EquipoRepository, EquipoDto>
         entity.FechaIngresoEquipo = DateOnly.FromDateTime(DateTime.Now);
 
         var result = await base.Create(entity);
-        if (result.IsSuccess) await RecalcGrupoStats(entity.IdGrupoEquipo);
+        
+        if (result.IsSuccess) 
+            await RecalcGrupoStats(entity.IdGrupoEquipo);
+        
         return result;
     }
 
     public async Task<Result<EquipoDto>> Update(int id, EquipoDto dto)
     {
         var validation = await _validator.ValidateAsync(dto);
-        if (!validation.IsValid) return validation.ToResult<EquipoDto>();
+        
+        if (!validation.IsValid) 
+            return validation.ToResult<EquipoDto>();
 
         var existing = await _dbContext.Equipos
             .AsNoTracking()
             .FirstOrDefaultAsync(equipo => equipo.Id == id && !equipo.EstadoEliminado);
-        if (existing == null) return Result<EquipoDto>.NotFound();
+        
+        if (existing == null) 
+            return Result<EquipoDto>.NotFound();
 
         var entity = _mapper.ToEntity(dto);
         entity.Id = id;
@@ -59,11 +72,15 @@ public class EquipoService : Service<EquipoEntity, EquipoRepository, EquipoDto>
         entity.EstadoEliminado = existing.EstadoEliminado;
 
         var result = await base.Update(entity);
-        if (!result.IsSuccess) return result;
+        
+        if (!result.IsSuccess) 
+            return result;
 
         await RecalcGrupoStats(entity.IdGrupoEquipo);
+        
         if (existing.IdGrupoEquipo != entity.IdGrupoEquipo)
             await RecalcGrupoStats(existing.IdGrupoEquipo);
+        
         return result;
     }
 
@@ -72,10 +89,15 @@ public class EquipoService : Service<EquipoEntity, EquipoRepository, EquipoDto>
         var existing = await _dbContext.Equipos
             .AsNoTracking()
             .FirstOrDefaultAsync(equipo => equipo.Id == id);
-        if (existing == null) return Result<object>.NotFound();
+        
+        if (existing == null) 
+            return Result<object>.NotFound();
 
         var result = await base.Delete(id);
-        if (result.IsSuccess) await RecalcGrupoStats(existing.IdGrupoEquipo);
+        
+        if (result.IsSuccess) 
+            await RecalcGrupoStats(existing.IdGrupoEquipo);
+        
         return result;
     }
 
@@ -83,7 +105,9 @@ public class EquipoService : Service<EquipoEntity, EquipoRepository, EquipoDto>
     {
         var grupo = await _dbContext.GruposEquipos
             .FirstOrDefaultAsync(grupoEquipo => grupoEquipo.Id == idGrupoEquipo);
-        if (grupo == null) return;
+        
+        if (grupo == null) 
+            return;
 
         var stats = await _dbContext.Equipos
             .Where(equipo => equipo.IdGrupoEquipo == idGrupoEquipo && !equipo.EstadoEliminado)

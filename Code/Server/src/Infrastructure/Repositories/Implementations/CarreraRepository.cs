@@ -9,7 +9,10 @@ namespace IMT_Reservas.Server.Infrastructure.Repositories.Implementations;
 
 public class CarreraRepository : Repository<CarreraEntity, CarreraDto>
 {
-    public CarreraRepository(ApplicationDbContext dbContext) : base(dbContext) { }
+    private readonly CarreraMapper _mapper;
+
+    public CarreraRepository(ApplicationDbContext dbContext, CarreraMapper mapper)
+        : base(dbContext) => _mapper = mapper;
 
     public override async Task<Result<List<CarreraDto>>> GetAll(QueryFilter? filter = null)
     {
@@ -35,11 +38,7 @@ public class CarreraRepository : Repository<CarreraEntity, CarreraDto>
     public async Task<CarreraEntity?> GetByNombre(string nombre)
         => await DbContext.Carreras.FirstOrDefaultAsync(c => c.Nombre == nombre && !c.EstadoEliminado);
     
-    protected override CarreraDto MapToDto(CarreraEntity entity) => new()
-    {
-        Id = entity.Id,
-        Nombre = entity.Nombre
-    };
+    protected override CarreraDto MapToDto(CarreraEntity entity) => _mapper.ToDto(entity);
 }
 
 

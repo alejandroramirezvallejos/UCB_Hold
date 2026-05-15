@@ -9,7 +9,10 @@ namespace IMT_Reservas.Server.Infrastructure.Repositories.Implementations;
 
 public class MuebleRepository : Repository<MuebleEntity, MuebleDto>
 {
-    public MuebleRepository(ApplicationDbContext dbContext) : base(dbContext) { }
+    private readonly MuebleMapper _mapper;
+
+    public MuebleRepository(ApplicationDbContext dbContext, MuebleMapper mapper)
+        : base(dbContext) => _mapper = mapper;
 
     public override async Task<Result<List<MuebleDto>>> GetAll(QueryFilter? filter = null)
     {
@@ -56,18 +59,7 @@ public class MuebleRepository : Repository<MuebleEntity, MuebleDto>
             : Result<MuebleDto>.Success(dto);
     }
     
-    protected override MuebleDto MapToDto(MuebleEntity entity) => new()
-    {
-        Id = entity.Id,
-        Nombre = entity.Nombre,
-        Ubicacion = entity.Ubicacion,
-        NumeroGaveteros = entity.NumeroGaveteros,
-        Tipo = entity.Tipo,
-        Costo = entity.Costo,
-        Longitud = entity.Longitud,
-        Profundidad = entity.Profundidad,
-        Altura = entity.Altura
-    };
+    protected override MuebleDto MapToDto(MuebleEntity entity) => _mapper.ToDto(entity);
 }
 
 

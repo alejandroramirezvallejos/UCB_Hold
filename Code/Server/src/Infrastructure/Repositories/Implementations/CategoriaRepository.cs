@@ -9,7 +9,10 @@ namespace IMT_Reservas.Server.Infrastructure.Repositories.Implementations;
 
 public class CategoriaRepository : Repository<CategoriaEntity, CategoriaDto>
 {
-    public CategoriaRepository(ApplicationDbContext dbContext) : base(dbContext) { }
+    private readonly CategoriaMapper _mapper;
+
+    public CategoriaRepository(ApplicationDbContext dbContext, CategoriaMapper mapper)
+        : base(dbContext) => _mapper = mapper;
 
     public override async Task<Result<List<CategoriaDto>>> GetAll(QueryFilter? filter = null)
     {
@@ -39,11 +42,7 @@ public class CategoriaRepository : Repository<CategoriaEntity, CategoriaDto>
             .AsNoTracking()
             .FirstOrDefaultAsync(c => c.Nombre == nombre && !c.EstadoEliminado);
 
-    protected override CategoriaDto MapToDto(CategoriaEntity entity) => new()
-    {
-        Id = entity.Id,
-        Nombre = entity.Nombre
-    };
+    protected override CategoriaDto MapToDto(CategoriaEntity entity) => _mapper.ToDto(entity);
 }
 
 

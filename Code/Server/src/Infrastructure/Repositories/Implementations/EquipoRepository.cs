@@ -10,7 +10,10 @@ namespace IMT_Reservas.Server.Infrastructure.Repositories.Implementations;
 
 public class EquipoRepository : Repository<EquipoEntity, EquipoDto>
 {
-    public EquipoRepository(ApplicationDbContext dbContext) : base(dbContext) { }
+    private readonly EquipoMapper _mapper;
+
+    public EquipoRepository(ApplicationDbContext dbContext, EquipoMapper mapper)
+        : base(dbContext) => _mapper = mapper;
 
     private static string EstadoEquipoToText(EstadoEquipo estado) => estado switch
     {
@@ -125,20 +128,5 @@ public class EquipoRepository : Repository<EquipoEntity, EquipoDto>
         return Result<object>.Success(null!);
     }
 
-    protected override EquipoDto MapToDto(EquipoEntity entity) => new()
-    {
-        Id = entity.Id,
-        CodigoImt = entity.CodigoImt,
-        CodigoUcb = entity.CodigoUcb,
-        NumeroSerial = entity.NumeroSerial,
-        EstadoEquipo = EstadoEquipoToText(entity.EstadoEquipo),
-        Ubicacion = entity.Ubicacion,
-        CostoReferencia = entity.CostoReferencia,
-        Descripcion = entity.Descripcion,
-        TiempoMaximoPrestamo = entity.TiempoMaximoPrestamo,
-        Procedencia = entity.Procedencia,
-        IdGrupoEquipo = entity.IdGrupoEquipo,
-        IdGavetero = entity.IdGavetero,
-        FechaIngresoEquipo = new DateTime(entity.FechaIngresoEquipo.Year, entity.FechaIngresoEquipo.Month, entity.FechaIngresoEquipo.Day)
-    };
+    protected override EquipoDto MapToDto(EquipoEntity entity) => _mapper.ToDto(entity);
 }

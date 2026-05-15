@@ -1,4 +1,4 @@
-# Despliegue — Oracle Cloud + nginx
+# Despliegue 
 
 Topología productiva sobre 2 VMs en Oracle Cloud Always Free.
 
@@ -14,14 +14,14 @@ Topología productiva sobre 2 VMs en Oracle Cloud Always Free.
               │   VM #1 (App)   │
               │                 │
               │  ┌───────────┐  │
-              │  │  nginx    │  │  ←─ reverse proxy
-              │  │  :80/:443 │  │     sirve Angular estático
-              │  └─────┬─────┘  │     y proxy /api → backend
+              │  │  nginx    │  │  ←─ reverse proxy :80/:443
+              │  │           │  │     sirve Angular estático
+              │  └─────┬─────┘  │     proxy /api/* → backend
               │        │        │
               │        ▼        │
               │  ┌───────────┐  │
-              │  │ .NET API  │  │  ←─ dotnet IMT_Reservas.Server.dll
-              │  │  :5000    │  │     ASPNETCORE_ENVIRONMENT=Production
+              │  │ .NET API  │  │  ←─ ASPNETCORE_ENVIRONMENT=Production
+              │  │  :5000    │  │
               │  └─────┬─────┘  │
               └────────┼────────┘
                        │
@@ -33,7 +33,56 @@ Topología productiva sobre 2 VMs en Oracle Cloud Always Free.
               └─────────────────┘
 ```
 
-**Frontend se conecta vía `http://<IP_VM1>/api/...`** sin puerto explícito (nginx escucha en 80/443).
+Frontend llama `http://<IP_VM1>/api/...` — nginx escucha en :80 y hace proxy al backend en :5000.
+
+---
+
+## VM #2 — PostgreSQL (configurar primero)
+
+### 1. Instalar
+
+```bash
+sudo apt update
+sudo apt install -y postgresql postgresql-contrib
+```
+
+### 2. Acceso remoto
+
+`/etc/postgresql/14/main/postgresql.conf`:
+```
+listen_addresses = '*'
+```
+
+`/etc/postgresql/14/main/pg_hba.conf` (agregar línea):
+```
+host    IMT_Reservas    imt_user    <IP_VM1>/32    md5
+```
+
+```bash
+sudo systemctl restart postgresql
+```
+
+### 3. Crear usuario y base de datos
+
+```bash
+sudo -u postgres psql
+```
+```sql
+CREATE USER imt_user WITH PASSWORD '<password>';
+CREATE DATABASE "IMT_Reservas" OWNER imt_user;
+\q
+```
+
+### 4. Cargar schema
+
+```bash
+psql -U imt_user -d IMT_Reservas -h localhost -f DataBase/database.ddl
+```
+
+### 5. Firewall Oracle Cloud
+
+- VM #2: abrir puerto `5432` **solo** desde la IP de VM #1 (Security List → Ingress Rule)
+- VM #1: abrir puertos `80` y `443` desde `0.0.0.0/0`
 
 ---
 
@@ -51,14 +100,14 @@ sudo apt update && sudo apt install -y aspnetcore-runtime-8.0
 
 ### 2. Publicar backend
 
-En máquina de desarrollo:
+En la máquina de desarrollo:
 ```bash
 cd Code/Server
 dotnet publish -c Release -o ./publish
 scp -r ./publish/* ubuntu@<IP_VM1>:/var/www/imt-reservas/
 ```
 
-### 3. Build frontend
+### 3. Build y publicar frontend
 
 ```bash
 cd Code/Client
@@ -66,15 +115,17 @@ ng build --configuration production --base-href /
 scp -r dist/* ubuntu@<IP_VM1>:/var/www/imt-frontend/
 ```
 
-### 4. Variables de entorno producción
+### 4. Variables de entorno
 
-En VM #1, crear `/etc/imt-reservas.env`:
+Crear `/etc/imt-reservas.env` en VM #1:
 ```bash
 ASPNETCORE_ENVIRONMENT=Production
 ASPNETCORE_URLS=http://localhost:5000
 ConnectionStrings__PostgreSQL=Host=<IP_VM2>;Port=5432;Database=IMT_Reservas;Username=imt_user;Password=<password>;Pooling=true;MinPoolSize=2;MaxPoolSize=20
 AllowedOrigins__0=http://<IP_VM1>
 ```
+
+> `MinPoolSize=2;MaxPoolSize=20` — pre-calienta conexiones y limita footprint de memoria.
 
 ### 5. Servicio systemd
 
@@ -98,14 +149,14 @@ EnvironmentFile=/etc/imt-reservas.env
 WantedBy=multi-user.target
 ```
 
-Activar:
 ```bash
+sudo systemctl daemon-reload
 sudo systemctl enable imt-reservas
 sudo systemctl start imt-reservas
 sudo systemctl status imt-reservas
 ```
 
-### 6. Configuración nginx
+### 6. nginx
 
 `/etc/nginx/sites-available/imt-reservas`:
 ```nginx
@@ -131,87 +182,48 @@ server {
 }
 ```
 
-Activar:
 ```bash
 sudo ln -s /etc/nginx/sites-available/imt-reservas /etc/nginx/sites-enabled/
-sudo rm /etc/nginx/sites-enabled/default
+sudo rm -f /etc/nginx/sites-enabled/default
 sudo nginx -t
 sudo systemctl reload nginx
 ```
 
 ---
 
-## VM #2 — PostgreSQL
-
-### 1. Instalar
-```bash
-sudo apt install -y postgresql postgresql-contrib
-```
-
-### 2. Configurar acceso remoto
-
-`/etc/postgresql/14/main/postgresql.conf`:
-```
-listen_addresses = '*'
-```
-
-`/etc/postgresql/14/main/pg_hba.conf`:
-```
-host    IMT_Reservas    imt_user    <IP_VM1>/32    md5
-```
-
-Restart:
-```bash
-sudo systemctl restart postgresql
-```
-
-### 3. Crear DB y usuario
-```bash
-sudo -u postgres psql
-```
-```sql
-CREATE USER imt_user WITH PASSWORD '<password>';
-CREATE DATABASE "IMT_Reservas" OWNER imt_user;
-\q
-```
-
-### 4. Cargar schema
-```bash
-psql -U imt_user -d IMT_Reservas -h localhost -f database.ddl
-```
-
-### 5. Firewall Oracle Cloud
-- VM #2: abrir puerto 5432 **solo** desde IP de VM #1 (Security List > Ingress Rule)
-- VM #1: abrir puertos 80 y 443 desde 0.0.0.0/0
-
----
-
 ## Logs en producción
 
-`appsettings.Production.json` configura `LogLevel: Warning` — solo warnings y errores se loguean. Los logs van a `journalctl`:
+`appsettings.Production.json` usa `LogLevel: Warning` — solo warnings y errores. Logs van a `journalctl`:
 
 ```bash
-sudo journalctl -u imt-reservas -f          # tail
-sudo journalctl -u imt-reservas --since today
+sudo journalctl -u imt-reservas -f               # tail en vivo
+sudo journalctl -u imt-reservas --since today     # solo hoy
+sudo journalctl -u imt-reservas -n 100            # últimas 100 líneas
 ```
 
-**Sin Swagger** en producción (configurado por `app.Environment.IsDevelopment()` en `Program.cs`).
+Swagger está deshabilitado en producción (`app.Environment.IsDevelopment()` en `Program.cs`).
 
 ---
 
 ## Actualización
 
 ```bash
-# en dev
+# En máquina de desarrollo — compilar
 cd Code/Server && dotnet publish -c Release -o ./publish
 cd ../Client && ng build --configuration production
 
-# en VM #1
+# En VM #1 — desplegar
 sudo systemctl stop imt-reservas
 
-# sync archivos via scp / rsync
+scp -r Code/Server/publish/* ubuntu@<IP_VM1>:/var/www/imt-reservas/
+scp -r Code/Client/dist/*   ubuntu@<IP_VM1>:/var/www/imt-frontend/
 
 sudo systemctl start imt-reservas
 sudo systemctl reload nginx
 ```
 
+Verificar:
+```bash
+sudo systemctl status imt-reservas
+curl -s http://localhost:5000/api/GrupoEquipo | head -c 200
+```

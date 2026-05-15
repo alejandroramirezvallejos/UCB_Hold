@@ -8,7 +8,10 @@ namespace IMT_Reservas.Server.Infrastructure.Repositories.Implementations;
 
 public class ContratoRepository : Repository<ContratoEntity, ContratoDto>
 {
-    public ContratoRepository(ApplicationDbContext dbContext) : base(dbContext) { }
+    private readonly ContratoMapper _mapper;
+
+    public ContratoRepository(ApplicationDbContext dbContext, ContratoMapper mapper)
+        : base(dbContext) => _mapper = mapper;
 
     public async Task<Result<ContratoEntity>> GetEntityByPrestamoId(int prestamoId)
     {
@@ -46,9 +49,5 @@ public class ContratoRepository : Repository<ContratoEntity, ContratoDto>
         return Result<object>.Success(new { });
     }
 
-    protected override ContratoDto MapToDto(ContratoEntity entity) => new()
-    {
-        Id = entity.Id,
-        ContratoHtml = entity.ContratoHtml
-    };
+    protected override ContratoDto MapToDto(ContratoEntity entity) => _mapper.ToDto(entity);
 }

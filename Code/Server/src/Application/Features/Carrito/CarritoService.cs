@@ -21,6 +21,7 @@ public class CarritoService
         if (request.FechaInicio == null || request.FechaFin == null || request.ArrayIds == null || request.ArrayIds.Count == 0)
         {
             _logger.LogWarning("Disponibilidad request missing fields or empty IDs: Inicio={Inicio}, Fin={Fin}, IdsCount={IdsCount}", request.FechaInicio, request.FechaFin, request.ArrayIds?.Count);
+            
             return Result<List<CarritoDto>>.Success(new List<CarritoDto>());
         }
 
@@ -46,7 +47,9 @@ public class CarritoService
             foreach (var grupoId in request.ArrayIds)
             {
                 var grupo = grupos.FirstOrDefault(grupoEquipo => grupoEquipo.Id == grupoId);
-                if (grupo == null) continue;
+                
+                if (grupo == null) 
+                    continue;
 
                 var totalCantidad = grupo.Cantidad;
                 var ocupados = prestamosActivos.Count(prestamoActivo =>

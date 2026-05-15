@@ -9,7 +9,10 @@ namespace IMT_Reservas.Server.Infrastructure.Repositories.Implementations;
 
 public class GaveteroRepository : Repository<GaveteroEntity, GaveteroDto>
 {
-    public GaveteroRepository(ApplicationDbContext dbContext) : base(dbContext) { }
+    private readonly GaveteroMapper _mapper;
+
+    public GaveteroRepository(ApplicationDbContext dbContext, GaveteroMapper mapper)
+        : base(dbContext) => _mapper = mapper;
 
     public override async Task<Result<List<GaveteroDto>>> GetAll(QueryFilter? filter = null)
     {
@@ -53,15 +56,6 @@ public class GaveteroRepository : Repository<GaveteroEntity, GaveteroDto>
             .Select(g => g.IdMueble)
             .FirstOrDefaultAsync();
 
-    protected override GaveteroDto MapToDto(GaveteroEntity entity) => new()
-    {
-        Id = entity.Id,
-        Nombre = entity.Nombre,
-        Tipo = entity.Tipo,
-        NombreMueble = null,
-        Longitud = entity.Longitud,
-        Profundidad = entity.Profundidad,
-        Altura = entity.Altura
-    };
+    protected override GaveteroDto MapToDto(GaveteroEntity entity) => _mapper.ToDto(entity);
 }
 

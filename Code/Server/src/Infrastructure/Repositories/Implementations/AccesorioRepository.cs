@@ -9,7 +9,10 @@ namespace IMT_Reservas.Server.Infrastructure.Repositories.Implementations;
 
 public class AccesorioRepository : Repository<AccesorioEntity, AccesorioDto>
 {
-    public AccesorioRepository(ApplicationDbContext dbContext) : base(dbContext) { }
+    private readonly AccesorioMapper _mapper;
+
+    public AccesorioRepository(ApplicationDbContext dbContext, AccesorioMapper mapper)
+        : base(dbContext) => _mapper = mapper;
 
     public override async Task<Result<List<AccesorioDto>>> GetAll(QueryFilter? filter = null)
     {
@@ -69,17 +72,5 @@ public class AccesorioRepository : Repository<AccesorioEntity, AccesorioDto>
             .Select(equipo => equipo.Id)
             .FirstOrDefaultAsync();
 
-    protected override AccesorioDto MapToDto(AccesorioEntity entity) => new()
-    {
-        Id = entity.Id,
-        Nombre = entity.Nombre,
-        Modelo = entity.Modelo,
-        Tipo = entity.Tipo,
-        Descripcion = entity.Descripcion,
-        Precio = entity.Precio,
-        UrlDataSheet = entity.UrlDataSheet,
-        IdEquipo = entity.IdEquipo,
-        CodigoImtEquipoAsociado = null,
-        NombreEquipoAsociado = null
-    };
+    protected override AccesorioDto MapToDto(AccesorioEntity entity) => _mapper.ToDto(entity);
 }

@@ -9,7 +9,10 @@ namespace IMT_Reservas.Server.Infrastructure.Repositories.Implementations;
 
 public class EmpresaMantenimientoRepository : Repository<EmpresaMantenimientoEntity, EmpresaMantenimientoDto>
 {
-    public EmpresaMantenimientoRepository(ApplicationDbContext dbContext) : base(dbContext) { }
+    private readonly EmpresaMantenimientoMapper _mapper;
+
+    public EmpresaMantenimientoRepository(ApplicationDbContext dbContext, EmpresaMantenimientoMapper mapper)
+        : base(dbContext) => _mapper = mapper;
 
     public override async Task<Result<List<EmpresaMantenimientoDto>>> GetAll(QueryFilter? filter = null)
     {
@@ -50,15 +53,7 @@ public class EmpresaMantenimientoRepository : Repository<EmpresaMantenimientoEnt
             : Result<EmpresaMantenimientoDto>.Success(dto);
     }
     
-    protected override EmpresaMantenimientoDto MapToDto(EmpresaMantenimientoEntity entity) => new()
-    {
-        Id = entity.Id,
-        NombreEmpresa = entity.Nombre,
-        NombreResponsable = entity.NombreResponsable,
-        ApellidoResponsable = entity.ApellidoResponsable,
-        Telefono = entity.Telefono,
-        Direccion = entity.Direccion
-    };
+    protected override EmpresaMantenimientoDto MapToDto(EmpresaMantenimientoEntity entity) => _mapper.ToDto(entity);
 }
 
 

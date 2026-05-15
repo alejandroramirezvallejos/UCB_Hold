@@ -9,7 +9,10 @@ namespace IMT_Reservas.Server.Infrastructure.Repositories.Implementations;
 
 public class MantenimientoRepository : Repository<MantenimientoEntity, MantenimientoDto>
 {
-    public MantenimientoRepository(ApplicationDbContext dbContext) : base(dbContext) { }
+    private readonly MantenimientoMapper _mapper;
+
+    public MantenimientoRepository(ApplicationDbContext dbContext, MantenimientoMapper mapper)
+        : base(dbContext) => _mapper = mapper;
 
     public override async Task<Result<List<MantenimientoDto>>> GetAll(QueryFilter? filter = null)
     {
@@ -69,13 +72,5 @@ public class MantenimientoRepository : Repository<MantenimientoEntity, Mantenimi
         return dto == null ? Result<MantenimientoDto>.NotFound() : Result<MantenimientoDto>.Success(dto);
     }
 
-    protected override MantenimientoDto MapToDto(MantenimientoEntity entity) => new()
-    {
-        Id = entity.Id,
-        IdEmpresa = entity.IdEmpresa,
-        FechaMantenimiento = entity.FechaMantenimiento,
-        FechaFinalMantenimiento = entity.FechaFinalMantenimiento,
-        Costo = entity.Costo,
-        Descripcion = entity.Descripcion
-    };
+    protected override MantenimientoDto MapToDto(MantenimientoEntity entity) => _mapper.ToDto(entity);
 }

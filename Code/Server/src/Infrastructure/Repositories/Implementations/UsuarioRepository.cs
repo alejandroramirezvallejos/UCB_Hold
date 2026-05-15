@@ -9,7 +9,10 @@ namespace IMT_Reservas.Server.Infrastructure.Repositories.Implementations;
 
 public class UsuarioRepository : Repository<UsuarioEntity, UsuarioDto>
 {
-    public UsuarioRepository(ApplicationDbContext dbContext) : base(dbContext) { }
+    private readonly UsuarioMapper _mapper;
+
+    public UsuarioRepository(ApplicationDbContext dbContext, UsuarioMapper mapper)
+        : base(dbContext) => _mapper = mapper;
 
     public override async Task<Result<List<UsuarioDto>>> GetAll(QueryFilter? filter = null)
     {
@@ -59,23 +62,7 @@ public class UsuarioRepository : Repository<UsuarioEntity, UsuarioDto>
         return Result<object>.Success(null!);
     }
 
-    protected override UsuarioDto MapToDto(UsuarioEntity entity) => new()
-    {
-        Carnet = entity.Carnet,
-        Nombre = entity.Nombre,
-        ApellidoPaterno = entity.ApellidoPaterno,
-        ApellidoMaterno = entity.ApellidoMaterno,
-        Rol = entity.Rol.ToString().ToLowerInvariant(),
-        Email = entity.Email,
-        CarreraNombre = null,
-        IdCarrera = entity.IdCarrera,
-        Telefono = entity.Telefono,
-        TelefonoReferencia = entity.TelefonoReferencia,
-        NombreReferencia = entity.NombreReferencia,
-        EmailReferencia = entity.EmailReferencia,
-        ImagenFrenteCarnet = entity.ImagenFrenteCarnet,
-        ImagenAtrasCarnet = entity.ImagenAtrasCarnet
-    };
+    protected override UsuarioDto MapToDto(UsuarioEntity entity) => _mapper.ToDto(entity);
 }
 
 

@@ -16,7 +16,9 @@ public class MuebleService : Service<MuebleEntity, MuebleRepository, MuebleDto>
     public async Task<Result<MuebleDto>> Create(MuebleDto dto)
     {
         var validation = await _validator.ValidateAsync(dto);
-        if (!validation.IsValid) return validation.ToResult<MuebleDto>();
+        
+        if (!validation.IsValid) 
+            return validation.ToResult<MuebleDto>();
 
         return await base.Create(_mapper.ToEntity(dto));
     }
@@ -24,10 +26,13 @@ public class MuebleService : Service<MuebleEntity, MuebleRepository, MuebleDto>
     public async Task<Result<MuebleDto>> Update(int id, MuebleDto dto)
     {
         var validation = await _validator.ValidateAsync(dto);
-        if (!validation.IsValid) return validation.ToResult<MuebleDto>();
+        
+        if (!validation.IsValid) 
+            return validation.ToResult<MuebleDto>();
 
         var entity = _mapper.ToEntity(dto);
         entity.Id = id;
+        
         return await base.Update(entity);
     }
 }

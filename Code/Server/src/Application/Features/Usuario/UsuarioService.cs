@@ -19,7 +19,9 @@ public class UsuarioService : Service<UsuarioEntity, UsuarioRepository, UsuarioD
     public async Task<Result<UsuarioDto>> Create(UsuarioDto dto)
     {
         var validation = await _validator.ValidateAsync(dto);
-        if (!validation.IsValid) return validation.ToResult<UsuarioDto>();
+        
+        if (!validation.IsValid) 
+            return validation.ToResult<UsuarioDto>();
 
         await ResolveCarrera(dto);
 
@@ -36,6 +38,7 @@ public class UsuarioService : Service<UsuarioEntity, UsuarioRepository, UsuarioD
         entity.Contrasena = BCrypt.Net.BCrypt.HashPassword(dto.Contrasena);
 
         var result = await base.Create(entity);
+        
         if (result.IsSuccess && result.Value != null)
             result.Value.CarreraNombre = await GetCarreraNombre(entity.IdCarrera);
 
@@ -44,15 +47,21 @@ public class UsuarioService : Service<UsuarioEntity, UsuarioRepository, UsuarioD
 
     public async Task<Result<UsuarioDto>> Update(string carnet, UsuarioDto dto)
     {
+        var validation = await _validator.ValidateAsync(dto);
+        if (!validation.IsValid)
+            return validation.ToResult<UsuarioDto>();
+
         var existing = await _dbContext.Usuarios
             .FirstOrDefaultAsync(usuario => usuario.Carnet == carnet && !usuario.EstadoEliminado);
 
-        if (existing == null) return Result<UsuarioDto>.NotFound();
+        if (existing == null) 
+            return Result<UsuarioDto>.NotFound();
 
         await ResolveCarrera(dto);
         _mapper.Update(dto, existing);
 
-        if ((dto.IdCarrera ?? 0) > 0) existing.IdCarrera = dto.IdCarrera!.Value;
+        if ((dto.IdCarrera ?? 0) > 0) 
+            existing.IdCarrera = dto.IdCarrera!.Value;
 
         if (!string.IsNullOrWhiteSpace(dto.Contrasena))
             existing.Contrasena = BCrypt.Net.BCrypt.HashPassword(dto.Contrasena);
@@ -61,16 +70,20 @@ public class UsuarioService : Service<UsuarioEntity, UsuarioRepository, UsuarioD
 
         var resultDto = _mapper.ToDto(existing);
         resultDto.CarreraNombre = await GetCarreraNombre(existing.IdCarrera);
+       
         return Result<UsuarioDto>.Success(resultDto);
     }
 
     public async Task<Result<UsuarioDto>> Get(string carnet)
     {
         var usuario = await Repository.GetByCarnet(carnet);
-        if (usuario == null) return Result<UsuarioDto>.NotFound();
+        
+        if (usuario == null) 
+            return Result<UsuarioDto>.NotFound();
 
         var dto = _mapper.ToDto(usuario);
         dto.CarreraNombre = await GetCarreraNombre(usuario.IdCarrera);
+        
         return Result<UsuarioDto>.Success(dto);
     }
 
@@ -92,17 +105,20 @@ public class UsuarioService : Service<UsuarioEntity, UsuarioRepository, UsuarioD
             })
             .FirstOrDefaultAsync();
 
-        if (loginData == null) return Result<UsuarioDto>.Unauthorized("Credenciales inválidas");
+        if (loginData == null) 
+            return Result<UsuarioDto>.Unauthorized("Credenciales inválidas");
 
         var passwordValid = !string.IsNullOrEmpty(loginData.Usuario.Contrasena)
                          && loginData.Usuario.Contrasena.StartsWith("$2")
                          && loginData.Usuario.Contrasena.Length == 60
                          && BCrypt.Net.BCrypt.Verify(password, loginData.Usuario.Contrasena);
 
-        if (!passwordValid) return Result<UsuarioDto>.Unauthorized("Credenciales inválidas");
+        if (!passwordValid) 
+            return Result<UsuarioDto>.Unauthorized("Credenciales inválidas");
 
         var dto = _mapper.ToDto(loginData.Usuario);
         dto.CarreraNombre = loginData.CarreraNombre;
+        
         return Result<UsuarioDto>.Success(dto);
     }
 
@@ -111,8 +127,11 @@ public class UsuarioService : Service<UsuarioEntity, UsuarioRepository, UsuarioD
 
     private async Task ResolveCarrera(UsuarioDto dto)
     {
-        if ((dto.IdCarrera ?? 0) > 0) return;
-        if (string.IsNullOrWhiteSpace(dto.CarreraNombre)) return;
+        if ((dto.IdCarrera ?? 0) > 0) 
+            return;
+        
+        if (string.IsNullOrWhiteSpace(dto.CarreraNombre)) 
+            return;
 
         var carrera = await _dbContext.Carreras
             .AsNoTracking()

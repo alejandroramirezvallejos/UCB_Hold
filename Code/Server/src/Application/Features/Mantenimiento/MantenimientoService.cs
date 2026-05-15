@@ -22,16 +22,21 @@ public class MantenimientoService : Service<MantenimientoEntity, MantenimientoRe
         await ResolveEmpresa(dto);
 
         var validation = await _validator.ValidateAsync(dto);
-        if (!validation.IsValid) return validation.ToResult<MantenimientoDto>();
+        
+        if (!validation.IsValid) 
+            return validation.ToResult<MantenimientoDto>();
 
         if (!await _dbContext.EmpresasMantenimiento.AnyAsync(empresa => empresa.Id == dto.IdEmpresa && !empresa.EstadoEliminado))
             return Result<MantenimientoDto>.Error("Empresa mantenimiento no existe");
 
         var entity = _mapper.ToEntity(dto);
         var result = await base.Create(entity);
-        if (!result.IsSuccess) return result;
+        
+        if (!result.IsSuccess) 
+            return result;
 
         await AssignDetalles(entity.Id, dto);
+        
         return result;
     }
 
@@ -40,13 +45,16 @@ public class MantenimientoService : Service<MantenimientoEntity, MantenimientoRe
         await ResolveEmpresa(dto);
 
         var validation = await _validator.ValidateAsync(dto);
-        if (!validation.IsValid) return validation.ToResult<MantenimientoDto>();
+        
+        if (!validation.IsValid) 
+            return validation.ToResult<MantenimientoDto>();
 
         if (!await _dbContext.EmpresasMantenimiento.AnyAsync(empresa => empresa.Id == dto.IdEmpresa && !empresa.EstadoEliminado))
             return Result<MantenimientoDto>.Error("Empresa mantenimiento no existe");
 
         var entity = _mapper.ToEntity(dto);
         entity.Id = id;
+        
         return await base.Update(entity);
     }
 
@@ -57,15 +65,19 @@ public class MantenimientoService : Service<MantenimientoEntity, MantenimientoRe
             .ToListAsync();
 
         foreach (var detalle in detalles) detalle.EstadoEliminado = true;
-        if (detalles.Count > 0) await _dbContext.SaveChangesAsync();
+        
+        if (detalles.Count > 0) 
+            await _dbContext.SaveChangesAsync();
 
         return await base.Delete(id);
     }
 
     private async Task ResolveEmpresa(MantenimientoDto dto)
     {
-        if ((dto.IdEmpresa ?? 0) > 0) return;
-        if (string.IsNullOrWhiteSpace(dto.NombreEmpresaMantenimiento)) return;
+        if ((dto.IdEmpresa ?? 0) > 0) 
+            return;
+        if (string.IsNullOrWhiteSpace(dto.NombreEmpresaMantenimiento)) 
+            return;
 
         var empresa = await _dbContext.EmpresasMantenimiento
             .AsNoTracking()
@@ -76,14 +88,16 @@ public class MantenimientoService : Service<MantenimientoEntity, MantenimientoRe
 
     private async Task AssignDetalles(int mantenimientoId, MantenimientoDto dto)
     {
-        if (dto.CodigoIMT == null || dto.CodigoIMT.Length == 0) return;
+        if (dto.CodigoIMT == null || dto.CodigoIMT.Length == 0) 
+            return;
 
         for (var i = 0; i < dto.CodigoIMT.Length; i++)
         {
             var equipo = await _dbContext.Equipos
                 .FirstOrDefaultAsync(equipo => equipo.CodigoImt == dto.CodigoIMT[i] && !equipo.EstadoEliminado);
 
-            if (equipo == null) continue;
+            if (equipo == null) 
+                continue;
 
             _dbContext.DetallesMantenimientos.Add(new DetalleMantenimientoEntity
             {
@@ -94,6 +108,7 @@ public class MantenimientoService : Service<MantenimientoEntity, MantenimientoRe
                 EstadoEliminado = false
             });
         }
+        
         await _dbContext.SaveChangesAsync();
     }
 }

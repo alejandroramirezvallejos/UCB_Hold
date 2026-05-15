@@ -10,7 +10,10 @@ namespace IMT_Reservas.Server.Infrastructure.Repositories.Implementations;
 
 public class PrestamoRepository : Repository<PrestamoEntity, PrestamoDto>
 {
-    public PrestamoRepository(ApplicationDbContext dbContext) : base(dbContext) { }
+    private readonly PrestamoMapper _mapper;
+
+    public PrestamoRepository(ApplicationDbContext dbContext, PrestamoMapper mapper)
+        : base(dbContext) => _mapper = mapper;
 
     public override async Task<Result<List<PrestamoDto>>> GetAll(QueryFilter? filter = null)
     {
@@ -113,19 +116,7 @@ public class PrestamoRepository : Repository<PrestamoEntity, PrestamoDto>
 
     public PrestamoDto ConvertToDto(PrestamoEntity entity) => MapToDto(entity);
 
-    protected override PrestamoDto MapToDto(PrestamoEntity entity) => new()
-    {
-        Id = entity.Id,
-        CarnetUsuario = entity.Carnet,
-        EstadoPrestamo = EstadoPrestamoState.ToText(entity.EstadoPrestamo),
-        FechaSolicitud = entity.FechaSolicitud,
-        FechaDevolucionEsperada = entity.FechaDevolucionEsperada,
-        FechaPrestamoEsperada = entity.FechaPrestamoEsperada,
-        FechaPrestamo = entity.FechaPrestamo,
-        FechaDevolucion = entity.FechaDevolucion,
-        Observacion = entity.Observacion,
-        IdContrato = entity.IdContrato
-    };
+    protected override PrestamoDto MapToDto(PrestamoEntity entity) => _mapper.ToDto(entity);
 
     private class FlatRow
     {

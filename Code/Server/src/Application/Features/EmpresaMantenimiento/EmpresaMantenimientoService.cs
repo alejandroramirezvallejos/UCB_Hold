@@ -16,7 +16,9 @@ public class EmpresaMantenimientoService : Service<EmpresaMantenimientoEntity, E
     public async Task<Result<EmpresaMantenimientoDto>> Create(EmpresaMantenimientoDto dto)
     {
         var validation = await _validator.ValidateAsync(dto);
-        if (!validation.IsValid) return validation.ToResult<EmpresaMantenimientoDto>();
+        
+        if (!validation.IsValid) 
+            return validation.ToResult<EmpresaMantenimientoDto>();
 
         return await base.Create(_mapper.ToEntity(dto));
     }
@@ -24,10 +26,13 @@ public class EmpresaMantenimientoService : Service<EmpresaMantenimientoEntity, E
     public async Task<Result<EmpresaMantenimientoDto>> Update(int id, EmpresaMantenimientoDto dto)
     {
         var validation = await _validator.ValidateAsync(dto);
-        if (!validation.IsValid) return validation.ToResult<EmpresaMantenimientoDto>();
+        
+        if (!validation.IsValid) 
+            return validation.ToResult<EmpresaMantenimientoDto>();
 
         var entity = _mapper.ToEntity(dto);
         entity.Id = id;
+        
         return await base.Update(entity);
     }
 }
