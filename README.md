@@ -8,12 +8,12 @@
 
 Plataforma web para gestión de préstamos de equipos, accesorios y herramientas del laboratorio IMT de la Universidad Católica Boliviana.
 
-[![.NET](https://img.shields.io/badge/.NET-8.0-yellow?style=flat-square&logo=dotnet)](https://dotnet.microsoft.com/)
-[![Angular](https://img.shields.io/badge/Angular-18-yellow?style=flat-square&logo=angular)](https://angular.io/)
-[![PostgreSQL](https://img.shields.io/badge/PostgreSQL-14-yellow?style=flat-square&logo=postgresql)](https://www.postgresql.org/)
-[![EF Core](https://img.shields.io/badge/EF_Core-8.0-yellow?style=flat-square&logo=nuget)](https://learn.microsoft.com/en-us/ef/core/)
-[![Mapperly](https://img.shields.io/badge/Mapperly-3.6-yellow?style=flat-square)](https://mapperly.riok.app/)
-[![FluentValidation](https://img.shields.io/badge/FluentValidation-11.9-yellow?style=flat-square)](https://fluentvalidation.net/)
+[![.NET](https://img.shields.io/badge/.NET-8.0-512BD4?style=flat-square&logo=dotnet)](https://dotnet.microsoft.com/)
+[![Angular](https://img.shields.io/badge/Angular-18-DD0031?style=flat-square&logo=angular)](https://angular.io/)
+[![PostgreSQL](https://img.shields.io/badge/PostgreSQL-14-4169E1?style=flat-square&logo=postgresql)](https://www.postgresql.org/)
+[![EF Core](https://img.shields.io/badge/EF_Core-8.0-512BD4?style=flat-square&logo=nuget)](https://learn.microsoft.com/en-us/ef/core/)
+[![Mapperly](https://img.shields.io/badge/Mapperly-3.6-00ADB5?style=flat-square)](https://mapperly.riok.app/)
+[![FluentValidation](https://img.shields.io/badge/FluentValidation-11.9-00B4AB?style=flat-square)](https://fluentvalidation.net/)
 
 </div>
 
@@ -106,8 +106,8 @@ cd Code/Client && npm start
 | Servicio | URL |
 |---------|-----|
 | Frontend | http://localhost:4200 |
-| Backend API | https://localhost:7001 |
-| Swagger | https://localhost:7001/swagger |
+| Backend API | https://localhost:7216 |
+| Swagger | https://localhost:7216/swagger |
 
 ---
 
