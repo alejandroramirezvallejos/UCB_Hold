@@ -11,7 +11,7 @@ public class Repository<TEntity, TDto> where TEntity : class where TDto : class
     protected readonly ApplicationDbContext DbContext;
     private readonly IMapper<TEntity, TDto> _mapper;
 
-    protected Repository(ApplicationDbContext dbContext, IMapper<TEntity, TDto> mapper)
+    public Repository(ApplicationDbContext dbContext, IMapper<TEntity, TDto> mapper)
     {
         DbContext = dbContext;
         _mapper = mapper;
