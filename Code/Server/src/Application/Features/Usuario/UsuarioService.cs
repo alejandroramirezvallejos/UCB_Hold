@@ -90,7 +90,7 @@ public class UsuarioService : Service<UsuarioEntity, UsuarioRepository, UsuarioD
         if (usuario == null)
             return Result<UsuarioDto>.Unauthorized("Credenciales inválidas");
 
-        var passwordValid = !string.IsNullOrEmpty(usuario.Contrasena)
+        var passwordValid = !string.IsNullOrWhiteSpace(usuario.Contrasena)
                          && BCrypt.Net.BCrypt.Verify(password, usuario.Contrasena);
 
         if (!passwordValid)
