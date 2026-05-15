@@ -5,6 +5,8 @@
     <option name="PASS_PARENT_ENVS" value="1" />
     <envs>
       <env name="ASPNETCORE_ENVIRONMENT" value="Development" />
+      <env name="ASPNETCORE_URLS" value="https://localhost:7216;http://localhost:5190" />
+      <env name="ASPNETCORE_HTTPS_PORT" value="7216" />
     </envs>
     <method v="2" />
   </configuration>
