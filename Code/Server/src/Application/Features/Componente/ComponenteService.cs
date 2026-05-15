@@ -1,4 +1,5 @@
 using Ardalis.Result;
+using FluentValidation;
 using IMT_Reservas.Server.Application.Abstraction;
 using IMT_Reservas.Server.Infrastructure.Repositories.Implementations;
 using ComponenteEntity = IMT_Reservas.Server.Core.Entities.Componente;
@@ -7,68 +8,40 @@ namespace IMT_Reservas.Server.Application.Features.Componente;
 public class ComponenteService : Service<ComponenteEntity, ComponenteRepository, ComponenteDto>
 {
     private readonly ComponenteRepository _repository;
+    private readonly ComponenteMapper _mapper;
+    private readonly IValidator<ComponenteDto> _validator;
 
-    public ComponenteService(ComponenteRepository repository)
-        : base(repository) => _repository = repository;
+    public ComponenteService(ComponenteRepository repository, ComponenteMapper mapper, IValidator<ComponenteDto> validator)
+        : base(repository) => (_repository, _mapper, _validator) = (repository, mapper, validator);
 
-    public override async Task<Result<ComponenteDto>> Create(ComponenteEntity entity)
+    public async Task<Result<ComponenteDto>> Create(ComponenteDto dto)
     {
-        if (entity.IdEquipo <= 0)
-            return Result<ComponenteDto>.Error("Equipo no encontrado");
+        await ResolveEquipoId(dto);
 
-        return await base.Create(entity);
+        var validation = await _validator.ValidateAsync(dto);
+        if (!validation.IsValid) return validation.ToResult<ComponenteDto>();
+
+        return await base.Create(_mapper.ToEntity(dto));
     }
 
-    public override async Task<Result<ComponenteDto>> Update(ComponenteEntity entity)
+    public async Task<Result<ComponenteDto>> Update(int id, ComponenteDto dto)
     {
-        if (entity.IdEquipo <= 0)
-            return Result<ComponenteDto>.Error("Equipo no encontrado");
+        await ResolveEquipoId(dto);
 
+        var validation = await _validator.ValidateAsync(dto);
+        if (!validation.IsValid) return validation.ToResult<ComponenteDto>();
+
+        var entity = _mapper.ToEntity(dto);
+        entity.Id = id;
         return await base.Update(entity);
     }
 
-    public async Task<Result<ComponenteDto>> CreateFromDto(ComponenteDto dto)
+    private async Task ResolveEquipoId(ComponenteDto dto)
     {
-        var equipoId = dto.IdEquipo ?? 0;
-        
-        if (equipoId <= 0 && !string.IsNullOrWhiteSpace(dto.CodigoImtEquipo) &&
-            int.TryParse(dto.CodigoImtEquipo, out var codigoImtInt))
-            equipoId = await _repository.GetEquipoByCodigoImt(codigoImtInt) ?? 0;
+        if ((dto.IdEquipo ?? 0) > 0) return;
 
-        var entity = new ComponenteEntity
-        {
-            Nombre = dto.Nombre ?? string.Empty,
-            Modelo = dto.Modelo ?? string.Empty,
-            Tipo = dto.Tipo,
-            Descripcion = dto.Descripcion,
-            PrecioReferencia = dto.PrecioReferencia,
-            IdEquipo = equipoId,
-            UrlDataSheet = dto.UrlDataSheet
-        };
-        
-        return await Create(entity);
-    }
-
-    public async Task<Result<ComponenteDto>> UpdateFromDto(int id, ComponenteDto dto)
-    {
-        var equipoId = dto.IdEquipo ?? 0;
-        
-        if (equipoId <= 0 && !string.IsNullOrWhiteSpace(dto.CodigoImtEquipo) &&
-            int.TryParse(dto.CodigoImtEquipo, out var codigoImtInt))
-            equipoId = await _repository.GetEquipoByCodigoImt(codigoImtInt) ?? 0;
-
-        var entity = new ComponenteEntity
-        {
-            Id = id,
-            Nombre = dto.Nombre ?? string.Empty,
-            Modelo = dto.Modelo ?? string.Empty,
-            Tipo = dto.Tipo,
-            Descripcion = dto.Descripcion,
-            PrecioReferencia = dto.PrecioReferencia,
-            IdEquipo = equipoId,
-            UrlDataSheet = dto.UrlDataSheet
-        };
-        
-        return await Update(entity);
+        if (!string.IsNullOrWhiteSpace(dto.CodigoImtEquipo)
+            && int.TryParse(dto.CodigoImtEquipo, out var codigoImtInt))
+            dto.IdEquipo = await _repository.GetEquipoByCodigoImt(codigoImtInt) ?? 0;
     }
 }

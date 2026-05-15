@@ -199,7 +199,7 @@ sudo journalctl -u imt-reservas --since today
 
 ---
 
-## Actualización (deploy nuevo)
+## Actualización
 
 ```bash
 # en dev
@@ -215,13 +215,3 @@ sudo systemctl start imt-reservas
 sudo systemctl reload nginx
 ```
 
----
-
-## Performance esperada
-
-- **Login warm:** < 500ms (BCrypt ~250ms + query ~50ms)
-- **Cold start (primer request):** < 2s con `MinPoolSize=2`
-- **RAM backend idle:** < 300MB
-- **RAM backend bajo carga:** < 700MB (objetivo)
-- **GET /api/Accesorio:** < 200ms con 1000 registros
-- **GET /api/Mantenimiento:** < 300ms con 1000 registros

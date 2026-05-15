@@ -25,34 +25,34 @@ public class CarritoService
         }
 
         var response = new List<CarritoDto>();
-        var grupos = await _dbContext.GruposEquipos.Where(g => request.ArrayIds.Contains(g.Id)).ToListAsync();
+        var grupos = await _dbContext.GruposEquipos
+            .Where(grupoEquipo => request.ArrayIds.Contains(grupoEquipo.Id))
+            .ToListAsync();
         var fechaInicio = request.FechaInicio.Value.Date;
         var fechaFin = request.FechaFin.Value.Date;
 
-        var prestamosActivos = await (from dp in _dbContext.DetallesPrestamos
-                join p in _dbContext.Prestamos on dp.IdPrestamo equals p.Id
-                join e in _dbContext.Equipos on dp.IdEquipo equals e.Id
-                where request.ArrayIds.Contains(e.IdGrupoEquipo) &&
-                      (p.EstadoPrestamo == EstadoPrestamo.Activo || p.EstadoPrestamo == EstadoPrestamo.Pendiente) &&
-                      p.FechaPrestamoEsperada.Date <= fechaFin &&
-                      p.FechaDevolucionEsperada.Date >= fechaInicio
-                select new { e.IdGrupoEquipo, p.FechaPrestamoEsperada, p.FechaDevolucionEsperada })
+        var prestamosActivos = await (from detalle in _dbContext.DetallesPrestamos
+                join prestamo in _dbContext.Prestamos on detalle.IdPrestamo equals prestamo.Id
+                join equipo in _dbContext.Equipos on detalle.IdEquipo equals equipo.Id
+                where request.ArrayIds.Contains(equipo.IdGrupoEquipo) &&
+                      (prestamo.EstadoPrestamo == EstadoPrestamo.Activo || prestamo.EstadoPrestamo == EstadoPrestamo.Pendiente) &&
+                      prestamo.FechaPrestamoEsperada.Date <= fechaFin &&
+                      prestamo.FechaDevolucionEsperada.Date >= fechaInicio
+                select new { equipo.IdGrupoEquipo, prestamo.FechaPrestamoEsperada, prestamo.FechaDevolucionEsperada })
             .ToListAsync();
 
         for (var date = fechaInicio; date <= fechaFin; date = date.AddDays(1))
         {
             foreach (var grupoId in request.ArrayIds)
             {
-                var grupo = grupos.FirstOrDefault(g => g.Id == grupoId);
-                
-                if (grupo == null) 
-                    continue;
+                var grupo = grupos.FirstOrDefault(grupoEquipo => grupoEquipo.Id == grupoId);
+                if (grupo == null) continue;
 
                 var totalCantidad = grupo.Cantidad;
-                var ocupados = prestamosActivos.Count(pa =>
-                    pa.IdGrupoEquipo == grupoId &&
-                    pa.FechaPrestamoEsperada.Date <= date &&
-                    pa.FechaDevolucionEsperada.Date >= date);
+                var ocupados = prestamosActivos.Count(prestamoActivo =>
+                    prestamoActivo.IdGrupoEquipo == grupoId &&
+                    prestamoActivo.FechaPrestamoEsperada.Date <= date &&
+                    prestamoActivo.FechaDevolucionEsperada.Date >= date);
 
                 response.Add(new CarritoDto
                 {
@@ -62,6 +62,7 @@ public class CarritoService
                 });
             }
         }
+
         return Result<List<CarritoDto>>.Success(response);
     }
 }

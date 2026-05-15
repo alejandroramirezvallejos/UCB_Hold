@@ -1,39 +1,42 @@
 using Ardalis.Result;
+using FluentValidation;
 using IMT_Reservas.Server.Application.Abstraction;
-using CarreraEntity = IMT_Reservas.Server.Core.Entities.Carrera;
 using IMT_Reservas.Server.Infrastructure.Repositories.Implementations;
+using CarreraEntity = IMT_Reservas.Server.Core.Entities.Carrera;
 namespace IMT_Reservas.Server.Application.Features.Carrera;
 
 public class CarreraService : Service<CarreraEntity, CarreraRepository, CarreraDto>
 {
     private readonly CarreraRepository _carreraRepository;
+    private readonly CarreraMapper _mapper;
+    private readonly IValidator<CarreraDto> _validator;
 
-    public CarreraService(CarreraRepository repository) : base(repository) =>
-        _carreraRepository = repository;
+    public CarreraService(CarreraRepository repository, CarreraMapper mapper, IValidator<CarreraDto> validator)
+        : base(repository) => (_carreraRepository, _mapper, _validator) = (repository, mapper, validator);
 
-    public override async Task<Result<CarreraDto>> Create(CarreraEntity entity)
+    public async Task<Result<CarreraDto>> Create(CarreraDto dto)
     {
-        if (string.IsNullOrWhiteSpace(entity.Nombre))
-            return Result<CarreraDto>.Error("Nombre de carrera es requerido");
+        var validation = await _validator.ValidateAsync(dto);
+        if (!validation.IsValid) return validation.ToResult<CarreraDto>();
 
-        var existing = await _carreraRepository.GetByNombre(entity.Nombre);
-
+        var existing = await _carreraRepository.GetByNombre(dto.Nombre!);
         if (existing != null)
-            return Result<CarreraDto>.Error($"Ya existe una carrera con nombre '{entity.Nombre}'");
+            return Result<CarreraDto>.Error($"Ya existe una carrera con nombre '{dto.Nombre}'");
 
-        return await base.Create(entity);
+        return await base.Create(_mapper.ToEntity(dto));
     }
 
-    public override async Task<Result<CarreraDto>> Update(CarreraEntity entity)
+    public async Task<Result<CarreraDto>> Update(int id, CarreraDto dto)
     {
-        if (string.IsNullOrWhiteSpace(entity.Nombre))
-            return Result<CarreraDto>.Error("Nombre de carrera es requerido");
+        var validation = await _validator.ValidateAsync(dto);
+        if (!validation.IsValid) return validation.ToResult<CarreraDto>();
 
-        var existing = await _carreraRepository.GetByNombre(entity.Nombre);
+        var existing = await _carreraRepository.GetByNombre(dto.Nombre!);
+        if (existing != null && existing.Id != id)
+            return Result<CarreraDto>.Error($"Ya existe otra carrera con nombre '{dto.Nombre}'");
 
-        if (existing != null && existing.Id != entity.Id)
-            return Result<CarreraDto>.Error($"Ya existe otra carrera con nombre '{entity.Nombre}'");
-
+        var entity = _mapper.ToEntity(dto);
+        entity.Id = id;
         return await base.Update(entity);
     }
 }

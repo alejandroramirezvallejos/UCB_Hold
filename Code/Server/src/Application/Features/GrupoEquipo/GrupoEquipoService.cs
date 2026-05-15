@@ -1,4 +1,5 @@
 using Ardalis.Result;
+using FluentValidation;
 using IMT_Reservas.Server.Application.Abstraction;
 using IMT_Reservas.Server.Infrastructure.Config;
 using IMT_Reservas.Server.Infrastructure.Repositories.Implementations;
@@ -10,104 +11,55 @@ public class GrupoEquipoService : Service<GrupoEquipoEntity, GrupoEquipoReposito
 {
     private readonly GrupoEquipoRepository _grupoRepository;
     private readonly ApplicationDbContext _dbContext;
+    private readonly GrupoEquipoMapper _mapper;
+    private readonly IValidator<GrupoEquipoDto> _validator;
 
-    public GrupoEquipoService(GrupoEquipoRepository repository, ApplicationDbContext dbContext) : base(repository)
+    public GrupoEquipoService(GrupoEquipoRepository repository, ApplicationDbContext dbContext, GrupoEquipoMapper mapper, IValidator<GrupoEquipoDto> validator)
+        : base(repository) => (_grupoRepository, _dbContext, _mapper, _validator) = (repository, dbContext, mapper, validator);
+
+    public async Task<Result<GrupoEquipoDto>> Create(GrupoEquipoDto dto)
     {
-        _grupoRepository = repository;
-        _dbContext = dbContext;
-    }
+        await ResolveCategoria(dto);
 
-    public async Task<Result<GrupoEquipoDto>> CreateFromDto(GrupoEquipoDto dto)
-    {
-        var idCategoria = await ResolveCategoria(dto.IdCategoria, dto.NombreCategoria);
-        
-        if (idCategoria == null)
-            return Result<GrupoEquipoDto>.Error("Categoría no encontrada");
+        var validation = await _validator.ValidateAsync(dto);
+        if (!validation.IsValid) return validation.ToResult<GrupoEquipoDto>();
 
-        var entity = new GrupoEquipoEntity
-        {
-            Nombre = dto.Nombre ?? string.Empty,
-            Modelo = dto.Modelo ?? string.Empty,
-            Marca = dto.Marca ?? string.Empty,
-            Descripcion = dto.Descripcion ?? string.Empty,
-            UrlDataSheet = dto.UrlDataSheet,
-            UrlImagen = dto.UrlImagen ?? string.Empty,
-            IdCategoria = idCategoria.Value,
-            EstadoEliminado = false
-        };
-
-        return await Create(entity);
-    }
-
-    public async Task<Result<GrupoEquipoDto>> UpdateFromDto(int id, GrupoEquipoDto dto)
-    {
-        var idCategoria = await ResolveCategoria(dto.IdCategoria, dto.NombreCategoria);
-        
-        if (idCategoria == null)
-            return Result<GrupoEquipoDto>.Error("Categoría no encontrada");
-
-        var entity = new GrupoEquipoEntity
-        {
-            Id = id,
-            Nombre = dto.Nombre ?? string.Empty,
-            Modelo = dto.Modelo ?? string.Empty,
-            Marca = dto.Marca ?? string.Empty,
-            Descripcion = dto.Descripcion ?? string.Empty,
-            UrlDataSheet = dto.UrlDataSheet,
-            UrlImagen = dto.UrlImagen ?? string.Empty,
-            IdCategoria = idCategoria.Value,
-            EstadoEliminado = false
-        };
-
-        return await Update(entity);
-    }
-
-    public override async Task<Result<GrupoEquipoDto>> Create(GrupoEquipoEntity entity)
-    {
-        if (string.IsNullOrWhiteSpace(entity.Nombre) || string.IsNullOrWhiteSpace(entity.Modelo) || string.IsNullOrWhiteSpace(entity.Marca))
-            return Result<GrupoEquipoDto>.Error("Nombre, modelo y marca son requeridos");
-
-        var existing = await _grupoRepository.GetByNombreModeloMarca(entity.Nombre, entity.Modelo, entity.Marca);
-        
+        var existing = await _grupoRepository.GetByNombreModeloMarca(dto.Nombre!, dto.Modelo!, dto.Marca!);
         if (existing != null)
-            return Result<GrupoEquipoDto>.Error($"Ya existe un grupo con nombre '{entity.Nombre}', modelo '{entity.Modelo}' y marca '{entity.Marca}'");
+            return Result<GrupoEquipoDto>.Error($"Ya existe un grupo con nombre '{dto.Nombre}', modelo '{dto.Modelo}' y marca '{dto.Marca}'");
 
-        return await base.Create(entity);
+        return await base.Create(_mapper.ToEntity(dto));
     }
 
-    public override async Task<Result<GrupoEquipoDto>> Update(GrupoEquipoEntity entity)
+    public async Task<Result<GrupoEquipoDto>> Update(int id, GrupoEquipoDto dto)
     {
-        if (string.IsNullOrWhiteSpace(entity.Nombre) || string.IsNullOrWhiteSpace(entity.Modelo) || string.IsNullOrWhiteSpace(entity.Marca))
-            return Result<GrupoEquipoDto>.Error("Nombre, modelo y marca son requeridos");
+        await ResolveCategoria(dto);
 
-        var existing = await _grupoRepository.GetByNombreModeloMarca(entity.Nombre, entity.Modelo, entity.Marca);
-        
-        if (existing != null && existing.Id != entity.Id)
-            return Result<GrupoEquipoDto>.Error($"Ya existe otro grupo con nombre '{entity.Nombre}', modelo '{entity.Modelo}' y marca '{entity.Marca}'");
+        var validation = await _validator.ValidateAsync(dto);
+        if (!validation.IsValid) return validation.ToResult<GrupoEquipoDto>();
 
+        var existing = await _grupoRepository.GetByNombreModeloMarca(dto.Nombre!, dto.Modelo!, dto.Marca!);
+        if (existing != null && existing.Id != id)
+            return Result<GrupoEquipoDto>.Error($"Ya existe otro grupo con nombre '{dto.Nombre}', modelo '{dto.Modelo}' y marca '{dto.Marca}'");
+
+        var entity = _mapper.ToEntity(dto);
+        entity.Id = id;
         return await base.Update(entity);
     }
 
     public async Task<Result<List<GrupoEquipoDto>>> Search(string? nombre = null, string? categoria = null)
+        => Result<List<GrupoEquipoDto>>.Success(await _grupoRepository.Search(nombre, categoria));
+
+    private async Task ResolveCategoria(GrupoEquipoDto dto)
     {
-        var results = await _grupoRepository.Search(nombre, categoria);
-        
-        return Result<List<GrupoEquipoDto>>.Success(results);
-    }
+        if ((dto.IdCategoria ?? 0) > 0) return;
 
-    private async Task<int?> ResolveCategoria(int? idCategoria, string? nombreCategoria)
-    {
-        if (idCategoria.HasValue && idCategoria.Value > 0)
-            return idCategoria.Value;
+        if (string.IsNullOrWhiteSpace(dto.NombreCategoria)) return;
 
-        if (!string.IsNullOrWhiteSpace(nombreCategoria))
-        {
-            var cat = await _dbContext.Categorias
-                .AsNoTracking()
-                .FirstOrDefaultAsync(c => c.Nombre == nombreCategoria && !c.EstadoEliminado);
-            return cat?.Id;
-        }
+        var categoria = await _dbContext.Categorias
+            .AsNoTracking()
+            .FirstOrDefaultAsync(categoria => categoria.Nombre == dto.NombreCategoria && !categoria.EstadoEliminado);
 
-        return null;
+        dto.IdCategoria = categoria?.Id;
     }
 }

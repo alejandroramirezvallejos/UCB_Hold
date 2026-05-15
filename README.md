@@ -1,6 +1,6 @@
 # UCB Hold — Sistema de Reservas IMT
 
-Sistema fullstack para gestión de préstamos de equipos del laboratorio de Mecatrónica UCB.
+Sistema para gestión de préstamos de equipos del laboratorio de Mecatrónica UCB.
 
 **Stack:** Angular 18 · .NET 8 · PostgreSQL 14 · Entity Framework Core
 
@@ -12,7 +12,6 @@ Sistema fullstack para gestión de préstamos de equipos del laboratorio de Meca
 - .NET 8 SDK
 - Node 18+
 - PostgreSQL 14+
-- JetBrains Rider (recomendado) o Visual Studio / VS Code
 
 ### Setup
 ```bash
@@ -42,7 +41,6 @@ Swagger en `https://localhost:{puerto}/swagger` (solo Development).
 
 | Documento | Contenido |
 |-----------|-----------|
-| [docs/ARCHITECTURE.md](docs/ARCHITECTURE.md) | Capas, patrones, decisiones de diseño |
 | [docs/DATABASE.md](docs/DATABASE.md) | Esquema, triggers, vistas, índices |
 | [docs/API.md](docs/API.md) | Endpoints disponibles y formato de respuesta |
 | [docs/DEVELOPMENT.md](docs/DEVELOPMENT.md) | Setup local, user-secrets, convenciones |

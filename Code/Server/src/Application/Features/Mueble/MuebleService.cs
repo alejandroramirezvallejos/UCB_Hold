@@ -1,4 +1,5 @@
 using Ardalis.Result;
+using FluentValidation;
 using IMT_Reservas.Server.Application.Abstraction;
 using IMT_Reservas.Server.Infrastructure.Repositories.Implementations;
 using MuebleEntity = IMT_Reservas.Server.Core.Entities.Mueble;
@@ -6,16 +7,27 @@ namespace IMT_Reservas.Server.Application.Features.Mueble;
 
 public class MuebleService : Service<MuebleEntity, MuebleRepository, MuebleDto>
 {
-    public MuebleService(MuebleRepository repository) : base(repository) { }
+    private readonly MuebleMapper _mapper;
+    private readonly IValidator<MuebleDto> _validator;
 
-    public override async Task<Result<MuebleDto>> Create(MuebleEntity entity)
+    public MuebleService(MuebleRepository repository, MuebleMapper mapper, IValidator<MuebleDto> validator)
+        : base(repository) => (_mapper, _validator) = (mapper, validator);
+
+    public async Task<Result<MuebleDto>> Create(MuebleDto dto)
     {
-        if (string.IsNullOrWhiteSpace(entity.Nombre))
-            return Result<MuebleDto>.Error("Nombre mueble requerido");
+        var validation = await _validator.ValidateAsync(dto);
+        if (!validation.IsValid) return validation.ToResult<MuebleDto>();
 
-        if (entity.Costo <= 0)
-            return Result<MuebleDto>.Error("Costo debe ser mayor a 0");
+        return await base.Create(_mapper.ToEntity(dto));
+    }
 
-        return await base.Create(entity);
+    public async Task<Result<MuebleDto>> Update(int id, MuebleDto dto)
+    {
+        var validation = await _validator.ValidateAsync(dto);
+        if (!validation.IsValid) return validation.ToResult<MuebleDto>();
+
+        var entity = _mapper.ToEntity(dto);
+        entity.Id = id;
+        return await base.Update(entity);
     }
 }

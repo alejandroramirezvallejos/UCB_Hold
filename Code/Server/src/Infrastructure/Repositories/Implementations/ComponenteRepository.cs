@@ -13,55 +13,60 @@ public class ComponenteRepository : Repository<ComponenteEntity, ComponenteDto>
 
     public override async Task<Result<List<ComponenteDto>>> GetAll(QueryFilter? filter = null)
     {
-        var dtos = await DbContext.Componentes
-            .AsNoTracking()
-            .Select(e => new ComponenteDto
+        var dtos = await (
+            from componente in DbContext.Componentes.AsNoTracking()
+            join equipo in DbContext.Equipos.AsNoTracking()
+                on componente.IdEquipo equals equipo.Id into equipoJoin
+            from equipo in equipoJoin.DefaultIfEmpty()
+            select new ComponenteDto
             {
-                Id = e.Id,
-                Nombre = e.Nombre,
-                Modelo = e.Modelo,
-                Tipo = e.Tipo,
-                Descripcion = e.Descripcion,
-                PrecioReferencia = e.PrecioReferencia,
-                IdEquipo = e.IdEquipo,
-                NombreEquipo = null,
-                CodigoImtEquipo = null,
-                UrlDataSheet = e.UrlDataSheet
-            })
-            .ToListAsync();
+                Id = componente.Id,
+                Nombre = componente.Nombre,
+                Modelo = componente.Modelo,
+                Tipo = componente.Tipo,
+                Descripcion = componente.Descripcion,
+                PrecioReferencia = componente.PrecioReferencia,
+                IdEquipo = componente.IdEquipo,
+                NombreEquipo = equipo != null ? equipo.Descripcion : null,
+                CodigoImtEquipo = equipo != null ? equipo.CodigoImt.ToString() : null,
+                UrlDataSheet = componente.UrlDataSheet
+            }
+        ).ToListAsync();
 
         return Result<List<ComponenteDto>>.Success(dtos);
     }
 
     public override async Task<Result<ComponenteDto>> Get(int id)
     {
-        var dto = await DbContext.Componentes
-            .AsNoTracking()
-            .Where(c => c.Id == id)
-            .Select(e => new ComponenteDto
+        var dto = await (
+            from componente in DbContext.Componentes.AsNoTracking().Where(componente => componente.Id == id)
+            join equipo in DbContext.Equipos.AsNoTracking()
+                on componente.IdEquipo equals equipo.Id into equipoJoin
+            from equipo in equipoJoin.DefaultIfEmpty()
+            select new ComponenteDto
             {
-                Id = e.Id,
-                Nombre = e.Nombre,
-                Modelo = e.Modelo,
-                Tipo = e.Tipo,
-                Descripcion = e.Descripcion,
-                PrecioReferencia = e.PrecioReferencia,
-                IdEquipo = e.IdEquipo,
-                NombreEquipo = null,
-                CodigoImtEquipo = null,
-                UrlDataSheet = e.UrlDataSheet
-            })
-            .FirstOrDefaultAsync();
+                Id = componente.Id,
+                Nombre = componente.Nombre,
+                Modelo = componente.Modelo,
+                Tipo = componente.Tipo,
+                Descripcion = componente.Descripcion,
+                PrecioReferencia = componente.PrecioReferencia,
+                IdEquipo = componente.IdEquipo,
+                NombreEquipo = equipo != null ? equipo.Descripcion : null,
+                CodigoImtEquipo = equipo != null ? equipo.CodigoImt.ToString() : null,
+                UrlDataSheet = componente.UrlDataSheet
+            }
+        ).FirstOrDefaultAsync();
 
         return dto == null
             ? Result<ComponenteDto>.NotFound()
             : Result<ComponenteDto>.Success(dto);
     }
-    
+
     public async Task<int?> GetEquipoByCodigoImt(int codigoImt)
         => await DbContext.Equipos
-            .Where(e => e.CodigoImt == codigoImt && !e.EstadoEliminado)
-            .Select(e => e.Id)
+            .Where(equipo => equipo.CodigoImt == codigoImt && !equipo.EstadoEliminado)
+            .Select(equipo => equipo.Id)
             .FirstOrDefaultAsync();
 
     protected override ComponenteDto MapToDto(ComponenteEntity entity) => new()
@@ -78,4 +83,3 @@ public class ComponenteRepository : Repository<ComponenteEntity, ComponenteDto>
         UrlDataSheet = entity.UrlDataSheet
     };
 }
-

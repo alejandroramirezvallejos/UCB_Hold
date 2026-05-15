@@ -35,7 +35,7 @@ public class UsuarioController : ControllerBase
     [HttpPost]
     public async Task<IActionResult> Create([FromBody] UsuarioDto dto)
     {
-        var result = await _service.CreateFromDto(dto);
+        var result = await _service.Create(dto);
 
         return result.IsSuccess
             ? CreatedAtAction(nameof(Get), new { carnet = result.Value?.Carnet }, new Response<UsuarioDto> { Status = 201, Value = result.Value })
@@ -45,7 +45,7 @@ public class UsuarioController : ControllerBase
     [HttpPut("{carnet}")]
     public async Task<IActionResult> Update(string carnet, [FromBody] UsuarioDto dto)
     {
-        var result = await _service.UpdateFromDto(carnet, dto);
+        var result = await _service.Update(carnet, dto);
 
         return result.IsSuccess
             ? Ok(new Response<UsuarioDto> { Status = 200, Value = result.Value })

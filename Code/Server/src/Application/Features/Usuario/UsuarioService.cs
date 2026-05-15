@@ -1,160 +1,76 @@
 using Ardalis.Result;
+using FluentValidation;
 using IMT_Reservas.Server.Application.Abstraction;
 using IMT_Reservas.Server.Infrastructure.Config;
 using IMT_Reservas.Server.Infrastructure.Repositories.Implementations;
-using UsuarioEntity = IMT_Reservas.Server.Core.Entities.Usuario;
 using Microsoft.EntityFrameworkCore;
+using UsuarioEntity = IMT_Reservas.Server.Core.Entities.Usuario;
 namespace IMT_Reservas.Server.Application.Features.Usuario;
 
 public class UsuarioService : Service<UsuarioEntity, UsuarioRepository, UsuarioDto>
 {
     private readonly ApplicationDbContext _dbContext;
+    private readonly UsuarioMapper _mapper;
+    private readonly IValidator<UsuarioDto> _validator;
 
-    public UsuarioService(UsuarioRepository repository, ApplicationDbContext dbContext)
-        : base(repository) => _dbContext = dbContext;
+    public UsuarioService(UsuarioRepository repository, ApplicationDbContext dbContext, UsuarioMapper mapper, IValidator<UsuarioDto> validator)
+        : base(repository) => (_dbContext, _mapper, _validator) = (dbContext, mapper, validator);
 
-    public override async Task<Result<UsuarioDto>> Create(UsuarioEntity entity)
+    public async Task<Result<UsuarioDto>> Create(UsuarioDto dto)
     {
-        if (string.IsNullOrEmpty(entity.Email) || !entity.Email.Contains("@"))
-            return Result<UsuarioDto>.Error("Email inválido");
+        var validation = await _validator.ValidateAsync(dto);
+        if (!validation.IsValid) return validation.ToResult<UsuarioDto>();
 
-        var carnetExists = await _dbContext.Usuarios
-            .IgnoreQueryFilters()
-            .AnyAsync(usuario => usuario.Carnet == entity.Carnet);
+        await ResolveCarrera(dto);
 
-        if (carnetExists)
+        if (await _dbContext.Usuarios.IgnoreQueryFilters().AnyAsync(usuario => usuario.Carnet == dto.Carnet))
             return Result<UsuarioDto>.Error("Carnet ya existe");
 
-        var emailExists = await _dbContext.Usuarios
-            .IgnoreQueryFilters()
-            .AnyAsync(usuario => usuario.Email == entity.Email);
-
-        if (emailExists)
+        if (await _dbContext.Usuarios.IgnoreQueryFilters().AnyAsync(usuario => usuario.Email == dto.Email))
             return Result<UsuarioDto>.Error("Email ya existe");
 
-        var carreraExists = await _dbContext.Carreras
-            .AnyAsync(carrera => carrera.Id == entity.IdCarrera && !carrera.EstadoEliminado);
-
-        if (!carreraExists)
+        if (!await _dbContext.Carreras.AnyAsync(carrera => carrera.Id == dto.IdCarrera && !carrera.EstadoEliminado))
             return Result<UsuarioDto>.Error("Carrera no existe");
 
-        entity.Contrasena = BCrypt.Net.BCrypt.HashPassword(entity.Contrasena);
+        var entity = _mapper.ToEntity(dto);
+        entity.Contrasena = BCrypt.Net.BCrypt.HashPassword(dto.Contrasena);
 
         var result = await base.Create(entity);
-        
         if (result.IsSuccess && result.Value != null)
-        {
-            var carreraResult = await _dbContext.Carreras.AsNoTracking().FirstOrDefaultAsync(carrera => carrera.Id == entity.IdCarrera);
-            if (carreraResult != null)
-                result.Value.CarreraNombre = carreraResult.Nombre;
-        }
-        
+            result.Value.CarreraNombre = await GetCarreraNombre(entity.IdCarrera);
+
         return result;
     }
 
-    public async Task<Result<UsuarioDto>> CreateFromDto(UsuarioDto dto)
-    {
-        var idCarrera = dto.IdCarrera ?? 0;
-        
-        if (idCarrera == 0 && !string.IsNullOrWhiteSpace(dto.CarreraNombre))
-        {
-            var carreraPorNombre = await _dbContext.Carreras
-                .AsNoTracking()
-                .FirstOrDefaultAsync(carrera => carrera.Nombre == dto.CarreraNombre && !carrera.EstadoEliminado);
-            
-            if (carreraPorNombre != null)
-                idCarrera = carreraPorNombre.Id;
-        }
-
-        var entity = new UsuarioEntity
-        {
-            Carnet = dto.Carnet ?? string.Empty,
-            Nombre = dto.Nombre ?? string.Empty,
-            ApellidoPaterno = dto.ApellidoPaterno ?? string.Empty,
-            ApellidoMaterno = dto.ApellidoMaterno ?? string.Empty,
-            Email = dto.Email ?? string.Empty,
-            Contrasena = dto.Contrasena ?? string.Empty,
-            Telefono = dto.Telefono ?? string.Empty,
-            TelefonoReferencia = dto.TelefonoReferencia,
-            NombreReferencia = dto.NombreReferencia,
-            EmailReferencia = dto.EmailReferencia,
-            IdCarrera = idCarrera,
-            Rol = dto.Rol?.ToLowerInvariant() switch
-            {
-                "docente" => Core.Entities.TipoUsuario.Docente,
-                "administrador" => Core.Entities.TipoUsuario.Administrador,
-                _ => Core.Entities.TipoUsuario.Estudiante
-            }
-        };
-
-        return await Create(entity);
-    }
-
-    public async Task<Result<UsuarioDto>> UpdateFromDto(string carnet, UsuarioDto dto)
+    public async Task<Result<UsuarioDto>> Update(string carnet, UsuarioDto dto)
     {
         var existing = await _dbContext.Usuarios
             .FirstOrDefaultAsync(usuario => usuario.Carnet == carnet && !usuario.EstadoEliminado);
 
-        if (existing == null)
-            return Result<UsuarioDto>.NotFound();
+        if (existing == null) return Result<UsuarioDto>.NotFound();
 
-        var idCarrera = dto.IdCarrera ?? 0;
-        
-        if (idCarrera == 0 && !string.IsNullOrWhiteSpace(dto.CarreraNombre))
-        {
-            var carreraPorNombre = await _dbContext.Carreras
-                .AsNoTracking()
-                .FirstOrDefaultAsync(carrera => carrera.Nombre == dto.CarreraNombre && !carrera.EstadoEliminado);
-            
-            if (carreraPorNombre != null)
-                idCarrera = carreraPorNombre.Id;
-        }
+        await ResolveCarrera(dto);
+        _mapper.Update(dto, existing);
 
-        existing.Nombre = dto.Nombre ?? existing.Nombre;
-        existing.ApellidoPaterno = dto.ApellidoPaterno ?? existing.ApellidoPaterno;
-        existing.ApellidoMaterno = dto.ApellidoMaterno ?? existing.ApellidoMaterno;
-        existing.Email = dto.Email ?? existing.Email;
-        existing.Telefono = dto.Telefono ?? existing.Telefono;
-        existing.TelefonoReferencia = dto.TelefonoReferencia ?? existing.TelefonoReferencia;
-        existing.NombreReferencia = dto.NombreReferencia ?? existing.NombreReferencia;
-        existing.EmailReferencia = dto.EmailReferencia ?? existing.EmailReferencia;
-        
-        if (idCarrera > 0) 
-            existing.IdCarrera = idCarrera;
-        
-        existing.Rol = dto.Rol?.ToLowerInvariant() switch
-        {
-            "docente" => Core.Entities.TipoUsuario.Docente,
-            "administrador" => Core.Entities.TipoUsuario.Administrador,
-            _ => existing.Rol
-        };
-        
+        if ((dto.IdCarrera ?? 0) > 0) existing.IdCarrera = dto.IdCarrera!.Value;
+
         if (!string.IsNullOrWhiteSpace(dto.Contrasena))
             existing.Contrasena = BCrypt.Net.BCrypt.HashPassword(dto.Contrasena);
 
         await _dbContext.SaveChangesAsync();
-        var resultDto = MapToDto(existing);
-        var carreraFinal = await _dbContext.Carreras.AsNoTracking().FirstOrDefaultAsync(carrera => carrera.Id == existing.IdCarrera);
-        
-        if (carreraFinal != null)
-            resultDto.CarreraNombre = carreraFinal.Nombre;
 
+        var resultDto = _mapper.ToDto(existing);
+        resultDto.CarreraNombre = await GetCarreraNombre(existing.IdCarrera);
         return Result<UsuarioDto>.Success(resultDto);
     }
 
     public async Task<Result<UsuarioDto>> Get(string carnet)
     {
         var usuario = await Repository.GetByCarnet(carnet);
+        if (usuario == null) return Result<UsuarioDto>.NotFound();
 
-        if (usuario == null)
-            return Result<UsuarioDto>.NotFound();
-
-        var dto = MapToDto(usuario);
-        var carrera = await _dbContext.Carreras.AsNoTracking().FirstOrDefaultAsync(carrera => carrera.Id == usuario.IdCarrera);
-        
-        if (carrera != null)
-            dto.CarreraNombre = carrera.Nombre;
-
+        var dto = _mapper.ToDto(usuario);
+        dto.CarreraNombre = await GetCarreraNombre(usuario.IdCarrera);
         return Result<UsuarioDto>.Success(dto);
     }
 
@@ -176,42 +92,39 @@ public class UsuarioService : Service<UsuarioEntity, UsuarioRepository, UsuarioD
             })
             .FirstOrDefaultAsync();
 
-        if (loginData == null)
-            return Result<UsuarioDto>.Unauthorized("Credenciales inválidas");
+        if (loginData == null) return Result<UsuarioDto>.Unauthorized("Credenciales inválidas");
 
-        var usuario = loginData.Usuario;
-        bool passwordValid = !string.IsNullOrEmpty(usuario.Contrasena)
-                          && usuario.Contrasena.StartsWith("$2")
-                          && usuario.Contrasena.Length == 60
-                          && BCrypt.Net.BCrypt.Verify(password, usuario.Contrasena);
+        var passwordValid = !string.IsNullOrEmpty(loginData.Usuario.Contrasena)
+                         && loginData.Usuario.Contrasena.StartsWith("$2")
+                         && loginData.Usuario.Contrasena.Length == 60
+                         && BCrypt.Net.BCrypt.Verify(password, loginData.Usuario.Contrasena);
 
-        if (!passwordValid)
-            return Result<UsuarioDto>.Unauthorized("Credenciales inválidas");
+        if (!passwordValid) return Result<UsuarioDto>.Unauthorized("Credenciales inválidas");
 
-        var dto = MapToDto(usuario);
+        var dto = _mapper.ToDto(loginData.Usuario);
         dto.CarreraNombre = loginData.CarreraNombre;
-
         return Result<UsuarioDto>.Success(dto);
     }
 
     public async Task<Result<object>> Delete(string carnet)
         => await Repository.Delete(carnet);
 
-    private UsuarioDto MapToDto(UsuarioEntity entity) => new()
+    private async Task ResolveCarrera(UsuarioDto dto)
     {
-        Carnet = entity.Carnet,
-        Nombre = entity.Nombre,
-        ApellidoPaterno = entity.ApellidoPaterno,
-        ApellidoMaterno = entity.ApellidoMaterno,
-        Rol = entity.Rol.ToString().ToLowerInvariant(),
-        Email = entity.Email,
-        IdCarrera = entity.IdCarrera,
-        CarreraNombre = null,
-        Telefono = entity.Telefono,
-        TelefonoReferencia = entity.TelefonoReferencia,
-        NombreReferencia = entity.NombreReferencia,
-        EmailReferencia = entity.EmailReferencia,
-        ImagenFrenteCarnet = entity.ImagenFrenteCarnet,
-        ImagenAtrasCarnet = entity.ImagenAtrasCarnet
-    };
+        if ((dto.IdCarrera ?? 0) > 0) return;
+        if (string.IsNullOrWhiteSpace(dto.CarreraNombre)) return;
+
+        var carrera = await _dbContext.Carreras
+            .AsNoTracking()
+            .FirstOrDefaultAsync(carrera => carrera.Nombre == dto.CarreraNombre && !carrera.EstadoEliminado);
+
+        dto.IdCarrera = carrera?.Id;
+    }
+
+    private async Task<string?> GetCarreraNombre(int idCarrera)
+        => await _dbContext.Carreras
+            .AsNoTracking()
+            .Where(carrera => carrera.Id == idCarrera)
+            .Select(carrera => carrera.Nombre)
+            .FirstOrDefaultAsync();
 }

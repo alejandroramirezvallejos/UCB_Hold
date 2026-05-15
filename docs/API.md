@@ -1,6 +1,6 @@
 # API Reference
 
-Backend `.NET 8` expone endpoints REST en `/api/{Controller}`. Todos los responses siguen el esquema `Response<T>` (ver [ARCHITECTURE.md](ARCHITECTURE.md#estructura-de-respuesta)).
+Backend `.NET 8` expone endpoints REST en `/api/{Controller}`.
 
 Swagger disponible en Development: `https://localhost:{puerto}/swagger`.
 
@@ -57,13 +57,13 @@ En caso de error:
 | PUT | `/{id}/estado` | `"aprobado"` (string) | `Response<PrestamoDto>` |
 | DELETE | `/{id}` | — | `204 No Content` |
 
-**Estados válidos en `/estado`:** `pendiente`, `aprobado`, `activo`, `rechazado`, `finalizado`, `cancelado`. Transiciones validadas por `EstadoPrestamoState` ([ARCHITECTURE.md](ARCHITECTURE.md#state-transiciones-de-estadoprestamo)).
+**Estados válidos en `/estado`:** `pendiente`, `aprobado`, `activo`, `rechazado`, `finalizado`, `cancelado`. Transiciones validadas por `EstadoPrestamoState`.
 
 ### Contrato `/api/Contrato`
 
 | Método | Ruta | Body | Respuesta |
 |--------|------|------|-----------|
-| POST | `/crear` | `multipart/form-data` (Archivo + PrestamoId) | `Response<ContratoDto>` |
+| POST | `/crear` | `multipart/form-data` (Archivo + PrestamoId) | `200 OK + Response<object>` |
 | GET | `/{prestamoId}` | — | `Response<ContratoDto>` |
 | DELETE | `/{prestamoId}` | — | `204 No Content` |
 
@@ -91,40 +91,3 @@ Todos siguen patrón CRUD estándar:
 | POST | `/disponibilidadEquipos` | `CarritoDto` (`FechaInicio`, `FechaFin`, `ArrayIds`) | `Response<List<CarritoDto>>` con disponibilidad por día |
 
 ---
-
-## Códigos de error comunes
-
-| Status | Significado | Causas típicas |
-|--------|-------------|----------------|
-| 400 | Bad Request | Validación de negocio (fechas inválidas, transición no permitida) |
-| 401 | Unauthorized | Login con credenciales inválidas o faltantes |
-| 404 | Not Found | ID no existe, recurso eliminado |
-| 409 | Conflict | Duplicado de PK (carnet/email), restricción de DB violada |
-| 500 | Server Error | Error no controlado — chequear logs del backend |
-
----
-
-## Ejemplo: flujo de login + creación de préstamo
-
-```bash
-# 1. Login
-curl -X POST https://localhost:7001/api/Usuario/login \
-  -H "Content-Type: application/json" \
-  -d '{"Email":"alumno@ucb.edu.bo","Contrasena":"password"}'
-
-# 2. Crear préstamo (sin contrato, mismo día)
-curl -X POST https://localhost:7001/api/Prestamo \
-  -H "Content-Type: application/json" \
-  -d '{
-    "CarnetUsuario": "12345678",
-    "FechaPrestamoEsperada": "2026-05-15T10:00:00",
-    "FechaDevolucionEsperada": "2026-05-15T18:00:00",
-    "GrupoEquipoId": [3, 5],
-    "Observacion": "Práctica de laboratorio"
-  }'
-
-# 3. Cambiar estado a aprobado
-curl -X PUT https://localhost:7001/api/Prestamo/42/estado \
-  -H "Content-Type: application/json" \
-  -d '"aprobado"'
-```

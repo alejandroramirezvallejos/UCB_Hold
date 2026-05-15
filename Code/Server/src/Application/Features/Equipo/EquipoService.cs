@@ -1,54 +1,100 @@
 using Ardalis.Result;
+using FluentValidation;
 using IMT_Reservas.Server.Application.Abstraction;
 using IMT_Reservas.Server.Infrastructure.Config;
 using IMT_Reservas.Server.Infrastructure.Repositories.Implementations;
-using EquipoEntity = IMT_Reservas.Server.Core.Entities.Equipo;
 using Microsoft.EntityFrameworkCore;
+using EquipoEntity = IMT_Reservas.Server.Core.Entities.Equipo;
 namespace IMT_Reservas.Server.Application.Features.Equipo;
 
 public class EquipoService : Service<EquipoEntity, EquipoRepository, EquipoDto>
 {
     private readonly ApplicationDbContext _dbContext;
+    private readonly EquipoMapper _mapper;
+    private readonly IValidator<EquipoDto> _validator;
 
-    public EquipoService(EquipoRepository repository, ApplicationDbContext dbContext)
-        : base(repository) => _dbContext = dbContext;
-    
-    public override async Task<Result<EquipoDto>> Create(EquipoEntity entity)
+    public EquipoService(EquipoRepository repository, ApplicationDbContext dbContext, EquipoMapper mapper, IValidator<EquipoDto> validator)
+        : base(repository) => (_dbContext, _mapper, _validator) = (dbContext, mapper, validator);
+
+    public async Task<Result<EquipoDto>> Create(EquipoDto dto)
     {
-        var grupoExists = await _dbContext.GruposEquipos
-            .AnyAsync(g => g.Id == entity.IdGrupoEquipo && !g.EstadoEliminado);
-        
-        if (!grupoExists)
-            return Result<EquipoDto>.Error("Grupo equipo no existe");
+        var validation = await _validator.ValidateAsync(dto);
+        if (!validation.IsValid) return validation.ToResult<EquipoDto>();
 
-        if (entity.IdGavetero.HasValue)
+        var grupoExists = await _dbContext.GruposEquipos
+            .AnyAsync(grupoEquipo => grupoEquipo.Id == dto.IdGrupoEquipo && !grupoEquipo.EstadoEliminado);
+        if (!grupoExists) return Result<EquipoDto>.Error("Grupo equipo no existe");
+
+        if (dto.IdGavetero.HasValue)
         {
             var gaveteroExists = await _dbContext.Gaveteros
-                .AnyAsync(g => g.Id == entity.IdGavetero && !g.EstadoEliminado);
-
-            if (!gaveteroExists)
-                return Result<EquipoDto>.Error("Gavetero no existe");
+                .AnyAsync(gavetero => gavetero.Id == dto.IdGavetero && !gavetero.EstadoEliminado);
+            if (!gaveteroExists) return Result<EquipoDto>.Error("Gavetero no existe");
         }
-        
-        var maxCodigo = await _dbContext.Equipos.MaxAsync(e => (int?)e.CodigoImt) ?? 0;
-        entity.CodigoImt = maxCodigo + 1;
 
-        return await base.Create(entity);
+        var entity = _mapper.ToEntity(dto);
+        var maxCodigo = await _dbContext.Equipos.MaxAsync(equipo => (int?)equipo.CodigoImt) ?? 0;
+        entity.CodigoImt = maxCodigo + 1;
+        entity.FechaIngresoEquipo = DateOnly.FromDateTime(DateTime.Now);
+
+        var result = await base.Create(entity);
+        if (result.IsSuccess) await RecalcGrupoStats(entity.IdGrupoEquipo);
+        return result;
     }
 
-    public override async Task<Result<EquipoDto>> Update(EquipoEntity entity)
+    public async Task<Result<EquipoDto>> Update(int id, EquipoDto dto)
     {
+        var validation = await _validator.ValidateAsync(dto);
+        if (!validation.IsValid) return validation.ToResult<EquipoDto>();
+
         var existing = await _dbContext.Equipos
             .AsNoTracking()
-            .FirstOrDefaultAsync(e => e.Id == entity.Id && !e.EstadoEliminado);
+            .FirstOrDefaultAsync(equipo => equipo.Id == id && !equipo.EstadoEliminado);
+        if (existing == null) return Result<EquipoDto>.NotFound();
 
-        if (existing == null)
-            return Result<EquipoDto>.NotFound();
-        
+        var entity = _mapper.ToEntity(dto);
+        entity.Id = id;
         entity.CodigoImt = existing.CodigoImt;
         entity.FechaIngresoEquipo = existing.FechaIngresoEquipo;
         entity.EstadoEliminado = existing.EstadoEliminado;
 
-        return await base.Update(entity);
+        var result = await base.Update(entity);
+        if (!result.IsSuccess) return result;
+
+        await RecalcGrupoStats(entity.IdGrupoEquipo);
+        if (existing.IdGrupoEquipo != entity.IdGrupoEquipo)
+            await RecalcGrupoStats(existing.IdGrupoEquipo);
+        return result;
+    }
+
+    public override async Task<Result<object>> Delete(int id)
+    {
+        var existing = await _dbContext.Equipos
+            .AsNoTracking()
+            .FirstOrDefaultAsync(equipo => equipo.Id == id);
+        if (existing == null) return Result<object>.NotFound();
+
+        var result = await base.Delete(id);
+        if (result.IsSuccess) await RecalcGrupoStats(existing.IdGrupoEquipo);
+        return result;
+    }
+
+    private async Task RecalcGrupoStats(int idGrupoEquipo)
+    {
+        var grupo = await _dbContext.GruposEquipos
+            .FirstOrDefaultAsync(grupoEquipo => grupoEquipo.Id == idGrupoEquipo);
+        if (grupo == null) return;
+
+        var stats = await _dbContext.Equipos
+            .Where(equipo => equipo.IdGrupoEquipo == idGrupoEquipo && !equipo.EstadoEliminado)
+            .Select(equipo => new { equipo.CostoReferencia })
+            .ToListAsync();
+
+        grupo.Cantidad = stats.Count;
+        grupo.CostoPromedio = stats.Count == 0
+            ? 0
+            : (decimal)(stats.Where(equipo => equipo.CostoReferencia.HasValue).Sum(equipo => equipo.CostoReferencia ?? 0) / Math.Max(1, stats.Count));
+
+        await _dbContext.SaveChangesAsync();
     }
 }

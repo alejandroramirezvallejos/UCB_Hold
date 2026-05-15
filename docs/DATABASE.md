@@ -14,27 +14,36 @@ PostgreSQL 14+ con Entity Framework Core 8. Schema DDL completo en `DataBase/dat
 
 `usuarios`, `prestamos`, `detalles_prestamos`, `categorias`, `carreras`, `empresas_mantenimiento`, `mantenimientos`, `detalles_mantenimientos`, `grupos_equipos`, `equipos`, `gaveteros`, `muebles`, `accesorios`, `componentes`, `contratos`.
 
-Todas incluyen `estado_eliminado BOOLEAN DEFAULT FALSE` para borrado lógico.
+Todas incluyen `estado_eliminado BOOLEAN DEFAULT FALSE` para borrado lógico. **Excepción**: la tabla `contratos` no tiene `estado_eliminado` — solo `id INTEGER PRIMARY KEY` y `contrato TEXT`. En C# el entity `Contrato` tiene `ContratoHtml` mapeado vía `HasColumnName("contrato")`. La FK desde `prestamos.id_contrato` (INTEGER) referencia `contratos.id`.
 
 ---
 
 ## Enums
 
-| Enum SQL | Valores |
-|----------|---------|
-| `estado_prestamo` | pendiente, rechazado, aprobado, activo, finalizado, cancelado |
-| `estado_equipo` | operativo, parcialmente_operativo, inoperativo |
-| `tipo_usuario` | docente, administrador, estudiante |
-| `tipo_mantenimiento` | correctivo, preventivo |
+| Enum SQL | Valores | Uso |
+|----------|---------|-----|
+| `estado_prestamo` | pendiente, rechazado, aprobado, activo, finalizado, cancelado | Tabla `prestamos` |
+| `estado_equipo` | operativo, parcialmente_operativo, inoperativo | Tabla `equipos` |
+| `tipo_usuario` | docente, administrador, estudiante | Tabla `usuarios` |
+| `tipo_mantenimiento` | correctivo, preventivo | Tabla `detalles_mantenimientos` |
+| `estado_disponibilidad` | disponible, mantenimiento, ocupado | **Reservado** — definido en DDL pero sin uso actual en ninguna tabla |
 
 Mapeados en C# vía `[PgName]` y registrados en `Program.cs`.
 
 ---
 
-## Triggers
+## Triggers y lógica de negocio
 
-- **`equipos`** — AFTER INSERT/UPDATE/DELETE → recalcula `cantidad_equipos` en `grupos_equipos`
-- **`gaveteros`** — AFTER INSERT/UPDATE/DELETE → recalcula `numero_gaveteros` en `muebles`
+El DDL define varias funciones (`fn_actualizar_cantidad_equipo_por_estado`, `fn_actualizar_costo_promedio_grupo`, `fn_actualizar_conteo_gaveteros_por_estado`, `fn_estado_eliminado_prestamo_a_detalle`, `fn_estado_eliminado_mantenimiento_a_detalle`, etc.) pero **NO están attached como triggers** — no se ejecutan automáticamente. La lógica equivalente vive en los Services del backend:
+
+| Acción | Service responsable | Método |
+|--------|---------------------|--------|
+| Recalcular `grupos_equipos.cantidad` y `costo_promedio` tras Create/Update/Delete de `equipos` | `EquipoService` | `RecalcGrupoStats` |
+| Recalcular `muebles.numero_gaveteros` tras Create/Update/Delete de `gaveteros` | `GaveteroService` | `RecalcMuebleCount` |
+| Cascade soft-delete `prestamos.estado_eliminado=true` → `detalles_prestamos.estado_eliminado=true` | `PrestamoService.Delete` | inline |
+| Cascade soft-delete `mantenimientos.estado_eliminado=true` → `detalles_mantenimientos.estado_eliminado=true` | `MantenimientoService.Delete` | inline |
+
+Backend es la única fuente de verdad para esta sincronización.
 
 ---
 
@@ -98,34 +107,6 @@ Mapeados en C# vía `[PgName]` y registrados en `Program.cs`.
 - **Justificación:** garantiza ausencia de lecturas no repetibles y lecturas fantasmas
 
 Operaciones críticas (creación de préstamo + contrato + detalles) se ejecutan en una sola transacción vía `SaveChangesAsync` agrupados.
-
----
-
-## Relación Préstamo ↔ Contrato
-
-`prestamos.id_contrato INTEGER NULL` referencia a `contratos.id` (PK). El contrato se crea opcionalmente al crear el préstamo, en la misma transacción de EF Core. Si el monto del préstamo supera cierto umbral, el frontend envía el HTML del contrato en `PrestamoDto.Contrato`.
-
-```sql
--- Tabla prestamos
-id_prestamo                INTEGER PRIMARY KEY
-fecha_solicitud            TIMESTAMP
-fecha_prestamo             TIMESTAMP
-fecha_prestamo_esperada    TIMESTAMP
-fecha_devolucion           TIMESTAMP
-fecha_devolucion_esperada  TIMESTAMP
-observacion                TEXT
-estado_prestamo            estado_prestamo
-carnet                     TEXT REFERENCES usuarios(carnet)
-id_contrato                INTEGER REFERENCES contratos(id)
-estado_eliminado           BOOLEAN DEFAULT FALSE
-```
-
-```sql
--- Tabla contratos
-id                INTEGER PRIMARY KEY
-contrato_html     TEXT
-estado_eliminado  BOOLEAN DEFAULT FALSE
-```
 
 ---
 

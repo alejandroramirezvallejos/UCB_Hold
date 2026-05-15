@@ -15,20 +15,19 @@ public class GrupoEquipoRepository : Repository<GrupoEquipoEntity, GrupoEquipoDt
     {
         var dtos = await DbContext.GruposEquipos
             .AsNoTracking()
-            .Include(g => g.Categoria)
-            .Select(e => new GrupoEquipoDto
+            .Select(grupoEquipo => new GrupoEquipoDto
             {
-                Id = e.Id,
-                Nombre = e.Nombre,
-                Modelo = e.Modelo,
-                Marca = e.Marca,
-                Descripcion = e.Descripcion,
-                UrlDataSheet = e.UrlDataSheet,
-                UrlImagen = e.UrlImagen,
-                IdCategoria = e.IdCategoria,
-                NombreCategoria = e.Categoria != null ? e.Categoria.Nombre : string.Empty,
-                Cantidad = e.Cantidad,
-                CostoPromedio = e.CostoPromedio
+                Id = grupoEquipo.Id,
+                Nombre = grupoEquipo.Nombre,
+                Modelo = grupoEquipo.Modelo,
+                Marca = grupoEquipo.Marca,
+                Descripcion = grupoEquipo.Descripcion,
+                UrlDataSheet = grupoEquipo.UrlDataSheet,
+                UrlImagen = grupoEquipo.UrlImagen,
+                IdCategoria = grupoEquipo.IdCategoria,
+                NombreCategoria = grupoEquipo.Categoria != null ? grupoEquipo.Categoria.Nombre : string.Empty,
+                Cantidad = grupoEquipo.Cantidad,
+                CostoPromedio = grupoEquipo.CostoPromedio
             })
             .ToListAsync();
 
@@ -39,21 +38,20 @@ public class GrupoEquipoRepository : Repository<GrupoEquipoEntity, GrupoEquipoDt
     {
         var dto = await DbContext.GruposEquipos
             .AsNoTracking()
-            .Include(g => g.Categoria)
-            .Where(g => g.Id == id && !g.EstadoEliminado)
-            .Select(e => new GrupoEquipoDto
+            .Where(grupoEquipo => grupoEquipo.Id == id && !grupoEquipo.EstadoEliminado)
+            .Select(grupoEquipo => new GrupoEquipoDto
             {
-                Id = e.Id,
-                Nombre = e.Nombre,
-                Modelo = e.Modelo,
-                Marca = e.Marca,
-                Descripcion = e.Descripcion,
-                UrlDataSheet = e.UrlDataSheet,
-                UrlImagen = e.UrlImagen,
-                IdCategoria = e.IdCategoria,
-                NombreCategoria = e.Categoria != null ? e.Categoria.Nombre : string.Empty,
-                Cantidad = e.Cantidad,
-                CostoPromedio = e.CostoPromedio
+                Id = grupoEquipo.Id,
+                Nombre = grupoEquipo.Nombre,
+                Modelo = grupoEquipo.Modelo,
+                Marca = grupoEquipo.Marca,
+                Descripcion = grupoEquipo.Descripcion,
+                UrlDataSheet = grupoEquipo.UrlDataSheet,
+                UrlImagen = grupoEquipo.UrlImagen,
+                IdCategoria = grupoEquipo.IdCategoria,
+                NombreCategoria = grupoEquipo.Categoria != null ? grupoEquipo.Categoria.Nombre : string.Empty,
+                Cantidad = grupoEquipo.Cantidad,
+                CostoPromedio = grupoEquipo.CostoPromedio
             })
             .FirstOrDefaultAsync();
 
@@ -61,42 +59,39 @@ public class GrupoEquipoRepository : Repository<GrupoEquipoEntity, GrupoEquipoDt
             ? Result<GrupoEquipoDto>.NotFound()
             : Result<GrupoEquipoDto>.Success(dto);
     }
-    
+
     public async Task<GrupoEquipoEntity?> GetByNombreModeloMarca(string nombre, string modelo, string marca)
         => await DbContext.GruposEquipos
-            .FirstOrDefaultAsync(g => g.Nombre == nombre && g.Modelo == modelo && g.Marca == marca && !g.EstadoEliminado);
+            .FirstOrDefaultAsync(grupoEquipo => grupoEquipo.Nombre == nombre && grupoEquipo.Modelo == modelo && grupoEquipo.Marca == marca && !grupoEquipo.EstadoEliminado);
 
     public async Task<List<GrupoEquipoDto>> Search(string? nombre = null, string? categoria = null)
     {
         var query = DbContext.GruposEquipos
             .AsNoTracking()
-            .Include(g => g.Categoria)
             .AsQueryable();
 
         if (!string.IsNullOrWhiteSpace(nombre))
-            query = query.Where(g => g.Nombre.Contains(nombre) || g.Modelo.Contains(nombre) || g.Marca.Contains(nombre));
+            query = query.Where(grupoEquipo => grupoEquipo.Nombre.Contains(nombre) || grupoEquipo.Modelo.Contains(nombre) || grupoEquipo.Marca.Contains(nombre));
 
         if (!string.IsNullOrWhiteSpace(categoria))
-            query = query.Where(g => g.Categoria != null && g.Categoria.Nombre == categoria);
+            query = query.Where(grupoEquipo => grupoEquipo.Categoria != null && grupoEquipo.Categoria.Nombre == categoria);
 
-        var result = await query
-            .Select(e => new GrupoEquipoDto
+        return await query
+            .Select(grupoEquipo => new GrupoEquipoDto
             {
-                Id = e.Id,
-                Nombre = e.Nombre,
-                Modelo = e.Modelo,
-                Marca = e.Marca,
-                Descripcion = e.Descripcion,
-                UrlDataSheet = e.UrlDataSheet,
-                UrlImagen = e.UrlImagen,
-                IdCategoria = e.IdCategoria,
-                NombreCategoria = e.Categoria != null ? e.Categoria.Nombre : string.Empty,
-                Cantidad = e.Cantidad,
-                CostoPromedio = e.CostoPromedio
+                Id = grupoEquipo.Id,
+                Nombre = grupoEquipo.Nombre,
+                Modelo = grupoEquipo.Modelo,
+                Marca = grupoEquipo.Marca,
+                Descripcion = grupoEquipo.Descripcion,
+                UrlDataSheet = grupoEquipo.UrlDataSheet,
+                UrlImagen = grupoEquipo.UrlImagen,
+                IdCategoria = grupoEquipo.IdCategoria,
+                NombreCategoria = grupoEquipo.Categoria != null ? grupoEquipo.Categoria.Nombre : string.Empty,
+                Cantidad = grupoEquipo.Cantidad,
+                CostoPromedio = grupoEquipo.CostoPromedio
             })
             .ToListAsync();
-
-        return result;
     }
 
     protected override GrupoEquipoDto MapToDto(GrupoEquipoEntity entity)
@@ -115,4 +110,3 @@ public class GrupoEquipoRepository : Repository<GrupoEquipoEntity, GrupoEquipoDt
             CostoPromedio = entity.CostoPromedio
         };
 }
-

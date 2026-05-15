@@ -1,5 +1,6 @@
 using Microsoft.EntityFrameworkCore;
 using Npgsql;
+using FluentValidation;
 using IMT_Reservas.Server.Application.Abstraction;
 using IMT_Reservas.Server.Application.Features.Accesorio;
 using IMT_Reservas.Server.Application.Features.Carrera;
@@ -19,7 +20,6 @@ using IMT_Reservas.Server.Core.Entities;
 using IMT_Reservas.Server.Infrastructure.Config;
 using IMT_Reservas.Server.Infrastructure.Repositories.Implementations;
 using IMT_Reservas.Server.Presentation.Middleware;
-using EmpresaMantenimientoEntity = IMT_Reservas.Server.Core.Entities.EmpresaMantenimiento;
 
 AppContext.SetSwitch("Npgsql.EnableLegacyTimestampBehavior", true);
 NpgsqlConnection.GlobalTypeMapper.MapEnum<EstadoPrestamo>("estado_prestamo");
@@ -76,14 +76,29 @@ builder.Services.AddScoped<CarreraService>();
 builder.Services.AddScoped<CategoriaService>();
 builder.Services.AddScoped<MantenimientoService>();
 
-builder.Services.AddScoped(sp => new Service<EmpresaMantenimientoEntity, EmpresaMantenimientoRepository, EmpresaMantenimientoDto>(
-    sp.GetRequiredService<EmpresaMantenimientoRepository>()));
+builder.Services.AddScoped<EmpresaMantenimientoService>();
 
 builder.Services.AddScoped<GaveteroService>();
 builder.Services.AddScoped<MuebleService>();
 builder.Services.AddScoped<ContratoService>();
 builder.Services.AddScoped<ComponenteRepository>();
 builder.Services.AddScoped<ComponenteService>();
+
+builder.Services.AddSingleton<UsuarioMapper>();
+builder.Services.AddSingleton<PrestamoMapper>();
+builder.Services.AddSingleton<EquipoMapper>();
+builder.Services.AddSingleton<CarreraMapper>();
+builder.Services.AddSingleton<CategoriaMapper>();
+builder.Services.AddSingleton<GrupoEquipoMapper>();
+builder.Services.AddSingleton<GaveteroMapper>();
+builder.Services.AddSingleton<MuebleMapper>();
+builder.Services.AddSingleton<MantenimientoMapper>();
+builder.Services.AddSingleton<EmpresaMantenimientoMapper>();
+builder.Services.AddSingleton<AccesorioMapper>();
+builder.Services.AddSingleton<ComponenteMapper>();
+builder.Services.AddSingleton<ContratoMapper>();
+
+builder.Services.AddValidatorsFromAssemblyContaining<UsuarioValidator>();
 
 var app = builder.Build();
 

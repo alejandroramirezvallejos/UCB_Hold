@@ -1,8 +1,6 @@
 using Microsoft.AspNetCore.Mvc;
 using IMT_Reservas.Server.Application.Features.Prestamo;
 using IMT_Reservas.Server.Application.Abstraction;
-using IMT_Reservas.Server.Core.Entities;
-using PrestamoEntity = IMT_Reservas.Server.Core.Entities.Prestamo;
 namespace IMT_Reservas.Server.Presentation.Controllers;
 
 [ApiController]
@@ -37,7 +35,7 @@ public class PrestamoController : ControllerBase
     [HttpPost]
     public async Task<IActionResult> Create([FromBody] PrestamoDto request)
     {
-        var result = await _service.CreateFromDto(request);
+        var result = await _service.Create(request);
 
         return result.IsSuccess
             ? CreatedAtAction(nameof(Get), new { id = result.Value?.Id }, new Response<PrestamoDto> { Status = 201, Value = result.Value })
@@ -47,24 +45,7 @@ public class PrestamoController : ControllerBase
     [HttpPut("{id:int}")]
     public async Task<IActionResult> Update(int id, [FromBody] PrestamoDto dto)
     {
-        var estadoPrestamo = EstadoPrestamoState.Parse(dto.EstadoPrestamo) ?? EstadoPrestamo.Pendiente;
-
-        var entity = new PrestamoEntity
-        {
-            Id = id,
-            Carnet = dto.CarnetUsuario,
-            FechaSolicitud = dto.FechaSolicitud ?? DateTime.UtcNow,
-            FechaPrestamo = dto.FechaPrestamo ?? dto.FechaPrestamoEsperada,
-            FechaPrestamoEsperada = dto.FechaPrestamoEsperada ?? DateTime.UtcNow,
-            FechaDevolucion = dto.FechaDevolucion,
-            FechaDevolucionEsperada = dto.FechaDevolucionEsperada ?? DateTime.UtcNow.AddDays(7),
-            Observacion = dto.Observacion,
-            EstadoPrestamo = estadoPrestamo,
-            IdContrato = dto.IdContrato
-        };
-
-        var result = await _service.Update(entity);
-
+        var result = await _service.Update(id, dto);
         return result.IsSuccess ? Ok(new Response<PrestamoDto> { Status = 200, Value = result.Value }) : BadRequest(new Response<object> { Status = 400, Errors = result.Errors.ToList() });
     }
 

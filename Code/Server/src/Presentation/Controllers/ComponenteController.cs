@@ -31,7 +31,7 @@ public class ComponenteController : ControllerBase
     [HttpPost]
     public async Task<IActionResult> Create([FromBody] ComponenteDto dto)
     {
-        var result = await _service.CreateFromDto(dto);
+        var result = await _service.Create(dto);
         
         return result.IsSuccess ? CreatedAtAction(nameof(Get), new { id = result.Value?.Id }, new Response<ComponenteDto> { Status = 201, Value = result.Value }) : BadRequest(new Response<object> { Status = 400, Errors = result.Errors.ToList() });
     }
@@ -39,7 +39,7 @@ public class ComponenteController : ControllerBase
     [HttpPut("{id:int}")]
     public async Task<IActionResult> Update(int id, [FromBody] ComponenteDto dto)
     {
-        var result = await _service.UpdateFromDto(id, dto);
+        var result = await _service.Update(id, dto);
        
         return result.IsSuccess ? Ok(new Response<ComponenteDto> { Status = 200, Value = result.Value }) : BadRequest(new Response<object> { Status = 400, Errors = result.Errors.ToList() });
     }

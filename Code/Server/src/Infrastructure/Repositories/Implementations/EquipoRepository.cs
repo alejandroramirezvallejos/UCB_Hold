@@ -21,58 +21,105 @@ public class EquipoRepository : Repository<EquipoEntity, EquipoDto>
 
     public override async Task<Result<List<EquipoDto>>> GetAll(QueryFilter? filter = null)
     {
-        var entities = await DbContext.Equipos
+        var rows = await DbContext.Equipos
             .AsNoTracking()
-            .Include(e => e.GrupoEquipo)
-            .Include(e => e.Gavetero)
+            .Select(equipo => new
+            {
+                equipo.Id,
+                equipo.CodigoImt,
+                equipo.CodigoUcb,
+                equipo.NumeroSerial,
+                equipo.EstadoEquipo,
+                equipo.Ubicacion,
+                equipo.CostoReferencia,
+                equipo.Descripcion,
+                equipo.TiempoMaximoPrestamo,
+                equipo.Procedencia,
+                equipo.IdGrupoEquipo,
+                NombreGrupoEquipo = equipo.GrupoEquipo != null ? equipo.GrupoEquipo.Nombre : null,
+                equipo.IdGavetero,
+                NombreGavetero = equipo.Gavetero != null ? equipo.Gavetero.Nombre : null,
+                equipo.FechaIngresoEquipo
+            })
             .ToListAsync();
 
-        var dtos = entities.Select(ToEquipoDto).ToList();
-       
+        var dtos = rows.Select(equipo => new EquipoDto
+        {
+            Id = equipo.Id,
+            CodigoImt = equipo.CodigoImt,
+            CodigoUcb = equipo.CodigoUcb,
+            NumeroSerial = equipo.NumeroSerial,
+            EstadoEquipo = EstadoEquipoToText(equipo.EstadoEquipo),
+            Ubicacion = equipo.Ubicacion,
+            CostoReferencia = equipo.CostoReferencia,
+            Descripcion = equipo.Descripcion,
+            TiempoMaximoPrestamo = equipo.TiempoMaximoPrestamo,
+            Procedencia = equipo.Procedencia,
+            IdGrupoEquipo = equipo.IdGrupoEquipo,
+            NombreGrupoEquipo = equipo.NombreGrupoEquipo,
+            IdGavetero = equipo.IdGavetero,
+            NombreGavetero = equipo.NombreGavetero,
+            FechaIngresoEquipo = new DateTime(equipo.FechaIngresoEquipo.Year, equipo.FechaIngresoEquipo.Month, equipo.FechaIngresoEquipo.Day)
+        }).ToList();
+
         return Result<List<EquipoDto>>.Success(dtos);
     }
 
     public override async Task<Result<EquipoDto>> Get(int id)
     {
-        var entity = await DbContext.Equipos
+        var row = await DbContext.Equipos
             .AsNoTracking()
-            .Include(e => e.GrupoEquipo)
-            .Include(e => e.Gavetero)
-            .FirstOrDefaultAsync(e => e.Id == id);
+            .Where(equipo => equipo.Id == id)
+            .Select(equipo => new
+            {
+                equipo.Id,
+                equipo.CodigoImt,
+                equipo.CodigoUcb,
+                equipo.NumeroSerial,
+                equipo.EstadoEquipo,
+                equipo.Ubicacion,
+                equipo.CostoReferencia,
+                equipo.Descripcion,
+                equipo.TiempoMaximoPrestamo,
+                equipo.Procedencia,
+                equipo.IdGrupoEquipo,
+                NombreGrupoEquipo = equipo.GrupoEquipo != null ? equipo.GrupoEquipo.Nombre : null,
+                equipo.IdGavetero,
+                NombreGavetero = equipo.Gavetero != null ? equipo.Gavetero.Nombre : null,
+                equipo.FechaIngresoEquipo
+            })
+            .FirstOrDefaultAsync();
 
-        return entity == null
-            ? Result<EquipoDto>.NotFound()
-            : Result<EquipoDto>.Success(ToEquipoDto(entity));
+        if (row == null) return Result<EquipoDto>.NotFound();
+
+        return Result<EquipoDto>.Success(new EquipoDto
+        {
+            Id = row.Id,
+            CodigoImt = row.CodigoImt,
+            CodigoUcb = row.CodigoUcb,
+            NumeroSerial = row.NumeroSerial,
+            EstadoEquipo = EstadoEquipoToText(row.EstadoEquipo),
+            Ubicacion = row.Ubicacion,
+            CostoReferencia = row.CostoReferencia,
+            Descripcion = row.Descripcion,
+            TiempoMaximoPrestamo = row.TiempoMaximoPrestamo,
+            Procedencia = row.Procedencia,
+            IdGrupoEquipo = row.IdGrupoEquipo,
+            NombreGrupoEquipo = row.NombreGrupoEquipo,
+            IdGavetero = row.IdGavetero,
+            NombreGavetero = row.NombreGavetero,
+            FechaIngresoEquipo = new DateTime(row.FechaIngresoEquipo.Year, row.FechaIngresoEquipo.Month, row.FechaIngresoEquipo.Day)
+        });
     }
-
-    private static EquipoDto ToEquipoDto(EquipoEntity e) => new()
-    {
-        Id = e.Id,
-        CodigoImt = e.CodigoImt,
-        CodigoUcb = e.CodigoUcb,
-        NumeroSerial = e.NumeroSerial,
-        EstadoEquipo = EstadoEquipoToText(e.EstadoEquipo),
-        Ubicacion = e.Ubicacion,
-        CostoReferencia = e.CostoReferencia,
-        Descripcion = e.Descripcion,
-        TiempoMaximoPrestamo = e.TiempoMaximoPrestamo,
-        Procedencia = e.Procedencia,
-        NombreGrupoEquipo = e.GrupoEquipo?.Nombre,
-        IdGrupoEquipo = e.IdGrupoEquipo,
-        NombreGavetero = e.Gavetero?.Nombre,
-        IdGavetero = e.IdGavetero,
-        FechaIngresoEquipo = new DateTime(e.FechaIngresoEquipo.Year, e.FechaIngresoEquipo.Month, e.FechaIngresoEquipo.Day)
-    };
 
     public override async Task<Result<object>> Delete(int id)
     {
         var entity = await DbContext.Equipos
-            .FirstOrDefaultAsync(e => e.Id == id && !e.EstadoEliminado);
+            .FirstOrDefaultAsync(equipo => equipo.Id == id && !equipo.EstadoEliminado);
 
-        if (entity == null)
-            return Result<object>.NotFound();
+        if (entity == null) return Result<object>.NotFound();
 
-        entity.EstadoEliminado = true; 
+        entity.EstadoEliminado = true;
         await DbContext.SaveChangesAsync();
 
         return Result<object>.Success(null!);
@@ -95,4 +142,3 @@ public class EquipoRepository : Repository<EquipoEntity, EquipoDto>
         FechaIngresoEquipo = new DateTime(entity.FechaIngresoEquipo.Year, entity.FechaIngresoEquipo.Month, entity.FechaIngresoEquipo.Day)
     };
 }
-

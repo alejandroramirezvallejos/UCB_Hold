@@ -73,7 +73,7 @@ npm install
 
 ## 4. Ejecutar el proyecto
 
-### Opción A: JetBrains Rider (recomendado)
+### Opción A: JetBrains Rider 
 Abrir `Code/` en Rider → seleccionar config `IMT_Reservas.FullStack` → Run. Levanta backend + frontend simultáneamente.
 
 Configs disponibles en `Code/.run/`:
@@ -124,30 +124,3 @@ cd Code/Client
 ng build
 ng test
 ```
-
----
-
-## 7. Convenciones de código
-
-Ver [ARCHITECTURE.md § Convención de nombres](ARCHITECTURE.md#convención-de-nombres).
-
-Resumen:
-- Funciones/variables en inglés (excepto entidades y atributos: `Prestamo`, `Carnet`, `CodigoImt`, etc.)
-- Sin try-catch en services (usar Ardalis `Result<T>`)
-- Sin comentarios `//` ni `/* */` (código autoexplicativo)
-- Sin llaves en `if` / `for` de una sola línea
-- Una clase/interfaz/enum por archivo
-
----
-
-## 8. Troubleshooting
-
-**Backend no levanta — `Connection refused`:** verificar que PostgreSQL está corriendo en `localhost:5432`.
-
-**Backend levanta pero responde 500 en todo:** ejecutar `dotnet user-secrets list` y confirmar que `ConnectionStrings:PostgreSQL` está set.
-
-**Login tarda 8s:** confirmar que el connection string incluye `Pooling=true;MinPoolSize=2`. Si solo es la primera request, es cold-start aceptable.
-
-**CORS error en frontend:** verificar `appsettings.Development.json` tiene `AllowedOrigins` con el puerto correcto del frontend.
-
-**Swagger no carga:** Swagger solo está habilitado en `ASPNETCORE_ENVIRONMENT=Development`. En el run config de Rider este env var ya está incluido.
