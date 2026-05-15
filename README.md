@@ -1,6 +1,6 @@
 <div align="center">
 
-<img src="Code/Client/public/assets/logo_universidad.png" alt="UCB Hold" width="160" />
+<img src="Images/logo.png" alt="UCB Hold" width="160" />
 
 # UCB Hold
 
@@ -21,30 +21,30 @@ Plataforma web para gestión de préstamos de equipos, accesorios y herramientas
 
 ## ✦ Características
 
-| | |
-|---|---|
-| 📦 **Gestión de equipos** | Inventario con grupos, gaveteros y muebles. Código IMT, estado y costo promedio calculados automáticamente. |
-| 📋 **Préstamos con contrato** | Flujo completo: solicitud → aprobación → entrega → devolución. Generación de contrato HTML adjunto. |
-| 📅 **Disponibilidad en tiempo real** | Carrito de reservas que calcula unidades disponibles por grupo por día en un rango de fechas. |
-| 🔧 **Mantenimientos** | Registro de mantenimientos correctivos y preventivos por empresa externa con detalles por equipo. |
-| 🗂️ **Catálogos completos** | Carreras, categorías, accesorios, componentes, empresas y muebles con CRUD completo. |
-| ♻️ **Borrado lógico** | Ningún dato se elimina físicamente. `estado_eliminado = true` con cascade automático a detalles. |
-| ⚡ **Queries optimizadas** | Single SQL projection con LEFT JOINs en todos los repositorios. `AsNoTracking` + índices compuestos. |
+|                                      |                                                                                                             |
+| ------------------------------------ | ----------------------------------------------------------------------------------------------------------- |
+| 📦 **Gestión de equipos**            | Inventario con grupos, gaveteros y muebles. Código IMT, estado y costo promedio calculados automáticamente. |
+| 📋 **Préstamos con contrato**        | Flujo completo: solicitud → aprobación → entrega → devolución. Generación de contrato HTML adjunto.         |
+| 📅 **Disponibilidad en tiempo real** | Carrito de reservas que calcula unidades disponibles por grupo por día en un rango de fechas.               |
+| 🔧 **Mantenimientos**                | Registro de mantenimientos correctivos y preventivos por empresa externa con detalles por equipo.           |
+| 🗂️ **Catálogos completos**           | Carreras, categorías, accesorios, componentes, empresas y muebles con CRUD completo.                        |
+| ♻️ **Borrado lógico**                | Ningún dato se elimina físicamente. `estado_eliminado = true` con cascade automático a detalles.            |
+| ⚡ **Queries optimizadas**           | Single SQL projection con LEFT JOINs en todos los repositorios. `AsNoTracking` + índices compuestos.        |
 
 ---
 
 ## ✦ Stack
 
-| Capa | Tecnología | Versión |
-|------|-----------|---------|
-| Frontend | Angular | 18 |
-| Backend | ASP.NET Core | .NET 8 |
-| ORM | Entity Framework Core + Npgsql | 8.0.4 |
-| Base de datos | PostgreSQL | 14+ |
-| Mapeo | Riok.Mapperly (source-generated) | 3.6.0 |
-| Validación | FluentValidation | 11.9.0 |
-| Result pattern | Ardalis.Result | 10.1.0 |
-| Passwords | BCrypt.Net-Next | 4.0.3 |
+| Capa           | Tecnología                       | Versión |
+| -------------- | -------------------------------- | ------- |
+| Frontend       | Angular                          | 18      |
+| Backend        | ASP.NET Core                     | .NET 8  |
+| ORM            | Entity Framework Core + Npgsql   | 8.0.4   |
+| Base de datos  | PostgreSQL                       | 14+     |
+| Mapeo          | Riok.Mapperly (source-generated) | 3.6.0   |
+| Validación     | FluentValidation                 | 11.9.0  |
+| Result pattern | Ardalis.Result                   | 10.1.0  |
+| Passwords      | BCrypt.Net-Next                  | 4.0.3   |
 
 ---
 
@@ -59,12 +59,14 @@ Plataforma web para gestión de préstamos de equipos, accesorios y herramientas
 ### 1 · Base de datos
 
 **Nativo:**
+
 ```bash
 psql -U postgres -c "CREATE DATABASE IMT_Reservas;"
 psql -U postgres -d IMT_Reservas -f DataBase/database.ddl
 ```
 
 **Docker:**
+
 ```bash
 docker run -d --name ucbhold-postgres \
   -e POSTGRES_PASSWORD=postgres \
@@ -95,6 +97,7 @@ npm install
 **JetBrains Rider** — abrir `Code/` → config `IMT_Reservas.FullStack` → Run.
 
 **CLI** — dos terminales:
+
 ```bash
 # Terminal 1
 cd Code/Server && dotnet run
@@ -103,11 +106,11 @@ cd Code/Server && dotnet run
 cd Code/Client && npm start
 ```
 
-| Servicio | URL |
-|---------|-----|
-| Frontend | http://localhost:4200 |
-| Backend API | https://localhost:7216 |
-| Swagger | https://localhost:7216/swagger |
+| Servicio    | URL                            |
+| ----------- | ------------------------------ |
+| Frontend    | http://localhost:4200          |
+| Backend API | https://localhost:7216         |
+| Swagger     | https://localhost:7216/swagger |
 
 ---
 
@@ -138,12 +141,12 @@ cd Code/Client && npm start
 
 ## ✦ Documentación
 
-| Documento | Contenido |
-|-----------|-----------|
-| [docs/API.md](docs/API.md) | Todos los endpoints, DTOs, códigos de respuesta |
-| [docs/DATABASE.md](docs/DATABASE.md) | Esquema ER, tablas, enums, vistas, índices, transacciones |
-| [docs/DEVELOPMENT.md](docs/DEVELOPMENT.md) | Setup local completo, user-secrets, variables de entorno |
-| [docs/DEPLOYMENT.md](docs/DEPLOYMENT.md) | Despliegue Oracle Cloud · nginx · systemd |
+| Documento                                  | Contenido                                                 |
+| ------------------------------------------ | --------------------------------------------------------- |
+| [docs/API.md](docs/API.md)                 | Todos los endpoints, DTOs, códigos de respuesta           |
+| [docs/DATABASE.md](docs/DATABASE.md)       | Esquema ER, tablas, enums, vistas, índices, transacciones |
+| [docs/DEVELOPMENT.md](docs/DEVELOPMENT.md) | Setup local completo, user-secrets, variables de entorno  |
+| [docs/DEPLOYMENT.md](docs/DEPLOYMENT.md)   | Despliegue Oracle Cloud · nginx · systemd                 |
 
 ---
 

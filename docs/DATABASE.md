@@ -6,7 +6,7 @@ PostgreSQL 14+ with Entity Framework Core 8. Schema DDL: [`DataBase/database.ddl
 
 ## ✦ Entity-Relation Diagram
 
-![ER Diagram](../Images/bd.png)
+![ER Diagram](../Images/diagram.png)
 
 ---
 
