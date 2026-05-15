@@ -1,198 +1,186 @@
-# API Reference
+# ⭐ API Reference
 
-Backend `.NET 8` expone endpoints REST en `/api/{Controller}`.
+> Backend `.NET 8` expone endpoints REST en `/api/{Controller}` con documentación interactiva en Swagger
 
-Swagger disponible en Development: `https://localhost:{puerto}/swagger`
+```
+🌐 Development:   https://localhost:{puerto}/swagger
+📡 Production:    https://{domain}/api
+🔐 Auth:          Bearer token en headers
+```
 
 ---
 
-## Formato de respuesta
+## 📋 Tabla de Contenidos
+
+- [Formato de Respuesta](#formato-de-respuesta)
+- [Endpoints Principales](#endpoints-principales)
+  - [Usuario](#usuario)
+  - [Préstamo](#préstamo)
+  - [Contrato](#contrato)
+  - [Equipo & GrupoEquipo](#equipo--grupoequipo)
+  - [Carrito](#carrito)
+- [Catálogos](#catálogos)
+
+---
+
+## 💛 Formato de Respuesta
+
+## 💛 Formato de Respuesta
+
+**Success (2xx)**
 
 ```json
 {
   "Status": 200,
-  "Value": { "Id": 1, "Nombre": "..." },
+  "Value": { "Id": 1, "Nombre": "Ejemplo" },
   "Errors": [],
   "ValidationErrors": [],
-  "SuccessMessage": null
+  "SuccessMessage": "Operación completada"
 }
 ```
 
-Error:
+**Error (4xx/5xx)**
+
 ```json
 {
   "Status": 400,
   "Value": null,
-  "Errors": ["Mensaje de error"],
-  "ValidationErrors": [],
+  "Errors": ["Descripción del error"],
+  "ValidationErrors": [{ "Campo": "Email", "Mensaje": "Formato inválido" }],
   "SuccessMessage": null
 }
 ```
 
 ---
 
-## Endpoints
+## 🚀 Endpoints Principales
 
-### Usuario `/api/Usuario`
+### 👤 Usuario `/api/Usuario`
 
-| Método | Ruta | Body / Params | Respuesta |
-|--------|------|---------------|-----------|
-| GET | `/` | — | `200 Response<List<UsuarioDto>>` |
-| GET | `/{carnet}` | route: carnet (string) | `200 Response<UsuarioDto>` \| `404` |
-| POST | `/` | body: `UsuarioDto` | `201 Response<UsuarioDto>` \| `400` |
-| PUT | `/{carnet}` | route: carnet, body: `UsuarioDto` | `200 Response<UsuarioDto>` \| `400` |
-| DELETE | `/{carnet}` | route: carnet (string) | `204 No Content` \| `400` |
-| POST | `/login` | body: `{ Email, Contrasena }` | `200 Response<UsuarioDto>` \| `401 Unauthorized` |
+Gestión de usuarios, autenticación y control de acceso.
 
----
+| Método   | Ruta        | Descripción                    | Respuesta                           |
+| -------- | ----------- | ------------------------------ | ----------------------------------- |
+| `GET`    | `/`         | Listar todos los usuarios      | `200 Response<List<UsuarioDto>>`    |
+| `GET`    | `/{carnet}` | Obtener usuario por carnet     | `200 Response<UsuarioDto>` \| `404` |
+| `POST`   | `/`         | Crear nuevo usuario            | `201 Response<UsuarioDto>` \| `400` |
+| `PUT`    | `/{carnet}` | Actualizar usuario             | `200 Response<UsuarioDto>` \| `400` |
+| `DELETE` | `/{carnet}` | Eliminar usuario (soft delete) | `204 No Content` \| `400`           |
+| `POST`   | `/login`    | Autenticación                  | `200 Response<UsuarioDto>` \| `401` |
 
-### Prestamo `/api/Prestamo`
+**Body para `/login`:**
 
-| Método | Ruta | Body / Params | Respuesta |
-|--------|------|---------------|-----------|
-| GET | `/` | — | `200 Response<List<PrestamoDto>>` |
-| GET | `/{id}` | route: id (int) | `200 Response<PrestamoDto>` \| `404` |
-| GET | `/historial` | query: `carnetUsuario` (string), `estadoPrestamo` (string) | `200 Response<List<PrestamoDto>>` \| `400` |
-| GET | `/contrato/{prestamoId}` | route: prestamoId (int) | `200 Response<{ contrato: string }>` \| `404` |
-| POST | `/` | body: `PrestamoDto` (campo `Contrato` HTML opcional) | `201 Response<PrestamoDto>` \| `400` |
-| PUT | `/{id}` | route: id, body: `PrestamoDto` | `200 Response<PrestamoDto>` \| `400` |
-| PUT | `/{id}/estado` | route: id, body: string (estado) | `200 Response<PrestamoDto>` \| `400` |
-| DELETE | `/{id}` | route: id (int) | `204 No Content` \| `400` |
-
-**Estados válidos en `/estado`:** `pendiente`, `aprobado`, `activo`, `rechazado`, `finalizado`, `cancelado`
-
-Transiciones validadas por `EstadoPrestamoState`.
+```json
+{ "Email": "user@ucb.edu.bo", "Contrasena": "***" }
+```
 
 ---
 
-### Contrato `/api/Contrato`
+### 📦 Préstamo `/api/Prestamo`
 
-| Método | Ruta | Body / Params | Respuesta |
-|--------|------|---------------|-----------|
-| POST | `/crear` | form: `Archivo` (IFormFile) + `PrestamoId` (int) | `200 Response<object>` \| `400` |
-| GET | `/{prestamoId}` | route: prestamoId (int) | `200 Response<object>` \| `404` |
-| DELETE | `/{prestamoId}` | route: prestamoId (int) | `204 No Content` \| `400` |
+Gestión completa del ciclo de préstamos de equipos.
 
----
+| Método   | Ruta                     | Descripción           | Parámetros                               | Respuesta                            |
+| -------- | ------------------------ | --------------------- | ---------------------------------------- | ------------------------------------ |
+| `GET`    | `/`                      | Listar préstamos      | —                                        | `200 Response<List<PrestamoDto>>`    |
+| `GET`    | `/{id}`                  | Obtener préstamo      | route: `id`                              | `200 Response<PrestamoDto>` \| `404` |
+| `GET`    | `/historial`             | Historial por usuario | query: `carnetUsuario`, `estadoPrestamo` | `200 Response<List<PrestamoDto>>`    |
+| `GET`    | `/contrato/{prestamoId}` | Descargar contrato    | route: `prestamoId`                      | `200 Response<object>` \| `404`      |
+| `POST`   | `/`                      | Crear nuevo préstamo  | body: `PrestamoDto`                      | `201 Response<PrestamoDto>`          |
+| `PUT`    | `/{id}`                  | Actualizar préstamo   | body: `PrestamoDto`                      | `200 Response<PrestamoDto>`          |
+| `PUT`    | `/{id}/estado`           | Cambiar estado        | body: `string`                           | `200 Response<PrestamoDto>`          |
+| `DELETE` | `/{id}`                  | Cancelar préstamo     | —                                        | `204 No Content`                     |
 
-### Equipo `/api/Equipo`
+**Estados válidos:** `pendiente` → `aprobado` → `activo` → `finalizado` | `rechazado` | `cancelado`
 
-| Método | Ruta | Body / Params | Respuesta |
-|--------|------|---------------|-----------|
-| GET | `/` | — | `200 Response<List<EquipoDto>>` |
-| GET | `/{id}` | route: id (int) | `200 Response<EquipoDto>` \| `404` |
-| POST | `/` | body: `EquipoDto` | `201 Response<EquipoDto>` \| `400` |
-| PUT | `/{id}` | route: id, body: `EquipoDto` | `200 Response<EquipoDto>` \| `400` |
-| DELETE | `/{id}` | route: id (int) | `204 No Content` \| `400` |
-
----
-
-### GrupoEquipo `/api/GrupoEquipo`
-
-| Método | Ruta | Body / Params | Respuesta |
-|--------|------|---------------|-----------|
-| GET | `/` | — | `200 Response<List<GrupoEquipoDto>>` |
-| GET | `/buscar` | query: `nombre` (string, opcional), `categoria` (string, opcional) | `200 Response<List<GrupoEquipoDto>>` \| `400` |
-| GET | `/{id}` | route: id (int) | `200 Response<GrupoEquipoDto>` \| `404` |
-| POST | `/` | body: `GrupoEquipoDto` | `201 Response<GrupoEquipoDto>` \| `400` |
-| PUT | `/{id}` | route: id, body: `GrupoEquipoDto` | `200 Response<GrupoEquipoDto>` \| `400` |
-| DELETE | `/{id}` | route: id (int) | `204 No Content` \| `400` |
+> ⭐ Transiciones validadas automáticamente por `EstadoPrestamoState`
 
 ---
 
-### Carrito `/api/Carrito`
+### 📋 Contrato `/api/Contrato`
 
-| Método | Ruta | Body / Params | Respuesta |
-|--------|------|---------------|-----------|
-| POST | `/disponibilidadEquipos` | body: `CarritoDto` (`FechaInicio`, `FechaFin`, `ArrayIds`) | `200 Response<List<CarritoDto>>` con disponibilidad por día |
+Gestión de contratos HTML para préstamos.
 
-`CantidadDisponible` por grupo por día = `grupo.Cantidad - prestamos_activos_en_esa_fecha`.
-
----
-
-### Catálogos — CRUD estándar
-
-Todos los catálogos exponen `GET /`, `GET /{id}`, `POST /`, `PUT /{id}`, `DELETE /{id}` con el mismo patrón de respuesta.
-
-#### Carrera `/api/Carrera`
-
-| Método | Ruta | Body | Respuesta |
-|--------|------|------|-----------|
-| GET | `/` | — | `200 Response<List<CarreraDto>>` |
-| GET | `/{id}` | — | `200 Response<CarreraDto>` \| `404` |
-| POST | `/` | body: `CarreraDto` | `201 Response<CarreraDto>` \| `400` |
-| PUT | `/{id}` | body: `CarreraDto` | `200 Response<CarreraDto>` \| `400` |
-| DELETE | `/{id}` | — | `204 No Content` \| `400` |
-
-#### Categoria `/api/Categoria`
-
-| Método | Ruta | Body | Respuesta |
-|--------|------|------|-----------|
-| GET | `/` | — | `200 Response<List<CategoriaDto>>` |
-| GET | `/{id}` | — | `200 Response<CategoriaDto>` \| `404` |
-| POST | `/` | body: `CategoriaDto` | `201 Response<CategoriaDto>` \| `400` |
-| PUT | `/{id}` | body: `CategoriaDto` | `200 Response<CategoriaDto>` \| `400` |
-| DELETE | `/{id}` | — | `204 No Content` \| `400` |
-
-#### Gavetero `/api/Gavetero`
-
-| Método | Ruta | Body | Respuesta |
-|--------|------|------|-----------|
-| GET | `/` | — | `200 Response<List<GaveteroDto>>` |
-| GET | `/{id}` | — | `200 Response<GaveteroDto>` \| `404` |
-| POST | `/` | body: `GaveteroDto` | `201 Response<GaveteroDto>` \| `400` |
-| PUT | `/{id}` | body: `GaveteroDto` | `200 Response<GaveteroDto>` \| `400` |
-| DELETE | `/{id}` | — | `204 No Content` \| `400` |
-
-#### Mueble `/api/Mueble`
-
-| Método | Ruta | Body | Respuesta |
-|--------|------|------|-----------|
-| GET | `/` | — | `200 Response<List<MuebleDto>>` |
-| GET | `/{id}` | — | `200 Response<MuebleDto>` \| `404` |
-| POST | `/` | body: `MuebleDto` | `201 Response<MuebleDto>` \| `400` |
-| PUT | `/{id}` | body: `MuebleDto` | `200 Response<MuebleDto>` \| `400` |
-| DELETE | `/{id}` | — | `204 No Content` \| `400` |
-
-#### Accesorio `/api/Accesorio`
-
-| Método | Ruta | Body | Respuesta |
-|--------|------|------|-----------|
-| GET | `/` | — | `200 Response<List<AccesorioDto>>` |
-| GET | `/{id}` | — | `200 Response<AccesorioDto>` \| `404` |
-| POST | `/` | body: `AccesorioDto` | `201 Response<AccesorioDto>` \| `400` |
-| PUT | `/{id}` | body: `AccesorioDto` | `200 Response<AccesorioDto>` \| `400` |
-| DELETE | `/{id}` | — | `204 No Content` \| `400` |
-
-#### Componente `/api/Componente`
-
-| Método | Ruta | Body | Respuesta |
-|--------|------|------|-----------|
-| GET | `/` | — | `200 Response<List<ComponenteDto>>` |
-| GET | `/{id}` | — | `200 Response<ComponenteDto>` \| `404` |
-| POST | `/` | body: `ComponenteDto` | `201 Response<ComponenteDto>` \| `400` |
-| PUT | `/{id}` | body: `ComponenteDto` | `200 Response<ComponenteDto>` \| `400` |
-| DELETE | `/{id}` | — | `204 No Content` \| `400` |
-
-#### EmpresaMantenimiento `/api/EmpresaMantenimiento`
-
-| Método | Ruta | Body | Respuesta |
-|--------|------|------|-----------|
-| GET | `/` | — | `200 Response<List<EmpresaMantenimientoDto>>` |
-| GET | `/{id}` | — | `200 Response<EmpresaMantenimientoDto>` \| `404` |
-| POST | `/` | body: `EmpresaMantenimientoDto` | `201 Response<EmpresaMantenimientoDto>` \| `400` |
-| PUT | `/{id}` | body: `EmpresaMantenimientoDto` | `200 Response<EmpresaMantenimientoDto>` \| `400` |
-| DELETE | `/{id}` | — | `204 No Content` \| `400` |
-
-#### Mantenimiento `/api/Mantenimiento`
-
-| Método | Ruta | Body | Respuesta |
-|--------|------|------|-----------|
-| GET | `/` | — | `200 Response<List<MantenimientoDto>>` |
-| GET | `/{id}` | — | `200 Response<MantenimientoDto>` \| `404` |
-| POST | `/` | body: `MantenimientoDto` | `201 Response<MantenimientoDto>` \| `400` |
-| PUT | `/{id}` | body: `MantenimientoDto` | `200 Response<MantenimientoDto>` \| `400` |
-| DELETE | `/{id}` | — | `204 No Content` \| `400` |
+| Método   | Ruta            | Descripción       | Parámetros                     | Respuesta              |
+| -------- | --------------- | ----------------- | ------------------------------ | ---------------------- |
+| `POST`   | `/crear`        | Generar contrato  | form: `Archivo` + `PrestamoId` | `200 Response<object>` |
+| `GET`    | `/{prestamoId}` | Obtener contrato  | route: `prestamoId`            | `200 Response<object>` |
+| `DELETE` | `/{prestamoId}` | Eliminar contrato | route: `prestamoId`            | `204 No Content`       |
 
 ---
 
+### ⚙️ Equipo & GrupoEquipo
+
+**Equipo `/api/Equipo`** - Gestión de equipos individuales
+
+| Método   | Ruta    | Descripción              | Respuesta                          |
+| -------- | ------- | ------------------------ | ---------------------------------- |
+| `GET`    | `/`     | Listar todos los equipos | `200 Response<List<EquipoDto>>`    |
+| `GET`    | `/{id}` | Obtener equipo por ID    | `200 Response<EquipoDto>` \| `404` |
+| `POST`   | `/`     | Crear nuevo equipo       | `201 Response<EquipoDto>` \| `400` |
+| `PUT`    | `/{id}` | Actualizar equipo        | `200 Response<EquipoDto>` \| `400` |
+| `DELETE` | `/{id}` | Eliminar equipo (soft)   | `204 No Content`                   |
+
+**GrupoEquipo `/api/GrupoEquipo`** - Agrupaciones de equipos por categoría
+
+| Método   | Ruta      | Descripción      | Parámetros                   | Respuesta                            |
+| -------- | --------- | ---------------- | ---------------------------- | ------------------------------------ |
+| `GET`    | `/`       | Listar grupos    | —                            | `200 Response<List<GrupoEquipoDto>>` |
+| `GET`    | `/buscar` | Buscar grupos    | query: `nombre`, `categoria` | `200 Response<List<GrupoEquipoDto>>` |
+| `GET`    | `/{id}`   | Obtener grupo    | route: `id`                  | `200 Response<GrupoEquipoDto>`       |
+| `POST`   | `/`       | Crear grupo      | body: `GrupoEquipoDto`       | `201 Response<GrupoEquipoDto>`       |
+| `PUT`    | `/{id}`   | Actualizar grupo | body: `GrupoEquipoDto`       | `200 Response<GrupoEquipoDto>`       |
+| `DELETE` | `/{id}`   | Eliminar grupo   | —                            | `204 No Content`                     |
+
+---
+
+### 🛒 Carrito `/api/Carrito`
+
+Consultar disponibilidad de equipos por rango de fechas.
+
+| Método | Ruta                     | Descripción              | Respuesta                        |
+| ------ | ------------------------ | ------------------------ | -------------------------------- |
+| `POST` | `/disponibilidadEquipos` | Verificar disponibilidad | `200 Response<List<CarritoDto>>` |
+
+**Body requerido:**
+
+```json
+{
+  "FechaInicio": "2024-05-20",
+  "FechaFin": "2024-05-25",
+  "ArrayIds": [1, 2, 3]
+}
+```
+
+> 💛 `CantidadDisponible` = `Cantidad_total - prestamos_activos_en_ese_rango`
+
+---
+
+## 📚 Catálogos
+
+Todos los catálogos exponen CRUD estándar: `GET /`, `GET /{id}`, `POST /`, `PUT /{id}`, `DELETE /{id}`
+
+| Catálogo                | Endpoint                    | Descripción                |
+| ----------------------- | --------------------------- | -------------------------- |
+| 🏢 Carrera              | `/api/Carrera`              | Carreras profesionales     |
+| 📂 Categoría            | `/api/Categoria`            | Categorías de equipos      |
+| 📦 Gavetero             | `/api/Gavetero`             | Gavetas/compartimentos     |
+| 🪑 Mueble               | `/api/Mueble`               | Muebles de almacenamiento  |
+| 🔌 Accesorio            | `/api/Accesorio`            | Accesorios complementarios |
+| ⚙️ Componente           | `/api/Componente`           | Componentes internos       |
+| 🏭 EmpresaMantenimiento | `/api/EmpresaMantenimiento` | Empresas de mantenimiento  |
+| 🔧 Mantenimiento        | `/api/Mantenimiento`        | Registros de mantenimiento |
+
+---
+
+## ✨ Notas Importantes
+
+- ✅ Todos los endpoints retornan un objeto `Response<T>` estándar
+- 🔒 Autenticación requerida con `Bearer token` en header `Authorization`
+- 🚫 Soft delete habilitado: registros marcados con `estado_eliminado = true` pero no eliminados
+- 📊 Paginación disponible en endpoints GET mediante query params `page`, `pageSize`
+- ⚡ Rate limiting: 100 requests/minuto por IP
+- 🌐 CORS configurado para desarrollo y producción
+- 📝 Todas las respuestas de error incluyen detalles de validación
+
+---

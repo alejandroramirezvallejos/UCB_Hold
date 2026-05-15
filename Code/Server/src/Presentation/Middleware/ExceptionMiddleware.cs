@@ -5,6 +5,8 @@ namespace IMT_Reservas.Server.Presentation.Middleware;
 
 public class ExceptionMiddleware
 {
+    private static readonly JsonSerializerOptions JsonOptions = new() { PropertyNamingPolicy = null };
+
     private readonly RequestDelegate _next;
     private readonly ILogger<ExceptionMiddleware> _logger;
 
@@ -57,12 +59,9 @@ public class ExceptionMiddleware
             Status = statusCode,
             Value = null,
             Errors = errors,
-            ValidationErrors = [],
-            SuccessMessage = null
+            ValidationErrors = []
         };
 
-        var options = new JsonSerializerOptions { PropertyNamingPolicy = null };
-
-        return context.Response.WriteAsync(JsonSerializer.Serialize(response, options));
+        return context.Response.WriteAsync(JsonSerializer.Serialize(response, JsonOptions));
     }
 }

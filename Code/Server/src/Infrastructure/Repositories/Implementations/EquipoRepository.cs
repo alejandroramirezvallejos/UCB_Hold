@@ -13,7 +13,9 @@ public class EquipoRepository : Repository<EquipoEntity, EquipoDto>
     private readonly EquipoMapper _mapper;
 
     public EquipoRepository(ApplicationDbContext dbContext, EquipoMapper mapper)
-        : base(dbContext) => _mapper = mapper;
+        : base(dbContext) { _mapper = mapper; }
+
+    protected override EquipoDto MapToDto(EquipoEntity entity) => _mapper.ToDto(entity);
 
     private static string EstadoEquipoToText(EstadoEquipo estado) => estado switch
     {
@@ -93,7 +95,8 @@ public class EquipoRepository : Repository<EquipoEntity, EquipoDto>
             })
             .FirstOrDefaultAsync();
 
-        if (row == null) return Result<EquipoDto>.NotFound();
+        if (row == null) 
+            return Result<EquipoDto>.NotFound();
 
         return Result<EquipoDto>.Success(new EquipoDto
         {
@@ -120,7 +123,8 @@ public class EquipoRepository : Repository<EquipoEntity, EquipoDto>
         var entity = await DbContext.Equipos
             .FirstOrDefaultAsync(equipo => equipo.Id == id && !equipo.EstadoEliminado);
 
-        if (entity == null) return Result<object>.NotFound();
+        if (entity == null) 
+            return Result<object>.NotFound();
 
         entity.EstadoEliminado = true;
         await DbContext.SaveChangesAsync();
@@ -128,5 +132,4 @@ public class EquipoRepository : Repository<EquipoEntity, EquipoDto>
         return Result<object>.Success(null!);
     }
 
-    protected override EquipoDto MapToDto(EquipoEntity entity) => _mapper.ToDto(entity);
 }

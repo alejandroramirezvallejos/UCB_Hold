@@ -11,19 +11,24 @@ public class UsuarioService : Service<UsuarioEntity, UsuarioRepository, UsuarioD
 {
     private readonly ApplicationDbContext _dbContext;
     private readonly UsuarioMapper _mapper;
-    private readonly IValidator<UsuarioDto> _validator;
 
     public UsuarioService(UsuarioRepository repository, ApplicationDbContext dbContext, UsuarioMapper mapper, IValidator<UsuarioDto> validator)
-        : base(repository) => (_dbContext, _mapper, _validator) = (dbContext, mapper, validator);
+        : base(repository, validator)
+    {
+        _dbContext = dbContext;
+        _mapper = mapper;
+    }
+
+    protected override UsuarioEntity MapToEntity(UsuarioDto dto) => _mapper.ToEntity(dto);
 
     public async Task<Result<UsuarioDto>> Create(UsuarioDto dto)
     {
-        var validation = await _validator.ValidateAsync(dto);
+        await ResolveCarrera(dto);
+
+        var validation = await Validator.ValidateAsync(dto);
         
         if (!validation.IsValid) 
             return validation.ToResult<UsuarioDto>();
-
-        await ResolveCarrera(dto);
 
         if (await _dbContext.Usuarios.IgnoreQueryFilters().AnyAsync(usuario => usuario.Carnet == dto.Carnet))
             return Result<UsuarioDto>.Error("Carnet ya existe");
@@ -31,12 +36,8 @@ public class UsuarioService : Service<UsuarioEntity, UsuarioRepository, UsuarioD
         if (await _dbContext.Usuarios.IgnoreQueryFilters().AnyAsync(usuario => usuario.Email == dto.Email))
             return Result<UsuarioDto>.Error("Email ya existe");
 
-        if (!await _dbContext.Carreras.AnyAsync(carrera => carrera.Id == dto.IdCarrera && !carrera.EstadoEliminado))
-            return Result<UsuarioDto>.Error("Carrera no existe");
-
         var entity = _mapper.ToEntity(dto);
         entity.Contrasena = BCrypt.Net.BCrypt.HashPassword(dto.Contrasena);
-
         var result = await base.Create(entity);
         
         if (result.IsSuccess && result.Value != null)
@@ -47,8 +48,9 @@ public class UsuarioService : Service<UsuarioEntity, UsuarioRepository, UsuarioD
 
     public async Task<Result<UsuarioDto>> Update(string carnet, UsuarioDto dto)
     {
-        var validation = await _validator.ValidateAsync(dto);
-        if (!validation.IsValid)
+        var validation = await Validator.ValidateAsync(dto);
+        
+        if (!validation.IsValid) 
             return validation.ToResult<UsuarioDto>();
 
         var existing = await _dbContext.Usuarios
@@ -62,7 +64,7 @@ public class UsuarioService : Service<UsuarioEntity, UsuarioRepository, UsuarioD
 
         if ((dto.IdCarrera ?? 0) > 0) 
             existing.IdCarrera = dto.IdCarrera!.Value;
-
+        
         if (!string.IsNullOrWhiteSpace(dto.Contrasena))
             existing.Contrasena = BCrypt.Net.BCrypt.HashPassword(dto.Contrasena);
 
@@ -70,7 +72,7 @@ public class UsuarioService : Service<UsuarioEntity, UsuarioRepository, UsuarioD
 
         var resultDto = _mapper.ToDto(existing);
         resultDto.CarreraNombre = await GetCarreraNombre(existing.IdCarrera);
-       
+        
         return Result<UsuarioDto>.Success(resultDto);
     }
 
@@ -109,8 +111,6 @@ public class UsuarioService : Service<UsuarioEntity, UsuarioRepository, UsuarioD
             return Result<UsuarioDto>.Unauthorized("Credenciales inválidas");
 
         var passwordValid = !string.IsNullOrEmpty(loginData.Usuario.Contrasena)
-                         && loginData.Usuario.Contrasena.StartsWith("$2")
-                         && loginData.Usuario.Contrasena.Length == 60
                          && BCrypt.Net.BCrypt.Verify(password, loginData.Usuario.Contrasena);
 
         if (!passwordValid) 
@@ -122,8 +122,7 @@ public class UsuarioService : Service<UsuarioEntity, UsuarioRepository, UsuarioD
         return Result<UsuarioDto>.Success(dto);
     }
 
-    public async Task<Result<object>> Delete(string carnet)
-        => await Repository.Delete(carnet);
+    public async Task<Result<object>> Delete(string carnet) => await Repository.Delete(carnet);
 
     private async Task ResolveCarrera(UsuarioDto dto)
     {

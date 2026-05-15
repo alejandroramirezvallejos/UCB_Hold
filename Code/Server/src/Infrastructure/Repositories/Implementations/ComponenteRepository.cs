@@ -9,10 +9,23 @@ namespace IMT_Reservas.Server.Infrastructure.Repositories.Implementations;
 
 public class ComponenteRepository : Repository<ComponenteEntity, ComponenteDto>
 {
-    private readonly ComponenteMapper _mapper;
+    public ComponenteRepository(ApplicationDbContext dbContext) : base(dbContext) { }
 
-    public ComponenteRepository(ApplicationDbContext dbContext, ComponenteMapper mapper)
-        : base(dbContext) => _mapper = mapper;
+    public override async Task<Result<ComponenteDto>> Create(ComponenteEntity entity)
+    {
+        DbContext.Add(entity);
+        await DbContext.SaveChangesAsync();
+        
+        return await Get(entity.Id);
+    }
+
+    public override async Task<Result<ComponenteDto>> Update(ComponenteEntity entity)
+    {
+        DbContext.Update(entity);
+        await DbContext.SaveChangesAsync();
+        
+        return await Get(entity.Id);
+    }
 
     public override async Task<Result<List<ComponenteDto>>> GetAll(QueryFilter? filter = null)
     {
@@ -72,5 +85,4 @@ public class ComponenteRepository : Repository<ComponenteEntity, ComponenteDto>
             .Select(equipo => equipo.Id)
             .FirstOrDefaultAsync();
 
-    protected override ComponenteDto MapToDto(ComponenteEntity entity) => _mapper.ToDto(entity);
 }

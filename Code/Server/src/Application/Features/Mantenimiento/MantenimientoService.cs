@@ -12,31 +12,28 @@ public class MantenimientoService : Service<MantenimientoEntity, MantenimientoRe
 {
     private readonly ApplicationDbContext _dbContext;
     private readonly MantenimientoMapper _mapper;
-    private readonly IValidator<MantenimientoDto> _validator;
 
     public MantenimientoService(MantenimientoRepository repository, ApplicationDbContext dbContext, MantenimientoMapper mapper, IValidator<MantenimientoDto> validator)
-        : base(repository) => (_dbContext, _mapper, _validator) = (dbContext, mapper, validator);
+        : base(repository, validator) { _dbContext = dbContext; _mapper = mapper; }
+
+    protected override MantenimientoEntity MapToEntity(MantenimientoDto dto) => _mapper.ToEntity(dto);
 
     public async Task<Result<MantenimientoDto>> Create(MantenimientoDto dto)
     {
         await ResolveEmpresa(dto);
 
-        var validation = await _validator.ValidateAsync(dto);
+        var validation = await Validator.ValidateAsync(dto);
         
         if (!validation.IsValid) 
             return validation.ToResult<MantenimientoDto>();
 
-        if (!await _dbContext.EmpresasMantenimiento.AnyAsync(empresa => empresa.Id == dto.IdEmpresa && !empresa.EstadoEliminado))
-            return Result<MantenimientoDto>.Error("Empresa mantenimiento no existe");
-
-        var entity = _mapper.ToEntity(dto);
+        var entity = MapToEntity(dto);
         var result = await base.Create(entity);
-        
+
         if (!result.IsSuccess) 
             return result;
 
         await AssignDetalles(entity.Id, dto);
-        
         return result;
     }
 
@@ -44,15 +41,12 @@ public class MantenimientoService : Service<MantenimientoEntity, MantenimientoRe
     {
         await ResolveEmpresa(dto);
 
-        var validation = await _validator.ValidateAsync(dto);
+        var validation = await Validator.ValidateAsync(dto);
         
         if (!validation.IsValid) 
             return validation.ToResult<MantenimientoDto>();
 
-        if (!await _dbContext.EmpresasMantenimiento.AnyAsync(empresa => empresa.Id == dto.IdEmpresa && !empresa.EstadoEliminado))
-            return Result<MantenimientoDto>.Error("Empresa mantenimiento no existe");
-
-        var entity = _mapper.ToEntity(dto);
+        var entity = MapToEntity(dto);
         entity.Id = id;
         
         return await base.Update(entity);
@@ -64,8 +58,9 @@ public class MantenimientoService : Service<MantenimientoEntity, MantenimientoRe
             .Where(detalle => detalle.IdMantenimiento == id && !detalle.EstadoEliminado)
             .ToListAsync();
 
-        foreach (var detalle in detalles) detalle.EstadoEliminado = true;
-        
+        foreach (var detalle in detalles) 
+            detalle.EstadoEliminado = true;
+
         if (detalles.Count > 0) 
             await _dbContext.SaveChangesAsync();
 
@@ -76,6 +71,7 @@ public class MantenimientoService : Service<MantenimientoEntity, MantenimientoRe
     {
         if ((dto.IdEmpresa ?? 0) > 0) 
             return;
+        
         if (string.IsNullOrWhiteSpace(dto.NombreEmpresaMantenimiento)) 
             return;
 
@@ -108,7 +104,7 @@ public class MantenimientoService : Service<MantenimientoEntity, MantenimientoRe
                 EstadoEliminado = false
             });
         }
-        
+
         await _dbContext.SaveChangesAsync();
     }
 }

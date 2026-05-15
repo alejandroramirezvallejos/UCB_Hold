@@ -12,7 +12,9 @@ public class CategoriaRepository : Repository<CategoriaEntity, CategoriaDto>
     private readonly CategoriaMapper _mapper;
 
     public CategoriaRepository(ApplicationDbContext dbContext, CategoriaMapper mapper)
-        : base(dbContext) => _mapper = mapper;
+        : base(dbContext) { _mapper = mapper; }
+
+    protected override CategoriaDto MapToDto(CategoriaEntity entity) => _mapper.ToDto(entity);
 
     public override async Task<Result<List<CategoriaDto>>> GetAll(QueryFilter? filter = null)
     {
@@ -37,12 +39,6 @@ public class CategoriaRepository : Repository<CategoriaEntity, CategoriaDto>
             : Result<CategoriaDto>.Success(dto);
     }
 
-    public async Task<CategoriaEntity?> GetByNombre(string nombre)
-        => await DbContext.Categorias
-            .AsNoTracking()
-            .FirstOrDefaultAsync(c => c.Nombre == nombre && !c.EstadoEliminado);
-
-    protected override CategoriaDto MapToDto(CategoriaEntity entity) => _mapper.ToDto(entity);
 }
 
 

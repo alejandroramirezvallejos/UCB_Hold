@@ -8,36 +8,24 @@ namespace IMT_Reservas.Server.Application.Features.Accesorio;
 public class AccesorioService : Service<AccesorioEntity, AccesorioRepository, AccesorioDto>
 {
     private readonly AccesorioMapper _mapper;
-    private readonly IValidator<AccesorioDto> _validator;
 
     public AccesorioService(AccesorioRepository repository, AccesorioMapper mapper, IValidator<AccesorioDto> validator)
-        : base(repository) => (_mapper, _validator) = (mapper, validator);
+        : base(repository, validator) { _mapper = mapper; }
+
+    protected override AccesorioEntity MapToEntity(AccesorioDto dto) => _mapper.ToEntity(dto);
 
     public async Task<Result<AccesorioDto>> Create(AccesorioDto dto)
     {
         await ResolveEquipoId(dto);
-
-        var validation = await _validator.ValidateAsync(dto);
         
-        if (!validation.IsValid)
-            return validation.ToResult<AccesorioDto>();
-
-        return await base.Create(_mapper.ToEntity(dto));
+        return await ValidateAndCreate(dto);
     }
 
     public async Task<Result<AccesorioDto>> Update(int id, AccesorioDto dto)
     {
         await ResolveEquipoId(dto);
-
-        var validation = await _validator.ValidateAsync(dto);
         
-        if (!validation.IsValid)
-            return validation.ToResult<AccesorioDto>();
-
-        var entity = _mapper.ToEntity(dto);
-        entity.Id = id;
-
-        return await base.Update(entity);
+        return await ValidateAndUpdate(id, dto);
     }
 
     private async Task ResolveEquipoId(AccesorioDto dto)

@@ -12,20 +12,22 @@ public class PrestamoService : Service<PrestamoEntity, PrestamoRepository, Prest
 {
     private readonly ApplicationDbContext _dbContext;
     private readonly PrestamoMapper _mapper;
-    private readonly IValidator<PrestamoDto> _validator;
 
     public PrestamoService(PrestamoRepository repository, ApplicationDbContext dbContext, PrestamoMapper mapper, IValidator<PrestamoDto> validator)
-        : base(repository) => (_dbContext, _mapper, _validator) = (dbContext, mapper, validator);
+        : base(repository, validator)
+    {
+        _dbContext = dbContext;
+        _mapper = mapper;
+    }
+
+    protected override PrestamoEntity MapToEntity(PrestamoDto dto) => _mapper.ToEntity(dto);
 
     public async Task<Result<PrestamoDto>> Create(PrestamoDto dto)
     {
-        var validation = await _validator.ValidateAsync(dto);
+        var validation = await Validator.ValidateAsync(dto);
         
-        if (!validation.IsValid)
+        if (!validation.IsValid) 
             return validation.ToResult<PrestamoDto>();
-
-        if (!await _dbContext.Usuarios.AnyAsync(usuario => usuario.Carnet == dto.CarnetUsuario && !usuario.EstadoEliminado))
-            return Result<PrestamoDto>.Error("Usuario no existe o está inactivo");
 
         var entity = _mapper.ToEntity(dto);
         entity.FechaSolicitud = dto.FechaSolicitud ?? DateTime.UtcNow;
@@ -36,7 +38,6 @@ public class PrestamoService : Service<PrestamoEntity, PrestamoRepository, Prest
 
         _dbContext.Prestamos.Add(entity);
         await _dbContext.SaveChangesAsync();
-
         await AssignEquipos(entity.Id, dto.GrupoEquipoId);
         await SaveContrato(entity, dto.Contrato);
 
@@ -48,8 +49,9 @@ public class PrestamoService : Service<PrestamoEntity, PrestamoRepository, Prest
 
     public async Task<Result<PrestamoDto>> Update(int id, PrestamoDto dto)
     {
-        var validation = await _validator.ValidateAsync(dto);
-        if (!validation.IsValid)
+        var validation = await Validator.ValidateAsync(dto);
+        
+        if (!validation.IsValid) 
             return validation.ToResult<PrestamoDto>();
 
         var entity = await _dbContext.Prestamos.FirstOrDefaultAsync(prestamo => prestamo.Id == id);
@@ -67,7 +69,7 @@ public class PrestamoService : Service<PrestamoEntity, PrestamoRepository, Prest
     public async Task<Result<PrestamoDto>> UpdateEstado(int id, string nuevoEstado)
     {
         var prestamo = await _dbContext.Prestamos.FirstOrDefaultAsync(prestamo => prestamo.Id == id);
-        
+       
         if (prestamo == null) 
             return Result<PrestamoDto>.NotFound();
 
@@ -92,6 +94,7 @@ public class PrestamoService : Service<PrestamoEntity, PrestamoRepository, Prest
             return Result<List<PrestamoDto>>.Error("Carnet requerido");
 
         EstadoPrestamo? estado = null;
+       
         if (!string.IsNullOrEmpty(estadoPrestamo) && estadoPrestamo != "todos")
         {
             estado = EstadoPrestamoState.Parse(estadoPrestamo);
@@ -111,7 +114,7 @@ public class PrestamoService : Service<PrestamoEntity, PrestamoRepository, Prest
 
         foreach (var detalle in detalles) detalle.EstadoEliminado = true;
         
-        if (detalles.Count > 0)
+        if (detalles.Count > 0) 
             await _dbContext.SaveChangesAsync();
 
         return await base.Delete(id);
@@ -153,7 +156,7 @@ public class PrestamoService : Service<PrestamoEntity, PrestamoRepository, Prest
             });
             assignedEquipoIds.Add(equipoDisponible.Id);
         }
-        
+
         await _dbContext.SaveChangesAsync();
     }
 
@@ -165,7 +168,7 @@ public class PrestamoService : Service<PrestamoEntity, PrestamoRepository, Prest
         var contrato = new Core.Entities.Contrato { ContratoHtml = contratoHtml };
         _dbContext.Contratos.Add(contrato);
         await _dbContext.SaveChangesAsync();
-        
+
         entity.IdContrato = contrato.Id;
         _dbContext.Prestamos.Update(entity);
         await _dbContext.SaveChangesAsync();

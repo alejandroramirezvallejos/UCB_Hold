@@ -8,36 +8,28 @@ namespace IMT_Reservas.Server.Application.Features.Componente;
 public class ComponenteService : Service<ComponenteEntity, ComponenteRepository, ComponenteDto>
 {
     private readonly ComponenteMapper _mapper;
-    private readonly IValidator<ComponenteDto> _validator;
 
-    public ComponenteService(ComponenteRepository repository, ComponenteMapper mapper, IValidator<ComponenteDto> validator)
-        : base(repository) => (_mapper, _validator) = (mapper, validator);
+    public ComponenteService(ComponenteRepository repository, ComponenteMapper mapper,
+        IValidator<ComponenteDto> validator)
+        : base(repository, validator)
+    {
+        _mapper = mapper;
+    }
+
+    protected override ComponenteEntity MapToEntity(ComponenteDto dto) => _mapper.ToEntity(dto);
 
     public async Task<Result<ComponenteDto>> Create(ComponenteDto dto)
     {
         await ResolveEquipoId(dto);
-
-        var validation = await _validator.ValidateAsync(dto);
         
-        if (!validation.IsValid)
-            return validation.ToResult<ComponenteDto>();
-
-        return await base.Create(_mapper.ToEntity(dto));
+        return await ValidateAndCreate(dto);
     }
 
     public async Task<Result<ComponenteDto>> Update(int id, ComponenteDto dto)
     {
         await ResolveEquipoId(dto);
-
-        var validation = await _validator.ValidateAsync(dto);
         
-        if (!validation.IsValid)
-            return validation.ToResult<ComponenteDto>();
-
-        var entity = _mapper.ToEntity(dto);
-        entity.Id = id;
-
-        return await base.Update(entity);
+        return await ValidateAndUpdate(id, dto);
     }
 
     private async Task ResolveEquipoId(ComponenteDto dto)

@@ -15,5 +15,5 @@ public partial class PrestamoMapper
     [MapProperty(nameof(PrestamoDto.CarnetUsuario), nameof(PrestamoEntity.Carnet))]
     public partial void Update(PrestamoDto source, PrestamoEntity destination);
 
-    private string EstadoPrestamoToString(EstadoPrestamo estado) => EstadoPrestamoState.ToText(estado);
+    private static string EstadoPrestamoToString(EstadoPrestamo estado) => EstadoPrestamoState.ToText(estado);
 }

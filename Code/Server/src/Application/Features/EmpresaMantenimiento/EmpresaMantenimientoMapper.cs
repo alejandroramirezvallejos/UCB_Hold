@@ -10,7 +10,4 @@ public partial class EmpresaMantenimientoMapper
 
     [MapProperty(nameof(EmpresaMantenimientoDto.NombreEmpresa), nameof(EmpresaMantenimientoEntity.Nombre))]
     public partial EmpresaMantenimientoEntity ToEntity(EmpresaMantenimientoDto dto);
-
-    [MapProperty(nameof(EmpresaMantenimientoDto.NombreEmpresa), nameof(EmpresaMantenimientoEntity.Nombre))]
-    public partial void Update(EmpresaMantenimientoDto source, EmpresaMantenimientoEntity destination);
 }

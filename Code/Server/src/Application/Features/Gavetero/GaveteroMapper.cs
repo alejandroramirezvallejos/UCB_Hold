@@ -7,5 +7,4 @@ public partial class GaveteroMapper
 {
     public partial GaveteroDto ToDto(GaveteroEntity entity);
     public partial GaveteroEntity ToEntity(GaveteroDto dto);
-    public partial void Update(GaveteroDto source, GaveteroEntity destination);
 }

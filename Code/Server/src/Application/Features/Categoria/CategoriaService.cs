@@ -8,41 +8,33 @@ namespace IMT_Reservas.Server.Application.Features.Categoria;
 public class CategoriaService : Service<CategoriaEntity, CategoriaRepository, CategoriaDto>
 {
     private readonly CategoriaMapper _mapper;
-    private readonly IValidator<CategoriaDto> _validator;
 
     public CategoriaService(CategoriaRepository repository, CategoriaMapper mapper, IValidator<CategoriaDto> validator)
-        : base(repository) => (_mapper, _validator) = (mapper, validator);
+        : base(repository, validator) { _mapper = mapper; }
+
+    protected override CategoriaEntity MapToEntity(CategoriaDto dto) => _mapper.ToEntity(dto);
 
     public async Task<Result<CategoriaDto>> Create(CategoriaDto dto)
     {
-        var validation = await _validator.ValidateAsync(dto);
-
-        if (!validation.IsValid)
+        var validation = await Validator.ValidateAsync(dto);
+        
+        if (!validation.IsValid) 
             return validation.ToResult<CategoriaDto>();
 
-        var existing = await Repository.GetByNombre(dto.Nombre!);
-
-        if (existing != null)
-            return Result<CategoriaDto>.Error($"Ya existe una categoría con nombre '{dto.Nombre}'");
-
-        return await base.Create(_mapper.ToEntity(dto));
+        return await base.Create(MapToEntity(dto));
     }
 
     public async Task<Result<CategoriaDto>> Update(int id, CategoriaDto dto)
     {
-        var validation = await _validator.ValidateAsync(dto);
-
-        if (!validation.IsValid)
+        dto.Id = id;
+        var validation = await Validator.ValidateAsync(dto);
+        
+        if (!validation.IsValid) 
             return validation.ToResult<CategoriaDto>();
 
-        var existing = await Repository.GetByNombre(dto.Nombre!);
-
-        if (existing != null && existing.Id != id)
-            return Result<CategoriaDto>.Error($"Ya existe otra categoría con nombre '{dto.Nombre}'");
-
-        var entity = _mapper.ToEntity(dto);
+        var entity = MapToEntity(dto);
         entity.Id = id;
-
+        
         return await base.Update(entity);
     }
 }

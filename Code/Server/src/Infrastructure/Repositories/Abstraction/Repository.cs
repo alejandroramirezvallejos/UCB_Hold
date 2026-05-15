@@ -8,9 +8,13 @@ public abstract class Repository<TEntity, TDto> where TEntity : class where TDto
 {
     protected readonly ApplicationDbContext DbContext;
 
-    protected Repository(ApplicationDbContext dbContext) => DbContext = dbContext;
+    protected Repository(ApplicationDbContext dbContext) => 
+        DbContext = dbContext;
+    
+    protected virtual TDto MapToDto(TEntity entity) =>
+        throw new NotSupportedException($"{GetType().Name} must override MapToDto.");
 
-    public async Task<Result<TDto>> Create(TEntity entity)
+    public virtual async Task<Result<TDto>> Create(TEntity entity)
     {
         DbContext.Add(entity);
         await DbContext.SaveChangesAsync();
@@ -18,7 +22,7 @@ public abstract class Repository<TEntity, TDto> where TEntity : class where TDto
         return Result<TDto>.Created(MapToDto(entity));
     }
 
-    public async Task<Result<TDto>> Update(TEntity entity)
+    public virtual async Task<Result<TDto>> Update(TEntity entity)
     {
         DbContext.Update(entity);
         await DbContext.SaveChangesAsync();
@@ -52,21 +56,16 @@ public abstract class Repository<TEntity, TDto> where TEntity : class where TDto
 
     public virtual async Task<Result<List<TDto>>> GetAll(QueryFilter? filter = null)
     {
-        var query = DbContext.Set<TEntity>().AsQueryable();
-        var entities = await query.ToListAsync();
-        var dtos = entities.Select(MapToDto).ToList();
-
-        return Result<List<TDto>>.Success(dtos);
+        var entities = await DbContext.Set<TEntity>().ToListAsync();
+        return Result<List<TDto>>.Success(entities.Select(MapToDto).ToList());
     }
-
-    protected abstract TDto MapToDto(TEntity entity);
 
     protected object? GetId(TEntity entity)
     {
         var idProp = typeof(TEntity).GetProperty("Id")
                   ?? typeof(TEntity).GetProperties().FirstOrDefault(p => p.Name.EndsWith("Id"));
 
-        if (idProp == null) 
+        if (idProp == null)
             return null;
 
         return idProp.GetValue(entity);

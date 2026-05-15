@@ -8,41 +8,33 @@ namespace IMT_Reservas.Server.Application.Features.Carrera;
 public class CarreraService : Service<CarreraEntity, CarreraRepository, CarreraDto>
 {
     private readonly CarreraMapper _mapper;
-    private readonly IValidator<CarreraDto> _validator;
 
     public CarreraService(CarreraRepository repository, CarreraMapper mapper, IValidator<CarreraDto> validator)
-        : base(repository) => (_mapper, _validator) = (mapper, validator);
+        : base(repository, validator) { _mapper = mapper; }
+
+    protected override CarreraEntity MapToEntity(CarreraDto dto) => _mapper.ToEntity(dto);
 
     public async Task<Result<CarreraDto>> Create(CarreraDto dto)
     {
-        var validation = await _validator.ValidateAsync(dto);
-
-        if (!validation.IsValid)
+        var validation = await Validator.ValidateAsync(dto);
+        
+        if (!validation.IsValid) 
             return validation.ToResult<CarreraDto>();
 
-        var existing = await Repository.GetByNombre(dto.Nombre!);
-
-        if (existing != null)
-            return Result<CarreraDto>.Error($"Ya existe una carrera con nombre '{dto.Nombre}'");
-
-        return await base.Create(_mapper.ToEntity(dto));
+        return await base.Create(MapToEntity(dto));
     }
 
     public async Task<Result<CarreraDto>> Update(int id, CarreraDto dto)
     {
-        var validation = await _validator.ValidateAsync(dto);
-
-        if (!validation.IsValid)
+        dto.Id = id;
+        var validation = await Validator.ValidateAsync(dto);
+        
+        if (!validation.IsValid) 
             return validation.ToResult<CarreraDto>();
 
-        var existing = await Repository.GetByNombre(dto.Nombre!);
-
-        if (existing != null && existing.Id != id)
-            return Result<CarreraDto>.Error($"Ya existe otra carrera con nombre '{dto.Nombre}'");
-
-        var entity = _mapper.ToEntity(dto);
+        var entity = MapToEntity(dto);
         entity.Id = id;
-
+        
         return await base.Update(entity);
     }
 }

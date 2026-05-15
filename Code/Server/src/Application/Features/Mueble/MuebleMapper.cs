@@ -7,5 +7,4 @@ public partial class MuebleMapper
 {
     public partial MuebleDto ToDto(MuebleEntity entity);
     public partial MuebleEntity ToEntity(MuebleDto dto);
-    public partial void Update(MuebleDto source, MuebleEntity destination);
 }

@@ -13,20 +13,29 @@ public class PrestamoRepository : Repository<PrestamoEntity, PrestamoDto>
     private readonly PrestamoMapper _mapper;
 
     public PrestamoRepository(ApplicationDbContext dbContext, PrestamoMapper mapper)
-        : base(dbContext) => _mapper = mapper;
+        : base(dbContext)
+    {
+        _mapper = mapper;
+    }
+
+    protected override PrestamoDto MapToDto(PrestamoEntity entity) => _mapper.ToDto(entity);
 
     public override async Task<Result<List<PrestamoDto>>> GetAll(QueryFilter? filter = null)
     {
         var rows = await ProjectFlat(DbContext.Prestamos.AsNoTracking()).ToListAsync();
+        
         return Result<List<PrestamoDto>>.Success(rows.Select(MapRowToDto).ToList());
     }
 
     public async Task<Result<List<PrestamoDto>>> GetHistorialWithDetalles(string carnetUsuario, EstadoPrestamo? estado)
     {
         var query = DbContext.Prestamos.AsNoTracking().Where(prestamo => prestamo.Carnet == carnetUsuario);
-        if (estado.HasValue) query = query.Where(prestamo => prestamo.EstadoPrestamo == estado.Value);
+        
+        if (estado.HasValue) 
+            query = query.Where(prestamo => prestamo.EstadoPrestamo == estado.Value);
 
         var rows = await ProjectFlat(query).ToListAsync();
+        
         return Result<List<PrestamoDto>>.Success(rows.Select(MapRowToDto).ToList());
     }
 
@@ -34,6 +43,7 @@ public class PrestamoRepository : Repository<PrestamoEntity, PrestamoDto>
     {
         var rows = await ProjectFlat(DbContext.Prestamos.AsNoTracking().Where(prestamo => prestamo.Id == id)).ToListAsync();
         var first = rows.FirstOrDefault();
+        
         return first == null ? Result<PrestamoDto>.NotFound() : Result<PrestamoDto>.Success(MapRowToDto(first));
     }
 
@@ -106,7 +116,9 @@ public class PrestamoRepository : Repository<PrestamoEntity, PrestamoDto>
     public override async Task<Result<object>> Delete(int id)
     {
         var entity = await DbContext.Prestamos.FirstOrDefaultAsync(prestamo => prestamo.Id == id && !prestamo.EstadoEliminado);
-        if (entity == null) return Result<object>.NotFound();
+        
+        if (entity == null) 
+            return Result<object>.NotFound();
 
         entity.EstadoEliminado = true;
         DbContext.Update(entity);
@@ -115,8 +127,6 @@ public class PrestamoRepository : Repository<PrestamoEntity, PrestamoDto>
     }
 
     public PrestamoDto ConvertToDto(PrestamoEntity entity) => MapToDto(entity);
-
-    protected override PrestamoDto MapToDto(PrestamoEntity entity) => _mapper.ToDto(entity);
 
     private class FlatRow
     {

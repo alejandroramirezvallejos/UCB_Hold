@@ -7,5 +7,4 @@ public partial class CategoriaMapper
 {
     public partial CategoriaDto ToDto(CategoriaEntity entity);
     public partial CategoriaEntity ToEntity(CategoriaDto dto);
-    public partial void Update(CategoriaDto source, CategoriaEntity destination);
 }

@@ -12,7 +12,12 @@ public class MuebleRepository : Repository<MuebleEntity, MuebleDto>
     private readonly MuebleMapper _mapper;
 
     public MuebleRepository(ApplicationDbContext dbContext, MuebleMapper mapper)
-        : base(dbContext) => _mapper = mapper;
+        : base(dbContext)
+    {
+        _mapper = mapper;
+    }
+
+    protected override MuebleDto MapToDto(MuebleEntity entity) => _mapper.ToDto(entity);
 
     public override async Task<Result<List<MuebleDto>>> GetAll(QueryFilter? filter = null)
     {
@@ -59,7 +64,6 @@ public class MuebleRepository : Repository<MuebleEntity, MuebleDto>
             : Result<MuebleDto>.Success(dto);
     }
     
-    protected override MuebleDto MapToDto(MuebleEntity entity) => _mapper.ToDto(entity);
 }
 
 

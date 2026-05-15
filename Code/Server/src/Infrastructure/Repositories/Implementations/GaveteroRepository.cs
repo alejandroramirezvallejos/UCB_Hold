@@ -12,7 +12,12 @@ public class GaveteroRepository : Repository<GaveteroEntity, GaveteroDto>
     private readonly GaveteroMapper _mapper;
 
     public GaveteroRepository(ApplicationDbContext dbContext, GaveteroMapper mapper)
-        : base(dbContext) => _mapper = mapper;
+        : base(dbContext)
+    {
+        _mapper = mapper;
+    }
+
+    protected override GaveteroDto MapToDto(GaveteroEntity entity) => _mapper.ToDto(entity);
 
     public override async Task<Result<List<GaveteroDto>>> GetAll(QueryFilter? filter = null)
     {
@@ -56,6 +61,5 @@ public class GaveteroRepository : Repository<GaveteroEntity, GaveteroDto>
             .Select(g => g.IdMueble)
             .FirstOrDefaultAsync();
 
-    protected override GaveteroDto MapToDto(GaveteroEntity entity) => _mapper.ToDto(entity);
 }
 

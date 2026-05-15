@@ -12,7 +12,9 @@ public class EmpresaMantenimientoRepository : Repository<EmpresaMantenimientoEnt
     private readonly EmpresaMantenimientoMapper _mapper;
 
     public EmpresaMantenimientoRepository(ApplicationDbContext dbContext, EmpresaMantenimientoMapper mapper)
-        : base(dbContext) => _mapper = mapper;
+        : base(dbContext) { _mapper = mapper; }
+
+    protected override EmpresaMantenimientoDto MapToDto(EmpresaMantenimientoEntity entity) => _mapper.ToDto(entity);
 
     public override async Task<Result<List<EmpresaMantenimientoDto>>> GetAll(QueryFilter? filter = null)
     {
@@ -53,7 +55,6 @@ public class EmpresaMantenimientoRepository : Repository<EmpresaMantenimientoEnt
             : Result<EmpresaMantenimientoDto>.Success(dto);
     }
     
-    protected override EmpresaMantenimientoDto MapToDto(EmpresaMantenimientoEntity entity) => _mapper.ToDto(entity);
 }
 
 

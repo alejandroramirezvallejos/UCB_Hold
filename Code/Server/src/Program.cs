@@ -98,7 +98,19 @@ builder.Services.AddSingleton<AccesorioMapper>();
 builder.Services.AddSingleton<ComponenteMapper>();
 builder.Services.AddSingleton<ContratoMapper>();
 
-builder.Services.AddValidatorsFromAssemblyContaining<UsuarioValidator>();
+builder.Services.AddScoped<IValidator<AccesorioDto>, AccesorioValidator>();
+builder.Services.AddScoped<IValidator<CarreraDto>, CarreraValidator>();
+builder.Services.AddScoped<IValidator<CategoriaDto>, CategoriaValidator>();
+builder.Services.AddScoped<IValidator<ComponenteDto>, ComponenteValidator>();
+builder.Services.AddScoped<IValidator<ContratoDto>, ContratoValidator>();
+builder.Services.AddScoped<IValidator<EmpresaMantenimientoDto>, EmpresaMantenimientoValidator>();
+builder.Services.AddScoped<IValidator<EquipoDto>, EquipoValidator>();
+builder.Services.AddScoped<IValidator<GaveteroDto>, GaveteroValidator>();
+builder.Services.AddScoped<IValidator<GrupoEquipoDto>, GrupoEquipoValidator>();
+builder.Services.AddScoped<IValidator<MantenimientoDto>, MantenimientoValidator>();
+builder.Services.AddScoped<IValidator<MuebleDto>, MuebleValidator>();
+builder.Services.AddScoped<IValidator<PrestamoDto>, PrestamoValidator>();
+builder.Services.AddScoped<IValidator<UsuarioDto>, UsuarioValidator>();
 
 var app = builder.Build();
 

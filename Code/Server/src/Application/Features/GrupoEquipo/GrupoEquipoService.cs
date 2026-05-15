@@ -11,45 +11,35 @@ public class GrupoEquipoService : Service<GrupoEquipoEntity, GrupoEquipoReposito
 {
     private readonly ApplicationDbContext _dbContext;
     private readonly GrupoEquipoMapper _mapper;
-    private readonly IValidator<GrupoEquipoDto> _validator;
 
     public GrupoEquipoService(GrupoEquipoRepository repository, ApplicationDbContext dbContext, GrupoEquipoMapper mapper, IValidator<GrupoEquipoDto> validator)
-        : base(repository) => (_dbContext, _mapper, _validator) = (dbContext, mapper, validator);
+        : base(repository, validator) { _dbContext = dbContext; _mapper = mapper; }
+
+    protected override GrupoEquipoEntity MapToEntity(GrupoEquipoDto dto) => _mapper.ToEntity(dto);
 
     public async Task<Result<GrupoEquipoDto>> Create(GrupoEquipoDto dto)
     {
         await ResolveCategoria(dto);
-
-        var validation = await _validator.ValidateAsync(dto);
-
-        if (!validation.IsValid)
+        var validation = await Validator.ValidateAsync(dto);
+        
+        if (!validation.IsValid) 
             return validation.ToResult<GrupoEquipoDto>();
 
-        var existing = await Repository.GetByNombreModeloMarca(dto.Nombre!, dto.Modelo!, dto.Marca!);
-
-        if (existing != null)
-            return Result<GrupoEquipoDto>.Error($"Ya existe un grupo con nombre '{dto.Nombre}', modelo '{dto.Modelo}' y marca '{dto.Marca}'");
-
-        return await base.Create(_mapper.ToEntity(dto));
+        return await base.Create(MapToEntity(dto));
     }
 
     public async Task<Result<GrupoEquipoDto>> Update(int id, GrupoEquipoDto dto)
     {
+        dto.Id = id;
         await ResolveCategoria(dto);
-
-        var validation = await _validator.ValidateAsync(dto);
-
-        if (!validation.IsValid)
+        var validation = await Validator.ValidateAsync(dto);
+        
+        if (!validation.IsValid) 
             return validation.ToResult<GrupoEquipoDto>();
 
-        var existing = await Repository.GetByNombreModeloMarca(dto.Nombre!, dto.Modelo!, dto.Marca!);
-
-        if (existing != null && existing.Id != id)
-            return Result<GrupoEquipoDto>.Error($"Ya existe otro grupo con nombre '{dto.Nombre}', modelo '{dto.Modelo}' y marca '{dto.Marca}'");
-
-        var entity = _mapper.ToEntity(dto);
+        var entity = MapToEntity(dto);
         entity.Id = id;
-
+        
         return await base.Update(entity);
     }
 
@@ -58,9 +48,10 @@ public class GrupoEquipoService : Service<GrupoEquipoEntity, GrupoEquipoReposito
 
     private async Task ResolveCategoria(GrupoEquipoDto dto)
     {
-        if ((dto.IdCategoria ?? 0) > 0)
+        if ((dto.IdCategoria ?? 0) > 0) 
             return;
-        if (string.IsNullOrWhiteSpace(dto.NombreCategoria))
+        
+        if (string.IsNullOrWhiteSpace(dto.NombreCategoria)) 
             return;
 
         var categoria = await _dbContext.Categorias

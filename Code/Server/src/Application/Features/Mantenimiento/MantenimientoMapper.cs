@@ -7,5 +7,4 @@ public partial class MantenimientoMapper
 {
     public partial MantenimientoDto ToDto(MantenimientoEntity entity);
     public partial MantenimientoEntity ToEntity(MantenimientoDto dto);
-    public partial void Update(MantenimientoDto source, MantenimientoEntity destination);
 }

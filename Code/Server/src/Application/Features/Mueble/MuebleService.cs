@@ -8,31 +8,13 @@ namespace IMT_Reservas.Server.Application.Features.Mueble;
 public class MuebleService : Service<MuebleEntity, MuebleRepository, MuebleDto>
 {
     private readonly MuebleMapper _mapper;
-    private readonly IValidator<MuebleDto> _validator;
 
     public MuebleService(MuebleRepository repository, MuebleMapper mapper, IValidator<MuebleDto> validator)
-        : base(repository) => (_mapper, _validator) = (mapper, validator);
+        : base(repository, validator) { _mapper = mapper; }
 
-    public async Task<Result<MuebleDto>> Create(MuebleDto dto)
-    {
-        var validation = await _validator.ValidateAsync(dto);
-        
-        if (!validation.IsValid) 
-            return validation.ToResult<MuebleDto>();
+    protected override MuebleEntity MapToEntity(MuebleDto dto) => _mapper.ToEntity(dto);
 
-        return await base.Create(_mapper.ToEntity(dto));
-    }
+    public Task<Result<MuebleDto>> Create(MuebleDto dto) => ValidateAndCreate(dto);
 
-    public async Task<Result<MuebleDto>> Update(int id, MuebleDto dto)
-    {
-        var validation = await _validator.ValidateAsync(dto);
-        
-        if (!validation.IsValid) 
-            return validation.ToResult<MuebleDto>();
-
-        var entity = _mapper.ToEntity(dto);
-        entity.Id = id;
-        
-        return await base.Update(entity);
-    }
+    public Task<Result<MuebleDto>> Update(int id, MuebleDto dto) => ValidateAndUpdate(id, dto);
 }

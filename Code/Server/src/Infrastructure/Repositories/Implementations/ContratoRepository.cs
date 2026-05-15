@@ -11,7 +11,12 @@ public class ContratoRepository : Repository<ContratoEntity, ContratoDto>
     private readonly ContratoMapper _mapper;
 
     public ContratoRepository(ApplicationDbContext dbContext, ContratoMapper mapper)
-        : base(dbContext) => _mapper = mapper;
+        : base(dbContext)
+    {
+        _mapper = mapper;
+    }
+
+    protected override ContratoDto MapToDto(ContratoEntity entity) => _mapper.ToDto(entity);
 
     public async Task<Result<ContratoEntity>> GetEntityByPrestamoId(int prestamoId)
     {
@@ -29,9 +34,9 @@ public class ContratoRepository : Repository<ContratoEntity, ContratoDto>
         return Result<ContratoEntity>.Success(contrato);
     }
 
-    public async Task<Result<object>> DeleteByPrestamoId(int prestamoId)
+    public override async Task<Result<object>> Delete(int id) // id = prestamoId
     {
-        var prestamo = await DbContext.Prestamos.FirstOrDefaultAsync(prestamo => prestamo.Id == prestamoId);
+        var prestamo = await DbContext.Prestamos.FirstOrDefaultAsync(prestamo => prestamo.Id == id);
 
         if (prestamo == null || !prestamo.IdContrato.HasValue)
             return Result<object>.Error("Préstamo no encontrado o no tiene contrato");
@@ -48,6 +53,4 @@ public class ContratoRepository : Repository<ContratoEntity, ContratoDto>
 
         return Result<object>.Success(new { });
     }
-
-    protected override ContratoDto MapToDto(ContratoEntity entity) => _mapper.ToDto(entity);
 }

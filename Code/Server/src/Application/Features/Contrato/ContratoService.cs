@@ -11,29 +11,35 @@ public class ContratoService : Service<ContratoEntity, ContratoRepository, Contr
 {
     private readonly ApplicationDbContext _dbContext;
     private readonly ContratoMapper _mapper;
-    private readonly IValidator<ContratoDto> _validator;
 
     public ContratoService(ContratoRepository repository, ApplicationDbContext dbContext, ContratoMapper mapper, IValidator<ContratoDto> validator)
-        : base(repository) => (_dbContext, _mapper, _validator) = (dbContext, mapper, validator);
+        : base(repository, validator)
+    {
+        _dbContext = dbContext;
+        _mapper = mapper;
+    }
+
+    protected override ContratoEntity MapToEntity(ContratoDto dto) => _mapper.ToEntity(dto);
 
     public async Task<Result<ContratoDto>> CreateForPrestamo(int prestamoId, string contenidoHtml)
     {
         var dto = new ContratoDto { ContratoHtml = contenidoHtml, PrestamoId = prestamoId };
-        var validation = await _validator.ValidateAsync(dto);
-        
-        if (!validation.IsValid) 
+        var validation = await Validator.ValidateAsync(dto);
+
+        if (!validation.IsValid)
             return validation.ToResult<ContratoDto>();
 
         var prestamo = await _dbContext.Prestamos.FirstOrDefaultAsync(prestamo => prestamo.Id == prestamoId);
-        
-        if (prestamo == null) 
+
+        if (prestamo == null)
             return Result<ContratoDto>.Error("Préstamo no existe");
-        if (prestamo.IdContrato.HasValue) 
+        
+        if (prestamo.IdContrato.HasValue)
             return Result<ContratoDto>.Error("Contrato ya existe para este préstamo");
 
-        var contrato = _mapper.ToEntity(dto);
+        var contrato = MapToEntity(dto);
         var result = await Repository.Create(contrato);
-        
+
         if (!result.IsSuccess)
             return Result<ContratoDto>.Error(result.Errors.FirstOrDefault() ?? "Error al crear contrato");
 
@@ -47,13 +53,10 @@ public class ContratoService : Service<ContratoEntity, ContratoRepository, Contr
     public async Task<Result<ContratoDto>> GetByPrestamoId(int prestamoId)
     {
         var result = await Repository.GetEntityByPrestamoId(prestamoId);
-        
+
         if (!result.IsSuccess)
             return Result<ContratoDto>.Error(result.Errors.FirstOrDefault() ?? "Contrato no encontrado");
 
         return Result<ContratoDto>.Success(_mapper.ToDto(result.Value));
     }
-
-    public async Task<Result<object>> DeleteByPrestamoId(int prestamoId)
-        => await Repository.DeleteByPrestamoId(prestamoId);
 }

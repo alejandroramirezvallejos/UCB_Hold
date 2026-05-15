@@ -12,7 +12,12 @@ public class UsuarioRepository : Repository<UsuarioEntity, UsuarioDto>
     private readonly UsuarioMapper _mapper;
 
     public UsuarioRepository(ApplicationDbContext dbContext, UsuarioMapper mapper)
-        : base(dbContext) => _mapper = mapper;
+        : base(dbContext)
+    {
+        _mapper = mapper;
+    }
+
+    protected override UsuarioDto MapToDto(UsuarioEntity entity) => _mapper.ToDto(entity);
 
     public override async Task<Result<List<UsuarioDto>>> GetAll(QueryFilter? filter = null)
     {
@@ -62,7 +67,6 @@ public class UsuarioRepository : Repository<UsuarioEntity, UsuarioDto>
         return Result<object>.Success(null!);
     }
 
-    protected override UsuarioDto MapToDto(UsuarioEntity entity) => _mapper.ToDto(entity);
 }
 
 

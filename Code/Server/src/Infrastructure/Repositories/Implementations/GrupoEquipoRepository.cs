@@ -12,7 +12,12 @@ public class GrupoEquipoRepository : Repository<GrupoEquipoEntity, GrupoEquipoDt
     private readonly GrupoEquipoMapper _mapper;
 
     public GrupoEquipoRepository(ApplicationDbContext dbContext, GrupoEquipoMapper mapper)
-        : base(dbContext) => _mapper = mapper;
+        : base(dbContext)
+    {
+        _mapper = mapper;
+    }
+
+    protected override GrupoEquipoDto MapToDto(GrupoEquipoEntity entity) => _mapper.ToDto(entity);
 
     public override async Task<Result<List<GrupoEquipoDto>>> GetAll(QueryFilter? filter = null)
     {
@@ -63,10 +68,6 @@ public class GrupoEquipoRepository : Repository<GrupoEquipoEntity, GrupoEquipoDt
             : Result<GrupoEquipoDto>.Success(dto);
     }
 
-    public async Task<GrupoEquipoEntity?> GetByNombreModeloMarca(string nombre, string modelo, string marca)
-        => await DbContext.GruposEquipos
-            .FirstOrDefaultAsync(grupoEquipo => grupoEquipo.Nombre == nombre && grupoEquipo.Modelo == modelo && grupoEquipo.Marca == marca && !grupoEquipo.EstadoEliminado);
-
     public async Task<List<GrupoEquipoDto>> Search(string? nombre = null, string? categoria = null)
     {
         var query = DbContext.GruposEquipos
@@ -97,5 +98,4 @@ public class GrupoEquipoRepository : Repository<GrupoEquipoEntity, GrupoEquipoDt
             .ToListAsync();
     }
 
-    protected override GrupoEquipoDto MapToDto(GrupoEquipoEntity entity) => _mapper.ToDto(entity);
 }

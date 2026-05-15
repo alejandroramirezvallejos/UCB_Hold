@@ -6,5 +6,4 @@ public class Response<T> where T : class
     public T? Value { get; set; }
     public List<string> Errors { get; set; } = [];
     public List<ValidationError> ValidationErrors { get; set; } = [];
-    public string? SuccessMessage { get; set; }
 }

@@ -8,31 +8,17 @@ namespace IMT_Reservas.Server.Application.Features.EmpresaMantenimiento;
 public class EmpresaMantenimientoService : Service<EmpresaMantenimientoEntity, EmpresaMantenimientoRepository, EmpresaMantenimientoDto>
 {
     private readonly EmpresaMantenimientoMapper _mapper;
-    private readonly IValidator<EmpresaMantenimientoDto> _validator;
 
-    public EmpresaMantenimientoService(EmpresaMantenimientoRepository repository, EmpresaMantenimientoMapper mapper, IValidator<EmpresaMantenimientoDto> validator)
-        : base(repository) => (_mapper, _validator) = (mapper, validator);
-
-    public async Task<Result<EmpresaMantenimientoDto>> Create(EmpresaMantenimientoDto dto)
+    public EmpresaMantenimientoService(EmpresaMantenimientoRepository repository, EmpresaMantenimientoMapper mapper,
+        IValidator<EmpresaMantenimientoDto> validator)
+        : base(repository, validator)
     {
-        var validation = await _validator.ValidateAsync(dto);
-        
-        if (!validation.IsValid) 
-            return validation.ToResult<EmpresaMantenimientoDto>();
-
-        return await base.Create(_mapper.ToEntity(dto));
+        _mapper = mapper;
     }
 
-    public async Task<Result<EmpresaMantenimientoDto>> Update(int id, EmpresaMantenimientoDto dto)
-    {
-        var validation = await _validator.ValidateAsync(dto);
-        
-        if (!validation.IsValid) 
-            return validation.ToResult<EmpresaMantenimientoDto>();
+    protected override EmpresaMantenimientoEntity MapToEntity(EmpresaMantenimientoDto dto) => _mapper.ToEntity(dto);
 
-        var entity = _mapper.ToEntity(dto);
-        entity.Id = id;
-        
-        return await base.Update(entity);
-    }
+    public Task<Result<EmpresaMantenimientoDto>> Create(EmpresaMantenimientoDto dto) => ValidateAndCreate(dto);
+
+    public Task<Result<EmpresaMantenimientoDto>> Update(int id, EmpresaMantenimientoDto dto) => ValidateAndUpdate(id, dto);
 }

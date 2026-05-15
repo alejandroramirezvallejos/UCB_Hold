@@ -12,7 +12,12 @@ public class MantenimientoRepository : Repository<MantenimientoEntity, Mantenimi
     private readonly MantenimientoMapper _mapper;
 
     public MantenimientoRepository(ApplicationDbContext dbContext, MantenimientoMapper mapper)
-        : base(dbContext) => _mapper = mapper;
+        : base(dbContext)
+    {
+        _mapper = mapper;
+    }
+
+    protected override MantenimientoDto MapToDto(MantenimientoEntity entity) => _mapper.ToDto(entity);
 
     public override async Task<Result<List<MantenimientoDto>>> GetAll(QueryFilter? filter = null)
     {
@@ -72,5 +77,4 @@ public class MantenimientoRepository : Repository<MantenimientoEntity, Mantenimi
         return dto == null ? Result<MantenimientoDto>.NotFound() : Result<MantenimientoDto>.Success(dto);
     }
 
-    protected override MantenimientoDto MapToDto(MantenimientoEntity entity) => _mapper.ToDto(entity);
 }

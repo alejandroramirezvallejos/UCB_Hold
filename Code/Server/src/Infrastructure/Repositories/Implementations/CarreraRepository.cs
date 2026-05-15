@@ -12,7 +12,9 @@ public class CarreraRepository : Repository<CarreraEntity, CarreraDto>
     private readonly CarreraMapper _mapper;
 
     public CarreraRepository(ApplicationDbContext dbContext, CarreraMapper mapper)
-        : base(dbContext) => _mapper = mapper;
+        : base(dbContext) { _mapper = mapper; }
+
+    protected override CarreraDto MapToDto(CarreraEntity entity) => _mapper.ToDto(entity);
 
     public override async Task<Result<List<CarreraDto>>> GetAll(QueryFilter? filter = null)
     {
@@ -35,10 +37,6 @@ public class CarreraRepository : Repository<CarreraEntity, CarreraDto>
             : Result<CarreraDto>.Success(MapToDto(entity));
     }
 
-    public async Task<CarreraEntity?> GetByNombre(string nombre)
-        => await DbContext.Carreras.FirstOrDefaultAsync(c => c.Nombre == nombre && !c.EstadoEliminado);
-    
-    protected override CarreraDto MapToDto(CarreraEntity entity) => _mapper.ToDto(entity);
 }
 
 

@@ -11,32 +11,22 @@ public class EquipoService : Service<EquipoEntity, EquipoRepository, EquipoDto>
 {
     private readonly ApplicationDbContext _dbContext;
     private readonly EquipoMapper _mapper;
-    private readonly IValidator<EquipoDto> _validator;
 
     public EquipoService(EquipoRepository repository, ApplicationDbContext dbContext, EquipoMapper mapper, IValidator<EquipoDto> validator)
-        : base(repository) => (_dbContext, _mapper, _validator) = (dbContext, mapper, validator);
+        : base(repository, validator)
+    {
+        _dbContext = dbContext;
+        _mapper = mapper;
+    }
+
+    protected override EquipoEntity MapToEntity(EquipoDto dto) => _mapper.ToEntity(dto);
 
     public async Task<Result<EquipoDto>> Create(EquipoDto dto)
     {
-        var validation = await _validator.ValidateAsync(dto);
+        var validation = await Validator.ValidateAsync(dto);
         
         if (!validation.IsValid) 
             return validation.ToResult<EquipoDto>();
-
-        var grupoExists = await _dbContext.GruposEquipos
-            .AnyAsync(grupoEquipo => grupoEquipo.Id == dto.IdGrupoEquipo && !grupoEquipo.EstadoEliminado);
-        
-        if (!grupoExists) 
-            return Result<EquipoDto>.Error("Grupo equipo no existe");
-
-        if (dto.IdGavetero.HasValue)
-        {
-            var gaveteroExists = await _dbContext.Gaveteros
-                .AnyAsync(gavetero => gavetero.Id == dto.IdGavetero && !gavetero.EstadoEliminado);
-            
-            if (!gaveteroExists) 
-                return Result<EquipoDto>.Error("Gavetero no existe");
-        }
 
         var entity = _mapper.ToEntity(dto);
         var maxCodigo = await _dbContext.Equipos.MaxAsync(equipo => (int?)equipo.CodigoImt) ?? 0;
@@ -53,7 +43,7 @@ public class EquipoService : Service<EquipoEntity, EquipoRepository, EquipoDto>
 
     public async Task<Result<EquipoDto>> Update(int id, EquipoDto dto)
     {
-        var validation = await _validator.ValidateAsync(dto);
+        var validation = await Validator.ValidateAsync(dto);
         
         if (!validation.IsValid) 
             return validation.ToResult<EquipoDto>();
@@ -61,7 +51,7 @@ public class EquipoService : Service<EquipoEntity, EquipoRepository, EquipoDto>
         var existing = await _dbContext.Equipos
             .AsNoTracking()
             .FirstOrDefaultAsync(equipo => equipo.Id == id && !equipo.EstadoEliminado);
-        
+
         if (existing == null) 
             return Result<EquipoDto>.NotFound();
 
@@ -77,10 +67,9 @@ public class EquipoService : Service<EquipoEntity, EquipoRepository, EquipoDto>
             return result;
 
         await RecalcGrupoStats(entity.IdGrupoEquipo);
-        
         if (existing.IdGrupoEquipo != entity.IdGrupoEquipo)
             await RecalcGrupoStats(existing.IdGrupoEquipo);
-        
+
         return result;
     }
 
@@ -89,9 +78,8 @@ public class EquipoService : Service<EquipoEntity, EquipoRepository, EquipoDto>
         var existing = await _dbContext.Equipos
             .AsNoTracking()
             .FirstOrDefaultAsync(equipo => equipo.Id == id);
-        
-        if (existing == null) 
-            return Result<object>.NotFound();
+
+        if (existing == null) return Result<object>.NotFound();
 
         var result = await base.Delete(id);
         
@@ -105,7 +93,7 @@ public class EquipoService : Service<EquipoEntity, EquipoRepository, EquipoDto>
     {
         var grupo = await _dbContext.GruposEquipos
             .FirstOrDefaultAsync(grupoEquipo => grupoEquipo.Id == idGrupoEquipo);
-        
+
         if (grupo == null) 
             return;
 
