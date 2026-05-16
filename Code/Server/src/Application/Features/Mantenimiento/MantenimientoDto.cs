@@ -13,7 +13,7 @@ public class MantenimientoDto
     public string? NombreGrupoEquipo { get; set; }
     public string? CodigoImtEquipo { get; set; }
     public string? DescripcionEquipo { get; set; }
-    public int[]? CodigoIMT { get; set; }
+    public int[]? CodigoImt { get; set; }
     public string[]? TiposMantenimiento { get; set; }
     public string[]? DescripcionesEquipo { get; set; }
 }

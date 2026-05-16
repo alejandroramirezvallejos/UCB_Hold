@@ -1,11 +1,11 @@
-﻿namespace IMT_Reservas.Server.Application.Features.Carrito;
+namespace IMT_Reservas.Server.Application.Features.Carrito;
 
 public class CarritoDto
 {
-    public DateTime? Fecha { get; set; }
-    public int? IdGrupoEquipo { get; set; }
-    public int? CantidadDisponible { get; set; }
-    public DateTime? FechaInicio { get; set; }
-    public DateTime? FechaFin { get; set; }
-    public List<int>? ArrayIds { get; set; } = new();
+    public DateTime? Fecha { get; init; }
+    public int? IdGrupoEquipo { get; init; }
+    public int? CantidadDisponible { get; init; }
+    public DateTime? FechaInicio { get; init; }
+    public DateTime? FechaFin { get; init; }
+    public List<int>? ArrayIds { get; init; } = new();
 }

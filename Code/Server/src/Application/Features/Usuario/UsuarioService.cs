@@ -1,4 +1,5 @@
 using Ardalis.Result;
+using BCryptLib = BCrypt.Net.BCrypt;
 using FluentValidation;
 using IMT_Reservas.Server.Application.Abstraction;
 using IMT_Reservas.Server.Infrastructure.Repositories.Implementations;
@@ -32,7 +33,7 @@ public class UsuarioService : Service<UsuarioEntity, UsuarioRepository, UsuarioD
             return Result<UsuarioDto>.Error("Email ya existe");
 
         var entity = MapToEntity(dto);
-        entity.Contrasena = BCrypt.Net.BCrypt.HashPassword(dto.Contrasena, workFactor: 10);
+        entity.Contrasena = BCryptLib.HashPassword(dto.Contrasena, workFactor: 10);
         var result = await CreateEntity(entity);
 
         if (result.IsSuccess && result.Value != null)
@@ -60,7 +61,7 @@ public class UsuarioService : Service<UsuarioEntity, UsuarioRepository, UsuarioD
             existing.IdCarrera = dto.IdCarrera!.Value;
 
         if (!string.IsNullOrWhiteSpace(dto.Contrasena))
-            existing.Contrasena = BCrypt.Net.BCrypt.HashPassword(dto.Contrasena, workFactor: 10);
+            existing.Contrasena = BCryptLib.HashPassword(dto.Contrasena, workFactor: 10);
 
         await Repository.UpdateEntity(existing);
 
@@ -94,7 +95,7 @@ public class UsuarioService : Service<UsuarioEntity, UsuarioRepository, UsuarioD
             return Result<UsuarioDto>.Unauthorized("Credenciales inválidas");
 
         var passwordValid = !string.IsNullOrWhiteSpace(usuario.Contrasena)
-                         && await Task.Run(() => BCrypt.Net.BCrypt.Verify(password, usuario.Contrasena));
+                         && await Task.Run(() => BCryptLib.Verify(password, usuario.Contrasena));
 
         if (!passwordValid)
             return Result<UsuarioDto>.Unauthorized("Credenciales inválidas");

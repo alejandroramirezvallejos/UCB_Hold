@@ -8,8 +8,6 @@ public partial class ComponenteMapper : IMapper<ComponenteEntity, ComponenteDto>
 {
     [MapperIgnoreTarget(nameof(ComponenteDto.CodigoImtEquipo))]
     [MapperIgnoreTarget(nameof(ComponenteDto.NombreEquipo))]
-    [MapperIgnoreSource(nameof(ComponenteDto.CodigoImtEquipo))]
-    [MapperIgnoreSource(nameof(ComponenteDto.NombreEquipo))]
     public partial ComponenteDto ToDto(ComponenteEntity entity);
 
     [MapperIgnoreSource(nameof(ComponenteDto.CodigoImtEquipo))]

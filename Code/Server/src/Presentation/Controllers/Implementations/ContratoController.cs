@@ -12,17 +12,18 @@ public class ContratoController : Controller
 
     [HttpPost("crear")]
     [Consumes("multipart/form-data")]
-    public async Task<IActionResult> Create([FromForm] ContratoDto? request)
+    public async Task<IActionResult> Create([FromForm] int? prestamoId, IFormFile? archivo)
     {
         string? contenido = null;
 
-        if (request?.Archivo != null)
+        if (archivo != null)
         {
-            using var reader = new StreamReader(request.Archivo.OpenReadStream());
+            using var reader = new StreamReader(archivo.OpenReadStream());
             contenido = await reader.ReadToEndAsync();
         }
 
-        var resultado = await _contratoService.CreateForPrestamo(request?.PrestamoId ?? 0, contenido ?? "");
+        var resultado = await _contratoService.CreateForPrestamo(prestamoId ?? 0, contenido ?? "");
+        
         return ToResponse(resultado);
     }
 

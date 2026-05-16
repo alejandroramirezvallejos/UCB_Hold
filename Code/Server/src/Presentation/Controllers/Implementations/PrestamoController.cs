@@ -1,4 +1,3 @@
-using IMT_Reservas.Server.Application.Abstraction;
 using IMT_Reservas.Server.Application.Features.Contrato;
 using IMT_Reservas.Server.Application.Features.Prestamo;
 using Controller = IMT_Reservas.Server.Presentation.Controllers.Abstraction.Controller;

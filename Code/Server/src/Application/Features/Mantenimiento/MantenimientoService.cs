@@ -32,7 +32,7 @@ public class MantenimientoService : Service<MantenimientoEntity, MantenimientoRe
         if (!result.IsSuccess)
             return result;
 
-        await Repository.AddDetalles(entity.Id, dto.CodigoIMT ?? [], dto.TiposMantenimiento, dto.DescripcionesEquipo);
+        await Repository.AddDetalles(entity.Id, dto.CodigoImt ?? [], dto.TiposMantenimiento, dto.DescripcionesEquipo);
 
         return result;
     }

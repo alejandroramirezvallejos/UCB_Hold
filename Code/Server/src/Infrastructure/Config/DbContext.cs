@@ -83,9 +83,9 @@ public class ApplicationDbContext : DbContext
             entity.Property(e => e.Nombre).IsRequired().HasMaxLength(256).HasColumnName("nombre");
             entity.Property(e => e.Modelo).IsRequired().HasMaxLength(512).HasColumnName("modelo");
             entity.Property(e => e.Marca).IsRequired().HasMaxLength(256).HasColumnName("marca");
-            entity.Property(e => e.Descripcion).IsRequired().HasColumnName("descripcion");
-            entity.Property(e => e.UrlDataSheet).HasColumnName("url_data_sheet");
-            entity.Property(e => e.UrlImagen).IsRequired().HasColumnName("url_imagen");
+            entity.Property(e => e.Descripcion).IsRequired().HasMaxLength(2048).HasColumnName("descripcion");
+            entity.Property(e => e.UrlDataSheet).HasMaxLength(2048).HasColumnName("url_data_sheet");
+            entity.Property(e => e.UrlImagen).IsRequired().HasMaxLength(2048).HasColumnName("url_imagen");
             entity.Property(e => e.CostoPromedio).HasPrecision(10, 2).HasColumnName("costo_promedio");
             entity.Property(e => e.Cantidad).HasDefaultValue(0).HasColumnName("cantidad");
             entity.Property(e => e.IdCategoria).HasColumnName("id_categoria");
@@ -142,7 +142,7 @@ public class ApplicationDbContext : DbContext
             entity.Property(e => e.CodigoUcb).HasMaxLength(256).HasColumnName("codigo_ucb");
             entity.Property(e => e.NumeroSerial).HasMaxLength(255).HasColumnName("numero_serial");
             entity.Property(e => e.Ubicacion).HasMaxLength(255).HasColumnName("ubicacion");
-            entity.Property(e => e.Descripcion).HasColumnName("descripcion");
+            entity.Property(e => e.Descripcion).HasMaxLength(2048).HasColumnName("descripcion");
             entity.Property(e => e.CostoReferencia).HasColumnName("costo_referencia");
             entity.Property(e => e.TiempoMaximoPrestamo).HasColumnName("tiempo_max_prestamo");
             entity.Property(e => e.Procedencia).HasMaxLength(255).HasColumnName("procedencia");
@@ -164,9 +164,9 @@ public class ApplicationDbContext : DbContext
             entity.HasKey(e => e.Id);
             entity.Property(e => e.Id).HasColumnName("id_accesorio");
             entity.Property(e => e.Nombre).IsRequired().HasMaxLength(255).HasColumnName("nombre");
-            entity.Property(e => e.Descripcion).HasColumnName("descripcion");
+            entity.Property(e => e.Descripcion).HasMaxLength(2048).HasColumnName("descripcion");
             entity.Property(e => e.Modelo).IsRequired().HasMaxLength(255).HasColumnName("modelo");
-            entity.Property(e => e.UrlDataSheet).HasColumnName("url_data_sheet");
+            entity.Property(e => e.UrlDataSheet).HasMaxLength(2048).HasColumnName("url_data_sheet");
             entity.Property(e => e.Tipo).HasMaxLength(255).HasColumnName("tipo");
             entity.Property(e => e.Precio).HasColumnName("precio");
             entity.Property(e => e.IdEquipo).HasColumnName("id_equipo");
@@ -182,9 +182,9 @@ public class ApplicationDbContext : DbContext
             entity.HasKey(e => e.Id);
             entity.Property(e => e.Id).HasColumnName("id_componente");
             entity.Property(e => e.Nombre).IsRequired().HasMaxLength(255).HasColumnName("nombre");
-            entity.Property(e => e.Descripcion).HasColumnName("descripcion");
+            entity.Property(e => e.Descripcion).HasMaxLength(2048).HasColumnName("descripcion");
             entity.Property(e => e.Modelo).IsRequired().HasMaxLength(255).HasColumnName("modelo");
-            entity.Property(e => e.UrlDataSheet).HasColumnName("url_data_sheet");
+            entity.Property(e => e.UrlDataSheet).HasMaxLength(2048).HasColumnName("url_data_sheet");
             entity.Property(e => e.Tipo).HasMaxLength(255).HasColumnName("tipo");
             entity.Property(e => e.PrecioReferencia).HasColumnName("precio_referencia");
             entity.Property(e => e.IdEquipo).HasColumnName("id_equipo");
@@ -199,7 +199,7 @@ public class ApplicationDbContext : DbContext
             entity.ToTable("mantenimientos");
             entity.HasKey(e => e.Id);
             entity.Property(e => e.Id).HasColumnName("id_mantenimiento");
-            entity.Property(e => e.Descripcion).HasColumnName("descripcion");
+            entity.Property(e => e.Descripcion).HasMaxLength(2048).HasColumnName("descripcion");
             entity.Property(e => e.Costo).HasColumnName("costo");
             entity.Property(e => e.FechaMantenimiento).IsRequired().HasColumnName("fecha_mantenimiento");
             entity.Property(e => e.FechaFinalMantenimiento).IsRequired().HasColumnName("fecha_final_mantenimiento");
@@ -216,7 +216,7 @@ public class ApplicationDbContext : DbContext
             entity.HasKey(e => e.Id);
             entity.Property(e => e.Id).HasColumnName("id_detalle_mantenimiento");
             entity.Property(e => e.TipoMantenimiento).HasMaxLength(256).HasColumnName("tipo_mantenimiento");
-            entity.Property(e => e.Descripcion).HasColumnName("descripcion");
+            entity.Property(e => e.Descripcion).HasMaxLength(2048).HasColumnName("descripcion");
             entity.Property(e => e.IdMantenimiento).HasColumnName("id_mantenimiento");
             entity.Property(e => e.IdEquipo).HasColumnName("id_equipo");
             entity.Property(e => e.EstadoEliminado).HasColumnName("estado_eliminado");
@@ -236,7 +236,7 @@ public class ApplicationDbContext : DbContext
             entity.Property(e => e.ApellidoPaterno).IsRequired().HasMaxLength(64).HasColumnName("apellido_paterno");
             entity.Property(e => e.ApellidoMaterno).IsRequired().HasMaxLength(64).HasColumnName("apellido_materno");
             entity.Property(e => e.Email).IsRequired().HasMaxLength(255).HasColumnName("email");
-            entity.Property(e => e.Contrasena).IsRequired().HasColumnName("contrasena");
+            entity.Property(e => e.Contrasena).IsRequired().HasMaxLength(72).HasColumnName("contrasena");
             entity.Property(e => e.Telefono).IsRequired().HasMaxLength(32).HasColumnName("telefono");
             entity.Property(e => e.TelefonoReferencia).HasMaxLength(32).HasColumnName("telefono_referencia");
             entity.Property(e => e.NombreReferencia).HasMaxLength(32).HasColumnName("nombre_referencia");
@@ -262,7 +262,7 @@ public class ApplicationDbContext : DbContext
             entity.Property(e => e.FechaPrestamoEsperada).IsRequired().HasColumnName("fecha_prestamo_esperada");
             entity.Property(e => e.FechaDevolucion).HasColumnName("fecha_devolucion");
             entity.Property(e => e.FechaDevolucionEsperada).IsRequired().HasColumnName("fecha_devolucion_esperada");
-            entity.Property(e => e.Observacion).HasColumnName("observacion");
+            entity.Property(e => e.Observacion).HasMaxLength(1024).HasColumnName("observacion");
             entity.Property(e => e.EstadoPrestamo)
                 .HasColumnType("estado_prestamo")
                 .HasDefaultValue(EstadoPrestamo.Pendiente)
@@ -282,7 +282,7 @@ public class ApplicationDbContext : DbContext
             entity.ToTable("contratos");
             entity.HasKey(e => e.Id);
             entity.Property(e => e.Id).HasColumnName("id");
-            entity.Property(e => e.ContratoHtml).HasColumnName("contrato");
+            entity.Property(e => e.ContratoHtml).HasColumnType("text").HasColumnName("contrato");
         });
 
         modelBuilder.Entity<DetallePrestamo>(entity =>

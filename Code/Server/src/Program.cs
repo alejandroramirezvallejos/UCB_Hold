@@ -27,16 +27,18 @@ using MuebleEntity = IMT_Reservas.Server.Core.Entities.Mueble;
 using EmpresaMantenimientoEntity = IMT_Reservas.Server.Core.Entities.EmpresaMantenimiento;
 
 AppContext.SetSwitch("Npgsql.EnableLegacyTimestampBehavior", true);
-NpgsqlConnection.GlobalTypeMapper.MapEnum<EstadoPrestamo>("estado_prestamo");
-NpgsqlConnection.GlobalTypeMapper.MapEnum<TipoUsuario>("tipo_usuario");
-NpgsqlConnection.GlobalTypeMapper.MapEnum<EstadoEquipo>("estado_equipo");
 
 var builder = WebApplication.CreateBuilder(args);
-
 var connectionString = builder.Configuration.GetConnectionString("PostgreSQL");
 
+var dataSourceBuilder = new NpgsqlDataSourceBuilder(connectionString);
+dataSourceBuilder.MapEnum<EstadoPrestamo>("estado_prestamo");
+dataSourceBuilder.MapEnum<TipoUsuario>("tipo_usuario");
+dataSourceBuilder.MapEnum<EstadoEquipo>("estado_equipo");
+var dataSource = dataSourceBuilder.Build();
+
 builder.Services.AddDbContext<ApplicationDbContext>(options =>
-    options.UseNpgsql(connectionString));
+    options.UseNpgsql(dataSource));
 
 builder.Services.AddControllers().AddJsonOptions(options =>
 {
@@ -105,31 +107,31 @@ builder.Services.AddSingleton<AccesorioMapper>();
 builder.Services.AddSingleton<ComponenteMapper>();
 builder.Services.AddSingleton<ContratoMapper>();
 
-builder.Services.AddSingleton<IMapper<IMT_Reservas.Server.Core.Entities.Usuario, UsuarioDto>>(
+builder.Services.AddSingleton<IMapper<Usuario, UsuarioDto>>(
     sp => sp.GetRequiredService<UsuarioMapper>());
-builder.Services.AddSingleton<IMapper<IMT_Reservas.Server.Core.Entities.Prestamo, PrestamoDto>>(
+builder.Services.AddSingleton<IMapper<Prestamo, PrestamoDto>>(
     sp => sp.GetRequiredService<PrestamoMapper>());
-builder.Services.AddSingleton<IMapper<IMT_Reservas.Server.Core.Entities.Equipo, EquipoDto>>(
+builder.Services.AddSingleton<IMapper<Equipo, EquipoDto>>(
     sp => sp.GetRequiredService<EquipoMapper>());
 builder.Services.AddSingleton<IMapper<CarreraEntity, CarreraDto>>(
     sp => sp.GetRequiredService<CarreraMapper>());
 builder.Services.AddSingleton<IMapper<CategoriaEntity, CategoriaDto>>(
     sp => sp.GetRequiredService<CategoriaMapper>());
-builder.Services.AddSingleton<IMapper<IMT_Reservas.Server.Core.Entities.GrupoEquipo, GrupoEquipoDto>>(
+builder.Services.AddSingleton<IMapper<GrupoEquipo, GrupoEquipoDto>>(
     sp => sp.GetRequiredService<GrupoEquipoMapper>());
-builder.Services.AddSingleton<IMapper<IMT_Reservas.Server.Core.Entities.Gavetero, GaveteroDto>>(
+builder.Services.AddSingleton<IMapper<Gavetero, GaveteroDto>>(
     sp => sp.GetRequiredService<GaveteroMapper>());
 builder.Services.AddSingleton<IMapper<MuebleEntity, MuebleDto>>(
     sp => sp.GetRequiredService<MuebleMapper>());
-builder.Services.AddSingleton<IMapper<IMT_Reservas.Server.Core.Entities.Mantenimiento, MantenimientoDto>>(
+builder.Services.AddSingleton<IMapper<Mantenimiento, MantenimientoDto>>(
     sp => sp.GetRequiredService<MantenimientoMapper>());
 builder.Services.AddSingleton<IMapper<EmpresaMantenimientoEntity, EmpresaMantenimientoDto>>(
     sp => sp.GetRequiredService<EmpresaMantenimientoMapper>());
-builder.Services.AddSingleton<IMapper<IMT_Reservas.Server.Core.Entities.Accesorio, AccesorioDto>>(
+builder.Services.AddSingleton<IMapper<Accesorio, AccesorioDto>>(
     sp => sp.GetRequiredService<AccesorioMapper>());
-builder.Services.AddSingleton<IMapper<IMT_Reservas.Server.Core.Entities.Componente, ComponenteDto>>(
+builder.Services.AddSingleton<IMapper<Componente, ComponenteDto>>(
     sp => sp.GetRequiredService<ComponenteMapper>());
-builder.Services.AddSingleton<IMapper<IMT_Reservas.Server.Core.Entities.Contrato, ContratoDto>>(
+builder.Services.AddSingleton<IMapper<Contrato, ContratoDto>>(
     sp => sp.GetRequiredService<ContratoMapper>());
 
 builder.Services.AddScoped<IValidator<AccesorioDto>, AccesorioValidator>();

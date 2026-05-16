@@ -7,8 +7,6 @@ namespace IMT_Reservas.Server.Application.Features.GrupoEquipo;
 public partial class GrupoEquipoMapper : IMapper<GrupoEquipoEntity, GrupoEquipoDto>
 {
     [MapProperty("Categoria.Nombre", nameof(GrupoEquipoDto.NombreCategoria))]
-    [MapperIgnoreTarget("Categoria")]
-    [MapperIgnoreSource(nameof(GrupoEquipoDto.NombreCategoria))]
     public partial GrupoEquipoDto ToDto(GrupoEquipoEntity entity);
 
     [MapperIgnoreTarget("Categoria")]

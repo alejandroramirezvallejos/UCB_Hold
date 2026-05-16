@@ -9,10 +9,6 @@ public partial class EquipoMapper : IMapper<EquipoEntity, EquipoDto>
 {
     [MapProperty("GrupoEquipo.Nombre", nameof(EquipoDto.NombreGrupoEquipo))]
     [MapProperty("Gavetero.Nombre", nameof(EquipoDto.NombreGavetero))]
-    [MapperIgnoreTarget("GrupoEquipo")]
-    [MapperIgnoreTarget("Gavetero")]
-    [MapperIgnoreSource(nameof(EquipoDto.NombreGavetero))]
-    [MapperIgnoreSource(nameof(EquipoDto.NombreGrupoEquipo))]
     public partial EquipoDto ToDto(EquipoEntity entity);
 
     [MapperIgnoreTarget("Gavetero")]
