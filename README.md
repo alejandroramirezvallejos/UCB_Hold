@@ -152,14 +152,6 @@ cd Code/Client && npm start
 
 ## ✦ Team
 
-## ✦ Contributing
-
-See [CONTRIBUTING.md](CONTRIBUTING.md) for the workflow, standards, and review expectations.
-
-## ✦ Code of Conduct
-
-Please review [CODE_OF_CONDUCT.md](CODE_OF_CONDUCT.md).
-
 <table>
   <tr>
     <td align="center">
@@ -179,3 +171,16 @@ Please review [CODE_OF_CONDUCT.md](CODE_OF_CONDUCT.md).
     </td>
   </tr>
 </table>
+
+---
+
+## ✦ Contributing
+
+See [CONTRIBUTING.md](CONTRIBUTING.md) for the workflow, standards, and review expectations.
+
+---
+
+## ✦ Code of Conduct
+
+Please review [CODE_OF_CONDUCT.md](CODE_OF_CONDUCT.md).
+
