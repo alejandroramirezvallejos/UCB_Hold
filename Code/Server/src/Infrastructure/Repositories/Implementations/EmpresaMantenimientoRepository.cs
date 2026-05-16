@@ -18,6 +18,10 @@ public class EmpresaMantenimientoRepository : Repository<EmpresaMantenimientoEnt
             .Select(e => (int?)e.Id)
             .FirstOrDefaultAsync();
 
+    public async Task<bool> ExistsByNit(string nit, int? excludeId = null)
+        => await DbContext.EmpresasMantenimiento
+            .AnyAsync(e => e.Nit == nit && !e.EstadoEliminado && e.Id != excludeId);
+
     public override async Task<Result<object>> Delete(int id)
     {
         var entity = await DbContext.EmpresasMantenimiento

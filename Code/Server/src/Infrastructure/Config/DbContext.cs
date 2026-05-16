@@ -66,6 +66,7 @@ public class ApplicationDbContext : DbContext
             entity.HasKey(e => e.Id);
             entity.Property(e => e.Id).HasColumnName("id_empresa_mantenimiento");
             entity.Property(e => e.Nombre).IsRequired().HasMaxLength(255).HasColumnName("nombre");
+            entity.Property(e => e.Nit).HasMaxLength(20).HasColumnName("nit");
             entity.Property(e => e.Direccion).HasMaxLength(512).HasColumnName("direccion");
             entity.Property(e => e.Telefono).HasMaxLength(64).HasColumnName("telefono");
             entity.Property(e => e.NombreResponsable).HasMaxLength(64).HasColumnName("nombre_responsable");

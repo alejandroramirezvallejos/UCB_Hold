@@ -69,6 +69,10 @@ public class UsuarioRepository : Repository<UsuarioEntity, UsuarioDto>
         => await DbContext.Usuarios.IgnoreQueryFilters()
             .AnyAsync(u => u.Email == email);
 
+    public async Task<bool> ExistsByTelefono(string telefono, string? excludeCarnet = null)
+        => await DbContext.Usuarios.IgnoreQueryFilters()
+            .AnyAsync(u => u.Telefono == telefono && u.Carnet != excludeCarnet);
+
     public async Task<int?> FindCarreraIdByName(string name)
         => await DbContext.Carreras.AsNoTracking()
             .Where(c => c.Nombre == name && !c.EstadoEliminado)

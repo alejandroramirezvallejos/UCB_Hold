@@ -14,6 +14,10 @@ public class EquipoRepository : Repository<EquipoEntity, EquipoDto>
     public async Task<int> GetMaxCodigoImt()
         => await DbContext.Equipos.MaxAsync(e => (int?)e.CodigoImt) ?? 0;
 
+    public async Task<bool> ExistsByCodigoImt(int codigoImt, int? excludeId = null)
+        => await DbContext.Equipos
+            .AnyAsync(e => e.CodigoImt == codigoImt && !e.EstadoEliminado && e.Id != excludeId);
+
     public async Task<EquipoEntity?> FindById(int id)
         => await DbContext.Equipos
             .AsNoTracking()

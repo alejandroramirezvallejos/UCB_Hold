@@ -32,6 +32,9 @@ public class UsuarioService : Service<UsuarioEntity, UsuarioRepository, UsuarioD
         if (await Repository.ExistsByEmail(dto.Email!))
             return Result<UsuarioDto>.Error("Email ya existe");
 
+        if (!string.IsNullOrWhiteSpace(dto.Telefono) && await Repository.ExistsByTelefono(dto.Telefono))
+            return Result<UsuarioDto>.Error("Teléfono ya registrado");
+
         var entity = MapToEntity(dto);
         entity.Contrasena = BCryptLib.HashPassword(dto.Contrasena, workFactor: 10);
         var result = await CreateEntity(entity);
@@ -53,6 +56,9 @@ public class UsuarioService : Service<UsuarioEntity, UsuarioRepository, UsuarioD
 
         if (existing == null)
             return Result<UsuarioDto>.NotFound();
+
+        if (!string.IsNullOrWhiteSpace(dto.Telefono) && await Repository.ExistsByTelefono(dto.Telefono, carnet))
+            return Result<UsuarioDto>.Error("Teléfono ya registrado");
 
         await ResolveCarrera(dto);
         _mapper.Update(dto, existing);

@@ -21,6 +21,9 @@ public class EquipoService : Service<EquipoEntity, EquipoRepository, EquipoDto>
         entity.CodigoImt = await Repository.GetMaxCodigoImt() + 1;
         entity.FechaIngresoEquipo = DateOnly.FromDateTime(DateTime.Now);
 
+        if (await Repository.ExistsByCodigoImt(entity.CodigoImt))
+            return Result<EquipoDto>.Error("Código IMT ya registrado");
+
         var result = await CreateEntity(entity);
 
         if (result.IsSuccess)

@@ -12,7 +12,11 @@ public class UsuarioValidator : AbstractValidator<UsuarioDto>
         RuleFor(usuario => usuario.ApellidoPaterno).NotEmpty().WithMessage("Apellido paterno requerido");
         RuleFor(usuario => usuario.Email).NotEmpty().EmailAddress().WithMessage("Email inválido");
         RuleFor(usuario => usuario.Contrasena)
-            .MinimumLength(6).WithMessage("Contraseña mínimo 6 caracteres")
+            .Cascade(CascadeMode.Stop)
+            .MinimumLength(8).WithMessage("Contraseña mínimo 8 caracteres")
+            .Matches("[A-Z]").WithMessage("Contraseña debe tener al menos una mayúscula")
+            .Matches("[0-9]").WithMessage("Contraseña debe tener al menos un número")
+            .Matches("[^a-zA-Z0-9]").WithMessage("Contraseña debe tener al menos un carácter especial")
             .When(usuario => !string.IsNullOrWhiteSpace(usuario.Contrasena));
 
         RuleFor(usuario => usuario.IdCarrera)
