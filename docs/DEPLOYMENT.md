@@ -67,7 +67,7 @@ GRANT ALL PRIVILEGES ON DATABASE "IMT_Reservas" TO imt_user;
 ### Load schema
 
 ```bash
-psql -U imt_user -d IMT_Reservas -h localhost -f DataBase/database.ddl
+psql -U imt_user -d IMT_Reservas -h localhost -f DataBase/schema.ddl
 psql -U imt_user -d IMT_Reservas -h localhost -c "\dt"   # 15 tables
 ```
 

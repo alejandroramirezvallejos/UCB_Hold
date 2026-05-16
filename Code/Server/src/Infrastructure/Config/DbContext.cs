@@ -231,7 +231,7 @@ public class ApplicationDbContext : DbContext
             entity.ToTable("usuarios");
             entity.HasKey(e => e.Carnet);
             entity.Ignore(e => e.Id);  // Entity.Id ignored; PK is Carnet (string)
-            entity.Property(e => e.Carnet).HasColumnName("carnet");
+            entity.Property(e => e.Carnet).HasMaxLength(20).HasColumnName("carnet");
             entity.Property(e => e.Nombre).IsRequired().HasMaxLength(64).HasColumnName("nombre");
             entity.Property(e => e.ApellidoPaterno).IsRequired().HasMaxLength(64).HasColumnName("apellido_paterno");
             entity.Property(e => e.ApellidoMaterno).IsRequired().HasMaxLength(64).HasColumnName("apellido_materno");
@@ -268,7 +268,7 @@ public class ApplicationDbContext : DbContext
                 .HasDefaultValue(EstadoPrestamo.Pendiente)
                 .HasColumnName("estado_prestamo");
             entity.Property(e => e.IdContrato).HasColumnName("id_contrato");
-            entity.Property(e => e.Carnet).HasColumnName("carnet");
+            entity.Property(e => e.Carnet).HasMaxLength(20).HasColumnName("carnet");
             entity.Property(e => e.EstadoEliminado).HasColumnName("estado_eliminado");
             entity.HasOne<Usuario>().WithMany().HasForeignKey(e => e.Carnet).IsRequired();
             entity.HasOne<Contrato>().WithMany().HasForeignKey(e => e.IdContrato);

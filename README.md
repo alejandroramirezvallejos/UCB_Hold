@@ -62,7 +62,7 @@ Plataforma web para gestión de préstamos de equipos, accesorios y herramientas
 
 ```bash
 psql -U postgres -c "CREATE DATABASE IMT_Reservas;"
-psql -U postgres -d IMT_Reservas -f DataBase/database.ddl
+psql -U postgres -d IMT_Reservas -f DataBase/schema.ddl
 ```
 
 **Docker:**
@@ -74,7 +74,7 @@ docker run -d --name ucbhold-postgres \
   -p 5432:5432 \
   postgres:14
 
-docker exec -i ucbhold-postgres psql -U postgres -d IMT_Reservas < DataBase/database.ddl
+docker exec -i ucbhold-postgres psql -U postgres -d IMT_Reservas < DataBase/schema.ddl
 ```
 
 ### 2 · Backend — credenciales locales

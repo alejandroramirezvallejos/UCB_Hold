@@ -22,7 +22,7 @@ Full-stack local environment: .NET 8 + Angular 18 + PostgreSQL 14+
 
 ```bash
 psql -U postgres -c "CREATE DATABASE IMT_Reservas;"
-psql -U postgres -d IMT_Reservas -f DataBase/database.ddl
+psql -U postgres -d IMT_Reservas -f DataBase/schema.ddl
 psql -U postgres -d IMT_Reservas -c "\dt"   # should list 15 tables
 ```
 
