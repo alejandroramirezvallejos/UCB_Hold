@@ -33,7 +33,7 @@ export class EmpresasMantenimientoCrearComponent  extends BaseTablaComponent{
       },
       error: (error) => {
         this.mensajeerror="Error al crear la empresa, Intente mas tarde";
-        console.error(error.error.error + ': ' + error.error.mensaje);
+        console.error(error.error?.Errors?.[0] ?? error.message ?? 'Error desconocido');
         this.error.set(true);
       }
     });

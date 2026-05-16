@@ -59,7 +59,7 @@
           [(ngModel)]="localUsuario.correo"
           required
           maxlength="50"
-          pattern="^[a-zA-Z0-9._%+-]+@ucb\.edu\.bo$"
+          pattern="^[a-zA-Z0-9._%\+\-]+@ucb\.edu\.bo$"
           placeholder="ejemplo@ucb.edu.bo"
           class="form-input"
           #correoInput="ngModel"
