@@ -6,7 +6,7 @@
 
 **Sistema de Reservas — Laboratorio de Mecatrónica UCB**
 
-Plataforma web para gestión de préstamos de equipos, accesorios y herramientas del laboratorio IMT de la Universidad Católica Boliviana.
+Plataforma web para gestión de préstamos de equipos, accesorios y herramientas del laboratorio de Mecatrónica de la Universidad Católica Boliviana.
 
 [![.NET](https://img.shields.io/badge/.NET-8.0-512BD4?style=flat-square&logo=dotnet)](https://dotnet.microsoft.com/)
 [![Angular](https://img.shields.io/badge/Angular-18-DD0031?style=flat-square&logo=angular)](https://angular.io/)
