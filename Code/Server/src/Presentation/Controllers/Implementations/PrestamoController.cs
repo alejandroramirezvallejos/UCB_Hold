@@ -37,27 +37,27 @@ public class PrestamoController : Controller
         => ToResponse(await _service.Update(id, dto));
 
     [HttpPut("{id:int}/estado")]
-    public async Task<IActionResult> UpdateEstado(int id, [FromBody] UpdateEstadoRequest request)
-        => ToResponse(await _service.UpdateEstado(id, request.EstadoPrestamo ?? string.Empty));
+    public async Task<IActionResult> UpdateStatus(int id, [FromBody] UpdateStatusRequest request)
+        => ToResponse(await _service.UpdateStatus(id, request.EstadoPrestamo ?? string.Empty));
 
     [HttpDelete("{id:int}")]
     public async Task<IActionResult> Delete(int id)
         => ToDeleteResponse(await _service.Delete(id));
 
     [HttpGet("historial")]
-    public async Task<IActionResult> GetHistorial([FromQuery] string carnetUsuario, [FromQuery] string estadoPrestamo)
-        => ToResponse(await _service.GetHistorial(carnetUsuario, estadoPrestamo));
+    public async Task<IActionResult> GetHistory([FromQuery] string carnetUsuario, [FromQuery] string estadoPrestamo)
+        => ToResponse(await _service.GetHistory(carnetUsuario, estadoPrestamo));
 
     [HttpGet("contrato/{prestamoId}")]
-    public async Task<IActionResult> ObtenerContratoPorPrestamo(int prestamoId)
+    public async Task<IActionResult> GetContrato(int prestamoId)
     {
         var result = await _contratoService.GetByPrestamoId(prestamoId);
 
         if (!result.IsSuccess)
             return ToResponse(result);
 
-        return Ok(new Response<object> { Status = 200, Value = new { contrato = result.Value!.ContratoHtml } });
+        return Ok(new { contrato = result.Value!.ContratoHtml });
     }
 }
 
-public record UpdateEstadoRequest(string? EstadoPrestamo);
+public record UpdateStatusRequest(string? EstadoPrestamo);

@@ -1,5 +1,6 @@
 using Ardalis.Result;
 using IMT_Reservas.Server.Application.Features.Prestamo;
+using IMT_Reservas.Server.Application.Features.Prestamo.State;
 using IMT_Reservas.Server.Core.Abstraction;
 using IMT_Reservas.Server.Core.Entities;
 using IMT_Reservas.Server.Infrastructure.Config;
@@ -26,7 +27,7 @@ public class PrestamoRepository : Repository<PrestamoEntity, PrestamoDto>
         return item == null ? Result<PrestamoDto>.NotFound() : Result<PrestamoDto>.Success(item);
     }
 
-    public async Task<Result<List<PrestamoDto>>> GetHistorialWithDetalles(string carnetUsuario, EstadoPrestamo? estado)
+    public async Task<Result<List<PrestamoDto>>> GetHistoryWithDetails(string carnetUsuario, EstadoPrestamo? estado)
     {
         var query = DbContext.Prestamos.AsNoTracking().Where(p => p.Carnet == carnetUsuario);
 

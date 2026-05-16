@@ -9,12 +9,16 @@ public partial class EquipoMapper : IMapper<EquipoEntity, EquipoDto>
 {
     [MapProperty("GrupoEquipo.Nombre", nameof(EquipoDto.NombreGrupoEquipo))]
     [MapProperty("Gavetero.Nombre", nameof(EquipoDto.NombreGavetero))]
-    public partial EquipoDto ToDto(EquipoEntity entity);
-
     [MapperIgnoreTarget("GrupoEquipo")]
     [MapperIgnoreTarget("Gavetero")]
-    [MapperIgnoreSource(nameof(EquipoDto.NombreGrupoEquipo))]
     [MapperIgnoreSource(nameof(EquipoDto.NombreGavetero))]
+    [MapperIgnoreSource(nameof(EquipoDto.NombreGrupoEquipo))]
+    public partial EquipoDto ToDto(EquipoEntity entity);
+
+    [MapperIgnoreTarget("Gavetero")]
+    [MapperIgnoreTarget("GrupoEquipo")]
+    [MapperIgnoreSource(nameof(EquipoDto.NombreGavetero))]
+    [MapperIgnoreSource(nameof(EquipoDto.NombreGrupoEquipo))]
     public partial EquipoEntity ToEntity(EquipoDto dto);
 
     public partial IQueryable<EquipoDto> ProjectTo(IQueryable<EquipoEntity> source);
@@ -22,8 +26,8 @@ public partial class EquipoMapper : IMapper<EquipoEntity, EquipoDto>
     private static string EstadoEquipoToString(EstadoEquipo estado) => estado switch
     {
         EstadoEquipo.ParcialmenteOperativo => "parcialmente_operativo",
-        EstadoEquipo.Inoperativo => "inoperativo",
-        _ => "operativo"
+        EstadoEquipo.Inoperativo           => "inoperativo",
+        _                                  => "operativo"
     };
 
     private static DateTime? DateOnlyToDateTime(DateOnly source) => source.ToDateTime(TimeOnly.MinValue);

@@ -7,12 +7,12 @@ public class GaveteroValidator : AbstractValidator<GaveteroDto>
 {
     public GaveteroValidator(ApplicationDbContext dbContext)
     {
-        RuleFor(gavetero => gavetero.Nombre).NotEmpty().WithMessage("Nombre requerido");
-        RuleFor(gavetero => gavetero.NombreMueble).NotEmpty().WithMessage("NombreMueble requerido");
+        RuleFor(g => g.Nombre).NotEmpty().WithMessage("Nombre requerido");
 
-        RuleFor(gavetero => gavetero.NombreMueble)
+        RuleFor(g => g.NombreMueble)
+            .Cascade(CascadeMode.Stop)
+            .NotEmpty().WithMessage("NombreMueble requerido")
             .MustAsync(async (nombre, _) => await dbContext.Muebles.AnyAsync(m => m.Nombre == nombre && !m.EstadoEliminado))
-            .When(gavetero => !string.IsNullOrWhiteSpace(gavetero.NombreMueble))
             .WithMessage("Mueble no existe");
     }
 }

@@ -7,6 +7,8 @@ namespace IMT_Reservas.Server.Application.Features.Gavetero;
 public partial class GaveteroMapper : IMapper<GaveteroEntity, GaveteroDto>
 {
     [MapProperty("Mueble.Nombre", nameof(GaveteroDto.NombreMueble))]
+    [MapperIgnoreTarget("Mueble")]
+    [MapperIgnoreSource(nameof(GaveteroDto.NombreMueble))]
     public partial GaveteroDto ToDto(GaveteroEntity entity);
 
     [MapperIgnoreTarget("Mueble")]

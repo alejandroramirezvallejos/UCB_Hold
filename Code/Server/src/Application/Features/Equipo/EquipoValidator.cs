@@ -7,21 +7,20 @@ public class EquipoValidator : AbstractValidator<EquipoDto>
 {
     public EquipoValidator(ApplicationDbContext dbContext)
     {
-        RuleFor(equipo => equipo.IdGrupoEquipo)
-            .NotNull().GreaterThan(0).WithMessage("IdGrupoEquipo requerido");
-
-        RuleFor(equipo => equipo.IdGrupoEquipo)
+        RuleFor(e => e.IdGrupoEquipo)
+            .Cascade(CascadeMode.Stop)
+            .NotNull().GreaterThan(0).WithMessage("IdGrupoEquipo requerido")
             .MustAsync(async (id, _) => await dbContext.GruposEquipos.AnyAsync(g => g.Id == id && !g.EstadoEliminado))
-            .When(equipo => (equipo.IdGrupoEquipo ?? 0) > 0)
             .WithMessage("Grupo equipo no existe");
 
-        RuleFor(equipo => equipo.IdGavetero)
+        RuleFor(e => e.IdGavetero)
             .MustAsync(async (id, _) => await dbContext.Gaveteros.AnyAsync(g => g.Id == id && !g.EstadoEliminado))
-            .When(equipo => equipo.IdGavetero.HasValue && equipo.IdGavetero.Value > 0)
+            .When(e => e.IdGavetero.HasValue && e.IdGavetero.Value > 0)
             .WithMessage("Gavetero no existe");
 
-        RuleFor(equipo => equipo.EstadoEquipo)
-            .Must(estado => string.IsNullOrEmpty(estado) || new[] { "operativo", "parcialmente_operativo", "inoperativo" }.Contains(estado.ToLowerInvariant()))
+        RuleFor(e => e.EstadoEquipo)
+            .Must(estado => string.IsNullOrEmpty(estado)
+                || new[] { "operativo", "parcialmente_operativo", "inoperativo" }.Contains(estado.ToLowerInvariant()))
             .WithMessage("Estado equipo inválido");
     }
 }

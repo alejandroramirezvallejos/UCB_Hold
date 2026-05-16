@@ -69,13 +69,13 @@ public class UsuarioRepository : Repository<UsuarioEntity, UsuarioDto>
         => await DbContext.Usuarios.IgnoreQueryFilters()
             .AnyAsync(u => u.Email == email);
 
-    public async Task<int?> FindCarreraIdByNombre(string nombre)
+    public async Task<int?> FindCarreraIdByName(string name)
         => await DbContext.Carreras.AsNoTracking()
-            .Where(c => c.Nombre == nombre && !c.EstadoEliminado)
+            .Where(c => c.Nombre == name && !c.EstadoEliminado)
             .Select(c => (int?)c.Id)
             .FirstOrDefaultAsync();
 
-    public async Task<string?> GetCarreraNombre(int idCarrera)
+    public async Task<string?> GetCarreraName(int idCarrera)
         => await DbContext.Carreras.AsNoTracking()
             .Where(c => c.Id == idCarrera)
             .Select(c => c.Nombre)
@@ -104,19 +104,19 @@ public class UsuarioRepository : Repository<UsuarioEntity, UsuarioDto>
 
         var entity = new UsuarioEntity
         {
-            Carnet            = result.Carnet,
-            Nombre            = result.Nombre,
-            ApellidoPaterno   = result.ApellidoPaterno,
-            ApellidoMaterno   = result.ApellidoMaterno,
-            Email             = result.Email,
-            Contrasena        = result.Contrasena,
-            Rol               = result.Rol,
-            Telefono          = result.Telefono,
+            Carnet             = result.Carnet,
+            Nombre             = result.Nombre,
+            ApellidoPaterno    = result.ApellidoPaterno,
+            ApellidoMaterno    = result.ApellidoMaterno,
+            Email              = result.Email,
+            Contrasena         = result.Contrasena,
+            Rol                = result.Rol,
+            Telefono           = result.Telefono,
             TelefonoReferencia = result.TelefonoReferencia,
-            NombreReferencia  = result.NombreReferencia,
-            EmailReferencia   = result.EmailReferencia,
-            IdCarrera         = result.IdCarrera,
-            EstadoEliminado   = result.EstadoEliminado
+            NombreReferencia   = result.NombreReferencia,
+            EmailReferencia    = result.EmailReferencia,
+            IdCarrera          = result.IdCarrera,
+            EstadoEliminado    = result.EstadoEliminado
         };
 
         return (entity, result.CarreraNombre);

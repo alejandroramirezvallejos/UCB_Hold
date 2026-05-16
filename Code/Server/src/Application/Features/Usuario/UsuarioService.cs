@@ -32,11 +32,11 @@ public class UsuarioService : Service<UsuarioEntity, UsuarioRepository, UsuarioD
             return Result<UsuarioDto>.Error("Email ya existe");
 
         var entity = MapToEntity(dto);
-        entity.Contrasena = BCrypt.Net.BCrypt.HashPassword(dto.Contrasena);
+        entity.Contrasena = BCrypt.Net.BCrypt.HashPassword(dto.Contrasena, workFactor: 10);
         var result = await CreateEntity(entity);
 
         if (result.IsSuccess && result.Value != null)
-            result.Value.CarreraNombre = await Repository.GetCarreraNombre(entity.IdCarrera);
+            result.Value.CarreraNombre = await Repository.GetCarreraName(entity.IdCarrera);
 
         return result;
     }
@@ -60,12 +60,12 @@ public class UsuarioService : Service<UsuarioEntity, UsuarioRepository, UsuarioD
             existing.IdCarrera = dto.IdCarrera!.Value;
 
         if (!string.IsNullOrWhiteSpace(dto.Contrasena))
-            existing.Contrasena = BCrypt.Net.BCrypt.HashPassword(dto.Contrasena);
+            existing.Contrasena = BCrypt.Net.BCrypt.HashPassword(dto.Contrasena, workFactor: 10);
 
         await Repository.UpdateEntity(existing);
 
         var resultDto = _mapper.ToDto(existing);
-        resultDto.CarreraNombre = await Repository.GetCarreraNombre(existing.IdCarrera);
+        resultDto.CarreraNombre = await Repository.GetCarreraName(existing.IdCarrera);
 
         return Result<UsuarioDto>.Success(resultDto);
     }
@@ -78,7 +78,7 @@ public class UsuarioService : Service<UsuarioEntity, UsuarioRepository, UsuarioD
             return Result<UsuarioDto>.NotFound();
 
         var dto = _mapper.ToDto(usuario);
-        dto.CarreraNombre = await Repository.GetCarreraNombre(usuario.IdCarrera);
+        dto.CarreraNombre = await Repository.GetCarreraName(usuario.IdCarrera);
 
         return Result<UsuarioDto>.Success(dto);
     }
@@ -94,7 +94,7 @@ public class UsuarioService : Service<UsuarioEntity, UsuarioRepository, UsuarioD
             return Result<UsuarioDto>.Unauthorized("Credenciales inválidas");
 
         var passwordValid = !string.IsNullOrWhiteSpace(usuario.Contrasena)
-                         && BCrypt.Net.BCrypt.Verify(password, usuario.Contrasena);
+                         && await Task.Run(() => BCrypt.Net.BCrypt.Verify(password, usuario.Contrasena));
 
         if (!passwordValid)
             return Result<UsuarioDto>.Unauthorized("Credenciales inválidas");
@@ -115,6 +115,6 @@ public class UsuarioService : Service<UsuarioEntity, UsuarioRepository, UsuarioD
         if (string.IsNullOrWhiteSpace(dto.CarreraNombre))
             return;
 
-        dto.IdCarrera = await Repository.FindCarreraIdByNombre(dto.CarreraNombre);
+        dto.IdCarrera = await Repository.FindCarreraIdByName(dto.CarreraNombre);
     }
 }

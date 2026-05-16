@@ -1,6 +1,7 @@
 using Ardalis.Result;
 using FluentValidation;
 using IMT_Reservas.Server.Application.Abstraction;
+using IMT_Reservas.Server.Application.Features.Prestamo.State;
 using IMT_Reservas.Server.Core.Entities;
 using IMT_Reservas.Server.Infrastructure.Repositories.Implementations;
 using PrestamoEntity = IMT_Reservas.Server.Core.Entities.Prestamo;
@@ -53,20 +54,20 @@ public class PrestamoService : Service<PrestamoEntity, PrestamoRepository, Prest
         return await Get(id);
     }
 
-    public async Task<Result<PrestamoDto>> UpdateEstado(int id, string nuevoEstado)
+    public async Task<Result<PrestamoDto>> UpdateStatus(int id, string newStatus)
     {
         var prestamo = await Repository.FindById(id);
 
         if (prestamo == null)
             return Result<PrestamoDto>.NotFound();
 
-        var parsedState = PrestamoState.Parse(nuevoEstado);
+        var parsedState = PrestamoState.Parse(newStatus);
 
         if (!parsedState.HasValue)
-            return Result<PrestamoDto>.Error($"Estado '{nuevoEstado}' no reconocido");
+            return Result<PrestamoDto>.Error($"Estado '{newStatus}' no reconocido");
 
         if (!PrestamoState.CanTransition(prestamo.EstadoPrestamo, parsedState.Value))
-            return Result<PrestamoDto>.Error($"Transición '{PrestamoState.ToText(prestamo.EstadoPrestamo)}' → '{nuevoEstado}' no permitida");
+            return Result<PrestamoDto>.Error($"Transición '{PrestamoState.ToText(prestamo.EstadoPrestamo)}' → '{newStatus}' no permitida");
 
         prestamo.EstadoPrestamo = parsedState.Value;
         await Repository.UpdateTracked(prestamo);
@@ -74,7 +75,7 @@ public class PrestamoService : Service<PrestamoEntity, PrestamoRepository, Prest
         return await Get(id);
     }
 
-    public async Task<Result<List<PrestamoDto>>> GetHistorial(string carnetUsuario, string estadoPrestamo)
+    public async Task<Result<List<PrestamoDto>>> GetHistory(string carnetUsuario, string estadoPrestamo)
     {
         if (string.IsNullOrEmpty(carnetUsuario))
             return Result<List<PrestamoDto>>.Error("Carnet requerido");
@@ -89,6 +90,6 @@ public class PrestamoService : Service<PrestamoEntity, PrestamoRepository, Prest
                 return Result<List<PrestamoDto>>.Error("Estado préstamo no válido");
         }
 
-        return await Repository.GetHistorialWithDetalles(carnetUsuario, estado);
+        return await Repository.GetHistoryWithDetails(carnetUsuario, estado);
     }
 }
