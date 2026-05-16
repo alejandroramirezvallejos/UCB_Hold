@@ -4,9 +4,9 @@
 
 # UCB Hold
 
-**Sistema de Reservas — Laboratorio de Mecatrónica UCB**
+**Reservation System - UCB Mechatronics Lab**
 
-Plataforma web para gestión de préstamos de equipos, accesorios y herramientas del laboratorio de Mecatrónica de la Universidad Católica Boliviana.
+Web platform for managing loans of equipment, accessories, and tools from the **Universidad Catolica Boliviana** Mechatronics Lab.
 
 [![.NET](https://img.shields.io/badge/.NET-8.0-512BD4?style=flat-square&logo=dotnet)](https://dotnet.microsoft.com/)
 [![Angular](https://img.shields.io/badge/Angular-18-DD0031?style=flat-square&logo=angular)](https://angular.io/)
@@ -19,17 +19,17 @@ Plataforma web para gestión de préstamos de equipos, accesorios y herramientas
 
 ---
 
-## ✦ Características
+## ✦ Features
 
-|                                      |                                                                                                             |
-| ------------------------------------ | ----------------------------------------------------------------------------------------------------------- |
-| 📦 **Gestión de equipos**            | Inventario con grupos, gaveteros y muebles. Código IMT, estado y costo promedio calculados automáticamente. |
-| 📋 **Préstamos con contrato**        | Flujo completo: solicitud → aprobación → entrega → devolución. Generación de contrato HTML adjunto.         |
-| 📅 **Disponibilidad en tiempo real** | Carrito de reservas que calcula unidades disponibles por grupo por día en un rango de fechas.               |
-| 🔧 **Mantenimientos**                | Registro de mantenimientos correctivos y preventivos por empresa externa con detalles por equipo.           |
-| 🗂️ **Catálogos completos**           | Carreras, categorías, accesorios, componentes, empresas y muebles con CRUD completo.                        |
-| ♻️ **Borrado lógico**                | Ningún dato se elimina físicamente. `estado_eliminado = true` con cascade automático a detalles.            |
-| ⚡ **Queries optimizadas**           | Single SQL projection con LEFT JOINs en todos los repositorios. `AsNoTracking` + índices compuestos.        |
+|                               |                                                                                                   |
+| ----------------------------- | ------------------------------------------------------------------------------------------------- |
+| 📦 **Equipment management**   | Inventory with groups, drawers, and cabinets. IMT code, status, and average cost auto-calculated. |
+| 📋 **Loans with contract**    | End-to-end flow: request -> approval -> checkout -> return. Generates an attached HTML contract.  |
+| 📅 **Real-time availability** | Reservation cart calculates available units per group per day within a date range.                |
+| 🔧 **Maintenance**            | Records corrective and preventive maintenance by external company with per-item details.          |
+| 🗂️ **Full catalogs**          | Degrees, categories, accessories, components, companies, and cabinets with full CRUD.             |
+| ♻️ **Logical delete**         | No data is physically deleted. `estado_eliminado = true` with automatic cascade to details.       |
+| ⚡ **Optimized queries**      | Single SQL projection with LEFT JOINs across repositories. `AsNoTracking` + composite indexes.    |
 
 ---
 
@@ -40,9 +40,9 @@ Plataforma web para gestión de préstamos de equipos, accesorios y herramientas
 | Frontend       | Angular                          | 18      |
 | Backend        | ASP.NET Core                     | .NET 8  |
 | ORM            | Entity Framework Core + Npgsql   | 8.0.4   |
-| Base de datos  | PostgreSQL                       | 14+     |
-| Mapeo          | Riok.Mapperly (source-generated) | 3.6.0   |
-| Validación     | FluentValidation                 | 11.9.0  |
+| Database       | PostgreSQL                       | 14+     |
+| Mapping        | Riok.Mapperly (source-generated) | 3.6.0   |
+| Validation     | FluentValidation                 | 11.9.0  |
 | Result pattern | Ardalis.Result                   | 10.1.0  |
 | Passwords      | BCrypt.Net-Next                  | 4.0.3   |
 
@@ -50,13 +50,13 @@ Plataforma web para gestión de préstamos de equipos, accesorios y herramientas
 
 ## ✦ Quick Start
 
-### Prerequisitos
+### Prerequisites
 
 - [.NET 8 SDK](https://dotnet.microsoft.com/download)
 - [Node.js 18+](https://nodejs.org)
-- [PostgreSQL 14+](https://www.postgresql.org/download/) — nativo **o** Docker
+- [PostgreSQL 14+](https://www.postgresql.org/download/) - native **or** Docker
 
-### 1 · Base de datos
+### 1 - Database
 
 **Nativo:**
 
@@ -77,7 +77,7 @@ docker run -d --name ucbhold-postgres \
 docker exec -i ucbhold-postgres psql -U postgres -d IMT_Reservas < DataBase/schema.ddl
 ```
 
-### 2 · Backend — credenciales locales
+### 2 - Backend - local credentials
 
 ```bash
 cd Code/Server
@@ -85,18 +85,18 @@ dotnet user-secrets set "ConnectionStrings:PostgreSQL" \
   "Host=localhost;Port=5432;Database=IMT_Reservas;Username=postgres;Password=postgres;Pooling=true;MinPoolSize=2;MaxPoolSize=20"
 ```
 
-### 3 · Frontend — dependencias
+### 3 - Frontend - dependencies
 
 ```bash
 cd Code/Client
 npm install
 ```
 
-### 4 · Ejecutar
+### 4 - Run
 
-**JetBrains Rider** — abrir `Code/` → config `IMT_Reservas.FullStack` → Run.
+**JetBrains Rider** - open `Code/` -> config `IMT_Reservas.FullStack` -> Run.
 
-**CLI** — dos terminales:
+**CLI** - two terminals:
 
 ```bash
 # Terminal 1
@@ -114,43 +114,51 @@ cd Code/Client && npm start
 
 ---
 
-## ✦ Arquitectura
+## ✦ Architecture
 
 ```
 ┌─────────────────────────────────────────────────────┐
 │                    Angular 18                       │
-│              (Client — localhost:4200)              │
+│              (Client - localhost:4200)              │
 └──────────────────────┬──────────────────────────────┘
                        │ HTTP /api/*
 ┌──────────────────────▼──────────────────────────────┐
-│              ASP.NET Core 8 — Controllers           │
-│         Result<T> · FluentValidation · Mapperly     │
+│              ASP.NET Core 8 - Controllers           │
+│         Result<T> - FluentValidation - Mapperly     │
 ├─────────────────────────────────────────────────────┤
 │                    Services                         │
-│   Business logic · State machines · Recálculos      │
+│   Business logic - State machines - Recalculations  │
 ├─────────────────────────────────────────────────────┤
 │                  Repositories                       │
-│    EF Core · AsNoTracking · SQL projections         │
+│    EF Core - AsNoTracking - SQL projections         │
 ├─────────────────────────────────────────────────────┤
-│           PostgreSQL 14 — ApplicationDbContext      │
-│    Enums nativos · Índices compuestos · Pool 2-20   │
+│           PostgreSQL 14 - ApplicationDbContext      │
+│    Native enums - Composite indexes - Pool 2-20     │
 └─────────────────────────────────────────────────────┘
 ```
 
 ---
 
-## ✦ Documentación
+## ✦ Documentation
 
-| Documento                                  | Contenido                                                 |
-| ------------------------------------------ | --------------------------------------------------------- |
-| [docs/API.md](docs/API.md)                 | Todos los endpoints, DTOs, códigos de respuesta           |
-| [docs/DATABASE.md](docs/DATABASE.md)       | Esquema ER, tablas, enums, vistas, índices, transacciones |
-| [docs/DEVELOPMENT.md](docs/DEVELOPMENT.md) | Setup local completo, user-secrets, variables de entorno  |
-| [docs/DEPLOYMENT.md](docs/DEPLOYMENT.md)   | Despliegue Oracle Cloud · nginx · systemd                 |
+| Document                                   | Content                                                |
+| ------------------------------------------ | ------------------------------------------------------ |
+| [docs/API.md](docs/API.md)                 | All endpoints, DTOs, and response codes                |
+| [docs/DATABASE.md](docs/DATABASE.md)       | ER schema, tables, enums, views, indexes, transactions |
+| [docs/DEVELOPMENT.md](docs/DEVELOPMENT.md) | Full local setup, user-secrets, environment variables  |
+| [docs/DEPLOYMENT.md](docs/DEPLOYMENT.md)   | Oracle Cloud deployment - nginx - systemd              |
 
 ---
 
-## ✦ Equipo
+## ✦ Team
+
+## ✦ Contributing
+
+See [CONTRIBUTING.md](CONTRIBUTING.md) for the workflow, standards, and review expectations.
+
+## ✦ Code of Conduct
+
+Please review [CODE_OF_CONDUCT.md](CODE_OF_CONDUCT.md).
 
 <table>
   <tr>
