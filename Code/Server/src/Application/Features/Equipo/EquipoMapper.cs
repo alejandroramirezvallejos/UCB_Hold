@@ -26,6 +26,13 @@ public partial class EquipoMapper : IMapper<EquipoEntity, EquipoDto>
         _                                  => "operativo"
     };
 
+    private static EstadoEquipo StringToEstadoEquipo(string? estado) => estado switch
+    {
+        "parcialmente_operativo" => EstadoEquipo.ParcialmenteOperativo,
+        "inoperativo"            => EstadoEquipo.Inoperativo,
+        _                        => EstadoEquipo.Operativo
+    };
+
     private static DateTime? DateOnlyToDateTime(DateOnly source) => source.ToDateTime(TimeOnly.MinValue);
 
     private static DateOnly DateTimeToDateOnly(DateTime? source)
