@@ -74,8 +74,8 @@ testem.log
 .history/*
 
 *.bak
-*.backup
-*.sql
+# *.backup - allowing DataBase/backup.backup
+# *.sql - allowing DataBase/server.sql
 *.db
 *.sqlite
 *.sqlite3
@@ -83,6 +83,10 @@ testem.log
 *.ldf
 logs/
 /libpeerconnection.log
+
+# Allow specific database files
+!DataBase/backup.backup
+!DataBase/server.sql
 
 *.log
 *.tlog
