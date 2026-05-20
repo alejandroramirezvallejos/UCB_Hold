@@ -74,7 +74,7 @@ public class PrestamoRepository : Repository<PrestamoEntity, PrestamoDto>
         await DbContext.SaveChangesAsync();
     }
 
-    public async Task AssignEquipos(int prestamoId, List<int>? grupoEquipoIds)
+    public async Task AssignEquipos(int prestamoId, List<int>? grupoEquipoIds, DateTime fechaInicio, DateTime fechaFin)
     {
         if (grupoEquipoIds == null || !grupoEquipoIds.Any())
             return;
@@ -85,9 +85,11 @@ public class PrestamoRepository : Repository<PrestamoEntity, PrestamoDto>
         {
             var loanedIds = await DbContext.DetallesPrestamos
                 .Join(DbContext.Prestamos, d => d.IdPrestamo, p => p.Id, (d, p) => new { d, p })
-                .Where(x => x.p.EstadoPrestamo == EstadoPrestamo.Pendiente
+                .Where(x => (x.p.EstadoPrestamo == EstadoPrestamo.Pendiente
                           || x.p.EstadoPrestamo == EstadoPrestamo.Aprobado
                           || x.p.EstadoPrestamo == EstadoPrestamo.Activo)
+                          && x.p.FechaPrestamoEsperada.Date <= fechaFin.Date
+                          && x.p.FechaDevolucionEsperada.Date >= fechaInicio.Date)
                 .Select(x => x.d.IdEquipo)
                 .ToListAsync();
 

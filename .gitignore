@@ -84,7 +84,6 @@ testem.log
 logs/
 /libpeerconnection.log
 
-# Allow specific database files
 !DataBase/backup.backup
 !DataBase/server.sql
 
@@ -109,6 +108,7 @@ mono_crash.*
 .env
 .env.*
 !.env.example
+server.env
 secrets/
 **/https/*.pem
 **/https/*.key

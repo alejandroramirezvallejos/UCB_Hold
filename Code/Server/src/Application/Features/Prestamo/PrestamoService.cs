@@ -30,7 +30,8 @@ public class PrestamoService : Service<PrestamoEntity, PrestamoRepository, Prest
         entity.EstadoPrestamo = EstadoPrestamo.Pendiente;
 
         await Repository.SavePrestamo(entity);
-        await Repository.AssignEquipos(entity.Id, dto.GrupoEquipoId);
+        await Repository.AssignEquipos(entity.Id, dto.GrupoEquipoId,
+            entity.FechaPrestamoEsperada, entity.FechaDevolucionEsperada);
         await Repository.SaveContrato(entity, dto.Contrato);
 
         return await Repository.Get(entity.Id);
