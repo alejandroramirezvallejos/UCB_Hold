@@ -74,6 +74,49 @@ public class PrestamoRepository : Repository<PrestamoEntity, PrestamoDto>
         await DbContext.SaveChangesAsync();
     }
 
+    public async Task<bool> HasEquipoConflictoAlAprobar(int prestamoId)
+    {
+        var prestamo = await DbContext.Prestamos
+            .FirstOrDefaultAsync(p => p.Id == prestamoId);
+
+        if (prestamo == null) return false;
+
+        var equipoIds = await DbContext.DetallesPrestamos
+            .Where(d => d.IdPrestamo == prestamoId && !d.EstadoEliminado)
+            .Select(d => d.IdEquipo)
+            .ToListAsync();
+
+        if (equipoIds.Count == 0) return false;
+
+        return await DbContext.DetallesPrestamos
+            .Join(DbContext.Prestamos, d => d.IdPrestamo, p => p.Id, (d, p) => new { d, p })
+            .AnyAsync(x => equipoIds.Contains(x.d.IdEquipo)
+                        && x.d.IdPrestamo != prestamoId
+                        && !x.d.EstadoEliminado
+                        && (x.p.EstadoPrestamo == EstadoPrestamo.Aprobado
+                         || x.p.EstadoPrestamo == EstadoPrestamo.Activo)
+                        && x.p.FechaPrestamoEsperada.Date <= prestamo.FechaDevolucionEsperada.Date
+                        && x.p.FechaDevolucionEsperada.Date >= prestamo.FechaPrestamoEsperada.Date);
+    }
+
+    public async Task<bool> HasAvailableEquipo(int grupoId, DateTime fechaInicio, DateTime fechaFin)
+    {
+        var loanedIds = await DbContext.DetallesPrestamos
+            .Join(DbContext.Prestamos, d => d.IdPrestamo, p => p.Id, (d, p) => new { d, p })
+            .Where(x => (x.p.EstadoPrestamo == EstadoPrestamo.Aprobado
+                      || x.p.EstadoPrestamo == EstadoPrestamo.Activo)
+                      && x.p.FechaPrestamoEsperada.Date <= fechaFin.Date
+                      && x.p.FechaDevolucionEsperada.Date >= fechaInicio.Date)
+            .Select(x => x.d.IdEquipo)
+            .ToListAsync();
+
+        return await DbContext.Equipos.AnyAsync(e =>
+            e.IdGrupoEquipo == grupoId
+            && !e.EstadoEliminado
+            && e.EstadoEquipo == EstadoEquipo.Operativo
+            && !loanedIds.Contains(e.Id));
+    }
+
     public async Task AssignEquipos(int prestamoId, List<int>? grupoEquipoIds, DateTime fechaInicio, DateTime fechaFin)
     {
         if (grupoEquipoIds == null || !grupoEquipoIds.Any())
@@ -85,8 +128,7 @@ public class PrestamoRepository : Repository<PrestamoEntity, PrestamoDto>
         {
             var loanedIds = await DbContext.DetallesPrestamos
                 .Join(DbContext.Prestamos, d => d.IdPrestamo, p => p.Id, (d, p) => new { d, p })
-                .Where(x => (x.p.EstadoPrestamo == EstadoPrestamo.Pendiente
-                          || x.p.EstadoPrestamo == EstadoPrestamo.Aprobado
+                .Where(x => (x.p.EstadoPrestamo == EstadoPrestamo.Aprobado
                           || x.p.EstadoPrestamo == EstadoPrestamo.Activo)
                           && x.p.FechaPrestamoEsperada.Date <= fechaFin.Date
                           && x.p.FechaDevolucionEsperada.Date >= fechaInicio.Date)

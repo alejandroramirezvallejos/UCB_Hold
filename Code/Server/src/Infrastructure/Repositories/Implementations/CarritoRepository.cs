@@ -24,7 +24,7 @@ public class CarritoRepository
             join equipo   in _dbContext.Equipos   on detalle.IdEquipo    equals equipo.Id
             where grupoIds.Contains(equipo.IdGrupoEquipo)
                && (prestamo.EstadoPrestamo == EstadoPrestamo.Activo
-                   || prestamo.EstadoPrestamo == EstadoPrestamo.Pendiente)
+                   || prestamo.EstadoPrestamo == EstadoPrestamo.Aprobado)
                && prestamo.FechaPrestamoEsperada.Date <= fechaFin
                && prestamo.FechaDevolucionEsperada.Date >= fechaInicio
             select new { equipo.IdGrupoEquipo, prestamo.FechaPrestamoEsperada, prestamo.FechaDevolucionEsperada })
