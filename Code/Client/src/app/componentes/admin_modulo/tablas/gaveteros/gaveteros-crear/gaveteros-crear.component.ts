@@ -32,7 +32,7 @@ export class GaveterosCrearComponent extends BaseTablaComponent{
       },
       error: (error) => {
         this.mensajeerror = "Error al cargar los muebles";
-        console.error(error.error.error + ': ' + error.error.mensaje);
+        console.error(error?.error?.error + ': ' + error?.error?.message);
         this.error.set(true);
       }
     })
@@ -50,7 +50,7 @@ export class GaveterosCrearComponent extends BaseTablaComponent{
       },
       error:  (error) => {
         this.mensajeerror = "Error al registrar el gavetero";
-        console.error(error.error.error + ': ' + error.error.mensaje);
+        console.error(error?.error?.error + ': ' + error?.error?.message);
         this.error.set(true);
       }
   });

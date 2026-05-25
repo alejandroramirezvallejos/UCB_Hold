@@ -6,14 +6,14 @@ Full-stack local environment: .NET 8 + Angular 18 + PostgreSQL 14+
 
 ## ✦ Prerequisites
 
-| Tool         | Min version | Install                                               | Verify            |
-| ------------ | ----------- | ----------------------------------------------------- | ----------------- |
-| .NET SDK     | 8.0 LTS     | [dotnet.microsoft.com](https://dotnet.microsoft.com/download) | `dotnet --version` |
-| Node.js      | 18 LTS      | [nodejs.org](https://nodejs.org)                      | `node -v`         |
-| PostgreSQL   | 14          | [postgresql.org](https://www.postgresql.org/download/) | `psql --version`  |
-| Angular CLI  | 18          | `npm install -g @angular/cli@18`                      | `ng version`      |
-| Docker       | any         | [docker.com](https://www.docker.com/products/docker-desktop/) | `docker -v`       |
-| Git          | any         | [git-scm.com](https://git-scm.com)                   | `git --version`   |
+| Tool        | Min version | Install                                                       | Verify             |
+| ----------- | ----------- | ------------------------------------------------------------- | ------------------ |
+| .NET SDK    | 8.0 LTS     | [dotnet.microsoft.com](https://dotnet.microsoft.com/download) | `dotnet --version` |
+| Node.js     | 18 LTS      | [nodejs.org](https://nodejs.org)                              | `node -v`          |
+| PostgreSQL  | 14          | [postgresql.org](https://www.postgresql.org/download/)        | `psql --version`   |
+| Angular CLI | 18          | `npm install -g @angular/cli@18`                              | `ng version`       |
+| Docker      | any         | [docker.com](https://www.docker.com/products/docker-desktop/) | `docker -v`        |
+| Git         | any         | [git-scm.com](https://git-scm.com)                            | `git --version`    |
 
 ---
 
@@ -29,7 +29,14 @@ This file holds the backend configuration and is **gitignored** — never commit
 ASPNETCORE_ENVIRONMENT=Production
 ASPNETCORE_URLS=http://+:80
 ConnectionStrings__PostgreSQL=Host=ucb_db;Port=5432;Database=IMT_Reservas;Username=<USERNAME>;Password=<PASSWORD>;Pooling=true;MinPoolSize=2;MaxPoolSize=20
+Jwt__Key=<KEY>
 ```
+
+> `Jwt__Key` must be a random string of at least 32 characters. Generate one with:
+>
+> ```bash
+> openssl rand -base64 32
+> ```
 
 ### 2 — Start
 
@@ -39,6 +46,7 @@ docker compose up --build
 ```
 
 Docker will:
+
 1. Pull `postgres:14` and start the database
 2. Run `Database/server.sql` automatically on first startup (schema + seed data)
 3. Build and start the .NET 8 backend
@@ -103,14 +111,17 @@ cd Code/Server
 dotnet user-secrets init
 dotnet user-secrets set "ConnectionStrings:PostgreSQL" \
   "Host=localhost;Port=5432;Database=IMT_Reservas;Username=<USERNAME>;Password=<PASSWORD>;Pooling=true;MinPoolSize=2;MaxPoolSize=20"
+dotnet user-secrets set "Jwt:Key" "local_dev_secret_at_least_32_chars!!"
 dotnet user-secrets list   # verify
 ```
 
-| Parameter      | Value | Reason                                |
-| -------------- | ----- | ------------------------------------- |
-| `MinPoolSize=2` | 2     | Pre-warm pool — avoids ~8s cold-start |
-| `MaxPoolSize=20`| 20    | Reasonable cap for development        |
-| `Pooling=true`  | —     | Reuse TCP connections                 |
+> The JWT key must be at least 32 characters. Use a different value in production.
+
+| Parameter        | Value | Reason                                |
+| ---------------- | ----- | ------------------------------------- |
+| `MinPoolSize=2`  | 2     | Pre-warm pool — avoids ~8s cold-start |
+| `MaxPoolSize=20` | 20    | Reasonable cap for development        |
+| `Pooling=true`   | —     | Reuse TCP connections                 |
 
 ### 3 — Frontend dependencies
 
@@ -127,11 +138,11 @@ npm install
 2. Select run configuration `IMT_Reservas.FullStack`
 3. Press Run (`Shift+F10`)
 
-| Configuration              | Runs                              |
-| -------------------------- | --------------------------------- |
-| `IMT_Reservas.FullStack`   | Backend + Frontend simultaneously |
-| `IMT_Reservas.Server`      | Backend only                      |
-| `IMT_Reservas.Client`      | Frontend only (watch mode)        |
+| Configuration            | Runs                              |
+| ------------------------ | --------------------------------- |
+| `IMT_Reservas.FullStack` | Backend + Frontend simultaneously |
+| `IMT_Reservas.Server`    | Backend only                      |
+| `IMT_Reservas.Client`    | Frontend only (watch mode)        |
 
 **CLI (two terminals):**
 
@@ -145,11 +156,11 @@ cd Code/Client && npm start
 
 ### URLs
 
-| Service      | URL                            |
-| ------------ | ------------------------------ |
-| Frontend     | `http://localhost:4200`        |
-| Backend API  | `https://localhost:7216`       |
-| Swagger      | `https://localhost:7216/swagger` |
+| Service      | URL                                 |
+| ------------ | ----------------------------------- |
+| Frontend     | `http://localhost:4200`             |
+| Backend API  | `https://localhost:7216`            |
+| Swagger      | `https://localhost:7216/swagger`    |
 | Health check | `https://localhost:7216/api/health` |
 
 > Swagger is only available in `Development`. The frontend dev server proxies `/api/*` to the backend via `proxy.conf.js`.
@@ -172,7 +183,7 @@ dotnet test Code/Tests/IMT_Reservas.Tests.csproj --filter "FullyQualifiedName~In
 dotnet test Code/Tests/IMT_Reservas.Tests.csproj --filter "FullyQualifiedName~Unit"
 ```
 
-Tests also run automatically on every push and PR to `main` and `develop` via GitHub Actions. Coverage output (`coverage.cobertura.xml`) is uploaded as an artifact.
+Tests also run automatically on every push and PR to `main` and `develop` via GitHub Actions. A browsable HTML coverage report is uploaded as the `coverage` artifact — download it and open `index.html`.
 
 ---
 
@@ -197,6 +208,7 @@ ng build --configuration production
 **`dotnet: command not found`** — install .NET 8 SDK from [dotnet.microsoft.com](https://dotnet.microsoft.com/download)
 
 **`Connection refused` on PostgreSQL**
+
 ```bash
 psql -U postgres -c "SELECT 1"        # test connection
 # Docker: docker start ucbhold-postgres
@@ -205,21 +217,25 @@ psql -U postgres -c "SELECT 1"        # test connection
 ```
 
 **`User Secrets not initialized`**
+
 ```bash
 cd Code/Server && dotnet user-secrets init
 ```
 
 **Docker — backend container restarting**
+
 ```bash
 docker logs ucb_server   # check for missing server.env or wrong connection string
 ```
 
 **Port 4200 in use**
+
 ```bash
 ng serve --port 4300
 ```
 
 **`Cannot find module '@angular/...'`**
+
 ```bash
 cd Code/Client && npm install
 ```

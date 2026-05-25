@@ -39,19 +39,24 @@ export class UsuarioServiceAPI {
     const body = { Email: correo, Contrasena: contraseña };
     return this.http.post<any>(api, body).pipe(
       map(response => ({
-        id: response.Value.Carnet,
-        carnet: response.Value.Carnet,
-        nombre: response.Value.Nombre,
-        apellido_materno: response.Value.ApellidoMaterno,
-        apellido_paterno: response.Value.ApellidoPaterno,
-        rol: response.Value.Rol,
-        carrera: response.Value.CarreraNombre,
-        correo: response.Value.Email,
-        telefono: response.Value.Telefono,
-        nombre_referencia: response.Value.NombreReferencia,
-        telefono_referencia: response.Value.TelefonoReferencia,
-        email_referencia: response.Value.EmailReferencia
-      })));
+        accessToken:  response.Value.AccessToken  as string,
+        refreshToken: response.Value.RefreshToken as string,
+        usuario: {
+          id:                  response.Value.Usuario.Carnet,
+          carnet:              response.Value.Usuario.Carnet,
+          nombre:              response.Value.Usuario.Nombre,
+          apellido_materno:    response.Value.Usuario.ApellidoMaterno,
+          apellido_paterno:    response.Value.Usuario.ApellidoPaterno,
+          rol:                 response.Value.Usuario.Rol,
+          carrera:             response.Value.Usuario.CarreraNombre,
+          correo:              response.Value.Usuario.Email,
+          telefono:            response.Value.Usuario.Telefono,
+          nombre_referencia:   response.Value.Usuario.NombreReferencia,
+          telefono_referencia: response.Value.Usuario.TelefonoReferencia,
+          email_referencia:    response.Value.Usuario.EmailReferencia
+        } as any
+      }))
+    );
   }
 
 

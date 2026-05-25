@@ -33,7 +33,7 @@ export class MueblesCrearComponent extends BaseTablaComponent{
       },
       error: (error) => {
         this.mensajeerror="Error al crear el mueble , Intente mas tarde";
-        console.error(error.error.error + ': ' + error.error.mensaje);
+        console.error(error?.error?.error + ': ' + error?.error?.message);
         this.error.set(true);
       }
     });

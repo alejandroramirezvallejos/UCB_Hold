@@ -247,9 +247,12 @@ public class ApplicationDbContext : DbContext
             entity.Property(e => e.EstadoEliminado).HasColumnName("estado_eliminado");
             entity.Property(e => e.ImagenFrenteCarnet).HasColumnName("imagen_frente_carnet");
             entity.Property(e => e.ImagenAtrasCarnet).HasColumnName("imagen_atras_carnet");
+            entity.Property(e => e.RefreshToken).HasColumnName("refresh_token");
+            entity.Property(e => e.RefreshTokenExpiry).HasColumnName("refresh_token_expiry");
             entity.HasOne<Carrera>().WithMany().HasForeignKey(e => e.IdCarrera).IsRequired();
             entity.HasIndex(e => new { e.Nombre, e.EstadoEliminado });
             entity.HasIndex(e => e.Email).IsUnique();
+            entity.HasIndex(e => e.RefreshToken);
             entity.HasQueryFilter(e => !e.EstadoEliminado);
         });
 
@@ -275,6 +278,7 @@ public class ApplicationDbContext : DbContext
             entity.HasOne<Contrato>().WithMany().HasForeignKey(e => e.IdContrato);
             entity.HasIndex(e => e.IdContrato);
             entity.HasIndex(e => new { e.FechaPrestamoEsperada, e.FechaDevolucionEsperada, e.Carnet, e.EstadoEliminado });
+            entity.HasIndex(e => new { e.Carnet, e.EstadoPrestamo, e.EstadoEliminado });
             entity.HasQueryFilter(e => !e.EstadoEliminado);
         });
 
@@ -297,6 +301,7 @@ public class ApplicationDbContext : DbContext
             entity.HasOne<Prestamo>().WithMany().HasForeignKey(e => e.IdPrestamo).IsRequired();
             entity.HasOne<Equipo>().WithMany().HasForeignKey(e => e.IdEquipo).IsRequired();
             entity.HasIndex(e => new { e.IdPrestamo, e.EstadoEliminado });
+            entity.HasIndex(e => e.IdEquipo);
             entity.HasQueryFilter(e => !e.EstadoEliminado);
         });
     }

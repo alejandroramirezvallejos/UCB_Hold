@@ -104,7 +104,7 @@ export class MantenimientosCrearComponent extends BaseTablaComponent{
       },
       error: (error) => {
         this.mensajeerror="Error al crear el mantenimiento. Por favor, inténtelo de nuevo más tarde.";
-        console.error(error.error.error + ': ' + error.error.mensaje);
+        console.error(error?.error?.error + ': ' + error?.error?.message);
         this.error.set(true);
       }
   });

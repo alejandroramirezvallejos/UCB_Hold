@@ -35,7 +35,11 @@ public class PrestamoService : Service<PrestamoEntity, PrestamoRepository, Prest
                 grupoId, entity.FechaPrestamoEsperada, entity.FechaDevolucionEsperada);
 
             if (!disponible)
-                return Result<PrestamoDto>.Error($"Equipo del grupo {grupoId} no disponible en las fechas solicitadas");
+            {
+                var nombre = await Repository.GetGrupoEquipoNombre(grupoId);
+                return Result<PrestamoDto>.Error(
+                    $"'{nombre ?? grupoId.ToString()}' no tiene unidades disponibles en las fechas seleccionadas");
+            }
         }
 
         await Repository.SavePrestamo(entity);

@@ -47,7 +47,7 @@ export class RegistrarUsuarioComponent {
       },
       error: (error) => {
         this.mensajeerror = "Error al obtener las carreras intente mas tarde";
-        console.error('Error al obtener las carreras:', error.error.mensaje);
+        console.error('Error al obtener las carreras:', error?.error?.message);
         this.error.set(true);
       }
     });
@@ -66,7 +66,7 @@ export class RegistrarUsuarioComponent {
       },
       error: (error) => {
         this.mensajeerror = "Error al registrar el usuario intente mas tarde";
-        alert('Error al registrar el usuario:' + error.error.mensaje);
+        console.error('Error al registrar el usuario:', error?.error?.message);
         this.error.set(true);
       }
     });

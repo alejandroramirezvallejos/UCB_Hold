@@ -32,7 +32,7 @@ export class EmpresasMantenimientoEditarComponent extends BaseTablaComponent {
       },
       error: (error) => {
         this.mensajeerror = "Error al actualizar la Empresa de Mantenimiento.";
-        console.error(error.error.error + ': ' + error.error.mensaje);
+        console.error(error?.error?.error + ': ' + error?.error?.message);
         this.error.set(true);
       }
     });

@@ -42,7 +42,7 @@ export class GruposEquiposTablaComponent extends Tabla implements OnInit {
       },
       error: (error) => {
         this.mensajeerror="Error al cargar las categorías, intente más tarde";
-        console.error('Error al cargar las categorías:', error.error.mensaje);
+        console.error('Error al cargar las categorías:', error?.error?.message);
         this.error.set(true);
       }
   });

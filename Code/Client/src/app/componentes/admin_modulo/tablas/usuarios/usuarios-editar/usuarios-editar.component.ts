@@ -34,7 +34,7 @@ export class UsuariosEditarComponent extends BaseTablaComponent {
       },
        error : (error) => {
         this.mensajeerror="Error al editar el usuario";
-        console.error(error.error.error + ': ' + error.error.mensaje);
+        console.error(error?.error?.error + ': ' + error?.error?.message);
         this.error.set(true);
       }
     });

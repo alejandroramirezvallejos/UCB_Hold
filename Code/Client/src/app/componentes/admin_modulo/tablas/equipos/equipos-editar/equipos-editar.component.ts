@@ -38,7 +38,7 @@ export class EquiposEditarComponent extends BaseTablaComponent{
       },
       error: (error) => {
         this.mensajeerror = "Error al cargar gaveteros";
-        console.error(error.error.error + ': ' + error.error.mensaje);
+        console.error(error?.error?.error + ': ' + error?.error?.message);
         this.error.set(true);
       }
     });
@@ -50,7 +50,7 @@ export class EquiposEditarComponent extends BaseTablaComponent{
       },
       error: (error) => {
         this.mensajeerror = "Error al cargar grupos de equipos";
-        console.error(error.error.error + ': ' + error.error.mensaje);
+        console.error(error?.error?.error + ': ' + error?.error?.message);
         this.error.set(true);
       }
     });
@@ -75,7 +75,7 @@ export class EquiposEditarComponent extends BaseTablaComponent{
       },
       error: (error) => {
         this.mensajeerror = "Error al editar el equipo";
-        console.error( error.error.error + ': ' + error.error.message);
+        console.error( error?.error?.error + ': ' + error?.error?.message);
         this.error.set(true);
       }
         });

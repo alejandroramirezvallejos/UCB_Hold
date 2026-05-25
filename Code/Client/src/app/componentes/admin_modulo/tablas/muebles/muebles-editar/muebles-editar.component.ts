@@ -37,7 +37,7 @@ export class MueblesEditarComponent extends BaseTablaComponent implements OnChan
       },
       error: (error) => {
         this.mensajeerror = "Error al editar el mueble.";
-        console.error(error.error.error + ': ' + error.error.mensaje);
+        console.error(error?.error?.error + ': ' + error?.error?.message);
         this.error.set(true);
       }
     });

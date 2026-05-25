@@ -29,7 +29,7 @@ export class GaveterosEditarComponent extends BaseTablaComponent {
       },
       error: (error) => {
         this.mensajeerror = "Error al cargar los muebles, intente mas tarde";
-        console.error(error.error.error + ': ' + error.error.mensaje);
+        console.error(error?.error?.error + ': ' + error?.error?.message);
         this.error.set(true);
       }
     })
@@ -47,7 +47,7 @@ export class GaveterosEditarComponent extends BaseTablaComponent {
       },
       error: (error) => {
         this.mensajeerror = "Error al editar el gavetero, intente mas tarde";
-        console.error(error.error.error + ': ' + error.error.mensaje);
+        console.error(error?.error?.error + ': ' + error?.error?.message);
         this.error.set(true);
       }
     });

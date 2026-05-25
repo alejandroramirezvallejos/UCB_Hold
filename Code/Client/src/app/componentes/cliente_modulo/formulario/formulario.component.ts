@@ -127,7 +127,7 @@ export class FormularioComponent implements OnInit {
         error: (error) => {
           console.error('Error al crear préstamo:', error);
           this.error.set(true);
-          this.mensajeerror = error.error.error + " - " + error.error.mensaje;
+          this.mensajeerror = `${error?.error?.error ?? 'Error'} - ${error?.error?.message ?? 'Intente más tarde'}`;
         }
       })
   }

@@ -47,7 +47,7 @@ export class MantenimientosTablaComponent extends Tabla implements OnInit {
       },
       error: (error) => {
         this.mensajeerror = "Error al cargar los mantenimientos, intente mas tarde";
-        console.error('Error al cargar los mantenimientos: ' + error.error.mensaje);
+        console.error('Error al cargar los mantenimientos: ' + error?.error?.message);
         this.error.set(true);
       }
     });
@@ -121,7 +121,7 @@ export class MantenimientosTablaComponent extends Tabla implements OnInit {
       error: (error) => {
           this.mensajeerror = "Error al eliminar el mantenimiento, intente mas tarde";
           this.error.set(true);
-         console.error('Error al eliminar el mantenimiento: ' + error.error.mensaje);
+         console.error('Error al eliminar el mantenimiento: ' + error?.error?.message);
           this.limpiarMantenimientoSeleccionado();
           this.alertaeliminar = false;
       }

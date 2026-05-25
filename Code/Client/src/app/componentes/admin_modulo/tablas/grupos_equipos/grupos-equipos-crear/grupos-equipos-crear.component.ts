@@ -34,7 +34,7 @@ export class GruposEquiposCrearComponent extends BaseTablaComponent {
       },
       error: (error) => {
         this.mensajeerror="Error al registrar el grupo de equipo";
-        console.error(error.error.error + ': ' + error.error.mensaje);
+        console.error(error?.error?.error + ': ' + error?.error?.message);
         this.error.set(true);
       }
     });

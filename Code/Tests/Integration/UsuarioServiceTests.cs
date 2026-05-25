@@ -1,23 +1,36 @@
 using BCryptLib = BCrypt.Net.BCrypt;
 using FluentAssertions;
+using IMT_Reservas.Server.Application.Features.Jwt;
 using IMT_Reservas.Server.Application.Features.Usuario;
 using IMT_Reservas.Server.Core.Entities;
 using IMT_Reservas.Server.Infrastructure.Config;
 using IMT_Reservas.Server.Infrastructure.Repositories.Implementations;
 using IMT_Reservas.Tests.Helpers;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Options;
 namespace IMT_Reservas.Tests.Integration;
 
 [TestFixture]
 internal class UsuarioServiceTests : ServiceTest<UsuarioService>
 {
+    private static readonly JwtSettings TestJwtSettings = new()
+    {
+        Key                    = "test_key_at_least_32_chars_long!!",
+        Issuer                 = "TestIssuer",
+        Audience               = "TestAudience",
+        ExpiresInMinutes       = 60,
+        RefreshTokenExpiryDays = 7
+    };
+
     protected override UsuarioService CreateService(ApplicationDbContext db)
     {
-        var mapper    = new UsuarioMapper();
-        var repo      = new UsuarioRepository(db, mapper);
-        var validator = new UsuarioValidator(db);
-        
-        return new UsuarioService(repo, mapper, validator);
+        var jwtOptions = Options.Create(TestJwtSettings);
+        var mapper     = new UsuarioMapper();
+        var repo       = new UsuarioRepository(db, mapper);
+        var validator  = new UsuarioValidator(db);
+        var jwt        = new JwtService(jwtOptions);
+
+        return new UsuarioService(repo, mapper, validator, jwt, jwtOptions);
     }
 
     [Test]
@@ -29,6 +42,7 @@ internal class UsuarioServiceTests : ServiceTest<UsuarioService>
 
         result.IsSuccess.Should().BeTrue();
         var stored = Db.Usuarios.Single(u => u.Carnet == "U001");
+        
         BCryptLib.Verify("Test@1234", stored.Contrasena).Should().BeTrue();
     }
 
@@ -117,7 +131,48 @@ internal class UsuarioServiceTests : ServiceTest<UsuarioService>
         var result = await Sut.Login("u001@ucb.edu.bo", "Test@1234");
 
         result.IsSuccess.Should().BeTrue();
-        result.Value.Carnet.Should().Be("U001");
+        result.Value.AccessToken.Should().NotBeNullOrEmpty();
+        result.Value.RefreshToken.Should().NotBeNullOrEmpty();
+        result.Value.Usuario.Carnet.Should().Be("U001");
+    }
+
+    [Test]
+    public async Task Refresh_ValidToken_ReturnsNewTokenPair()
+    {
+        await Sut.Create(BuildValidUsuario("U001", "u001@ucb.edu.bo"));
+        var loginResult = await Sut.Login("u001@ucb.edu.bo", "Test@1234");
+
+        var result = await Sut.Refresh(loginResult.Value.RefreshToken);
+
+        result.IsSuccess.Should().BeTrue();
+        result.Value.AccessToken.Should().NotBeNullOrEmpty();
+        result.Value.RefreshToken.Should().NotBeNullOrEmpty();
+        result.Value.RefreshToken.Should().NotBe(loginResult.Value.RefreshToken);
+    }
+
+    [Test]
+    public async Task Refresh_InvalidToken_ReturnsUnauthorized()
+    {
+        var result = await Sut.Refresh("this-token-does-not-exist");
+
+        result.IsSuccess.Should().BeFalse();
+        result.Status.Should().Be(Ardalis.Result.ResultStatus.Unauthorized);
+    }
+
+    [Test]
+    public async Task Refresh_ExpiredToken_ReturnsUnauthorized()
+    {
+        await Sut.Create(BuildValidUsuario("U001", "u001@ucb.edu.bo"));
+
+        var usuario = Db.Usuarios.Single(u => u.Carnet == "U001");
+        usuario.RefreshToken       = "expired-token";
+        usuario.RefreshTokenExpiry = DateTime.UtcNow.AddDays(-1);
+        await Db.SaveChangesAsync();
+
+        var result = await Sut.Refresh("expired-token");
+
+        result.IsSuccess.Should().BeFalse();
+        result.Status.Should().Be(Ardalis.Result.ResultStatus.Unauthorized);
     }
 
     [Test]

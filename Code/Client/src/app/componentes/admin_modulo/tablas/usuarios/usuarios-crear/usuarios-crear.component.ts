@@ -36,11 +36,11 @@ export class UsuariosCrearComponent extends BaseTablaComponent{
       error: (error) => {
         console.error('Error completo:', error);
         console.error('error.error:', error.error);
-        console.error('error.error.error:', error.error?.error);
-        console.error('error.error.mensaje:', error.error?.mensaje);
+        console.error('error?.error?.error:', error.error?.error);
+        console.error('error?.error?.message:', error.error?.mensaje);
         this.mensajeerror="No se pudo crear el usuario. ";
         this.error.set(true);
-        console.error(error.error.error + ': ' + error.error.mensaje);
+        console.error(error?.error?.error + ': ' + error?.error?.message);
       }
     });
   }

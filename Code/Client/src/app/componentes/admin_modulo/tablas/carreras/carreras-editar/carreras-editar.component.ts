@@ -38,7 +38,7 @@ export class CarrerasEditarComponent extends BaseTablaComponent {
       },
       error: (error) => {
         this.mensajeerror="error al actualizar la carrera";
-        console.error(error.error.error + ': ' + error.error.mensaje);
+        console.error(error?.error?.error + ': ' + error?.error?.message);
         this.error.set(true);
       }
     });

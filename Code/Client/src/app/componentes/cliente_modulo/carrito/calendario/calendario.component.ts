@@ -26,7 +26,7 @@ export class CalendarioComponent {
   @Input() fechaFinSeleccionada: WritableSignal<Date | null> = signal(null);
   carrito: Carrito = {};
  disponibilidadPorFecha: Map<string,Map<number, number>> = new Map();
- diasDelMes: Date[] = [];
+ diasDelMes: (Date | null)[] = [];
  diaActual: Date = new Date();
  inicio: Date = new Date();
  error : WritableSignal<boolean> = signal(false);
@@ -41,9 +41,11 @@ export class CalendarioComponent {
     const primerDia = new Date(this.inicio.getFullYear(), this.inicio.getMonth(), 1);
     const ultimoDia = new Date(this.inicio.getFullYear(), this.inicio.getMonth() + 1, 0);
     this.diasDelMes = [];
-    for (let d = new Date(primerDia); d <= ultimoDia; d.setDate(d.getDate() + 1)) {
+    const diaSemana = primerDia.getDay();
+    const offset = diaSemana === 0 ? 6 : diaSemana - 1;
+    for (let i = 0; i < offset; i++) this.diasDelMes.push(null);
+    for (let d = new Date(primerDia); d <= ultimoDia; d.setDate(d.getDate() + 1))
       this.diasDelMes.push(new Date(d));
-    }
   }
   cambiarMes(valor : number){
     this.inicio = new Date(this.inicio.getFullYear(), this.inicio.getMonth() + valor, 1);

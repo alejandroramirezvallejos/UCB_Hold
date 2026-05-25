@@ -1,6 +1,7 @@
 import { Component, Input, signal, WritableSignal } from '@angular/core';
 import { Router } from '@angular/router';
 import { UsuarioService } from '../../../services/usuario/usuario.service';
+import { AuthService } from '../../../services/auth/auth.service';
 @Component({
   selector: 'app-usuario-previo',
   imports: [],
@@ -12,7 +13,7 @@ export class UsuarioPrevioComponent {
   rol : string;
   isInAdminMode: boolean = false;
   @Input() showUserMenu : WritableSignal<Boolean> = signal(true);
-  constructor(private router : Router , private usuario : UsuarioService){
+  constructor(private router: Router, private usuario: UsuarioService, private authService: AuthService){
     this.sesion=!usuario.vacio();
     this.rol=usuario.obtenerrol();
     this.isInAdminMode = this.router.url.includes('/admin');
@@ -31,8 +32,9 @@ export class UsuarioPrevioComponent {
         this.router.navigate(["/Historial"])
       }
       else if (item=='cerrar-sesion'){
+        this.authService.clear();
         this.usuario.vaciar();
-        this.router.navigate(["/Iniciar-Sesion"]); // redirect to login usually?
+        this.router.navigate(["/Iniciar-Sesion"]);
       }
       else if(item=='admin'){
         this.router.navigate(["/admin"])

@@ -1,8 +1,10 @@
 using IMT_Reservas.Server.Application.Features.Carrito;
 using Controller = IMT_Reservas.Server.Presentation.Controllers.Abstraction.Controller;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 namespace IMT_Reservas.Server.Presentation.Controllers.Implementations;
 
+[Authorize]
 [Route("api/[controller]")]
 public class CarritoController : Controller
 {

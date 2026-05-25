@@ -33,7 +33,7 @@ export class ComponentesCrearComponent extends BaseTablaComponent {
       },
       error: (error) => {
         this.mensajeerror="Error al obtener los equipos , intente mas tarde";
-        console.error('Error al cargar los equipos:', error.error.mensaje);
+        console.error('Error al cargar los equipos:', error?.error?.message);
         this.error.set(true);
       }
     })
@@ -52,7 +52,7 @@ export class ComponentesCrearComponent extends BaseTablaComponent {
       error : (error) => {
         this.mensajeerror = "Error al crear el componente , Intente mas tarde ";
         this.error.set(true);
-        console.error(error.error.error + ': ' + error.error.mensaje);
+        console.error(error?.error?.error + ': ' + error?.error?.message);
       }
     });
   }

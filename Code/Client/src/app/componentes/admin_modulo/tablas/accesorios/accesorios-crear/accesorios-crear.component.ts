@@ -33,7 +33,7 @@ export class AccesoriosCrearComponent extends BaseTablaComponent {
       },
       error: (error) => {
         this.mensajeerror= "Error al cargar los equipos.";
-        console.error(error.error.error + ': ' + error.error.mensaje);
+        console.error(error?.error?.error + ': ' + error?.error?.message);
         this.error.set(true);
       }
     })
@@ -47,7 +47,7 @@ export class AccesoriosCrearComponent extends BaseTablaComponent {
       },
       error: (error) => {
         this.mensajeerror= "Error al crear el accesorio.";
-        console.error(error.error.error + ': ' + error.error.mensaje);
+        console.error(error?.error?.error + ': ' + error?.error?.message);
         this.error.set(true);
       }
     });

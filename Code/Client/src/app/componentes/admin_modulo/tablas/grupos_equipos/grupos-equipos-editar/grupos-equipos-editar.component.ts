@@ -38,7 +38,7 @@ export class GruposEquiposEditarComponent extends BaseTablaComponent implements 
       },
       error: (error) => {
         this.mensajeerror="Error al editar el grupo de equipo";
-        console.error(error.error.error + ': ' + error.error.mensaje);
+        console.error(error?.error?.error + ': ' + error?.error?.message);
         this.error.set(true);
       }
     });

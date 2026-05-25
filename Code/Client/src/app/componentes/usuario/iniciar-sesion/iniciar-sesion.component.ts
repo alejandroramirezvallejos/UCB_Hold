@@ -4,6 +4,7 @@ import { CommonModule, NgFor, NgIf } from '@angular/common';
 import { UsuarioService } from '../../../services/usuario/usuario.service';
 import { Router } from '@angular/router';
 import { UsuarioServiceAPI } from '../../../services/APIS/Usuario/usuario.service';
+import { AuthService } from '../../../services/auth/auth.service';
 import { MostrarerrorComponent } from '../../pantallas_avisos/mostrarerror/mostrarerror.component';
 @Component({
   selector: 'app-iniciar-sesion',
@@ -13,17 +14,23 @@ import { MostrarerrorComponent } from '../../pantallas_avisos/mostrarerror/mostr
   styleUrls: ['./iniciar-sesion.component.css']
 })
 export class IniciarSesionComponent {
-  email : string = ""; 
+  email : string = "";
   contrasena : string ="";
   loading: boolean = false;
   incorrecto : boolean = false;
   errorraro : WritableSignal<boolean> = signal(false);
-  constructor(private usuario : UsuarioService , private router : Router , private usuarioapi : UsuarioServiceAPI ){};
+  constructor(
+    private usuario    : UsuarioService,
+    private router     : Router,
+    private usuarioapi : UsuarioServiceAPI,
+    private authService: AuthService
+  ) {}
   login(){
     this.loading = true;
     this.usuarioapi.iniciarsesion(this.email, this.contrasena).subscribe({
       next: (data) => {
-        this.usuario.iniciarsesion(data);
+        this.authService.setSession(data.accessToken, data.refreshToken, data.usuario);
+        this.usuario.iniciarsesion(data.usuario);
         this.loading = false;
         this.incorrecto = false;
         this.router.navigate(["/home"]);

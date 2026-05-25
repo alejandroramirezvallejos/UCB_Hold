@@ -1,9 +1,11 @@
 using IMT_Reservas.Server.Application.Features.Contrato;
 using IMT_Reservas.Server.Application.Features.Prestamo;
 using Controller = IMT_Reservas.Server.Presentation.Controllers.Abstraction.Controller;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 namespace IMT_Reservas.Server.Presentation.Controllers.Implementations;
 
+[Authorize]
 [Route("api/[controller]")]
 public class PrestamoController : Controller
 {
@@ -16,6 +18,7 @@ public class PrestamoController : Controller
         _contratoService = contratoService;
     }
 
+    [Authorize(Roles = "administrador")]
     [HttpGet]
     public async Task<IActionResult> GetAll()
         => ToResponse(await _service.GetAll());
@@ -35,6 +38,7 @@ public class PrestamoController : Controller
     public async Task<IActionResult> Update(int id, [FromBody] PrestamoDto dto)
         => ToResponse(await _service.Update(id, dto));
 
+    [Authorize(Roles = "administrador")]
     [HttpPut("{id:int}/estado")]
     public async Task<IActionResult> UpdateStatus(int id, [FromBody] UpdateStatusRequest request)
         => ToResponse(await _service.UpdateStatus(id, request.EstadoPrestamo ?? string.Empty));

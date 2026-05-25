@@ -1,4 +1,8 @@
+using System.Text;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.IdentityModel.Tokens;
+using Microsoft.OpenApi.Models;
 using Npgsql;
 using FluentValidation;
 using IMT_Reservas.Server.Application.Abstraction;
@@ -14,8 +18,11 @@ using IMT_Reservas.Server.Application.Features.Mantenimiento;
 using IMT_Reservas.Server.Application.Features.Mueble;
 using IMT_Reservas.Server.Application.Features.Prestamo;
 using IMT_Reservas.Server.Application.Features.Usuario;
+using JwtSettings  = IMT_Reservas.Server.Application.Features.Usuario.JwtSettings;
+using JwtSvc       = IMT_Reservas.Server.Application.Features.Jwt.JwtService;
 using IMT_Reservas.Server.Application.Features.Carrito;
 using IMT_Reservas.Server.Application.Features.Contrato;
+using IMT_Reservas.Server.Application.Features.Warmup;
 using IMT_Reservas.Server.Core.Entities;
 using IMT_Reservas.Server.Infrastructure.Config;
 using IMT_Reservas.Server.Infrastructure.Repositories.Abstraction;
@@ -59,8 +66,52 @@ builder.Services.AddCors(options =>
 });
 
 builder.Services.AddEndpointsApiExplorer();
-builder.Services.AddSwaggerGen();
+builder.Services.AddSwaggerGen(options =>
+{
+    options.AddSecurityDefinition("Bearer", new OpenApiSecurityScheme
+    {
+        Type         = SecuritySchemeType.Http,
+        Scheme       = "bearer",
+        BearerFormat = "JWT",
+        Description  = "Paste your JWT access token here"
+    });
+    options.AddSecurityRequirement(new OpenApiSecurityRequirement
+    {
+        {
+            new OpenApiSecurityScheme
+            {
+                Reference = new OpenApiReference { Type = ReferenceType.SecurityScheme, Id = "Bearer" }
+            },
+            Array.Empty<string>()
+        }
+    });
+});
 builder.Services.AddHealthChecks();
+
+builder.Services.Configure<JwtSettings>(builder.Configuration.GetSection("Jwt"));
+builder.Services.AddSingleton<JwtSvc>();
+
+var jwtSettings = builder.Configuration.GetSection("Jwt").Get<JwtSettings>()!;
+
+builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
+    .AddJwtBearer(options =>
+    {
+        options.MapInboundClaims = false;
+        options.TokenValidationParameters = new TokenValidationParameters
+        {
+            ValidateIssuer           = true,
+            ValidateAudience         = true,
+            ValidateLifetime         = true,
+            ValidateIssuerSigningKey = true,
+            ValidIssuer              = jwtSettings.Issuer,
+            ValidAudience            = jwtSettings.Audience,
+            IssuerSigningKey         = new SymmetricSecurityKey(
+                                           Encoding.UTF8.GetBytes(jwtSettings.Key)),
+            RoleClaimType            = "role",
+            NameClaimType            = "sub",
+            ClockSkew                = TimeSpan.Zero
+        };
+    });
 
 builder.Services.AddScoped<UsuarioRepository>();
 builder.Services.AddScoped<PrestamoRepository>();
@@ -76,6 +127,7 @@ builder.Services.AddScoped<GaveteroRepository>();
 builder.Services.AddScoped<ContratoRepository>();
 builder.Services.AddScoped<ComponenteRepository>();
 builder.Services.AddScoped<CarritoRepository>();
+builder.Services.AddScoped<WarmupService>();
 
 builder.Services.AddScoped<UsuarioService>();
 builder.Services.AddScoped<CarritoService>();
@@ -163,4 +215,8 @@ app.UseAuthentication();
 app.UseAuthorization();
 app.MapControllers();
 app.MapHealthChecks("/api/health");
+
+using var warmupScope = app.Services.CreateScope();
+await warmupScope.ServiceProvider.GetRequiredService<WarmupService>().Run();
+
 app.Run();

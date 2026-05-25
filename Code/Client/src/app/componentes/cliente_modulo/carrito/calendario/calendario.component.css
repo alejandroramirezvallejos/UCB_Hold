@@ -132,6 +132,8 @@
   max-width: 100%;
   overflow: hidden;
 }
+.dia-celda-vacio {
+}
 .dia-celda-pasado{
   aspect-ratio: 1;
   display: flex;

@@ -391,7 +391,9 @@ create table usuarios
         constraint fk_usuarios_carrera
             references carreras,
     imagen_frente_carnet bytea,
-    imagen_atras_carnet  bytea
+    imagen_atras_carnet  bytea,
+    refresh_token        text,
+    refresh_token_expiry timestamp with time zone
 );
 
 alter table usuarios
@@ -428,6 +430,9 @@ alter sequence "Prestamo_Id_Prestamo_seq" owned by prestamos.id_prestamo;
 create index idx_prestamos_fechas
     on prestamos (fecha_prestamo_esperada, fecha_devolucion_esperada, carnet, estado_eliminado);
 
+create index ix_prestamos_carnet_estado
+    on prestamos (carnet, estado_prestamo, estado_eliminado);
+
 create table detalles_prestamos
 (
     id_detalle_prestamo integer generated always as identity
@@ -447,11 +452,17 @@ alter table detalles_prestamos
 create index idx_detalles_prestamos
     on detalles_prestamos (id_prestamo, estado_eliminado);
 
+create index ix_detalles_prestamos_id_equipo
+    on detalles_prestamos (id_equipo);
+
 create index idx_muebles_nombre
     on usuarios (nombre, estado_eliminado);
 
 create index idx_usuarios_email
     on usuarios (email, estado_eliminado);
+
+create index ix_usuarios_refresh_token
+    on usuarios (refresh_token);
 
 create view vw_equipos_necesitan_mantenimiento
             (codigo_imt, grupo_equipo, estado_equipo, ubicacion, ultima_fecha_mantenimiento) as
@@ -3681,4 +3692,495 @@ END;
 $$;
 
 alter procedure recalcular_costo_promedio_todos_grupos() owner to postgres;
+
+create function digest(text, text) returns bytea
+    immutable
+    strict
+    parallel safe
+    language c
+as
+$$
+begin
+-- missing source code
+end;
+$$;
+
+alter function digest(text, text) owner to postgres;
+
+create function digest(bytea, text) returns bytea
+    immutable
+    strict
+    parallel safe
+    language c
+as
+$$
+begin
+-- missing source code
+end;
+$$;
+
+alter function digest(bytea, text) owner to postgres;
+
+create function hmac(text, text, text) returns bytea
+    immutable
+    strict
+    parallel safe
+    language c
+as
+$$
+begin
+-- missing source code
+end;
+$$;
+
+alter function hmac(text, text, text) owner to postgres;
+
+create function hmac(bytea, bytea, text) returns bytea
+    immutable
+    strict
+    parallel safe
+    language c
+as
+$$
+begin
+-- missing source code
+end;
+$$;
+
+alter function hmac(bytea, bytea, text) owner to postgres;
+
+create function crypt(text, text) returns text
+    immutable
+    strict
+    parallel safe
+    language c
+as
+$$
+begin
+-- missing source code
+end;
+$$;
+
+alter function crypt(text, text) owner to postgres;
+
+create function gen_salt(text) returns text
+    strict
+    parallel safe
+    language c
+as
+$$
+begin
+-- missing source code
+end;
+$$;
+
+alter function gen_salt(text) owner to postgres;
+
+create function gen_salt(text, integer) returns text
+    strict
+    parallel safe
+    language c
+as
+$$
+begin
+-- missing source code
+end;
+$$;
+
+alter function gen_salt(text, integer) owner to postgres;
+
+create function encrypt(bytea, bytea, text) returns bytea
+    immutable
+    strict
+    parallel safe
+    language c
+as
+$$
+begin
+-- missing source code
+end;
+$$;
+
+alter function encrypt(bytea, bytea, text) owner to postgres;
+
+create function decrypt(bytea, bytea, text) returns bytea
+    immutable
+    strict
+    parallel safe
+    language c
+as
+$$
+begin
+-- missing source code
+end;
+$$;
+
+alter function decrypt(bytea, bytea, text) owner to postgres;
+
+create function encrypt_iv(bytea, bytea, bytea, text) returns bytea
+    immutable
+    strict
+    parallel safe
+    language c
+as
+$$
+begin
+-- missing source code
+end;
+$$;
+
+alter function encrypt_iv(bytea, bytea, bytea, text) owner to postgres;
+
+create function decrypt_iv(bytea, bytea, bytea, text) returns bytea
+    immutable
+    strict
+    parallel safe
+    language c
+as
+$$
+begin
+-- missing source code
+end;
+$$;
+
+alter function decrypt_iv(bytea, bytea, bytea, text) owner to postgres;
+
+create function gen_random_bytes(integer) returns bytea
+    strict
+    parallel safe
+    language c
+as
+$$
+begin
+-- missing source code
+end;
+$$;
+
+alter function gen_random_bytes(integer) owner to postgres;
+
+create function gen_random_uuid() returns uuid
+    parallel safe
+    language c
+as
+$$
+begin
+-- missing source code
+end;
+$$;
+
+alter function gen_random_uuid() owner to postgres;
+
+create function pgp_sym_encrypt(text, text) returns bytea
+    strict
+    parallel safe
+    language c
+as
+$$
+begin
+-- missing source code
+end;
+$$;
+
+alter function pgp_sym_encrypt(text, text) owner to postgres;
+
+create function pgp_sym_encrypt_bytea(bytea, text) returns bytea
+    strict
+    parallel safe
+    language c
+as
+$$
+begin
+-- missing source code
+end;
+$$;
+
+alter function pgp_sym_encrypt_bytea(bytea, text) owner to postgres;
+
+create function pgp_sym_encrypt(text, text, text) returns bytea
+    strict
+    parallel safe
+    language c
+as
+$$
+begin
+-- missing source code
+end;
+$$;
+
+alter function pgp_sym_encrypt(text, text, text) owner to postgres;
+
+create function pgp_sym_encrypt_bytea(bytea, text, text) returns bytea
+    strict
+    parallel safe
+    language c
+as
+$$
+begin
+-- missing source code
+end;
+$$;
+
+alter function pgp_sym_encrypt_bytea(bytea, text, text) owner to postgres;
+
+create function pgp_sym_decrypt(bytea, text) returns text
+    immutable
+    strict
+    parallel safe
+    language c
+as
+$$
+begin
+-- missing source code
+end;
+$$;
+
+alter function pgp_sym_decrypt(bytea, text) owner to postgres;
+
+create function pgp_sym_decrypt_bytea(bytea, text) returns bytea
+    immutable
+    strict
+    parallel safe
+    language c
+as
+$$
+begin
+-- missing source code
+end;
+$$;
+
+alter function pgp_sym_decrypt_bytea(bytea, text) owner to postgres;
+
+create function pgp_sym_decrypt(bytea, text, text) returns text
+    immutable
+    strict
+    parallel safe
+    language c
+as
+$$
+begin
+-- missing source code
+end;
+$$;
+
+alter function pgp_sym_decrypt(bytea, text, text) owner to postgres;
+
+create function pgp_sym_decrypt_bytea(bytea, text, text) returns bytea
+    immutable
+    strict
+    parallel safe
+    language c
+as
+$$
+begin
+-- missing source code
+end;
+$$;
+
+alter function pgp_sym_decrypt_bytea(bytea, text, text) owner to postgres;
+
+create function pgp_pub_encrypt(text, bytea) returns bytea
+    strict
+    parallel safe
+    language c
+as
+$$
+begin
+-- missing source code
+end;
+$$;
+
+alter function pgp_pub_encrypt(text, bytea) owner to postgres;
+
+create function pgp_pub_encrypt_bytea(bytea, bytea) returns bytea
+    strict
+    parallel safe
+    language c
+as
+$$
+begin
+-- missing source code
+end;
+$$;
+
+alter function pgp_pub_encrypt_bytea(bytea, bytea) owner to postgres;
+
+create function pgp_pub_encrypt(text, bytea, text) returns bytea
+    strict
+    parallel safe
+    language c
+as
+$$
+begin
+-- missing source code
+end;
+$$;
+
+alter function pgp_pub_encrypt(text, bytea, text) owner to postgres;
+
+create function pgp_pub_encrypt_bytea(bytea, bytea, text) returns bytea
+    strict
+    parallel safe
+    language c
+as
+$$
+begin
+-- missing source code
+end;
+$$;
+
+alter function pgp_pub_encrypt_bytea(bytea, bytea, text) owner to postgres;
+
+create function pgp_pub_decrypt(bytea, bytea) returns text
+    immutable
+    strict
+    parallel safe
+    language c
+as
+$$
+begin
+-- missing source code
+end;
+$$;
+
+alter function pgp_pub_decrypt(bytea, bytea) owner to postgres;
+
+create function pgp_pub_decrypt_bytea(bytea, bytea) returns bytea
+    immutable
+    strict
+    parallel safe
+    language c
+as
+$$
+begin
+-- missing source code
+end;
+$$;
+
+alter function pgp_pub_decrypt_bytea(bytea, bytea) owner to postgres;
+
+create function pgp_pub_decrypt(bytea, bytea, text) returns text
+    immutable
+    strict
+    parallel safe
+    language c
+as
+$$
+begin
+-- missing source code
+end;
+$$;
+
+alter function pgp_pub_decrypt(bytea, bytea, text) owner to postgres;
+
+create function pgp_pub_decrypt_bytea(bytea, bytea, text) returns bytea
+    immutable
+    strict
+    parallel safe
+    language c
+as
+$$
+begin
+-- missing source code
+end;
+$$;
+
+alter function pgp_pub_decrypt_bytea(bytea, bytea, text) owner to postgres;
+
+create function pgp_pub_decrypt(bytea, bytea, text, text) returns text
+    immutable
+    strict
+    parallel safe
+    language c
+as
+$$
+begin
+-- missing source code
+end;
+$$;
+
+alter function pgp_pub_decrypt(bytea, bytea, text, text) owner to postgres;
+
+create function pgp_pub_decrypt_bytea(bytea, bytea, text, text) returns bytea
+    immutable
+    strict
+    parallel safe
+    language c
+as
+$$
+begin
+-- missing source code
+end;
+$$;
+
+alter function pgp_pub_decrypt_bytea(bytea, bytea, text, text) owner to postgres;
+
+create function pgp_key_id(bytea) returns text
+    immutable
+    strict
+    parallel safe
+    language c
+as
+$$
+begin
+-- missing source code
+end;
+$$;
+
+alter function pgp_key_id(bytea) owner to postgres;
+
+create function armor(bytea) returns text
+    immutable
+    strict
+    parallel safe
+    language c
+as
+$$
+begin
+-- missing source code
+end;
+$$;
+
+alter function armor(bytea) owner to postgres;
+
+create function armor(bytea, text[], text[]) returns text
+    immutable
+    strict
+    parallel safe
+    language c
+as
+$$
+begin
+-- missing source code
+end;
+$$;
+
+alter function armor(bytea, text[], text[]) owner to postgres;
+
+create function dearmor(text) returns bytea
+    immutable
+    strict
+    parallel safe
+    language c
+as
+$$
+begin
+-- missing source code
+end;
+$$;
+
+alter function dearmor(text) owner to postgres;
+
+create function pgp_armor_headers(text, out key text, out value text) returns setof record
+    immutable
+    strict
+    parallel safe
+    language c
+as
+$$
+begin
+-- missing source code
+end;
+$$;
+
+alter function pgp_armor_headers(text, out text, out text) owner to postgres;
 

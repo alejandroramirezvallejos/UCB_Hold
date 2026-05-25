@@ -2,17 +2,30 @@ using Ardalis.Result;
 using BCryptLib = BCrypt.Net.BCrypt;
 using FluentValidation;
 using IMT_Reservas.Server.Application.Abstraction;
+using IMT_Reservas.Server.Application.Features.Jwt;
 using IMT_Reservas.Server.Infrastructure.Repositories.Implementations;
+using Microsoft.Extensions.Options;
 using UsuarioEntity = IMT_Reservas.Server.Core.Entities.Usuario;
 namespace IMT_Reservas.Server.Application.Features.Usuario;
 
 public class UsuarioService : Service<UsuarioEntity, UsuarioRepository, UsuarioDto>
 {
-    private readonly UsuarioMapper _mapper;
+    private readonly UsuarioMapper   _mapper;
+    private readonly JwtService      _jwtService;
+    private readonly JwtSettings     _jwtSettings;
 
-    public UsuarioService(UsuarioRepository repository, UsuarioMapper mapper, IValidator<UsuarioDto> validator)
-        : base(repository, validator, mapper) =>
-        _mapper = mapper;
+    public UsuarioService(
+        UsuarioRepository         repository,
+        UsuarioMapper             mapper,
+        IValidator<UsuarioDto>    validator,
+        JwtService                jwtService,
+        IOptions<JwtSettings>     jwtSettings)
+        : base(repository, validator, mapper)
+    {
+        _mapper      = mapper;
+        _jwtService  = jwtService;
+        _jwtSettings = jwtSettings.Value;
+    }
 
     public override async Task<Result<UsuarioDto>> Create(UsuarioDto dto)
     {
@@ -90,26 +103,68 @@ public class UsuarioService : Service<UsuarioEntity, UsuarioRepository, UsuarioD
         return Result<UsuarioDto>.Success(dto);
     }
 
-    public async Task<Result<UsuarioDto>> Login(string email, string password)
+    public async Task<Result<LoginDto>> Login(string email, string password)
     {
         if (string.IsNullOrWhiteSpace(email) || string.IsNullOrWhiteSpace(password))
-            return Result<UsuarioDto>.Unauthorized("Credenciales requeridas");
+            return Result<LoginDto>.Unauthorized("Credenciales requeridas");
 
         var (usuario, carreraNombre) = await Repository.GetByEmailWithCarrera(email);
 
         if (usuario == null)
-            return Result<UsuarioDto>.Unauthorized("Credenciales inválidas");
+            return Result<LoginDto>.Unauthorized("Credenciales inválidas");
 
         var passwordValid = !string.IsNullOrWhiteSpace(usuario.Contrasena)
-                         && await Task.Run(() => BCryptLib.Verify(password, usuario.Contrasena));
+                         && BCryptLib.Verify(password, usuario.Contrasena);
 
         if (!passwordValid)
-            return Result<UsuarioDto>.Unauthorized("Credenciales inválidas");
+            return Result<LoginDto>.Unauthorized("Credenciales inválidas");
 
         var dto = _mapper.ToDto(usuario);
         dto.CarreraNombre = carreraNombre;
 
-        return Result<UsuarioDto>.Success(dto);
+        var accessToken  = _jwtService.GenerateAccessToken(dto);
+        var refreshToken = _jwtService.GenerateRefreshToken();
+
+        await Repository.UpdateRefreshToken(
+            usuario.Carnet!,
+            refreshToken,
+            DateTime.UtcNow.AddDays(_jwtSettings.RefreshTokenExpiryDays));
+
+        return Result<LoginDto>.Success(new LoginDto
+        {
+            AccessToken  = accessToken,
+            RefreshToken = refreshToken,
+            Usuario      = dto
+        });
+    }
+
+    public async Task<Result<LoginDto>> Refresh(string refreshToken)
+    {
+        if (string.IsNullOrWhiteSpace(refreshToken))
+            return Result<LoginDto>.Unauthorized("Refresh token requerido");
+
+        var (usuario, carreraNombre) = await Repository.GetByRefreshTokenWithCarrera(refreshToken);
+
+        if (usuario == null || usuario.RefreshTokenExpiry < DateTime.UtcNow)
+            return Result<LoginDto>.Unauthorized("Refresh token inválido o expirado");
+
+        var dto = _mapper.ToDto(usuario);
+        dto.CarreraNombre = carreraNombre;
+
+        var newAccessToken  = _jwtService.GenerateAccessToken(dto);
+        var newRefreshToken = _jwtService.GenerateRefreshToken();
+
+        await Repository.UpdateRefreshToken(
+            usuario.Carnet!,
+            newRefreshToken,
+            DateTime.UtcNow.AddDays(_jwtSettings.RefreshTokenExpiryDays));
+
+        return Result<LoginDto>.Success(new LoginDto
+        {
+            AccessToken  = newAccessToken,
+            RefreshToken = newRefreshToken,
+            Usuario      = dto
+        });
     }
 
     public async Task<Result<object>> Delete(string carnet) => await Repository.Delete(carnet);

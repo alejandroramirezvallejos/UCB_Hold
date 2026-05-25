@@ -1,8 +1,10 @@
 using IMT_Reservas.Server.Application.Features.Mantenimiento;
 using Controller = IMT_Reservas.Server.Presentation.Controllers.Abstraction.Controller;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 namespace IMT_Reservas.Server.Presentation.Controllers.Implementations;
 
+[Authorize(Roles = "administrador")]
 [Route("api/[controller]")]
 public class MantenimientoController : Controller
 {

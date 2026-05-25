@@ -4,44 +4,50 @@ import { IniciarSesionComponent } from './componentes/usuario/iniciar-sesion/ini
 import { PantallaMainComponent } from './componentes/cliente_modulo/pantalla-main/pantalla-main.component';
 import { ObjetoComponent } from './componentes/cliente_modulo/clic_objeto/objeto.component';
 import { CarritoComponent } from './componentes/cliente_modulo/carrito/carrito.component';
+import { authGuard } from './guards/auth.guard';
+import { adminGuard } from './guards/admin.guard';
 
 const routes: Routes = [
   { path: '', redirectTo: '/Iniciar-Sesion', pathMatch: 'full' },
   { path: 'Iniciar-Sesion', component: IniciarSesionComponent },
-  { path: 'home', component: PantallaMainComponent },
-  { path: 'Objeto/:id', component: ObjetoComponent },
-  { path: 'Carrito', component: CarritoComponent },
-  { path: 'ConfirmarReserva', component: CarritoComponent },
-  // Lazy loading - solo carga cuando el usuario navega a estas rutas
-  { 
-    path: 'admin', 
+  { path: 'home',            component: PantallaMainComponent, canActivate: [authGuard] },
+  { path: 'Objeto/:id',      component: ObjetoComponent,       canActivate: [authGuard] },
+  { path: 'Carrito',         component: CarritoComponent,      canActivate: [authGuard] },
+  { path: 'ConfirmarReserva', component: CarritoComponent,     canActivate: [authGuard] },
+  {
+    path: 'admin',
+    canActivate: [adminGuard],
     loadComponent: () => import('./componentes/admin_modulo/administrador/administrador.component')
-      .then(m => m.AdministradorComponent) 
+      .then(m => m.AdministradorComponent)
   },
-  { 
-    path: 'Formulario', 
+  {
+    path: 'Formulario',
+    canActivate: [authGuard],
     loadComponent: () => import('./componentes/cliente_modulo/formulario/formulario.component')
-      .then(m => m.FormularioComponent) 
+      .then(m => m.FormularioComponent)
   },
-  { 
-    path: 'Historial', 
+  {
+    path: 'Historial',
+    canActivate: [authGuard],
     loadComponent: () => import('./componentes/usuario/historial/historial.component')
-      .then(m => m.HistorialComponent) 
+      .then(m => m.HistorialComponent)
   },
-  { 
-    path: 'Perfil', 
+  {
+    path: 'Perfil',
+    canActivate: [authGuard],
     loadComponent: () => import('./componentes/usuario/perfil/perfil.component')
-      .then(m => m.PerfilComponent) 
+      .then(m => m.PerfilComponent)
   },
-  { 
-    path: 'Registrar-Usuario', 
+  {
+    path: 'Registrar-Usuario',
     loadComponent: () => import('./componentes/usuario/registrar-usuario/registrar-usuario.component')
-      .then(m => m.RegistrarUsuarioComponent) 
+      .then(m => m.RegistrarUsuarioComponent)
   },
-  { 
-    path: 'pruebas', 
+  {
+    path: 'pruebas',
+    canActivate: [adminGuard],
     loadComponent: () => import('./componentes/admin_modulo/buscador/buscador.component')
-      .then(m => m.BuscadorComponent) 
+      .then(m => m.BuscadorComponent)
   },
 ];
 @NgModule({

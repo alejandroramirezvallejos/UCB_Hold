@@ -91,17 +91,16 @@ public class UsuarioRepository : Repository<UsuarioEntity, UsuarioDto>
             .AsNoTracking()
             .IgnoreQueryFilters()
             .Where(u => u.Email == email && !u.EstadoEliminado)
-            .Select(u => new
-            {
-                u.Carnet, u.Nombre, u.ApellidoPaterno, u.ApellidoMaterno,
-                u.Email, u.Contrasena, u.Rol, u.Telefono,
-                u.TelefonoReferencia, u.NombreReferencia, u.EmailReferencia,
-                u.IdCarrera, u.EstadoEliminado,
-                CarreraNombre = DbContext.Carreras
-                    .Where(c => c.Id == u.IdCarrera && !c.EstadoEliminado)
-                    .Select(c => c.Nombre)
-                    .FirstOrDefault()
-            })
+            .Join(DbContext.Carreras.Where(c => !c.EstadoEliminado),
+                  u => u.IdCarrera, c => c.Id,
+                  (u, c) => new
+                  {
+                      u.Carnet, u.Nombre, u.ApellidoPaterno, u.ApellidoMaterno,
+                      u.Email, u.Contrasena, u.Rol, u.Telefono,
+                      u.TelefonoReferencia, u.NombreReferencia, u.EmailReferencia,
+                      u.IdCarrera, u.EstadoEliminado, u.RefreshToken, u.RefreshTokenExpiry,
+                      CarreraNombre = c.Nombre
+                  })
             .FirstOrDefaultAsync();
 
         if (result == null) return (null, null);
@@ -120,7 +119,9 @@ public class UsuarioRepository : Repository<UsuarioEntity, UsuarioDto>
             NombreReferencia   = result.NombreReferencia,
             EmailReferencia    = result.EmailReferencia,
             IdCarrera          = result.IdCarrera,
-            EstadoEliminado    = result.EstadoEliminado
+            EstadoEliminado    = result.EstadoEliminado,
+            RefreshToken       = result.RefreshToken,
+            RefreshTokenExpiry = result.RefreshTokenExpiry
         };
 
         return (entity, result.CarreraNombre);
@@ -130,5 +131,62 @@ public class UsuarioRepository : Repository<UsuarioEntity, UsuarioDto>
     {
         DbContext.Usuarios.Update(entity);
         await DbContext.SaveChangesAsync();
+    }
+
+    public async Task<UsuarioEntity?> GetByRefreshToken(string token)
+        => await DbContext.Usuarios
+            .IgnoreQueryFilters()
+            .FirstOrDefaultAsync(u => u.RefreshToken == token);
+
+    public async Task<(UsuarioEntity? Usuario, string? CarreraNombre)> GetByRefreshTokenWithCarrera(string token)
+    {
+        var result = await DbContext.Usuarios
+            .AsNoTracking()
+            .IgnoreQueryFilters()
+            .Where(u => u.RefreshToken == token)
+            .Join(DbContext.Carreras.Where(c => !c.EstadoEliminado),
+                  u => u.IdCarrera, c => c.Id,
+                  (u, c) => new
+                  {
+                      u.Carnet, u.Nombre, u.ApellidoPaterno, u.ApellidoMaterno,
+                      u.Email, u.Contrasena, u.Rol, u.Telefono,
+                      u.TelefonoReferencia, u.NombreReferencia, u.EmailReferencia,
+                      u.IdCarrera, u.EstadoEliminado, u.RefreshToken, u.RefreshTokenExpiry,
+                      CarreraNombre = c.Nombre
+                  })
+            .FirstOrDefaultAsync();
+
+        if (result == null) return (null, null);
+
+        var entity = new UsuarioEntity
+        {
+            Carnet             = result.Carnet,
+            Nombre             = result.Nombre,
+            ApellidoPaterno    = result.ApellidoPaterno,
+            ApellidoMaterno    = result.ApellidoMaterno,
+            Email              = result.Email,
+            Contrasena         = result.Contrasena,
+            Rol                = result.Rol,
+            Telefono           = result.Telefono,
+            TelefonoReferencia = result.TelefonoReferencia,
+            NombreReferencia   = result.NombreReferencia,
+            EmailReferencia    = result.EmailReferencia,
+            IdCarrera          = result.IdCarrera,
+            EstadoEliminado    = result.EstadoEliminado,
+            RefreshToken       = result.RefreshToken,
+            RefreshTokenExpiry = result.RefreshTokenExpiry
+        };
+
+        return (entity, result.CarreraNombre);
+    }
+
+    public async Task UpdateRefreshToken(string carnet, string? token, DateTime? expiry)
+    {
+        await DbContext.Usuarios
+            .IgnoreQueryFilters()
+            .Where(u => u.Carnet == carnet)
+            .ExecuteUpdateAsync(s => s
+                .SetProperty(u => u.RefreshToken, token)
+                .SetProperty(u => u.RefreshTokenExpiry, expiry));
     }
 }

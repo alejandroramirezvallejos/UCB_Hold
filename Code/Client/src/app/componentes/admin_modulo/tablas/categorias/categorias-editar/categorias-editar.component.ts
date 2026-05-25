@@ -38,7 +38,7 @@ export class CategoriasEditarComponent  extends BaseTablaComponent{
       },
       error: (error) => {
         this.mensajeerror = "No se pudo actualizar la Categoria intente mas tarde";
-        console.error(error.error.error + ': ' + error.error.mensaje);
+        console.error(error?.error?.error + ': ' + error?.error?.message);
         this.error.set(true);
       }
     });

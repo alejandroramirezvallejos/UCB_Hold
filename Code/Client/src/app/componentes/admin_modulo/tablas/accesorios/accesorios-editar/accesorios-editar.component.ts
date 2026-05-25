@@ -32,7 +32,7 @@ export class AccesoriosEditarComponent extends BaseTablaComponent {
       },
       error: (error) => {
         this.mensajeerror= "Error al cargar los equipos.";
-        console.error(error.error.error + ': ' + error.error.mensaje);
+        console.error(error?.error?.error + ': ' + error?.error?.message);
         this.error.set(true);
       }
     })
@@ -50,7 +50,7 @@ export class AccesoriosEditarComponent extends BaseTablaComponent {
       },
       error: (error) => {
         this.mensajeerror= "Error al editar el accesorio.";
-        console.error(error.error.error + ': ' + error.error.mensaje);
+        console.error(error?.error?.error + ': ' + error?.error?.message);
         this.error.set(true);
       }
     });

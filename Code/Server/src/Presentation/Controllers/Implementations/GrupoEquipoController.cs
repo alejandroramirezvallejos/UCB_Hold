@@ -1,8 +1,10 @@
 using IMT_Reservas.Server.Application.Features.GrupoEquipo;
 using Controller = IMT_Reservas.Server.Presentation.Controllers.Abstraction.Controller;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 namespace IMT_Reservas.Server.Presentation.Controllers.Implementations;
 
+[Authorize]
 [Route("api/[controller]")]
 public class GrupoEquipoController : Controller
 {
@@ -22,18 +24,21 @@ public class GrupoEquipoController : Controller
     public async Task<IActionResult> Get(int id)
         => ToResponse(await _service.Get(id));
 
+    [Authorize(Roles = "administrador")]
     [HttpPost]
     public async Task<IActionResult> Create([FromBody] GrupoEquipoDto dto)
     {
         var result = await _service.Create(dto);
-       
+
         return ToCreatedResponse(result, nameof(Get), new { id = result.Value?.Id });
     }
 
+    [Authorize(Roles = "administrador")]
     [HttpPut("{id:int}")]
     public async Task<IActionResult> Update(int id, [FromBody] GrupoEquipoDto dto)
         => ToResponse(await _service.Update(id, dto));
 
+    [Authorize(Roles = "administrador")]
     [HttpDelete("{id:int}")]
     public async Task<IActionResult> Delete(int id)
         => ToDeleteResponse(await _service.Delete(id));
