@@ -1,0 +1,180 @@
+using FluentAssertions;
+using IMT_Reservas.Server.Application.Features.Carrito;
+using IMT_Reservas.Server.Core.Entities;
+using IMT_Reservas.Server.Infrastructure.Config;
+using IMT_Reservas.Server.Infrastructure.Repositories.Implementations;
+using Microsoft.Extensions.Logging.Abstractions;
+using IMT_Reservas.Tests.Helpers;
+namespace IMT_Reservas.Tests.Integration;
+
+[TestFixture]
+internal class CarritoServiceTests : ServiceTest<CarritoService>
+{
+    private const int GrupoId  = 1;
+    private const int EquipoId = 1;
+    private const int Total    = 2;
+
+    protected override CarritoService CreateService(ApplicationDbContext db)
+    {
+        var repo = new CarritoRepository(db);
+        
+        return new CarritoService(repo, NullLogger<CarritoService>.Instance);
+    }
+
+    [SetUp]
+    public async Task SeedBaseData()
+    {
+        Db.GruposEquipos.Add(new GrupoEquipo
+        {
+            Id          = GrupoId,
+            Nombre      = "Grupo Test",
+            Modelo      = "M1",
+            Marca       = "Marca",
+            IdCategoria = 1,
+            Cantidad    = Total
+        });
+
+        Db.Equipos.AddRange(
+            new Equipo { Id = EquipoId,     IdGrupoEquipo = GrupoId, CodigoImt = 1, EstadoEquipo = EstadoEquipo.Operativo, FechaIngresoEquipo = DateOnly.FromDateTime(DateTime.Today), EstadoEliminado = false },
+            new Equipo { Id = EquipoId + 1, IdGrupoEquipo = GrupoId, CodigoImt = 2, EstadoEquipo = EstadoEquipo.Operativo, FechaIngresoEquipo = DateOnly.FromDateTime(DateTime.Today), EstadoEliminado = false }
+        );
+
+        await Db.SaveChangesAsync();
+    }
+
+    [Test]
+    public async Task GetDisponibilidad_NoLoans_ReturnsFullCapacityEveryDay()
+    {
+        var fechaInicio = DateTime.Today;
+        var fechaFin    = DateTime.Today.AddDays(2);
+        var request     = BuildRequest([GrupoId], fechaInicio, fechaFin);
+
+        var result = await Sut.GetDisponibilidad(request);
+
+        result.IsSuccess.Should().BeTrue();
+        result.Value.Should().AllSatisfy(d => d.CantidadDisponible.Should().Be(Total));
+    }
+
+    [Test]
+    public async Task GetDisponibilidad_OneActiveLoan_ReducesCapacity()
+    {
+        var fechaInicio = DateTime.Today;
+        var fechaFin    = DateTime.Today.AddDays(2);
+        await SeedLoan(EstadoPrestamo.Activo, EquipoId, fechaInicio, fechaFin);
+        var request = BuildRequest([GrupoId], fechaInicio, fechaFin);
+
+        var result = await Sut.GetDisponibilidad(request);
+
+        result.IsSuccess.Should().BeTrue();
+        result.Value.Should().AllSatisfy(d => d.CantidadDisponible.Should().Be(Total - 1));
+    }
+
+    [Test]
+    public async Task GetDisponibilidad_AprobadoLoan_ReducesCapacity()
+    {
+        var fechaInicio = DateTime.Today;
+        var fechaFin    = DateTime.Today.AddDays(2);
+        await SeedLoan(EstadoPrestamo.Aprobado, EquipoId, fechaInicio, fechaFin);
+        var request = BuildRequest([GrupoId], fechaInicio, fechaFin);
+
+        var result = await Sut.GetDisponibilidad(request);
+
+        result.IsSuccess.Should().BeTrue();
+        result.Value.Should().AllSatisfy(d => d.CantidadDisponible.Should().Be(Total - 1));
+    }
+
+    [Test]
+    public async Task GetDisponibilidad_PendienteLoan_DoesNotReduceCapacity()
+    {
+        var fechaInicio = DateTime.Today;
+        var fechaFin    = DateTime.Today.AddDays(2);
+        await SeedLoan(EstadoPrestamo.Pendiente, EquipoId, fechaInicio, fechaFin);
+        var request = BuildRequest([GrupoId], fechaInicio, fechaFin);
+
+        var result = await Sut.GetDisponibilidad(request);
+
+        result.IsSuccess.Should().BeTrue();
+        result.Value.Should().AllSatisfy(d => d.CantidadDisponible.Should().Be(Total));
+    }
+
+    [Test]
+    public async Task GetDisponibilidad_LoanOutsideDateRange_DoesNotReduceCapacity()
+    {
+        await SeedLoan(EstadoPrestamo.Aprobado, EquipoId, DateTime.Today.AddDays(10), DateTime.Today.AddDays(15));
+        var request = BuildRequest([GrupoId], DateTime.Today, DateTime.Today.AddDays(3));
+
+        var result = await Sut.GetDisponibilidad(request);
+
+        result.IsSuccess.Should().BeTrue();
+        result.Value.Should().AllSatisfy(d => d.CantidadDisponible.Should().Be(Total));
+    }
+
+    [Test]
+    public async Task GetDisponibilidad_EmptyIds_ReturnsEmptyList()
+    {
+        var request = BuildRequest([], DateTime.Today, DateTime.Today.AddDays(2));
+
+        var result = await Sut.GetDisponibilidad(request);
+
+        result.IsSuccess.Should().BeTrue();
+        result.Value.Should().BeEmpty();
+    }
+
+    [Test]
+    public async Task GetDisponibilidad_NullDates_ReturnsEmptyList()
+    {
+        var request = new CarritoDto { ArrayIds = [GrupoId], FechaInicio = null, FechaFin = null };
+
+        var result = await Sut.GetDisponibilidad(request);
+
+        result.IsSuccess.Should().BeTrue();
+        result.Value.Should().BeEmpty();
+    }
+
+    [Test]
+    public async Task GetDisponibilidad_TwoGroups_CalculatesIndependently()
+    {
+        const int GrupoId2  = 2;
+        const int EquipoId3 = 3;
+        const int Total2    = 1;
+
+        Db.GruposEquipos.Add(new GrupoEquipo { Id = GrupoId2, Nombre = "Grupo B", Modelo = "M2", Marca = "Marca", IdCategoria = 1, Cantidad = Total2 });
+        Db.Equipos.Add(new Equipo { Id = EquipoId3, IdGrupoEquipo = GrupoId2, CodigoImt = 3, EstadoEquipo = EstadoEquipo.Operativo, FechaIngresoEquipo = DateOnly.FromDateTime(DateTime.Today), EstadoEliminado = false });
+        await Db.SaveChangesAsync();
+
+        var fechaInicio = DateTime.Today;
+        var fechaFin    = DateTime.Today;
+        await SeedLoan(EstadoPrestamo.Activo, EquipoId, fechaInicio, fechaFin);
+        var request = BuildRequest([GrupoId, GrupoId2], fechaInicio, fechaFin);
+
+        var result = await Sut.GetDisponibilidad(request);
+
+        result.IsSuccess.Should().BeTrue();
+        result.Value.Single(d => d.IdGrupoEquipo == GrupoId).CantidadDisponible.Should().Be(Total - 1);
+        result.Value.Single(d => d.IdGrupoEquipo == GrupoId2).CantidadDisponible.Should().Be(Total2);
+    }
+
+    private async Task SeedLoan(EstadoPrestamo estado, int equipoId, DateTime inicio, DateTime fin)
+    {
+        var prestamo = new Prestamo
+        {
+            EstadoPrestamo          = estado,
+            FechaSolicitud          = DateTime.UtcNow,
+            FechaPrestamoEsperada   = inicio,
+            FechaDevolucionEsperada = fin,
+            EstadoEliminado         = false
+        };
+        Db.Prestamos.Add(prestamo);
+        await Db.SaveChangesAsync();
+
+        Db.DetallesPrestamos.Add(new DetallePrestamo { IdPrestamo = prestamo.Id, IdEquipo = equipoId, EstadoEliminado = false });
+        await Db.SaveChangesAsync();
+    }
+
+    private static CarritoDto BuildRequest(List<int> grupoIds, DateTime inicio, DateTime fin) => new()
+    {
+        ArrayIds    = grupoIds,
+        FechaInicio = inicio,
+        FechaFin    = fin
+    };
+}
