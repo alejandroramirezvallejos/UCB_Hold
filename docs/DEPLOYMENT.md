@@ -1,6 +1,7 @@
 # Deployment
 
-Production topology: 2 VMs on Oracle Cloud Always Free.
+Production: **[https://ucbhold.dev](https://ucbhold.dev)**
+Topology: 2 VMs on Oracle Cloud Always Free.
 
 ---
 
@@ -14,7 +15,7 @@ Production topology: 2 VMs on Oracle Cloud Always Free.
                │   VM #1 (App Server)    │
                │   Ubuntu 24.04.4        │
                │                         │
-               │  nginx :80/:443         │  ← reverse proxy
+               │  nginx :80/:443         │  ← reverse proxy + TLS
                │     ↓                   │
                │  .NET 8 :5000 (internal)│  ← systemd service
                └───────────┬─────────────┘
@@ -67,15 +68,15 @@ GRANT ALL PRIVILEGES ON DATABASE "IMT_Reservas" TO imt_user;
 ### Load schema
 
 ```bash
-psql -U imt_user -d IMT_Reservas -h localhost -f DataBase/schema.ddl
+psql -U imt_user -d IMT_Reservas -h localhost -f Database/server.sql
 psql -U imt_user -d IMT_Reservas -h localhost -c "\dt"   # 15 tables
 ```
 
 ### Oracle Cloud firewall — VM #2
 
-| Protocol | Port | Source | Description |
-|---|---|---|---|
-| TCP | 5432 | `<IP_VM1>/32` | PostgreSQL from VM #1 only |
+| Protocol | Port | Source         | Description                  |
+| -------- | ---- | -------------- | ---------------------------- |
+| TCP      | 5432 | `<IP_VM1>/32`  | PostgreSQL from VM #1 only   |
 
 ---
 
@@ -117,19 +118,19 @@ scp -r ./publish/* ubuntu@<IP_VM1>:/var/www/imt-reservas/
 # Local machine
 cd Code/Client
 ng build --configuration production --base-href /
-scp -r dist/imt_reservas.client/* ubuntu@<IP_VM1>:/var/www/imt-frontend/
+scp -r dist/imt_reservas.client/browser/* ubuntu@<IP_VM1>:/var/www/imt-frontend/
 ```
 
 ### Environment file
 
-`/etc/imt-reservas.env` on VM #1:
+`/etc/imt-reservas.env` on VM #1 (permissions `600`, owned by `root`):
 
 ```bash
 ASPNETCORE_ENVIRONMENT=Production
 ASPNETCORE_URLS=http://localhost:5000
 ConnectionStrings__PostgreSQL=Host=<IP_VM2>;Port=5432;Database=IMT_Reservas;Username=imt_user;Password=<PASSWORD>;Pooling=true;MinPoolSize=2;MaxPoolSize=20
-AllowedOrigins__0=http://<IP_VM1>
-AllowedOrigins__1=https://<IP_VM1>
+AllowedOrigins__0=https://ucbhold.dev
+AllowedOrigins__1=https://www.<IP_VM1>
 ```
 
 ```bash
@@ -184,7 +185,7 @@ upstream api_backend {
 server {
     listen 80 default_server;
     listen [::]:80 default_server;
-    server_name _;
+    server_name ucbhold.dev www.ucbhold.dev;
 
     root /var/www/imt-frontend;
     index index.html;
@@ -192,11 +193,11 @@ server {
     access_log /var/log/nginx/imt-reservas-access.log;
     error_log  /var/log/nginx/imt-reservas-error.log;
 
-    # Angular SPA
+    # Angular SPA — client-side routing
     location / {
         try_files $uri $uri/ /index.html;
         expires 1h;
-        add_header Cache-Control "public, immutable";
+        add_header Cache-Control "public";
     }
 
     # Static assets — long cache
@@ -209,11 +210,11 @@ server {
     location /api/ {
         proxy_pass http://api_backend;
         proxy_http_version 1.1;
-        proxy_set_header Host $host;
-        proxy_set_header X-Real-IP $remote_addr;
-        proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+        proxy_set_header Host              $host;
+        proxy_set_header X-Real-IP         $remote_addr;
+        proxy_set_header X-Forwarded-For   $proxy_add_x_forwarded_for;
         proxy_set_header X-Forwarded-Proto $scheme;
-        proxy_set_header Connection "";
+        proxy_set_header Connection        "";
         proxy_connect_timeout 60s;
         proxy_send_timeout    60s;
         proxy_read_timeout    60s;
@@ -230,10 +231,10 @@ sudo systemctl reload nginx
 
 ### Oracle Cloud firewall — VM #1
 
-| Protocol | Port | Source | Description |
-|---|---|---|---|
-| TCP | 80 | `0.0.0.0/0` | HTTP public |
-| TCP | 443 | `0.0.0.0/0` | HTTPS public |
+| Protocol | Port | Source      | Description   |
+| -------- | ---- | ----------- | ------------- |
+| TCP      | 80   | `0.0.0.0/0` | HTTP public   |
+| TCP      | 443  | `0.0.0.0/0` | HTTPS public  |
 
 ---
 
@@ -264,8 +265,8 @@ cd Code/Client && ng build --configuration production
 ssh ubuntu@<IP_VM1> "sudo systemctl stop imt-reservas"
 
 # 3. Copy files
-scp -r Code/Server/publish/*         ubuntu@<IP_VM1>:/var/www/imt-reservas/
-scp -r Code/Client/dist/imt_reservas.client/* ubuntu@<IP_VM1>:/var/www/imt-frontend/
+scp -r Code/Server/publish/*                        ubuntu@<IP_VM1>:/var/www/imt-reservas/
+scp -r Code/Client/dist/imt_reservas.client/browser/* ubuntu@<IP_VM1>:/var/www/imt-frontend/
 
 # 4. Restart
 ssh ubuntu@<IP_VM1> "sudo systemctl start imt-reservas && sudo systemctl reload nginx"
@@ -288,7 +289,11 @@ psql -U imt_user -d IMT_Reservas -h <IP_VM2> -c "SELECT version();"
 
 **nginx 502 Bad Gateway**
 ```bash
-sudo netstat -tlnp | grep 5000   # verify .NET is listening
+sudo ss -tlnp | grep 5000   # verify .NET is listening
 sudo journalctl -u imt-reservas | tail -20
 sudo systemctl restart imt-reservas
 ```
+
+**Angular routes return 404**
+
+Ensure nginx `location /` block has `try_files $uri $uri/ /index.html;` — this serves the Angular shell for all deep links.

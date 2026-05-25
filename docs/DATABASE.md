@@ -1,6 +1,6 @@
 # Database
 
-PostgreSQL 14+ with Entity Framework Core 8. Schema DDL: [`DataBase/schema.ddl`](../DataBase/schema.ddl)
+PostgreSQL 14+ with Entity Framework Core 8. Schema: [`Database/server.sql`](../Database/server.sql)
 
 ---
 
@@ -12,25 +12,23 @@ PostgreSQL 14+ with Entity Framework Core 8. Schema DDL: [`DataBase/schema.ddl`]
 
 ## ✦ Tables
 
-| Table                     | Purpose                           | Soft Delete |
-| ------------------------- | --------------------------------- | ----------- |
-| `usuarios`                | Users and authentication          | Yes         |
-| `prestamos`               | Loan lifecycle                    | Yes         |
-| `detalles_prestamos`      | Line items per loan               | Yes         |
-| `categorias`              | Equipment categories              | Yes         |
-| `carreras`                | Academic programs                 | Yes         |
-| `empresas_mantenimiento`  | Third-party maintenance providers | Yes         |
-| `mantenimientos`          | Maintenance records               | Yes         |
-| `detalles_mantenimientos` | Line items per maintenance        | Yes         |
-| `grupos_equipos`          | Logical equipment groups          | Yes         |
-| `equipos`                 | Individual equipment units        | Yes         |
-| `gaveteros`               | Storage compartments              | Yes         |
-| `muebles`                 | Furniture containing compartments | Yes         |
-| `accesorios`              | Complementary accessories         | Yes         |
-| `componentes`             | Internal components / spares      | Yes         |
-| `contratos`               | Generated HTML contracts          | No          |
-
-`contratos` contains only `id INTEGER PRIMARY KEY` and `contrato TEXT`. Referenced via FK from `prestamos.id_contrato`.
+| Table                     | Purpose                              | Soft Delete | Notable columns                    |
+| ------------------------- | ------------------------------------ | ----------- | ---------------------------------- |
+| `usuarios`                | Users and authentication             | Yes         | `carnet` PK, `email` (unique), `telefono` (unique) |
+| `prestamos`               | Loan lifecycle                       | Yes         | `estado_prestamo` enum, FK to `usuarios` |
+| `detalles_prestamos`      | Line items per loan                  | Yes         | FK to `prestamos`, FK to `equipos` |
+| `categorias`              | Equipment categories                 | Yes         | —                                  |
+| `carreras`                | Academic programs                    | Yes         | —                                  |
+| `empresas_mantenimiento`  | Third-party maintenance providers    | Yes         | `nit` (unique when provided)       |
+| `mantenimientos`          | Maintenance records                  | Yes         | FK to `empresas_mantenimiento`     |
+| `detalles_mantenimientos` | Line items per maintenance           | Yes         | `tipo_mantenimiento` enum          |
+| `grupos_equipos`          | Logical equipment groups             | Yes         | `cantidad`, `costo_promedio` (derived) |
+| `equipos`                 | Individual equipment units           | Yes         | `codigo_imt` (unique, sequential), `estado_equipo` enum |
+| `gaveteros`               | Storage compartments                 | Yes         | FK to `muebles`                    |
+| `muebles`                 | Furniture containing compartments    | Yes         | `numero_gaveteros` (derived)       |
+| `accesorios`              | Complementary accessories            | Yes         | —                                  |
+| `componentes`             | Internal components / spares         | Yes         | —                                  |
+| `contratos`               | Generated HTML contracts             | No          | `contrato TEXT`, FK from `prestamos` |
 
 ---
 
@@ -44,12 +42,15 @@ PostgreSQL 14+ with Entity Framework Core 8. Schema DDL: [`DataBase/schema.ddl`]
 | `tipo_mantenimiento` | `correctivo` · `preventivo`                                                    | `detalles_mantenimientos` |
 
 C# mapping: `[PgName]` attribute + `NpgsqlDataSourceBuilder.MapEnum<T>()` in `Program.cs`.
+Mapperly uses `EnumMappingStrategy.ByName` with a `StringToEstadoEquipo` helper for SQL-named enums with underscores.
 
 ---
 
 ## ✦ Business Logic
 
-Derived counters are maintained by two mechanisms. DB triggers fire first; the backend recalculates as a consistency backstop.
+### Derived counters
+
+Maintained by two mechanisms. DB triggers fire first; the backend recalculates as a consistency backstop.
 
 | Level      | Event                              | Mechanism                                                                                                           | Field maintained                                           |
 | ---------- | ---------------------------------- | ------------------------------------------------------------------------------------------------------------------- | ---------------------------------------------------------- |
@@ -59,6 +60,21 @@ Derived counters are maintained by two mechanisms. DB triggers fire first; the b
 | DB trigger | Mantenimiento UPDATE (soft-delete) | `fn_estado_eliminado_mantenimiento_a_detalle`                                                                       | `detalles_mantenimientos.estado_eliminado`                 |
 | Backend    | Equipo Create / Update / Delete    | `EquipoRepository.RecalcGrupoStats()`                                                                               | `grupos_equipos.cantidad`, `costo_promedio`                |
 | Backend    | Gavetero Create / Delete           | `GaveteroRepository.RecalcMuebleCount()`                                                                            | `muebles.numero_gaveteros`                                 |
+
+### Availability logic
+
+An equipment unit is considered **unavailable** for a date range when an existing loan for that unit has `estado_prestamo IN ('aprobado', 'activo')` and the date ranges overlap.
+
+`pendiente` loans do **not** block availability — they are not confirmed reservations.
+
+Two checks run per `Prestamo`:
+
+1. **Pre-create** (`HasAvailableEquipo`): verified before saving the loan. Returns error if no units in the requested group are available.
+2. **Pre-approve** (`HasEquipoConflictoAlAprobar`): re-verified when an admin transitions `pendiente → aprobado`. Prevents race conditions between concurrent approvals.
+
+### IMT code assignment
+
+`equipos.codigo_imt` is assigned sequentially (max existing + 1) on Create. It cannot be changed via Update — the field is read-only after creation.
 
 ---
 
@@ -97,8 +113,8 @@ Derived counters are maintained by two mechanisms. DB triggers fire first; the b
 # Create database
 psql -U postgres -c "CREATE DATABASE IMT_Reservas;"
 
-# Load schema
-psql -U postgres -d IMT_Reservas -f DataBase/schema.ddl
+# Load schema + seed data
+psql -U postgres -d IMT_Reservas -f Database/server.sql
 
 # Verify (should list 15 tables)
 psql -U postgres -d IMT_Reservas -c "\dt"
@@ -114,5 +130,5 @@ docker run -d --name ucbhold-postgres \
   -v ucbhold-pgdata:/var/lib/postgresql/data \
   postgres:14
 
-docker exec -i ucbhold-postgres psql -U postgres -d IMT_Reservas < DataBase/schema.ddl
+docker exec -i ucbhold-postgres psql -U postgres -d IMT_Reservas < Database/server.sql
 ```
