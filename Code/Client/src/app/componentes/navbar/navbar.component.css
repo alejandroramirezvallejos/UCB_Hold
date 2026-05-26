@@ -161,6 +161,19 @@
   position: relative;
 }
 
+/* ===== RESPONSIVE LAPTOP ===== */
+@media (max-width: 1280px) {
+  .navbar-container {
+    padding: 0 6rem;
+  }
+}
+
+@media (max-width: 1024px) {
+  .navbar-container {
+    padding: 0 2.5rem;
+  }
+}
+
 /* ===== RESPONSIVE MÓVIL ===== */
 @media (max-width: 768px) {
   .navbar-container {

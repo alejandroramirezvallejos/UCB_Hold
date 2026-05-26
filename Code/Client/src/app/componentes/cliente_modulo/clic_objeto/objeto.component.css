@@ -146,6 +146,25 @@
     margin-bottom: 0.6rem;
   }
 }
+@media (max-width: 1280px) {
+  .contenedor-objeto {
+    width: auto;
+    margin: 5rem 6rem 2rem;
+  }
+  .seccion-imagen {
+    margin-left: -2rem;
+  }
+}
+
+@media (max-width: 1024px) {
+  .contenedor-objeto {
+    margin: 4.5rem 2.5rem 2rem;
+  }
+  .seccion-imagen {
+    margin-left: -1rem;
+  }
+}
+
 @media (max-width: 992px) {
   .contenedor-objeto {
     grid-template-columns: 1fr;
