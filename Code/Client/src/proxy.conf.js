@@ -1,6 +1,6 @@
 const { env } = require('process');
 
-const target = env.ASPNETCORE_HTTPS_PORT ? `https://localhost:${env.ASPNETCORE_HTTPS_PORT}` :
+const target = env.ASPNETCORE_HTTPS_PORT ? `https://localhost:5190` :
   env.ASPNETCORE_URLS ? env.ASPNETCORE_URLS.split(';')[0] : 'http://localhost:5190';
 
 const PROXY_CONFIG = [
