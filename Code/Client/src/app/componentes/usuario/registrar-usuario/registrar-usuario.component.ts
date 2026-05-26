@@ -64,9 +64,19 @@ export class RegistrarUsuarioComponent {
         this.usuarioS.iniciarsesion(this.nuevoUsuario);
         this.aviso.set(true);
       },
-      error: (error) => {
-        this.mensajeerror = "Error al registrar el usuario intente mas tarde";
-        console.error('Error al registrar el usuario:', error?.error?.message);
+      error: (err) => {
+        if (err?.error?.Errors && err.error.Errors.length > 0) {
+          this.mensajeerror = err.error.Errors[0];
+        } else if (err?.error?.errors && err.error.errors.length > 0) {
+          this.mensajeerror = err.error.errors[0];
+        } else if (err?.error?.message) {
+          this.mensajeerror = err.error.message;
+        } else if (typeof err?.error === 'string') {
+          this.mensajeerror = err.error;
+        } else {
+          this.mensajeerror = "Error al registrar el usuario intente mas tarde";
+        }
+        console.error('Error al registrar el usuario:', err);
         this.error.set(true);
       }
     });
