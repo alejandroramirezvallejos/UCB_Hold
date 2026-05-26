@@ -99,7 +99,7 @@
                   <i class="fas fa-file-contract"></i>
               </button>
             }
-            @if(prestamo.value.datosgrupo.EstadoPrestamo == 'rechazado' || prestamo.value.datosgrupo.EstadoPrestamo == 'aprobado' || prestamo.value.datosgrupo.EstadoPrestamo == 'finalizado' || prestamo.value.datosgrupo.EstadoPrestamo == 'cancelado'){
+            @if(prestamo.value.datosgrupo.EstadoPrestamo == 'rechazado' || prestamo.value.datosgrupo.EstadoPrestamo == 'finalizado' || prestamo.value.datosgrupo.EstadoPrestamo == 'cancelado'){
             <button class="btn-icon btn-delete" (click)="eliminarPrestamo(prestamo.value.datosgrupo)">
                 <i class="fas fa-trash-alt"></i>
             </button>
@@ -114,7 +114,21 @@
                   Rechazar
                 </button>
             }
+            @else if (prestamo.value.datosgrupo.EstadoPrestamo=='aprobado') {
+                <button class="btn-action btn-accept" (click)="validarRecogido(prestamo.key)">
+                  <i class="fas fa-hand-holding"></i>
+                  Recogido
+                </button>
+                <button class="btn-action btn-reject" (click)="validarrechazo(prestamo.key)">
+                  <i class="fas fa-times"></i>
+                  Rechazar
+                </button>
+            }
             @else if (prestamo.value.datosgrupo.EstadoPrestamo=='activo') {
+                <button class="btn-action btn-accept" (click)="validarDevuelto(prestamo.key)">
+                  <i class="fas fa-undo"></i>
+                  Devuelto
+                </button>
             }
             </td>
           </tr>
@@ -181,4 +195,23 @@
   [mensaje]="mensajeavisorechazar"
   (aceptar)="rechazarprestamo(prestamoKeySeleccionado)"
   ></app-aviso>
+}
+@if(avisorecogido()){
+  <app-aviso
+  [cerrar]="avisorecogido"
+  [mensaje]="'¿Está seguro de marcar este préstamo como recogido?'"
+  (aceptar)="recogerprestamo(prestamoKeySeleccionado)"
+  ></app-aviso>
+}
+@if(avisodevuelto()){
+  <div class="alerta-eliminar">
+    <div class="modal-content">
+      <p>¿Está seguro de marcar este préstamo como devuelto? Puede agregar observaciones opcionales:</p>
+      <textarea [(ngModel)]="observacionDevolucion" class="observaciones-input" placeholder="Escriba sus observaciones aquí..."></textarea>
+      <div style="margin-top: 1.5rem;">
+        <button class="btn btn-cancel" (click)="avisodevuelto.set(false)">Cancelar</button>
+        <button class="btn btn-confirm" style="background-color: #10b981; border-color: #10b981;" (click)="devolverprestamo(prestamoKeySeleccionado)">Aceptar</button>
+      </div>
+    </div>
+  </div>
 }

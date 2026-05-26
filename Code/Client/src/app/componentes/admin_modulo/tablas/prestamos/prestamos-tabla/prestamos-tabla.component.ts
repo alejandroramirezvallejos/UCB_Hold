@@ -232,6 +232,12 @@ export class PrestamosTablaComponent extends Tabla implements OnInit {
     this.prestamoSeleccionado = prestamo;
     this.vercontrato.set(!this.vercontrato());
   }
+
+  
+  avisorecogido: WritableSignal<boolean> = signal(false);
+  avisodevuelto: WritableSignal<boolean> = signal(false);
+  observacionDevolucion: string = '';
+
   abrirVistaPrestamos(prestamos : PrestamoDto[]) {
     this.prestamosVista = prestamos;
     this.abrirVista = true;
@@ -239,5 +245,52 @@ export class PrestamosTablaComponent extends Tabla implements OnInit {
   cerrarVistaPrestamos() {
     this.abrirVista = false;
     this.prestamosVista = [];
+  }
+
+  validarRecogido(key: number) {
+    this.prestamoKeySeleccionado = key;
+    this.avisorecogido.set(true);
+  }
+
+  validarDevuelto(key: number) {
+    this.observacionDevolucion = '';
+    this.prestamoKeySeleccionado = key;
+    this.avisodevuelto.set(true);
+  }
+
+  recogerprestamo(key: number) {
+    this.prestamosapi.cambiarEstadoPrestamo(this.prestamos.get(key)!.datosgrupo.Id, 'activo').subscribe({
+      next: (response) => {
+        this.mensajeexito = 'Préstamo marcado como recogido con éxito.';
+        this.exito.set(true);
+        this.cargarPrestamos();
+      },
+      error: (error) => {
+        const errorMsg = error.error?.errors?.[0] || error.error?.message || error.message || 'Error desconocido';
+        this.mensajeerror = `Error al actualizar el préstamo: ${errorMsg}`;
+        console.error(errorMsg);
+        this.error.set(true);
+      }
+    });
+    this.prestamoKeySeleccionado = 0;
+    this.avisorecogido.set(false);
+  }
+
+  devolverprestamo(key: number) {
+    this.prestamosapi.cambiarEstadoPrestamo(this.prestamos.get(key)!.datosgrupo.Id, 'finalizado', this.observacionDevolucion).subscribe({
+      next: (response) => {
+        this.mensajeexito = 'Préstamo marcado como devuelto con éxito.';
+        this.exito.set(true);
+        this.cargarPrestamos();
+      },
+      error: (error) => {
+        const errorMsg = error.error?.errors?.[0] || error.error?.message || error.message || 'Error desconocido';
+        this.mensajeerror = `Error al devolver el préstamo: ${errorMsg}`;
+        console.error(errorMsg);
+        this.error.set(true);
+      }
+    });
+    this.prestamoKeySeleccionado = 0;
+    this.avisodevuelto.set(false);
   }
 }

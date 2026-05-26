@@ -846,8 +846,226 @@
   width: 16px;
   text-align: center;
 }
+.equipos-cell {
+  max-width: 100px;
+}
+.equipos-info {
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+}
+.nombre-equipo {
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  font-weight: 500;
+  color: var(--color-text);
+}
+.cantidad-equipos {
+  font-size: 0.75rem;
+  color: var(--color-text-secondary);
+  font-weight: 600;
+}
+.codigos-cell {
+  max-width: 150px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+@media (max-width: 480px) {
+  .modal-content {
+    min-width: 90vw;
+    padding: 1.5rem;
+  }
+  .modal-content p {
+    font-size: 1rem;
+    margin-bottom: 1.25rem;
+  }
+  .modal-content .btn {
+    margin: 0.25rem;
+    width: auto;
+    min-width: 90px;
+  }
+  .btn-action {
+    padding: 0.25rem 0.5rem;
+    font-size: 0.65rem;
+    min-width: 50px;
+    gap: 0.25rem;
+  }
+  .btn-action i {
+    font-size: 0.65rem;
+  }
+  .actions-column {
+    width: 120px;
+  }
+}
+@media (max-width: 768px) {
+  .table-header {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 1rem;  }
+}
+@media (max-width: 360px) {
+  .table-header {
+    gap: 0.75rem;
+  }
+  .header-title h1 {
+    font-size: 1.2rem;
+  }
+  .subtitle {
+    font-size: 0.75rem;
+  }
+  .botoncrear {
+    padding: 6px 10px;
+    font-size: 0.75rem;
+    height: 30px;
+  }
+  .search-container {
+    gap: 0.5rem;
+  }
+  .search-input {
+    padding: 0.55rem 2rem;
+    font-size: 0.75rem;
+  }
+  .search-icon {
+    left: 0.75rem;
+  }
+  .clear-search {
+    right: 0.75rem;
+  }
+  .data-table th,
+  .data-table td {
+    padding: 0.6rem;
+    font-size: 0.75rem;
+  }
+  .btn {
+    padding: 0.5rem 0.9rem;
+    font-size: 0.75rem;
+  }
+  .btn-icon {
+    width: 1.75rem;
+    height: 1.75rem;
+  }
+  .modal-content {
+    padding: 1.2rem;
+    min-width: 92vw;
+  }
+  .modal-content p {
+    font-size: 0.9rem;
+  }
+  .modal-content .btn {
+    width: auto;
+    min-width: 80px;
+    margin: 0.25rem;
+  }
+}
+.custom-dropdown {
+  position: relative;
+  min-width: 150px;
+  font-family: "Open Sans", sans-serif;
+  margin-right: 1rem; /* Espacio si hay otros elementos */
+}
+.dropdown-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.5rem;
+  cursor: pointer;
+  padding: 0.5rem 1rem;
+  user-select: none;
+  background-color: white;
+  border: 1px solid #e2e8f0;
+  border-radius: 8px;
+  height: 42px;
+  box-sizing: border-box;
+  transition: all 0.2s ease;
+}
+.dropdown-header .current-value {
+  font-size: 0.9rem;
+  font-weight: 600;
+  color: #6b7786;
+  white-space: nowrap;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+.dropdown-header .current-value i {
+  color: #6b7786;
+}
+.dropdown-header:hover {
+  border-color: #d1d5db;
+  background-color: #f8fafc;
+}
+.dropdown-arrow {
+  width: 16px;
+  height: 16px;
+}
+.dropdown-list {
+  position: absolute;
+  top: 100%;
+  left: 0; /* Alinear a la izquierda para el filtro */
+  min-width: 200px;
+  background: white;
+  border-radius: 12px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+  list-style: none;
+  padding: 0;
+  margin: 5px 0 0 0;
+  z-index: 1000;
+  border: 1px solid #e2e8f0;
+  overflow: hidden;
+  backdrop-filter: blur(10px);
+  background-color: rgba(255, 255, 255, 0.95);
+}
+.dropdown-list li {
+  padding: 0.75rem 1rem;
+  font-size: 0.9rem;
+  font-weight: 500;
+  color: #64748b;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+.dropdown-list li:hover {
+  color: #FFCF00;
+  background-color: #f8fafc;
+}
+.dropdown-list li.active {
+  color: #334155;
+  font-weight: 700;
+  background-color: #f1f5f9;
+}
+.dropdown-list i {
+  width: 16px;
+  text-align: center;
+}
 .text-warning { color: #f59e0b; }
 .text-success { color: #10b981; }
 .text-danger { color: #ef4444; }
 .text-primary { color: #3b82f6; }
 .text-secondary { color: #64748b; }
+.observaciones-input {
+  width: 100%;
+  min-height: 100px;
+  max-height: 100px;
+  padding: 0.75rem 1rem;
+  margin: 1rem 0;
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius);
+  font-family: inherit;
+  font-size: 0.875rem;
+  resize: none;
+  transition: var(--transition);
+  background-color: #f9fafb;
+  color: var(--color-text);
+  box-sizing: border-box;
+}
+
+.observaciones-input:focus {
+  outline: none;
+  border-color: var(--color-primary);
+  box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.1);
+  background-color: #ffffff;
+}
