@@ -19,21 +19,39 @@ export class IniciarSesionComponent {
   loading: boolean = false;
   incorrecto : boolean = false;
   errorraro : WritableSignal<boolean> = signal(false);
+
   constructor(
     private usuario    : UsuarioService,
     private router     : Router,
     private usuarioapi : UsuarioServiceAPI,
     private authService: AuthService
   ) {}
+
+  
   login(){
     this.loading = true;
     this.usuarioapi.iniciarsesion(this.email, this.contrasena).subscribe({
       next: (data) => {
         this.authService.setSession(data.accessToken, data.refreshToken, data.usuario);
         this.usuario.iniciarsesion(data.usuario);
-        this.loading = false;
-        this.incorrecto = false;
-        this.router.navigate(["/home"]);
+        
+        const checkInterval = setInterval(() => {
+          if (this.authService.getAccessToken()) {
+            clearInterval(checkInterval);
+            this.loading = false;
+            this.incorrecto = false;
+            this.router.navigate(["/home"]);
+          }
+        }, 50);
+
+        setTimeout(() => {
+          clearInterval(checkInterval);
+          if (this.loading) {
+            this.loading = false;
+            this.incorrecto = false;
+            this.router.navigate(["/home"]);
+          }
+        }, 2000);
       },
       error: (error) => {
         if(error.status === 400 || error.status === 401){
