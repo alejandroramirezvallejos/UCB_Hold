@@ -117,18 +117,15 @@ export class CalendarioComponent {
     if(this.disponibilidadPorFecha.has(fechaKey)){
       for(let key in this.carrito){
          if( ( this.disponibilidadPorFecha.get(fechaKey)?.get(Number(key))  ?? 0 ) < this.carrito[key].cantidad ){
-          return true; 
+          return true;
          }
       }
-      return false; 
+      return false;
     }
-    else{
-        return true; 
-    }
+    return this.disponibilidadPorFecha.size > 0;
   }
   private toLocalISOString(date: Date): string {
-    const offset = date.getTimezoneOffset();
-    const localDate = new Date(date.getTime() - offset * 60000);
-    return localDate.toISOString().split('T')[0];
+    const pad = (n: number) => String(n).padStart(2, '0');
+    return `${date.getFullYear()}-${pad(date.getMonth() + 1)}-${pad(date.getDate())}`;
   }
 }

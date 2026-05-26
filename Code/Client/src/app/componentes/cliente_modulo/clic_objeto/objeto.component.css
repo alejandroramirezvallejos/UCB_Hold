@@ -125,8 +125,8 @@
   margin-top: 0.5rem;
   margin-bottom: 0.8rem;
   padding: 0;
-  text-decoration: underline dotted rgba(107,119,134,0.35);
-  color: rgba(107,119,134,0.75);
+  text-decoration: underline dotted rgba(143,145,149,0.45);
+  color: #8f9195;
   text-align: left;
 }
 @media (max-width: 992px) {

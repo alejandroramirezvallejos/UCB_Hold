@@ -15,8 +15,20 @@ services:
       timeout: 5s
       retries: 5
     volumes:
-      - ucb_db_data:/var/lib/postgresql/data         
-      - ./Database/server.sql:/docker-entrypoint-initdb.d/init.sql  
+      - ucb_db_data:/var/lib/postgresql/data
+      - ./DataBase/server.sql:/docker-entrypoint-initdb.d/init.sql
+
+  ucb_redis:
+    container_name: ucb_redis
+    image: redis:7-alpine
+    restart: on-failure
+    ports:
+      - "6379:6379"
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 5s
+      timeout: 3s
+      retries: 5
 
   ucb_server:
     container_name: ucb_server
@@ -25,10 +37,12 @@ services:
     ports:
       - "5000:80"
     env_file:
-      - server.env  
+      - server.env
     depends_on:
       ucb_db:
-        condition: service_healthy   
+        condition: service_healthy
+      ucb_redis:
+        condition: service_healthy
 
   ucb_client:
     container_name: ucb_client

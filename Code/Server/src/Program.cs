@@ -7,6 +7,7 @@ using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
 using Npgsql;
 using FluentValidation;
+using StackExchange.Redis;
 using IMT_Reservas.Server.Application.Features.Cache;
 using IMT_Reservas.Server.Application.Abstraction;
 using IMT_Reservas.Server.Application.Features.Accesorio;
@@ -203,11 +204,21 @@ builder.Services.AddScoped<IValidator<MuebleDto>, MuebleValidator>();
 builder.Services.AddScoped<IValidator<PrestamoDto>, PrestamoValidator>();
 builder.Services.AddScoped<IValidator<UsuarioDto>, UsuarioValidator>();
 
-builder.Services.AddStackExchangeRedisCache(options =>
+var redisConnectionString = builder.Configuration["Redis:ConnectionString"];
+if (!string.IsNullOrWhiteSpace(redisConnectionString))
 {
-    options.Configuration = builder.Configuration["Redis:ConnectionString"];
-    options.InstanceName  = builder.Configuration["Redis:InstanceName"];
-});
+    var redisConfig = ConfigurationOptions.Parse(redisConnectionString);
+    redisConfig.ConnectTimeout     = 500;
+    redisConfig.SyncTimeout        = 500;
+    redisConfig.AbortOnConnectFail = false;
+    builder.Services.AddStackExchangeRedisCache(options =>
+    {
+        options.ConfigurationOptions = redisConfig;
+        options.InstanceName         = builder.Configuration["Redis:InstanceName"];
+    });
+}
+else
+    builder.Services.AddDistributedMemoryCache();
 builder.Services.AddSingleton<CacheService>();
 
 builder.Services.AddRateLimiter(options =>
