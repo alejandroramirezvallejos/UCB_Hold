@@ -8,6 +8,7 @@ using IMT_Reservas.Server.Infrastructure.Repositories.Implementations;
 using IMT_Reservas.Tests.Helpers;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Options;
+using CarreraEntity = IMT_Reservas.Server.Core.Entities.Carrera;
 namespace IMT_Reservas.Tests.Integration;
 
 [TestFixture]
@@ -31,6 +32,13 @@ internal class UsuarioServiceTests : ServiceTest<UsuarioService>
         var jwt        = new JwtService(jwtOptions);
 
         return new UsuarioService(repo, mapper, validator, jwt, jwtOptions);
+    }
+
+    [SetUp]
+    public async Task SeedCarrera()
+    {
+        Db.Set<CarreraEntity>().Add(new CarreraEntity { Id = 1, Nombre = "Ingeniería" });
+        await Db.SaveChangesAsync();
     }
 
     [Test]
@@ -248,6 +256,7 @@ internal class UsuarioServiceTests : ServiceTest<UsuarioService>
         ApellidoPaterno = "Usuario",
         Email           = email,
         Telefono        = telefono,
-        Contrasena      = contrasena
+        Contrasena      = contrasena,
+        IdCarrera       = 1
     };
 }

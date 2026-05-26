@@ -5,20 +5,20 @@ namespace IMT_Reservas.Server.Application.Features.Warmup;
 
 public class WarmupService
 {
-    private readonly UsuarioRepository  _usuarioRepo;
-    private readonly GrupoEquipoService _grupoSvc;
+    private readonly UsuarioRepository  _usuarioRepository;
+    private readonly GrupoEquipoService _grupoService;
 
-    public WarmupService(UsuarioRepository usuarioRepo, GrupoEquipoService grupoSvc)
+    public WarmupService(UsuarioRepository usuarioRepository, GrupoEquipoService grupoService)
     {
-        _usuarioRepo = usuarioRepo;
-        _grupoSvc    = grupoSvc;
+        _usuarioRepository = usuarioRepository;
+        _grupoService    = grupoService;
     }
 
     public async Task Run()
     {
-        _ = await _usuarioRepo.GetByEmailWithCarrera(string.Empty);
-        _ = await _usuarioRepo.GetByRefreshTokenWithCarrera(string.Empty);
-        _ = await _grupoSvc.Search(string.Empty, null);
+        _ = await _usuarioRepository.GetByEmailWithCarrera(string.Empty);
+        _ = await _usuarioRepository.GetByRefreshTokenWithCarrera(string.Empty);
+        _ = await _grupoService.Search(string.Empty, null);
         var hash = BCryptLib.HashPassword("x", workFactor: 4);
         
         BCryptLib.Verify("x", hash);

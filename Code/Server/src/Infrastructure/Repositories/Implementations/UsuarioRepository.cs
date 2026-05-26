@@ -182,11 +182,12 @@ public class UsuarioRepository : Repository<UsuarioEntity, UsuarioDto>
 
     public async Task UpdateRefreshToken(string carnet, string? token, DateTime? expiry)
     {
-        await DbContext.Usuarios
+        var entity = await DbContext.Usuarios
             .IgnoreQueryFilters()
-            .Where(u => u.Carnet == carnet)
-            .ExecuteUpdateAsync(s => s
-                .SetProperty(u => u.RefreshToken, token)
-                .SetProperty(u => u.RefreshTokenExpiry, expiry));
+            .FirstOrDefaultAsync(u => u.Carnet == carnet);
+        if (entity == null) return;
+        entity.RefreshToken       = token;
+        entity.RefreshTokenExpiry = expiry;
+        await DbContext.SaveChangesAsync();
     }
 }

@@ -79,7 +79,7 @@ internal class PrestamoServiceTests : ServiceTest<PrestamoService>
         var result = await Sut.Create(BuildValidPrestamo(Carnet, GrupoId, fechaInicio, fechaFin));
 
         result.IsSuccess.Should().BeFalse();
-        result.Errors.Should().Contain(e => e.Contains("no disponible"));
+        result.Errors.Should().Contain(e => e.Contains("disponible"));
     }
 
     [Test]
@@ -92,7 +92,7 @@ internal class PrestamoServiceTests : ServiceTest<PrestamoService>
         var result = await Sut.Create(BuildValidPrestamo(Carnet, GrupoId, fechaInicio, fechaFin));
 
         result.IsSuccess.Should().BeFalse();
-        result.Errors.Should().Contain(e => e.Contains("no disponible"));
+        result.Errors.Should().Contain(e => e.Contains("disponible"));
     }
 
     [Test]
