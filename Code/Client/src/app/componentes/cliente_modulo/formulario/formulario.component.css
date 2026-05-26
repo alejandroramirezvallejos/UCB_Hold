@@ -74,7 +74,7 @@
 }
  ::ng-deep .contrato-container {
       font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-      line-height: 1.6;
+      line-height: 1.35;
       max-width: 800px;
       margin: 0 auto;
       background-color: #fff;
@@ -85,13 +85,13 @@
       text-align: center;
       font-size: 24px;
       color: #2c3e50;
-      margin-bottom: 20px;
+      margin-bottom: 12px;
       text-transform: uppercase;
   }
  ::ng-deep .contrato-container p {
       text-align: justify;
-      margin-bottom: 16px;
-      font-size: 16px;
+      margin-bottom: 10px;
+      font-size: 15px;
   }
 ::ng-deep  .contrato-container strong {
     display: inline;
@@ -135,7 +135,7 @@
       border: 1px solid #aaa;
   }
 ::ng-deep .contrato-container .signature {
-  margin-top: 40px;
+  margin-top: 20px;
   display: flex;
   justify-content: center;
   align-items: flex-start; /* Alinea los bloques en la parte superior */
@@ -149,12 +149,12 @@
   max-width: 300px; /* Ancho máximo para cada bloque de firma */
 }
 ::ng-deep .contrato-container .signature img {
-  max-width: 200px;
+  max-width: 160px;
   height: auto;
   border: 1px solid #ccc;
-  padding: 10px;
+  padding: 5px;
   background-color: #fff;
-  margin-bottom: 10px; /* Espacio entre imagen y texto */
+  margin-bottom: 5px; /* Espacio entre imagen y texto */
 }
 ::ng-deep .contrato-container .signature p {
    margin: 0px 0;

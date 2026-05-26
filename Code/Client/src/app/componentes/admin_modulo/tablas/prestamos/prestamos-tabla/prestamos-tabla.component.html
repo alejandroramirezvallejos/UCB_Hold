@@ -94,9 +94,11 @@
                 (click)="abrirVistaPrestamos(prestamo.value.equipos)">
                 <i class="fas fa-eye"></i>
                </button>
-            <button class="btn-icon btn-view" (click)="cambiarestadovercontrato(prestamo.value.datosgrupo)">
-                <i class="fas fa-file-contract"></i>
-            </button>
+            @if(prestamo.value.datosgrupo.IdContrato){
+              <button class="btn-icon btn-view" (click)="cambiarestadovercontrato(prestamo.value.datosgrupo)">
+                  <i class="fas fa-file-contract"></i>
+              </button>
+            }
             @if(prestamo.value.datosgrupo.EstadoPrestamo == 'rechazado' || prestamo.value.datosgrupo.EstadoPrestamo == 'aprobado' || prestamo.value.datosgrupo.EstadoPrestamo == 'finalizado' || prestamo.value.datosgrupo.EstadoPrestamo == 'cancelado'){
             <button class="btn-icon btn-delete" (click)="eliminarPrestamo(prestamo.value.datosgrupo)">
                 <i class="fas fa-trash-alt"></i>
