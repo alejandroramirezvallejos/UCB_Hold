@@ -211,8 +211,9 @@ textarea.form-input {
     font-size: 0.85rem;
   }
   .register-button {
-    width: 100%;
-    min-width: auto;
+    width: auto;
+    min-width: 160px;
+    max-width: 260px;
     padding: 0.6rem 1rem;
     font-size: 0.85rem;
   }

@@ -312,8 +312,8 @@
   }
   .modal-content .btn {
     margin: 0.25rem;
-    width: calc(50% - 0.5rem);
-    min-width: auto;
+    width: auto;
+    min-width: 90px;
   }
 }
 @media (max-width: 768px) {
@@ -381,7 +381,8 @@
     font-size: 0.9rem;
   }
   .modal-content .btn {
-    width: 100%;
-    margin: 0.25rem 0;
+    width: auto;
+    min-width: 80px;
+    margin: 0.25rem;
   }
 }

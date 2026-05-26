@@ -178,10 +178,10 @@
 @media (max-width: 768px) {
   .navbar-container {
     padding: 0 1.25rem;
-    min-height: 56px;
+    min-height: 64px;
   }
   .navbar-spacer {
-    height: 60px;
+    height: 68px;
   }
   .left-section {
     gap: 1rem;
@@ -223,10 +223,10 @@
 @media (max-width: 480px) {
   .navbar-container {
     padding: 0 1rem;
-    min-height: 52px;
+    min-height: 60px;
   }
   .navbar-spacer {
-    height: 56px;
+    height: 64px;
   }
   .left-section {
     gap: 0.75rem;
@@ -247,7 +247,7 @@
     height: 22px;
   }
   .logo-image {
-    width: 38px;
+    width: 46px;
   }
   .cart-count {
     width: 12px;
@@ -260,10 +260,10 @@
 @media (max-width: 360px) {
   .navbar-container {
     padding: 0 0.75rem;
-    min-height: 48px;
+    min-height: 56px;
   }
   .navbar-spacer {
-    height: 52px;
+    height: 60px;
   }
   .left-section {
     gap: 0.5rem;
@@ -284,7 +284,7 @@
     height: 20px;
   }
   .logo-image {
-    width: 34px;
+    width: 40px;
   }
   .cart-count {
     width: 11px;
