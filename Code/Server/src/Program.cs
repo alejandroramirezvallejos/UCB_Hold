@@ -1,10 +1,13 @@
 using System.Text;
+using System.Threading.RateLimiting;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.AspNetCore.RateLimiting;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
 using Npgsql;
 using FluentValidation;
+using IMT_Reservas.Server.Application.Features.Cache;
 using IMT_Reservas.Server.Application.Abstraction;
 using IMT_Reservas.Server.Application.Features.Accesorio;
 using IMT_Reservas.Server.Application.Features.Carrera;
@@ -200,8 +203,62 @@ builder.Services.AddScoped<IValidator<MuebleDto>, MuebleValidator>();
 builder.Services.AddScoped<IValidator<PrestamoDto>, PrestamoValidator>();
 builder.Services.AddScoped<IValidator<UsuarioDto>, UsuarioValidator>();
 
+builder.Services.AddStackExchangeRedisCache(options =>
+{
+    options.Configuration = builder.Configuration["Redis:ConnectionString"];
+    options.InstanceName  = builder.Configuration["Redis:InstanceName"];
+});
+builder.Services.AddSingleton<CacheService>();
+
+builder.Services.AddRateLimiter(options =>
+{
+    options.OnRejected = async (context, ct) =>
+    {
+        context.HttpContext.Response.StatusCode = StatusCodes.Status429TooManyRequests;
+        context.HttpContext.Response.Headers["Retry-After"] = "60";
+        await context.HttpContext.Response.WriteAsync("Demasiadas solicitudes.", ct);
+    };
+
+    options.AddFixedWindowLimiter("auth", o =>
+    {
+        o.PermitLimit          = 10;
+        o.Window               = TimeSpan.FromMinutes(1);
+        o.QueueProcessingOrder = QueueProcessingOrder.OldestFirst;
+        o.QueueLimit           = 0;
+    });
+
+    options.GlobalLimiter = PartitionedRateLimiter.Create<HttpContext, string>(ctx =>
+        RateLimitPartition.GetSlidingWindowLimiter(
+            ctx.Connection.RemoteIpAddress?.ToString() ?? "unknown",
+            _ => new SlidingWindowRateLimiterOptions
+            {
+                PermitLimit          = 100,
+                Window               = TimeSpan.FromMinutes(1),
+                SegmentsPerWindow    = 6,
+                QueueProcessingOrder = QueueProcessingOrder.OldestFirst,
+                QueueLimit           = 0
+            }));
+});
+
 var app = builder.Build();
 
+if (!app.Environment.IsDevelopment())
+{
+    app.UseHsts();
+    app.UseHttpsRedirection();
+}
+
+app.Use(async (ctx, next) =>
+{
+    ctx.Response.Headers.Append("X-Content-Type-Options",  "nosniff");
+    ctx.Response.Headers.Append("X-Frame-Options",         "DENY");
+    ctx.Response.Headers.Append("Referrer-Policy",         "strict-origin-when-cross-origin");
+    ctx.Response.Headers.Append("Permissions-Policy",      "camera=(), microphone=(), geolocation=()");
+    ctx.Response.Headers.Append("X-XSS-Protection",        "1; mode=block");
+    await next();
+});
+
+app.UseRateLimiter();
 app.UseCors("AllowFrontend");
 app.UseExceptionMiddleware();
 

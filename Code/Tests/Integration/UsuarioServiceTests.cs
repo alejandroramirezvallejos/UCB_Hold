@@ -1,5 +1,6 @@
 using BCryptLib = BCrypt.Net.BCrypt;
 using FluentAssertions;
+using IMT_Reservas.Server.Application.Features.Cache;
 using IMT_Reservas.Server.Application.Features.Jwt;
 using IMT_Reservas.Server.Application.Features.Usuario;
 using IMT_Reservas.Server.Core.Entities;
@@ -7,6 +8,8 @@ using IMT_Reservas.Server.Infrastructure.Config;
 using IMT_Reservas.Server.Infrastructure.Repositories.Implementations;
 using IMT_Reservas.Tests.Helpers;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Caching.Distributed;
+using Microsoft.Extensions.Caching.Memory;
 using Microsoft.Extensions.Options;
 using CarreraEntity = IMT_Reservas.Server.Core.Entities.Carrera;
 namespace IMT_Reservas.Tests.Integration;
@@ -25,13 +28,15 @@ internal class UsuarioServiceTests : ServiceTest<UsuarioService>
 
     protected override UsuarioService CreateService(ApplicationDbContext db)
     {
-        var jwtOptions = Options.Create(TestJwtSettings);
-        var mapper     = new UsuarioMapper();
-        var repo       = new UsuarioRepository(db, mapper);
-        var validator  = new UsuarioValidator(db);
-        var jwt        = new JwtService(jwtOptions);
+        var jwtOptions    = Options.Create(TestJwtSettings);
+        var mapper        = new UsuarioMapper();
+        var repo          = new UsuarioRepository(db, mapper);
+        var validator     = new UsuarioValidator(db);
+        var jwt           = new JwtService(jwtOptions);
+        var memoryCache   = new MemoryDistributedCache(Options.Create(new MemoryDistributedCacheOptions()));
+        var cacheService  = new CacheService(memoryCache);
 
-        return new UsuarioService(repo, mapper, validator, jwt, jwtOptions);
+        return new UsuarioService(repo, mapper, validator, jwt, jwtOptions, cacheService);
     }
 
     [SetUp]

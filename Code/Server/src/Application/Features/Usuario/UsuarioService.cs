@@ -2,6 +2,7 @@ using Ardalis.Result;
 using BCryptLib = BCrypt.Net.BCrypt;
 using FluentValidation;
 using IMT_Reservas.Server.Application.Abstraction;
+using IMT_Reservas.Server.Application.Features.Cache;
 using IMT_Reservas.Server.Application.Features.Jwt;
 using IMT_Reservas.Server.Infrastructure.Repositories.Implementations;
 using Microsoft.Extensions.Options;
@@ -10,21 +11,21 @@ namespace IMT_Reservas.Server.Application.Features.Usuario;
 
 public class UsuarioService : Service<UsuarioEntity, UsuarioRepository, UsuarioDto>
 {
+    private static readonly TimeSpan UsuarioCacheTtl = TimeSpan.FromMinutes(30);
     private readonly UsuarioMapper   _mapper;
     private readonly JwtService      _jwtService;
     private readonly JwtSettings     _jwtSettings;
+    private readonly CacheService    _cacheService;
 
-    public UsuarioService(
-        UsuarioRepository         repository,
-        UsuarioMapper             mapper,
-        IValidator<UsuarioDto>    validator,
-        JwtService                jwtService,
-        IOptions<JwtSettings>     jwtSettings)
-        : base(repository, validator, mapper)
+    public UsuarioService(UsuarioRepository repository,
+        UsuarioMapper mapper, IValidator<UsuarioDto> validator,
+        JwtService jwtService, IOptions<JwtSettings> jwtSettings,
+        CacheService cacheService) : base(repository, validator, mapper)
     {
-        _mapper      = mapper;
-        _jwtService  = jwtService;
-        _jwtSettings = jwtSettings.Value;
+        _mapper       = mapper;
+        _jwtService   = jwtService;
+        _jwtSettings  = jwtSettings.Value;
+        _cacheService = cacheService;
     }
 
     public override async Task<Result<UsuarioDto>> Create(UsuarioDto dto)
@@ -49,7 +50,7 @@ public class UsuarioService : Service<UsuarioEntity, UsuarioRepository, UsuarioD
             return Result<UsuarioDto>.Error("Teléfono ya registrado");
 
         var entity = MapToEntity(dto);
-        entity.Contrasena = BCryptLib.HashPassword(dto.Contrasena, workFactor: 10);
+        entity.Contrasena = BCryptLib.HashPassword(dto.Contrasena, workFactor: 12);
         var result = await CreateEntity(entity);
 
         if (result.IsSuccess && result.Value != null)
@@ -80,18 +81,26 @@ public class UsuarioService : Service<UsuarioEntity, UsuarioRepository, UsuarioD
             existing.IdCarrera = dto.IdCarrera!.Value;
 
         if (!string.IsNullOrWhiteSpace(dto.Contrasena))
-            existing.Contrasena = BCryptLib.HashPassword(dto.Contrasena, workFactor: 10);
+            existing.Contrasena = BCryptLib.HashPassword(dto.Contrasena, workFactor: 12);
 
         await Repository.UpdateEntity(existing);
 
         var resultDto = _mapper.ToDto(existing);
         resultDto.CarreraNombre = await Repository.GetCarreraName(existing.IdCarrera);
 
+        _ = await _cacheService.Remove($"usuario:{carnet}");
+
         return Result<UsuarioDto>.Success(resultDto);
     }
 
     public async Task<Result<UsuarioDto>> Get(string carnet)
     {
+        var cacheKey = $"usuario:{carnet}";
+        var cacheResult = await _cacheService.Get<UsuarioDto>(cacheKey);
+        
+        if (cacheResult.IsSuccess) 
+            return Result<UsuarioDto>.Success(cacheResult.Value);
+
         var usuario = await Repository.GetByCarnet(carnet);
 
         if (usuario == null)
@@ -99,6 +108,8 @@ public class UsuarioService : Service<UsuarioEntity, UsuarioRepository, UsuarioD
 
         var dto = _mapper.ToDto(usuario);
         dto.CarreraNombre = await Repository.GetCarreraName(usuario.IdCarrera);
+
+        _ = await _cacheService.Set(cacheKey, dto, UsuarioCacheTtl);
 
         return Result<UsuarioDto>.Success(dto);
     }
@@ -167,7 +178,15 @@ public class UsuarioService : Service<UsuarioEntity, UsuarioRepository, UsuarioD
         });
     }
 
-    public async Task<Result<object>> Delete(string carnet) => await Repository.Delete(carnet);
+    public async Task<Result<object>> Delete(string carnet)
+    {
+        var deleteResult = await Repository.Delete(carnet);
+        
+        if (deleteResult.IsSuccess)
+            _ = await _cacheService.Remove($"usuario:{carnet}");
+        
+        return deleteResult;
+    }
 
     private async Task ResolveCarrera(UsuarioDto dto)
     {

@@ -127,13 +127,7 @@
   padding: 0;
   text-decoration: underline dotted rgba(107,119,134,0.35);
   color: rgba(107,119,134,0.75);
-  text-align: right;
-}
-@media (max-width: 992px) {
-  .ficha-link.debajo-texto {
-    text-align: left;
-    width: 100%;
-  }
+  text-align: left;
 }
 @media (max-width: 992px) {
   .acciones {

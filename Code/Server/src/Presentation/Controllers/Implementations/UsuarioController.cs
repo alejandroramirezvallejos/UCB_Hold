@@ -2,6 +2,7 @@ using IMT_Reservas.Server.Application.Features.Usuario;
 using Controller = IMT_Reservas.Server.Presentation.Controllers.Abstraction.Controller;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.RateLimiting;
 namespace IMT_Reservas.Server.Presentation.Controllers.Implementations;
 
 [Authorize]
@@ -39,11 +40,13 @@ public class UsuarioController : Controller
         => ToDeleteResponse(await _service.Delete(carnet));
 
     [AllowAnonymous]
+    [EnableRateLimiting("auth")]
     [HttpPost("login")]
     public async Task<IActionResult> Login([FromBody] UsuarioDto request)
         => ToResponse(await _service.Login(request.Email ?? string.Empty, request.Contrasena ?? string.Empty));
 
     [AllowAnonymous]
+    [EnableRateLimiting("auth")]
     [HttpPost("refresh")]
     public async Task<IActionResult> Refresh([FromBody] RefreshDto request)
         => ToResponse(await _service.Refresh(request.RefreshToken));

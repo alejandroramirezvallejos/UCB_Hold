@@ -10,10 +10,18 @@ public class CarritoRepository
     public CarritoRepository(ApplicationDbContext dbContext) => _dbContext = dbContext;
 
     public async Task<Dictionary<int, int>> GetCantidadesByGrupos(List<int> grupoIds)
-        => await _dbContext.GruposEquipos
-            .Where(g => grupoIds.Contains(g.Id))
-            .Select(g => new { g.Id, g.Cantidad })
-            .ToDictionaryAsync(g => g.Id, g => g.Cantidad);
+    {
+        var grupoIdsPorEquipo = await _dbContext.Equipos
+            .Where(e => grupoIds.Contains(e.IdGrupoEquipo)
+                     && !e.EstadoEliminado
+                     && e.EstadoEquipo == EstadoEquipo.Operativo)
+            .Select(e => e.IdGrupoEquipo)
+            .ToListAsync();
+
+        return grupoIdsPorEquipo
+            .GroupBy(id => id)
+            .ToDictionary(g => g.Key, g => g.Count());
+    }
 
     public async Task<List<(int IdGrupoEquipo, DateTime FechaPrestamo, DateTime FechaDevolucion)>> GetPrestamosActivosEnRango(
         List<int> grupoIds, DateTime fechaInicio, DateTime fechaFin)
