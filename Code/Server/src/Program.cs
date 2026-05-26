@@ -208,9 +208,10 @@ var redisConnectionString = builder.Configuration["Redis:ConnectionString"];
 if (!string.IsNullOrWhiteSpace(redisConnectionString))
 {
     var redisConfig = ConfigurationOptions.Parse(redisConnectionString);
-    redisConfig.ConnectTimeout     = 500;
-    redisConfig.SyncTimeout        = 500;
+    redisConfig.ConnectTimeout     = 5000;
+    redisConfig.SyncTimeout        = 1000;
     redisConfig.AbortOnConnectFail = false;
+    redisConfig.ConnectRetry       = 3;
     builder.Services.AddStackExchangeRedisCache(options =>
     {
         options.ConfigurationOptions = redisConfig;
