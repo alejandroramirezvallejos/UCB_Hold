@@ -6,6 +6,7 @@ import { ObjetoComponent } from './componentes/cliente_modulo/clic_objeto/objeto
 import { CarritoComponent } from './componentes/cliente_modulo/carrito/carrito.component';
 import { authGuard } from './guards/auth.guard';
 import { adminGuard } from './guards/admin.guard';
+import { PerfilComponent } from './componentes/usuario/perfil/perfil.component';
 
 const routes: Routes = [
   { path: '', redirectTo: '/Iniciar-Sesion', pathMatch: 'full' },
@@ -14,6 +15,7 @@ const routes: Routes = [
   { path: 'Objeto/:id',      component: ObjetoComponent,       canActivate: [authGuard] },
   { path: 'Carrito',         component: CarritoComponent,      canActivate: [authGuard] },
   { path: 'ConfirmarReserva', component: CarritoComponent,     canActivate: [authGuard] },
+  { path: 'Perfil' ,          component: PerfilComponent,      canActivate: [authGuard]  },
   {
     path: 'admin',
     canActivate: [adminGuard],
@@ -31,12 +33,6 @@ const routes: Routes = [
     canActivate: [authGuard],
     loadComponent: () => import('./componentes/usuario/historial/historial.component')
       .then(m => m.HistorialComponent)
-  },
-  {
-    path: 'Perfil',
-    canActivate: [authGuard],
-    loadComponent: () => import('./componentes/usuario/perfil/perfil.component')
-      .then(m => m.PerfilComponent)
   },
   {
     path: 'Registrar-Usuario',
