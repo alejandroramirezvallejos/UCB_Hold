@@ -10,6 +10,7 @@ import { BaseTablaComponent } from '../../base/base';
 import { MostrarerrorComponent } from '../../../../pantallas_avisos/mostrarerror/mostrarerror.component';
 import { Aviso } from '../../../../pantallas_avisos/aviso/aviso.component';
 import { AvisoExitoComponent } from '../../../../pantallas_avisos/aviso-exito/aviso-exito.component';
+import { extractErrorMessage } from '../../../../../utils/error-handler';
 @Component({
   selector: 'app-equipos-crear',
   standalone: true,
@@ -39,8 +40,9 @@ export class EquiposCrearComponent extends BaseTablaComponent {
         this.Gaveteros = data;
       },
       error: (error) => {
-        this.mensajeerror= "Error al cargar los gaveteros. Intente mas tarde";
-        console.error(error?.error?.error + ': ' + error?.error?.message);
+        const errorMsg = extractErrorMessage(error, "Error al cargar los gaveteros. Intente mas tarde");
+        this.mensajeerror = errorMsg;
+        console.error(errorMsg);
         this.error.set(true);
       }
     });
@@ -51,8 +53,9 @@ export class EquiposCrearComponent extends BaseTablaComponent {
         this.grupoequipo = data;
       },
       error: (error) => {
-         this.mensajeerror= "Error al cargar los grupos equipos. Intente mas tarde";
-        console.error(error?.error?.error + ': ' + error?.error?.message);
+        const errorMsg = extractErrorMessage(error, "Error al cargar los grupos equipos. Intente mas tarde");
+        this.mensajeerror = errorMsg;
+        console.error(errorMsg);
         this.error.set(true);
       }
     });
@@ -80,8 +83,9 @@ export class EquiposCrearComponent extends BaseTablaComponent {
         this.exito.set(true);
       },
       error: (error) => {
-        this.mensajeerror= "Error al crear el equipo. Intente mas tarde";
-        console.error(error?.error?.error + ': ' + error?.error?.message);
+        const errorMsg = extractErrorMessage(error, "Error al crear el equipo. Intente mas tarde");
+        this.mensajeerror = errorMsg;
+        console.error(errorMsg);
         this.error.set(true);
       }
        });

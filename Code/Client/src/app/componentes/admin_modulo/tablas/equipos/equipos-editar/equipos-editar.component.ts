@@ -9,6 +9,7 @@ import { BaseTablaComponent } from '../../base/base';
 import { MostrarerrorComponent } from '../../../../pantallas_avisos/mostrarerror/mostrarerror.component';
 import { Aviso } from '../../../../pantallas_avisos/aviso/aviso.component';
 import { AvisoExitoComponent } from '../../../../pantallas_avisos/aviso-exito/aviso-exito.component';
+import { extractErrorMessage } from '../../../../../utils/error-handler';
 @Component({
   selector: 'app-equipos-editar',
   imports: [FormsModule , MostrarerrorComponent , Aviso , AvisoExitoComponent],
@@ -37,8 +38,9 @@ export class EquiposEditarComponent extends BaseTablaComponent{
         this.gaveteraSeleccionada = this.Gaveteros.find((g: any) => g.Id === this.equipo.IdGavetero) ?? null;
       },
       error: (error) => {
-        this.mensajeerror = "Error al cargar gaveteros";
-        console.error(error?.error?.error + ': ' + error?.error?.message);
+        const errorMsg = extractErrorMessage(error, "Error al cargar gaveteros");
+        this.mensajeerror = errorMsg;
+        console.error(errorMsg);
         this.error.set(true);
       }
     });
@@ -49,8 +51,9 @@ export class EquiposEditarComponent extends BaseTablaComponent{
         this.grupoequipo = data;
       },
       error: (error) => {
-        this.mensajeerror = "Error al cargar grupos de equipos";
-        console.error(error?.error?.error + ': ' + error?.error?.message);
+        const errorMsg = extractErrorMessage(error, "Error al cargar grupos de equipos");
+        this.mensajeerror = errorMsg;
+        console.error(errorMsg);
         this.error.set(true);
       }
     });
@@ -74,8 +77,9 @@ export class EquiposEditarComponent extends BaseTablaComponent{
         this.exito.set(true);
       },
       error: (error) => {
-        this.mensajeerror = "Error al editar el equipo";
-        console.error( error?.error?.error + ': ' + error?.error?.message);
+        const errorMsg = extractErrorMessage(error, "Error al editar el equipo");
+        this.mensajeerror = errorMsg;
+        console.error(errorMsg);
         this.error.set(true);
       }
         });

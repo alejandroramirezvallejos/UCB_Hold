@@ -12,6 +12,7 @@ import { AvisoExitoComponent } from '../../../../pantallas_avisos/aviso-exito/av
 import { Aviso } from '../../../../pantallas_avisos/aviso/aviso.component';
 import { BuscadorComponent } from '../../../buscador/buscador.component';
 import { Tabla } from '../../base/tabla';
+import { extractErrorMessage } from '../../../../../utils/error-handler';
 @Component({
   selector: 'app-accesorios-tabla',
   standalone: true,
@@ -27,19 +28,24 @@ export class AccesoriosTablaComponent  extends Tabla{
   accesorioscopia: Accesorio[] = [];
   accesorioSeleccionado:  Accesorio= new Accesorio();
   override columnas: string[] = ['Nombre','Modelo','Tipo','Código IMT del Equipo','Precio'];
+
   constructor(private accesoriosapi : AccesoriosService){
     super();
   };
+
   ngOnInit(){
     this.cargarAccesorios();
   }
+
   limpiarAccesorioSeleccionado() {
     this.accesorioSeleccionado = new Accesorio();
   }
+
   crearaccesorio() {
     this.botoneditar.set(false);
     this.botoncrear.set(true);
   }
+
   cargarAccesorios() {
     this.accesoriosapi.obtenerAccesorios().subscribe({
       next: (data: Accesorio[]) => {
@@ -47,12 +53,15 @@ export class AccesoriosTablaComponent  extends Tabla{
         this.accesorioscopia = [...this.accesorios];
       },
       error: (error) => {
-        this.mensajeerror = 'Error al cargar los accesorios. Por favor, intente más tarde.';
-        console.error('Error al cargar los accesorios:', error);
+        const errorMsg = extractErrorMessage(error, "Error al cargar los accesorios. Por favor, intente más tarde.");
+        this.mensajeerror = errorMsg;
+        console.error(errorMsg);
         this.error.set(true);
       }
     });
   }
+
+
   aplicarFiltros(event?: [string, string]) {
     if (event && event[0].trim() !== '') {
       const busquedaNormalizada = this.normalizeText(event[0]);
@@ -81,18 +90,23 @@ export class AccesoriosTablaComponent  extends Tabla{
       this.accesorios = [...this.accesorioscopia];
     }
   }
+
+
 limpiarBusqueda(){
   this.accesorios = [...this.accesorioscopia];
 }
+
 editarAccesorio(accesorio : Accesorio) {
   this.botoncrear.set(false);
   this.accesorioSeleccionado = { ...accesorio }; // Crear una copia del objeto
   this.botoneditar.set(true);
 }
+
 eliminarAccesorio(accesorio : Accesorio) {
   this.accesorioSeleccionado = accesorio;
   this.alertaeliminar = true;
 }
+
 confirmarEliminacion() {
   this.accesoriosapi.eliminarAccesorio(this.accesorioSeleccionado.Id).subscribe({
     next: (response) => {
@@ -101,14 +115,17 @@ confirmarEliminacion() {
       this.exito.set(true);
     },
     error: (error) => {
-      this.mensajeerror = 'Error al eliminar el accesorio. Por favor, intente más tarde.';
-      alert('Error al eliminar el accesorio: ' + error);
-      this.error.set(true);
-    }
+        const errorMsg = extractErrorMessage(error, "Error al eliminar el accesorio. Por favor, intente más tarde.");
+        this.mensajeerror = errorMsg;
+        console.error(errorMsg);
+        this.error.set(true);
+      }
   });
   this.limpiarAccesorioSeleccionado();
   this.alertaeliminar = false;
 }
+
+
 cancelarEliminacion(){
   this.alertaeliminar = false;
   this.limpiarAccesorioSeleccionado();

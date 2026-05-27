@@ -11,6 +11,7 @@ import { MostrarerrorComponent } from '../../../../pantallas_avisos/mostrarerror
 import { AvisoExitoComponent } from '../../../../pantallas_avisos/aviso-exito/aviso-exito.component';
 import { Tabla } from '../../base/tabla';
 import { BuscadorComponent } from '../../../buscador/buscador.component';
+import { extractErrorMessage } from '../../../../../utils/error-handler';
 @Component({
   selector: 'app-categorias-tabla',
   standalone: true,
@@ -40,17 +41,18 @@ export class CategoriasTablaComponent extends Tabla {
     this.botoncrear.set(true);
   }
   cargarCategorias() {
-    this.categoriaService.obtenercategorias().subscribe(
-      (data: any[]) => {
+    this.categoriaService.obtenercategorias().subscribe({
+      next: (data: any[]) => {
         this.categorias = data;
         this.categoriascopia = [...this.categorias];
       },
-      (error) => {
-        this.mensajeerror = 'Error al cargar las categorías , intente mas tarde ';
-        console.error('Error al cargar las categorías:', error.message);
+      error: (error) => {
+        const errorMsg = extractErrorMessage(error, 'Error al cargar las categorías, intente más tarde');
+        this.mensajeerror = errorMsg;
+        console.error('Error al cargar las categorías:', errorMsg);
         this.error.set(true);
       }
-    );
+    });
   }
   aplicarFiltros(event?: [string, string]) {
     if (event && event[0].trim() === '') {
@@ -83,8 +85,9 @@ export class CategoriasTablaComponent extends Tabla {
           this.exito.set(true);
         },
         error: (error) => {
-          this.mensajeerror="Error al eliminar la categoría , intente mas tarde";
-          alert('Error al eliminar la categoría: ' + error.message);
+          const errorMsg = extractErrorMessage(error, "Error al eliminar la categoría, intente más tarde");
+          this.mensajeerror = errorMsg;
+          console.error('Error al eliminar la categoría:', errorMsg);
           this.error.set(true);
         }
       });

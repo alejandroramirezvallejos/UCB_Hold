@@ -11,6 +11,7 @@ import { MostrarerrorComponent } from '../../../../pantallas_avisos/mostrarerror
 import { AvisoExitoComponent } from '../../../../pantallas_avisos/aviso-exito/aviso-exito.component';
 import { BuscadorComponent } from '../../../buscador/buscador.component';
 import { Tabla } from '../../base/tabla';
+import { extractErrorMessage } from '../../../../../utils/error-handler';
 @Component({
   selector: 'app-muebles-tabla',
   standalone: true,
@@ -47,8 +48,9 @@ export class MueblesTablaComponent extends Tabla implements OnInit {
         this.aplicarFiltros();
       },
       error: (error) => {
-        this.mensajeerror = 'Error al cargar los muebles. Intente más tarde.';
-        console.error('Error al cargar los muebles:', error);
+        const errorMsg = extractErrorMessage(error, "Error al cargar los muebles. Intente más tarde.");
+        this.mensajeerror = errorMsg;
+        console.error(errorMsg);
         this.error.set(true);
       }
     });
@@ -107,8 +109,9 @@ export class MueblesTablaComponent extends Tabla implements OnInit {
         this.cargarMuebles();
       },
       error: (error) => {
-        this.mensajeerror = 'Error al eliminar el mueble. Intente más tarde.';
-        console.error('Error al eliminar el mueble: ' + error);
+        const errorMsg = extractErrorMessage(error, "Error al eliminar el mueble. Intente más tarde.");
+        this.mensajeerror = errorMsg;
+        console.error(errorMsg);
         this.error.set(true);
       }
     });

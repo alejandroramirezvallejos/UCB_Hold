@@ -12,6 +12,7 @@ import { MostrarerrorComponent } from '../../../../pantallas_avisos/mostrarerror
 import { AvisoExitoComponent } from '../../../../pantallas_avisos/aviso-exito/aviso-exito.component';
 import { Tabla } from '../../base/tabla';
 import { BuscadorComponent } from '../../../buscador/buscador.component';
+import { extractErrorMessage } from '../../../../../utils/error-handler';
 @Component({
   selector: 'app-usuarios-tabla',
   standalone: true,
@@ -45,9 +46,10 @@ export class UsuariosTablaComponent extends Tabla implements OnInit {
       next:(data: any[]) => {
         this.carreras = data.map(carrera => carrera.nombre);
       },
-      error:(error) => {
-        this.mensajeerror = 'Error al cargar las carreras, intente más tarde.';
-        console.error('Error al cargar las carreras:', error);
+      error: (error) => {
+        const errorMsg = extractErrorMessage(error, "Error al cargar las carreras, intente más tarde.");
+        this.mensajeerror = errorMsg;
+        console.error(errorMsg);
         this.error.set(true);
       }
     });
@@ -59,8 +61,9 @@ export class UsuariosTablaComponent extends Tabla implements OnInit {
         this.usuarioscopia = [...this.usuarios]; // Guardar una copia para la búsqueda
       },
       error: (error) => {
-        this.mensajeerror = 'Error al cargar los usuarios, intente más tarde.';
-        console.error('Error al cargar los usuarios:', error);
+        const errorMsg = extractErrorMessage(error, "Error al cargar los usuarios, intente más tarde.");
+        this.mensajeerror = errorMsg;
+        console.error(errorMsg);
         this.error.set(true);
       }
     });
@@ -134,8 +137,9 @@ export class UsuariosTablaComponent extends Tabla implements OnInit {
         this.valoreliminar = 0;
       },
       error: (error) => {
-        this.mensajeerror='Error al eliminar el usuario, intente más tarde.';
-        console.error('Error al eliminar usuario: ' + error);
+        const errorMsg = extractErrorMessage(error, "Error al eliminar el usuario, intente más tarde.");
+        this.mensajeerror = errorMsg;
+        console.error(errorMsg);
         this.error.set(true);
         this.alertaeliminar = false;
         this.valoreliminar = 0;

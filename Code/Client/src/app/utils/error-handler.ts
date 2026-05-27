@@ -9,6 +9,12 @@ export function extractErrorMessage(error: any, defaultMessage: string = 'Error 
     if (error.error.errors && Array.isArray(error.error.errors) && error.error.errors.length > 0) {
       return error.error.errors[0];
     }
+    if (error.error.ValidationErrors && Array.isArray(error.error.ValidationErrors) && error.error.ValidationErrors.length > 0) {
+      return error.error.ValidationErrors[0]?.description || error.error.ValidationErrors[0];
+    }
+    if (error.error.validationErrors && Array.isArray(error.error.validationErrors) && error.error.validationErrors.length > 0) {
+      return error.error.validationErrors[0]?.description || error.error.validationErrors[0];
+    }
     if (error.error.mensaje) {
       return error.error.mensaje;
     }

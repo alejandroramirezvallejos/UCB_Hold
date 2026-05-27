@@ -62,8 +62,9 @@ export class PrestamosTablaComponent extends Tabla implements OnInit {
         this.seleccionarEstado(this.estadoSeleccionado);
       },
       error: (error) => {
-        this.mensajeerror = 'Error al cargar los préstamos. Por favor, inténtelo de nuevo más tarde.';
-        console.error('Error al cargar los préstamos:', error);
+        const errorMsg = extractErrorMessage(error, 'Error al cargar los préstamos. Por favor, inténtelo de nuevo más tarde.');
+        this.mensajeerror = errorMsg;
+        console.error('Error al cargar los préstamos:', errorMsg);
         this.error.set(true);
       }
     });
@@ -100,8 +101,9 @@ export class PrestamosTablaComponent extends Tabla implements OnInit {
         this.cargarPrestamos();
       },
       error: (error) => {
-        this.mensajeerror = 'Error al eliminar el préstamo. Por favor, inténtelo de nuevo más tarde.';
-        console.error('Error al eliminar el préstamo: ' + error);
+        const errorMsg = extractErrorMessage(error, 'Error al eliminar el préstamo. Por favor, inténtelo de nuevo más tarde.');
+        this.mensajeerror = errorMsg;
+        console.error('Error al eliminar el préstamo:', errorMsg);
         this.error.set(true);
       }
     });

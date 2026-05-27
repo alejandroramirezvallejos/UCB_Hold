@@ -6,6 +6,7 @@ import { BaseTablaComponent } from '../../base/base';
 import { MostrarerrorComponent } from '../../../../pantallas_avisos/mostrarerror/mostrarerror.component';
 import { Aviso } from '../../../../pantallas_avisos/aviso/aviso.component';
 import { AvisoExitoComponent } from '../../../../pantallas_avisos/aviso-exito/aviso-exito.component';
+import { extractErrorMessage } from '../../../../../utils/error-handler';
 @Component({
   selector: 'app-empresas-mantenimiento-editar',
   imports: [FormsModule, MostrarerrorComponent , Aviso ,AvisoExitoComponent],
@@ -31,8 +32,9 @@ export class EmpresasMantenimientoEditarComponent extends BaseTablaComponent {
         this.exito.set(true);
       },
       error: (error) => {
-        this.mensajeerror = "Error al actualizar la Empresa de Mantenimiento.";
-        console.error(error?.error?.error + ': ' + error?.error?.message);
+        const errorMsg = extractErrorMessage(error, "Error al actualizar la Empresa de Mantenimiento.");
+        this.mensajeerror = errorMsg;
+        console.error(errorMsg);
         this.error.set(true);
       }
     });

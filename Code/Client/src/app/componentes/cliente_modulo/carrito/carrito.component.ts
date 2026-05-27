@@ -12,6 +12,7 @@ import { PantallaCargaComponent } from '../../pantallas_avisos/pantalla-carga/pa
 import { CalendarioComponent } from './calendario/calendario.component';
 import { PrestamosAPIService } from '../../../services/APIS/prestamo/prestamos-api.service';
 import { finalize } from 'rxjs';
+import { extractErrorMessage } from '../../../utils/error-handler';
 @Component({
   selector: 'app-carrito',
   standalone: true ,
@@ -143,14 +144,9 @@ export class CarritoComponent {
           this.exito.set(true);
         },
         error: (error) => {
-          console.error('Error al crear préstamo:', error);
-          const serverErrors =
-            error?.error?.Errors || error?.error?.errors || [];
-          const validationErrors =
-            error?.error?.ValidationErrors || error?.error?.validationErrors || [];
-          const validationMsg = validationErrors[0]?.description;
-          this.mensajeerror =
-            serverErrors[0] || validationMsg || error.message || 'Error desconocido';
+          const errorMsg = extractErrorMessage(error, 'Error desconocido');
+          this.mensajeerror = errorMsg;
+          console.error('Error al crear préstamo:', errorMsg);
           this.errorboton.set(true);
         }
       });

@@ -11,6 +11,7 @@ import { MostrarerrorComponent } from '../../../../pantallas_avisos/mostrarerror
 import { AvisoExitoComponent } from '../../../../pantallas_avisos/aviso-exito/aviso-exito.component';
 import { Tabla } from '../../base/tabla';
 import { BuscadorComponent } from '../../../buscador/buscador.component';
+import { extractErrorMessage } from '../../../../../utils/error-handler';
 @Component({
   selector: 'app-empresas-mantenimiento-tabla',
   standalone: true,
@@ -40,17 +41,18 @@ export class EmpresasMantenimientoTablaComponent extends Tabla implements OnInit
     this.botoncrear.set(true);
   }
   cargarEmpresas() {
-    this.empresaService.obtenerEmpresaMantenimiento().subscribe(
-      (data: EmpresaMantenimiento[]) => {
+    this.empresaService.obtenerEmpresaMantenimiento().subscribe({
+      next: (data: EmpresaMantenimiento[]) => {
         this.empresas = data;
         this.empresascopia = [...this.empresas];
       },
-      (error) => {
-        this.mensajeerror = 'Error al cargar las empresas de mantenimiento, intente más tarde.';
-        console.error('Error al cargar las empresas de mantenimiento:', error);
+      error: (error) => {
+        const errorMsg = extractErrorMessage(error, 'Error al cargar las empresas de mantenimiento, intente más tarde.');
+        this.mensajeerror = errorMsg;
+        console.error('Error al cargar las empresas de mantenimiento:', errorMsg);
         this.error.set(true);
       }
-    );
+    });
   }
   aplicarFiltros(event?: [string, string]) {
    if (event && event[0].trim() !== '') {
@@ -97,8 +99,9 @@ export class EmpresasMantenimientoTablaComponent extends Tabla implements OnInit
           this.exito.set(true);
         },
         error: (error) => {
-          this.mensajeerror = 'Error al eliminar la empresa de mantenimiento.';
-          console.error('Error al eliminar la empresa de mantenimiento: ' + error);
+          const errorMsg = extractErrorMessage(error, 'Error al eliminar la empresa de mantenimiento.');
+          this.mensajeerror = errorMsg;
+          console.error('Error al eliminar la empresa de mantenimiento:', errorMsg);
           this.error.set(true);
         }
       });

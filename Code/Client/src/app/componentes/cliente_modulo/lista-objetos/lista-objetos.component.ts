@@ -4,6 +4,7 @@ import { GrupoequipoService } from '../../../services/APIS/GrupoEquipo/grupoequi
 import { GrupoEquipo } from '../../../models/grupo_equipo';
 import { Router } from '@angular/router';
 import { MostrarerrorComponent } from '../../pantallas_avisos/mostrarerror/mostrarerror.component';
+import { extractErrorMessage } from '../../../utils/error-handler';
 @Component({
   selector: 'app-lista-objetos',
   standalone: true,
@@ -37,9 +38,10 @@ export class ListaObjetosComponent implements OnChanges {
         this.todosLosProductos = data;
         this.filtrarProductos();
       },
-      error: (error) =>{ 
-        this.mensajeerror = "Error al cargar los productos, intente mas tarde";
-        console.error('Error en componente:', error)
+      error: (error) => {
+        const errorMsg = extractErrorMessage(error, "Error al cargar los productos, intente mas tarde");
+        this.mensajeerror = errorMsg;
+        console.error(errorMsg);
         this.error.set(true);
       }
     });

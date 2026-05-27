@@ -4,6 +4,7 @@ import { DisponibilidadService } from '../../../../services/APIS/Disponibilidad/
 import { Disponibilidad } from '../../../../models/disponibilidad';
 import { Carrito } from '../../../../models/carrito';
 import { MostrarerrorComponent } from '../../../pantallas_avisos/mostrarerror/mostrarerror.component';
+import { extractErrorMessage } from '../../../../utils/error-handler';
 @Component({
   selector: 'app-calendario',
   imports: [CommonModule , MostrarerrorComponent],
@@ -32,11 +33,13 @@ export class CalendarioComponent {
  error : WritableSignal<boolean> = signal(false);
  mensajeerror : string ="Error desconocido , intente mas tarde";
  constructor(private ApiDisponibilidad : DisponibilidadService){};
+
   ngOnInit(): void { 
     this.diaActual.setHours(0, 0, 0, 0);
     this.inicio.setHours(0, 0, 0, 0);
     this.generarDiasDelMes();
   }
+
  generarDiasDelMes(): void {
     const primerDia = new Date(this.inicio.getFullYear(), this.inicio.getMonth(), 1);
     const ultimoDia = new Date(this.inicio.getFullYear(), this.inicio.getMonth() + 1, 0);
@@ -47,10 +50,13 @@ export class CalendarioComponent {
     for (let d = new Date(primerDia); d <= ultimoDia; d.setDate(d.getDate() + 1))
       this.diasDelMes.push(new Date(d));
   }
+
   cambiarMes(valor : number){
     this.inicio = new Date(this.inicio.getFullYear(), this.inicio.getMonth() + valor, 1);
     this.generarDiasDelMes();
   }
+
+
   obtenerDisponibilidad(keys : number[]){
     this.ApiDisponibilidad.obtenerDisponibilidad(new Date(), new Date(new Date().getFullYear() + 1, new Date().getMonth(), new Date().getDate()), keys).subscribe({
       next: (data : Disponibilidad[]) => {
@@ -66,11 +72,16 @@ export class CalendarioComponent {
         });
       },
       error: (error) => {
+        const errorMsg = extractErrorMessage(error, "Error al obtener la disponibilidad de los prestamos, intente mas tarde");
+        this.mensajeerror = errorMsg;
+        console.error(errorMsg);
         this.error.set(true);
-        this.mensajeerror = "Error al obtener la disponibilidad de los prestamos, intente mas tarde";
       }
     })
   }
+
+
+
   selecionarFecha(fecha: Date): void {
     if (!this.fechaInicioSeleccionada() || (this.fechaInicioSeleccionada() && this.fechaFinSeleccionada())) {
       this.fechaInicioSeleccionada.set(new Date(fecha));
@@ -87,6 +98,8 @@ export class CalendarioComponent {
     }
     this.validarSeleccion(); 
   }
+
+
   validarSeleccion(){
     if (!this.fechaInicioSeleccionada() || !this.fechaFinSeleccionada()) {
       return ; 
@@ -103,15 +116,21 @@ export class CalendarioComponent {
         }
     }
   }
+
+
   esFechaSeleccionada(fecha: Date): boolean {
     if (!this.fechaInicioSeleccionada()) return false;
     const inicio : number= this.fechaInicioSeleccionada()!.getTime();
     const fin: number  = this.fechaFinSeleccionada() ? this.fechaFinSeleccionada()!.getTime() : inicio;
     return fecha.getTime() >= inicio && fecha.getTime() <= fin;
   }
+
+
   obtenerFechaKey(date: Date): string {
     return this.toLocalISOString(date);
   }
+
+
   estaOcupado(dia : Date): boolean {
     const fechaKey = this.obtenerFechaKey(dia);
     if(this.disponibilidadPorFecha.has(fechaKey)){
@@ -131,4 +150,6 @@ export class CalendarioComponent {
     const localDate = new Date(date.getTime() - offset * 60000);
     return localDate.toISOString().split('T')[0];
   }
+
+  
 }

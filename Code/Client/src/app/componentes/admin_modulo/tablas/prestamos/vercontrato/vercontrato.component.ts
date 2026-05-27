@@ -3,6 +3,7 @@ import { CommonModule } from '@angular/common';
 import { PrestamosAPIService } from '../../../../../services/APIS/prestamo/prestamos-api.service';
 import { BaseTablaComponent } from '../../base/base';
 import { MostrarerrorComponent } from '../../../../pantallas_avisos/mostrarerror/mostrarerror.component';
+import { extractErrorMessage } from '../../../../../utils/error-handler';
 @Component({
   selector: 'app-vercontrato',
   imports: [CommonModule, MostrarerrorComponent],
@@ -30,8 +31,9 @@ export class VercontratoComponent extends BaseTablaComponent {
         this.contratoContent = data;
       },
       error: (error) => {
-        this.mensajeerror="No se pudo cargar el contrato del prestamo.";
-        console.error(error);
+        const errorMsg = extractErrorMessage(error, "No se pudo cargar el contrato del prestamo.");
+        this.mensajeerror = errorMsg;
+        console.error(errorMsg);
         this.error.set(true);
       }
     });
