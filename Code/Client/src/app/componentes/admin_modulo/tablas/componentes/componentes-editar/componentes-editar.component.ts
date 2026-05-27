@@ -8,6 +8,7 @@ import { BaseTablaComponent } from '../../base/base';
 import { AvisoExitoComponent } from '../../../../pantallas_avisos/aviso-exito/aviso-exito.component';
 import { Aviso } from '../../../../pantallas_avisos/aviso/aviso.component';
 import { MostrarerrorComponent } from '../../../../pantallas_avisos/mostrarerror/mostrarerror.component';
+import { extractErrorMessage } from '../../../../../utils/error-handler';
 @Component({
   selector: 'app-componentes-editar',
   standalone: true,
@@ -32,8 +33,9 @@ export class ComponentesEditarComponent extends BaseTablaComponent {
         this.equipos = data;
       },
       error: (error) => {
-        this.mensajeerror="Error al obtener los equipos , intente mas tarde";
-        console.error('Error al cargar los equipos:', error?.error?.message);
+        const errorMsg = extractErrorMessage(error, "Error al obtener los equipos , intente mas tarde");
+        this.mensajeerror = errorMsg;
+        console.error(errorMsg);
         this.error.set(true);
       }
     })
@@ -50,9 +52,10 @@ export class ComponentesEditarComponent extends BaseTablaComponent {
         this.exito.set(true); 
       },
       error: (error) => {
-        this.mensajeerror="Error al actualizar el componenete , intente mas tarde"
-        console.error(error?.error?.error + ': ' + error?.error?.message);
-        this.error.set(true); 
+        const errorMsg = extractErrorMessage(error, "Error al actualizar el componenete , intente mas tarde");
+        this.mensajeerror = errorMsg;
+        console.error(errorMsg);
+        this.error.set(true);
       }
     });
   }

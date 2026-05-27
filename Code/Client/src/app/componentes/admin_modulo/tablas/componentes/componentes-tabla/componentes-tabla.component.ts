@@ -11,6 +11,7 @@ import { MostrarerrorComponent } from '../../../../pantallas_avisos/mostrarerror
 import { AvisoExitoComponent } from '../../../../pantallas_avisos/aviso-exito/aviso-exito.component';
 import { BuscadorComponent } from '../../../buscador/buscador.component';
 import { Tabla } from '../../base/tabla';
+import { extractErrorMessage } from '../../../../../utils/error-handler';
 @Component({
   selector: 'app-componentes-tabla',
   standalone: true,
@@ -46,8 +47,9 @@ export class ComponentesTablaComponent extends Tabla implements OnInit  {
         this.componentescopia = [...this.componentes];
       },
       error: (error) => {
-        this.mensajeerror = "Error al cargar los componentes , Intente mas tarde";
-        console.error('Error al cargar los componentes:', error);
+        const errorMsg = extractErrorMessage(error, "Error al cargar los componentes , Intente mas tarde");
+        this.mensajeerror = errorMsg;
+        console.error(errorMsg);
         this.error.set(true);
       }
     });
@@ -101,10 +103,11 @@ export class ComponentesTablaComponent extends Tabla implements OnInit  {
           this.exito.set(true);
         },
         error: (error) => {
-          this.mensajeerror = "Error al eliminar el componente, intente más tarde";
-          console.error('Error al eliminar el componente: ' + error);
-          this.error.set(true);
-        }
+        const errorMsg = extractErrorMessage(error, "Error al eliminar el componente, intente más tarde");
+        this.mensajeerror = errorMsg;
+        console.error(errorMsg);
+        this.error.set(true);
+      }
       });
     }
     this.limpiarComponenteSeleccionado();

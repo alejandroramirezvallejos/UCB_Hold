@@ -12,6 +12,7 @@ import { MostrarerrorComponent } from '../../../../pantallas_avisos/mostrarerror
 import { AvisoExitoComponent } from '../../../../pantallas_avisos/aviso-exito/aviso-exito.component';
 import { BuscadorComponent } from '../../../buscador/buscador.component';
 import { Tabla } from '../../base/tabla';
+import { extractErrorMessage } from '../../../../../utils/error-handler';
 @Component({
   selector: 'app-mantenimientos-tabla',
   standalone: true,
@@ -46,8 +47,9 @@ export class MantenimientosTablaComponent extends Tabla implements OnInit {
         this.agruparMantenimientos(datos);
       },
       error: (error) => {
-        this.mensajeerror = "Error al cargar los mantenimientos, intente mas tarde";
-        console.error('Error al cargar los mantenimientos: ' + error?.error?.message);
+        const errorMsg = extractErrorMessage(error, "Error al cargar los mantenimientos, intente mas tarde");
+        this.mensajeerror = errorMsg;
+        console.error(errorMsg);
         this.error.set(true);
       }
     });
@@ -119,11 +121,13 @@ export class MantenimientosTablaComponent extends Tabla implements OnInit {
           this.cargarMantenimientos();
       },
       error: (error) => {
-          this.mensajeerror = "Error al eliminar el mantenimiento, intente mas tarde";
-          this.error.set(true);
-         console.error('Error al eliminar el mantenimiento: ' + error?.error?.message);
-          this.limpiarMantenimientoSeleccionado();
-          this.alertaeliminar = false;
+        const errorMsg = extractErrorMessage(error, "Error al eliminar el mantenimiento, intente mas tarde");
+        this.mensajeerror = errorMsg;
+        console.error(errorMsg);
+        this.error.set(true);
+        this.limpiarMantenimientoSeleccionado();
+        this.alertaeliminar = false;
+       
       }
     })
   }

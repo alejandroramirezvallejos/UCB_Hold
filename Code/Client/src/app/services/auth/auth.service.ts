@@ -59,7 +59,7 @@ export class AuthService {
     try {
       const base64Payload  = accessToken.split('.')[1].replace(/-/g, '+').replace(/_/g, '/');
       const decodedPayload = JSON.parse(atob(base64Payload));
-      return decodedPayload['role'] ?? null;
+      return decodedPayload['role'] || decodedPayload['http://schemas.microsoft.com/ws/2008/06/identity/claims/role'] || null;
     } catch {
       return null;
     }

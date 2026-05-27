@@ -6,6 +6,7 @@ import { GrupoEquipo } from '../../../models/grupo_equipo';
 import { CarritoService } from '../../../services/carrito/carrito.service';
 import { MostrarerrorComponent } from '../../pantallas_avisos/mostrarerror/mostrarerror.component';
 import { DisponibilidadService } from '../../../services/APIS/Disponibilidad/disponibilidad.service';
+import { extractErrorMessage } from '../../../utils/error-handler';
 @Component({
   selector: 'app-objeto',
   standalone: true,
@@ -41,8 +42,9 @@ export class ObjetoComponent {
       },
       error: (error) => {
         this.desabilitarboton = true;
-        this.mensajeerror = "Error al cargar el producto, intente mas tarde";
-        console.error('Error completo del backend:', error.error?.Errors || error.message);
+        const errorMsg = extractErrorMessage(error, 'Error al cargar el producto, intente mas tarde');
+        this.mensajeerror = errorMsg;
+        console.error('Error completo del backend:', errorMsg);
         this.producto = {
           id: 0,
           nombre: 'Error de carga',
@@ -68,8 +70,9 @@ export class ObjetoComponent {
         this.cargando = false;
       },
       error: (error) => {
-        console.error('Error disponibilidad:', error.error?.Errors || error.message);
-        this.mensajeerror = "Error al obtener la disponibilidad del producto";
+        const errorMsg = extractErrorMessage(error, 'Error al obtener la disponibilidad del producto');
+        console.error('Error disponibilidad:', errorMsg);
+        this.mensajeerror = errorMsg;
         this.error.set(true);
         this.cargando = false;
       }

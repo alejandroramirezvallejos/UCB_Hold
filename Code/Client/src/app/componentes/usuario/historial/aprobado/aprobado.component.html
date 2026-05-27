@@ -29,8 +29,6 @@
         </div>
       <div class="botones">
         <div class="botones-izquierda">
-          <button class="recoger"
-           (click)="$event.stopPropagation(); avisorecogerf(item.value.datosgrupo)"> RECOGIDO</button>
           <button class="cancelar" (click)="$event.stopPropagation(); avisocancelarf(item.value.datosgrupo)"> CANCELAR</button>
         </div>
         <button class="ver-detalles" (click)="AbrirVista(item.value.equipos)"> VER DETALLES</button>
@@ -46,14 +44,7 @@
     }
   </div>
 </div>
-@if (avisoaprobar()) {
-  <app-aviso
-  [mensaje]="'Al recoger el equipo usted afirma que el equipo se encuentra a su disposicion y cualquier problema que tenga con el equipo sera de su responsabilidad.'"
-  [cerrar]="avisoaprobar"
-  (aceptar)="recoger()"
-  >
-  </app-aviso>
-}
+
 @if (avisocancelar()) {
   <app-aviso
   [mensaje]="'Desea cancelar el préstamo de este equipo? , tenga en cuenta que si lo hace, el equipo no podrá ser recogido o si ya fue recogido, debe ser devuelto .'"

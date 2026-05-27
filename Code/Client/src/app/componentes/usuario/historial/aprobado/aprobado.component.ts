@@ -8,6 +8,7 @@ import { HistorialBase } from '../BASE/HistorialBase';
 import { VistaPrestamosComponent } from '../../../vista-prestamos/vista-prestamos.component';
 import { Aviso } from '../../../pantallas_avisos/aviso/aviso.component';
 import { AvisoExitoComponent } from '../../../pantallas_avisos/aviso-exito/aviso-exito.component';
+import { extractErrorMessage } from '../../../../utils/error-handler';
 @Component({
   selector: 'app-aprobado',
   standalone: true,
@@ -18,40 +19,23 @@ import { AvisoExitoComponent } from '../../../pantallas_avisos/aviso-exito/aviso
 export class AprobadoComponent extends HistorialBase {
   override estado: string = 'aprobado';
   avisocancelar : WritableSignal<boolean> = signal(false);
-  avisoaprobar : WritableSignal<boolean> = signal(false);
   constructor( protected override usuario : UsuarioService ,  protected override prestamoApi : PrestamosAPIService)
-  {super(prestamoApi, usuario);}; 
+  {
+    super(prestamoApi, usuario);
+  }; 
+
+
   ngOnInit() {
     this.cargarDatos();
   }
- validarFechaRecogida(item: any): boolean {
-   return item.value.datosgrupo.FechaPrestamoEsperada && item.value.datosgrupo.FechaPrestamoEsperada > new Date();
- }
+
+
   avisocancelarf(item : PrestamoDto) {
     this.avisocancelar.set(!this.avisocancelar());
     this.itemSeleccionado = item;
   }
-  avisorecogerf(item : PrestamoDto){
-     this.avisoaprobar.set(!this.avisoaprobar());
-     this.itemSeleccionado = item;
-  }
-  recoger() {
-    this.prestamoApi.cambiarEstadoPrestamo(this.itemSeleccionado!.Id, 'activo').subscribe({
-      next: (response) => {
-        this.cargarDatos();
-        this.itemSeleccionado = null;
-        this.avisoaprobar.set(false);
-        this.mensajeexito = "Préstamo recogido con éxito , ahora pasa a Activo";
-        this.exito.set(true);
-      }, 
-      error: (error) => {
-        const msg = error.error?.errors?.[0] || error.error?.message || error.message || 'Error desconocido';
-        this.mensajeerror = `Error al recoger el préstamo: ${msg}`;
-        console.error(msg);
-        this.error.set(true);
-      }
-    });
-  }
+
+  
   cancelar() {
     this.prestamoApi.cambiarEstadoPrestamo(this.itemSeleccionado!.Id, 'cancelado').subscribe({
       next: (response) => {
@@ -62,7 +46,7 @@ export class AprobadoComponent extends HistorialBase {
         this.exito.set(true);
       },
       error: (error) => {
-        const msg = error.error?.errors?.[0] || error.error?.message || error.message || 'Error desconocido';
+        const msg = extractErrorMessage(error);
         this.mensajeerror = `Error al cancelar el préstamo: ${msg}`;
         console.error(msg);
         this.error.set(true);

@@ -11,6 +11,7 @@ import { PantallaCargaComponent } from '../../../../pantallas_avisos/pantalla-ca
 import { AvisoEliminarComponent } from '../../../../pantallas_avisos/aviso-eliminar/aviso-eliminar.component';
 import { MostrarerrorComponent } from '../../../../pantallas_avisos/mostrarerror/mostrarerror.component';
 import { Aviso } from '../../../../pantallas_avisos/aviso/aviso.component';
+import { extractErrorMessage } from '../../../../../utils/error-handler';
 import { AvisoExitoComponent } from '../../../../pantallas_avisos/aviso-exito/aviso-exito.component';
 import { BuscadorComponent } from '../../../buscador/buscador.component';
 import { Tabla } from '../../base/tabla';
@@ -61,8 +62,9 @@ export class PrestamosTablaComponent extends Tabla implements OnInit {
         this.seleccionarEstado(this.estadoSeleccionado);
       },
       error: (error) => {
-        this.mensajeerror = 'Error al cargar los préstamos. Por favor, inténtelo de nuevo más tarde.';
-        console.error('Error al cargar los préstamos:', error);
+        const errorMsg = extractErrorMessage(error, 'Error al cargar los préstamos. Por favor, inténtelo de nuevo más tarde.');
+        this.mensajeerror = errorMsg;
+        console.error('Error al cargar los préstamos:', errorMsg);
         this.error.set(true);
       }
     });
@@ -99,8 +101,9 @@ export class PrestamosTablaComponent extends Tabla implements OnInit {
         this.cargarPrestamos();
       },
       error: (error) => {
-        this.mensajeerror = 'Error al eliminar el préstamo. Por favor, inténtelo de nuevo más tarde.';
-        console.error('Error al eliminar el préstamo: ' + error);
+        const errorMsg = extractErrorMessage(error, 'Error al eliminar el préstamo. Por favor, inténtelo de nuevo más tarde.');
+        this.mensajeerror = errorMsg;
+        console.error('Error al eliminar el préstamo:', errorMsg);
         this.error.set(true);
       }
     });
@@ -199,7 +202,7 @@ export class PrestamosTablaComponent extends Tabla implements OnInit {
         this.cargarPrestamos();
       },
       error: (error) => {
-        const errorMsg = error.error?.errors?.[0] || error.error?.message || error.message || 'Error desconocido';
+        const errorMsg = extractErrorMessage(error);
         this.mensajeerror = `Error al aprobar el préstamo: ${errorMsg}`;
         console.error(errorMsg);
         this.error.set(true);
@@ -220,7 +223,7 @@ export class PrestamosTablaComponent extends Tabla implements OnInit {
         this.cargarPrestamos();
       },
       error: (error) => {
-        const errorMsg = error.error?.errors?.[0] || error.error?.message || error.message || 'Error desconocido';
+        const errorMsg = extractErrorMessage(error);
         this.mensajeerror = `Error al rechazar el préstamo: ${errorMsg}`;
         console.error(errorMsg);
         this.error.set(true);
@@ -232,6 +235,12 @@ export class PrestamosTablaComponent extends Tabla implements OnInit {
     this.prestamoSeleccionado = prestamo;
     this.vercontrato.set(!this.vercontrato());
   }
+
+  
+  avisorecogido: WritableSignal<boolean> = signal(false);
+  avisodevuelto: WritableSignal<boolean> = signal(false);
+  observacionDevolucion: string = '';
+
   abrirVistaPrestamos(prestamos : PrestamoDto[]) {
     this.prestamosVista = prestamos;
     this.abrirVista = true;
@@ -239,5 +248,52 @@ export class PrestamosTablaComponent extends Tabla implements OnInit {
   cerrarVistaPrestamos() {
     this.abrirVista = false;
     this.prestamosVista = [];
+  }
+
+  validarRecogido(key: number) {
+    this.prestamoKeySeleccionado = key;
+    this.avisorecogido.set(true);
+  }
+
+  validarDevuelto(key: number) {
+    this.observacionDevolucion = '';
+    this.prestamoKeySeleccionado = key;
+    this.avisodevuelto.set(true);
+  }
+
+  recogerprestamo(key: number) {
+    this.prestamosapi.cambiarEstadoPrestamo(this.prestamos.get(key)!.datosgrupo.Id, 'activo').subscribe({
+      next: (response) => {
+        this.mensajeexito = 'Préstamo marcado como recogido con éxito.';
+        this.exito.set(true);
+        this.cargarPrestamos();
+      },
+      error: (error) => {
+        const errorMsg = extractErrorMessage(error);
+        this.mensajeerror = `Error al actualizar el préstamo: ${errorMsg}`;
+        console.error(errorMsg);
+        this.error.set(true);
+      }
+    });
+    this.prestamoKeySeleccionado = 0;
+    this.avisorecogido.set(false);
+  }
+
+  devolverprestamo(key: number) {
+    this.prestamosapi.cambiarEstadoPrestamo(this.prestamos.get(key)!.datosgrupo.Id, 'finalizado', this.observacionDevolucion).subscribe({
+      next: (response) => {
+        this.mensajeexito = 'Préstamo marcado como devuelto con éxito.';
+        this.exito.set(true);
+        this.cargarPrestamos();
+      },
+      error: (error) => {
+        const errorMsg = extractErrorMessage(error);
+        this.mensajeerror = `Error al devolver el préstamo: ${errorMsg}`;
+        console.error(errorMsg);
+        this.error.set(true);
+      }
+    });
+    this.prestamoKeySeleccionado = 0;
+    this.avisodevuelto.set(false);
   }
 }

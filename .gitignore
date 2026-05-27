@@ -112,3 +112,5 @@ server.env
 secrets/
 **/https/*.pem
 **/https/*.key
+
+Code/Server/publish/

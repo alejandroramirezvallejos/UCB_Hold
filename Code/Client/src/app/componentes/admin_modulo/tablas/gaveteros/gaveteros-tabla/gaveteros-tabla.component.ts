@@ -11,6 +11,7 @@ import { MostrarerrorComponent } from '../../../../pantallas_avisos/mostrarerror
 import { AvisoExitoComponent } from '../../../../pantallas_avisos/aviso-exito/aviso-exito.component';
 import { BuscadorComponent } from '../../../buscador/buscador.component';
 import { Tabla } from '../../base/tabla';
+import { extractErrorMessage } from '../../../../../utils/error-handler';
 @Component({
   selector: 'app-gaveteros-tabla',
   standalone: true,
@@ -46,8 +47,9 @@ export class GaveterosTablaComponent extends Tabla {
         this.gaveteroscopia = [...this.gaveteros];
       },
       error: (error) => {
-        this.mensajeerror = "Error al cargar los gaveteros, intente mas tarde";
-        console.error('Error al cargar los gaveteros:', error);
+        const errorMsg = extractErrorMessage(error, "Error al cargar los gaveteros, intente mas tarde");
+        this.mensajeerror = errorMsg;
+        console.error(errorMsg);
         this.error.set(true);
       }
     });
@@ -102,10 +104,11 @@ confirmarEliminacion() {
        this.cargarGaveteros();
     },
     error: (error) => {
-      this.mensajeerror = "Error al eliminar el gavetero, intente mas tarde";
-      console.error('Error al eliminar el gavetero: ' + error);
-      this.error.set(true);
-    }
+        const errorMsg = extractErrorMessage(error, "Error al eliminar el gavetero, intente mas tarde");
+        this.mensajeerror = errorMsg;
+        console.error(errorMsg);
+        this.error.set(true);
+      }
   });
   this.limpiarGaveteroSeleccionado();
   this.alertaeliminar = false;

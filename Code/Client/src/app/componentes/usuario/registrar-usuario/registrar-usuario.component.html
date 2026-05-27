@@ -186,7 +186,8 @@
             name="password"
             [(ngModel)]="password"
             required
-            minlength="6"
+            minlength="8"
+            pattern="^(?=.*[A-Z])(?=.*[0-9])(?=.*[^a-zA-Z0-9]).{8,}$"
             placeholder="••••••••"
             class="form-input"
             #passwordInput="ngModel"
@@ -197,7 +198,10 @@
                 <div>La contraseña es requerida</div>
               }
               @if (passwordInput.errors?.['minlength']) {
-                <div>Mínimo 6 caracteres</div>
+                <div>Mínimo 8 caracteres</div>
+              }
+              @if (passwordInput.errors?.['pattern']) {
+                <div>La contraseña debe tener al menos una mayúscula, un número y un carácter especial</div>
               }
             </div>
           }

@@ -4,8 +4,9 @@ import { EmpresaMantenimiento } from '../../../../../models/admin/EmpresaManteni
 import { EmpresamantenimientoService } from '../../../../../services/APIS/EmpresaMantenimiento/empresamantenimiento.service';
 import { BaseTablaComponent } from '../../base/base';
 import { MostrarerrorComponent } from '../../../../pantallas_avisos/mostrarerror/mostrarerror.component';
-import { Aviso } from '../../../../pantallas_avisos/aviso/aviso.component';
 import { AvisoExitoComponent } from '../../../../pantallas_avisos/aviso-exito/aviso-exito.component';
+import { Aviso } from '../../../../pantallas_avisos/aviso/aviso.component';
+import { extractErrorMessage } from '../../../../../utils/error-handler';
 @Component({
   selector: 'app-empresas-mantenimiento-crear',
   standalone: true,
@@ -32,8 +33,9 @@ export class EmpresasMantenimientoCrearComponent  extends BaseTablaComponent{
         this.exito.set(true);
       },
       error: (error) => {
-        this.mensajeerror="Error al crear la empresa, Intente mas tarde";
-        console.error(error.error?.Errors?.[0] ?? error.message ?? 'Error desconocido');
+        const errorMsg = extractErrorMessage(error, 'Error al crear la empresa, Intente mas tarde');
+        this.mensajeerror = errorMsg;
+        console.error(errorMsg);
         this.error.set(true);
       }
     });

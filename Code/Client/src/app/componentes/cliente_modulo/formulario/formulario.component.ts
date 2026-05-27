@@ -15,6 +15,7 @@ import { PantallaCargaComponent } from '../../pantallas_avisos/pantalla-carga/pa
 import { MostrarerrorComponent } from '../../pantallas_avisos/mostrarerror/mostrarerror.component';
 import { Aviso } from '../../pantallas_avisos/aviso/aviso.component';
 import { AvisoExitoComponent } from '../../pantallas_avisos/aviso-exito/aviso-exito.component';
+import { extractErrorMessage } from '../../../utils/error-handler';
 @Component({
   selector: 'app-formulario',
   standalone: true,
@@ -75,10 +76,11 @@ export class FormularioComponent implements OnInit {
           this.contenidoHtml = this.sanitizer.bypassSecurityTrustHtml(processedTemplate);
         },
         error: (error) => {
-          this.mensajeerror = "Error al cargar el contrato, intente mas tarde";
-          console.error('Error al cargar el HTML: ', error);
-          this.error.set(true);
-        }
+        const errorMsg = extractErrorMessage(error, "Error al cargar el contrato, intente mas tarde");
+        this.mensajeerror = errorMsg;
+        console.error(errorMsg);
+        this.error.set(true);
+      }
       });
   }
 

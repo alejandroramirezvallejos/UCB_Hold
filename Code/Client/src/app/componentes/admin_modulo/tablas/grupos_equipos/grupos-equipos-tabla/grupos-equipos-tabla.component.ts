@@ -12,6 +12,7 @@ import { MostrarerrorComponent } from '../../../../pantallas_avisos/mostrarerror
 import { AvisoExitoComponent } from '../../../../pantallas_avisos/aviso-exito/aviso-exito.component';
 import { BuscadorComponent } from '../../../buscador/buscador.component';
 import { Tabla } from '../../base/tabla';
+import { extractErrorMessage } from '../../../../../utils/error-handler';
 @Component({
   selector: 'app-grupos-equipos-tabla',
   standalone: true,
@@ -41,8 +42,9 @@ export class GruposEquiposTablaComponent extends Tabla implements OnInit {
         this.categorias = data.map((categoria: any) => categoria.Nombre);
       },
       error: (error) => {
-        this.mensajeerror="Error al cargar las categorías, intente más tarde";
-        console.error('Error al cargar las categorías:', error?.error?.message);
+        const errorMsg = extractErrorMessage(error, "Error al cargar las categorías, intente más tarde");
+        this.mensajeerror = errorMsg;
+        console.error(errorMsg);
         this.error.set(true);
       }
   });
@@ -62,8 +64,9 @@ export class GruposEquiposTablaComponent extends Tabla implements OnInit {
         this.aplicarFiltros();
       },
       error: (error) => {
-        this.mensajeerror="Error al cargar los grupos de equipos, intente más tarde";
-        console.error('Error al cargar los grupos de equipos:', error);
+        const errorMsg = extractErrorMessage(error, "Error al cargar los grupos de equipos, intente más tarde");
+        this.mensajeerror = errorMsg;
+        console.error(errorMsg);
         this.error.set(true);
       }
     });
@@ -121,8 +124,9 @@ export class GruposEquiposTablaComponent extends Tabla implements OnInit {
         this.cargarGruposEquipos();
       },
       error: (error) => {
-        this.mensajeerror="Error al eliminar el grupo de equipo, intente más tarde";
-        console.error('Error al eliminar el grupo de equipo: ' + error);
+        const errorMsg = extractErrorMessage(error, "Error al eliminar el grupo de equipo, intente más tarde");
+        this.mensajeerror = errorMsg;
+        console.error(errorMsg);
         this.error.set(true);
       }}
     );

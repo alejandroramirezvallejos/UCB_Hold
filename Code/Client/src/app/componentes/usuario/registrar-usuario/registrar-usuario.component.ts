@@ -6,8 +6,9 @@ import { FormsModule } from '@angular/forms';
 import { Router } from '@angular/router';
 import { UsuarioServiceAPI } from '../../../services/APIS/Usuario/usuario.service';
 import { CarreraService } from '../../../services/APIS/Carrera/carrera.service';
-import { MostrarerrorComponent } from '../../pantallas_avisos/mostrarerror/mostrarerror.component';
 import { AvisoExitoComponent } from '../../pantallas_avisos/aviso-exito/aviso-exito.component';
+import { MostrarerrorComponent } from '../../pantallas_avisos/mostrarerror/mostrarerror.component';
+import { extractErrorMessage } from '../../../utils/error-handler';
 @Component({
   selector: 'app-registrar-usuario',
   imports: [FormsModule, CommonModule, MostrarerrorComponent, AvisoExitoComponent],
@@ -46,8 +47,9 @@ export class RegistrarUsuarioComponent {
         this.carreras = response.map((carrera: any) => carrera.nombre);
       },
       error: (error) => {
-        this.mensajeerror = "Error al obtener las carreras intente mas tarde";
-        console.error('Error al obtener las carreras:', error?.error?.message);
+        const errorMsg = extractErrorMessage(error, 'Error al obtener las carreras intente mas tarde');
+        this.mensajeerror = errorMsg;
+        console.error('Error al obtener las carreras:', errorMsg);
         this.error.set(true);
       }
     });
@@ -64,9 +66,10 @@ export class RegistrarUsuarioComponent {
         this.usuarioS.iniciarsesion(this.nuevoUsuario);
         this.aviso.set(true);
       },
-      error: (error) => {
-        this.mensajeerror = "Error al registrar el usuario intente mas tarde";
-        console.error('Error al registrar el usuario:', error?.error?.message);
+      error: (err) => {
+        const errorMsg = extractErrorMessage(err, 'Error al registrar el usuario intente mas tarde');
+        this.mensajeerror = errorMsg;
+        console.error('Error al registrar el usuario:', errorMsg);
         this.error.set(true);
       }
     });

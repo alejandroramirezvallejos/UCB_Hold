@@ -3,6 +3,7 @@ import { CommonModule } from '@angular/common';
 import { PrestamosAPIService } from '../../../../../services/APIS/prestamo/prestamos-api.service';
 import { BaseTablaComponent } from '../../base/base';
 import { MostrarerrorComponent } from '../../../../pantallas_avisos/mostrarerror/mostrarerror.component';
+import { extractErrorMessage } from '../../../../../utils/error-handler';
 @Component({
   selector: 'app-vercontrato',
   imports: [CommonModule, MostrarerrorComponent],
@@ -30,11 +31,112 @@ export class VercontratoComponent extends BaseTablaComponent {
         this.contratoContent = data;
       },
       error: (error) => {
-        this.mensajeerror="No se pudo cargar el contrato del prestamo.";
-        console.error(error);
+        const errorMsg = extractErrorMessage(error, "No se pudo cargar el contrato del prestamo.");
+        this.mensajeerror = errorMsg;
+        console.error(errorMsg);
         this.error.set(true);
       }
     });
+  }
+
+  descargarContrato() {
+    const printContent = document.querySelector('.contract-viewer')?.innerHTML;
+    if (printContent) {
+      const printWindow = window.open('', '_blank');
+      if (printWindow) {
+        printWindow.document.write(`
+          <html>
+            <head>
+              <title>Contrato de Préstamo</title>
+              <style>
+                body { 
+                  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; 
+                  padding: 20px; 
+                  color: #333; 
+                  line-height: 1.35;
+                }
+                h1 { 
+                  text-align: center; 
+                  font-size: 24px; 
+                  color: #2c3e50; 
+                  margin-bottom: 12px; 
+                  text-transform: uppercase; 
+                }
+                p { 
+                  text-align: justify; 
+                  margin-bottom: 10px; 
+                  font-size: 15px; 
+                }
+                strong { 
+                  font-size: 16px; 
+                  color: #2c3e50; 
+                }
+                table { 
+                  width: 100%; 
+                  border-collapse: collapse; 
+                  margin: 20px 0; 
+                  font-size: 14px; 
+                }
+                td p { 
+                  margin: 0; 
+                  padding: 0; 
+                  line-height: 1.1 !important; 
+                  font-size: 13px; 
+                }
+                td strong { 
+                  display: block; 
+                  margin-bottom: 2px; 
+                  font-size: 14px; 
+                }
+                td { 
+                  border: 1px solid #aaa; 
+                  padding: 4px 6px; 
+                  text-align: left; 
+                  vertical-align: top; 
+                }
+                th { 
+                  background-color: #e0e0e0; 
+                  padding: 6px 8px; 
+                  border: 1px solid #aaa; 
+                }
+                .signature { 
+                  margin-top: 20px; 
+                  display: flex; 
+                  justify-content: center; 
+                  align-items: flex-start; 
+                  gap: 40px; 
+                  width: 100%;
+                }
+                .signature > div { 
+                  display: flex; 
+                  flex-direction: column; 
+                  align-items: center; 
+                  text-align: center; 
+                  max-width: 300px; 
+                }
+                .signature img { 
+                  max-width: 160px; 
+                  height: auto; 
+                  border: 1px solid #ccc; 
+                  padding: 5px; 
+                  background-color: #fff; 
+                  margin-bottom: 5px; 
+                }
+                .signature p { 
+                  margin: 0; 
+                  font-weight: bold; 
+                  text-align: center; 
+                }
+              </style>
+            </head>
+            <body onload="setTimeout(function() { window.print(); window.close(); }, 250)">
+              ${printContent}
+            </body>
+          </html>
+        `);
+        printWindow.document.close();
+      }
+    }
   }
   cerrar(){
     this.vercontraro.set(false);

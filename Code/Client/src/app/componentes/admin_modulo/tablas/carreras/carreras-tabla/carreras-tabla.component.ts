@@ -11,6 +11,7 @@ import { MostrarerrorComponent } from '../../../../pantallas_avisos/mostrarerror
 import { AvisoExitoComponent } from '../../../../pantallas_avisos/aviso-exito/aviso-exito.component';
 import { BuscadorComponent } from '../../../buscador/buscador.component';
 import { Tabla } from '../../base/tabla';
+import { extractErrorMessage } from '../../../../../utils/error-handler';
 @Component({
   selector: 'app-carreras-tabla',
   standalone: true,
@@ -26,19 +27,24 @@ export class CarrerasTablaComponent extends Tabla {
   carrerascopia: Carrera[] = [];
   carreraSeleccionada: Carrera = new Carrera();
   override columnas: string[] = ['Nombre'];
+
   constructor(private carreraService: CarreraService) {
     super();
   }
+
   ngOnInit() {
     this.cargarCarreras();
   }
+
   limpiarCarreraSeleccionada() {
     this.carreraSeleccionada = new Carrera();
   }
+
   crearCarrera() {
     this.botoneditar.set(false);
     this.botoncrear.set(true);
   }
+
   cargarCarreras() {
     this.carreraService.obtenerCarreras().subscribe({
       next: (data: any[]) => {
@@ -49,12 +55,14 @@ export class CarrerasTablaComponent extends Tabla {
         this.carrerascopia = [...this.carreras];
       },
       error: (error) => {
-        this.mensajeerror="Error al cargar las carreras , intente mas tarde";
-        console.error('Error al cargar las carreras:', error);
+        const errorMsg = extractErrorMessage(error, "Error al cargar las carreras , intente mas tarde");
+        this.mensajeerror = errorMsg;
+        console.error(errorMsg);
         this.error.set(true);
       }
     });
   }
+
   aplicarFiltros(event?: [string, string]) {
     if (event && event[0].trim() !== '') {
         const busquedaNormalizada = this.normalizeText(event[0]);
@@ -70,18 +78,22 @@ export class CarrerasTablaComponent extends Tabla {
         this.carreras = [...this.carrerascopia];
       }
   }
+
   limpiarBusqueda() {
     this.carreras = [...this.carrerascopia];
   }
+
   editarCarrera(carrera: Carrera) {
     this.botoncrear.set(false);
     this.carreraSeleccionada = { ...carrera };
     this.botoneditar.set(true);
   }
+
   eliminarCarrera(carrera: Carrera) {
     this.carreraSeleccionada = carrera;
     this.alertaeliminar = true;
   }
+  
   confirmarEliminacion() {
     if (this.carreraSeleccionada.Id) {
       this.carreraService.eliminarCarrera(this.carreraSeleccionada.Id).subscribe({
@@ -91,10 +103,11 @@ export class CarrerasTablaComponent extends Tabla {
           this.exito.set(true);
         },
         error: (error) => {
-          this.mensajeerror="Error al eliminar la carrera";
-          console.error('Error al eliminar la carrera: ' + error);
-          this.error.set(true);
-        }
+        const errorMsg = extractErrorMessage(error, "Error al eliminar la carrera");
+        this.mensajeerror = errorMsg;
+        console.error(errorMsg);
+        this.error.set(true);
+      }
       });
     }
     this.limpiarCarreraSeleccionada();

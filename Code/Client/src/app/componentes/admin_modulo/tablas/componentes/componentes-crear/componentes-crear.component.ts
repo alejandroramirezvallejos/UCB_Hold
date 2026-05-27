@@ -8,6 +8,7 @@ import { BaseTablaComponent } from '../../base/base';
 import { MostrarerrorComponent } from '../../../../pantallas_avisos/mostrarerror/mostrarerror.component';
 import { Aviso } from '../../../../pantallas_avisos/aviso/aviso.component';
 import { AvisoExitoComponent } from '../../../../pantallas_avisos/aviso-exito/aviso-exito.component';
+import { extractErrorMessage } from '../../../../../utils/error-handler';
 @Component({
   selector: 'app-componentes-crear',
   standalone: true,
@@ -32,8 +33,9 @@ export class ComponentesCrearComponent extends BaseTablaComponent {
         this.equipos = data;
       },
       error: (error) => {
-        this.mensajeerror="Error al obtener los equipos , intente mas tarde";
-        console.error('Error al cargar los equipos:', error?.error?.message);
+        const errorMsg = extractErrorMessage(error, "Error al obtener los equipos , intente mas tarde");
+        this.mensajeerror = errorMsg;
+        console.error(errorMsg);
         this.error.set(true);
       }
     })

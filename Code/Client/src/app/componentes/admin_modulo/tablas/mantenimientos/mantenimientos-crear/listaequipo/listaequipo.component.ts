@@ -7,6 +7,7 @@ import { MantenimientosServiceEquipos } from '../../../../../../services/manteni
 import { FormularioDatosComponent } from './formulario-datos/formulario-datos.component';
 import { BaseTablaComponent } from '../../../base/base';
 import { MostrarerrorComponent } from '../../../../../pantallas_avisos/mostrarerror/mostrarerror.component';
+import { extractErrorMessage } from '../../../../../../utils/error-handler';
 @Component({
   selector: 'app-listaequipo',
   imports: [CommonModule , FormsModule, FormularioDatosComponent , MostrarerrorComponent],
@@ -43,8 +44,9 @@ export class ListaequipoComponent extends BaseTablaComponent {
         this.equiposcopia = [...this.equipos];
       },
       error: (error) => {
-        this.mensajeerror = "Error al cargar los equipos, intente mas tarde";
-        console.error('Error al cargar los equipos:', error);
+        const errorMsg = extractErrorMessage(error, "Error al cargar los equipos, intente mas tarde");
+        this.mensajeerror = errorMsg;
+        console.error(errorMsg);
         this.error.set(true);
       }
     });

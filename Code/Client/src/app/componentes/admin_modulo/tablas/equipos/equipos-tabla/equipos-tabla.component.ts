@@ -11,6 +11,7 @@ import { MostrarerrorComponent } from '../../../../pantallas_avisos/mostrarerror
 import { AvisoExitoComponent } from '../../../../pantallas_avisos/aviso-exito/aviso-exito.component';
 import { BuscadorComponent } from '../../../buscador/buscador.component';
 import { Tabla } from '../../base/tabla';
+import { extractErrorMessage } from '../../../../../utils/error-handler';
 @Component({
   selector: 'app-equipos-tabla',
   standalone: true,
@@ -40,17 +41,18 @@ export class EquiposTablaComponent extends Tabla{
     this.botoncrear.set(true);
   }
   cargarEquipos() {
-    this.equiposapi.obtenerEquipos().subscribe(
-      (data: any[]) => {
+    this.equiposapi.obtenerEquipos().subscribe({
+      next: (data: any[]) => {
         this.equipos = data;
         this.equiposcopia = [...this.equipos];
       },
-      (error) => {
-        this.mensajeerror = "Error al cargar los equipos";
-        console.error('Error al cargar los equipos:', error);
+      error: (error) => {
+        const errorMsg = extractErrorMessage(error, "Error al cargar los equipos");
+        this.mensajeerror = errorMsg;
+        console.error('Error al cargar los equipos:', errorMsg);
         this.error.set(true);
       }
-    );
+    });
   }
   aplicarFiltros(event?: [string, string]){
     if (event && event[0].trim() !== '') {
@@ -99,8 +101,9 @@ confirmarEliminacion() {
        this.cargarEquipos();
     },
     error: (error) => {
-      this.mensajeerror = "Error al eliminar el equipo";
-      console.error('Error al eliminar el equipo: ' + error);
+      const errorMsg = extractErrorMessage(error, "Error al eliminar el equipo");
+      this.mensajeerror = errorMsg;
+      console.error('Error al eliminar el equipo:', errorMsg);
       this.error.set(true);
     }}
   );

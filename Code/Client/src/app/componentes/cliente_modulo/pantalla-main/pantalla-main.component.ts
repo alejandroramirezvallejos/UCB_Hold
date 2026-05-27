@@ -5,6 +5,7 @@ import { FormsModule } from '@angular/forms';
 import { CategoriaService } from '../../../services/APIS/Categoria/categoria.service';
 import { Categorias } from '../../../models/admin/Categorias';
 import { MostrarerrorComponent } from '../../pantallas_avisos/mostrarerror/mostrarerror.component';
+import { extractErrorMessage } from '../../../utils/error-handler';
 @Component({
   selector: 'app-pantalla-main',
   standalone: true,
@@ -32,9 +33,10 @@ export class PantallaMainComponent {
   ngOnInit(): void {
     this.categorias.obtenercategorias().subscribe({
       next: (data) => (this.items = data),
-      error: (error) =>{
-        this.mensajeerror = "Error al cargar las categorias , intente mas tarde"; 
-        console.error('Error en componente:' + error)
+      error: (error) => {
+        const errorMsg = extractErrorMessage(error, "Error al cargar las categorias , intente mas tarde");
+        this.mensajeerror = errorMsg;
+        console.error(errorMsg);
         this.error.set(true);
       },
     });
