@@ -15,7 +15,7 @@ Please read and follow the Code of Conduct in CODE_OF_CONDUCT.md.
 
 ## Project Setup
 
-See docs/DEVELOPMENT.md for the full local setup and run instructions.
+See [Docs/SETUP.md](Docs/SETUP.md) for the full local setup and run instructions.
 
 ## Repository Structure
 

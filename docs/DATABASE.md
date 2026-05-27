@@ -4,13 +4,13 @@ PostgreSQL 14+ with Entity Framework Core 8. Schema: [`Database/server.sql`](../
 
 ---
 
-## ✦ Entity-Relation Diagram
+## <img height="20" src="../Images/icons/architecture.svg">&nbsp;&nbsp;Entity-Relation Diagram
 
 ![ER Diagram](../Images/diagram.png)
 
 ---
 
-## ✦ Tables
+## <img height="20" src="../Images/icons/features.svg">&nbsp;&nbsp;Tables
 
 | Table                     | Purpose                              | Soft Delete | Notable columns                    |
 | ------------------------- | ------------------------------------ | ----------- | ---------------------------------- |
@@ -32,7 +32,7 @@ PostgreSQL 14+ with Entity Framework Core 8. Schema: [`Database/server.sql`](../
 
 ---
 
-## ✦ Enums
+## <img height="20" src="../Images/icons/stack.svg">&nbsp;&nbsp;Enums
 
 | SQL Enum             | Values                                                                         | Used in                   |
 | -------------------- | ------------------------------------------------------------------------------ | ------------------------- |
@@ -46,7 +46,7 @@ Mapperly uses `EnumMappingStrategy.ByName` with a `StringToEstadoEquipo` helper 
 
 ---
 
-## ✦ Business Logic
+## <img height="20" src="../Images/icons/documentation.svg">&nbsp;&nbsp;Business Logic
 
 ### Derived counters
 
@@ -78,7 +78,7 @@ Two checks run per `Prestamo`:
 
 ---
 
-## ✦ Indexes
+## <img height="20" src="../Images/icons/prerequisites.svg">&nbsp;&nbsp;Indexes
 
 | Index                                           | Columns                                                               | Justification                  |
 | ----------------------------------------------- | --------------------------------------------------------------------- | ------------------------------ |
@@ -98,7 +98,7 @@ Two checks run per `Prestamo`:
 
 ---
 
-## ✦ SQL Views
+## <img height="20" src="../Images/icons/stack.svg">&nbsp;&nbsp;SQL Views
 
 | View                                 | Purpose                                                               |
 | ------------------------------------ | --------------------------------------------------------------------- |
@@ -107,28 +107,18 @@ Two checks run per `Prestamo`:
 
 ---
 
-## ✦ Restore
+## <img height="20" src="../Images/icons/setup.svg">&nbsp;&nbsp;Restore
 
 ```bash
-# Create database
 psql -U postgres -c "CREATE DATABASE IMT_Reservas;"
-
-# Load schema + seed data
 psql -U postgres -d IMT_Reservas -f Database/server.sql
-
-# Verify (should list 15 tables)
 psql -U postgres -d IMT_Reservas -c "\dt"
 ```
 
 Docker alternative:
 
 ```bash
-docker run -d --name ucbhold-postgres \
-  -e POSTGRES_PASSWORD=postgres \
-  -e POSTGRES_DB=IMT_Reservas \
-  -p 5432:5432 \
-  -v ucbhold-pgdata:/var/lib/postgresql/data \
-  postgres:14
-
-docker exec -i ucbhold-postgres psql -U postgres -d IMT_Reservas < Database/server.sql
+cd Code && docker compose up -d ucb_db
 ```
+
+The `ucb_db` container runs `DataBase/server.sql` automatically on first startup.

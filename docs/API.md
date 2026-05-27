@@ -5,7 +5,7 @@ Interactive documentation: [`https://ucbhold.dev/swagger`](https://ucbhold.dev/s
 
 ---
 
-## ✦ Response Format
+## <img height="20" src="../Images/icons/documentation.svg">&nbsp;&nbsp;Response Format
 
 All responses use the [Ardalis.Result](https://github.com/ardalis/Result) envelope.
 
@@ -62,7 +62,7 @@ All responses use the [Ardalis.Result](https://github.com/ardalis/Result) envelo
 
 ---
 
-## ✦ Endpoints
+## <img height="20" src="../Images/icons/documentation.svg">&nbsp;&nbsp;Endpoints
 
 ### Usuario
 
@@ -136,7 +136,7 @@ All responses use the [Ardalis.Result](https://github.com/ardalis/Result) envelo
 
 ---
 
-## ✦ Validation Rules
+## <img height="20" src="../Images/icons/documentation.svg">&nbsp;&nbsp;Validation Rules
 
 ### Usuario
 
@@ -203,7 +203,7 @@ Approval (`pendiente → aprobado`) re-validates that the assigned equipment has
 
 ---
 
-## ✦ Health Check
+## <img height="20" src="../Images/icons/documentation.svg">&nbsp;&nbsp;Health Check
 
 ```
 GET /api/health

@@ -22,7 +22,7 @@ using IMT_Reservas.Server.Application.Features.Mantenimiento;
 using IMT_Reservas.Server.Application.Features.Mueble;
 using IMT_Reservas.Server.Application.Features.Prestamo;
 using IMT_Reservas.Server.Application.Features.Usuario;
-using JwtSettings  = IMT_Reservas.Server.Application.Features.Usuario.JwtSettings;
+using JwtSettings  = IMT_Reservas.Server.Application.Features.Jwt.JwtSettings;
 using JwtSvc       = IMT_Reservas.Server.Application.Features.Jwt.JwtService;
 using IMT_Reservas.Server.Application.Features.Carrito;
 using IMT_Reservas.Server.Application.Features.Contrato;
