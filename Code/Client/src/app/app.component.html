@@ -13,4 +13,7 @@
     <app-navbar></app-navbar>
     <router-outlet></router-outlet>
   </section>
+  @if(cargando()) {
+    <app-pantalla-carga></app-pantalla-carga>
+  }
 </body>

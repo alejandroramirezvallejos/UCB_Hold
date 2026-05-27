@@ -8,9 +8,12 @@ import { CarreraService } from '../../../../services/APIS/Carrera/carrera.servic
 import { AvisoExitoComponent } from '../../../pantallas_avisos/aviso-exito/aviso-exito.component';
 import { MostrarerrorComponent } from '../../../pantallas_avisos/mostrarerror/mostrarerror.component';
 import { extractErrorMessage } from '../../../../utils/error-handler';
+import { PantallaCargaComponent } from '../../../pantallas_avisos/pantalla-carga/pantalla-carga.component';
+import { finalize } from 'rxjs';
+
 @Component({
   selector: 'app-editar',
-  imports: [CommonModule, FormsModule, AvisoExitoComponent, MostrarerrorComponent],
+  imports: [CommonModule, FormsModule, AvisoExitoComponent, MostrarerrorComponent, PantallaCargaComponent],
   templateUrl: './editar.component.html',
   styleUrl: './editar.component.css'
 })
@@ -27,6 +30,8 @@ export class EditarComponent {
   isOpen: boolean = false;
   isHovered: boolean = false;
   contrasena: string = '';
+  cargando: boolean = false;
+
   constructor(
     private usuarioApi: UsuarioServiceAPI,
     private carrerasAPI: CarreraService,
@@ -63,7 +68,10 @@ export class EditarComponent {
     });
   }
   confirmar() {
-    this.usuarioApi.editarUsuario(this.localUsuario, this.contrasena).subscribe({
+    this.cargando = true;
+    this.usuarioApi.editarUsuario(this.localUsuario, this.contrasena)
+    .pipe(finalize(() => this.cargando = false))
+    .subscribe({
       next: () => {
         this.usuarioStore.actualizarDatos({ ...this.localUsuario });
         this.guardado.emit({ ...this.localUsuario });
