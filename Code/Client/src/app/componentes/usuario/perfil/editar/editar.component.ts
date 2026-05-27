@@ -7,6 +7,7 @@ import { FormsModule } from '@angular/forms';
 import { CarreraService } from '../../../../services/APIS/Carrera/carrera.service';
 import { AvisoExitoComponent } from '../../../pantallas_avisos/aviso-exito/aviso-exito.component';
 import { MostrarerrorComponent } from '../../../pantallas_avisos/mostrarerror/mostrarerror.component';
+import { extractErrorMessage } from '../../../../utils/error-handler';
 @Component({
   selector: 'app-editar',
   imports: [CommonModule, FormsModule, AvisoExitoComponent, MostrarerrorComponent],
@@ -54,8 +55,9 @@ export class EditarComponent {
         this.carreras = data.map((carrera: any) => carrera.nombre);
       },
       error: (error) => {
-        this.mensajeerror = 'Error al obtener las carreras, intente mas tarde';
-        console.error('Error al obtener las carreras:', error.error?.mensaje ?? error.message);
+        const errorMsg = extractErrorMessage(error, 'Error al obtener las carreras, intente mas tarde');
+        this.mensajeerror = errorMsg;
+        console.error('Error al obtener las carreras:', errorMsg);
         this.error.set(true);
       }
     });
@@ -70,8 +72,9 @@ export class EditarComponent {
         setTimeout(() => this.cerrar(), 2000);
       },
       error: (error) => {
-        this.mensajeerror = 'Error al actualizar el usuario, intente mas tarde';
-        console.error('Error al actualizar el usuario:', error.error?.mensaje ?? error.message);
+        const errorMsg = extractErrorMessage(error, 'Error al actualizar el usuario, intente mas tarde');
+        this.mensajeerror = errorMsg;
+        console.error('Error al actualizar el usuario:', errorMsg);
         this.error.set(true);
       }
     });

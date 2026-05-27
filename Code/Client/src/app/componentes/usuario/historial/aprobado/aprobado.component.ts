@@ -8,6 +8,7 @@ import { HistorialBase } from '../BASE/HistorialBase';
 import { VistaPrestamosComponent } from '../../../vista-prestamos/vista-prestamos.component';
 import { Aviso } from '../../../pantallas_avisos/aviso/aviso.component';
 import { AvisoExitoComponent } from '../../../pantallas_avisos/aviso-exito/aviso-exito.component';
+import { extractErrorMessage } from '../../../../utils/error-handler';
 @Component({
   selector: 'app-aprobado',
   standalone: true,
@@ -45,7 +46,7 @@ export class AprobadoComponent extends HistorialBase {
         this.exito.set(true);
       },
       error: (error) => {
-        const msg = error.error?.errors?.[0] || error.error?.message || error.message || 'Error desconocido';
+        const msg = extractErrorMessage(error);
         this.mensajeerror = `Error al cancelar el préstamo: ${msg}`;
         console.error(msg);
         this.error.set(true);

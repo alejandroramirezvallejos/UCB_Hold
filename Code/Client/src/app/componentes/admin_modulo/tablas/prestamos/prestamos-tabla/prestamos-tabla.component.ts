@@ -11,6 +11,7 @@ import { PantallaCargaComponent } from '../../../../pantallas_avisos/pantalla-ca
 import { AvisoEliminarComponent } from '../../../../pantallas_avisos/aviso-eliminar/aviso-eliminar.component';
 import { MostrarerrorComponent } from '../../../../pantallas_avisos/mostrarerror/mostrarerror.component';
 import { Aviso } from '../../../../pantallas_avisos/aviso/aviso.component';
+import { extractErrorMessage } from '../../../../../utils/error-handler';
 import { AvisoExitoComponent } from '../../../../pantallas_avisos/aviso-exito/aviso-exito.component';
 import { BuscadorComponent } from '../../../buscador/buscador.component';
 import { Tabla } from '../../base/tabla';
@@ -199,7 +200,7 @@ export class PrestamosTablaComponent extends Tabla implements OnInit {
         this.cargarPrestamos();
       },
       error: (error) => {
-        const errorMsg = error.error?.errors?.[0] || error.error?.message || error.message || 'Error desconocido';
+        const errorMsg = extractErrorMessage(error);
         this.mensajeerror = `Error al aprobar el préstamo: ${errorMsg}`;
         console.error(errorMsg);
         this.error.set(true);
@@ -220,7 +221,7 @@ export class PrestamosTablaComponent extends Tabla implements OnInit {
         this.cargarPrestamos();
       },
       error: (error) => {
-        const errorMsg = error.error?.errors?.[0] || error.error?.message || error.message || 'Error desconocido';
+        const errorMsg = extractErrorMessage(error);
         this.mensajeerror = `Error al rechazar el préstamo: ${errorMsg}`;
         console.error(errorMsg);
         this.error.set(true);
@@ -266,7 +267,7 @@ export class PrestamosTablaComponent extends Tabla implements OnInit {
         this.cargarPrestamos();
       },
       error: (error) => {
-        const errorMsg = error.error?.errors?.[0] || error.error?.message || error.message || 'Error desconocido';
+        const errorMsg = extractErrorMessage(error);
         this.mensajeerror = `Error al actualizar el préstamo: ${errorMsg}`;
         console.error(errorMsg);
         this.error.set(true);
@@ -284,7 +285,7 @@ export class PrestamosTablaComponent extends Tabla implements OnInit {
         this.cargarPrestamos();
       },
       error: (error) => {
-        const errorMsg = error.error?.errors?.[0] || error.error?.message || error.message || 'Error desconocido';
+        const errorMsg = extractErrorMessage(error);
         this.mensajeerror = `Error al devolver el préstamo: ${errorMsg}`;
         console.error(errorMsg);
         this.error.set(true);

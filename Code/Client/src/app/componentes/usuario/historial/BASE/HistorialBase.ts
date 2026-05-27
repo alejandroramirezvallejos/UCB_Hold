@@ -3,6 +3,7 @@ import { PrestamoDto } from "../../../../models/admin/Prestamos";
 import { PrestamoAgrupados } from "../../../../models/PrestamoAgrupados";
 import { PrestamosAPIService } from "../../../../services/APIS/prestamo/prestamos-api.service";
 import { UsuarioService } from "../../../../services/usuario/usuario.service";
+import { extractErrorMessage } from "../../../../utils/error-handler";
 export abstract class HistorialBase {
   datos = new Map<number, PrestamoAgrupados>;
   itemSeleccionado: PrestamoDto | null = null;
@@ -21,8 +22,9 @@ export abstract class HistorialBase {
           this.agruparPrestamos(data);
         },
         error: (error) => {
-          this.mensajeerror = "Error al cargar los prestamos, intente mas tarde";
-          console.error('Error Historial:', error.error?.mensaje || error.message);
+          const errorMsg = extractErrorMessage(error, 'Error al cargar los prestamos, intente mas tarde');
+          this.mensajeerror = errorMsg;
+          console.error('Error Historial:', errorMsg);
           this.error.set(true);
         }
       });
