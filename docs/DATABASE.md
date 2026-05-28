@@ -32,7 +32,7 @@ PostgreSQL 14+ with Entity Framework Core 8. Schema: [`Database/server.sql`](../
 
 ---
 
-## <img height="20" src="../Images/icons/stack.svg">&nbsp;&nbsp;Enums
+## <img height="20" src="../Images/icons/enums.svg">&nbsp;&nbsp;Enums
 
 | SQL Enum             | Values                                                                         | Used in                   |
 | -------------------- | ------------------------------------------------------------------------------ | ------------------------- |
@@ -46,7 +46,7 @@ Mapperly uses `EnumMappingStrategy.ByName` with a `StringToEstadoEquipo` helper 
 
 ---
 
-## <img height="20" src="../Images/icons/documentation.svg">&nbsp;&nbsp;Business Logic
+## <img height="20" src="../Images/icons/businesslogic.svg">&nbsp;&nbsp;Business Logic
 
 ### Derived counters
 
@@ -98,7 +98,7 @@ Two checks run per `Prestamo`:
 
 ---
 
-## <img height="20" src="../Images/icons/stack.svg">&nbsp;&nbsp;SQL Views
+## <img height="20" src="../Images/icons/views.svg">&nbsp;&nbsp;SQL Views
 
 | View                                 | Purpose                                                               |
 | ------------------------------------ | --------------------------------------------------------------------- |

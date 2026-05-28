@@ -1,8 +1,4 @@
 <svg width="840" height="840" viewBox="0 0 840 840" fill="none" xmlns="http://www.w3.org/2000/svg">
-<circle cx="110" cy="172" r="74" fill="#FFD700"/>
-<rect x="258" y="129" width="545" height="86" rx="20" fill="#FFD700"/>
-<circle cx="110" cy="420" r="74" fill="#FFD700"/>
-<circle cx="110" cy="668" r="74" fill="#FFD700"/>
-<rect x="258" y="377" width="545" height="86" rx="20" fill="#FFD700"/>
-<rect x="258" y="625" width="545" height="86" rx="20" fill="#FFD700"/>
+<path fill-rule="evenodd" clip-rule="evenodd" d="M330 70A260 260 0 1 0 330.001 70ZM330 160A170 170 0 1 0 330.001 160Z" fill="#FFD700"/>
+<path d="M472 528L534 462L760 688L724 724Z" fill="#FFD700"/>
 </svg>
