@@ -23,6 +23,10 @@ public class PrestamoService : Service<PrestamoEntity, PrestamoRepository, Prest
             return validation.ToResult<PrestamoDto>();
 
         var entity = MapToEntity(dto);
+
+        if (await Repository.HasAtrasadoPrestamo(entity.Carnet!))
+            return Result<PrestamoDto>.Error("Tiene un préstamo con devolución atrasada. Devuelva los equipos antes de realizar una nueva reserva.");
+
         entity.FechaSolicitud = dto.FechaSolicitud ?? DateTime.UtcNow;
         entity.FechaPrestamo = dto.FechaPrestamo ?? dto.FechaPrestamoEsperada;
         entity.FechaPrestamoEsperada = dto.FechaPrestamoEsperada ?? DateTime.UtcNow;

@@ -64,7 +64,7 @@ create type estado_equipo as enum ('operativo', 'parcialmente_operativo', 'inope
 
 alter type estado_equipo owner to postgres;
 
-create type estado_prestamo as enum ('pendiente', 'rechazado', 'aprobado', 'activo', 'finalizado', 'cancelado');
+create type estado_prestamo as enum ('pendiente', 'rechazado', 'aprobado', 'activo', 'finalizado', 'cancelado', 'atrasado');
 
 alter type estado_prestamo owner to postgres;
 

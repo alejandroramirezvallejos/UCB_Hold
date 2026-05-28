@@ -8,5 +8,6 @@ public enum EstadoPrestamo
     [PgName("activo")]     Activo,
     [PgName("rechazado")]  Rechazado,
     [PgName("finalizado")] Finalizado,
-    [PgName("cancelado")]  Cancelado
+    [PgName("cancelado")]  Cancelado,
+    [PgName("atrasado")]   Atrasado
 }

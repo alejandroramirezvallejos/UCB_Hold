@@ -1,0 +1,183 @@
+:root {
+  --color-primary: #2563eb;
+  --color-secondary: #FFCF00;
+  --color-warning: #ef4444;
+  --color-text: #334155;
+  --color-text-secondary: #64748b;
+  --color-border: #e2e8f0;
+  --color-background: #f8fafc;
+  --color-surface: #ffffff;
+}
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+  font-family: "Manrope", sans-serif;
+}
+.prestamos-container {
+  width: 100%;
+  padding: 1rem;
+}
+.prestamos-list {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+  max-width: 800px;
+  margin: 0 auto;
+}
+.prestamo-item {
+  background: var(--color-surface);
+  border-radius: 12px;
+  padding: 1.25rem;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+  border-left: 4px solid #ef4444;
+  transition: box-shadow 0.2s;
+}
+.prestamo-item:hover {
+  box-shadow: 0 4px 16px rgba(0,0,0,0.12);
+}
+.item-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  margin-bottom: 1rem;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+}
+.usuario-info {
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+}
+.usuario-nombre {
+  font-size: 1rem;
+  font-weight: 700;
+  color: var(--color-text);
+}
+.cantidad-equipos {
+  font-size: 0.8rem;
+  color: #ef4444;
+  font-weight: 600;
+  background: #fee2e2;
+  padding: 0.15rem 0.5rem;
+  border-radius: 20px;
+  width: fit-content;
+}
+.usuario-carnet {
+  font-size: 0.8rem;
+  color: var(--color-text-secondary);
+}
+.equipo-info {
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+  text-align: right;
+}
+.codigo-imt {
+  font-size: 0.8rem;
+  color: var(--color-text-secondary);
+}
+.fechas-info {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.75rem;
+  margin-bottom: 1rem;
+  padding: 0.75rem;
+  background: #fef2f2;
+  border-radius: 8px;
+}
+.fecha-item {
+  display: flex;
+  flex-direction: column;
+  gap: 0.15rem;
+  min-width: 140px;
+}
+.fecha-label {
+  font-size: 0.72rem;
+  color: var(--color-text-secondary);
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.03em;
+}
+.fecha-valor {
+  font-size: 0.85rem;
+  color: var(--color-text);
+  font-weight: 500;
+}
+.atrasado-fecha {
+  color: #ef4444;
+  font-weight: 700;
+}
+.aviso-atrasado {
+  font-size: 0.82rem;
+  color: #991b1b;
+  background: #fee2e2;
+  border: 1px solid #fca5a5;
+  border-radius: 8px;
+  padding: 0.6rem 0.875rem;
+  margin-bottom: 0.75rem;
+  font-weight: 500;
+}
+.botones {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 0.75rem;
+  flex-wrap: wrap;
+}
+.botones-izquierda {
+  display: flex;
+  gap: 0.5rem;
+  flex-wrap: wrap;
+}
+.ver-detalles {
+  background: transparent;
+  border: 1.5px solid #9CA3AF;
+  color: #9CA3AF;
+  padding: 0.5rem 0.875rem;
+  border-radius: 20px;
+  cursor: pointer;
+  font-size: 0.75rem;
+  font-weight: 600;
+  transition: all 0.2s;
+}
+.ver-detalles:hover {
+  border-color: #ffd814;
+  color: #ffd814;
+}
+.empty-state {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 3rem 1rem;
+  color: var(--color-text-secondary);
+  text-align: center;
+  gap: 0.5rem;
+}
+.empty-icon {
+  font-size: 2.5rem;
+  margin-bottom: 0.5rem;
+}
+.empty-state h3 {
+  font-size: 1.1rem;
+  color: var(--color-text);
+  font-weight: 600;
+  margin: 0;
+}
+.empty-state p {
+  font-size: 0.875rem;
+  margin: 0;
+}
+@media (max-width: 768px) {
+  .item-header { flex-direction: column; }
+  .equipo-info { text-align: left; }
+  .fechas-info { gap: 0.5rem; }
+}
+@media (max-width: 480px) {
+  .prestamos-container { padding: 0.5rem; }
+  .prestamo-item { padding: 1rem; }
+  .fecha-item { min-width: 120px; }
+  .botones { flex-direction: column; align-items: stretch; }
+  .ver-detalles { text-align: center; }
+}

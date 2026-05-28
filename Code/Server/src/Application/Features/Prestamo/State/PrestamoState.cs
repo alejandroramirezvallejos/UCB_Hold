@@ -10,7 +10,8 @@ public static class PrestamoState
         [EstadoPrestamo.Activo]     = new EstadoActivo(),
         [EstadoPrestamo.Rechazado]  = new EstadoRechazado(),
         [EstadoPrestamo.Finalizado] = new EstadoFinalizado(),
-        [EstadoPrestamo.Cancelado]  = new EstadoCancelado()
+        [EstadoPrestamo.Cancelado]  = new EstadoCancelado(),
+        [EstadoPrestamo.Atrasado]   = new EstadoAtrasado()
     };
 
     private static readonly Dictionary<string, EstadoPrestamo> ParseMap =

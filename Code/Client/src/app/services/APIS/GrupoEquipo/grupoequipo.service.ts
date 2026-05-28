@@ -1,14 +1,19 @@
 import { Injectable } from '@angular/core';
 import { environment } from '../../../../environments/environment';
 import { HttpClient } from '@angular/common/http';
-import { map, Observable } from 'rxjs';
+import { map, Observable, of, tap } from 'rxjs';
 import { GrupoEquipo } from '../../../models/grupo_equipo';
 @Injectable({
   providedIn: 'root'
 })
 export class GrupoequipoService {
   private apiUrl = environment.apiUrl + '/api/GrupoEquipo';
+  private _cache: GrupoEquipo[] | null = null;
+  private _cacheExpiry: number = 0;
+  private readonly CACHE_TTL = 5 * 60 * 1000;
   constructor(private http: HttpClient) { }
+
+  invalidarCache() { this._cache = null; }
   crearGrupoEquipo(grupoEquipo: GrupoEquipo){
     const envio = {
       Nombre: grupoEquipo.nombre,
@@ -19,7 +24,9 @@ export class GrupoequipoService {
       UrlDataSheet: grupoEquipo.url_data_sheet,
       UrlImagen: grupoEquipo.link
     };
-    return this.http.post<any>(this.apiUrl, envio);
+    return this.http.post<any>(this.apiUrl, envio).pipe(
+      tap(() => this.invalidarCache())
+    );
   }
   obtenersinfiltroGruposEquipos() {
     return this.http.get<any>(this.apiUrl).pipe(
@@ -37,21 +44,27 @@ export class GrupoequipoService {
       })))
     );
   }
-  getGrupoEquipo(categoria : string , producto : string): Observable<GrupoEquipo[]>  {
-    var url : string   = this.apiUrl +'/buscar' + '?nombre=' + producto + '&categoria=' + categoria;
+  getGrupoEquipo(categoria: string, producto: string): Observable<GrupoEquipo[]> {
+    if (this._cache && Date.now() < this._cacheExpiry)
+      return of(this._cache);
+    const url = this.apiUrl + '/buscar?nombre=' + producto + '&categoria=' + categoria;
     return this.http.get<any>(url).pipe(
       map((data: any) => data.Value.map((item: any) => ({
         id: item.Id,
-        nombre: item.Nombre ,
-        descripcion : item.Descripcion  || '',
-        modelo: ' '+item.Modelo || '',
-        url_data_sheet: item.UrlDataSheet || '' ,
-        marca: ' '+item.Marca || '',
-        link: item.UrlImagen ,
+        nombre: item.Nombre,
+        descripcion: item.Descripcion || '',
+        modelo: ' ' + item.Modelo || '',
+        url_data_sheet: item.UrlDataSheet || '',
+        marca: ' ' + item.Marca || '',
+        link: item.UrlImagen,
         nombreCategoria: item.NombreCategoria || '',
         Cantidad: item.Cantidad || 0,
         CostoPromedio: item.CostoPromedio || 0
-      })))
+      }))),
+      tap(result => {
+        this._cache = result;
+        this._cacheExpiry = Date.now() + this.CACHE_TTL;
+      })
     );
   }
   getproducto(id: string): Observable<GrupoEquipo> {
@@ -81,9 +94,13 @@ export class GrupoequipoService {
       UrlDataSheet: grupoEquipo.url_data_sheet,
       UrlImagen: grupoEquipo.link
     };
-    return this.http.put<any>(`${this.apiUrl}/${grupoEquipo.id}`, envio);
+    return this.http.put<any>(`${this.apiUrl}/${grupoEquipo.id}`, envio).pipe(
+      tap(() => this.invalidarCache())
+    );
   }
   eliminarGrupoEquipo(id: number) {
-    return this.http.delete<any>(`${this.apiUrl}/${id}`);
+    return this.http.delete<any>(`${this.apiUrl}/${id}`).pipe(
+      tap(() => this.invalidarCache())
+    );
   }
 }

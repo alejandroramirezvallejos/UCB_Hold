@@ -26,8 +26,10 @@ using JwtSettings  = IMT_Reservas.Server.Application.Features.Jwt.JwtSettings;
 using JwtSvc       = IMT_Reservas.Server.Application.Features.Jwt.JwtService;
 using IMT_Reservas.Server.Application.Features.Carrito;
 using IMT_Reservas.Server.Application.Features.Contrato;
-using IMT_Reservas.Server.Application.Features.Warmup;
+using Hangfire;
+using Hangfire.PostgreSql;
 using IMT_Reservas.Server.Core.Entities;
+using IMT_Reservas.Server.Infrastructure.Jobs;
 using IMT_Reservas.Server.Infrastructure.Config;
 using IMT_Reservas.Server.Infrastructure.Repositories.Abstraction;
 using IMT_Reservas.Server.Infrastructure.Repositories.Implementations;
@@ -131,8 +133,6 @@ builder.Services.AddScoped<GaveteroRepository>();
 builder.Services.AddScoped<ContratoRepository>();
 builder.Services.AddScoped<ComponenteRepository>();
 builder.Services.AddScoped<CarritoRepository>();
-builder.Services.AddScoped<WarmupService>();
-
 builder.Services.AddScoped<UsuarioService>();
 builder.Services.AddScoped<CarritoService>();
 builder.Services.AddScoped<PrestamoService>();
@@ -222,6 +222,9 @@ else
     builder.Services.AddDistributedMemoryCache();
 builder.Services.AddSingleton<CacheService>();
 
+builder.Services.AddHangfire(config => config.UsePostgreSqlStorage(connectionString));
+builder.Services.AddHangfireServer();
+
 builder.Services.AddRateLimiter(options =>
 {
     options.OnRejected = async (context, ct) =>
@@ -284,8 +287,10 @@ app.UseAuthentication();
 app.UseAuthorization();
 app.MapControllers();
 app.MapHealthChecks("/api/health");
-
-using var warmupScope = app.Services.CreateScope();
-await warmupScope.ServiceProvider.GetRequiredService<WarmupService>().Run();
+app.UseHangfireDashboard("/hangfire");
+RecurringJob.AddOrUpdate<EstadoPrestamoJob>(
+    "estado-prestamo",
+    job => job.Execute(),
+    "*/10 * * * *");
 
 app.Run();

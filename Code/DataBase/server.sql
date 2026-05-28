@@ -5,7 +5,7 @@
 -- Dumped from database version 17.4
 -- Dumped by pg_dump version 17.4
 
--- Started on 2026-05-25 18:53:00
+-- Started on 2026-05-28 15:50:02
 
 SET statement_timeout = 0;
 SET lock_timeout = 0;
@@ -94,7 +94,8 @@ CREATE TYPE public.estado_prestamo AS ENUM (
     'aprobado',
     'activo',
     'finalizado',
-    'cancelado'
+    'cancelado',
+    'atrasado'
 );
 
 
@@ -5729,7 +5730,7 @@ string	string	string	string	estudiante	string	terrazas@ucb.edu.bo	striasdang	str
 29708795	Andrea	Cruz	Silva	estudiante	$2a$10$.rwfOlYLmVM/44mhPzjH7OsQPisLoCq7cOwBeYd9ARbJ0bFnn637a	andrea.cruz4578@ucb.edu.bo	79802189	66463751	Ricardo Herrera	referencia2143@gmail.com	f	1	\N	\N	\N	\N
 12890062	Fernando	Terrazas	Llanos	estudiante	$2a$10$Pd8PKpTWsm6w7mgcBO9BV.UhyGy9ohbseCaaEkNBtm1zU66mPlElS	terrazasllanosfernando@ucb.edu.bo	73818234	\N	\N	\N	f	18	\N	\N	\N	\N
 122221213	Alejandro	Ramírez	Vallejos	administrador	$2a$10$fIosbUwV2zHcaY1BW7efAeYuHuJ/Ps/8G6OYl9XZIMytEXWixZm.q	alejandro.r.r@ucb.edu.bo	79943071	\N	\N	\N	f	12	\N	\N	\N	\N
-12890061	Fernando	Terrazas	Llanos	administrador	$2a$10$/8JV2T7ZgDGesA4Bd8J1Ne7YprDGYSOIS3vdcXZ9TBf2B4aifVe0G	fernando.terrazas@ucb.edu.bo	799430792	\N	\N	\N	f	2	\N	\N	/T4BSUKx1df/u7ETdnBIq4IiLXtkEwXxKOVFe6ap2lt9lTkSQ2HE7LPS8hgv1C5we1zfrL57quF8hikFEwO0yQ==	2026-06-01 22:29:17.565472-04
+12890061	Fernando	Terrazas	Llanos	administrador	$2a$10$/8JV2T7ZgDGesA4Bd8J1Ne7YprDGYSOIS3vdcXZ9TBf2B4aifVe0G	fernando.terrazas@ucb.edu.bo	799430792	\N	\N	\N	f	2	\N	\N	BVFzdwWsOHpOynCX42ibGpJVT/9LexWyjmoiTks+kU5bASZNf+oYYP9jUv2QKf4ae5ECH7W+Aj5B3Mjl/dNXYA==	2026-06-03 21:27:32.900907-04
 \.
 
 
@@ -6453,7 +6454,7 @@ REVOKE USAGE ON SCHEMA public FROM PUBLIC;
 GRANT ALL ON SCHEMA public TO PUBLIC;
 
 
--- Completed on 2026-05-25 18:53:03
+-- Completed on 2026-05-28 15:50:05
 
 --
 -- PostgreSQL database dump complete

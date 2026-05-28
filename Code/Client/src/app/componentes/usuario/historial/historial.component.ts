@@ -2,18 +2,19 @@ import { Component, OnDestroy, OnInit } from '@angular/core';
 import { UsuarioService } from '../../../services/usuario/usuario.service';
 import { ActivoComponent } from './activo/activo.component';
 import { AprobadoComponent } from './aprobado/aprobado.component';
+import { AtrasadoComponent } from './atrasado/atrasado.component';
 import { CanceladoComponent } from './cancelado/cancelado.component';
 import { FinalizadoComponent } from './finalizado/finalizado.component';
 import { PendienteComponent } from './pendiente/pendiente.component';
 import { RechazadoComponent } from './rechazado/rechazado.component';
 @Component({
   selector: 'app-historial',
-  imports: [ActivoComponent, AprobadoComponent, CanceladoComponent, FinalizadoComponent, PendienteComponent, RechazadoComponent],
+  imports: [ActivoComponent, AprobadoComponent, AtrasadoComponent, CanceladoComponent, FinalizadoComponent, PendienteComponent, RechazadoComponent],
   templateUrl: './historial.component.html',
   styleUrl: './historial.component.css'
 })
 export class HistorialComponent implements OnInit, OnDestroy {
-  contenido: string[] = ["Activo", "Aprobado", "Pendiente", "Rechazado", "Finalizado", "Cancelado"];
+  contenido: string[] = ["Activo", "Aprobado", "Pendiente", "Rechazado", "Finalizado", "Cancelado", "Atrasado"];
   item: string = "Activo";
   isOpen: boolean = false;
   isHovered: boolean = false;

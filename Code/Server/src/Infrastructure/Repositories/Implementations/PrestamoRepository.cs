@@ -109,7 +109,8 @@ public class PrestamoRepository : Repository<PrestamoEntity, PrestamoDto>
                     .Join(DbContext.Prestamos, d => d.IdPrestamo, p => p.Id, (d, p) => new { d, p })
                     .Any(x => x.d.IdEquipo == e.Id
                         && (x.p.EstadoPrestamo == EstadoPrestamo.Aprobado
-                         || x.p.EstadoPrestamo == EstadoPrestamo.Activo)
+                         || x.p.EstadoPrestamo == EstadoPrestamo.Activo
+                         || x.p.EstadoPrestamo == EstadoPrestamo.Atrasado)
                         && x.p.FechaPrestamoEsperada.Date <= fechaFin.Date
                         && x.p.FechaDevolucionEsperada.Date >= fechaInicio.Date))
             .AnyAsync();
@@ -123,7 +124,8 @@ public class PrestamoRepository : Repository<PrestamoEntity, PrestamoDto>
         var loanedIds = await DbContext.DetallesPrestamos
             .Join(DbContext.Prestamos, d => d.IdPrestamo, p => p.Id, (d, p) => new { d, p })
             .Where(x => (x.p.EstadoPrestamo == EstadoPrestamo.Aprobado
-                      || x.p.EstadoPrestamo == EstadoPrestamo.Activo)
+                      || x.p.EstadoPrestamo == EstadoPrestamo.Activo
+                      || x.p.EstadoPrestamo == EstadoPrestamo.Atrasado)
                       && x.p.FechaPrestamoEsperada.Date <= fechaFin.Date
                       && x.p.FechaDevolucionEsperada.Date >= fechaInicio.Date)
             .Select(x => x.d.IdEquipo)
@@ -176,10 +178,16 @@ public class PrestamoRepository : Repository<PrestamoEntity, PrestamoDto>
         await DbContext.SaveChangesAsync();
     }
 
+    public async Task<bool> HasAtrasadoPrestamo(string carnet)
+        => await DbContext.Prestamos
+            .AnyAsync(p => p.Carnet == carnet
+                        && p.EstadoPrestamo == EstadoPrestamo.Atrasado
+                        && !p.EstadoEliminado);
+
     private async Task<List<PrestamoDto>> GetPrestamoList(IQueryable<PrestamoEntity> source)
     {
         var rows = await (
-            from prestamo in source
+            from prestamo in source.OrderByDescending(p => p.FechaSolicitud)
             join usuario in DbContext.Usuarios.AsNoTracking()
                 on prestamo.Carnet equals usuario.Carnet into usuarioJoin
             from usuario in usuarioJoin.DefaultIfEmpty()

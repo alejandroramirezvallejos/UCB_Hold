@@ -124,7 +124,7 @@
                   Rechazar
                 </button>
             }
-            @else if (prestamo.value.datosgrupo.EstadoPrestamo=='activo') {
+            @else if (getEstadoCalculado(prestamo.value) === 'activo' || getEstadoCalculado(prestamo.value) === 'atrasado') {
                 <button class="btn-action btn-accept" (click)="validarDevuelto(prestamo.key)">
                   <i class="fas fa-undo"></i>
                   Devuelto
