@@ -11,6 +11,7 @@ export class GrupoequipoService {
   private _cache: GrupoEquipo[] | null = null;
   private _cacheExpiry: number = 0;
   private readonly CACHE_TTL = 5 * 60 * 1000;
+  paginaGuardada: number = 0;
   constructor(private http: HttpClient) { }
 
   invalidarCache() { this._cache = null; }

@@ -1,4 +1,4 @@
-import { Component, Input, OnChanges, signal, SimpleChanges, WritableSignal } from '@angular/core';
+import { Component, Input, OnChanges, OnDestroy, signal, SimpleChanges, WritableSignal } from '@angular/core';
 import { RouterModule } from '@angular/router';
 import { GrupoequipoService } from '../../../services/APIS/GrupoEquipo/grupoequipo.service';
 import { GrupoEquipo } from '../../../models/grupo_equipo';
@@ -12,7 +12,7 @@ import { extractErrorMessage } from '../../../utils/error-handler';
   templateUrl: './lista-objetos.component.html',
   styleUrl: './lista-objetos.component.css'
 })
-export class ListaObjetosComponent implements OnChanges {
+export class ListaObjetosComponent implements OnChanges, OnDestroy {
   @Input() categorias: string[] = [];
   @Input() producto: string = '';
   private todosLosProductos: GrupoEquipo[] = [];
@@ -25,7 +25,11 @@ export class ListaObjetosComponent implements OnChanges {
   mensajeerror : string = "";
   constructor(private servicio: GrupoequipoService) {}
   ngOnInit(): void {
+    this.paginaActual = this.servicio.paginaGuardada;
     this.cargarProductos();
+  }
+  ngOnDestroy(): void {
+    this.servicio.paginaGuardada = this.paginaActual;
   }
   ngOnChanges(changes: SimpleChanges): void {
     if ((changes['categorias'] || changes['producto']) && this.todosLosProductos.length > 0) {
@@ -109,6 +113,7 @@ export class ListaObjetosComponent implements OnChanges {
   actualizarPagina(pagina: number): void {
     if (pagina >= 0 && pagina < this.totalPaginas) {
       this.paginaActual = pagina;
+      this.servicio.paginaGuardada = pagina;
     }
   }
   get productosActuales(): GrupoEquipo[] {

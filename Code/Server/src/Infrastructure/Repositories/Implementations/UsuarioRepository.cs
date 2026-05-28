@@ -1,5 +1,6 @@
 using IMT_Reservas.Server.Infrastructure.Repositories.Abstraction;
 using Ardalis.Result;
+using IMT_Reservas.Server.Core.Entities;
 using IMT_Reservas.Server.Application.Features.Usuario;
 using IMT_Reservas.Server.Core.Abstraction;
 using IMT_Reservas.Server.Infrastructure.Config;
@@ -56,6 +57,28 @@ public class UsuarioRepository : Repository<UsuarioEntity, UsuarioDto>
 
         entity.EstadoEliminado = true;
         DbContext.Update(entity);
+
+        var prestamos = await DbContext.Prestamos
+            .Where(p => p.Carnet == carnet && !p.EstadoEliminado)
+            .ToListAsync();
+
+        var prestamoIds = prestamos.Select(p => p.Id).ToList();
+
+        if (prestamoIds.Count > 0)
+        {
+            var detalles = await DbContext.DetallesPrestamos
+                .Where(d => prestamoIds.Contains(d.IdPrestamo) && !d.EstadoEliminado)
+                .ToListAsync();
+            foreach (var detalle in detalles)
+                detalle.EstadoEliminado = true;
+        }
+
+        foreach (var prestamo in prestamos)
+        {
+            prestamo.EstadoPrestamo  = EstadoPrestamo.Cancelado;
+            prestamo.EstadoEliminado = true;
+        }
+
         await DbContext.SaveChangesAsync();
 
         return Result<object>.Success(null!);

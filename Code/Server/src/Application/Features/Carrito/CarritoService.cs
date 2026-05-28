@@ -38,8 +38,7 @@ public class CarritoService
         {
             foreach (var grupoId in request.ArrayIds)
             {
-                if (!cantidades.TryGetValue(grupoId, out var total))
-                    continue;
+                var total = cantidades.TryGetValue(grupoId, out var t) ? t : 0;
 
                 var ocupados = prestamosActivos.Count(p =>
                     p.IdGrupoEquipo == grupoId
