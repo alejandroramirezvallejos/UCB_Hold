@@ -18,11 +18,13 @@ export class ObjetoComponent {
   @Input() id: string = ''
   producto: GrupoEquipo = new GrupoEquipo();
   cantidadDisponible: number = 0;
+  totalOperativo: number = 0;
   cargando: boolean = true;
-   addedToCart = false;
+  addedToCart = false;
   error : WritableSignal<boolean> = signal(false);
   mensajeerror : string = "";
   desabilitarboton: boolean = false;
+  sinUnidadesOperativas: boolean = false;
   constructor(private route: ActivatedRoute , private servicio : GrupoequipoService, private carrito : CarritoService, private SDisponibilidad : DisponibilidadService) { }
   ngOnInit(): void {
     const routeId = this.route.snapshot.paramMap.get('id');
@@ -64,8 +66,14 @@ export class ObjetoComponent {
       next: (data) => {
         if(data && data.length > 0){
           this.cantidadDisponible = data[0].CantidadDisponible;
+          this.totalOperativo = data[0].TotalOperativo ?? 0;
         } else {
           this.cantidadDisponible = 0;
+          this.totalOperativo = 0;
+        }
+        if (this.totalOperativo === 0) {
+          this.sinUnidadesOperativas = true;
+          this.desabilitarboton = true;
         }
         this.cargando = false;
       },

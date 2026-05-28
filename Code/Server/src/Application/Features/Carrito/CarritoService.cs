@@ -49,7 +49,8 @@ public class CarritoService
                 {
                     Fecha = date,
                     IdGrupoEquipo = grupoId,
-                    CantidadDisponible = Math.Max(0, total - ocupados)
+                    CantidadDisponible = Math.Max(0, total - ocupados),
+                    TotalOperativo = total
                 });
             }
         }

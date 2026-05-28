@@ -34,7 +34,9 @@
     }
     <div class ="seccion-compra">
       <p>Cantidad disponible hoy : {{cantidadDisponible}}</p>
-      @if(desabilitarboton==false){
+      @if(sinUnidadesOperativas){
+        <p class="sin-operativas">Sin unidades operativas disponibles</p>
+      } @else if(desabilitarboton==false){
         <button
           (click)="addproductocarrito()"
           class="boton-carrito"

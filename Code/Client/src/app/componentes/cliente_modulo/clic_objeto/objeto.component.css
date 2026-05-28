@@ -73,6 +73,16 @@
   line-height: 1.6;
   color: #8f9195;
 }
+.sin-operativas {
+  font-size: 0.875rem;
+  font-weight: 600;
+  color: #ef4444;
+  background: #fee2e2;
+  border: 1px solid #fca5a5;
+  border-radius: 8px;
+  padding: 0.5rem 0.875rem;
+  width: fit-content;
+}
 .boton-carrito {
   background-color: #ffd814;
   color: #6b7786;

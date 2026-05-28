@@ -14,6 +14,7 @@ export class DisponibilidadService {
       Fecha: item.Fecha ? new Date(item.Fecha) : null,
       IdGrupoEquipo: item.IdGrupoEquipo,
       CantidadDisponible: item.CantidadDisponible,
+      TotalOperativo: item.TotalOperativo ?? 0,
     } as Disponibilidad;
   }
   obtenerDisponibilidad(
