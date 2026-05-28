@@ -9,8 +9,6 @@ import { GrupoEquipo } from '../../../models/grupo_equipo';
 export class GrupoequipoService {
   private apiUrl = environment.apiUrl + '/api/GrupoEquipo';
   private _cache: GrupoEquipo[] | null = null;
-  private _cacheExpiry: number = 0;
-  private readonly CACHE_TTL = 5 * 60 * 1000;
   paginaGuardada: number = 0;
   constructor(private http: HttpClient) { }
 
@@ -46,7 +44,7 @@ export class GrupoequipoService {
     );
   }
   getGrupoEquipo(categoria: string, producto: string): Observable<GrupoEquipo[]> {
-    if (this._cache && Date.now() < this._cacheExpiry)
+    if (this._cache !== null)
       return of(this._cache);
     const url = this.apiUrl + '/buscar?nombre=' + producto + '&categoria=' + categoria;
     return this.http.get<any>(url).pipe(
@@ -62,10 +60,7 @@ export class GrupoequipoService {
         Cantidad: item.Cantidad || 0,
         CostoPromedio: item.CostoPromedio || 0
       }))),
-      tap(result => {
-        this._cache = result;
-        this._cacheExpiry = Date.now() + this.CACHE_TTL;
-      })
+      tap(result => { this._cache = result; })
     );
   }
   getproducto(id: string): Observable<GrupoEquipo> {
