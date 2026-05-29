@@ -2,7 +2,6 @@ using Ardalis.Result;
 using BCryptLib = BCrypt.Net.BCrypt;
 using FluentValidation;
 using IMT_Reservas.Server.Application.Abstraction;
-using IMT_Reservas.Server.Application.Features.Cache;
 using IMT_Reservas.Server.Application.Features.Jwt;
 using IMT_Reservas.Server.Infrastructure.Repositories.Implementations;
 using Microsoft.Extensions.Options;
@@ -15,17 +14,17 @@ public class UsuarioService : Service<UsuarioEntity, UsuarioRepository, UsuarioD
     private readonly UsuarioMapper   _mapper;
     private readonly JwtService      _jwtService;
     private readonly JwtSettings     _jwtSettings;
-    private readonly CacheService    _cacheService;
+    private readonly CacheRepository    _cacheRepository;
 
     public UsuarioService(UsuarioRepository repository,
         UsuarioMapper mapper, IValidator<UsuarioDto> validator,
         JwtService jwtService, IOptions<JwtSettings> jwtSettings,
-        CacheService cacheService) : base(repository, validator, mapper)
+        CacheRepository cacheRepository) : base(repository, validator, mapper)
     {
         _mapper       = mapper;
         _jwtService   = jwtService;
         _jwtSettings  = jwtSettings.Value;
-        _cacheService = cacheService;
+        _cacheRepository = cacheRepository;
     }
 
     public override async Task<Result<UsuarioDto>> Create(UsuarioDto dto)
@@ -88,7 +87,7 @@ public class UsuarioService : Service<UsuarioEntity, UsuarioRepository, UsuarioD
         var resultDto = _mapper.ToDto(existing);
         resultDto.CarreraNombre = await Repository.GetCarreraName(existing.IdCarrera);
 
-        _ = await _cacheService.Remove($"usuario:{carnet}");
+        _ = await _cacheRepository.Remove($"usuario:{carnet}");
 
         return Result<UsuarioDto>.Success(resultDto);
     }
@@ -96,7 +95,7 @@ public class UsuarioService : Service<UsuarioEntity, UsuarioRepository, UsuarioD
     public async Task<Result<UsuarioDto>> Get(string carnet)
     {
         var cacheKey = $"usuario:{carnet}";
-        var cacheResult = await _cacheService.Get<UsuarioDto>(cacheKey);
+        var cacheResult = await _cacheRepository.Get<UsuarioDto>(cacheKey);
         
         if (cacheResult.IsSuccess) 
             return Result<UsuarioDto>.Success(cacheResult.Value);
@@ -109,7 +108,7 @@ public class UsuarioService : Service<UsuarioEntity, UsuarioRepository, UsuarioD
         var dto = _mapper.ToDto(usuario);
         dto.CarreraNombre = await Repository.GetCarreraName(usuario.IdCarrera);
 
-        _ = await _cacheService.Set(cacheKey, dto, UsuarioCacheTtl);
+        _ = await _cacheRepository.Set(cacheKey, dto, UsuarioCacheTtl);
 
         return Result<UsuarioDto>.Success(dto);
     }
@@ -183,7 +182,7 @@ public class UsuarioService : Service<UsuarioEntity, UsuarioRepository, UsuarioD
         var deleteResult = await Repository.Delete(carnet);
         
         if (deleteResult.IsSuccess)
-            _ = await _cacheService.Remove($"usuario:{carnet}");
+            _ = await _cacheRepository.Remove($"usuario:{carnet}");
         
         return deleteResult;
     }

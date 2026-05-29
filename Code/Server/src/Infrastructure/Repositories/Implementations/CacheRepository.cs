@@ -1,13 +1,13 @@
-using Ardalis.Result;
 using System.Text.Json;
+using Ardalis.Result;
 using Microsoft.Extensions.Caching.Distributed;
-namespace IMT_Reservas.Server.Application.Features.Cache;
+namespace IMT_Reservas.Server.Infrastructure.Repositories.Implementations;
 
-public class CacheService
+public class CacheRepository
 {
     private readonly IDistributedCache _cache;
 
-    public CacheService(IDistributedCache cache) => _cache = cache;
+    public CacheRepository(IDistributedCache cache) => _cache = cache;
 
     public async Task<Result<T>> Get<T>(string cacheKey)
     {

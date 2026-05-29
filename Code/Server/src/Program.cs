@@ -8,7 +8,6 @@ using Microsoft.OpenApi.Models;
 using Npgsql;
 using FluentValidation;
 using StackExchange.Redis;
-using IMT_Reservas.Server.Application.Features.Cache;
 using IMT_Reservas.Server.Application.Abstraction;
 using IMT_Reservas.Server.Application.Features.Accesorio;
 using IMT_Reservas.Server.Application.Features.Carrera;
@@ -220,7 +219,7 @@ if (!string.IsNullOrWhiteSpace(redisConnectionString))
 }
 else
     builder.Services.AddDistributedMemoryCache();
-builder.Services.AddSingleton<CacheService>();
+builder.Services.AddSingleton<CacheRepository>();
 
 builder.Services.AddHangfire(config => config.UsePostgreSqlStorage(connectionString));
 builder.Services.AddHangfireServer();

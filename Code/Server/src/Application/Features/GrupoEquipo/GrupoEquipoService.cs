@@ -1,7 +1,6 @@
 using Ardalis.Result;
 using FluentValidation;
 using IMT_Reservas.Server.Application.Abstraction;
-using IMT_Reservas.Server.Application.Features.Cache;
 using IMT_Reservas.Server.Infrastructure.Repositories.Implementations;
 using GrupoEquipoEntity = IMT_Reservas.Server.Core.Entities.GrupoEquipo;
 namespace IMT_Reservas.Server.Application.Features.GrupoEquipo;
@@ -10,12 +9,12 @@ public class GrupoEquipoService : Service<GrupoEquipoEntity, GrupoEquipoReposito
 {
     private static readonly TimeSpan GrupoEquipoSearchTtl = TimeSpan.FromMinutes(5);
     private const string GrupoEquipoSearchCacheKey = "grupo-equipo:search::";
-    private readonly CacheService _cacheService;
+    private readonly CacheRepository _cacheRepository;
 
     public GrupoEquipoService(GrupoEquipoRepository repository,
         GrupoEquipoMapper mapper, IValidator<GrupoEquipoDto> validator,
-        CacheService cacheService) : base(repository, validator, mapper) =>
-        _cacheService = cacheService;
+        CacheRepository cacheRepository) : base(repository, validator, mapper) =>
+        _cacheRepository = cacheRepository;
 
     public override async Task<Result<GrupoEquipoDto>> Create(GrupoEquipoDto dto)
     {
@@ -28,7 +27,7 @@ public class GrupoEquipoService : Service<GrupoEquipoEntity, GrupoEquipoReposito
         var createResult = await CreateEntity(MapToEntity(dto));
         
         if (createResult.IsSuccess)
-            _ = await _cacheService.Remove(GrupoEquipoSearchCacheKey);
+            _ = await _cacheRepository.Remove(GrupoEquipoSearchCacheKey);
         
         return createResult;
     }
@@ -48,7 +47,7 @@ public class GrupoEquipoService : Service<GrupoEquipoEntity, GrupoEquipoReposito
         var updateResult = await UpdateEntity(entity);
         
         if (updateResult.IsSuccess)
-            _ = await _cacheService.Remove(GrupoEquipoSearchCacheKey);
+            _ = await _cacheRepository.Remove(GrupoEquipoSearchCacheKey);
         
         return updateResult;
     }
@@ -58,7 +57,7 @@ public class GrupoEquipoService : Service<GrupoEquipoEntity, GrupoEquipoReposito
         var deleteResult = await base.Delete(id);
         
         if (deleteResult.IsSuccess)
-            _ = await _cacheService.Remove(GrupoEquipoSearchCacheKey);
+            _ = await _cacheRepository.Remove(GrupoEquipoSearchCacheKey);
         
         return deleteResult;
     }
@@ -66,13 +65,13 @@ public class GrupoEquipoService : Service<GrupoEquipoEntity, GrupoEquipoReposito
     public async Task<Result<List<GrupoEquipoDto>>> Search(string? nombre = null, string? categoria = null)
     {
         var cacheKey = $"grupo-equipo:search:{nombre ?? string.Empty}:{categoria}";
-        var cacheResult = await _cacheService.Get<List<GrupoEquipoDto>>(cacheKey);
+        var cacheResult = await _cacheRepository.Get<List<GrupoEquipoDto>>(cacheKey);
         
         if (cacheResult.IsSuccess) 
             return Result<List<GrupoEquipoDto>>.Success(cacheResult.Value);
 
         var equipos = await Repository.Search(nombre, categoria);
-        _ = await _cacheService.Set(cacheKey, equipos, GrupoEquipoSearchTtl);
+        _ = await _cacheRepository.Set(cacheKey, equipos, GrupoEquipoSearchTtl);
         
         return Result<List<GrupoEquipoDto>>.Success(equipos);
     }
