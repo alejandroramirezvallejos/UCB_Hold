@@ -108,8 +108,8 @@ p {
   cursor: pointer;
   transition: background-color var(--t-fast), box-shadow var(--t-fast), transform var(--t-fast);
   min-width: 80px;
-  font-size: 0.875rem;
-  font-weight: 600;
+  font-size: var(--btn-font-size);
+  font-weight: var(--btn-font-weight);
   font-family: var(--font);
 }
 @media (hover: hover) and (pointer: fine) {

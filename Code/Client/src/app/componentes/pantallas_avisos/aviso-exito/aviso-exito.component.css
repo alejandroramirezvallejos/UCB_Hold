@@ -100,8 +100,8 @@ p {
   cursor: pointer;
   transition: color var(--t-base), background-color var(--t-base), border-color var(--t-base), box-shadow var(--t-base);
   min-width: 100px;
-  font-size: 0.9rem;
-  font-weight: 600;
+  font-size: var(--btn-font-size);
+  font-weight: var(--btn-font-weight);
 }
 .aceptar:hover {
   transform: scale(1.05);

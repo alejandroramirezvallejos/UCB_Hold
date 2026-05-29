@@ -193,7 +193,12 @@
 }
 .boton-carrito {
   display: inline-block;
-  background-color: var(--brand);
+  background: var(--brand);
+  height: var(--btn-height);
+  min-height: 44px;
+  padding: 0 var(--btn-pad-x);
+  font-size: var(--btn-font-size);
+  font-weight: var(--btn-font-weight);
   color: var(--brand-text);
   border: none;
   border-radius: 20px;

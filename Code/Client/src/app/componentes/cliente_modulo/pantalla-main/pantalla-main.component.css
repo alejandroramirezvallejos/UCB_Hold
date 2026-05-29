@@ -7,8 +7,7 @@
   position: relative;
   display: flex;
   flex-direction: column;
-  width: 40%;
-  max-width: 500px;
+  width: min(500px, 90%);
   margin: 60px auto 30px;
   background: var(--surface);
   border: 1px solid var(--border);

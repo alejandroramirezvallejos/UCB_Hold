@@ -112,14 +112,14 @@ textarea.form-input {
   border: none;
   border-radius: 16px;
   font-size: 0.95rem;
-  font-weight: 600;
+  font-weight: var(--btn-font-weight);
   cursor: pointer;
   transition: color var(--t-base), background-color var(--t-base), border-color var(--t-base), box-shadow var(--t-base);
   display: inline-flex;
   align-items: center;
   justify-content: center;
   gap: 0.5rem;
-  width: auto;
+  
   max-width: 300px;
   margin: 0 auto;
 }

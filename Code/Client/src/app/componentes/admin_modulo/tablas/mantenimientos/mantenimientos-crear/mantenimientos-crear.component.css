@@ -172,7 +172,7 @@ textarea.form-input {
   border: none;
   border-radius: 16px;
   font-size: 0.85rem;
-  font-weight: 600;
+  font-weight: var(--btn-font-weight);
   cursor: pointer;
   transition: background-color 0.2s, transform 0.2s;
   display: inline-flex;
@@ -319,7 +319,7 @@ textarea.form-input {
     font-size: 0.85rem;
   }
   .register-button {
-    width: auto;
+    
     min-width: 160px;
     max-width: 260px;
     padding: 0.6rem 1rem;

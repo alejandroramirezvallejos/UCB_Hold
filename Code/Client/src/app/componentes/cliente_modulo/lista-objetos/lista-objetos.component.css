@@ -99,15 +99,13 @@ body {
   display: grid;
   grid-template-columns: repeat(auto-fill, minmax(239px, 1fr));
   gap: 2.5rem;
-  padding: 0 calc(9rem - 1.6rem);
+  padding: 0 var(--sp-10);
   margin: 0;
-  padding-left: 11.4rem;
   margin-top: 3rem;
 }
 @media (max-width: 1280px) {
   .grid-container {
-    padding-left: 5.4rem;
-    padding-right: 3.4rem;
+    padding: 0 var(--sp-6);
   }
 }
 

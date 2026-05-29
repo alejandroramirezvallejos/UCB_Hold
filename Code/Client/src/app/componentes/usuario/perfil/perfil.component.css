@@ -113,8 +113,8 @@
   border: none;
   border-radius: var(--radius-full);
   padding: 0.65rem 1.75rem;
-  font-size: 0.875rem;
-  font-weight: 700;
+  font-size: var(--btn-font-size);
+  font-weight: var(--btn-font-weight);
   font-family: var(--font);
   cursor: pointer;
   transition: background-color var(--t-fast), box-shadow var(--t-fast), transform var(--t-fast);

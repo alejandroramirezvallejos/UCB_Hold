@@ -78,10 +78,10 @@ label {
   padding: 0.75rem 1rem;
   border: none;
   border-radius: var(--radius-full);
-  font-size: 0.9rem;
-  font-weight: 600;
+  font-size: var(--btn-font-size);
+  font-weight: var(--btn-font-weight);
   font-family: var(--font);
-  width: 180px;
+  
   margin: 0.5rem auto 0;
   cursor: pointer;
   transition: background-color var(--t-fast), box-shadow var(--t-fast), transform var(--t-fast);

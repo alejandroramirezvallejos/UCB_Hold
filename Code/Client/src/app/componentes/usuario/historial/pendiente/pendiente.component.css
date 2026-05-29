@@ -220,8 +220,8 @@
   color: white;
 }
 .ver-detalles:hover {
-  background-color: var(--brand);
-  color: #6b7786;
+  background-color: var(--sidebar);
+  color: var(--ink);
   transform: translateY(-1px);
   box-shadow: 0 4px 12px rgba(255, 216, 20, 0.4);
 }

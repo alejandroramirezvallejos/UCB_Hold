@@ -323,3 +323,23 @@
     margin: 0.3rem 0;
   }
 }
+
+/* === RESPONSIVE IMPROVEMENTS === */
+@media (max-width: 480px) {
+  .dia-celda,
+  .dia-celda-ocupado,
+  .dia-celda-seleccionado,
+  .dia-celda-pasado {
+    min-height: 38px;
+    padding: 0.2rem;
+  }
+  .dia-numero { font-size: 0.75rem; }
+  .pildora-disponible, .pildora-ocupada { font-size: 0.5rem; padding: 1px 3px; }
+  .calendario-grid { gap: 0.2rem; padding: 0.5rem 0.75rem 0.75rem; }
+}
+@media (max-width: 360px) {
+  .dia-celda, .dia-celda-ocupado, .dia-celda-seleccionado, .dia-celda-pasado {
+    min-height: 32px;
+  }
+  .dia-semana { font-size: 0.55rem; }
+}

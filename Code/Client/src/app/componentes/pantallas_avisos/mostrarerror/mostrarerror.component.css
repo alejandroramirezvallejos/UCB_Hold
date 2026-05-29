@@ -104,9 +104,11 @@ p {
   margin: 15px 0;
 }
 .volver-btn {
-  background: var(--brand);
+  background: var(--sidebar);
+  color: var(--ink-secondary);
+  border: 1px solid var(--border);
   border: none;
-  color: var(--brand-text);
+  
   padding: 0.65rem 2rem;
   border-radius: var(--radius-full);
   cursor: pointer;
@@ -118,9 +120,11 @@ p {
 }
 @media (hover: hover) and (pointer: fine) {
   .volver-btn:hover {
-    background: var(--brand-hover);
-    box-shadow: 0 4px 12px rgba(255, 215, 0, 0.4);
-    transform: translateY(-1px);
+    background: var(--bg);
+  border-color: var(--border-strong);
+  color: var(--ink);
+    
+    
   }
 }
 @media (max-width: 360px) {
