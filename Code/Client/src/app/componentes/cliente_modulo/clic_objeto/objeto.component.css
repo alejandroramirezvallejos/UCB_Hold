@@ -1,6 +1,6 @@
 :host {
-  font-family: "Manrope";
-  color: #8f9195;
+  font-family: var(--font);
+  color: var(--ink-secondary);
 }
 .contenedor-objeto {
   display: grid;
@@ -9,8 +9,8 @@
   width: calc(100vw - 24rem);
   margin: 5rem 12rem 2rem;
   padding: 1.5rem;
-  background: #fff;
-  border-radius: 8px;
+  background: transparent;
+  border-radius: 0;
   overflow: visible;
 }
 .seccion-imagen {
@@ -29,9 +29,9 @@
   margin-top: 1rem;
 }
 .seccion-compra p {
-  font-size: 1rem;
-  font-weight: 500;
-  color: #6b7786;
+  font-size: 0.9rem;
+  font-weight: 600;
+  color: var(--ink-secondary);
   margin: 0;
 }
 .contenedor-imagen {
@@ -64,14 +64,16 @@
 }
 .nombre-objeto {
   font-size: 2rem;
-  font-weight: 700;
-  color: #6b7786;
+  font-weight: 800;
+  color: var(--ink);
   margin-bottom: 0;
+  letter-spacing: -0.02em;
 }
 .descripcion-objeto {
-  font-size: 1.1rem;
-  line-height: 1.6;
-  color: #8f9195;
+  font-size: 1rem;
+  line-height: 1.7;
+  color: var(--ink-secondary);
+  max-width: 60ch;
 }
 .sin-operativas {
   font-size: 0.875rem;
@@ -84,25 +86,33 @@
   width: fit-content;
 }
 .boton-carrito {
-  background-color: #ffd814;
-  color: #6b7786;
+  background-color: var(--brand);
+  color: var(--brand-text);
   border: none;
-  border-radius: 20px;
-  padding: 0.75rem 1rem;
-  font-size: 0.9rem;
-  width: 180px;
+  border-radius: var(--radius-full);
+  padding: 0.75rem 1.25rem;
+  font-size: 0.875rem;
+  font-weight: 700;
+  font-family: var(--font);
+  width: 190px;
   cursor: pointer;
-  transition: background-color 0.3s;
+  transition: background-color var(--t-fast), box-shadow var(--t-fast), transform var(--t-fast);
 }
-.boton-carrito:hover {
-  transform: scale(1.05);
+@media (hover: hover) and (pointer: fine) {
+  .boton-carrito:hover:not(:disabled) {
+    background-color: var(--brand-hover);
+    box-shadow: 0 4px 12px rgba(255, 215, 0, 0.4);
+    transform: translateY(-1px);
+  }
 }
 .boton-carrito.plomo,
 .boton-carrito:disabled {
-  color: #6b7786;
-  background-color: #f8f9fa;
+  color: var(--ink-secondary);
+  background-color: var(--border);
   cursor: default;
   transition: none;
+  box-shadow: none;
+  transform: none;
 }
 .ficha-link {
   display: inline-block;

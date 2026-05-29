@@ -1,22 +1,8 @@
-:root {
-  --color-primary: #2563eb;
-  --color-secondary: #FFCF00;
-  --color-success: #10b981;
-  --color-text: #334155;
-  --color-text-secondary: #64748b;
-  --color-border: #e2e8f0;
-  --color-background: #f8fafc;
-  --color-surface: #ffffff;
-  --shadow-sm: 0 1px 3px rgba(0, 0, 0, 0.12);
-  --shadow-md: 0 4px 6px rgba(0, 0, 0, 0.07);
-  --radius: 0.5rem;
-  --transition: all 0.2s ease-in-out;
-}
 * {
   box-sizing: border-box;
   margin: 0;
   padding: 0;
-  font-family: "Manrope", sans-serif;
+  font-family: var(--font);
 }
 .prestamos-container {
   padding: 0;
@@ -29,12 +15,12 @@
 .title {
   font-size: 1.8rem;
   font-weight: 700;
-  color: var(--color-text);
+  color: var(--ink);
   margin-bottom: 0.25rem;
 }
 .subtitle {
   font-size: 0.95rem;
-  color: var(--color-text-secondary);
+  color: var(--ink-secondary);
   margin-bottom: 0;
 }
 .prestamos-list {
@@ -43,19 +29,19 @@
   gap: 1rem;
 }
 .prestamo-item {
-  background: var(--color-surface);
-  border-left: 5px solid var(--color-primary);
+  background: var(--surface);
+  border: 1px solid var(--border);
   border-radius: 20px;
   padding: 1.25rem;
   margin: 0.75rem;
   box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
-  transition: var(--transition);
+  transition: transition: box-shadow var(--t-base), transform var(--t-base);
   position: relative;
 }
 .prestamo-item:hover {
   transform: translateY(-2px);
   box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
-  border-color: var(--color-primary);
+  border-color: var(--border-strong);
 }
 .item-header {
   display: flex;
@@ -63,7 +49,7 @@
   align-items: flex-start;
   margin-bottom: 1rem;
   padding-bottom: 0.75rem;
-  border-bottom: 1px solid var(--color-border);
+  border-bottom: 1px solid var(--border);
   flex-wrap: wrap;
   gap: 1rem;
 }
@@ -74,7 +60,7 @@
 .usuario-nombre {
   font-size: 1.3rem;
   font-weight: 700;
-  color: var(--color-primary);
+  color: var(--interactive);
   margin-bottom: 0.3rem;
   white-space: nowrap;
   overflow: hidden;
@@ -84,12 +70,12 @@
 }
 .usuario-carnet {
   font-size: 0.9rem;
-  color: var(--color-text);
-  background: var(--color-background);
+  color: var(--ink);
+  background: var(--sidebar);
   padding: 0.3rem 0.8rem;
   border-radius: 0.75rem;
   display: inline-block;
-  border: 1px solid var(--color-border);
+  border: 1px solid var(--border);
   font-weight: 500;
 }
 .equipo-info {
@@ -100,7 +86,7 @@
 }
 .codigo-imt {
   font-size: 0.8rem;
-  color: var(--color-text-secondary);
+  color: var(--ink-secondary);
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
@@ -116,11 +102,11 @@
   display: flex;
   justify-content: space-between;
   align-items: center;
-  background: linear-gradient(135deg, var(--color-background), #ffffff);
+  background: linear-gradient(135deg, var(--sidebar), #ffffff);
   padding: 0.6rem 0.9rem;
   border-radius: 0.5rem;
-  border: 1px solid var(--color-border);
-  transition: var(--transition);
+  border: 1px solid var(--border);
+  transition: transition: box-shadow var(--t-base), transform var(--t-base);
 }
 .fecha-item:hover {
   border-color: inherit;
@@ -130,23 +116,23 @@
 .fecha-label {
   font-size: 0.9rem;
   font-weight: 600;
-  color: var(--color-text);
+  color: var(--ink);
 }
 .fecha-valor {
   font-size: 0.9rem;
   font-weight: 700;
-  color: var(--color-primary);
+  color: var(--interactive);
   background: #ffffff;
   padding: 0.2rem 0.5rem;
   border-radius: 0.3rem;
-  border: 1px solid var(--color-border);
+  border: 1px solid var(--border);
 }
 .empty-state {
   text-align: center;
   padding: 3rem 2rem;
-  color: var(--color-text-secondary);
-  background: var(--color-surface);
-  border: 2px dashed var(--color-border);
+  color: var(--ink-secondary);
+  background: var(--surface);
+  border: 2px dashed var(--border);
   border-radius: var(--radius);
 }
 .empty-icon {
@@ -156,14 +142,14 @@
 .empty-state h3 {
   font-size: 1.3rem;
   margin-bottom: 0.5rem;
-  color: var(--color-text);
+  color: var(--ink);
 }
 .empty-state p {
   font-size: 0.95rem;
 }
 .cantidad-equipos {
   font-size: 0.8rem;
-  color: var(--color-primary);
+  color: var(--interactive);
   background: rgba(37, 99, 235, 0.1);
   padding: 0.2rem 0.5rem;
   border-radius: 12px;
@@ -187,7 +173,7 @@
   font-size: 0.75rem;
   font-weight: 600;
   cursor: pointer;
-  transition: all 0.3s ease;
+  transition: color var(--t-base), background-color var(--t-base), border-color var(--t-base), box-shadow var(--t-base);
   margin: 0 0.25rem;
   min-width: 70px;
   justify-content: center;
@@ -226,7 +212,7 @@
   font-size: 0.75rem;
   font-weight: 600;
   cursor: pointer;
-  transition: all 0.3s ease;
+  transition: color var(--t-base), background-color var(--t-base), border-color var(--t-base), box-shadow var(--t-base);
   min-width: 70px;
   justify-content: center;
   box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
@@ -234,7 +220,7 @@
   color: white;
 }
 .ver-detalles:hover {
-  background-color: #ffd814;
+  background-color: var(--brand);
   color: #6b7786;
   transform: translateY(-1px);
   box-shadow: 0 4px 12px rgba(255, 216, 20, 0.4);
@@ -304,7 +290,7 @@
     text-align: left;
     width: 100%;
     padding-top: 0.25rem;
-    border-top: 1px dashed var(--color-border);
+    border-top: 1px dashed var(--border);
   }
   .codigo-imt {
     font-size: 0.75rem;

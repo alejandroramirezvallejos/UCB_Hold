@@ -1,61 +1,182 @@
-body {
-    font-family: 'Open Sans', sans-serif;
-    margin: 0;
-    padding: 0;
-    -webkit-font-smoothing: antialiased;
-    -moz-osx-font-smoothing: grayscale;
+/* =========================================================
+   UCB Hold — Global Design Tokens & Base Styles
+   ========================================================= */
+
+/* === TOKENS === */
+:root {
+  /* Brand */
+  --brand: #FFD700;
+  --brand-hover: #F5C800;
+  --brand-text: #4a4200;
+
+  /* Surfaces */
+  --bg: #f1f5f9;
+  --surface: #ffffff;
+  --sidebar: #f8fafc;
+
+  /* Ink */
+  --ink: #0f172a;
+  --ink-secondary: #475569;
+  --ink-muted: #94a3b8;
+  --ink-inverse: #ffffff;
+
+  /* Interactive */
+  --interactive: #2563eb;
+  --interactive-dark: #1e40af;
+  --interactive-subtle: rgba(37, 99, 235, 0.08);
+
+  /* Semantic */
+  --success: #10b981;
+  --success-bg: #ecfdf5;
+  --success-border: #a7f3d0;
+  --warning: #f59e0b;
+  --warning-bg: #fffbeb;
+  --warning-border: #fde68a;
+  --error: #ef4444;
+  --error-bg: #fef2f2;
+  --error-border: #fecaca;
+  --info: #3b82f6;
+  --info-bg: #eff6ff;
+  --info-border: #bfdbfe;
+
+  /* Loan state colors */
+  --state-pendiente: #f59e0b;
+  --state-pendiente-bg: #fffbeb;
+  --state-aprobado: #3b82f6;
+  --state-aprobado-bg: #eff6ff;
+  --state-activo: #10b981;
+  --state-activo-bg: #ecfdf5;
+  --state-finalizado: #64748b;
+  --state-finalizado-bg: #f1f5f9;
+  --state-cancelado: #94a3b8;
+  --state-cancelado-bg: #f8fafc;
+  --state-rechazado: #ef4444;
+  --state-rechazado-bg: #fef2f2;
+  --state-atrasado: #f97316;
+  --state-atrasado-bg: #fff7ed;
+
+  /* Borders */
+  --border: #e2e8f0;
+  --border-strong: #cbd5e1;
+
+  /* Radius */
+  --radius-xs: 4px;
+  --radius-sm: 6px;
+  --radius-md: 10px;
+  --radius-lg: 16px;
+  --radius-xl: 20px;
+  --radius-full: 9999px;
+
+  /* Shadows */
+  --shadow-xs: 0 1px 2px rgba(0,0,0,0.05);
+  --shadow-sm: 0 1px 3px rgba(0,0,0,0.08), 0 1px 2px rgba(0,0,0,0.04);
+  --shadow-md: 0 4px 8px rgba(0,0,0,0.06), 0 2px 4px rgba(0,0,0,0.04);
+  --shadow-lg: 0 12px 24px rgba(0,0,0,0.08), 0 4px 8px rgba(0,0,0,0.04);
+  --shadow-xl: 0 20px 40px rgba(0,0,0,0.1), 0 8px 16px rgba(0,0,0,0.06);
+
+  /* Typography */
+  --font: 'Manrope', system-ui, -apple-system, sans-serif;
+
+  /* Spacing (8pt grid) */
+  --sp-1: 0.25rem;
+  --sp-2: 0.5rem;
+  --sp-3: 0.75rem;
+  --sp-4: 1rem;
+  --sp-5: 1.25rem;
+  --sp-6: 1.5rem;
+  --sp-8: 2rem;
+  --sp-10: 2.5rem;
+  --sp-12: 3rem;
+
+  /* Transitions */
+  --t-fast: 120ms ease-out;
+  --t-base: 200ms ease-out;
+  --t-slow: 300ms ease-out;
 }
 
-/* ===== OPTIMIZACIONES MÓVIL GLOBALES ===== */
-* {
-    -webkit-tap-highlight-color: transparent;
-    box-sizing: border-box;
+/* === BASE === */
+*, *::before, *::after {
+  box-sizing: border-box;
+  -webkit-tap-highlight-color: transparent;
 }
 
 html {
-    scroll-behavior: smooth;
-    -webkit-text-size-adjust: 100%;
+  scroll-behavior: smooth;
+  -webkit-text-size-adjust: 100%;
 }
 
-/* Prevenir zoom en inputs en iOS */
-@media (max-width: 768px) {
-    input, select, textarea {
-        font-size: 16px !important;
-    }
+body {
+  font-family: var(--font);
+  font-size: 1rem;
+  line-height: 1.6;
+  color: var(--ink);
+  background: var(--bg);
+  margin: 0;
+  padding: 0;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
 }
 
-/* Mejorar touch targets en móvil */
+/* === SCROLLBAR === */
+::-webkit-scrollbar { width: 6px; height: 6px; }
+::-webkit-scrollbar-thumb {
+  background: rgba(0,0,0,0.18);
+  border-radius: var(--radius-full);
+}
+::-webkit-scrollbar-track { background: transparent; }
+
+/* === STATUS BADGE UTILITY === */
+.badge {
+  display: inline-flex;
+  align-items: center;
+  padding: 0.2rem 0.625rem;
+  border-radius: var(--radius-full);
+  font-size: 0.72rem;
+  font-weight: 700;
+  font-family: var(--font);
+  letter-spacing: 0.02em;
+  text-transform: capitalize;
+  white-space: nowrap;
+}
+.badge-pendiente  { background: var(--state-pendiente-bg);  color: var(--state-pendiente);  }
+.badge-aprobado   { background: var(--state-aprobado-bg);   color: var(--state-aprobado);   }
+.badge-activo     { background: var(--state-activo-bg);     color: var(--state-activo);     }
+.badge-finalizado { background: var(--state-finalizado-bg); color: var(--state-finalizado); }
+.badge-cancelado  { background: var(--state-cancelado-bg);  color: var(--state-cancelado);  }
+.badge-rechazado  { background: var(--state-rechazado-bg);  color: var(--state-rechazado);  }
+.badge-atrasado   { background: var(--state-atrasado-bg);   color: var(--state-atrasado);   }
+
+/* === FOCUS RING === */
+:focus-visible {
+  outline: 2px solid var(--interactive);
+  outline-offset: 2px;
+}
+
+/* === MOBILE === */
 @media (max-width: 768px) {
-    button, a, .icon-button {
-        min-height: 44px;
-        min-width: 44px;
-    }
+  ::-webkit-scrollbar { width: 3px; height: 3px; }
+  input, select, textarea { font-size: 16px !important; }
+  button, a, .icon-button { min-height: 44px; min-width: 44px; }
 }
 
 @media (max-width: 360px) {
-    button, a, .icon-button {
-        min-height: 40px;
-        min-width: 40px;
-    }
+  button, a, .icon-button { min-height: 40px; min-width: 40px; }
 }
 
-::-webkit-scrollbar {
-    width: 6px;
-    height: 6px;
-}
-::-webkit-scrollbar-thumb {
-    background-color: rgba(0, 0, 0, 0.3);
-    border-radius: 10px;
-}
-::-webkit-scrollbar-track {
-    background: rgba(0, 0, 0, 0.05);
-    border-radius: 10px;
+/* === ADMIN/MODAL HEADING OVERRIDES === */
+/* Undo blue from var(--primary-color) → var(--interactive) migration */
+.form-container h2,
+.modal-content h2,
+.modal-header h2,
+.modal h2,
+h1.title, h2.title {
+  color: var(--ink);
 }
 
-/* Ocultar scrollbar en móvil para mejor UX */
-@media (max-width: 768px) {
-    ::-webkit-scrollbar {
-        width: 3px;
-        height: 3px;
-    }
+/* === REDUCED MOTION === */
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after {
+    animation-duration: 0.01ms !important;
+    transition-duration: 0.01ms !important;
+  }
 }

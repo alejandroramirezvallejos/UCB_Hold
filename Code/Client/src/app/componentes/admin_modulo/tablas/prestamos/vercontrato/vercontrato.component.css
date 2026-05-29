@@ -134,7 +134,7 @@
 }
 
 .btn-secondary {
-  background-color: #ffd814;
+  background-color: var(--brand);
   color: #000000;
   border: none;
   padding: 10px 24px;
@@ -142,7 +142,7 @@
   cursor: pointer;
   font-size: 0.95rem;
   font-weight: 600;
-  transition: all 0.2s ease;
+  transition: color var(--t-fast), background-color var(--t-fast), border-color var(--t-fast), box-shadow var(--t-fast), transform var(--t-fast);
   display: flex;
   align-items: center;
   justify-content: center;
@@ -151,7 +151,7 @@
 }
 
 .btn-secondary:hover {
-  background-color: #f7ca00;
+  background-color: var(--brand-hover);
   transform: translateY(-1px);
   box-shadow: 0 4px 12px rgba(255, 216, 20, 0.4);
 }

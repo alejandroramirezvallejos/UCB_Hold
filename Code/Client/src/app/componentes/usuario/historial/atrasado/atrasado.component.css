@@ -1,18 +1,8 @@
-:root {
-  --color-primary: #2563eb;
-  --color-secondary: #FFCF00;
-  --color-warning: #ef4444;
-  --color-text: #334155;
-  --color-text-secondary: #64748b;
-  --color-border: #e2e8f0;
-  --color-background: #f8fafc;
-  --color-surface: #ffffff;
-}
 * {
   box-sizing: border-box;
   margin: 0;
   padding: 0;
-  font-family: "Manrope", sans-serif;
+  font-family: var(--font);
 }
 .prestamos-container {
   width: 100%;
@@ -26,11 +16,11 @@
   margin: 0 auto;
 }
 .prestamo-item {
-  background: var(--color-surface);
+  background: var(--surface);
   border-radius: 12px;
   padding: 1.25rem;
   box-shadow: 0 2px 8px rgba(0,0,0,0.08);
-  border-left: 4px solid #ef4444;
+  border-top: 3px solid var(--error);
   transition: box-shadow 0.2s;
 }
 .prestamo-item:hover {
@@ -52,7 +42,7 @@
 .usuario-nombre {
   font-size: 1rem;
   font-weight: 700;
-  color: var(--color-text);
+  color: var(--ink);
 }
 .cantidad-equipos {
   font-size: 0.8rem;
@@ -65,7 +55,7 @@
 }
 .usuario-carnet {
   font-size: 0.8rem;
-  color: var(--color-text-secondary);
+  color: var(--ink-secondary);
 }
 .equipo-info {
   display: flex;
@@ -75,7 +65,7 @@
 }
 .codigo-imt {
   font-size: 0.8rem;
-  color: var(--color-text-secondary);
+  color: var(--ink-secondary);
 }
 .fechas-info {
   display: flex;
@@ -94,14 +84,14 @@
 }
 .fecha-label {
   font-size: 0.72rem;
-  color: var(--color-text-secondary);
+  color: var(--ink-secondary);
   font-weight: 600;
   text-transform: uppercase;
   letter-spacing: 0.03em;
 }
 .fecha-valor {
   font-size: 0.85rem;
-  color: var(--color-text);
+  color: var(--ink);
   font-weight: 500;
 }
 .atrasado-fecha {
@@ -142,8 +132,8 @@
   transition: all 0.2s;
 }
 .ver-detalles:hover {
-  border-color: #ffd814;
-  color: #ffd814;
+  border-color: var(--ink);
+  color: var(--interactive);
 }
 .empty-state {
   display: flex;
@@ -151,7 +141,7 @@
   align-items: center;
   justify-content: center;
   padding: 3rem 1rem;
-  color: var(--color-text-secondary);
+  color: var(--ink-secondary);
   text-align: center;
   gap: 0.5rem;
 }
@@ -161,7 +151,7 @@
 }
 .empty-state h3 {
   font-size: 1.1rem;
-  color: var(--color-text);
+  color: var(--ink);
   font-weight: 600;
   margin: 0;
 }

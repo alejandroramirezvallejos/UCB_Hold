@@ -1,30 +1,72 @@
-<div class="profile-container">
-  <h2>Tu Perfil</h2>
-  <div class="avatar-container">
-    <img ngSrc="assets/profile_line.png"
-         width="64" height="64" alt="Avatar de usuario">
-  </div>
-  <div class="display-data">
-    <div class="form-group"><label>Nombre:</label><p>{{ usuario.nombre || '-' }}</p></div>
-    <div class="form-group"><label>Carnet:</label><p>{{ usuario.carnet || '-' }}</p></div>
-    <div class="form-group"><label>Apellido Paterno:</label><p>{{ usuario.apellido_paterno || '-' }}</p></div>
-    <div class="form-group"><label>Apellido Materno:</label><p>{{ usuario.apellido_materno || '-' }}</p></div>
-    <div class="form-group"><label>Correo:</label><p>{{ usuario.correo || '-' }}</p></div>
-    <div class="form-group"><label>Teléfono:</label><p>{{ usuario.telefono || '-' }}</p></div>
-    <div class="form-group"><label>Carrera:</label><p>{{ usuario.carrera || '-' }}</p></div>
-    <div class="form-group"><label>Nombre de Referencia:</label><p>{{ usuario.nombre_referencia || '-' }}</p></div>
-    <div class="form-group"><label>Telefono de Referencia:</label><p>{{ usuario.telefono_referencia || '-' }}</p></div>
-    <div class="form-group"><label>Email de Referencia:</label><p>{{ usuario.email_referencia || '-' }}</p></div>
-    <div class="buttons">
-      <button type="button" (click)="toggleEdit()">Actualizar</button>
+<div class="profile-page">
+  <div class="profile-container">
+    <div class="profile-header">
+      <div class="avatar-wrapper">
+        <img class="avatar" ngSrc="assets/profile_line.png" width="64" height="64" alt="Avatar">
+      </div>
+      <div class="profile-title-group">
+        <h2>{{ usuario.nombre || 'Mi Perfil' }}</h2>
+        <span>{{ usuario.correo || '' }}</span>
+      </div>
+    </div>
+
+    <div class="profile-body">
+      <p class="section-label">Información personal</p>
+      <div class="data-grid">
+        <div class="data-item">
+          <label>Nombre</label>
+          <p [class.empty]="!usuario.nombre">{{ usuario.nombre || '-' }}</p>
+        </div>
+        <div class="data-item">
+          <label>Carnet</label>
+          <p [class.empty]="!usuario.carnet">{{ usuario.carnet || '-' }}</p>
+        </div>
+        <div class="data-item">
+          <label>Apellido Paterno</label>
+          <p [class.empty]="!usuario.apellido_paterno">{{ usuario.apellido_paterno || '-' }}</p>
+        </div>
+        <div class="data-item">
+          <label>Apellido Materno</label>
+          <p [class.empty]="!usuario.apellido_materno">{{ usuario.apellido_materno || '-' }}</p>
+        </div>
+        <div class="data-item">
+          <label>Teléfono</label>
+          <p [class.empty]="!usuario.telefono">{{ usuario.telefono || '-' }}</p>
+        </div>
+        <div class="data-item">
+          <label>Carrera</label>
+          <p [class.empty]="!usuario.carrera">{{ usuario.carrera || '-' }}</p>
+        </div>
+      </div>
+
+      <hr class="section-divider">
+      <p class="section-label">Contacto de referencia</p>
+      <div class="data-grid">
+        <div class="data-item">
+          <label>Nombre</label>
+          <p [class.empty]="!usuario.nombre_referencia">{{ usuario.nombre_referencia || '-' }}</p>
+        </div>
+        <div class="data-item">
+          <label>Teléfono</label>
+          <p [class.empty]="!usuario.telefono_referencia">{{ usuario.telefono_referencia || '-' }}</p>
+        </div>
+        <div class="data-item full">
+          <label>Email</label>
+          <p [class.empty]="!usuario.email_referencia">{{ usuario.email_referencia || '-' }}</p>
+        </div>
+      </div>
+    </div>
+
+    <div class="profile-footer">
+      <button class="btn-update" type="button" (click)="toggleEdit()">Editar perfil</button>
     </div>
   </div>
 </div>
+
 @if(editar()){
   <app-editar
-  [botoneditar]="editar"
-  [usuario]="usuario"
-  (guardado)="onGuardado($event)"
-  >
-  </app-editar>
+    [botoneditar]="editar"
+    [usuario]="usuario"
+    (guardado)="onGuardado($event)"
+  ></app-editar>
 }

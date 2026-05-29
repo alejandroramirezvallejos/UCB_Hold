@@ -122,7 +122,7 @@
   margin: -1.5rem 0; /* compensar el padding del capsule para ocupar toda la altura */
   width: 60px;
   cursor: pointer;
-  transition: all 0.2s ease;
+  transition: color var(--t-fast), background-color var(--t-fast), border-color var(--t-fast), box-shadow var(--t-fast), transform var(--t-fast);
   display: flex;
   align-items: center;
   justify-content: center;
@@ -144,9 +144,10 @@
   gap: 2rem;
   width: 100%;
   max-width: 500px;
+  margin: 0 auto;
   justify-content: center;
   background: #fff;
-  padding: 1rem;
+  padding: 1rem 1.5rem;
   border-radius: 12px;
   box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06);
 }
@@ -192,8 +193,8 @@
 }
 .boton-carrito {
   display: inline-block;
-  background-color: #ffd814;
-  color: #6b7786;
+  background-color: var(--brand);
+  color: var(--brand-text);
   border: none;
   border-radius: 20px;
   padding: 0.6rem 1.8rem;
@@ -205,7 +206,7 @@
   margin-top: -1.2rem;
 }
 .boton-carrito:hover:not(:disabled) {
-  background-color: #ffd814;
+  background-color: var(--brand);
   transform: scale(1.05);
   box-shadow: 0 4px 12px rgba(255, 216, 20, 0.5);
 }

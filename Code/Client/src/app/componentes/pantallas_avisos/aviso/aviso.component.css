@@ -1,19 +1,8 @@
-:root {
-  --color-primary: #2563eb;
-  --color-secondary: #FFCF00;
-  --color-success: #10b981;
-  --color-error: #ef4444;
-  --color-text: #334155;
-  --color-text-secondary: #64748b;
-  --color-border: #e2e8f0;
-  --color-background: #f8fafc;
-  --color-surface: #ffffff;
-}
 * {
   box-sizing: border-box;
   margin: 0;
   padding: 0;
-  font-family: "Manrope", sans-serif;
+  font-family: var(--font);
 }
 :host {
   position: fixed;
@@ -21,29 +10,29 @@
   left: 0;
   width: 100vw;
   height: 100vh;
-  background: rgba(0, 0, 0, 0.5);
+  background: rgba(0, 0, 0, 0.45);
   display: flex;
   align-items: center;
   justify-content: center;
   z-index: 1000;
-  animation: fadeIn 0.3s ease-in-out;
+  animation: fadeIn 200ms ease-out both;
+  backdrop-filter: blur(2px);
 }
 .container {
   position: relative;
   display: flex;
   flex-direction: column;
   align-items: center;
-  background-color: #fff;
-  padding: 35px 30px 25px 30px;
+  background: var(--surface);
+  padding: 2rem 1.75rem 1.5rem;
   width: 400px;
   max-width: 90vw;
   max-height: 80vh;
-  border: none;
-  border-radius: 20px;
-  box-shadow: 0 6px 12px rgba(0, 0, 0, 0.3);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-lg);
+  box-shadow: var(--shadow-xl);
   text-align: center;
-  animation: slideIn 0.3s ease-out;
-  font-family: 'Manrope', sans-serif;
+  animation: slideIn 200ms ease-out both;
 }
 .cerrar {
   position: absolute;
@@ -62,30 +51,30 @@
 .cerrar img {
   width: 100%;
   height: 100%;
-  transition: all 0.2s ease;
+  transition: color var(--t-fast), background-color var(--t-fast), border-color var(--t-fast), box-shadow var(--t-fast), transform var(--t-fast);
 }
 .cerrar:hover img {
   transform: scale(1.1);
 }
 h1 {
-  margin-top: 10px;
-  color: var(--color-text);
-  font-size: 1.5rem;
+  margin-top: 0.5rem;
+  color: var(--ink);
+  font-size: 1.25rem;
   font-weight: 700;
-  margin-bottom: 15px;
-  padding-right: 30px;
+  margin-bottom: 0.75rem;
+  padding-right: 1.5rem;
 }
 .mensaje-container {
   max-height: 200px;
   overflow-y: auto;
   width: 100%;
-  margin: 15px 0 20px 0;
+  margin: 0 0 1.25rem 0;
   padding-right: 5px;
 }
 p {
-  font-size: 16px;
-  color: var(--color-text);
-  line-height: 1.5;
+  font-size: 0.95rem;
+  color: var(--ink-secondary);
+  line-height: 1.6;
   text-align: left;
   padding: 0 5px;
   margin: 0;
@@ -111,35 +100,43 @@ p {
   width: 100%;
 }
 .aceptar {
-  background-color: #ffd814;
+  background: var(--brand);
   border: none;
-  color: #6b7786;
-  padding: 0.75rem 1.5rem;
-  border-radius: 20px;
+  color: var(--brand-text);
+  padding: 0.65rem 1.5rem;
+  border-radius: var(--radius-full);
   cursor: pointer;
-  transition: all 0.3s ease;
+  transition: background-color var(--t-fast), box-shadow var(--t-fast), transform var(--t-fast);
   min-width: 80px;
-  font-size: 0.9rem;
+  font-size: 0.875rem;
   font-weight: 600;
+  font-family: var(--font);
 }
-.aceptar:hover {
-  transform: scale(1.05);
-  box-shadow: 0 4px 12px rgba(255, 216, 20, 0.5);
+@media (hover: hover) and (pointer: fine) {
+  .aceptar:hover {
+    background: var(--brand-hover);
+    box-shadow: 0 4px 12px rgba(255, 215, 0, 0.4);
+    transform: translateY(-1px);
+  }
 }
 .volver-btn {
-  background-color: #f0f0f0;
-  border: none;
-  color: #6b7786;
-  padding: 0.75rem 1.5rem;
-  border-radius: 20px;
+  background: var(--sidebar);
+  border: 1px solid var(--border);
+  color: var(--ink-secondary);
+  padding: 0.65rem 1.5rem;
+  border-radius: var(--radius-full);
   cursor: pointer;
-  transition: background-color 0.3s ease;
+  transition: background-color var(--t-fast), border-color var(--t-fast);
   min-width: 80px;
-  font-size: 0.9rem;
+  font-size: 0.875rem;
   font-weight: 600;
+  font-family: var(--font);
 }
-.volver-btn:hover {
-  background-color: #e0e0e0;
+@media (hover: hover) and (pointer: fine) {
+  .volver-btn:hover {
+    background: var(--bg);
+    border-color: var(--border-strong);
+  }
 }
 @keyframes fadeIn {
   from {

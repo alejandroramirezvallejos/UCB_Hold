@@ -1,17 +1,4 @@
-:root {
-  --color-primary: #2563eb;
-  --color-primary-dark: #1e40af;
-  --color-error: #ef4444;
-  --color-text: #334155;
-  --color-text-secondary: #64748b;
-  --color-border: #e2e8f0;
-  --color-background: #f8fafc;
-  --color-surface: #ffffff;
-  --shadow-sm: 0 1px 2px rgba(0, 0, 0, 0.05);
-  --radius: 0.5rem;
-  --radius-full: 9999px;
-  --transition: all 0.2s ease-in-out;
-}
+
 .botoncrear {
   display: flex;
   align-items: center;
@@ -24,13 +11,13 @@
   font-size: 12px;
   font-weight: 600;
   cursor: pointer;
-  transition: all 0.3s ease;
+  transition: color var(--t-base), background-color var(--t-base), border-color var(--t-base), box-shadow var(--t-base);
   box-shadow: none;
   white-space: nowrap;
   height: 32px;
 }
 .botoncrear:hover {
-  background-color: #ffd814;
+  background-color: var(--brand);
   color: #6b7786;
   transform: translateY(-1px);
   box-shadow: 0 4px 12px rgba(255, 216, 20, 0.4);
@@ -100,7 +87,7 @@
   transition: var(--transition);
 }
 .button:hover {
-  background-color: var(--color-primary);
+  background-color: var(--brand);
 }
 .search-container {
   margin-bottom: 1.5rem;
@@ -130,7 +117,7 @@
 }
 .search-input:focus {
   outline: none;
-  border-color: var(--color-primary);
+  border-color: var(--interactive);
   box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.1);
 }
 .clear-search {
@@ -205,8 +192,8 @@
 }
 .btn-outline {
   background-color: transparent;
-  border: 1px solid var(--color-primary);
-  color: var(--color-primary);
+  border: 1px solid var(--interactive);
+  color: var(--ink);
 }
 .btn-outline:hover {
   background-color: rgba(37, 99, 235, 0.05);
@@ -230,7 +217,7 @@
   background-color: rgba(239, 68, 68, 0.1);
 }
 .btn-edit {
-  color: var(--color-primary);
+  color: var(--ink);
 }
 .btn-edit:hover {
   background-color: rgba(37, 99, 235, 0.1);
@@ -282,7 +269,7 @@
   font-size: 0.9rem;
   font-weight: 600;
   border-radius: 8px;
-  transition: all 0.3s ease;
+  transition: color var(--t-base), background-color var(--t-base), border-color var(--t-base), box-shadow var(--t-base);
   min-width: 80px;
 }
 .btn-confirm {
@@ -302,9 +289,9 @@
   border: 2px solid #5F6368;
 }
 .btn-cancel:hover {
-  background-color: #FFCF00;
+  background-color: var(--brand);
   color: #333;
-  border-color: #FFCF00;
+  border-color: var(--ink);
   transform: translateY(-1px);
   box-shadow: 0 4px 12px rgba(255, 207, 0, 0.3);
 }

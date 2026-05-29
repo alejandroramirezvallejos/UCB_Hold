@@ -82,7 +82,7 @@
             <td>{{prestamo.value.datosgrupo.FechaPrestamoEsperada | date:'dd/MM/yyyy':'America/La_Paz'}}</td>
             <td>{{prestamo.value.datosgrupo.FechaDevolucionEsperada | date:'dd/MM/yyyy':'America/La_Paz'}}</td>
             <td>
-              <span [class]="'estado-' + (getEstadoCalculado(prestamo.value) || '')">
+              <span [class]="'badge badge-' + (getEstadoCalculado(prestamo.value) || '')">
                 {{ getEstadoCalculado(prestamo.value) | titlecase }}
               </span>
             </td>

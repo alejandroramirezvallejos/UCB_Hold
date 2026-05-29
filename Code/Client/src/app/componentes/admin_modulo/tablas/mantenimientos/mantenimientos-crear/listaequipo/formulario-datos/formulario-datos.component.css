@@ -1,6 +1,6 @@
 @import url('https://fonts.googleapis.com/css2?family=Open+Sans:wght@300;400;600;700&display=swap');
 :host {
-  font-family: 'Open Sans', sans-serif;
+  font-family: var(--font);
   position: fixed;
   top: 0;
   left: 0;
@@ -13,16 +13,13 @@
   z-index: 1001;
   animation: fadeIn 0.3s ease-in-out;
 }
-:root {
-  --primary-color: #1e3a8a;
-  --text-color: #1f2937;
-}
+
 .form-container {
   background: white;
   padding: 2rem;
   border-radius: 1rem;
   border: 1px solid #e1e5ea;
-  border-left: 4px solid var(--primary-color);
+  border-top: 3px solid var(--brand);
   box-shadow: 0 15px 25px rgba(0, 0, 0, 0.1);
   width: 100%;
   max-width: 500px;
@@ -46,7 +43,7 @@
   align-items: center;
   justify-content: center;
   border-radius: 50%;
-  transition: all 0.2s ease;
+  transition: color var(--t-fast), background-color var(--t-fast), border-color var(--t-fast), box-shadow var(--t-fast), transform var(--t-fast);
 }
 .btn-close:hover {
   background-color: rgba(0, 0, 0, 0.1);
@@ -54,7 +51,7 @@
 }
 .form-container h2 {
   text-align: center;
-  color: var(--primary-color);
+  color: var(--ink);
   margin-bottom: 1.5rem;
   font-size: 1.6rem;
   font-weight: 700;
@@ -86,7 +83,7 @@
 }
 .form-input:focus {
   outline: none;
-  border-color: var(--primary-color);
+  border-color: var(--interactive);
   box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.1);
 }
 .form-input.ng-invalid.ng-touched {
@@ -109,7 +106,7 @@ textarea.form-input {
   text-align: center;
 }
 .register-button {
-  background-color: #ffd814;
+  background-color: var(--brand);
   color: #6b7786;
   padding: 0.65rem 1.5rem;
   border: none;
@@ -117,7 +114,7 @@ textarea.form-input {
   font-size: 0.95rem;
   font-weight: 600;
   cursor: pointer;
-  transition: all 0.3s ease;
+  transition: color var(--t-base), background-color var(--t-base), border-color var(--t-base), box-shadow var(--t-base);
   display: inline-flex;
   align-items: center;
   justify-content: center;
@@ -127,12 +124,12 @@ textarea.form-input {
   margin: 0 auto;
 }
 .register-button:hover {
-  background: #f7ca00;
+  background: var(--brand-hover);
   transform: scale(1.05);
   box-shadow: 0 4px 12px rgba(255, 216, 20, 0.4);
 }
 .register-button:active {
-  background: #FFCF00;
+  background: var(--brand);
   transform: scale(0.98);
   box-shadow: inset 0 3px 5px rgba(0, 0, 0, 0.125);
 }

@@ -1,6 +1,6 @@
 @import url('https://fonts.googleapis.com/css2?family=Open+Sans:wght@300;400;600;700&display=swap');
 :host {
-  font-family: 'Open Sans', sans-serif;
+  font-family: var(--font);
   position: fixed;
   top: 0;
   left: 0;
@@ -13,18 +13,12 @@
   z-index: 1000;
   animation: fadeIn 0.3s ease-in-out;
 }
-:root {
-  --primary-color: #1e3a8a;
-  --text-color: #1f2937;
-  --border-color: #e1e5ea;
-  --hover-color: #FFCF00;
-  --background-gray: #5F6368;
-}
+
 .container {
   background: white;
   border-radius: 1rem;
   border: 1px solid var(--border-color);
-  border-left: 4px solid var(--primary-color);
+  border-top: 3px solid var(--brand);
   box-shadow: 0 15px 25px rgba(0, 0, 0, 0.1);
   padding: 1.5rem 3rem 1.5rem 1.5rem;
   animation: slideIn 0.3s ease-out;
@@ -51,10 +45,10 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  transition: all 0.2s ease;
+  transition: color var(--t-fast), background-color var(--t-fast), border-color var(--t-fast), box-shadow var(--t-fast), transform var(--t-fast);
 }
 .btn-back:hover {
-  background-color: #f8fafc;
+  background-color: #fffde7;
 }
 .btn-back img {
   width: 24px;
@@ -86,7 +80,7 @@
 }
 .search-input:focus {
   outline: none;
-  border-color: var(--primary-color);
+  border-color: var(--interactive);
   box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.1);
 }
 .search-input::placeholder {
@@ -106,7 +100,7 @@
   justify-content: center;
   width: 1.5rem;
   height: 1.5rem;
-  transition: all 0.2s ease;
+  transition: color var(--t-fast), background-color var(--t-fast), border-color var(--t-fast), box-shadow var(--t-fast), transform var(--t-fast);
 }
 .clear-search:hover {
   background-color: rgba(0, 0, 0, 0.1);
@@ -161,7 +155,7 @@
   border-bottom: 2px solid var(--border-color);
 }
 .data-table thead th:hover {
-  background-color: #f8fafc;
+  background-color: #fffde7;
 }
 .data-table thead th i {
   margin-left: 0.5rem;
@@ -173,7 +167,7 @@
   transition: background-color 0.2s;
 }
 .data-table tbody tr:hover {
-  background-color: #f8fafc;
+  background-color: #fffde7;
 }
 .data-table tbody tr:last-child {
   border-bottom: none;
@@ -230,11 +224,11 @@
 }
 .btn-outline {
   background: transparent;
-  border: 2px solid var(--primary-color);
-  color: var(--primary-color);
+  border: 2px solid var(--interactive);
+  color: var(--ink);
 }
 .btn-outline:hover {
-  background: var(--primary-color);
+  background: var(--brand);
   color: white;
 }
 @keyframes slideIn {

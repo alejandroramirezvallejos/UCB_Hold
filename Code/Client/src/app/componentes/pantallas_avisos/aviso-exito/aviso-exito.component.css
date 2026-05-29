@@ -1,19 +1,8 @@
-:root {
-  --color-primary: #2563eb;
-  --color-secondary: #FFCF00;
-  --color-success: #10b981;
-  --color-info: #3b82f6;
-  --color-text: #334155;
-  --color-text-secondary: #64748b;
-  --color-border: #e2e8f0;
-  --color-background: #f8fafc;
-  --color-surface: #ffffff;
-}
 * {
   box-sizing: border-box;
   margin: 0;
   padding: 0;
-  font-family: "Manrope", sans-serif;
+  font-family: var(--font);
 }
 :host {
   position: fixed;
@@ -103,13 +92,13 @@ p {
   width: 100%;
 }
 .aceptar {
-  background-color: #ffd814;
+  background-color: var(--brand);
   border: none;
-  color: #6b7786;
+  color: var(--brand-text);
   padding: 0.75rem 1.5rem;
   border-radius: 20px;
   cursor: pointer;
-  transition: all 0.3s ease;
+  transition: color var(--t-base), background-color var(--t-base), border-color var(--t-base), box-shadow var(--t-base);
   min-width: 100px;
   font-size: 0.9rem;
   font-weight: 600;

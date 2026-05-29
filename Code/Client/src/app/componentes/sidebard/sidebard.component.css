@@ -40,7 +40,7 @@
   font-size: 1rem;
   color: #64748b;
   cursor: pointer;
-  transition: all 0.2s ease;
+  transition: color var(--t-fast), background-color var(--t-fast), border-color var(--t-fast), box-shadow var(--t-fast), transform var(--t-fast);
   font-weight: 500;
   display: flex;
   align-items: center;
@@ -48,18 +48,18 @@
   border-left: 3px solid transparent;
 }
 .item:hover {
-  background-color: #f8fafc;
-  color: #FFCF00;
+  background-color: #fffde7;
+  color: var(--ink);
   border-left-color: transparent;
   font-weight: 700;
-  box-shadow: inset 3px 0 0 0 #FFCF00;
+  box-shadow: inset 3px 0 0 0 var(--brand);
 }
 .item.active {
   background-color: #fffbeb;
   color: #6b7786;
   border-left-color: transparent;
   font-weight: 700;
-  box-shadow: inset 4px 0 0 0 #ffd814;
+  box-shadow: inset 4px 0 0 0 var(--brand);
   position: relative;
 }
 .item.active::before {
@@ -69,7 +69,7 @@
   top: 0;
   bottom: 0;
   width: 4px;
-  background: linear-gradient(180deg, #ffd814, #f7ca00);
+  background: linear-gradient(180deg, var(--brand), var(--brand-hover));
   border-radius: 0 4px 4px 0;
 }
 .item i {

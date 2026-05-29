@@ -24,7 +24,7 @@
   border: 1px solid #e2e8f0;
   border-radius: 0.5rem;
   font-size: 0.875rem;
-  transition: all 0.2s ease-in-out;
+  transition: color var(--t-fast), background-color var(--t-fast), border-color var(--t-fast), box-shadow var(--t-fast);
 }
 .search-input:focus {
   outline: none;
@@ -59,7 +59,7 @@
 .custom-dropdown {
   position: relative;
   min-width: 150px;
-  font-family: "Open Sans", sans-serif;
+  font-family: var(--font);
 }
 .dropdown-header {
   display: flex;
@@ -74,7 +74,7 @@
   border-radius: 8px;
   height: 42px;
   box-sizing: border-box;
-  transition: all 0.2s ease;
+  transition: color var(--t-fast), background-color var(--t-fast), border-color var(--t-fast), box-shadow var(--t-fast), transform var(--t-fast);
 }
 .dropdown-header .current-value {
   font-size: 0.9rem;
@@ -117,14 +117,14 @@
   font-weight: 500;
   color: #64748b;
   cursor: pointer;
-  transition: all 0.2s ease;
+  transition: color var(--t-fast), background-color var(--t-fast), border-color var(--t-fast), box-shadow var(--t-fast), transform var(--t-fast);
   display: flex;
   align-items: center;
   gap: 0.5rem;
 }
 .dropdown-list li:hover {
-  color: #FFCF00;
-  background-color: #f8fafc;
+  color: var(--ink);
+  background-color: #fffde7;
 }
 .dropdown-list li.active {
   color: #334155;
@@ -163,7 +163,7 @@
   gap: 0.75rem;
   padding: 12px 16px;
   cursor: pointer;
-  transition: all 0.2s ease;
+  transition: color var(--t-fast), background-color var(--t-fast), border-color var(--t-fast), box-shadow var(--t-fast), transform var(--t-fast);
   font-size: 14px;
   color: #6b7786;
   border-bottom: 1px solid rgba(226, 232, 240, 0.5);
@@ -171,12 +171,12 @@
 }
 .estados-item-flotante:hover {
   background-color: #fffbeb;
-  color: #ffd814;
+  color: var(--ink);
 }
 .estados-item-flotante.active {
   background-color: #fffbeb;
   color: #6b7786;
-  border-left: 3px solid #ffd814;
+  border-left: 3px solid var(--brand);
   font-weight: 600;
 }
 .estados-item-flotante:first-child {

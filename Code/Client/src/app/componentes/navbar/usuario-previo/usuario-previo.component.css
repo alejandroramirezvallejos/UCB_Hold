@@ -19,7 +19,7 @@
   align-items: center;
   gap: 0.75rem;
   color: #64748b;
-  transition: all 0.2s ease;
+  transition: color var(--t-fast), background-color var(--t-fast), border-color var(--t-fast), box-shadow var(--t-fast), transform var(--t-fast);
   cursor: pointer;
   border: none;
   background: none;
@@ -30,8 +30,8 @@
   text-decoration: none;
 }
 .dropdown-item:hover {
-  background-color: #f8fafc;
-  color: #FFCF00;
+  background-color: #fffde7;
+  color: var(--ink);
 }
 .dropdown-item i {
   width: 20px;

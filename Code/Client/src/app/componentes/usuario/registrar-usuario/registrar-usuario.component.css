@@ -1,16 +1,5 @@
-@import url('https://fonts.googleapis.com/css2?family=Open+Sans:wght@300;400;600;700&display=swap');
-
 :host {
-  font-family: 'Open Sans', sans-serif;
-}
-
-:root {
-  --primary-color: #1e3a8a;
-  --primary-hover: #162d6b;
-  --text-color: #1f2937;
-  --background-color: #f8fafc;
-  --input-border: #94a3b8;
-  --input-bg: #f8fafc;
+  font-family: var(--font);
 }
 
 .register-container {
@@ -18,27 +7,28 @@
   display: flex;
   align-items: flex-start;
   justify-content: center;
-  background: #ffffff;
+  background: var(--bg);
   padding: 4rem 2rem 2rem;
 }
 
 .register-card {
-  background: white;
+  background: var(--surface);
   padding: 2.5rem;
-  border-radius: 1rem;
-  border: 1px solid #e1e5ea;
-  border-left: 4px solid var(--primary-color);
-  box-shadow: 0 15px 25px rgba(0, 0, 0, 0.1);
+  border-radius: var(--radius-lg);
+  border: 1px solid var(--border);
+  border-top: 3px solid var(--brand);
+  box-shadow: var(--shadow-lg);
   width: 100%;
   max-width: 600px;
 }
 
 .title {
   text-align: center;
-  color: var(--primary-color);
+  color: var(--ink);
   margin-bottom: 2rem;
-  font-size: 2rem;
-  font-weight: 700;
+  font-size: 1.75rem;
+  font-weight: 800;
+  letter-spacing: -0.02em;
 }
 
 .register-form {
@@ -56,10 +46,12 @@
 
 .form-section h3 {
   margin: 0 0 1.2rem 0;
-  color: var(--primary-color);
-  font-size: 1.1rem;
+  color: var(--ink-secondary);
+  font-size: 0.875rem;
   font-weight: 700;
-  border-bottom: 2px solid var(--primary-color);
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  border-bottom: 1px solid var(--border);
   padding-bottom: 0.6rem;
 }
 
@@ -77,7 +69,7 @@
 
 .form-group label {
   font-weight: 700;
-  color: var(--text-color);
+  color: var(--ink-secondary);
   margin-bottom: 0.75rem;
   display: block;
   font-size: 1rem;
@@ -100,14 +92,13 @@
 
 .form-input:focus {
   outline: none;
-  border-color: var(--primary-color);
-  box-shadow: 0 0 0 3px rgba(30, 58, 138, 0.1);
-  background-color: #ffffff;
+  border-color: var(--interactive);
+  box-shadow: 0 0 0 3px var(--interactive-subtle);
+  background-color: var(--surface);
 }
 
-.form-input:invalid {
-  border-color: #dc2626;
-}
+/* :invalid removed — fires at page load on empty required fields (HTML5 native)
+   Angular error messages already handle validation feedback via touched/submitted */
 
 .error-message {
   color: #dc2626;
@@ -120,37 +111,41 @@
 }
 
 .register-button {
-  background-color: #ffd814;
-  color: #6b7786;
+  background: var(--brand);
+  color: var(--brand-text);
   padding: 0.75rem 1rem;
   border: none;
-  border-radius: 20px;
+  border-radius: var(--radius-full);
   font-size: 0.9rem;
-  font-weight: normal;
+  font-weight: 600;
+  font-family: var(--font);
   width: 180px;
   margin: 1rem auto 0;
   cursor: pointer;
-  transition: background-color 0.3s ease;
+  transition: background-color var(--t-fast), box-shadow var(--t-fast), transform var(--t-fast);
   display: flex;
   align-items: center;
   justify-content: center;
   gap: 0.5rem;
 }
 
-.register-button:hover:not(:disabled) {
-  background-color: #f7ca00;
-  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+@media (hover: hover) and (pointer: fine) {
+  .register-button:hover:not(:disabled) {
+    background: var(--brand-hover);
+    box-shadow: 0 4px 12px rgba(255, 215, 0, 0.4);
+    transform: translateY(-1px);
+  }
 }
 
 .register-button:active:not(:disabled) {
-  background: #FFCF00;
-  transform: translateY(1px);
-  box-shadow: inset 0 3px 5px rgba(0, 0, 0, 0.125);
+  transform: translateY(0);
+  box-shadow: none;
 }
 
 .register-button:disabled {
-  opacity: 0.7;
+  opacity: 0.55;
   cursor: not-allowed;
+  transform: none;
 }
 
 .spinner {
@@ -180,7 +175,7 @@
 }
 
 .login-link a {
-  color: var(--primary-color);
+  color: var(--interactive);
   text-decoration: none;
   font-weight: 500;
   cursor: pointer;
@@ -194,7 +189,7 @@
 .custom-dropdown {
   position: relative;
   width: 100%;
-  font-family: "Open Sans", sans-serif;
+  font-family: var(--font);
 }
 
 .dropdown-header {
@@ -216,8 +211,8 @@
 }
 
 .dropdown-header:focus-within {
-  border-color: var(--primary-color);
-  box-shadow: 0 0 0 3px rgba(30, 58, 138, 0.1);
+  border-color: var(--interactive);
+  box-shadow: 0 0 0 3px var(--interactive-subtle);
 }
 
 .dropdown-header.error {
@@ -269,13 +264,13 @@
   font-weight: 500;
   color: #64748b;
   cursor: pointer;
-  transition: all 0.2s ease;
+  transition: color var(--t-fast), background-color var(--t-fast), border-color var(--t-fast), box-shadow var(--t-fast), transform var(--t-fast);
   text-align: left;
 }
 
 .dropdown-list li:hover {
-  color: #FFCF00;
-  background-color: #f8fafc;
+  color: var(--ink);
+  background-color: #fffde7;
 }
 
 .dropdown-list li.selected {

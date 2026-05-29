@@ -61,11 +61,11 @@
   background-color: #8f9195;
 }
 .buttons button:last-child {
-  background-color: #FFCF00;
+  background-color: var(--brand);
   color: #5f6368;
 }
 .buttons button:last-child:hover {
-  background-color: #FFCF00;
+  background-color: var(--brand);
 }
 .signature-instructions {
   font-size: 1.1em;

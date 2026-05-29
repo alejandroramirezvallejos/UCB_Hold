@@ -14,11 +14,11 @@ body {
 }
 .product-card {
   max-width: 240px;
-  background-color: #ffffff;
-  border: none;
-  border-radius: 20px;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-xl);
   overflow: hidden;
-  transition: box-shadow 0.2s ease, transform 0.2s ease;
+  transition: box-shadow var(--t-base), transform var(--t-base), border-color var(--t-base);
 }
 /* Efecto active para feedback táctil */
 .product-card:active {
@@ -28,12 +28,12 @@ body {
 /* Hover solo en dispositivos con mouse */
 @media (hover: hover) and (pointer: fine) {
   .product-card:hover {
-    transform: translateY(-4px);
-    box-shadow: 0 8px 20px rgba(0, 0, 0, 0.08);
+    transform: translateY(-3px);
+    box-shadow: var(--shadow-md);
+    border-color: var(--border-strong);
   }
   .product-card:hover .product-card__image {
-    transform: scale(1.05);
-    box-shadow: 0 8px 20px rgba(0, 0, 0, 0.08);
+    transform: scale(1.04);
     border-bottom-left-radius: 0;
     border-bottom-right-radius: 0;
   }
@@ -70,12 +70,12 @@ body {
   padding: 1rem;
 }
 .product-card__title {
-  font-family: "Manrope", sans-serif;
+  font-family: var(--font);
   font-weight: 600;
   font-size: 0.9rem;
   line-height: 1.2;
   margin: 0;
-  color: #6b7786;
+  color: var(--ink);
   flex: 1;
   white-space: nowrap;
   overflow: hidden;
@@ -86,14 +86,14 @@ body {
   align-items: center;
 }
 .product-card__imt {
-  font-family: "Manrope", sans-serif;
+  font-family: var(--font);
   font-weight: 500;
-  font-size: 0.875rem;
+  font-size: 0.8rem;
   line-height: 1.2rem;
-  color: #8f9195;
-  background-color: #f8f9fa;
-  padding: 0.25rem 0.75rem;
-  border-radius: 9999px;
+  color: var(--ink-secondary);
+  background: var(--sidebar);
+  padding: 0.2rem 0.625rem;
+  border-radius: var(--radius-full);
 }
 .grid-container {
   display: grid;
@@ -230,11 +230,11 @@ body {
   }
 }
 .site-footer {
-  background-color: #ffffff;
+  background-color: var(--bg);
   padding: 30px 0;
   text-align: center;
   font-size: 0.875rem;
-  color: #8f9195;
+  color: var(--ink-muted);
   margin-top: 1rem;
 }
 .footer-content p {
@@ -291,7 +291,7 @@ body {
   font-size: 0.875rem;
   font-weight: 500;
   cursor: pointer;
-  transition: all 0.2s ease;
+  transition: color var(--t-fast), background-color var(--t-fast), border-color var(--t-fast), box-shadow var(--t-fast), transform var(--t-fast);
   display: flex;
   align-items: center;
   justify-content: center;
@@ -310,14 +310,16 @@ body {
   }
 }
 .pagination__button--active {
-  background: #ffd814;
-  border-color: #ffd814;
-  color: #6b7786;
-  font-weight: 600;
+  background: var(--brand);
+  border-color: var(--interactive);
+  color: var(--brand-text);
+  font-weight: 700;
 }
-.pagination__button--active:hover {
-  background: #f7ca00;
-  border-color: #f7ca00;
+@media (hover: hover) and (pointer: fine) {
+  .pagination__button--active:hover {
+    background: var(--brand-hover);
+    border-color: var(--brand-hover);
+  }
 }
 .pagination__arrow-btn {
   width: 1.8rem;
@@ -327,7 +329,7 @@ body {
   background: transparent;
   border-radius: 0.5rem;
   cursor: pointer;
-  transition: all 0.2s ease;
+  transition: color var(--t-fast), background-color var(--t-fast), border-color var(--t-fast), box-shadow var(--t-fast), transform var(--t-fast);
   display: flex;
   align-items: center;
   justify-content: center;

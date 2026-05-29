@@ -3,6 +3,7 @@
   margin: 0 auto;
   padding: 0;
   width: 100%;
+  box-sizing: border-box;
 }
 .calendario-header {
   display: flex;
@@ -24,13 +25,13 @@
   height: 32px;
   border-radius: 8px;
   cursor: pointer;
-  transition: all 0.2s ease;
+  transition: color var(--t-fast), background-color var(--t-fast), border-color var(--t-fast), box-shadow var(--t-fast), transform var(--t-fast);
   display: flex;
   align-items: center;
   justify-content: center;
 }
 .calendario-header button:hover {
-  background: #ffdd05;
+  background: var(--brand);
   border-color: #d0d0d0;
   transform: none;
 }
@@ -111,7 +112,7 @@
 }
 .dia-celda:hover {
   background: #fffbf0;
-  border-color: #ffd814;
+  border-color: var(--brand);
   transform: none;
 }
 .dia-celda-seleccionado{
@@ -126,7 +127,7 @@
   transition: all 0.15s ease;
   position: relative;
   background: rgba(255, 251, 240, 0.5); /* Cambiado a semi-transparente como el hover */
-  border-color: #ffd814; /* Añadido para coincidir con el hover */
+  border-color: var(--brand); /* Añadido para coincidir con el hover */
   padding: 0.3rem;
   min-height: 45px;
   max-width: 100%;
@@ -208,12 +209,12 @@
   box-shadow: none;
 }
 .dia-celda.seleccionado {
-  background: #ffd814 !important;
+  background: var(--brand) !important;
   border-color: #000 !important;
 }
 .dia-celda.en-rango {
   background: #fff3cd;
-  border-color: #ffd814;
+  border-color: var(--brand);
 }
 .dia-celda.mes-otro {
   opacity: 0.3;

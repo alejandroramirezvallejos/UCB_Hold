@@ -45,12 +45,12 @@
   box-shadow: none;
 }
 .boton-aceptar {
-  background: #FFCF00;
+  background: var(--brand);
   color: #5f6368;
   box-shadow: none;
 }
 .boton-aceptar:hover {
-  background: #FFCF00;
+  background: var(--brand);
   transform: none;
   box-shadow: none;
 }
