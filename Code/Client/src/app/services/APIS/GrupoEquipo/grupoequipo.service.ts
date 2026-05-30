@@ -10,6 +10,7 @@ export class GrupoequipoService {
   private apiUrl = environment.apiUrl + '/api/GrupoEquipo';
   private _cache: GrupoEquipo[] | null = null;
   paginaGuardada: number = 0;
+  cantidadObjetosGuardada: number = 21;
   constructor(private http: HttpClient) { }
 
   invalidarCache() { this._cache = null; }

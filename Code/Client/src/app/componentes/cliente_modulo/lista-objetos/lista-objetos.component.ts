@@ -1,4 +1,4 @@
-import { Component, Input, OnChanges, OnDestroy, signal, SimpleChanges, WritableSignal } from '@angular/core';
+import { Component, Input, OnChanges, OnDestroy, signal, SimpleChanges, WritableSignal, HostListener, ViewChild, ElementRef, AfterViewInit } from '@angular/core';
 import { RouterModule } from '@angular/router';
 import { GrupoequipoService } from '../../../services/APIS/GrupoEquipo/grupoequipo.service';
 import { GrupoEquipo } from '../../../models/grupo_equipo';
@@ -12,7 +12,8 @@ import { extractErrorMessage } from '../../../utils/error-handler';
   templateUrl: './lista-objetos.component.html',
   styleUrl: './lista-objetos.component.css'
 })
-export class ListaObjetosComponent implements OnChanges, OnDestroy {
+export class ListaObjetosComponent implements OnChanges, OnDestroy, AfterViewInit {
+  @ViewChild('gridContainer') gridContainer!: ElementRef;
   @Input() categorias: string[] = [];
   @Input() producto: string = '';
   private todosLosProductos: GrupoEquipo[] = [];
@@ -26,12 +27,56 @@ export class ListaObjetosComponent implements OnChanges, OnDestroy {
   constructor(private servicio: GrupoequipoService) {}
   
   ngOnInit(): void {
+    this.cantidadObjetos = this.servicio.cantidadObjetosGuardada || 21;
     this.paginaActual = this.servicio.paginaGuardada;
     this.cargarProductos();
+  }
+
+  ngAfterViewInit(): void {
+    setTimeout(() => {
+      this.calcularCantidadObjetos();
+    });
+  }
+
+  @HostListener('window:resize', ['$event'])
+  onResize(event: any) {
+    this.calcularCantidadObjetos();
+  }
+
+  private calcularCantidadObjetos(): void {
+    if (!this.gridContainer) return;
+
+    const element = this.gridContainer.nativeElement;
+    const computedStyle = window.getComputedStyle(element);
+    const gridColumns = computedStyle.getPropertyValue('grid-template-columns');
+    
+    let columnas = 1;
+    if (gridColumns && gridColumns !== 'none') {
+      columnas = gridColumns.trim().split(/\s+/).length;
+    }
+
+    const filasDeseadas = 4;
+    let nuevaCantidad = columnas * filasDeseadas;
+
+    if (nuevaCantidad < 6) {
+      nuevaCantidad = 6;
+    }
+
+    if (this.cantidadObjetos !== nuevaCantidad) {
+      const primerItemVisible = this.paginaActual * this.cantidadObjetos;
+      this.cantidadObjetos = nuevaCantidad;
+      this.servicio.cantidadObjetosGuardada = nuevaCantidad;
+      this.paginaActual = Math.floor(primerItemVisible / nuevaCantidad);
+      this.servicio.paginaGuardada = this.paginaActual;
+      if (this.todosLosProductos.length > 0) {
+        this.filtrarProductos();
+      }
+    }
   }
   
   ngOnDestroy(): void {
     this.servicio.paginaGuardada = this.paginaActual;
+    this.servicio.cantidadObjetosGuardada = this.cantidadObjetos;
   }
   
   ngOnChanges(changes: SimpleChanges): void {
