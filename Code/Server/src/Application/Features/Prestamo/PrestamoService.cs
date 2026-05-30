@@ -72,7 +72,7 @@ public class PrestamoService : Service<PrestamoEntity, PrestamoRepository, Prest
         return await Get(id);
     }
 
-    public async Task<Result<PrestamoDto>> UpdateStatus(int id, string newStatus)
+    public async Task<Result<PrestamoDto>> UpdateStatus(int id, string newStatus, string? observacion = null)
     {
         var prestamo = await Repository.FindById(id);
 
@@ -92,6 +92,12 @@ public class PrestamoService : Service<PrestamoEntity, PrestamoRepository, Prest
             return Result<PrestamoDto>.Error("No se puede aprobar: uno o más equipos ya están reservados en esas fechas");
 
         prestamo.EstadoPrestamo = parsedState.Value;
+        
+        if (observacion != null)
+        {
+            prestamo.Observacion = observacion;
+        }
+
         await Repository.UpdateTracked(prestamo);
 
         return await Get(id);

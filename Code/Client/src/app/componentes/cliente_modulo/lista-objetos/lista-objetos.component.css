@@ -201,7 +201,7 @@ body {
   border: 3px solid #ddd;
   border-top-color: #007bff;
   border-radius: 50%;
-  animation: spin 1s linear infinite;
+  animation: spin 2s linear infinite;
 }
 .item-info {
   position: absolute;
