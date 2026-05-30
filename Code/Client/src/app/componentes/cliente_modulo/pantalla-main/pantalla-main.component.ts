@@ -1,11 +1,13 @@
 import { CommonModule } from '@angular/common';
-import { Component, signal, WritableSignal } from '@angular/core';
+import { Component, signal, WritableSignal, OnInit, OnDestroy } from '@angular/core';
 import { ListaObjetosComponent } from '../lista-objetos/lista-objetos.component';
 import { FormsModule } from '@angular/forms';
 import { CategoriaService } from '../../../services/APIS/Categoria/categoria.service';
 import { Categorias } from '../../../models/admin/Categorias';
 import { MostrarerrorComponent } from '../../pantallas_avisos/mostrarerror/mostrarerror.component';
 import { extractErrorMessage } from '../../../utils/error-handler';
+import { FiltrosService } from '../../../services/filtros.service';
+
 @Component({
   selector: 'app-pantalla-main',
   standalone: true,
@@ -13,7 +15,7 @@ import { extractErrorMessage } from '../../../utils/error-handler';
   templateUrl: './pantalla-main.component.html',
   styleUrl: './pantalla-main.component.css',
 })
-export class PantallaMainComponent {
+export class PantallaMainComponent implements OnInit, OnDestroy {
   showCategories = false;
   solicitud: string = '';
   categoriasSeleccionadas: Set<string> = new Set();
@@ -29,8 +31,13 @@ export class PantallaMainComponent {
   };
   error : WritableSignal<boolean> = signal(false);
   mensajeerror : string = "";
-  constructor(private categorias: CategoriaService) {}
+
+  constructor(private categorias: CategoriaService, private filtrosService: FiltrosService) {}
+
   ngOnInit(): void {
+    this.categoriasSeleccionadas = this.filtrosService.categoriasSeleccionadas;
+    this.solicitud = this.filtrosService.solicitud;
+
     this.categorias.obtenercategorias().subscribe({
       next: (data) => (this.items = data),
       error: (error) => {
@@ -41,14 +48,22 @@ export class PantallaMainComponent {
       },
     });
   }
+
+  ngOnDestroy(): void {
+    this.filtrosService.solicitud = this.solicitud;
+  }
+
   limpiar() {
     this.solicitud = '';
     this.categoriasSeleccionadas.clear();
+    this.filtrosService.limpiar();
     this.hover.clear = false;
   }
+
   mostrarcategorias() {
     this.showCategories = !this.showCategories;
   }
+
   seleccionarcategoria(categoria: string) {
     if (this.categoriasSeleccionadas.has(categoria)) {
       this.categoriasSeleccionadas.delete(categoria);
@@ -61,9 +76,11 @@ export class PantallaMainComponent {
       this.categoriasSeleccionadas.add(categoria);
     }
   }
+
   estaCategoriaSeleccionada(categoria: string): boolean {
     return this.categoriasSeleccionadas.has(categoria);
   }
+  
   get categoriasArray(): string[] {
     return Array.from(this.categoriasSeleccionadas);
   }

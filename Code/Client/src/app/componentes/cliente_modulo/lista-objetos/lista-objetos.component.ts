@@ -24,18 +24,22 @@ export class ListaObjetosComponent implements OnChanges, OnDestroy {
   error : WritableSignal<boolean> = signal(false);
   mensajeerror : string = "";
   constructor(private servicio: GrupoequipoService) {}
+  
   ngOnInit(): void {
     this.paginaActual = this.servicio.paginaGuardada;
     this.cargarProductos();
   }
+  
   ngOnDestroy(): void {
     this.servicio.paginaGuardada = this.paginaActual;
   }
+  
   ngOnChanges(changes: SimpleChanges): void {
     if ((changes['categorias'] || changes['producto']) && this.todosLosProductos.length > 0) {
       this.filtrarProductos();
     }
   }
+
   private cargarProductos(): void {
     this.servicio.getGrupoEquipo('', '').subscribe({
       next: (data) => {
@@ -50,6 +54,7 @@ export class ListaObjetosComponent implements OnChanges, OnDestroy {
       }
     });
   }
+  
   private normalizeText(text: string): string {
     if (typeof text !== 'string') {
       return String(text || '').toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g, '');
@@ -59,6 +64,7 @@ export class ListaObjetosComponent implements OnChanges, OnDestroy {
       .normalize('NFD')  // Descompone caracteres con acentos
       .replace(/[\u0300-\u036f]/g, '');  // Elimina diacríticos (acentos, tildes, etc.)
   }
+  
   private filtrarProductos(): void {
     let productos = [...this.todosLosProductos];
     if (this.categorias.length > 0) {
@@ -88,6 +94,7 @@ export class ListaObjetosComponent implements OnChanges, OnDestroy {
       this.paginaActual = Math.max(0, this.totalPaginas - 1);
     }
   }
+  
   paginar(productos: GrupoEquipo[]): GrupoEquipo[][] {
     const resultado: GrupoEquipo[][] = [];
     for (let i = 0; i < productos.length; i += this.cantidadObjetos) {
@@ -95,6 +102,7 @@ export class ListaObjetosComponent implements OnChanges, OnDestroy {
     }
     return resultado;
   }
+  
   obtenerRangoPaginas(): number[] {
     const maxBotones = 5;
     if (this.totalPaginas <= maxBotones) {
@@ -110,18 +118,22 @@ export class ListaObjetosComponent implements OnChanges, OnDestroy {
     }
     return Array.from({ length: maxBotones }, (_, i) => inicio + i);
   }
+  
   actualizarPagina(pagina: number): void {
     if (pagina >= 0 && pagina < this.totalPaginas) {
       this.paginaActual = pagina;
       this.servicio.paginaGuardada = pagina;
     }
   }
+  
   get productosActuales(): GrupoEquipo[] {
     return this.productosPaginados[this.paginaActual] || [];
   }
+  
   get hayPaginasAnteriores(): boolean {
     return this.paginaActual > 0;
   }
+  
   get hayPaginasSiguientes(): boolean {
     return this.paginaActual < this.totalPaginas - 1;
   }
