@@ -21,8 +21,8 @@
                 @for(prestamo of prestamos; track $index) {
                     <tr>
                         <td>{{prestamo.NombreGrupoEquipo}}</td>
-                        <td>{{prestamo.CodigoImt}}</td>
-                        <td>{{prestamo.Ubicacion_Equipo}}</td>
+                        <td>{{prestamo.CodigoImt || 'Pendiente de asignación'}}</td>
+                        <td>{{prestamo.Ubicacion_Equipo || 'Pendiente de asignación'}}</td>
                     </tr>
                 }
             </tbody>
