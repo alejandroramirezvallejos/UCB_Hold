@@ -47,8 +47,7 @@ public class PrestamoService : Service<PrestamoEntity, PrestamoRepository, Prest
         }
 
         await Repository.SavePrestamo(entity);
-        await Repository.AssignEquipos(entity.Id, dto.GrupoEquipoId,
-            entity.FechaPrestamoEsperada, entity.FechaDevolucionEsperada);
+        await Repository.SaveGrupoReservas(entity.Id, dto.GrupoEquipoId);
         await Repository.SaveContrato(entity, dto.Contrato);
 
         return await Repository.Get(entity.Id);
@@ -87,9 +86,14 @@ public class PrestamoService : Service<PrestamoEntity, PrestamoRepository, Prest
         if (!PrestamoState.CanTransition(prestamo.EstadoPrestamo, parsedState.Value))
             return Result<PrestamoDto>.Error($"Transición '{PrestamoState.ToText(prestamo.EstadoPrestamo)}' → '{newStatus}' no permitida");
 
-        if (parsedState.Value == EstadoPrestamo.Aprobado
-            && await Repository.HasEquipoConflictoAlAprobar(id))
-            return Result<PrestamoDto>.Error("No se puede aprobar: uno o más equipos ya están reservados en esas fechas");
+        if (parsedState.Value == EstadoPrestamo.Aprobado)
+        {
+            var assigned = await Repository.AssignEquiposOnApproval(id);
+            if (!assigned)
+                return Result<PrestamoDto>.Error("No se puede aprobar: no hay equipos disponibles para uno o más grupos en las fechas solicitadas");
+
+            await Repository.UpdateContratoWithEquipos(id);
+        }
 
         prestamo.EstadoPrestamo = parsedState.Value;
         

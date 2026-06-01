@@ -1,3 +1,4 @@
+using System.Text.RegularExpressions;
 using Ardalis.Result;
 using IMT_Reservas.Server.Application.Features.Prestamo;
 using IMT_Reservas.Server.Application.Features.Prestamo.State;
@@ -116,45 +117,117 @@ public class PrestamoRepository : Repository<PrestamoEntity, PrestamoDto>
             .AnyAsync();
     }
 
-    public async Task AssignEquipos(int prestamoId, List<int>? grupoEquipoIds, DateTime fechaInicio, DateTime fechaFin)
+    public async Task SaveGrupoReservas(int prestamoId, List<int>? grupoEquipoIds)
     {
         if (grupoEquipoIds == null || !grupoEquipoIds.Any())
             return;
 
-        var loanedIds = await DbContext.DetallesPrestamos
-            .Join(DbContext.Prestamos, d => d.IdPrestamo, p => p.Id, (d, p) => new { d, p })
-            .Where(x => (x.p.EstadoPrestamo == EstadoPrestamo.Aprobado
-                      || x.p.EstadoPrestamo == EstadoPrestamo.Activo
-                      || x.p.EstadoPrestamo == EstadoPrestamo.Atrasado)
-                      && x.p.FechaPrestamoEsperada.Date <= fechaFin.Date
-                      && x.p.FechaDevolucionEsperada.Date >= fechaInicio.Date)
-            .Select(x => x.d.IdEquipo)
-            .ToListAsync();
-
-        var assignedEquipoIds = new List<int>();
-
         foreach (var groupId in grupoEquipoIds)
         {
-            var excluded = loanedIds.Concat(assignedEquipoIds).ToList();
+            DbContext.DetallesPrestamos.Add(new DetallePrestamo
+            {
+                IdPrestamo = prestamoId,
+                IdGrupoEquipo = groupId,
+                IdEquipo = null,
+                EstadoEliminado = false
+            });
+        }
 
-            var equipoDisponible = await DbContext.Equipos
-                .FirstOrDefaultAsync(e => e.IdGrupoEquipo == groupId
+        await DbContext.SaveChangesAsync();
+    }
+
+    public async Task<bool> AssignEquiposOnApproval(int prestamoId)
+    {
+        var prestamo = await DbContext.Prestamos.FirstOrDefaultAsync(p => p.Id == prestamoId);
+        if (prestamo == null) return false;
+
+        var detalles = await DbContext.DetallesPrestamos
+            .Where(d => d.IdPrestamo == prestamoId && !d.EstadoEliminado && d.IdEquipo == null)
+            .ToListAsync();
+
+        if (detalles.Count == 0) return true;
+
+        var loanedIds = await DbContext.DetallesPrestamos
+            .Join(DbContext.Prestamos, d => d.IdPrestamo, p => p.Id, (d, p) => new { d, p })
+            .Where(x => x.d.IdEquipo != null
+                      && (x.p.EstadoPrestamo == EstadoPrestamo.Aprobado
+                       || x.p.EstadoPrestamo == EstadoPrestamo.Activo
+                       || x.p.EstadoPrestamo == EstadoPrestamo.Atrasado)
+                      && x.p.FechaPrestamoEsperada.Date <= prestamo.FechaDevolucionEsperada.Date
+                      && x.p.FechaDevolucionEsperada.Date >= prestamo.FechaPrestamoEsperada.Date)
+            .Select(x => x.d.IdEquipo!.Value)
+            .ToListAsync();
+
+        var assignedIds = new List<int>();
+
+        foreach (var detalle in detalles)
+        {
+            var excluded = loanedIds.Concat(assignedIds).ToList();
+
+            var equipo = await DbContext.Equipos
+                .FirstOrDefaultAsync(e => e.IdGrupoEquipo == detalle.IdGrupoEquipo
                     && !e.EstadoEliminado
                     && e.EstadoEquipo == EstadoEquipo.Operativo
                     && !excluded.Contains(e.Id));
 
-            if (equipoDisponible == null)
-                continue;
+            if (equipo == null)
+                return false;
 
-            DbContext.DetallesPrestamos.Add(new DetallePrestamo
-            {
-                IdPrestamo = prestamoId,
-                IdEquipo = equipoDisponible.Id,
-                EstadoEliminado = false
-            });
-            assignedEquipoIds.Add(equipoDisponible.Id);
+            detalle.IdEquipo = equipo.Id;
+            assignedIds.Add(equipo.Id);
         }
 
+        await DbContext.SaveChangesAsync();
+        return true;
+    }
+
+    public async Task UpdateContratoWithEquipos(int prestamoId)
+    {
+        var prestamo = await DbContext.Prestamos.FirstOrDefaultAsync(p => p.Id == prestamoId);
+        if (prestamo?.IdContrato == null) return;
+
+        var contrato = await DbContext.Contratos.FirstOrDefaultAsync(c => c.Id == prestamo.IdContrato);
+        if (contrato == null || string.IsNullOrEmpty(contrato.ContratoHtml)) return;
+
+        var detalles = await DbContext.DetallesPrestamos
+            .Where(d => d.IdPrestamo == prestamoId && !d.EstadoEliminado && d.IdEquipo != null)
+            .ToListAsync();
+
+        var equiposByGrupo = new Dictionary<int, List<Equipo>>();
+        foreach (var detalle in detalles)
+        {
+            var equipo = await DbContext.Equipos.AsNoTracking()
+                .FirstOrDefaultAsync(e => e.Id == detalle.IdEquipo);
+            if (equipo == null) continue;
+
+            if (!equiposByGrupo.ContainsKey(detalle.IdGrupoEquipo))
+                equiposByGrupo[detalle.IdGrupoEquipo] = new List<Equipo>();
+            equiposByGrupo[detalle.IdGrupoEquipo].Add(equipo);
+        }
+
+        var html = contrato.ContratoHtml;
+
+        foreach (var (grupoId, equipos) in equiposByGrupo)
+        {
+            var imtCodes = string.Join(", ", equipos.Select(e => e.CodigoImt.ToString()));
+            var ucbCodes = string.Join(", ", equipos.Select(e => e.CodigoUcb ?? "-"));
+            var serials = string.Join(", ", equipos.Select(e => e.NumeroSerial ?? "-"));
+
+            html = Regex.Replace(html,
+                $@"<td[^>]*class=""imt-code""[^>]*data-grupo-id=""{grupoId}""[^>]*>.*?</td>",
+                $@"<td class=""imt-code"" data-grupo-id=""{grupoId}"">{imtCodes}</td>");
+
+            html = Regex.Replace(html,
+                $@"<td[^>]*class=""ucb-code""[^>]*data-grupo-id=""{grupoId}""[^>]*>.*?</td>",
+                $@"<td class=""ucb-code"" data-grupo-id=""{grupoId}"">{ucbCodes}</td>");
+
+            html = Regex.Replace(html,
+                $@"<td[^>]*class=""serial-code""[^>]*data-grupo-id=""{grupoId}""[^>]*>.*?</td>",
+                $@"<td class=""serial-code"" data-grupo-id=""{grupoId}"">{serials}</td>");
+        }
+
+        contrato.ContratoHtml = html;
+        DbContext.Contratos.Update(contrato);
         await DbContext.SaveChangesAsync();
     }
 
@@ -197,9 +270,9 @@ public class PrestamoRepository : Repository<PrestamoEntity, PrestamoDto>
             join equipo in DbContext.Equipos.AsNoTracking()
                 on detalle.IdEquipo equals equipo.Id into equipoJoin
             from equipo in equipoJoin.DefaultIfEmpty()
-            join grupo in DbContext.GruposEquipos.AsNoTracking()
-                on equipo.IdGrupoEquipo equals grupo.Id into grupoJoin
-            from grupo in grupoJoin.DefaultIfEmpty()
+            join grupoReserva in DbContext.GruposEquipos.AsNoTracking()
+                on detalle.IdGrupoEquipo equals grupoReserva.Id into grupoReservaJoin
+            from grupoReserva in grupoReservaJoin.DefaultIfEmpty()
             join gavetero in DbContext.Gaveteros.AsNoTracking()
                 on equipo.IdGavetero equals gavetero.Id into gaveteroJoin
             from gavetero in gaveteroJoin.DefaultIfEmpty()
@@ -221,7 +294,7 @@ public class PrestamoRepository : Repository<PrestamoEntity, PrestamoDto>
                 prestamo.FechaDevolucion,
                 prestamo.Observacion,
                 prestamo.IdContrato,
-                NombreGrupoEquipo = grupo != null ? grupo.Nombre : null,
+                NombreGrupoEquipo = grupoReserva != null ? grupoReserva.Nombre : null,
                 CodigoImt = equipo != null ? (int?)equipo.CodigoImt : null,
                 UbicacionEquipo = equipo != null ? equipo.Ubicacion : null,
                 NombreGavetero = gavetero != null ? gavetero.Nombre : null,

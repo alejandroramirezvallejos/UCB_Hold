@@ -157,18 +157,19 @@ export class FormularioComponent implements OnInit {
 
 
   private primeradelobjeto(carrito: Carrito): string {
-    const items = Object.values(carrito)
-      .filter(item => typeof item === 'object' && 'nombre' in item);
+    const items = Object.entries(carrito)
+      .filter(([key, item]) => typeof item === 'object' && 'nombre' in item);
     return `
-      ${items.map((item, index) => `
+      ${items.map(([key, item]) => `
         <tr>
-          <td>${this.formatearCodigos(item.codigo_ucb_unico)}</td>
+          <td class="imt-code" data-grupo-id="${key}">Por definirse</td>
+          <td class="ucb-code" data-grupo-id="${key}">Por definirse</td>
           <td>
           <strong>${item.nombre}</strong>
           <p>Marca: ${item.marca} </p>
           <p>Modelo: ${item.modelo} </p>
           </td>
-          <td>${this.formatearCodigos(item.numero_serie_unico)}</td>
+          <td class="serial-code" data-grupo-id="${key}">Por definirse</td>
           <td>${item.cantidad}</td> 
         </tr>
       `).join('')}
@@ -176,18 +177,19 @@ export class FormularioComponent implements OnInit {
   }
 
   private quintavalordebienes(carrito: Carrito): string {
-    const items = Object.values(carrito)
-      .filter(item => typeof item === 'object' && 'nombre' in item);
+    const items = Object.entries(carrito)
+      .filter(([key, item]) => typeof item === 'object' && 'nombre' in item);
     return `
-      ${items.map((item, index) => `
+      ${items.map(([key, item]) => `
         <tr>
-          <td>${this.formatearCodigos(item.codigo_ucb_unico)}</td>
+          <td class="imt-code" data-grupo-id="${key}">Por definirse</td>
+          <td class="ucb-code" data-grupo-id="${key}">Por definirse</td>
           <td>
           <strong>${item.nombre}</strong>
           <p>Marca: ${item.marca} </p>
           <p>Modelo: ${item.modelo} </p>
           </td>
-          <td>${this.formatearCodigos(item.numero_serie_unico)}</td>
+          <td class="serial-code" data-grupo-id="${key}">Por definirse</td>
           <td>${item.cantidad}</td>
           <td>${item.precio}</td>
           <td>${item.precio * item.cantidad}</td> 

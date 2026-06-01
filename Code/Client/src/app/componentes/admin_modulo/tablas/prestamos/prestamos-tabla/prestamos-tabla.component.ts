@@ -34,6 +34,8 @@ export class PrestamosTablaComponent extends Tabla implements OnInit {
   prestamoKeySeleccionado: number = 0;
   avisorechazar : WritableSignal<boolean> = signal(false);
   mensajeavisorechazar : string = "¿Está seguro de rechazar el préstamo seleccionado?";
+  avisocancelar : WritableSignal<boolean> = signal(false);
+  mensajeavisocancelar : string = "¿Está seguro de cancelar el préstamo seleccionado?";
   override columnas: string[] = ['Usuario','Carnet','Teléfono','Equipos','Fecha Solicitud','Fecha Préstamo Esperada','Fecha Devolución Esperada'];
   showEstados: boolean = false;
   estadoSeleccionado: string = '';
@@ -231,6 +233,31 @@ export class PrestamosTablaComponent extends Tabla implements OnInit {
     });
     this.prestamoKeySeleccionado = 0;
   }
+
+  validarcancelacion(key : number){
+    this.mensajeavisocancelar = "¿Está seguro de cancelar el préstamo seleccionado?";
+    this.prestamoKeySeleccionado = key;
+    this.avisocancelar.set(true);
+  }
+
+  cancelarprestamo(key : number) {
+    this.prestamosapi.cambiarEstadoPrestamo(this.prestamos.get(key)!.datosgrupo.Id, 'cancelado').subscribe({
+      next: (response) => {
+        this.mensajeexito = 'Préstamo cancelado con éxito.';
+        this.exito.set(true);
+        this.cargarPrestamos();
+      },
+      error: (error) => {
+        const errorMsg = extractErrorMessage(error);
+        this.mensajeerror = `Error al cancelar el préstamo: ${errorMsg}`;
+        console.error(errorMsg);
+        this.error.set(true);
+      }
+    });
+    this.prestamoKeySeleccionado = 0;
+    this.avisocancelar.set(false);
+  }
+  
   cambiarestadovercontrato(prestamo : PrestamoDto) {
     this.prestamoSeleccionado = prestamo;
     this.vercontrato.set(!this.vercontrato());
