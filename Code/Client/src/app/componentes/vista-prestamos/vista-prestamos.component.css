@@ -356,3 +356,24 @@
 	.panel { max-width: calc(100vw - 24px); padding: 1rem; }
 	.vista-table thead th, .vista-table tbody td { padding: 0.5rem; font-size: 0.9rem; }
 }
+
+.observacion-general {
+	margin-top: 1rem;
+	padding: 1rem;
+	background: #f8fafc;
+	border-radius: 0.5rem;
+	border-left: 4px solid var(--ink-muted);
+}
+.obs-label {
+	font-weight: 600;
+	color: var(--ink);
+	font-size: 0.9rem;
+	margin-bottom: 0.25rem;
+	display: block;
+}
+.obs-texto {
+	color: var(--ink-secondary);
+	font-size: 0.9rem;
+	margin: 0;
+	line-height: 1.5;
+}

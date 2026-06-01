@@ -41,7 +41,7 @@ public class PrestamoController : Controller
     [Authorize(Roles = "administrador")]
     [HttpPut("{id:int}/estado")]
     public async Task<IActionResult> UpdateStatus(int id, [FromBody] UpdateStatusRequest request)
-        => ToResponse(await _service.UpdateStatus(id, request.EstadoPrestamo ?? string.Empty));
+        => ToResponse(await _service.UpdateStatus(id, request.EstadoPrestamo ?? string.Empty, request.Observacion));
 
     [HttpDelete("{id:int}")]
     public async Task<IActionResult> Delete(int id)
@@ -63,4 +63,4 @@ public class PrestamoController : Controller
     }
 }
 
-public record UpdateStatusRequest(string? EstadoPrestamo);
+public record UpdateStatusRequest(string? EstadoPrestamo, string? Observacion);

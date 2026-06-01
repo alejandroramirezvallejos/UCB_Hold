@@ -1,6 +1,6 @@
 <body>
   <div class="page-wrapper">
-    <div class="grid-container">
+    <div class="grid-container" #gridContainer>
       @if (productosFiltrados.length > 0) {
         @for (item of productosActuales; track item.id) {
           <div class="product-card"

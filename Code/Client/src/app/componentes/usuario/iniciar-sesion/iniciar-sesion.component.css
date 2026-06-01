@@ -132,7 +132,7 @@ label {
   border: 2.5px solid rgba(74, 66, 0, 0.2);
   border-radius: 50%;
   border-top-color: var(--brand-text);
-  animation: spin 0.8s linear infinite;
+  animation: spin 2s linear infinite;
   margin: 0 auto;
 }
 
