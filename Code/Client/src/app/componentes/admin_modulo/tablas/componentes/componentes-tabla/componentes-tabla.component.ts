@@ -21,6 +21,14 @@ import { AuditPanelComponent } from "../../../audit-panel/audit-panel.component"
   styleUrl: './componentes-tabla.component.css'
 })
 export class ComponentesTablaComponent extends Tabla implements OnInit  {
+  expandedRowId: number | null = null;
+  auditRefresh = 0;
+  activeTab: 'tabla' | 'auditoria' = 'tabla';
+
+  toggleExpand(id: number) {
+    this.expandedRowId = this.expandedRowId === id ? null : id;
+  }
+
   botoncrear: WritableSignal<boolean> = signal(false);
   botoneditar: WritableSignal<boolean> = signal(false);
   alertaeliminar: boolean = false;
@@ -102,6 +110,7 @@ export class ComponentesTablaComponent extends Tabla implements OnInit  {
           this.cargarComponentes();
           this.mensajeexito = "Componente eliminado exitosamente";
           this.exito.set(true);
+        this.auditRefresh++;
         },
         error: (error) => {
         const errorMsg = extractErrorMessage(error, "Error al eliminar el componente, intente más tarde");

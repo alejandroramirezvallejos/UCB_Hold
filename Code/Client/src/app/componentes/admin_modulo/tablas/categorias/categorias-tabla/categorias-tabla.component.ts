@@ -21,6 +21,14 @@ import { AuditPanelComponent } from "../../../audit-panel/audit-panel.component"
   styleUrl: './categorias-tabla.component.css'
 })
 export class CategoriasTablaComponent extends Tabla {
+  expandedRowId: number | null = null;
+  auditRefresh = 0;
+  activeTab: 'tabla' | 'auditoria' = 'tabla';
+
+  toggleExpand(id: number) {
+    this.expandedRowId = this.expandedRowId === id ? null : id;
+  }
+
   botoncrear: WritableSignal<boolean> = signal(false);
   botoneditar: WritableSignal<boolean> = signal(false);
   alertaeliminar: boolean = false;
@@ -84,6 +92,7 @@ export class CategoriasTablaComponent extends Tabla {
           this.cargarCategorias();
           this.mensajeexito="Categoría eliminada con éxito";
           this.exito.set(true);
+        this.auditRefresh++;
         },
         error: (error) => {
           const errorMsg = extractErrorMessage(error, "Error al eliminar la categoría, intente más tarde");

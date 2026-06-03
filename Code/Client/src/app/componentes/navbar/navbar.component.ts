@@ -1,4 +1,4 @@
-import { Component, signal, WritableSignal, effect } from '@angular/core';
+import { Component, signal, WritableSignal, effect, HostListener, ElementRef } from '@angular/core';
 import { RouterModule } from '@angular/router';
 import { CarritoService } from '../../services/carrito/carrito.service';
 import { CommonModule, Location } from '@angular/common';
@@ -26,11 +26,12 @@ export class NavbarComponent {
   private previousAdminRoute: boolean = false;
 
   constructor(
-    private carrito: CarritoService, 
-    private router: Router, 
-    private usuario: UsuarioService, 
-    private location: Location, 
-    private sidebarService: SidebarService
+    private carrito: CarritoService,
+    private router: Router,
+    private usuario: UsuarioService,
+    private location: Location,
+    private sidebarService: SidebarService,
+    private el: ElementRef
   ) {
     // 1. Ejecutar al iniciar el componente
     this.updateButtonVisibility(this.router.url);
@@ -143,5 +144,13 @@ export class NavbarComponent {
     this.location.back();
   }
 
-
+  @HostListener('document:click', ['$event'])
+  onDocumentClick(event: MouseEvent) {
+    if (this.showUserMenu() && !this.el.nativeElement.contains(event.target)) {
+      this.showUserMenu.set(false);
+    }
+    if (this.sidebarService.isOpen() && !this.el.nativeElement.contains(event.target)) {
+      this.sidebarService.close();
+    }
+  }
 }

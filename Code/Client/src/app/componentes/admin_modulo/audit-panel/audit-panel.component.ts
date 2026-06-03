@@ -1,4 +1,4 @@
-import { Component, Input, OnInit, signal, WritableSignal } from '@angular/core';
+import { Component, Input, OnChanges, SimpleChanges } from '@angular/core';
 import { CommonModule, DatePipe } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { AuditLogApiService } from '../../../services/APIS/AuditLog/auditlog-api.service';
@@ -11,31 +11,52 @@ import { AuditLogDto } from '../../../models/admin/AuditLog';
   templateUrl: './audit-panel.component.html',
   styleUrl: './audit-panel.component.css'
 })
-export class AuditPanelComponent implements OnInit {
+export class AuditPanelComponent implements OnChanges {
   @Input() entidad!: string;
+  @Input() refreshTrigger: number = 0;
 
   logs: AuditLogDto[] = [];
   cargando = true;
   fechaDesde = '';
   fechaHasta = '';
+  filtroAccion = '';
+  filtroAdmin = '';
+  today = new Date().toISOString().split('T')[0];
+
+  readonly acciones = ['Crear', 'Editar', 'Eliminar', 'Aprobar', 'Rechazar', 'Recoger', 'Devolver', 'Cancelar', 'AtrasadoAutomatico'];
 
   constructor(private auditService: AuditLogApiService) {}
 
-  ngOnInit() {
-    this.cargar();
+  ngOnChanges(changes: SimpleChanges) {
+    if (changes['entidad'] || changes['refreshTrigger']) {
+      this.cargar();
+    }
   }
 
   cargar() {
     this.cargando = true;
     this.auditService.getAuditLog(
       this.entidad,
-      undefined,
+      this.filtroAdmin || undefined,
       this.fechaDesde || undefined,
       this.fechaHasta || undefined
     ).subscribe({
-      next: data => { this.logs = data; this.cargando = false; },
+      next: data => {
+        this.logs = this.filtroAccion
+          ? data.filter(l => l.Accion?.toLowerCase() === this.filtroAccion.toLowerCase())
+          : data;
+        this.cargando = false;
+      },
       error: () => { this.cargando = false; }
     });
+  }
+
+  limpiar() {
+    this.fechaDesde = '';
+    this.fechaHasta = '';
+    this.filtroAccion = '';
+    this.filtroAdmin = '';
+    this.cargar();
   }
 
   badgeClass(accion: string | undefined): string {

@@ -22,6 +22,14 @@ import { AuditPanelComponent } from "../../../audit-panel/audit-panel.component"
   styleUrls: ['./gaveteros-tabla.component.css']
 })
 export class GaveterosTablaComponent extends Tabla {
+  expandedRowId: number | null = null;
+  auditRefresh = 0;
+  activeTab: 'tabla' | 'auditoria' = 'tabla';
+
+  toggleExpand(id: number) {
+    this.expandedRowId = this.expandedRowId === id ? null : id;
+  }
+
   botoncrear : WritableSignal<boolean> = signal(false);
   botoneditar : WritableSignal<boolean> = signal(false);
   alertaeliminar : boolean = false;
@@ -103,6 +111,7 @@ confirmarEliminacion() {
     next: (response) => {
       this.mensajeexito = "Gavetero eliminado con exito";
       this.exito.set(true);
+        this.auditRefresh++;
        this.cargarGaveteros();
     },
     error: (error) => {

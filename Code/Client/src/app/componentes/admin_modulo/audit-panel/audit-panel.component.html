@@ -1,8 +1,14 @@
 <div class="audit-panel-container">
   <div class="audit-filters">
-    <input type="date" [(ngModel)]="fechaDesde" (change)="cargar()" class="date-input" placeholder="Desde">
-    <input type="date" [(ngModel)]="fechaHasta" (change)="cargar()" class="date-input" placeholder="Hasta">
-    <button class="btn btn-ghost btn-sm" (click)="fechaDesde=''; fechaHasta=''; cargar()">Limpiar</button>
+    <input type="date" [(ngModel)]="fechaDesde" [max]="today" (change)="cargar()" class="date-input">
+    <input type="date" [(ngModel)]="fechaHasta" [max]="today" (change)="cargar()" class="date-input">
+    <select [(ngModel)]="filtroAccion" (change)="cargar()" class="date-input">
+      <option value="">Todas las acciones</option>
+      @for(a of acciones; track a) { <option [value]="a">{{ a }}</option> }
+    </select>
+    <input type="text" [(ngModel)]="filtroAdmin" (keyup.enter)="cargar()" placeholder="Buscar admin..." class="date-input admin-search">
+    <button class="btn btn-ghost btn-sm" (click)="limpiar()">Limpiar</button>
+    <button class="btn btn-ghost btn-sm" (click)="cargar()" title="Actualizar">↻</button>
   </div>
 
   @if(cargando) {
@@ -10,6 +16,7 @@
   } @else if(logs.length === 0) {
     <div class="audit-empty">Sin registros de auditoría para {{ entidad }}</div>
   } @else {
+    <div class="audit-count">{{ logs.length }} registro{{ logs.length !== 1 ? 's' : '' }}</div>
     <div class="table-scroll">
       <table class="audit-table">
         <thead>

@@ -19,12 +19,13 @@ import { Tabla } from '../../base/tabla';
 @Component({
   selector: 'app-prestamos-tabla',
   standalone: true,
-  imports: [CommonModule, FormsModule, ReactiveFormsModule , VercontratoComponent, PantallaCargaComponent , VistaPrestamosComponent , AvisoEliminarComponent , MostrarerrorComponent , Aviso ,AvisoExitoComponent , BuscadorComponent ],
+  imports: [CommonModule, FormsModule, ReactiveFormsModule , VercontratoComponent, PantallaCargaComponent , VistaPrestamosComponent , AvisoEliminarComponent , MostrarerrorComponent , Aviso ,AvisoExitoComponent , BuscadorComponent, AuditPanelComponent],
   templateUrl: './prestamos-tabla.component.html',
   styleUrls: ['./prestamos-tabla.component.css']
 })
 export class PrestamosTablaComponent extends Tabla implements OnInit {
   expandedRowId: number | null = null;
+  auditRefresh = 0;
   activeTab: 'tabla' | 'auditoria' = 'tabla';
 
   toggleExpand(id: number) {
@@ -107,6 +108,7 @@ export class PrestamosTablaComponent extends Tabla implements OnInit {
       next: (response) => {
         this.mensajeexito = 'Préstamo eliminado con éxito.';
         this.exito.set(true);
+        this.auditRefresh++;
         this.cargarPrestamos();
       },
       error: (error) => {
@@ -208,6 +210,7 @@ export class PrestamosTablaComponent extends Tabla implements OnInit {
       next: (response) => {
         this.mensajeexito = 'Préstamo aprobado con éxito.';
         this.exito.set(true);
+        this.auditRefresh++;
         this.cargarPrestamos();
       },
       error: (error) => {
@@ -229,6 +232,7 @@ export class PrestamosTablaComponent extends Tabla implements OnInit {
       next: (response) => {
         this.mensajeexito = 'Préstamo rechazado con éxito.';
         this.exito.set(true);
+        this.auditRefresh++;
         this.cargarPrestamos();
       },
       error: (error) => {
@@ -252,6 +256,7 @@ export class PrestamosTablaComponent extends Tabla implements OnInit {
       next: (response) => {
         this.mensajeexito = 'Préstamo cancelado con éxito.';
         this.exito.set(true);
+        this.auditRefresh++;
         this.cargarPrestamos();
       },
       error: (error) => {
@@ -300,6 +305,7 @@ export class PrestamosTablaComponent extends Tabla implements OnInit {
       next: (response) => {
         this.mensajeexito = 'Préstamo marcado como recogido con éxito.';
         this.exito.set(true);
+        this.auditRefresh++;
         this.cargarPrestamos();
       },
       error: (error) => {
@@ -318,6 +324,7 @@ export class PrestamosTablaComponent extends Tabla implements OnInit {
       next: (response) => {
         this.mensajeexito = 'Préstamo marcado como devuelto con éxito.';
         this.exito.set(true);
+        this.auditRefresh++;
         this.cargarPrestamos();
       },
       error: (error) => {

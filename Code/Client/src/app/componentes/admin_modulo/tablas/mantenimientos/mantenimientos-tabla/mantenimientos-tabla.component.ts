@@ -23,6 +23,7 @@ import { AuditPanelComponent } from "../../../audit-panel/audit-panel.component"
 })
 export class MantenimientosTablaComponent extends Tabla implements OnInit {
   expandedRowId: number | null = null;
+  auditRefresh = 0;
   activeTab: 'tabla' | 'auditoria' = 'tabla';
 
   toggleExpand(id: number) {
@@ -125,6 +126,7 @@ export class MantenimientosTablaComponent extends Tabla implements OnInit {
           this.alertaeliminar = false;
           this.mensajeexito = "Mantenimiento eliminado exitosamente";
           this.exito.set(true);
+        this.auditRefresh++;
           this.cargarMantenimientos();
       },
       error: (error) => {

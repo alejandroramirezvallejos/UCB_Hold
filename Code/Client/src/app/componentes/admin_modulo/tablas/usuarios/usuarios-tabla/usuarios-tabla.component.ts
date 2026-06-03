@@ -24,6 +24,12 @@ import { AuditPanelComponent } from "../../../audit-panel/audit-panel.component"
 })
 export class UsuariosTablaComponent extends Tabla implements OnInit {
   expandedRowId: number | null = null;
+  auditRefresh = 0;
+  expandedCarnet: string | null = null;
+
+  toggleExpandCarnet(carnet: string) {
+    this.expandedCarnet = this.expandedCarnet === carnet ? null : carnet;
+  }
   activeTab: 'tabla' | 'auditoria' = 'tabla';
 
   toggleExpand(id: number) {
@@ -139,6 +145,7 @@ export class UsuariosTablaComponent extends Tabla implements OnInit {
       next: (response) => {
         this.mensajeexito = 'Usuario eliminado exitosamente.';
         this.exito.set(true);
+        this.auditRefresh++;
         this.usuarios.splice(this.valoreliminar, 1);
         this.usuarioscopia = [...this.usuarios];
         this.alertaeliminar = false;

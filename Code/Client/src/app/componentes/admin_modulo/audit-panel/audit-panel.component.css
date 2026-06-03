@@ -1,6 +1,6 @@
-.audit-panel-container {
-  padding: 0;
-}
+.audit-panel-container { padding: 0; }
+.audit-count { font-size: 0.75rem; color: var(--ink-muted); margin-bottom: 0.5rem; font-weight: 500; }
+.admin-search { min-width: 140px; }
 .audit-filters {
   display: flex;
   gap: 0.75rem;

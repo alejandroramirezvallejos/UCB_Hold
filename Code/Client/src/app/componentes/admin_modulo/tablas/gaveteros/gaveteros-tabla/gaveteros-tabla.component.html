@@ -13,6 +13,11 @@
        Nuevo Gavetero
     </button>
   </app-buscador>
+  <div class="admin-tabs">
+    <button [class.active]="activeTab==='tabla'" (click)="activeTab='tabla'">Tabla</button>
+    <button [class.active]="activeTab==='auditoria'" (click)="activeTab='auditoria'">Auditoría</button>
+  </div>
+  @if(activeTab==="tabla") {
   <div class="table-responsive">
     <table class="data-table">
       <thead>        <tr>
@@ -31,6 +36,7 @@
             <td>{{gavetero.Altura}} m </td>
             <td>{{gavetero.Profundidad}} m</td>
             <td class="actions-column">
+              <button class="expand-btn" [class.open]="expandedRowId===gavetero.Id" (click)="toggleExpand(gavetero.Id!)">&#9654;</button>
               <button class="btn-icon btn-delete" (click)="eliminarGavetero(gavetero)">
                 <i class="fas fa-trash-alt"></i>
               </button>
@@ -38,7 +44,9 @@
                 <i class="fas fa-pencil-alt"></i>
               </button>
             </td>        </tr>
-        }
+          @if(expandedRowId===gavetero.Id){
+            <tr class="expanded-row"><td colspan="99"><app-equipos-gavetero-inline [gaveteroId]="gavetero.Id!"></app-equipos-gavetero-inline></td></tr>
+          } }
         @if (gaveteros.length === 0) {
           <tr>
             <td colspan="6" class="empty-table">
@@ -51,7 +59,10 @@
           </tr>
         }
       </tbody>
-    </table>  </div>  <!-- ALERTA DE ELIMINACIÓN -->
+    </table>  </div>
+  } @else {
+    <app-audit-panel [refreshTrigger]="auditRefresh" [entidad]="'Gavetero'"></app-audit-panel>
+  }  <!-- ALERTA DE ELIMINACIÓN -->
   @if(alertaeliminar){
       <app-aviso-eliminar
       [mensaje]="'¿Estás seguro de que deseas eliminar este gavetero?'"

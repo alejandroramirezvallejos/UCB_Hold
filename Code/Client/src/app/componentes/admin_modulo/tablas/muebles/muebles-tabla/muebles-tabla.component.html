@@ -13,6 +13,11 @@
        Nuevo Mueble
     </button>
   </app-buscador>
+  <div class="admin-tabs">
+    <button [class.active]="activeTab==='tabla'" (click)="activeTab='tabla'">Tabla</button>
+    <button [class.active]="activeTab==='auditoria'" (click)="activeTab='auditoria'">Auditoría</button>
+  </div>
+  @if(activeTab==="tabla") {
   <div class="table-responsive">
     <table class="data-table">
       <thead>
@@ -41,6 +46,9 @@
               </button>
             </td>
           </tr>
+          @if(expandedRowId===mueble.Id){
+            <tr class="expanded-row"><td colspan="99"><app-gaveteros-inline [muebleId]="mueble.Id!"></app-gaveteros-inline></td></tr>
+          }
         }
         @if (mueblesFiltrados.length === 0) {
           <tr>
@@ -56,6 +64,9 @@
       </tbody>
     </table>
   </div>
+  } @else {
+    <app-audit-panel [refreshTrigger]="auditRefresh" [entidad]="'Mueble'"></app-audit-panel>
+  }
   @if(alertaeliminar){
     <app-aviso-eliminar
       [mensaje]="'¿Estás seguro de que deseas eliminar este mueble?'"

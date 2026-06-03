@@ -1,5 +1,5 @@
 import { CommonModule } from '@angular/common';
-import { Component, signal, WritableSignal, OnInit, OnDestroy } from '@angular/core';
+import { Component, signal, WritableSignal, OnInit, OnDestroy, HostListener, ElementRef } from '@angular/core';
 import { ListaObjetosComponent } from '../lista-objetos/lista-objetos.component';
 import { FormsModule } from '@angular/forms';
 import { CategoriaService } from '../../../services/APIS/Categoria/categoria.service';
@@ -32,7 +32,14 @@ export class PantallaMainComponent implements OnInit, OnDestroy {
   error : WritableSignal<boolean> = signal(false);
   mensajeerror : string = "";
 
-  constructor(private categorias: CategoriaService, private filtrosService: FiltrosService) {}
+  constructor(private categorias: CategoriaService, private filtrosService: FiltrosService, private el: ElementRef) {}
+
+  @HostListener('document:click', ['$event'])
+  onDocumentClick(event: MouseEvent) {
+    if (this.showCategories && !this.el.nativeElement.contains(event.target)) {
+      this.showCategories = false;
+    }
+  }
 
   ngOnInit(): void {
     this.categoriasSeleccionadas = this.filtrosService.categoriasSeleccionadas;

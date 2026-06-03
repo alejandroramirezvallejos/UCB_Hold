@@ -22,6 +22,14 @@ import { AuditPanelComponent } from "../../../audit-panel/audit-panel.component"
   styleUrls: ['./equipos-tabla.component.css']
 })
 export class EquiposTablaComponent extends Tabla{
+  expandedRowId: number | null = null;
+  auditRefresh = 0;
+  activeTab: 'tabla' | 'auditoria' = 'tabla';
+
+  toggleExpand(id: number) {
+    this.expandedRowId = this.expandedRowId === id ? null : id;
+  }
+
   botoncrear : WritableSignal<boolean> = signal(false);
   botoneditar : WritableSignal<boolean> = signal(false);
   alertaeliminar : boolean = false;
@@ -100,6 +108,7 @@ confirmarEliminacion() {
     next:(response) => {
       this.mensajeexito = "Equipo eliminado con éxito";
       this.exito.set(true);
+        this.auditRefresh++;
        this.cargarEquipos();
     },
     error: (error) => {

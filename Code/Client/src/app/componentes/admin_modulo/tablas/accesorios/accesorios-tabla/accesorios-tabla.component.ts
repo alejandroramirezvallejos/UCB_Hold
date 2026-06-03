@@ -22,6 +22,14 @@ import { AuditPanelComponent } from "../../../audit-panel/audit-panel.component"
   styleUrls: ['./accesorios-tabla.component.css']
 })
 export class AccesoriosTablaComponent  extends Tabla{
+  expandedRowId: number | null = null;
+  auditRefresh = 0;
+  activeTab: 'tabla' | 'auditoria' = 'tabla';
+
+  toggleExpand(id: number) {
+    this.expandedRowId = this.expandedRowId === id ? null : id;
+  }
+
   botoncrear : WritableSignal<boolean> = signal(false);
   botoneditar : WritableSignal<boolean> = signal(false);
   alertaeliminar : boolean = false;
@@ -114,6 +122,7 @@ confirmarEliminacion() {
       this.cargarAccesorios();
       this.mensajeexito = 'Accesorio eliminado exitosamente.';
       this.exito.set(true);
+        this.auditRefresh++;
     },
     error: (error) => {
         const errorMsg = extractErrorMessage(error, "Error al eliminar el accesorio. Por favor, intente más tarde.");

@@ -24,6 +24,7 @@ import { AuditPanelComponent } from "../../../audit-panel/audit-panel.component"
 })
 export class GruposEquiposTablaComponent extends Tabla implements OnInit {
   expandedRowId: number | null = null;
+  auditRefresh = 0;
   activeTab: 'tabla' | 'auditoria' = 'tabla';
 
   toggleExpand(id: number) {
@@ -129,6 +130,7 @@ export class GruposEquiposTablaComponent extends Tabla implements OnInit {
       next: (response) => {
         this.mensajeexito="Grupo de equipo eliminado exitosamente";
         this.exito.set(true);
+        this.auditRefresh++;
         this.cargarGruposEquipos();
       },
       error: (error) => {

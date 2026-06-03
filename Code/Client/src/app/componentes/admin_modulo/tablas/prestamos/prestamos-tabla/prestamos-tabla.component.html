@@ -49,6 +49,11 @@
         }
     </div>
   </app-buscador>
+  <div class="admin-tabs">
+    <button [class.active]="activeTab==='tabla'" (click)="activeTab='tabla'">Tabla</button>
+    <button [class.active]="activeTab==='auditoria'" (click)="activeTab='auditoria'">Auditoría</button>
+  </div>
+  @if(activeTab==="tabla") {
   <div class="table-responsive">
     <table class="data-table">
       <thead>
@@ -147,6 +152,9 @@
       </tbody>
     </table>
   </div>
+  } @else {
+    <app-audit-panel [refreshTrigger]="auditRefresh" [entidad]="'Prestamo'"></app-audit-panel>
+  }
   @if(alertaeliminar){
     <app-aviso-eliminar
       [mensaje]="'¿Estás seguro de que deseas eliminar este préstamo?'"

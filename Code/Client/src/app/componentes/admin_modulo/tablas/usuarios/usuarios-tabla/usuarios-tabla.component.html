@@ -13,6 +13,11 @@
        Nuevo Usuario
     </button>
   </app-buscador>
+  <div class="admin-tabs">
+    <button [class.active]="activeTab==='tabla'" (click)="activeTab='tabla'">Tabla</button>
+    <button [class.active]="activeTab==='auditoria'" (click)="activeTab='auditoria'">Auditoría</button>
+  </div>
+  @if(activeTab==="tabla") {
   <div class="table-responsive">
     <table class="data-table">
       <thead>
@@ -37,6 +42,7 @@
             <td>{{usuario.nombre_referencia || 'N/A'}}</td>
             <td>{{usuario.telefono_referencia || 'N/A'}}</td>
             <td class="actions-column">
+              <button class="expand-btn" [class.open]="expandedCarnet===usuario.carnet" (click)="toggleExpandCarnet(usuario.carnet ?? '')">&#9654;</button>
               <button class="btn-icon btn-delete" (click)="eliminarUsuario(i)">
                 <i class="fas fa-trash-alt"></i>
               </button>
@@ -45,7 +51,9 @@
               </button>
             </td>
         </tr>
-        }
+          @if(expandedCarnet===usuario.carnet){
+            <tr class="expanded-row"><td colspan="99"><app-prestamos-inline [carnet]="usuario.carnet ?? ''"></app-prestamos-inline></td></tr>
+          } }
         @if (usuarios.length === 0) {
           <tr>
             <td colspan="11" class="empty-table">
@@ -60,6 +68,9 @@
       </tbody>
     </table>
   </div>
+  } @else {
+    <app-audit-panel [refreshTrigger]="auditRefresh" [entidad]="'Usuario'"></app-audit-panel>
+  }
   @if(alertaeliminar){
     <app-aviso-eliminar
       [mensaje]="'¿Estás seguro de que deseas eliminar este usuario?'"

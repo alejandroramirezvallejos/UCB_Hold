@@ -21,6 +21,14 @@ import { AuditPanelComponent } from "../../../audit-panel/audit-panel.component"
   styleUrl: './carreras-tabla.component.css'
 })
 export class CarrerasTablaComponent extends Tabla {
+  expandedRowId: number | null = null;
+  auditRefresh = 0;
+  activeTab: 'tabla' | 'auditoria' = 'tabla';
+
+  toggleExpand(id: number) {
+    this.expandedRowId = this.expandedRowId === id ? null : id;
+  }
+
   botoncrear: WritableSignal<boolean> = signal(false);
   botoneditar: WritableSignal<boolean> = signal(false);
   alertaeliminar: boolean = false;
@@ -102,6 +110,7 @@ export class CarrerasTablaComponent extends Tabla {
           this.cargarCarreras();
           this.mensajeexito="Carrera eliminada correctamente";
           this.exito.set(true);
+        this.auditRefresh++;
         },
         error: (error) => {
         const errorMsg = extractErrorMessage(error, "Error al eliminar la carrera");

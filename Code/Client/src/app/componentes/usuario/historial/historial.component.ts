@@ -1,4 +1,4 @@
-import { Component, OnDestroy, OnInit } from '@angular/core';
+import { Component, OnDestroy, OnInit, HostListener, ElementRef } from '@angular/core';
 import { UsuarioService } from '../../../services/usuario/usuario.service';
 import { ActivoComponent } from './activo/activo.component';
 import { AprobadoComponent } from './aprobado/aprobado.component';
@@ -21,7 +21,14 @@ export class HistorialComponent implements OnInit, OnDestroy {
   show: boolean = true;
   private pollInterval: ReturnType<typeof setInterval> | null = null;
 
-  constructor(private usuario: UsuarioService) { }
+  constructor(private usuario: UsuarioService, private el: ElementRef) { }
+
+  @HostListener('document:click', ['$event'])
+  onDocumentClick(event: MouseEvent) {
+    if (this.isOpen && !this.el.nativeElement.contains(event.target)) {
+      this.isOpen = false;
+    }
+  }
 
   ngOnInit() {
     this.pollInterval = setInterval(() => this.recargar(), 30000);

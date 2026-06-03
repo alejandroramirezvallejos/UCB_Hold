@@ -22,6 +22,7 @@ import { AuditPanelComponent } from "../../../audit-panel/audit-panel.component"
 })
 export class EmpresasMantenimientoTablaComponent extends Tabla implements OnInit {
   expandedRowId: number | null = null;
+  auditRefresh = 0;
   activeTab: 'tabla' | 'auditoria' = 'tabla';
 
   toggleExpand(id: number) {
@@ -104,6 +105,7 @@ export class EmpresasMantenimientoTablaComponent extends Tabla implements OnInit
           this.cargarEmpresas();
           this.mensajeexito = 'Empresa de mantenimiento eliminada exitosamente.';
           this.exito.set(true);
+        this.auditRefresh++;
         },
         error: (error) => {
           const errorMsg = extractErrorMessage(error, 'Error al eliminar la empresa de mantenimiento.');

@@ -12,7 +12,6 @@
   width: auto;
   height: auto;
   z-index: 9999;
-  animation: slideDown 0.3s ease-out;
 }
 .container {
   position: relative;
@@ -28,7 +27,6 @@
   border-radius: 10px;
   box-shadow: 0 8px 24px rgba(0, 0, 0, 0.18);
   text-align: center;
-  animation: slideDown 0.3s ease-out;
 }
 .cerrar {
   position: absolute;
@@ -108,15 +106,10 @@ p {
   box-shadow: 0 4px 12px rgba(255, 216, 20, 0.5);
 }
 @keyframes slideDown {
-  from {
-    transform: translateY(-20px);
-    opacity: 0;
-  }
-  to {
-    transform: translateY(0);
-    opacity: 1;
-  }
+  from { transform: translateX(-50%) translateY(-16px); opacity: 0; }
+  to   { transform: translateX(-50%) translateY(0);     opacity: 1; }
 }
+:host { animation: slideDown 220ms ease-out both; }
 @media (max-width: 480px) {
   .container {
     width: 90vw;

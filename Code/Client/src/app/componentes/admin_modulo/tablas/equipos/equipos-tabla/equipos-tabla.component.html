@@ -13,6 +13,11 @@
        Nuevo Equipo
     </button>
   </app-buscador>
+  <div class="admin-tabs">
+    <button [class.active]="activeTab==='tabla'" (click)="activeTab='tabla'">Tabla</button>
+    <button [class.active]="activeTab==='auditoria'" (click)="activeTab='auditoria'">Auditoría</button>
+  </div>
+  @if(activeTab==="tabla") {
   <div class="table-responsive">
     <table class="data-table">
       <thead>        <tr>
@@ -30,13 +35,18 @@
             <td>{{equipo.CodigoImt}}</td>
             <td class="precio-column">{{equipo.CostoReferencia | currency:'Bs ':'symbol':'1.2-2'}}</td>
             <td class="actions-column">
+              <button class="expand-btn" [class.open]="expandedRowId===equipo.Id" (click)="toggleExpand(equipo.Id!)">&#9654;</button>
               <button class="btn-icon btn-delete" (click)="eliminarEquipo(equipo)">
                 <i class="fas fa-trash-alt"></i>
               </button>
               <button class="btn-icon btn-edit" (click)="editarEquipo(equipo)">
                 <i class="fas fa-pencil-alt"></i>
               </button>
-            </td>        </tr>
+            </td>
+            </tr>
+            @if(expandedRowId===equipo.Id) {
+              <tr class="expanded-row"><td colspan="99"><app-historial-equipo-inline [equipoId]="equipo.Id!"></app-historial-equipo-inline></td></tr>
+            }
         }
         @if (equipos.length === 0) {
           <tr>
@@ -50,7 +60,10 @@
           </tr>
         }
       </tbody>
-    </table>  </div>  <!-- ALERTA DE ELIMINACIÓN -->
+    </table>  </div>
+  } @else {
+    <app-audit-panel [refreshTrigger]="auditRefresh" [entidad]="'Equipo'"></app-audit-panel>
+  }  <!-- ALERTA DE ELIMINACIÓN -->
   @if(alertaeliminar){
     <app-aviso-eliminar
       [mensaje]="'¿Estás seguro de que deseas eliminar este equipo?'"

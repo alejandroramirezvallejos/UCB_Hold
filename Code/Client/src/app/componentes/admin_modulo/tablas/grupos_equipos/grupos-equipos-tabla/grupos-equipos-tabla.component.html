@@ -13,6 +13,11 @@
        Nuevo Grupo de Equipo
     </button>
   </app-buscador>
+  <div class="admin-tabs">
+    <button [class.active]="activeTab==='tabla'" (click)="activeTab='tabla'">Tabla</button>
+    <button [class.active]="activeTab==='auditoria'" (click)="activeTab='auditoria'">Auditoría</button>
+  </div>
+  @if(activeTab==="tabla") {
   <div class="table-responsive">
     <table class="data-table">
       <thead>
@@ -32,6 +37,7 @@
             <td>{{grupoequipo.nombreCategoria || ''}}</td>
             <td>{{grupoequipo.descripcion}}</td>
             <td class="actions-column">
+              <button class="expand-btn" [class.open]="expandedRowId===grupoequipo.id" (click)="toggleExpand(grupoequipo.id!)">&#9654;</button>
               <button class="btn-icon btn-delete" (click)="eliminarGrupoEquipo(grupoequipo)">
                 <i class="fas fa-trash-alt"></i>
               </button>
@@ -39,6 +45,9 @@
                 <i class="fas fa-pencil-alt"></i>
               </button>
             </td>        </tr>
+          @if(expandedRowId===grupoequipo.id){
+            <tr class="expanded-row"><td colspan="99"><app-equipos-inline [grupoEquipoId]="grupoequipo.id!"></app-equipos-inline></td></tr>
+          }
         }
         @if (gruposEquiposFiltrados.length === 0) {
           <tr>
@@ -52,7 +61,10 @@
           </tr>
         }
       </tbody>
-    </table>  </div>  <!-- ALERTA DE ELIMINACIÓN -->
+    </table>  </div>
+  } @else {
+    <app-audit-panel [refreshTrigger]="auditRefresh" [entidad]="'GrupoEquipo'"></app-audit-panel>
+  }  <!-- ALERTA DE ELIMINACIÓN -->
   @if(alertaeliminar){
       <app-aviso-eliminar
       [mensaje]="'¿Estás seguro de que deseas eliminar este grupo de equipo?'"
