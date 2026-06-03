@@ -1,5 +1,7 @@
 using BCryptLib = BCrypt.Net.BCrypt;
 using FluentAssertions;
+using IMT_Reservas.Server.Application.Features.AuditLog;
+using Microsoft.AspNetCore.Http;
 using IMT_Reservas.Server.Application.Features.Jwt;
 using IMT_Reservas.Server.Application.Features.Usuario;
 using IMT_Reservas.Server.Core.Entities;
@@ -35,7 +37,9 @@ internal class UsuarioServiceTests : ServiceTest<UsuarioService>
         var memoryCache   = new MemoryDistributedCache(Options.Create(new MemoryDistributedCacheOptions()));
         var cacheService  = new CacheRepository(memoryCache);
 
-        return new UsuarioService(repo, mapper, validator, jwt, jwtOptions, cacheService);
+        var audit = new AuditLogService(new AuditLogRepository(db), new HttpContextAccessor());
+        
+        return new UsuarioService(repo, mapper, validator, jwt, jwtOptions, cacheService, audit);
     }
 
     [SetUp]

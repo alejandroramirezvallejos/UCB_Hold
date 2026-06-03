@@ -1,4 +1,6 @@
 using FluentAssertions;
+using IMT_Reservas.Server.Application.Features.AuditLog;
+using Microsoft.AspNetCore.Http;
 using IMT_Reservas.Server.Application.Features.Prestamo;
 using IMT_Reservas.Server.Core.Entities;
 using IMT_Reservas.Server.Infrastructure.Config;
@@ -19,7 +21,8 @@ internal class PrestamoServiceTests : ServiceTest<PrestamoService>
         var repo      = new PrestamoRepository(db, mapper);
         var validator = new PrestamoValidator(db);
         
-        return new PrestamoService(repo, mapper, validator);
+        var audit = new AuditLogService(new AuditLogRepository(db), new HttpContextAccessor());
+        return new PrestamoService(repo, mapper, validator, audit);
     }
 
     [SetUp]
@@ -233,6 +236,7 @@ internal class PrestamoServiceTests : ServiceTest<PrestamoService>
             FechaDevolucionEsperada = fin,
             EstadoEliminado         = false
         };
+        
         Db.Prestamos.Add(prestamo);
         await Db.SaveChangesAsync();
 
@@ -242,6 +246,7 @@ internal class PrestamoServiceTests : ServiceTest<PrestamoService>
             IdEquipo        = EquipoId,
             EstadoEliminado = false
         });
+
         await Db.SaveChangesAsync();
     }
 
@@ -265,6 +270,7 @@ internal class PrestamoServiceTests : ServiceTest<PrestamoService>
             IdEquipo        = equipoId,
             EstadoEliminado = false
         });
+
         await Db.SaveChangesAsync();
     }
 

@@ -1,9 +1,11 @@
 using FluentAssertions;
+using IMT_Reservas.Server.Application.Features.AuditLog;
 using IMT_Reservas.Server.Application.Features.Equipo;
 using IMT_Reservas.Server.Core.Entities;
 using IMT_Reservas.Server.Infrastructure.Config;
 using IMT_Reservas.Server.Infrastructure.Repositories.Implementations;
 using IMT_Reservas.Tests.Helpers;
+using Microsoft.AspNetCore.Http;
 using Microsoft.EntityFrameworkCore;
 namespace IMT_Reservas.Tests.Integration;
 
@@ -18,8 +20,9 @@ internal class EquipoServiceTests : ServiceTest<EquipoService>
         var mapper    = new EquipoMapper();
         var repo      = new EquipoRepository(db, mapper);
         var validator = new EquipoValidator(db);
-        
-        return new EquipoService(repo, mapper, validator);
+        var audit     = new AuditLogService(new AuditLogRepository(db), new HttpContextAccessor());
+
+        return new EquipoService(repo, mapper, validator, audit);
     }
 
     [SetUp]
