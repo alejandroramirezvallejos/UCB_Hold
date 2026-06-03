@@ -1,6 +1,7 @@
 using Ardalis.Result;
 using FluentValidation;
 using IMT_Reservas.Server.Application.Abstraction;
+using IMT_Reservas.Server.Application.Features.Cache;
 using IMT_Reservas.Server.Application.Features.AuditLog;
 using IMT_Reservas.Server.Infrastructure.Repositories.Implementations;
 using GrupoEquipoEntity = IMT_Reservas.Server.Core.Entities.GrupoEquipo;
@@ -9,7 +10,6 @@ namespace IMT_Reservas.Server.Application.Features.GrupoEquipo;
 public class GrupoEquipoService : Service<GrupoEquipoEntity, GrupoEquipoRepository, GrupoEquipoDto>
 {
     private static readonly TimeSpan GrupoEquipoSearchTtl = TimeSpan.FromMinutes(5);
-    private const string GrupoEquipoSearchCacheKey = "grupo-equipo:search::";
     private readonly CacheRepository _cacheRepository;
     private readonly AuditLogService _audit;
 
@@ -34,7 +34,7 @@ public class GrupoEquipoService : Service<GrupoEquipoEntity, GrupoEquipoReposito
 
         if (createResult.IsSuccess)
         {
-            _ = await _cacheRepository.Remove(GrupoEquipoSearchCacheKey);
+            _ = await _cacheRepository.Remove(CacheKeys.GrupoEquipoSearch(string.Empty, null));
             await _audit.Log(AuditAccion.Crear, nameof(GrupoEquipoEntity), createResult.Value?.Id?.ToString());
         }
 
@@ -57,7 +57,7 @@ public class GrupoEquipoService : Service<GrupoEquipoEntity, GrupoEquipoReposito
 
         if (updateResult.IsSuccess)
         {
-            _ = await _cacheRepository.Remove(GrupoEquipoSearchCacheKey);
+            _ = await _cacheRepository.Remove(CacheKeys.GrupoEquipoSearch(string.Empty, null));
             await _audit.Log(AuditAccion.Editar, nameof(GrupoEquipoEntity), id.ToString());
         }
 
@@ -70,7 +70,7 @@ public class GrupoEquipoService : Service<GrupoEquipoEntity, GrupoEquipoReposito
 
         if (deleteResult.IsSuccess)
         {
-            _ = await _cacheRepository.Remove(GrupoEquipoSearchCacheKey);
+            _ = await _cacheRepository.Remove(CacheKeys.GrupoEquipoSearch(string.Empty, null));
             await _audit.Log(AuditAccion.Eliminar, nameof(GrupoEquipoEntity), id.ToString());
         }
 
@@ -79,7 +79,7 @@ public class GrupoEquipoService : Service<GrupoEquipoEntity, GrupoEquipoReposito
 
     public async Task<Result<List<GrupoEquipoDto>>> Search(string? nombre = null, string? categoria = null)
     {
-        var cacheKey = $"grupo-equipo:search:{nombre ?? string.Empty}:{categoria}";
+        var cacheKey = CacheKeys.GrupoEquipoSearch(nombre ?? string.Empty, categoria);
         var cacheResult = await _cacheRepository.Get<List<GrupoEquipoDto>>(cacheKey);
         
         if (cacheResult.IsSuccess) 

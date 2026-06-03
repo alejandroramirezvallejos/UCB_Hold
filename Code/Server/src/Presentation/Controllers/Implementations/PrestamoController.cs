@@ -40,8 +40,11 @@ public class PrestamoController : Controller
 
     [Authorize(Roles = "administrador")]
     [HttpPut("{id:int}/estado")]
-    public async Task<IActionResult> UpdateStatus(int id, [FromBody] UpdateStatusRequest request)
-        => ToResponse(await _service.UpdateStatus(id, request.EstadoPrestamo ?? string.Empty, request.Observacion));
+    public async Task<IActionResult> UpdateStatus(
+        int id,
+        [FromQuery] string estado,
+        [FromQuery] string? observacion = null)
+        => ToResponse(await _service.UpdateStatus(id, estado, observacion));
 
     [HttpDelete("{id:int}")]
     public async Task<IActionResult> Delete(int id)
@@ -67,5 +70,3 @@ public class PrestamoController : Controller
         return Ok(new { contrato = result.Value!.ContratoHtml });
     }
 }
-
-public record UpdateStatusRequest(string? EstadoPrestamo, string? Observacion);

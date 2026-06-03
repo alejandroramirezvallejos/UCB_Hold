@@ -2,6 +2,7 @@ using Ardalis.Result;
 using BCryptLib = BCrypt.Net.BCrypt;
 using FluentValidation;
 using IMT_Reservas.Server.Application.Abstraction;
+using IMT_Reservas.Server.Application.Features.Cache;
 using IMT_Reservas.Server.Application.Features.AuditLog;
 using IMT_Reservas.Server.Application.Features.Jwt;
 using IMT_Reservas.Server.Infrastructure.Repositories.Implementations;
@@ -94,7 +95,7 @@ public class UsuarioService : Service<UsuarioEntity, UsuarioRepository, UsuarioD
         var resultDto = _mapper.ToDto(existing);
         resultDto.CarreraNombre = await Repository.GetCarreraName(existing.IdCarrera);
 
-        _ = await _cacheRepository.Remove($"usuario:{carnet}");
+        _ = await _cacheRepository.Remove(CacheKeys.Usuario(carnet));
         await _audit.Log(AuditAccion.Editar, nameof(UsuarioEntity), carnet);
 
         return Result<UsuarioDto>.Success(resultDto);
@@ -102,7 +103,7 @@ public class UsuarioService : Service<UsuarioEntity, UsuarioRepository, UsuarioD
 
     public async Task<Result<UsuarioDto>> Get(string carnet)
     {
-        var cacheKey = $"usuario:{carnet}";
+        var cacheKey = CacheKeys.Usuario(carnet);
         var cacheResult = await _cacheRepository.Get<UsuarioDto>(cacheKey);
         
         if (cacheResult.IsSuccess) 
@@ -191,7 +192,7 @@ public class UsuarioService : Service<UsuarioEntity, UsuarioRepository, UsuarioD
 
         if (deleteResult.IsSuccess)
         {
-            _ = await _cacheRepository.Remove($"usuario:{carnet}");
+            _ = await _cacheRepository.Remove(CacheKeys.Usuario(carnet));
             await _audit.Log(AuditAccion.Eliminar, nameof(UsuarioEntity), carnet);
         }
 
