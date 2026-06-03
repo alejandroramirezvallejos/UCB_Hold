@@ -17,5 +17,4 @@ public class Equipo : Entity
     public int? TiempoMaximoPrestamo { get; set; }
     public string? Procedencia { get; set; }
     public DateOnly FechaIngresoEquipo { get; set; }
-    public bool EstadoEliminado { get; set; }
 }

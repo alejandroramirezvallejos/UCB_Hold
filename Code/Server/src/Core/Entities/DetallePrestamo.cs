@@ -6,5 +6,4 @@ public class DetallePrestamo : Entity
     public int IdPrestamo { get; set; }
     public int? IdEquipo { get; set; }
     public int IdGrupoEquipo { get; set; }
-    public bool EstadoEliminado { get; set; }
 }

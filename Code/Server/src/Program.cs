@@ -144,12 +144,8 @@ builder.Services.AddScoped<GaveteroService>();
 builder.Services.AddScoped<ContratoService>();
 builder.Services.AddScoped<ComponenteService>();
 
-builder.Services.AddScoped<CarreraService>();
-builder.Services.AddScoped<CategoriaService>();
-builder.Services.AddScoped<Service<CarreraEntity, Repository<CarreraEntity, CarreraDto>, CarreraDto>>(
-    sp => sp.GetRequiredService<CarreraService>());
-builder.Services.AddScoped<Service<CategoriaEntity, Repository<CategoriaEntity, CategoriaDto>, CategoriaDto>>(
-    sp => sp.GetRequiredService<CategoriaService>());
+builder.Services.AddScoped<Service<CarreraEntity, Repository<CarreraEntity, CarreraDto>, CarreraDto>>();
+builder.Services.AddScoped<Service<CategoriaEntity, Repository<CategoriaEntity, CategoriaDto>, CategoriaDto>>();
 builder.Services.AddScoped<Service<MuebleEntity, Repository<MuebleEntity, MuebleDto>, MuebleDto>>();
 builder.Services.AddScoped<Service<EmpresaMantenimientoEntity, EmpresaMantenimientoRepository, EmpresaMantenimientoDto>>();
 

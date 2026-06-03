@@ -1,31 +1,34 @@
 using Ardalis.Result;
 using FluentValidation;
 using IMT_Reservas.Server.Application.Abstraction;
+using IMT_Reservas.Server.Application.Features.AuditLog;
 using IMT_Reservas.Server.Infrastructure.Repositories.Implementations;
 using GaveteroEntity = IMT_Reservas.Server.Core.Entities.Gavetero;
 namespace IMT_Reservas.Server.Application.Features.Gavetero;
 
 public class GaveteroService : Service<GaveteroEntity, GaveteroRepository, GaveteroDto>
 {
-    public GaveteroService(GaveteroRepository repository, GaveteroMapper mapper, IValidator<GaveteroDto> validator)
-        : base(repository, validator, mapper) { }
+    public GaveteroService(GaveteroRepository repository, GaveteroMapper mapper,
+        IValidator<GaveteroDto> validator, AuditLogService audit)
+        : base(repository, validator, mapper, audit) { }
 
     public override async Task<Result<GaveteroDto>> Create(GaveteroDto dto)
     {
         var validation = await Validator.ValidateAsync(dto);
 
-        if (!validation.IsValid)
+        if (!validation.IsValid) 
             return validation.ToResult<GaveteroDto>();
 
         var muebleId = await Repository.GetMuebleByNombre(dto.NombreMueble!) ?? 0;
-
         var entity = MapToEntity(dto);
         entity.IdMueble = muebleId;
-
         var result = await CreateEntity(entity);
 
         if (result.IsSuccess)
+        {
             await Repository.RecalcMuebleCount(muebleId);
+            await Audit!.Log(AuditAccion.Crear, nameof(GaveteroEntity), result.Value?.Id?.ToString());
+        }
 
         return result;
     }
@@ -34,21 +37,20 @@ public class GaveteroService : Service<GaveteroEntity, GaveteroRepository, Gavet
     {
         var validation = await Validator.ValidateAsync(dto);
 
-        if (!validation.IsValid)
+        if (!validation.IsValid) 
             return validation.ToResult<GaveteroDto>();
 
+        var previousMuebleId = await Repository.GetMuebleByGavetero(id);
         var muebleId = !string.IsNullOrWhiteSpace(dto.NombreMueble)
             ? await Repository.GetMuebleByNombre(dto.NombreMueble) ?? 0
-            : await Repository.GetMuebleByGavetero(id) ?? 0;
+            : previousMuebleId ?? 0;
 
-        var previousMuebleId = await Repository.GetMuebleByGavetero(id);
         var entity = MapToEntity(dto);
         entity.Id = id;
         entity.IdMueble = muebleId;
-
         var result = await UpdateEntity(entity);
 
-        if (!result.IsSuccess)
+        if (!result.IsSuccess) 
             return result;
 
         await Repository.RecalcMuebleCount(muebleId);
@@ -56,6 +58,7 @@ public class GaveteroService : Service<GaveteroEntity, GaveteroRepository, Gavet
         if (previousMuebleId.HasValue && previousMuebleId.Value != muebleId)
             await Repository.RecalcMuebleCount(previousMuebleId.Value);
 
+        await Audit!.Log(AuditAccion.Editar, nameof(GaveteroEntity), id.ToString());
         return result;
     }
 

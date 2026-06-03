@@ -52,7 +52,7 @@ public class EstadoPrestamoJob
                 .ExecuteUpdateAsync(s => s.SetProperty(p => p.EstadoPrestamo, EstadoPrestamo.Rechazado));
 
             foreach (var id in rechazadosIds)
-                await _audit.Log(AuditAccion.AtrasadoAutomatico, nameof(PrestamoEntity), id.ToString(), "Auto-rechazado por exceder fecha de inicio");
+                await _audit.Log(AuditAccion.Rechazar, nameof(PrestamoEntity), id.ToString(), "Auto-rechazado por exceder fecha de inicio");
         }
     }
 }

@@ -8,17 +8,15 @@ namespace IMT_Reservas.Server.Application.Features.Equipo;
 
 public class EquipoService : Service<EquipoEntity, EquipoRepository, EquipoDto>
 {
-    private readonly AuditLogService _audit;
-
     public EquipoService(EquipoRepository repository, EquipoMapper mapper,
         IValidator<EquipoDto> validator, AuditLogService audit)
-        : base(repository, validator, mapper) => _audit = audit;
+        : base(repository, validator, mapper, audit) { }
 
     public override async Task<Result<EquipoDto>> Create(EquipoDto dto)
     {
         var validation = await Validator.ValidateAsync(dto);
 
-        if (!validation.IsValid)
+        if (!validation.IsValid) 
             return validation.ToResult<EquipoDto>();
 
         var entity = MapToEntity(dto);
@@ -33,7 +31,7 @@ public class EquipoService : Service<EquipoEntity, EquipoRepository, EquipoDto>
         if (result.IsSuccess)
         {
             await Repository.RecalcGrupoStats(entity.IdGrupoEquipo);
-            await _audit.Log(AuditAccion.Crear, nameof(EquipoEntity), result.Value?.Id?.ToString());
+            await Audit!.Log(AuditAccion.Crear, nameof(EquipoEntity), result.Value?.Id?.ToString());
         }
 
         return result;
@@ -43,12 +41,12 @@ public class EquipoService : Service<EquipoEntity, EquipoRepository, EquipoDto>
     {
         var validation = await Validator.ValidateAsync(dto);
 
-        if (!validation.IsValid)
+        if (!validation.IsValid) 
             return validation.ToResult<EquipoDto>();
 
         var existing = await Repository.FindById(id);
 
-        if (existing == null)
+        if (existing == null) 
             return Result<EquipoDto>.NotFound();
 
         var entity = MapToEntity(dto);
@@ -59,7 +57,7 @@ public class EquipoService : Service<EquipoEntity, EquipoRepository, EquipoDto>
 
         var result = await UpdateEntity(entity);
 
-        if (!result.IsSuccess)
+        if (!result.IsSuccess) 
             return result;
 
         await Repository.RecalcGrupoStats(entity.IdGrupoEquipo);
@@ -67,7 +65,7 @@ public class EquipoService : Service<EquipoEntity, EquipoRepository, EquipoDto>
         if (existing.IdGrupoEquipo != entity.IdGrupoEquipo)
             await Repository.RecalcGrupoStats(existing.IdGrupoEquipo);
 
-        await _audit.Log(AuditAccion.Editar, nameof(EquipoEntity), id.ToString());
+        await Audit!.Log(AuditAccion.Editar, nameof(EquipoEntity), id.ToString());
 
         return result;
     }
@@ -76,16 +74,13 @@ public class EquipoService : Service<EquipoEntity, EquipoRepository, EquipoDto>
     {
         var existing = await Repository.FindById(id);
 
-        if (existing == null)
+        if (existing == null) 
             return Result<object>.NotFound();
 
         var result = await base.Delete(id);
 
         if (result.IsSuccess)
-        {
             await Repository.RecalcGrupoStats(existing.IdGrupoEquipo);
-            await _audit.Log(AuditAccion.Eliminar, nameof(EquipoEntity), id.ToString());
-        }
 
         return result;
     }

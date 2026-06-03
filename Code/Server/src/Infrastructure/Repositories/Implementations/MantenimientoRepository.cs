@@ -13,7 +13,7 @@ public class MantenimientoRepository : Repository<MantenimientoEntity, Mantenimi
     public MantenimientoRepository(ApplicationDbContext dbContext, MantenimientoMapper mapper)
         : base(dbContext, mapper) { }
 
-    public override async Task<Result<List<MantenimientoDto>>> GetAll(QueryFilter? filter = null)
+    public override async Task<Result<List<MantenimientoDto>>> GetAll()
     {
         var rows = await (
             from mantenimiento in DbContext.Mantenimientos.AsNoTracking()

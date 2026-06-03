@@ -10,5 +10,4 @@ public class Gavetero : Entity
     public double? Longitud { get; set; }
     public double? Profundidad { get; set; }
     public double? Altura { get; set; }
-    public bool EstadoEliminado { get; set; }
 }

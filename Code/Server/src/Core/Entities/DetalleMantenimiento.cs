@@ -7,5 +7,4 @@ public class DetalleMantenimiento : Entity
     public int IdEquipo { get; set; }
     public string? TipoMantenimiento { get; set; }
     public string? Descripcion { get; set; }
-    public bool EstadoEliminado { get; set; }
 }

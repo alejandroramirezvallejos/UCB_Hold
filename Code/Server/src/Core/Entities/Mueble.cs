@@ -11,5 +11,4 @@ public class Mueble : Entity
     public double? Profundidad { get; set; }
     public double? Altura { get; set; }
     public double? Costo { get; set; }
-    public bool EstadoEliminado { get; set; }
 }

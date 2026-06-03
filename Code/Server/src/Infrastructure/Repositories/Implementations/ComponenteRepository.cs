@@ -28,7 +28,7 @@ public class ComponenteRepository : Repository<ComponenteEntity, ComponenteDto>
         return await Get(entity.Id);
     }
 
-    public override async Task<Result<List<ComponenteDto>>> GetAll(QueryFilter? filter = null)
+    public override async Task<Result<List<ComponenteDto>>> GetAll()
     {
         var dtos = await (
             from componente in DbContext.Componentes.AsNoTracking()

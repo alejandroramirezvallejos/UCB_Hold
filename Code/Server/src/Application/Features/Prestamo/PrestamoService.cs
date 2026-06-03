@@ -11,14 +11,12 @@ namespace IMT_Reservas.Server.Application.Features.Prestamo;
 public class PrestamoService : Service<PrestamoEntity, PrestamoRepository, PrestamoDto>
 {
     private readonly PrestamoMapper _mapper;
-    private readonly AuditLogService _audit;
 
     public PrestamoService(PrestamoRepository repository, PrestamoMapper mapper,
         IValidator<PrestamoDto> validator, AuditLogService audit)
-        : base(repository, validator, mapper)
+        : base(repository, validator, mapper, audit)
     {
         _mapper = mapper;
-        _audit = audit;
     }
 
     public override async Task<Result<PrestamoDto>> Create(PrestamoDto dto)
@@ -47,6 +45,7 @@ public class PrestamoService : Service<PrestamoEntity, PrestamoRepository, Prest
             if (!disponible)
             {
                 var nombre = await Repository.GetGrupoEquipoNombre(grupoId);
+                
                 return Result<PrestamoDto>.Error(
                     $"'{nombre ?? grupoId.ToString()}' no tiene unidades disponibles en las fechas seleccionadas");
             }
@@ -55,8 +54,7 @@ public class PrestamoService : Service<PrestamoEntity, PrestamoRepository, Prest
         await Repository.SavePrestamo(entity);
         await Repository.SaveGrupoReservas(entity.Id, dto.GrupoEquipoId);
         await Repository.SaveContrato(entity, dto.Contrato);
-
-        await _audit.Log(AuditAccion.Crear, nameof(PrestamoEntity), entity.Id.ToString());
+        await Audit!.Log(AuditAccion.Crear, nameof(PrestamoEntity), entity.Id.ToString());
 
         return await Repository.Get(entity.Id);
     }
@@ -97,6 +95,7 @@ public class PrestamoService : Service<PrestamoEntity, PrestamoRepository, Prest
         if (parsedState.Value == EstadoPrestamo.Aprobado)
         {
             var assigned = await Repository.AssignEquiposOnApproval(id);
+            
             if (!assigned)
                 return Result<PrestamoDto>.Error("No se puede aprobar: no hay equipos disponibles para uno o más grupos en las fechas solicitadas");
 
@@ -121,7 +120,7 @@ public class PrestamoService : Service<PrestamoEntity, PrestamoRepository, Prest
             _                         => AuditAccion.Editar
         };
 
-        await _audit.Log(accionAudit, nameof(PrestamoEntity), id.ToString());
+        await Audit!.Log(accionAudit, nameof(PrestamoEntity), id.ToString());
 
         return await Get(id);
     }
@@ -143,4 +142,5 @@ public class PrestamoService : Service<PrestamoEntity, PrestamoRepository, Prest
 
         return await Repository.GetHistoryWithDetails(carnetUsuario, estado);
     }
+
 }

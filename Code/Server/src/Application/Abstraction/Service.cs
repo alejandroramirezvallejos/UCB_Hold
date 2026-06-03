@@ -1,5 +1,6 @@
 using Ardalis.Result;
 using FluentValidation;
+using IMT_Reservas.Server.Application.Features.AuditLog;
 using IMT_Reservas.Server.Core.Abstraction;
 using IMT_Reservas.Server.Infrastructure.Repositories.Abstraction;
 namespace IMT_Reservas.Server.Application.Abstraction;
@@ -11,6 +12,7 @@ public class Service<TEntity, TRepository, TDto>
 {
     protected readonly TRepository Repository;
     protected readonly IValidator<TDto> Validator;
+    protected AuditLogService? Audit;
     private readonly IMapper<TEntity, TDto> _mapper;
 
     public Service(TRepository repository, IValidator<TDto> validator, IMapper<TEntity, TDto> mapper)
@@ -19,6 +21,9 @@ public class Service<TEntity, TRepository, TDto>
         Validator = validator;
         _mapper = mapper;
     }
+
+    public Service(TRepository repository, IValidator<TDto> validator, IMapper<TEntity, TDto> mapper, AuditLogService audit)
+        : this(repository, validator, mapper) => Audit = audit;
 
     protected TEntity MapToEntity(TDto dto) => _mapper.ToEntity(dto);
 
@@ -30,24 +35,50 @@ public class Service<TEntity, TRepository, TDto>
     protected async Task<Result<TDto>> UpdateEntity(TEntity entity)
         => await Repository.Update(entity);
 
-    public virtual Task<Result<TDto>> Create(TDto dto) => ValidateAndCreate(dto);
+    public virtual async Task<Result<TDto>> Create(TDto dto)
+    {
+        var result = await ValidateAndCreate(dto);
 
-    public virtual Task<Result<TDto>> Update(int id, TDto dto) => ValidateAndUpdate(id, dto);
+        if (result.IsSuccess && Audit != null)
+        {
+            var id = typeof(TDto).GetProperty("Id")?.GetValue(result.Value)?.ToString();
+            await Audit.Log(AuditAccion.Crear, typeof(TEntity).Name, id);
+        }
+
+        return result;
+    }
+
+    public virtual async Task<Result<TDto>> Update(int id, TDto dto)
+    {
+        var result = await ValidateAndUpdate(id, dto);
+
+        if (result.IsSuccess && Audit != null)
+            await Audit.Log(AuditAccion.Editar, typeof(TEntity).Name, id.ToString());
+
+        return result;
+    }
 
     public virtual async Task<Result<object>> Delete(int id)
-        => await Repository.Delete(id);
+    {
+        var result = await Repository.Delete(id);
+
+        if (result.IsSuccess && Audit != null)
+            await Audit.Log(AuditAccion.Eliminar, typeof(TEntity).Name, id.ToString());
+
+        return result;
+    }
 
     public virtual async Task<Result<TDto>> Get(int id)
         => await Repository.Get(id);
 
-    public virtual async Task<Result<List<TDto>>> GetAll(QueryFilter? filter = null)
-        => await Repository.GetAll(filter);
+    public virtual async Task<Result<List<TDto>>> GetAll()
+        => await Repository.GetAll();
 
     protected async Task<Result<TDto>> ValidateAndCreate(TDto dto)
     {
         var validation = await Validator.ValidateAsync(dto);
 
-        if (!validation.IsValid)
+        if (!validation.IsValid) 
             return validation.ToResult<TDto>();
 
         return await CreateEntity(MapToEntity(dto));
@@ -57,7 +88,7 @@ public class Service<TEntity, TRepository, TDto>
     {
         var validation = await Validator.ValidateAsync(dto);
 
-        if (!validation.IsValid)
+        if (!validation.IsValid) 
             return validation.ToResult<TDto>();
 
         var entity = MapToEntity(dto);

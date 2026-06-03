@@ -17,7 +17,6 @@ public class Usuario : Entity
     public int IdCarrera { get; set; }
     public byte[]? ImagenFrenteCarnet { get; set; }
     public byte[]? ImagenAtrasCarnet { get; set; }
-    public bool EstadoEliminado { get; set; }
     public string? RefreshToken       { get; set; }
     public DateTime? RefreshTokenExpiry { get; set; }
 }

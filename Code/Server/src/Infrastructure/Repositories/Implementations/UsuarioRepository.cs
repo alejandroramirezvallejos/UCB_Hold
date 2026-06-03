@@ -2,7 +2,6 @@ using IMT_Reservas.Server.Infrastructure.Repositories.Abstraction;
 using Ardalis.Result;
 using IMT_Reservas.Server.Core.Entities;
 using IMT_Reservas.Server.Application.Features.Usuario;
-using IMT_Reservas.Server.Core.Abstraction;
 using IMT_Reservas.Server.Infrastructure.Config;
 using Microsoft.EntityFrameworkCore;
 using UsuarioEntity = IMT_Reservas.Server.Core.Entities.Usuario;
@@ -13,7 +12,7 @@ public class UsuarioRepository : Repository<UsuarioEntity, UsuarioDto>
     public UsuarioRepository(ApplicationDbContext dbContext, UsuarioMapper mapper)
         : base(dbContext, mapper) { }
 
-    public override async Task<Result<List<UsuarioDto>>> GetAll(QueryFilter? filter = null)
+    public override async Task<Result<List<UsuarioDto>>> GetAll()
     {
         var dtos = await DbContext.Usuarios
             .AsNoTracking()
@@ -69,6 +68,7 @@ public class UsuarioRepository : Repository<UsuarioEntity, UsuarioDto>
             var detalles = await DbContext.DetallesPrestamos
                 .Where(d => prestamoIds.Contains(d.IdPrestamo) && !d.EstadoEliminado)
                 .ToListAsync();
+
             foreach (var detalle in detalles)
                 detalle.EstadoEliminado = true;
         }
@@ -126,7 +126,8 @@ public class UsuarioRepository : Repository<UsuarioEntity, UsuarioDto>
                   })
             .FirstOrDefaultAsync();
 
-        if (result == null) return (null, null);
+        if (result == null) 
+            return (null, null);
 
         var entity = new UsuarioEntity
         {
@@ -179,7 +180,8 @@ public class UsuarioRepository : Repository<UsuarioEntity, UsuarioDto>
                   })
             .FirstOrDefaultAsync();
 
-        if (result == null) return (null, null);
+        if (result == null) 
+            return (null, null);
 
         var entity = new UsuarioEntity
         {
@@ -208,7 +210,10 @@ public class UsuarioRepository : Repository<UsuarioEntity, UsuarioDto>
         var entity = await DbContext.Usuarios
             .IgnoreQueryFilters()
             .FirstOrDefaultAsync(u => u.Carnet == carnet);
-        if (entity == null) return;
+            
+        if (entity == null) 
+            return;
+
         entity.RefreshToken       = token;
         entity.RefreshTokenExpiry = expiry;
         await DbContext.SaveChangesAsync();

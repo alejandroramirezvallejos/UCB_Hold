@@ -10,5 +10,4 @@ public class Accesorio : Entity
     public double? Precio { get; set; }
     public int IdEquipo { get; set; }
     public string? Tipo { get; set; }
-    public bool EstadoEliminado { get; set; }
 }

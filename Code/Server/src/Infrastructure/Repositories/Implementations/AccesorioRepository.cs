@@ -28,7 +28,7 @@ public class AccesorioRepository : Repository<AccesorioEntity, AccesorioDto>
         return await Get(entity.Id);
     }
 
-    public override async Task<Result<List<AccesorioDto>>> GetAll(QueryFilter? filter = null)
+    public override async Task<Result<List<AccesorioDto>>> GetAll()
     {
         var dtos = await DbContext.Accesorios
             .AsNoTracking()

@@ -15,7 +15,7 @@ public class PrestamoRepository : Repository<PrestamoEntity, PrestamoDto>
     public PrestamoRepository(ApplicationDbContext dbContext, PrestamoMapper mapper)
         : base(dbContext, mapper) { }
 
-    public override async Task<Result<List<PrestamoDto>>> GetAll(QueryFilter? filter = null)
+    public override async Task<Result<List<PrestamoDto>>> GetAll()
     {
         var list = await GetPrestamoList(DbContext.Prestamos.AsNoTracking());
         return Result<List<PrestamoDto>>.Success(list);
@@ -139,13 +139,16 @@ public class PrestamoRepository : Repository<PrestamoEntity, PrestamoDto>
     public async Task<bool> AssignEquiposOnApproval(int prestamoId)
     {
         var prestamo = await DbContext.Prestamos.FirstOrDefaultAsync(p => p.Id == prestamoId);
-        if (prestamo == null) return false;
+       
+        if (prestamo == null) 
+            return false;
 
         var detalles = await DbContext.DetallesPrestamos
             .Where(d => d.IdPrestamo == prestamoId && !d.EstadoEliminado && d.IdEquipo == null)
             .ToListAsync();
 
-        if (detalles.Count == 0) return true;
+        if (detalles.Count == 0) 
+            return true;
 
         var loanedIds = await DbContext.DetallesPrestamos
             .Join(DbContext.Prestamos, d => d.IdPrestamo, p => p.Id, (d, p) => new { d, p })
@@ -184,24 +187,32 @@ public class PrestamoRepository : Repository<PrestamoEntity, PrestamoDto>
     public async Task UpdateContratoWithEquipos(int prestamoId)
     {
         var prestamo = await DbContext.Prestamos.FirstOrDefaultAsync(p => p.Id == prestamoId);
-        if (prestamo?.IdContrato == null) return;
+        
+        if (prestamo?.IdContrato == null) 
+            return;
 
         var contrato = await DbContext.Contratos.FirstOrDefaultAsync(c => c.Id == prestamo.IdContrato);
-        if (contrato == null || string.IsNullOrEmpty(contrato.ContratoHtml)) return;
+        
+        if (contrato == null || string.IsNullOrEmpty(contrato.ContratoHtml)) 
+            return;
 
         var detalles = await DbContext.DetallesPrestamos
             .Where(d => d.IdPrestamo == prestamoId && !d.EstadoEliminado && d.IdEquipo != null)
             .ToListAsync();
 
         var equiposByGrupo = new Dictionary<int, List<Equipo>>();
+
         foreach (var detalle in detalles)
         {
             var equipo = await DbContext.Equipos.AsNoTracking()
                 .FirstOrDefaultAsync(e => e.Id == detalle.IdEquipo);
-            if (equipo == null) continue;
+
+            if (equipo == null) 
+                continue;
 
             if (!equiposByGrupo.ContainsKey(detalle.IdGrupoEquipo))
                 equiposByGrupo[detalle.IdGrupoEquipo] = new List<Equipo>();
+                
             equiposByGrupo[detalle.IdGrupoEquipo].Add(equipo);
         }
 

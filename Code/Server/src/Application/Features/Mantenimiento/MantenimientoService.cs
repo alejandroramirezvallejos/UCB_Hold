@@ -4,13 +4,11 @@ using IMT_Reservas.Server.Application.Abstraction;
 using IMT_Reservas.Server.Application.Features.AuditLog;
 using IMT_Reservas.Server.Infrastructure.Repositories.Implementations;
 using MantenimientoEntity = IMT_Reservas.Server.Core.Entities.Mantenimiento;
-
 namespace IMT_Reservas.Server.Application.Features.Mantenimiento;
 
 public class MantenimientoService : Service<MantenimientoEntity, MantenimientoRepository, MantenimientoDto>
 {
     private readonly EmpresaMantenimientoRepository _empresaRepository;
-    private readonly AuditLogService _audit;
 
     public MantenimientoService(
         MantenimientoRepository repository,
@@ -18,29 +16,25 @@ public class MantenimientoService : Service<MantenimientoEntity, MantenimientoRe
         MantenimientoMapper mapper,
         IValidator<MantenimientoDto> validator,
         AuditLogService audit)
-        : base(repository, validator, mapper)
-    {
+        : base(repository, validator, mapper, audit) =>
         _empresaRepository = empresaRepository;
-        _audit             = audit;
-    }
 
     public override async Task<Result<MantenimientoDto>> Create(MantenimientoDto dto)
     {
         await ResolveEmpresa(dto);
-
         var validation = await Validator.ValidateAsync(dto);
 
-        if (!validation.IsValid)
+        if (!validation.IsValid) 
             return validation.ToResult<MantenimientoDto>();
 
         var entity = MapToEntity(dto);
         var result = await CreateEntity(entity);
 
-        if (!result.IsSuccess)
+        if (!result.IsSuccess) 
             return result;
 
         await Repository.AddDetalles(entity.Id, dto.CodigoImt ?? [], dto.TiposMantenimiento, dto.DescripcionesEquipo);
-        await _audit.Log(AuditAccion.Crear, nameof(MantenimientoEntity), result.Value?.Id?.ToString());
+        await Audit!.Log(AuditAccion.Crear, nameof(MantenimientoEntity), result.Value?.Id?.ToString());
 
         return result;
     }
@@ -48,41 +42,16 @@ public class MantenimientoService : Service<MantenimientoEntity, MantenimientoRe
     public override async Task<Result<MantenimientoDto>> Update(int id, MantenimientoDto dto)
     {
         await ResolveEmpresa(dto);
-
-        var validation = await Validator.ValidateAsync(dto);
-
-        if (!validation.IsValid)
-            return validation.ToResult<MantenimientoDto>();
-
-        var entity = MapToEntity(dto);
-        entity.Id = id;
-
-        var result = await UpdateEntity(entity);
-
-        if (result.IsSuccess)
-            await _audit.Log(AuditAccion.Editar, nameof(MantenimientoEntity), id.ToString());
-
-        return result;
-    }
-
-    public override async Task<Result<object>> Delete(int id)
-    {
-        var result = await base.Delete(id);
-
-        if (result.IsSuccess)
-            await _audit.Log(AuditAccion.Eliminar, nameof(MantenimientoEntity), id.ToString());
-
-        return result;
+        return await base.Update(id, dto);
     }
 
     private async Task ResolveEmpresa(MantenimientoDto dto)
     {
-        if ((dto.IdEmpresa ?? 0) > 0)
+        if ((dto.IdEmpresa ?? 0) > 0) 
             return;
-
-        if (string.IsNullOrWhiteSpace(dto.NombreEmpresaMantenimiento))
+        if (string.IsNullOrWhiteSpace(dto.NombreEmpresaMantenimiento)) 
             return;
-
+            
         dto.IdEmpresa = await _empresaRepository.FindIdByNombre(dto.NombreEmpresaMantenimiento);
     }
 }

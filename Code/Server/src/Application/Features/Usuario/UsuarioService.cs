@@ -17,19 +17,17 @@ public class UsuarioService : Service<UsuarioEntity, UsuarioRepository, UsuarioD
     private readonly JwtService      _jwtService;
     private readonly JwtSettings     _jwtSettings;
     private readonly CacheRepository _cacheRepository;
-    private readonly AuditLogService _audit;
 
     public UsuarioService(UsuarioRepository repository,
         UsuarioMapper mapper, IValidator<UsuarioDto> validator,
         JwtService jwtService, IOptions<JwtSettings> jwtSettings,
         CacheRepository cacheRepository, AuditLogService audit)
-        : base(repository, validator, mapper)
+        : base(repository, validator, mapper, audit)
     {
         _mapper          = mapper;
         _jwtService      = jwtService;
         _jwtSettings     = jwtSettings.Value;
         _cacheRepository = cacheRepository;
-        _audit           = audit;
     }
 
     public override async Task<Result<UsuarioDto>> Create(UsuarioDto dto)
@@ -60,7 +58,7 @@ public class UsuarioService : Service<UsuarioEntity, UsuarioRepository, UsuarioD
         if (result.IsSuccess && result.Value != null)
         {
             result.Value.CarreraNombre = await Repository.GetCarreraName(entity.IdCarrera);
-            await _audit.Log(AuditAccion.Crear, nameof(UsuarioEntity), entity.Carnet);
+            await Audit!.Log(AuditAccion.Crear, nameof(UsuarioEntity), entity.Carnet);
         }
 
         return result;
@@ -96,7 +94,7 @@ public class UsuarioService : Service<UsuarioEntity, UsuarioRepository, UsuarioD
         resultDto.CarreraNombre = await Repository.GetCarreraName(existing.IdCarrera);
 
         _ = await _cacheRepository.Remove(CacheKeys.Usuario(carnet));
-        await _audit.Log(AuditAccion.Editar, nameof(UsuarioEntity), carnet);
+        await Audit!.Log(AuditAccion.Editar, nameof(UsuarioEntity), carnet);
 
         return Result<UsuarioDto>.Success(resultDto);
     }
@@ -193,7 +191,7 @@ public class UsuarioService : Service<UsuarioEntity, UsuarioRepository, UsuarioD
         if (deleteResult.IsSuccess)
         {
             _ = await _cacheRepository.Remove(CacheKeys.Usuario(carnet));
-            await _audit.Log(AuditAccion.Eliminar, nameof(UsuarioEntity), carnet);
+            await Audit!.Log(AuditAccion.Eliminar, nameof(UsuarioEntity), carnet);
         }
 
         return deleteResult;

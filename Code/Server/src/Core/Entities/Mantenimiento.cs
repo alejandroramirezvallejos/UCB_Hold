@@ -8,5 +8,4 @@ public class Mantenimiento : Entity
     public DateTime FechaFinalMantenimiento { get; set; }
     public string? Descripcion { get; set; }
     public double? Costo { get; set; }
-    public bool EstadoEliminado { get; set; }
 }

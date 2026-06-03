@@ -10,5 +10,4 @@ public class Componente : Entity
     public double? PrecioReferencia { get; set; }
     public int IdEquipo { get; set; }
     public string? UrlDataSheet { get; set; }
-    public bool EstadoEliminado { get; set; }
 }

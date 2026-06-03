@@ -16,7 +16,7 @@ services:
       retries: 5
     volumes:
       - ucb_db_data:/var/lib/postgresql/data
-      - ./DataBase/server.sql:/docker-entrypoint-initdb.d/init.sql
+      - ./DataBase/server.sql:/docker-entrypoint-initdb.d/01-init.sql
 
   ucb_redis:
     container_name: ucb_redis
