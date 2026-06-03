@@ -179,7 +179,7 @@ internal class PrestamoServiceTests : ServiceTest<PrestamoService>
         var result = await Sut.UpdateStatus(prestamoId, "aprobado");
 
         result.IsSuccess.Should().BeFalse();
-        result.Errors.Should().Contain(e => e.Contains("ya están reservados"));
+        result.Errors.Should().Contain(e => e.Contains("no hay equipos disponibles"));
     }
 
     [Test]
