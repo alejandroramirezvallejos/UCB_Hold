@@ -35,12 +35,14 @@
             <td>{{equipo.CodigoImt}}</td>
             <td class="precio-column">{{equipo.CostoReferencia | currency:'Bs ':'symbol':'1.2-2'}}</td>
             <td class="actions-column">
-              <button class="expand-btn" [class.open]="expandedRowId===equipo.Id" (click)="toggleExpand(equipo.Id!)">&#9654;</button>
-              <button class="btn-icon btn-delete" (click)="eliminarEquipo(equipo)">
-                <i class="fas fa-trash-alt"></i>
+              <button class="btn-icon btn-history" [class.active]="expandedRowId===equipo.Id" (click)="toggleExpand(equipo.Id!)" title="Ver historial de préstamos">
+                <i class="fas fa-history"></i>
               </button>
-              <button class="btn-icon btn-edit" (click)="editarEquipo(equipo)">
+              <button class="btn-icon btn-edit" (click)="editarEquipo(equipo)" title="Editar">
                 <i class="fas fa-pencil-alt"></i>
+              </button>
+              <button class="btn-icon btn-delete" (click)="eliminarEquipo(equipo)" title="Eliminar">
+                <i class="fas fa-trash-alt"></i>
               </button>
             </td>
             </tr>

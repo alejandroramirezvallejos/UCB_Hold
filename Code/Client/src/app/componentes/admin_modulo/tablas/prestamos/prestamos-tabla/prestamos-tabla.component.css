@@ -164,9 +164,16 @@
   background-color: rgba(37, 99, 235, 0.05);
 }
 .actions-column {
-  width: 160px;
-  text-align: center;
+  width: 180px;
+  min-width: 160px;
   white-space: nowrap;
+}
+td.actions-column {
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  gap: 0.25rem;
+  padding-right: 0.75rem;
 }
 .precio-column {
   text-align: right;
@@ -304,8 +311,8 @@
   font-weight: 600;
   cursor: pointer;
   transition: color var(--t-base), background-color var(--t-base), border-color var(--t-base), box-shadow var(--t-base);
-  margin: 0 0.25rem;
-  min-width: 70px;
+  margin: 0;
+  min-width: 68px;
   justify-content: center;
   box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
 }

@@ -105,7 +105,7 @@
   padding: 1.25rem 2rem;
   border-top: 1px solid var(--border);
   display: flex;
-  justify-content: flex-end;
+  justify-content: center;
 }
 .btn-update {
   background: var(--brand);

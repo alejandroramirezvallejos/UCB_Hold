@@ -27,7 +27,7 @@ public class GaveteroService : Service<GaveteroEntity, GaveteroRepository, Gavet
         if (result.IsSuccess)
         {
             await Repository.RecalcMuebleCount(muebleId);
-            await Audit!.Log(AuditAccion.Crear, nameof(GaveteroEntity), result.Value?.Id?.ToString());
+            await Audit!.Log(AuditAccion.Crear, typeof(GaveteroEntity).Name, result.Value?.Id?.ToString());
         }
 
         return result;
@@ -58,7 +58,7 @@ public class GaveteroService : Service<GaveteroEntity, GaveteroRepository, Gavet
         if (previousMuebleId.HasValue && previousMuebleId.Value != muebleId)
             await Repository.RecalcMuebleCount(previousMuebleId.Value);
 
-        await Audit!.Log(AuditAccion.Editar, nameof(GaveteroEntity), id.ToString());
+        await Audit!.Log(AuditAccion.Editar, typeof(GaveteroEntity).Name, id.ToString());
         return result;
     }
 

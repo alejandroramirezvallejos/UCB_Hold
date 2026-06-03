@@ -58,7 +58,7 @@ public class UsuarioService : Service<UsuarioEntity, UsuarioRepository, UsuarioD
         if (result.IsSuccess && result.Value != null)
         {
             result.Value.CarreraNombre = await Repository.GetCarreraName(entity.IdCarrera);
-            await Audit!.Log(AuditAccion.Crear, nameof(UsuarioEntity), entity.Carnet);
+            await Audit!.Log(AuditAccion.Crear, typeof(UsuarioEntity).Name, entity.Carnet);
         }
 
         return result;
@@ -94,7 +94,7 @@ public class UsuarioService : Service<UsuarioEntity, UsuarioRepository, UsuarioD
         resultDto.CarreraNombre = await Repository.GetCarreraName(existing.IdCarrera);
 
         _ = await _cacheRepository.Remove(CacheKeys.Usuario(carnet));
-        await Audit!.Log(AuditAccion.Editar, nameof(UsuarioEntity), carnet);
+        await Audit!.Log(AuditAccion.Editar, typeof(UsuarioEntity).Name, carnet);
 
         return Result<UsuarioDto>.Success(resultDto);
     }
@@ -191,7 +191,7 @@ public class UsuarioService : Service<UsuarioEntity, UsuarioRepository, UsuarioD
         if (deleteResult.IsSuccess)
         {
             _ = await _cacheRepository.Remove(CacheKeys.Usuario(carnet));
-            await Audit!.Log(AuditAccion.Eliminar, nameof(UsuarioEntity), carnet);
+            await Audit!.Log(AuditAccion.Eliminar, typeof(UsuarioEntity).Name, carnet);
         }
 
         return deleteResult;

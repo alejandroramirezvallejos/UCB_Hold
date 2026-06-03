@@ -16,14 +16,14 @@
 .form-container {
   background: var(--surface);
   border: 1px solid var(--border);
-  border-radius: var(--radius-lg);
+  border-radius: var(--radius-xl);
   box-shadow: var(--shadow-xl);
   width: 100%;
   max-width: 500px;
   max-height: 85vh;
   overflow: hidden;
   position: relative;
-  animation: slideIn 200ms ease-out both;
+  animation: slideIn 220ms ease-out both;
   display: flex;
   flex-direction: column;
 }
@@ -31,10 +31,10 @@
   text-align: center;
   color: var(--ink);
   margin: 0;
-  font-size: 1.25rem;
-  font-weight: 800;
-  letter-spacing: -0.02em;
-  padding: 1.5rem 2rem 0;
+  font-size: 1.5rem;
+  font-weight: 700;
+  letter-spacing: -0.01em;
+  padding: 2rem 2rem 0;
 }
 .scroll-content {
   overflow-y: auto;

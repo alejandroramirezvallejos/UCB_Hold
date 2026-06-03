@@ -4,6 +4,21 @@ import { FormsModule } from '@angular/forms';
 import { AuditLogApiService } from '../../../services/APIS/AuditLog/auditlog-api.service';
 import { AuditLogDto } from '../../../models/admin/AuditLog';
 
+const ACCIONES_POR_ENTIDAD: Record<string, string[]> = {
+  Prestamo:  ['Crear', 'Editar', 'Aprobar', 'Rechazar', 'Recoger', 'Devolver', 'Cancelar'],
+  Usuario:   ['Crear', 'Editar', 'Eliminar'],
+  Equipo:    ['Crear', 'Editar', 'Eliminar'],
+  GrupoEquipo:          ['Crear', 'Editar', 'Eliminar'],
+  Accesorio:            ['Crear', 'Editar', 'Eliminar'],
+  Componente:           ['Crear', 'Editar', 'Eliminar'],
+  Gavetero:             ['Crear', 'Editar', 'Eliminar'],
+  Mueble:               ['Crear', 'Editar', 'Eliminar'],
+  Mantenimiento:        ['Crear', 'Editar', 'Eliminar'],
+  EmpresaMantenimiento: ['Crear', 'Editar', 'Eliminar'],
+  Carrera:              ['Crear', 'Editar', 'Eliminar'],
+  Categoria:            ['Crear', 'Editar', 'Eliminar'],
+};
+
 @Component({
   selector: 'app-audit-panel',
   standalone: true,
@@ -23,14 +38,15 @@ export class AuditPanelComponent implements OnChanges {
   filtroAdmin = '';
   today = new Date().toISOString().split('T')[0];
 
-  readonly acciones = ['Crear', 'Editar', 'Eliminar', 'Aprobar', 'Rechazar', 'Recoger', 'Devolver', 'Cancelar', 'AtrasadoAutomatico'];
+  get acciones(): string[] {
+    return ACCIONES_POR_ENTIDAD[this.entidad] ?? ['Crear', 'Editar', 'Eliminar'];
+  }
 
   constructor(private auditService: AuditLogApiService) {}
 
   ngOnChanges(changes: SimpleChanges) {
-    if (changes['entidad'] || changes['refreshTrigger']) {
+    if (changes['entidad'] || changes['refreshTrigger'])
       this.cargar();
-    }
   }
 
   cargar() {
@@ -64,7 +80,7 @@ export class AuditPanelComponent implements OnChanges {
       case 'crear':   return 'badge-aprobado';
       case 'editar':  return 'badge-pendiente';
       case 'aprobar': case 'recoger': return 'badge-activo';
-      case 'devolver': case 'finalizado': return 'badge-finalizado';
+      case 'devolver': return 'badge-finalizado';
       case 'eliminar': case 'rechazar': case 'cancelar': return 'badge-rechazado';
       case 'atrasadoautomatico': return 'badge-atrasado';
       default: return 'badge-cancelado';

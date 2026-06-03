@@ -54,7 +54,7 @@ public class PrestamoService : Service<PrestamoEntity, PrestamoRepository, Prest
         await Repository.SavePrestamo(entity);
         await Repository.SaveGrupoReservas(entity.Id, dto.GrupoEquipoId);
         await Repository.SaveContrato(entity, dto.Contrato);
-        await Audit!.Log(AuditAccion.Crear, nameof(PrestamoEntity), entity.Id.ToString());
+        await Audit!.Log(AuditAccion.Crear, typeof(PrestamoEntity).Name, entity.Id.ToString());
 
         return await Repository.Get(entity.Id);
     }
@@ -120,7 +120,7 @@ public class PrestamoService : Service<PrestamoEntity, PrestamoRepository, Prest
             _                         => AuditAccion.Editar
         };
 
-        await Audit!.Log(accionAudit, nameof(PrestamoEntity), id.ToString());
+        await Audit!.Log(accionAudit, typeof(PrestamoEntity).Name, id.ToString());
 
         return await Get(id);
     }

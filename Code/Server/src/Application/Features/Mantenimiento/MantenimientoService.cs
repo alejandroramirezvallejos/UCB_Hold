@@ -34,7 +34,7 @@ public class MantenimientoService : Service<MantenimientoEntity, MantenimientoRe
             return result;
 
         await Repository.AddDetalles(entity.Id, dto.CodigoImt ?? [], dto.TiposMantenimiento, dto.DescripcionesEquipo);
-        await Audit!.Log(AuditAccion.Crear, nameof(MantenimientoEntity), result.Value?.Id?.ToString());
+        await Audit!.Log(AuditAccion.Crear, typeof(MantenimientoEntity).Name, result.Value?.Id?.ToString());
 
         return result;
     }

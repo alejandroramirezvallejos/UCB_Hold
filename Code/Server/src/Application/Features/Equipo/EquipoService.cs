@@ -31,7 +31,7 @@ public class EquipoService : Service<EquipoEntity, EquipoRepository, EquipoDto>
         if (result.IsSuccess)
         {
             await Repository.RecalcGrupoStats(entity.IdGrupoEquipo);
-            await Audit!.Log(AuditAccion.Crear, nameof(EquipoEntity), result.Value?.Id?.ToString());
+            await Audit!.Log(AuditAccion.Crear, typeof(EquipoEntity).Name, result.Value?.Id?.ToString());
         }
 
         return result;
@@ -65,7 +65,7 @@ public class EquipoService : Service<EquipoEntity, EquipoRepository, EquipoDto>
         if (existing.IdGrupoEquipo != entity.IdGrupoEquipo)
             await Repository.RecalcGrupoStats(existing.IdGrupoEquipo);
 
-        await Audit!.Log(AuditAccion.Editar, nameof(EquipoEntity), id.ToString());
+        await Audit!.Log(AuditAccion.Editar, typeof(EquipoEntity).Name, id.ToString());
 
         return result;
     }

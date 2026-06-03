@@ -31,7 +31,7 @@ public class GrupoEquipoService : Service<GrupoEquipoEntity, GrupoEquipoReposito
         if (createResult.IsSuccess)
         {
             _ = await _cacheRepository.Remove(CacheKeys.GrupoEquipoSearch(string.Empty, null));
-            await Audit!.Log(AuditAccion.Crear, nameof(GrupoEquipoEntity), createResult.Value?.Id?.ToString());
+            await Audit!.Log(AuditAccion.Crear, typeof(GrupoEquipoEntity).Name, createResult.Value?.Id?.ToString());
         }
 
         return createResult;
@@ -54,7 +54,7 @@ public class GrupoEquipoService : Service<GrupoEquipoEntity, GrupoEquipoReposito
         if (updateResult.IsSuccess)
         {
             _ = await _cacheRepository.Remove(CacheKeys.GrupoEquipoSearch(string.Empty, null));
-            await Audit!.Log(AuditAccion.Editar, nameof(GrupoEquipoEntity), id.ToString());
+            await Audit!.Log(AuditAccion.Editar, typeof(GrupoEquipoEntity).Name, id.ToString());
         }
 
         return updateResult;

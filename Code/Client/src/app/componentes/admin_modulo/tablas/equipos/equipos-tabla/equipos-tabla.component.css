@@ -170,9 +170,21 @@
   background-color: rgba(37, 99, 235, 0.05);
 }
 .actions-column {
-  width: 70px;
-  text-align: center;
+  width: 130px;
+  min-width: 130px;
+  text-align: right;
+  white-space: nowrap;
 }
+.actions-column > * {
+  display: inline-flex;
+  vertical-align: middle;
+}
+.btn-history {
+  color: var(--ink-secondary);
+  transition: color var(--t-fast), background-color var(--t-fast);
+}
+.btn-history:hover { color: var(--interactive); background-color: var(--interactive-subtle); }
+.btn-history.active { color: var(--interactive); background-color: var(--interactive-subtle); }
 .precio-column {
   text-align: right;
 }
