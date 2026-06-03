@@ -2,6 +2,7 @@ using Ardalis.Result;
 using BCryptLib = BCrypt.Net.BCrypt;
 using FluentValidation;
 using IMT_Reservas.Server.Application.Abstraction;
+using IMT_Reservas.Server.Application.Features.AuditLog;
 using IMT_Reservas.Server.Application.Features.Jwt;
 using IMT_Reservas.Server.Infrastructure.Repositories.Implementations;
 using Microsoft.Extensions.Options;
@@ -14,17 +15,20 @@ public class UsuarioService : Service<UsuarioEntity, UsuarioRepository, UsuarioD
     private readonly UsuarioMapper   _mapper;
     private readonly JwtService      _jwtService;
     private readonly JwtSettings     _jwtSettings;
-    private readonly CacheRepository    _cacheRepository;
+    private readonly CacheRepository _cacheRepository;
+    private readonly AuditLogService _audit;
 
     public UsuarioService(UsuarioRepository repository,
         UsuarioMapper mapper, IValidator<UsuarioDto> validator,
         JwtService jwtService, IOptions<JwtSettings> jwtSettings,
-        CacheRepository cacheRepository) : base(repository, validator, mapper)
+        CacheRepository cacheRepository, AuditLogService audit)
+        : base(repository, validator, mapper)
     {
-        _mapper       = mapper;
-        _jwtService   = jwtService;
-        _jwtSettings  = jwtSettings.Value;
+        _mapper          = mapper;
+        _jwtService      = jwtService;
+        _jwtSettings     = jwtSettings.Value;
         _cacheRepository = cacheRepository;
+        _audit           = audit;
     }
 
     public override async Task<Result<UsuarioDto>> Create(UsuarioDto dto)
@@ -53,7 +57,10 @@ public class UsuarioService : Service<UsuarioEntity, UsuarioRepository, UsuarioD
         var result = await CreateEntity(entity);
 
         if (result.IsSuccess && result.Value != null)
+        {
             result.Value.CarreraNombre = await Repository.GetCarreraName(entity.IdCarrera);
+            await _audit.Log(AuditAccion.Crear, nameof(UsuarioEntity), entity.Carnet);
+        }
 
         return result;
     }
@@ -88,6 +95,7 @@ public class UsuarioService : Service<UsuarioEntity, UsuarioRepository, UsuarioD
         resultDto.CarreraNombre = await Repository.GetCarreraName(existing.IdCarrera);
 
         _ = await _cacheRepository.Remove($"usuario:{carnet}");
+        await _audit.Log(AuditAccion.Editar, nameof(UsuarioEntity), carnet);
 
         return Result<UsuarioDto>.Success(resultDto);
     }
@@ -180,10 +188,13 @@ public class UsuarioService : Service<UsuarioEntity, UsuarioRepository, UsuarioD
     public async Task<Result<object>> Delete(string carnet)
     {
         var deleteResult = await Repository.Delete(carnet);
-        
+
         if (deleteResult.IsSuccess)
+        {
             _ = await _cacheRepository.Remove($"usuario:{carnet}");
-        
+            await _audit.Log(AuditAccion.Eliminar, nameof(UsuarioEntity), carnet);
+        }
+
         return deleteResult;
     }
 

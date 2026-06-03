@@ -19,6 +19,7 @@ public class ApplicationDbContext : DbContext
     public DbSet<Prestamo> Prestamos { get; set; }
     public DbSet<DetallePrestamo> DetallesPrestamos { get; set; }
     public DbSet<Contrato> Contratos { get; set; }
+    public DbSet<AuditLog> AuditLogs { get; set; }
 
     public ApplicationDbContext(DbContextOptions<ApplicationDbContext> options) : base(options) { }
 
@@ -305,6 +306,22 @@ public class ApplicationDbContext : DbContext
             entity.HasIndex(e => new { e.IdPrestamo, e.EstadoEliminado });
             entity.HasIndex(e => e.IdEquipo);
             entity.HasQueryFilter(e => !e.EstadoEliminado);
+        });
+
+        modelBuilder.Entity<AuditLog>(entity =>
+        {
+            entity.ToTable("audit_logs");
+            entity.HasKey(e => e.Id);
+            entity.Property(e => e.Id).HasColumnName("id");
+            entity.Property(e => e.AdminCarnet).HasColumnName("admin_carnet").HasMaxLength(20);
+            entity.Property(e => e.AdminNombre).HasColumnName("admin_nombre");
+            entity.Property(e => e.Accion).HasColumnName("accion").HasMaxLength(50);
+            entity.Property(e => e.Entidad).HasColumnName("entidad").HasMaxLength(100);
+            entity.Property(e => e.EntidadId).HasColumnName("entidad_id");
+            entity.Property(e => e.Detalle).HasColumnName("detalle");
+            entity.Property(e => e.Timestamp).HasColumnName("timestamp");
+            entity.HasIndex(e => new { e.AdminCarnet, e.Timestamp });
+            entity.HasIndex(e => new { e.Entidad, e.EntidadId });
         });
     }
 }

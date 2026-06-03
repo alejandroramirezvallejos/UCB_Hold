@@ -1,6 +1,7 @@
 using Ardalis.Result;
 using FluentValidation;
 using IMT_Reservas.Server.Application.Abstraction;
+using IMT_Reservas.Server.Application.Features.AuditLog;
 using IMT_Reservas.Server.Infrastructure.Repositories.Implementations;
 using GrupoEquipoEntity = IMT_Reservas.Server.Core.Entities.GrupoEquipo;
 namespace IMT_Reservas.Server.Application.Features.GrupoEquipo;
@@ -10,11 +11,16 @@ public class GrupoEquipoService : Service<GrupoEquipoEntity, GrupoEquipoReposito
     private static readonly TimeSpan GrupoEquipoSearchTtl = TimeSpan.FromMinutes(5);
     private const string GrupoEquipoSearchCacheKey = "grupo-equipo:search::";
     private readonly CacheRepository _cacheRepository;
+    private readonly AuditLogService _audit;
 
     public GrupoEquipoService(GrupoEquipoRepository repository,
         GrupoEquipoMapper mapper, IValidator<GrupoEquipoDto> validator,
-        CacheRepository cacheRepository) : base(repository, validator, mapper) =>
+        CacheRepository cacheRepository, AuditLogService audit)
+        : base(repository, validator, mapper)
+    {
         _cacheRepository = cacheRepository;
+        _audit = audit;
+    }
 
     public override async Task<Result<GrupoEquipoDto>> Create(GrupoEquipoDto dto)
     {
@@ -25,10 +31,13 @@ public class GrupoEquipoService : Service<GrupoEquipoEntity, GrupoEquipoReposito
             return validation.ToResult<GrupoEquipoDto>();
 
         var createResult = await CreateEntity(MapToEntity(dto));
-        
+
         if (createResult.IsSuccess)
+        {
             _ = await _cacheRepository.Remove(GrupoEquipoSearchCacheKey);
-        
+            await _audit.Log(AuditAccion.Crear, nameof(GrupoEquipoEntity), createResult.Value?.Id?.ToString());
+        }
+
         return createResult;
     }
 
@@ -45,20 +54,26 @@ public class GrupoEquipoService : Service<GrupoEquipoEntity, GrupoEquipoReposito
         entity.Id = id;
 
         var updateResult = await UpdateEntity(entity);
-        
+
         if (updateResult.IsSuccess)
+        {
             _ = await _cacheRepository.Remove(GrupoEquipoSearchCacheKey);
-        
+            await _audit.Log(AuditAccion.Editar, nameof(GrupoEquipoEntity), id.ToString());
+        }
+
         return updateResult;
     }
 
     public override async Task<Result<object>> Delete(int id)
     {
         var deleteResult = await base.Delete(id);
-        
+
         if (deleteResult.IsSuccess)
+        {
             _ = await _cacheRepository.Remove(GrupoEquipoSearchCacheKey);
-        
+            await _audit.Log(AuditAccion.Eliminar, nameof(GrupoEquipoEntity), id.ToString());
+        }
+
         return deleteResult;
     }
 

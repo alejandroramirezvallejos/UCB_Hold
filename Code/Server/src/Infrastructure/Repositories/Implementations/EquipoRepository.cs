@@ -44,6 +44,42 @@ public class EquipoRepository : Repository<EquipoEntity, EquipoDto>
         await DbContext.SaveChangesAsync();
     }
 
+    public async Task<List<EquipoDto>> GetByGrupo(int grupoId)
+        => await ProjectTo(DbContext.Equipos
+            .Where(e => e.IdGrupoEquipo == grupoId && !e.EstadoEliminado))
+            .ToListAsync();
+
+    public async Task<List<EquipoDto>> GetByGavetero(int gaveteroId)
+        => await ProjectTo(DbContext.Equipos
+            .Where(e => e.IdGavetero == gaveteroId && !e.EstadoEliminado))
+            .ToListAsync();
+
+    public async Task<List<HistorialEquipoDto>> GetHistorial(int equipoId)
+        => await DbContext.DetallesPrestamos
+            .AsNoTracking()
+            .IgnoreQueryFilters()
+            .Where(d => d.IdEquipo == equipoId)
+            .Join(DbContext.Prestamos.IgnoreQueryFilters(),
+                d => d.IdPrestamo,
+                p => p.Id,
+                (d, p) => new { d, p })
+            .Join(DbContext.Usuarios.IgnoreQueryFilters(),
+                x => x.p.Carnet,
+                u => u.Carnet,
+                (x, u) => new HistorialEquipoDto
+                {
+                    IdPrestamo              = x.p.Id,
+                    Carnet                  = u.Carnet,
+                    NombreUsuario           = u.Nombre + " " + u.ApellidoPaterno,
+                    FechaPrestamo           = x.p.FechaPrestamo,
+                    FechaDevolucionEsperada = x.p.FechaDevolucionEsperada,
+                    FechaDevolucion         = x.p.FechaDevolucion,
+                    EstadoPrestamo          = x.p.EstadoPrestamo.ToString().ToLower(),
+                    Observacion             = x.p.Observacion
+                })
+            .OrderByDescending(h => h.FechaPrestamo)
+            .ToListAsync();
+
     public override async Task<Result<object>> Delete(int id)
     {
         var entity = await DbContext.Equipos

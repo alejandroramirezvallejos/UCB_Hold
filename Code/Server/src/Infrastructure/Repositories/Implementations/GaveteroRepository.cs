@@ -34,4 +34,9 @@ public class GaveteroRepository : Repository<GaveteroEntity, GaveteroDto>
 
         await DbContext.SaveChangesAsync();
     }
+
+    public async Task<List<GaveteroDto>> GetByMueble(int muebleId)
+        => await ProjectTo(DbContext.Gaveteros
+            .Where(g => g.IdMueble == muebleId && !g.EstadoEliminado))
+            .ToListAsync();
 }

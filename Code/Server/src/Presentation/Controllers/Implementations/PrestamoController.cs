@@ -51,6 +51,11 @@ public class PrestamoController : Controller
     public async Task<IActionResult> GetHistory([FromQuery] string carnetUsuario, [FromQuery] string estadoPrestamo)
         => ToResponse(await _service.GetHistory(carnetUsuario, estadoPrestamo));
 
+    [Authorize(Roles = "administrador")]
+    [HttpGet("byUsuario/{carnet}")]
+    public async Task<IActionResult> GetByUsuario(string carnet)
+        => ToResponse(await _service.GetHistory(carnet, string.Empty));
+
     [HttpGet("contrato/{prestamoId}")]
     public async Task<IActionResult> GetContrato(int prestamoId)
     {

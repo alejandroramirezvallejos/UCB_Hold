@@ -24,6 +24,7 @@ using IMT_Reservas.Server.Application.Features.Usuario;
 using JwtSettings  = IMT_Reservas.Server.Application.Features.Jwt.JwtSettings;
 using JwtSvc       = IMT_Reservas.Server.Application.Features.Jwt.JwtService;
 using IMT_Reservas.Server.Application.Features.Carrito;
+using IMT_Reservas.Server.Application.Features.AuditLog;
 using IMT_Reservas.Server.Application.Features.Contrato;
 using Hangfire;
 using Hangfire.PostgreSql;
@@ -220,6 +221,10 @@ if (!string.IsNullOrWhiteSpace(redisConnectionString))
 else
     builder.Services.AddDistributedMemoryCache();
 builder.Services.AddSingleton<CacheRepository>();
+
+builder.Services.AddHttpContextAccessor();
+builder.Services.AddScoped<AuditLogRepository>();
+builder.Services.AddScoped<AuditLogService>();
 
 builder.Services.AddHangfire(config => config.UsePostgreSqlStorage(connectionString));
 builder.Services.AddHangfireServer();

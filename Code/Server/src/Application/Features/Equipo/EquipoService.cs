@@ -1,14 +1,18 @@
 using Ardalis.Result;
 using FluentValidation;
 using IMT_Reservas.Server.Application.Abstraction;
+using IMT_Reservas.Server.Application.Features.AuditLog;
 using IMT_Reservas.Server.Infrastructure.Repositories.Implementations;
 using EquipoEntity = IMT_Reservas.Server.Core.Entities.Equipo;
 namespace IMT_Reservas.Server.Application.Features.Equipo;
 
 public class EquipoService : Service<EquipoEntity, EquipoRepository, EquipoDto>
 {
-    public EquipoService(EquipoRepository repository, EquipoMapper mapper, IValidator<EquipoDto> validator)
-        : base(repository, validator, mapper) { }
+    private readonly AuditLogService _audit;
+
+    public EquipoService(EquipoRepository repository, EquipoMapper mapper,
+        IValidator<EquipoDto> validator, AuditLogService audit)
+        : base(repository, validator, mapper) => _audit = audit;
 
     public override async Task<Result<EquipoDto>> Create(EquipoDto dto)
     {
@@ -27,7 +31,10 @@ public class EquipoService : Service<EquipoEntity, EquipoRepository, EquipoDto>
         var result = await CreateEntity(entity);
 
         if (result.IsSuccess)
+        {
             await Repository.RecalcGrupoStats(entity.IdGrupoEquipo);
+            await _audit.Log(AuditAccion.Crear, nameof(EquipoEntity), result.Value?.Id?.ToString());
+        }
 
         return result;
     }
@@ -60,6 +67,8 @@ public class EquipoService : Service<EquipoEntity, EquipoRepository, EquipoDto>
         if (existing.IdGrupoEquipo != entity.IdGrupoEquipo)
             await Repository.RecalcGrupoStats(existing.IdGrupoEquipo);
 
+        await _audit.Log(AuditAccion.Editar, nameof(EquipoEntity), id.ToString());
+
         return result;
     }
 
@@ -73,8 +82,20 @@ public class EquipoService : Service<EquipoEntity, EquipoRepository, EquipoDto>
         var result = await base.Delete(id);
 
         if (result.IsSuccess)
+        {
             await Repository.RecalcGrupoStats(existing.IdGrupoEquipo);
+            await _audit.Log(AuditAccion.Eliminar, nameof(EquipoEntity), id.ToString());
+        }
 
         return result;
     }
+
+    public async Task<Result<List<EquipoDto>>> GetByGrupo(int grupoId)
+        => Result<List<EquipoDto>>.Success(await Repository.GetByGrupo(grupoId));
+
+    public async Task<Result<List<EquipoDto>>> GetByGavetero(int gaveteroId)
+        => Result<List<EquipoDto>>.Success(await Repository.GetByGavetero(gaveteroId));
+
+    public async Task<Result<List<HistorialEquipoDto>>> GetHistorial(int equipoId)
+        => Result<List<HistorialEquipoDto>>.Success(await Repository.GetHistorial(equipoId));
 }

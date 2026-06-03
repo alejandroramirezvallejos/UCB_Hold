@@ -1,6 +1,7 @@
 using Ardalis.Result;
 using FluentValidation;
 using IMT_Reservas.Server.Application.Abstraction;
+using IMT_Reservas.Server.Application.Features.AuditLog;
 using IMT_Reservas.Server.Application.Features.Prestamo.State;
 using IMT_Reservas.Server.Core.Entities;
 using IMT_Reservas.Server.Infrastructure.Repositories.Implementations;
@@ -10,10 +11,15 @@ namespace IMT_Reservas.Server.Application.Features.Prestamo;
 public class PrestamoService : Service<PrestamoEntity, PrestamoRepository, PrestamoDto>
 {
     private readonly PrestamoMapper _mapper;
+    private readonly AuditLogService _audit;
 
-    public PrestamoService(PrestamoRepository repository, PrestamoMapper mapper, IValidator<PrestamoDto> validator)
-        : base(repository, validator, mapper) =>
+    public PrestamoService(PrestamoRepository repository, PrestamoMapper mapper,
+        IValidator<PrestamoDto> validator, AuditLogService audit)
+        : base(repository, validator, mapper)
+    {
         _mapper = mapper;
+        _audit = audit;
+    }
 
     public override async Task<Result<PrestamoDto>> Create(PrestamoDto dto)
     {
@@ -49,6 +55,8 @@ public class PrestamoService : Service<PrestamoEntity, PrestamoRepository, Prest
         await Repository.SavePrestamo(entity);
         await Repository.SaveGrupoReservas(entity.Id, dto.GrupoEquipoId);
         await Repository.SaveContrato(entity, dto.Contrato);
+
+        await _audit.Log(AuditAccion.Crear, nameof(PrestamoEntity), entity.Id.ToString());
 
         return await Repository.Get(entity.Id);
     }
@@ -96,13 +104,24 @@ public class PrestamoService : Service<PrestamoEntity, PrestamoRepository, Prest
         }
 
         prestamo.EstadoPrestamo = parsedState.Value;
-        
+
         if (observacion != null)
-        {
             prestamo.Observacion = observacion;
-        }
 
         await Repository.UpdateTracked(prestamo);
+
+        var accionAudit = parsedState.Value switch
+        {
+            EstadoPrestamo.Aprobado   => AuditAccion.Aprobar,
+            EstadoPrestamo.Rechazado  => AuditAccion.Rechazar,
+            EstadoPrestamo.Activo     => AuditAccion.Recoger,
+            EstadoPrestamo.Finalizado => AuditAccion.Devolver,
+            EstadoPrestamo.Cancelado  => AuditAccion.Cancelar,
+            EstadoPrestamo.Atrasado   => AuditAccion.AtrasadoAutomatico,
+            _                         => AuditAccion.Editar
+        };
+
+        await _audit.Log(accionAudit, nameof(PrestamoEntity), id.ToString());
 
         return await Get(id);
     }

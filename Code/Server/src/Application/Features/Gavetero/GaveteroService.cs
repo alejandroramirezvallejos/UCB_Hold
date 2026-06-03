@@ -69,4 +69,7 @@ public class GaveteroService : Service<GaveteroEntity, GaveteroRepository, Gavet
 
         return result;
     }
+
+    public async Task<Result<List<GaveteroDto>>> GetByMueble(int muebleId)
+        => Result<List<GaveteroDto>>.Success(await Repository.GetByMueble(muebleId));
 }

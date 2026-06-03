@@ -2,6 +2,7 @@ using IMT_Reservas.Server.Application.Features.Equipo;
 using Controller = IMT_Reservas.Server.Presentation.Controllers.Abstraction.Controller;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+
 namespace IMT_Reservas.Server.Presentation.Controllers.Implementations;
 
 [Authorize]
@@ -25,7 +26,6 @@ public class EquipoController : Controller
     public async Task<IActionResult> Create([FromBody] EquipoDto dto)
     {
         var result = await _service.Create(dto);
-
         return ToCreatedResponse(result, nameof(Get), new { id = result.Value?.Id });
     }
 
@@ -38,4 +38,19 @@ public class EquipoController : Controller
     [HttpDelete("{id:int}")]
     public async Task<IActionResult> Delete(int id)
         => ToDeleteResponse(await _service.Delete(id));
+
+    [Authorize(Roles = "administrador")]
+    [HttpGet("byGrupo/{grupoId:int}")]
+    public async Task<IActionResult> GetByGrupo(int grupoId)
+        => ToResponse(await _service.GetByGrupo(grupoId));
+
+    [Authorize(Roles = "administrador")]
+    [HttpGet("byGavetero/{gaveteroId:int}")]
+    public async Task<IActionResult> GetByGavetero(int gaveteroId)
+        => ToResponse(await _service.GetByGavetero(gaveteroId));
+
+    [Authorize(Roles = "administrador")]
+    [HttpGet("{id:int}/historial")]
+    public async Task<IActionResult> GetHistorial(int id)
+        => ToResponse(await _service.GetHistorial(id));
 }

@@ -25,7 +25,7 @@ public class GaveteroController : Controller
     public async Task<IActionResult> Create([FromBody] GaveteroDto dto)
     {
         var result = await _service.Create(dto);
-
+       
         return ToCreatedResponse(result, nameof(Get), new { id = result.Value?.Id });
     }
 
@@ -38,4 +38,9 @@ public class GaveteroController : Controller
     [HttpDelete("{id:int}")]
     public async Task<IActionResult> Delete(int id)
         => ToDeleteResponse(await _service.Delete(id));
+
+    [Authorize(Roles = "administrador")]
+    [HttpGet("byMueble/{muebleId:int}")]
+    public async Task<IActionResult> GetByMueble(int muebleId)
+        => ToResponse(await _service.GetByMueble(muebleId));
 }
