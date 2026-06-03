@@ -12,6 +12,7 @@ import { AvisoEliminarComponent } from '../../../../pantallas_avisos/aviso-elimi
 import { MostrarerrorComponent } from '../../../../pantallas_avisos/mostrarerror/mostrarerror.component';
 import { Aviso } from '../../../../pantallas_avisos/aviso/aviso.component';
 import { extractErrorMessage } from '../../../../../utils/error-handler';
+import { AuditPanelComponent } from "../../../audit-panel/audit-panel.component";
 import { AvisoExitoComponent } from '../../../../pantallas_avisos/aviso-exito/aviso-exito.component';
 import { BuscadorComponent } from '../../../buscador/buscador.component';
 import { Tabla } from '../../base/tabla';
@@ -23,6 +24,12 @@ import { Tabla } from '../../base/tabla';
   styleUrls: ['./prestamos-tabla.component.css']
 })
 export class PrestamosTablaComponent extends Tabla implements OnInit {
+  expandedRowId: number | null = null;
+  activeTab: 'tabla' | 'auditoria' = 'tabla';
+
+  toggleExpand(id: number) {
+    this.expandedRowId = this.expandedRowId === id ? null : id;
+  }
   @ViewChild(BuscadorComponent) buscador!: BuscadorComponent;
   botoncrear: WritableSignal<boolean> = signal(false);
   cargando : boolean = false;

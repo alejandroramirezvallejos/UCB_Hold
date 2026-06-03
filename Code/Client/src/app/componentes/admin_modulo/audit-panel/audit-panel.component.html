@@ -1,0 +1,41 @@
+<div class="audit-panel-container">
+  <div class="audit-filters">
+    <input type="date" [(ngModel)]="fechaDesde" (change)="cargar()" class="date-input" placeholder="Desde">
+    <input type="date" [(ngModel)]="fechaHasta" (change)="cargar()" class="date-input" placeholder="Hasta">
+    <button class="btn btn-ghost btn-sm" (click)="fechaDesde=''; fechaHasta=''; cargar()">Limpiar</button>
+  </div>
+
+  @if(cargando) {
+    <div class="audit-loading">Cargando auditoría...</div>
+  } @else if(logs.length === 0) {
+    <div class="audit-empty">Sin registros de auditoría para {{ entidad }}</div>
+  } @else {
+    <div class="table-scroll">
+      <table class="audit-table">
+        <thead>
+          <tr>
+            <th>Fecha</th>
+            <th>Administrador</th>
+            <th>Acción</th>
+            <th>ID</th>
+            <th>Detalle</th>
+          </tr>
+        </thead>
+        <tbody>
+          @for(log of logs; track log.Id) {
+            <tr>
+              <td class="date-col">{{ log.Timestamp | date:'dd/MM/yyyy HH:mm':'America/La_Paz' }}</td>
+              <td>
+                <span class="admin-name">{{ log.AdminNombre || log.AdminCarnet }}</span>
+                <span class="admin-carnet">{{ log.AdminCarnet }}</span>
+              </td>
+              <td><span [class]="'badge ' + badgeClass(log.Accion)">{{ log.Accion }}</span></td>
+              <td class="id-col">{{ log.EntidadId }}</td>
+              <td class="detail-col">{{ log.Detalle || '—' }}</td>
+            </tr>
+          }
+        </tbody>
+      </table>
+    </div>
+  }
+</div>

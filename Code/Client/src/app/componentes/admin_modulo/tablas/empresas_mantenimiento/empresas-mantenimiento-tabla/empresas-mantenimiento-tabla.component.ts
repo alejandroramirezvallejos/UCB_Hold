@@ -12,14 +12,21 @@ import { AvisoExitoComponent } from '../../../../pantallas_avisos/aviso-exito/av
 import { Tabla } from '../../base/tabla';
 import { BuscadorComponent } from '../../../buscador/buscador.component';
 import { extractErrorMessage } from '../../../../../utils/error-handler';
+import { AuditPanelComponent } from "../../../audit-panel/audit-panel.component";
 @Component({
   selector: 'app-empresas-mantenimiento-tabla',
   standalone: true,
-  imports: [CommonModule, FormsModule, EmpresasMantenimientoCrearComponent, EmpresasMantenimientoEditarComponent, AvisoEliminarComponent , MostrarerrorComponent, AvisoExitoComponent, BuscadorComponent],
+  imports: [CommonModule, FormsModule, EmpresasMantenimientoCrearComponent, EmpresasMantenimientoEditarComponent, AvisoEliminarComponent , MostrarerrorComponent, AvisoExitoComponent, BuscadorComponent, AuditPanelComponent],
   templateUrl: './empresas-mantenimiento-tabla.component.html',
   styleUrl: './empresas-mantenimiento-tabla.component.css'
 })
 export class EmpresasMantenimientoTablaComponent extends Tabla implements OnInit {
+  expandedRowId: number | null = null;
+  activeTab: 'tabla' | 'auditoria' = 'tabla';
+
+  toggleExpand(id: number) {
+    this.expandedRowId = this.expandedRowId === id ? null : id;
+  }
   botoncrear: WritableSignal<boolean> = signal(false);
   botoneditar: WritableSignal<boolean> = signal(false);
   alertaeliminar: boolean = false;

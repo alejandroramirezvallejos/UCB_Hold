@@ -12,10 +12,12 @@ import { AvisoExitoComponent } from '../../../../pantallas_avisos/aviso-exito/av
 import { BuscadorComponent } from '../../../buscador/buscador.component';
 import { Tabla } from '../../base/tabla';
 import { extractErrorMessage } from '../../../../../utils/error-handler';
+import { EquiposGaveteroInlineComponent } from "../../../inline/equipos-gavetero-inline.component";
+import { AuditPanelComponent } from "../../../audit-panel/audit-panel.component";
 @Component({
   selector: 'app-gaveteros-tabla',
   standalone: true,
-  imports: [CommonModule, FormsModule, ReactiveFormsModule , GaveterosCrearComponent , GaveterosEditarComponent,AvisoEliminarComponent , MostrarerrorComponent, AvisoExitoComponent , BuscadorComponent],
+  imports: [CommonModule, FormsModule, ReactiveFormsModule , GaveterosCrearComponent , GaveterosEditarComponent,AvisoEliminarComponent , MostrarerrorComponent, AvisoExitoComponent , BuscadorComponent, EquiposGaveteroInlineComponent, AuditPanelComponent],
   templateUrl: './gaveteros-tabla.component.html',
   styleUrls: ['./gaveteros-tabla.component.css']
 })

@@ -12,10 +12,11 @@ import { AvisoExitoComponent } from '../../../../pantallas_avisos/aviso-exito/av
 import { Tabla } from '../../base/tabla';
 import { BuscadorComponent } from '../../../buscador/buscador.component';
 import { extractErrorMessage } from '../../../../../utils/error-handler';
+import { AuditPanelComponent } from "../../../audit-panel/audit-panel.component";
 @Component({
   selector: 'app-categorias-tabla',
   standalone: true,
-  imports: [CommonModule, FormsModule, CategoriasCrearComponent, CategoriasEditarComponent, AvisoEliminarComponent , MostrarerrorComponent , AvisoExitoComponent , BuscadorComponent],
+  imports: [CommonModule, FormsModule, CategoriasCrearComponent, CategoriasEditarComponent, AvisoEliminarComponent , MostrarerrorComponent , AvisoExitoComponent , BuscadorComponent, AuditPanelComponent],
   templateUrl: './categorias-tabla.component.html',
   styleUrl: './categorias-tabla.component.css'
 })

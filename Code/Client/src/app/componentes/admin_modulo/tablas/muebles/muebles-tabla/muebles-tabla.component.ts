@@ -12,14 +12,22 @@ import { AvisoExitoComponent } from '../../../../pantallas_avisos/aviso-exito/av
 import { BuscadorComponent } from '../../../buscador/buscador.component';
 import { Tabla } from '../../base/tabla';
 import { extractErrorMessage } from '../../../../../utils/error-handler';
+import { GaveterosInlineComponent } from "../../../inline/gaveteros-inline.component";
+import { AuditPanelComponent } from "../../../audit-panel/audit-panel.component";
 @Component({
   selector: 'app-muebles-tabla',
   standalone: true,
-  imports: [CommonModule, FormsModule, ReactiveFormsModule, MueblesCrearComponent, MueblesEditarComponent,AvisoEliminarComponent, MostrarerrorComponent, AvisoExitoComponent , BuscadorComponent],
+  imports: [CommonModule, FormsModule, ReactiveFormsModule, MueblesCrearComponent, MueblesEditarComponent,AvisoEliminarComponent, MostrarerrorComponent, AvisoExitoComponent , BuscadorComponent, GaveterosInlineComponent, AuditPanelComponent],
   templateUrl: './muebles-tabla.component.html',
   styleUrl: './muebles-tabla.component.css'
 })
 export class MueblesTablaComponent extends Tabla implements OnInit {
+  expandedRowId: number | null = null;
+  activeTab: 'tabla' | 'auditoria' = 'tabla';
+
+  toggleExpand(id: number) {
+    this.expandedRowId = this.expandedRowId === id ? null : id;
+  }
   botoncrear: WritableSignal<boolean> = signal(false);
   botoneditar: WritableSignal<boolean> = signal(false);
   alertaeliminar: boolean = false;

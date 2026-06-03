@@ -12,10 +12,12 @@ import { AvisoExitoComponent } from '../../../../pantallas_avisos/aviso-exito/av
 import { BuscadorComponent } from '../../../buscador/buscador.component';
 import { Tabla } from '../../base/tabla';
 import { extractErrorMessage } from '../../../../../utils/error-handler';
+import { HistorialEquipoInlineComponent } from "../../../inline/historial-equipo-inline.component";
+import { AuditPanelComponent } from "../../../audit-panel/audit-panel.component";
 @Component({
   selector: 'app-equipos-tabla',
   standalone: true,
-  imports: [CommonModule, FormsModule, ReactiveFormsModule , EquiposCrearComponent , EquiposEditarComponent,AvisoEliminarComponent , MostrarerrorComponent, AvisoExitoComponent , BuscadorComponent],
+  imports: [CommonModule, FormsModule, ReactiveFormsModule , EquiposCrearComponent , EquiposEditarComponent,AvisoEliminarComponent , MostrarerrorComponent, AvisoExitoComponent , BuscadorComponent, HistorialEquipoInlineComponent, AuditPanelComponent],
   templateUrl: './equipos-tabla.component.html',
   styleUrls: ['./equipos-tabla.component.css']
 })

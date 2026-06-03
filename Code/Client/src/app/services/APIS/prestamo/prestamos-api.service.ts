@@ -78,14 +78,11 @@ export class PrestamosAPIService {
 
 
   cambiarEstadoPrestamo(Id: number, estado: string, observacion?: string) {
-    const APIurl = `${this.url}/${Id}/estado`;
-    const envio: any = {
-      EstadoPrestamo: estado
-    };
-    if (observacion !== undefined && observacion !== null) {
-      envio.Observacion = observacion;
+    let params = `estado=${encodeURIComponent(estado)}`;
+    if (observacion !== undefined && observacion !== null && observacion !== '') {
+      params += `&observacion=${encodeURIComponent(observacion)}`;
     }
-    return this.http.put(APIurl, envio)
+    return this.http.put(`${this.url}/${Id}/estado?${params}`, null);
   }
 
 

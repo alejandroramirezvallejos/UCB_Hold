@@ -12,10 +12,11 @@ import { AvisoExitoComponent } from '../../../../pantallas_avisos/aviso-exito/av
 import { BuscadorComponent } from '../../../buscador/buscador.component';
 import { Tabla } from '../../base/tabla';
 import { extractErrorMessage } from '../../../../../utils/error-handler';
+import { AuditPanelComponent } from "../../../audit-panel/audit-panel.component";
 @Component({
   selector: 'app-carreras-tabla',
   standalone: true,
-  imports: [CommonModule, FormsModule, CarrerasCrearComponent, CarrerasEditarComponent , AvisoEliminarComponent , MostrarerrorComponent , AvisoExitoComponent , BuscadorComponent],
+  imports: [CommonModule, FormsModule, CarrerasCrearComponent, CarrerasEditarComponent , AvisoEliminarComponent , MostrarerrorComponent , AvisoExitoComponent , BuscadorComponent, AuditPanelComponent],
   templateUrl: './carreras-tabla.component.html',
   styleUrl: './carreras-tabla.component.css'
 })

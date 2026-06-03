@@ -13,10 +13,11 @@ import { Aviso } from '../../../../pantallas_avisos/aviso/aviso.component';
 import { BuscadorComponent } from '../../../buscador/buscador.component';
 import { Tabla } from '../../base/tabla';
 import { extractErrorMessage } from '../../../../../utils/error-handler';
+import { AuditPanelComponent } from "../../../audit-panel/audit-panel.component";
 @Component({
   selector: 'app-accesorios-tabla',
   standalone: true,
-  imports: [CommonModule, FormsModule, ReactiveFormsModule , AccesoriosCrearComponent , AccesoriosEditarComponent , AvisoEliminarComponent , MostrarerrorComponent , AvisoExitoComponent , Aviso , AvisoExitoComponent, BuscadorComponent],
+  imports: [CommonModule, FormsModule, ReactiveFormsModule , AccesoriosCrearComponent , AccesoriosEditarComponent , AvisoEliminarComponent , MostrarerrorComponent , AvisoExitoComponent , Aviso , AvisoExitoComponent, BuscadorComponent, AuditPanelComponent],
   templateUrl: './accesorios-tabla.component.html',
   styleUrls: ['./accesorios-tabla.component.css']
 })

@@ -13,14 +13,22 @@ import { AvisoExitoComponent } from '../../../../pantallas_avisos/aviso-exito/av
 import { BuscadorComponent } from '../../../buscador/buscador.component';
 import { Tabla } from '../../base/tabla';
 import { extractErrorMessage } from '../../../../../utils/error-handler';
+import { EquiposInlineComponent } from "../../../inline/equipos-inline.component";
+import { AuditPanelComponent } from "../../../audit-panel/audit-panel.component";
 @Component({
   selector: 'app-grupos-equipos-tabla',
   standalone: true,
-  imports: [CommonModule, FormsModule, ReactiveFormsModule, GruposEquiposCrearComponent, GruposEquiposEditarComponent,AvisoEliminarComponent , MostrarerrorComponent, AvisoExitoComponent, BuscadorComponent],
+  imports: [CommonModule, FormsModule, ReactiveFormsModule, GruposEquiposCrearComponent, GruposEquiposEditarComponent,AvisoEliminarComponent , MostrarerrorComponent, AvisoExitoComponent, BuscadorComponent, EquiposInlineComponent, AuditPanelComponent],
   templateUrl: './grupos-equipos-tabla.component.html',
   styleUrl: './grupos-equipos-tabla.component.css'
 })
 export class GruposEquiposTablaComponent extends Tabla implements OnInit {
+  expandedRowId: number | null = null;
+  activeTab: 'tabla' | 'auditoria' = 'tabla';
+
+  toggleExpand(id: number) {
+    this.expandedRowId = this.expandedRowId === id ? null : id;
+  }
   botoncrear: WritableSignal<boolean> = signal(false);
   botoneditar: WritableSignal<boolean> = signal(false);
   alertaeliminar: boolean = false;
