@@ -97,7 +97,8 @@
   padding: 0.6rem 0.9rem;
   border-radius: 0.5rem;
   border: 1px solid var(--border);
-  transition: transition: box-shadow var(--t-base), transform var(--t-base);
+  transition: box-shadow var(--t-base), transform var(--t-base);
+  user-select: none;
 }
 .fecha-item:hover {
   border-color: inherit;
@@ -107,12 +108,12 @@
 .fecha-label {
   font-size: 0.9rem;
   font-weight: 600;
-  color: var(--ink);
+  color: var(--ink-secondary);
 }
 .fecha-valor {
   font-size: 0.9rem;
   font-weight: 700;
-  color: var(--interactive-text);
+  color: var(--ink);
   background: #ffffff;
   padding: 0.2rem 0.5rem;
   border-radius: 0.3rem;

@@ -28,6 +28,8 @@ export class PrestamosTablaComponent extends Tabla implements OnInit {
   expandedRowId: number | null = null;
   auditRefresh = 0;
   activeTab: 'tabla' | 'auditoria' = 'tabla';
+  // Preserve Map insertion order (already sorted most-recent-first) in keyvalue pipe
+  keepOrder = (_a: unknown, _b: unknown): number => 0;
 
   toggleExpand(id: number) {
     this.expandedRowId = this.expandedRowId === id ? null : id;

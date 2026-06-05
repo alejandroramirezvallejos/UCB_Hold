@@ -100,16 +100,17 @@
   border-radius: 0.5rem;
   border: 1px solid var(--border);
   transition: background-color var(--t-fast), color var(--t-fast);
+  user-select: none;
 }
 .fecha-label {
   font-size: 0.9rem;
   font-weight: 600;
-  color: var(--ink);
+  color: var(--ink-secondary);
 }
 .fecha-valor {
   font-size: 0.9rem;
   font-weight: 700;
-  color: var(--interactive-text);
+  color: var(--ink);
   background: #ffffff;
   padding: 0.2rem 0.5rem;
   border-radius: 0.3rem;

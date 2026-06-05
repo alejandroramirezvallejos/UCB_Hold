@@ -22,6 +22,7 @@ export class FlatpickrDirective implements OnInit, OnDestroy {
       dateFormat: 'Y-m-d',
       allowInput: false,
       disableMobile: false,
+      monthSelectorType: 'static',
       ...this.fpOptions,
       onChange: (dates, dateStr) => {
         this.fpChange.emit(dates);

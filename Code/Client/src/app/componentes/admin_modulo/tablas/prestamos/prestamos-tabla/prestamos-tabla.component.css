@@ -233,73 +233,86 @@ td.actions-column {
   gap: 1rem;
   color: var(--color-text-secondary);
 }
-.alerta-eliminar {
+/* === Modal "Devuelto" — consistente con el resto de modales === */
+.devuelto-overlay {
   position: fixed;
-  top: 0;
-  left: 0;
-  width: 100vw;
-  height: 100vh;
-  background-color: rgba(0, 0, 0, 0.5);
+  inset: 0;
+  background: rgba(0, 0, 0, 0.5);
+  backdrop-filter: blur(4px);
+  -webkit-backdrop-filter: blur(4px);
   display: flex;
   align-items: center;
   justify-content: center;
-  z-index: 1000;
-  animation: fadeIn 0.3s ease-in-out;
+  z-index: 9999;
+  padding: 1rem;
+  animation: fadeIn 200ms ease-out both;
 }
-.modal-content {
-  background-color: #ffffff !important;
-  padding: 2rem;
-  border-radius: 12px;
-  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
-  text-align: center;
-  animation: slideIn 0.3s ease-out;
-  min-width: 400px;
-  max-width: 90vw;
+.devuelto-modal {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-xl);
+  box-shadow: var(--shadow-xl);
+  padding: 1.75rem;
+  width: 100%;
+  max-width: 460px;
+  max-height: 85vh;
+  overflow-y: auto;
+  animation: slideIn 200ms ease-out both;
 }
-.modal-content p {
-  margin: 0 0 1.5rem 0;
+.devuelto-title {
+  margin: 0 0 0.5rem;
   font-size: 1.1rem;
-  color: var(--color-text);
-  font-weight: 500;
+  font-weight: 700;
+  color: var(--ink);
+  font-family: var(--font);
+}
+.devuelto-text {
+  margin: 0;
+  font-size: 0.875rem;
+  color: var(--ink-secondary);
+  font-family: var(--font);
   line-height: 1.5;
 }
-.modal-content .btn {
-  margin: 0 0.5rem;
-  padding: 0.75rem 1.5rem;
-  font-size: 0.9rem;
-  font-weight: 600;
-  border-radius: 8px;
-  transition: color var(--t-base), background-color var(--t-base), border-color var(--t-base), box-shadow var(--t-base);
-  min-width: 80px;
+.devuelto-actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 0.75rem;
+  margin-top: 1.25rem;
 }
-.btn-confirm {
-  background-color: #dc2626;
-  color: white;
-  border: 2px solid #dc2626;
+.devuelto-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 44px;
+  padding: 0 var(--btn-pad-x);
+  border-radius: var(--btn-radius);
+  font-size: var(--btn-font-size);
+  font-weight: var(--btn-font-weight);
+  font-family: var(--font);
+  cursor: pointer;
+  transition: var(--btn-transition);
 }
-.btn-confirm:hover {
-  background-color: #b91c1c;
-  border-color: #b91c1c;
-  transform: translateY(-1px);
-  box-shadow: 0 4px 12px rgba(220, 38, 38, 0.4);
+.devuelto-btn-cancel {
+  background: transparent;
+  color: var(--ink-secondary);
+  border: 1px solid var(--border);
 }
-.btn-cancel {
-  background-color: #5F6368;
-  color: white;
-  border: 2px solid #5F6368;
+.devuelto-btn-confirm {
+  background: var(--brand);
+  color: var(--brand-text);
+  border: none;
+  box-shadow: 0 2px 8px rgba(255, 215, 0, 0.3);
 }
-.btn-cancel:hover {
-  background-color: var(--brand);
-  color: #333;
-  border-color: var(--ink);
-  transform: translateY(-1px);
-  box-shadow: 0 4px 12px rgba(255, 207, 0, 0.3);
+@media (hover: hover) and (pointer: fine) {
+  .devuelto-btn-cancel:hover { background: var(--sidebar); border-color: var(--border-strong); color: var(--ink); }
+  .devuelto-btn-confirm:hover { background: var(--brand-hover); box-shadow: 0 4px 12px rgba(255, 215, 0, 0.4); transform: translateY(-1px); }
 }
+.devuelto-btn:active { transform: scale(0.97); box-shadow: none; }
 .btn-action {
   display: inline-flex;
   align-items: center;
-  gap: 0.25rem;
-  padding: 0.3rem 0.875rem;
+  gap: 0.4rem;
+  padding: 0.35rem 1rem;
   border-radius: var(--radius-full);
   font-size: 0.72rem;
   font-weight: 700;
@@ -307,7 +320,7 @@ td.actions-column {
   cursor: pointer;
   transition: all var(--t-fast);
   margin: 0;
-  min-width: 72px;
+  min-width: 80px;
   justify-content: center;
   letter-spacing: 0.01em;
 }

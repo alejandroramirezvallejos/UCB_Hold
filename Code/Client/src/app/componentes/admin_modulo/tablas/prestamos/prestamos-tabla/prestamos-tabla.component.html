@@ -68,7 +68,7 @@
         </tr>
       </thead>
       <tbody>
-        @for (prestamo of (prestamos | keyvalue) ; track prestamo.key){
+        @for (prestamo of (prestamos | keyvalue: keepOrder) ; track prestamo.key){
           <tr>
             <td class="nombre-usuario">
               <span title="{{prestamo.value.datosgrupo.NombreUsuario}} {{prestamo.value.datosgrupo.ApellidoPaternoUsuario}}">
@@ -221,13 +221,14 @@
   ></app-aviso>
 }
 @if(avisodevuelto()){
-  <div class="alerta-eliminar">
-    <div class="modal-content">
-      <p>¿Está seguro de marcar este préstamo como devuelto? Puede agregar observaciones opcionales:</p>
+  <div class="devuelto-overlay">
+    <div class="devuelto-modal">
+      <h3 class="devuelto-title">Marcar como devuelto</h3>
+      <p class="devuelto-text">¿Está seguro de marcar este préstamo como devuelto? Puede agregar observaciones opcionales:</p>
       <textarea [(ngModel)]="observacionDevolucion" class="observaciones-input" placeholder="Escriba sus observaciones aquí..."></textarea>
-      <div style="margin-top: 1.5rem;">
-        <button class="btn btn-cancel" (click)="avisodevuelto.set(false)">Cancelar</button>
-        <button class="btn btn-confirm" style="background-color: #10b981; border-color: #10b981;" (click)="devolverprestamo(prestamoKeySeleccionado)">Aceptar</button>
+      <div class="devuelto-actions">
+        <button class="devuelto-btn devuelto-btn-cancel" (click)="avisodevuelto.set(false)">Cancelar</button>
+        <button class="devuelto-btn devuelto-btn-confirm" (click)="devolverprestamo(prestamoKeySeleccionado)">Aceptar</button>
       </div>
     </div>
   </div>

@@ -75,6 +75,20 @@
   font-size: 0.95rem !important;
   color: #333 !important;
 }
+/* Static month label (no select dropdown) — keep it tight to the year */
+.flatpickr-current-month .cur-month {
+  font-family: 'Manrope', system-ui, sans-serif !important;
+  font-weight: 600 !important;
+  font-size: 0.95rem !important;
+  color: #333 !important;
+  text-transform: capitalize !important;
+  margin: 0 !important;
+  padding: 0 !important;
+}
+.flatpickr-current-month .numInputWrapper {
+  width: 3.6ch !important;
+  margin-left: 0.35rem !important;
+}
 
 /* Nav arrows — override absolute positioning, match calendario-header button */
 .flatpickr-months .flatpickr-prev-month,
