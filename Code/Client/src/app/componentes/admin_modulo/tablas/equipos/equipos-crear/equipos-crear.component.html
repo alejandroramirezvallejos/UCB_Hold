@@ -14,18 +14,13 @@
     <form #form="ngForm" (ngSubmit)="validarcreacion()">
      <div class="form-group">
       <label for="grupo_equipo">Grupo Equipo</label>
-      <select
-        id="grupo_equipo"
+      <app-custom-select
         name="grupo_equipo"
         [(ngModel)]="grupoequipoSeleccionado"
         required
-        class="form-input"
-        >
-        <option [ngValue]="null" disabled>Seleccione un grupo de equipo</option>
-        @for (item of grupoequipo; track $index) {
-        <option [ngValue]="item">{{ item.nombre }} {{ item.modelo }} {{ item.marca }}</option>
-        }
-      </select>
+        [opciones]="gruposOpciones"
+        placeholder="Seleccione un grupo de equipo"
+      ></app-custom-select>
     </div>
     <div class="form-group">
       <label for="codigo_ucb">Código UCB</label>
@@ -55,18 +50,13 @@
     </div>
     <div class="form-group">
       <label for="estado_equipo">Estado Equipo</label>
-      <select
-        type="text"
-        id="estado_equipo"
+      <app-custom-select
         name="estado_equipo"
         [(ngModel)]="equipo.EstadoEquipo"
         required
-        class="form-input"
-      >
-        <option value="operativo">Operativo</option>
-        <option value="parcialmente_operativo">Parcialmente Operativo</option>
-        <option value="inoperativo">Inoperativo</option>
-    </select>
+        [opciones]="estadoOpciones"
+        placeholder="Estado del equipo"
+      ></app-custom-select>
     </div>
     <div class="form-group">
       <label for="ubicacion">Ubicación</label>
@@ -83,17 +73,12 @@
     </div>
      <div class="form-group">
       <label for="nombre_gavetero">Gavetero</label>
-      <select
-        id="nombre_gavetero"
+      <app-custom-select
         name="nombre_gavetero"
         [(ngModel)]="gaveteraSeleccionada"
-        class="form-input"
-      >
-        <option [ngValue]="null">Sin gavetero</option>
-        @for (item of Gaveteros; track $index) {
-          <option [ngValue]="item">{{item.Nombre}}</option>
-        }
-      </select>
+        [opciones]="gaveterosOpciones"
+        placeholder="Sin gavetero"
+      ></app-custom-select>
     </div>
     <div class="form-group">
       <label for="costo_referencia">Costo Referencia</label>

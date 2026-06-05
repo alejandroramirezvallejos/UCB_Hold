@@ -1,9 +1,9 @@
 .signature-overlay {
   position: fixed;
   inset: 0;
-  background: rgba(0, 0, 0, 0.45);
-  backdrop-filter: blur(2px);
-  -webkit-backdrop-filter: blur(2px);
+  background: rgba(0, 0, 0, 0.5);
+  backdrop-filter: blur(4px);
+  -webkit-backdrop-filter: blur(4px);
   display: flex;
   justify-content: center;
   align-items: center;
@@ -14,11 +14,12 @@
 .signature-container {
   background: var(--surface);
   padding: 2rem 1.75rem 1.5rem;
-  border-radius: var(--radius-lg);
+  border-radius: var(--radius-xl);
   border: 1px solid var(--border);
   box-shadow: var(--shadow-xl);
-  max-width: 90%;
-  width: 600px;
+  width: 100%;
+  max-width: 600px;
+  max-height: 85vh;
   position: relative;
   animation: slideIn 200ms ease-out both;
 }

@@ -109,34 +109,23 @@
       </div>
       <div class="form-group">
         <label for="rol">Rol</label>
-        <select
-          id="rol"
+        <app-custom-select
           name="rol"
           [(ngModel)]="usuario.rol"
           required
-          class="form-input"
-        >
-          <option value="">Seleccionar rol</option>
-          <option value="administrador">Administrador</option>
-          <option value="estudiante">Estudiante</option>
-        </select>
+          [opciones]="rolesOpciones"
+          placeholder="Seleccionar rol"
+        ></app-custom-select>
       </div>
       <div class="form-group">
         <label for="carrera">Carrera</label>
-        <select
-          type="text"
-          id="carrera"
+        <app-custom-select
           name="carrera"
           [(ngModel)]="usuario.carrera"
           required
-          placeholder="Nombre de la carrera"
-          class="form-input"
-          >
-          <option value="" disabled>Selecciona una carrera</option>
-          @for (item of carreras; track $index) {
-            <option [value]="item">{{ item }}</option>
-          }
-        </select>
+          [opciones]="carreras"
+          placeholder="Selecciona una carrera"
+        ></app-custom-select>
       </div>
       <div class="form-group">
         <label for="nombre_referencia">Nombre de Referencia</label>

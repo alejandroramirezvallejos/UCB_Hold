@@ -8,10 +8,11 @@ import { MostrarerrorComponent } from '../../../../pantallas_avisos/mostrarerror
 import { Aviso } from '../../../../pantallas_avisos/aviso/aviso.component';
 import { AvisoExitoComponent } from '../../../../pantallas_avisos/aviso-exito/aviso-exito.component';
 import { extractErrorMessage } from '../../../../../utils/error-handler';
+import { CustomSelectComponent } from '../../../../compartidos/custom-select/custom-select.component';
 @Component({
   selector: 'app-gaveteros-crear',
   standalone: true,
-  imports: [FormsModule, MostrarerrorComponent , Aviso , AvisoExitoComponent],
+  imports: [FormsModule, MostrarerrorComponent , Aviso , AvisoExitoComponent, CustomSelectComponent],
   templateUrl: './gaveteros-crear.component.html',
   styleUrl: './gaveteros-crear.component.css'
 })

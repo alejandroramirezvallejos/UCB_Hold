@@ -7,10 +7,11 @@ import { MostrarerrorComponent } from '../../../../pantallas_avisos/mostrarerror
 import { AvisoExitoComponent } from '../../../../pantallas_avisos/aviso-exito/aviso-exito.component';
 import { Aviso } from '../../../../pantallas_avisos/aviso/aviso.component';
 import { extractErrorMessage } from '../../../../../utils/error-handler';
+import { CustomSelectComponent, OpcionSelect } from '../../../../compartidos/custom-select/custom-select.component';
 @Component({
   selector: 'app-usuarios-crear',
   standalone: true,
-  imports: [FormsModule, MostrarerrorComponent,Aviso , AvisoExitoComponent],
+  imports: [FormsModule, MostrarerrorComponent,Aviso , AvisoExitoComponent, CustomSelectComponent],
   templateUrl: './usuarios-crear.component.html',
   styleUrl: './usuarios-crear.component.css'
 })
@@ -20,6 +21,10 @@ export class UsuariosCrearComponent extends BaseTablaComponent{
   @Input() carreras: string[] = [];
   usuario: Usuario = new Usuario();
   contrasena: string = '';
+  rolesOpciones: OpcionSelect[] = [
+    { value: 'administrador', label: 'Administrador' },
+    { value: 'estudiante', label: 'Estudiante' },
+  ];
   constructor(private usuarioApi: UsuarioServiceAPI) {
     super();
   } 

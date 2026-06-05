@@ -9,10 +9,11 @@ import { MostrarerrorComponent } from '../../../../pantallas_avisos/mostrarerror
 import { Aviso } from '../../../../pantallas_avisos/aviso/aviso.component';
 import { AvisoExitoComponent } from '../../../../pantallas_avisos/aviso-exito/aviso-exito.component';
 import { extractErrorMessage } from '../../../../../utils/error-handler';
+import { CustomSelectComponent, OpcionSelect } from '../../../../compartidos/custom-select/custom-select.component';
 @Component({
   selector: 'app-componentes-crear',
   standalone: true,
-  imports: [FormsModule , MostrarerrorComponent , AvisoExitoComponent , Aviso],
+  imports: [FormsModule , MostrarerrorComponent , AvisoExitoComponent , Aviso, CustomSelectComponent],
   templateUrl: './componentes-crear.component.html',
   styleUrl: './componentes-crear.component.css'
 })
@@ -21,6 +22,9 @@ export class ComponentesCrearComponent extends BaseTablaComponent {
   @Output() Actualizar = new EventEmitter<void>();
   equipos : Equipos[] = [];
   componente: Componente = new Componente() ;
+  get equiposOpciones(): OpcionSelect[] {
+    return this.equipos.map(e => ({ value: e.CodigoImt, label: `${e.NombreGrupoEquipo} ${e.CodigoImt}` }));
+  }
   constructor(private componenteService: ComponenteService , private equiposAPI : EquipoService) {
     super();
   }

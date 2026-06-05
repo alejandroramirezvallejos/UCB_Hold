@@ -11,10 +11,11 @@ import { MostrarerrorComponent } from '../../../../pantallas_avisos/mostrarerror
 import { Aviso } from '../../../../pantallas_avisos/aviso/aviso.component';
 import { AvisoExitoComponent } from '../../../../pantallas_avisos/aviso-exito/aviso-exito.component';
 import { extractErrorMessage } from '../../../../../utils/error-handler';
+import { CustomSelectComponent } from '../../../../compartidos/custom-select/custom-select.component';
 @Component({
   selector: 'app-mantenimientos-crear',
   standalone: true,
-  imports: [FormsModule , ListaequipoComponent, CommonModule, MostrarerrorComponent , Aviso , AvisoExitoComponent],
+  imports: [FormsModule , ListaequipoComponent, CommonModule, MostrarerrorComponent , Aviso , AvisoExitoComponent, CustomSelectComponent],
   templateUrl: './mantenimientos-crear.component.html',
   styleUrl: './mantenimientos-crear.component.css'
 })

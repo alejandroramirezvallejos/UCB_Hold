@@ -65,17 +65,13 @@
     </div>
     <div class="form-group">
       <label for="codigo_imt">Código IMT</label>
-      <select
-        id="codigo_imt"
+      <app-custom-select
         name="codigo_imt"
         [(ngModel)]="accesorio.codigo_imt"
         required
-        class="form-input"
-      >
-      @for (item of equipos; track $index) {
-        <option [value]="item.CodigoImt"> {{ item.NombreGrupoEquipo }} {{item.Modelo}} {{item.Marca}} - {{ item.CodigoImt }}</option>
-      }
-    </select>
+        [opciones]="equiposOpciones"
+        placeholder="Selecciona un equipo"
+      ></app-custom-select>
     </div>
     <div class="form-group">
       <label for="precio">Precio</label>

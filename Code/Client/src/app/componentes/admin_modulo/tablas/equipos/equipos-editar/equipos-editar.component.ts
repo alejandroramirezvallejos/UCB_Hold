@@ -10,9 +10,10 @@ import { MostrarerrorComponent } from '../../../../pantallas_avisos/mostrarerror
 import { Aviso } from '../../../../pantallas_avisos/aviso/aviso.component';
 import { AvisoExitoComponent } from '../../../../pantallas_avisos/aviso-exito/aviso-exito.component';
 import { extractErrorMessage } from '../../../../../utils/error-handler';
+import { CustomSelectComponent, OpcionSelect } from '../../../../compartidos/custom-select/custom-select.component';
 @Component({
   selector: 'app-equipos-editar',
-  imports: [FormsModule , MostrarerrorComponent , Aviso , AvisoExitoComponent],
+  imports: [FormsModule , MostrarerrorComponent , Aviso , AvisoExitoComponent, CustomSelectComponent],
   templateUrl: './equipos-editar.component.html',
   styleUrl: './equipos-editar.component.css'
 })
@@ -24,6 +25,18 @@ export class EquiposEditarComponent extends BaseTablaComponent{
   grupoequipoSeleccionado: GrupoEquipo | null = null;
   Gaveteros: any[] = [];
   gaveteraSeleccionada: any = null;
+  estadoOpciones: OpcionSelect[] = [
+    { value: 'operativo', label: 'Operativo' },
+    { value: 'parcialmente_operativo', label: 'Parcialmente Operativo' },
+    { value: 'inoperativo', label: 'Inoperativo' },
+  ];
+  get gruposOpciones(): OpcionSelect[] {
+    const actual = `${this.equipo.NombreGrupoEquipo} ${this.equipo.Modelo} ${this.equipo.Marca} (Actual)`;
+    return [{ value: null, label: actual }, ...this.grupoequipo.map(g => ({ value: g, label: `${g.nombre} ${g.modelo} ${g.marca}` }))];
+  }
+  get gaveterosOpciones(): OpcionSelect[] {
+    return [{ value: null, label: 'Sin gavetero' }, ...this.Gaveteros.map(g => ({ value: g, label: g.Nombre }))];
+  }
   constructor(private equipoapi: EquipoService ,  private grupoequipoAPI : GrupoequipoService , private gaveterosAPI : GaveteroService) {
     super(); 
   }; 

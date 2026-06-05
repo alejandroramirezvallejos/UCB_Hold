@@ -1,0 +1,26 @@
+<div class="cs-wrap">
+  <button
+    type="button"
+    class="cs-trigger"
+    [class.open]="abierto"
+    [class.invalid]="invalid"
+    [disabled]="disabled"
+    (click)="alternar()"
+  >
+    <span class="cs-value" [class.placeholder]="tienePlaceholder">{{ etiquetaActual }}</span>
+    <i class="fas fa-chevron-down cs-chevron" [class.open]="abierto"></i>
+  </button>
+  @if (abierto) {
+    <ul class="cs-menu">
+      @for (opcion of opcionesNormalizadas; track opcion.value) {
+        <li
+          class="cs-item"
+          [class.active]="opcion.value === valor"
+          (click)="seleccionar(opcion)"
+        >
+          {{ opcion.label }}
+        </li>
+      }
+    </ul>
+  }
+</div>

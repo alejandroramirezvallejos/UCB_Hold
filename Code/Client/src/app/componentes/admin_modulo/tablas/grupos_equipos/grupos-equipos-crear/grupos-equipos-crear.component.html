@@ -53,19 +53,13 @@
       </div>
       <div class="form-group">
         <label for="nombreCategoria">Categoría</label>
-        <select
-          type="text"
-          id="nombreCategoria"
+        <app-custom-select
           name="nombreCategoria"
           required
           [(ngModel)]="grupoEquipo.nombreCategoria"
+          [opciones]="categorias"
           placeholder="Categoría del grupo de equipo"
-          class="form-input"
-        >
-          @for (item of categorias; track $index) {
-            <option [value]="item">{{ item }}</option>
-          }
-        </select>
+        ></app-custom-select>
       </div>
       <div class="form-group">
         <label for="descripcion">Descripción</label>

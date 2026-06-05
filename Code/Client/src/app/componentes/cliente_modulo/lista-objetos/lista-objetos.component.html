@@ -18,7 +18,7 @@
             </a>
             <!-- Cart controls -->
             <div class="product-card__cart">
-              @if((item.Cantidad ?? 0) <= 0) {
+              @if((item.Cantidad ?? 0) <= 0 || sinOperativos(item.id!)) {
                 <span class="card-no-stock">Sin unidades disponibles</span>
               } @else {
                 <div class="card-stepper">

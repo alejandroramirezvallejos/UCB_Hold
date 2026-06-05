@@ -7,9 +7,10 @@ import { MostrarerrorComponent } from '../../../../pantallas_avisos/mostrarerror
 import { Aviso } from '../../../../pantallas_avisos/aviso/aviso.component';
 import { AvisoExitoComponent } from '../../../../pantallas_avisos/aviso-exito/aviso-exito.component';
 import { extractErrorMessage } from '../../../../../utils/error-handler';
+import { CustomSelectComponent, OpcionSelect } from '../../../../compartidos/custom-select/custom-select.component';
 @Component({
   selector: 'app-usuarios-editar',
-  imports: [FormsModule,MostrarerrorComponent , Aviso , AvisoExitoComponent],
+  imports: [FormsModule,MostrarerrorComponent , Aviso , AvisoExitoComponent, CustomSelectComponent],
   templateUrl: './usuarios-editar.component.html',
   styleUrl: './usuarios-editar.component.css'
 })
@@ -19,6 +20,11 @@ export class UsuariosEditarComponent extends BaseTablaComponent {
   @Input() usuario: Usuario = new Usuario();
   @Input() carreras: string[] = [];
   contrasena: string = '';
+  rolesOpciones: OpcionSelect[] = [
+    { value: 'administrador', label: 'Administrador' },
+    { value: 'docente', label: 'Docente' },
+    { value: 'estudiante', label: 'Estudiante' },
+  ];
   constructor(private usuarioApi: UsuarioServiceAPI) {
     super();
   }

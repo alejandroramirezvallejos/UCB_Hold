@@ -15,18 +15,13 @@
     <form #form="ngForm" >
       <div class="form-group">
         <label for="NombreEmpresaMantenimiento">Empresa de Mantenimiento</label>
-        <select
-          id="NombreEmpresaMantenimiento"
+        <app-custom-select
           name="NombreEmpresaMantenimiento"
           [(ngModel)]="mantenimiento.NombreEmpresaMantenimiento"
           required
-          class="form-input"
-        >
-        <option value="" disabled>Selecciona una empresa</option>
-        @for (item of empresas; track $index) {
-          <option [value]="item">{{item}}</option>
-        }
-        </select>
+          [opciones]="empresas"
+          placeholder="Selecciona una empresa"
+        ></app-custom-select>
       </div>
       <div class="form-group">
         <label for="FechaMantenimiento">Fecha de Inicio</label>

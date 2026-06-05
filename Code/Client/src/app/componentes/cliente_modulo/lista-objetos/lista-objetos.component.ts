@@ -6,6 +6,7 @@ import { GrupoEquipo } from '../../../models/grupo_equipo';
 import { Router } from '@angular/router';
 import { MostrarerrorComponent } from '../../pantallas_avisos/mostrarerror/mostrarerror.component';
 import { CarritoService } from '../../../services/carrito/carrito.service';
+import { DisponibilidadService } from '../../../services/APIS/Disponibilidad/disponibilidad.service';
 import { extractErrorMessage } from '../../../utils/error-handler';
 @Component({
   selector: 'app-lista-objetos',
@@ -30,8 +31,16 @@ export class ListaObjetosComponent implements OnChanges, OnDestroy, AfterViewIni
   // Cart quantity per product
   cantidades: { [id: number]: number } = {};
   addedToCart: { [id: number]: boolean } = {};
+  // Total de unidades operativas por grupo (0 = sin equipos operativos)
+  totalOperativo: { [id: number]: number } = {};
 
-  constructor(private servicio: GrupoequipoService, private carrito: CarritoService) {}
+  constructor(
+    private servicio: GrupoequipoService,
+    private carrito: CarritoService,
+    private disponibilidad: DisponibilidadService
+  ) {}
+
+  sinOperativos(id: number): boolean { return (this.totalOperativo[id] ?? 1) <= 0; }
 
   getCantidad(id: number): number { return this.cantidades[id] ?? 1; }
   incrementarCantidad(id: number, max: number, event: Event) {
@@ -46,6 +55,7 @@ export class ListaObjetosComponent implements OnChanges, OnDestroy, AfterViewIni
   }
   agregarAlCarrito(item: GrupoEquipo, event: Event) {
     event.stopPropagation(); event.preventDefault();
+    if (this.sinOperativos(item.id!)) return;
     if (this.addedToCart[item.id!]) {
       this.carrito.quitarproducto(item.id!);
       this.addedToCart[item.id!] = false;
@@ -126,6 +136,7 @@ export class ListaObjetosComponent implements OnChanges, OnDestroy, AfterViewIni
       next: (data) => {
         this.todosLosProductos = data;
         this.filtrarProductos();
+        this.cargarOperatividad(data);
       },
       error: () => {
         this.mensajeerror = 'No se pudo cargar el catálogo de equipos. Por favor, recarga la página e inténtalo de nuevo.';
@@ -134,6 +145,19 @@ export class ListaObjetosComponent implements OnChanges, OnDestroy, AfterViewIni
     });
   }
   
+  private cargarOperatividad(productos: GrupoEquipo[]): void {
+    const ids = productos.map(p => p.id).filter((id): id is number => id != null);
+    if (ids.length === 0) return;
+    const hoy = new Date();
+    this.disponibilidad.obtenerDisponibilidad(hoy, hoy, ids).subscribe({
+      next: (data) => {
+        for (const d of data) {
+          this.totalOperativo[d.IdGrupoEquipo] = d.TotalOperativo ?? 0;
+        }
+      }
+    });
+  }
+
   private normalizeText(text: string): string {
     if (typeof text !== 'string') {
       return String(text || '').toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g, '');
@@ -148,7 +172,6 @@ export class ListaObjetosComponent implements OnChanges, OnDestroy, AfterViewIni
     let productos = [...this.todosLosProductos];
     if (this.categorias.length > 0) {
       if(this.categorias.includes('sinCategoria')){
-        console.log('Filtrando sin categoría');
         productos = productos.filter(p => p.nombreCategoria === null || p.nombreCategoria === ''  );
       }
       else{

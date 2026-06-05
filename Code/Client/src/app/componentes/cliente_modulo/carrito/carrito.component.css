@@ -191,7 +191,7 @@
   text-align: center;
   cursor: default;
 }
-.input-wrapper input[type="text"]::placeholder { color: var(--ink-muted); font-size: 0.72rem; }
+.input-wrapper input[type="text"]::placeholder { color: var(--ink-muted); font-size: 0.62rem; }
 .input-wrapper input[type="text"]:focus { outline: none; }
 .error {
   color: var(--error);
@@ -235,10 +235,6 @@
   cursor: not-allowed;
   opacity: 0.5;
   pointer-events: none;
-}.navigation-buttons {
-  display: flex;
-  justify-content: flex-end;
-  width: 100%;
 }
 
 @media (max-width: 768px) {

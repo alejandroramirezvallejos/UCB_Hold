@@ -9,9 +9,10 @@ import { AvisoExitoComponent } from '../../../../pantallas_avisos/aviso-exito/av
 import { Aviso } from '../../../../pantallas_avisos/aviso/aviso.component';
 import { BaseTablaComponent } from '../../base/base';
 import { extractErrorMessage } from '../../../../../utils/error-handler';
+import { CustomSelectComponent, OpcionSelect } from '../../../../compartidos/custom-select/custom-select.component';
 @Component({
   selector: 'app-accesorios-editar',
-  imports: [FormsModule , MostrarerrorComponent , AvisoExitoComponent , Aviso],
+  imports: [FormsModule , MostrarerrorComponent , AvisoExitoComponent , Aviso, CustomSelectComponent],
   templateUrl: './accesorios-editar.component.html',
   styleUrl: './accesorios-editar.component.css'
 })
@@ -19,7 +20,10 @@ export class AccesoriosEditarComponent extends BaseTablaComponent {
   @Input() botoneditar: WritableSignal<boolean> = signal(true);
   @Output() actualizar: EventEmitter<void> = new EventEmitter<void>();
   @Input() accesorio : Accesorio = new Accesorio();
-   equipos : Equipos[] = [] ;  
+   equipos : Equipos[] = [] ;
+  get equiposOpciones(): OpcionSelect[] {
+    return this.equipos.map(e => ({ value: e.CodigoImt, label: `${e.NombreGrupoEquipo} ${e.Modelo} ${e.Marca} - ${e.CodigoImt}` }));
+  }
 
   constructor(private accesorioapi: AccesoriosService , private equipoAPI : EquipoService) {
     super();
