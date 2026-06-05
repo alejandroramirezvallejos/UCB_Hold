@@ -1,4 +1,4 @@
-import { Component, EventEmitter, Input, Output, signal, WritableSignal } from '@angular/core';
+import { Component, HostListener, EventEmitter, Input, Output, signal, WritableSignal } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { Gaveteros } from '../../../../../models/admin/Gaveteros';
 import { GaveteroService } from '../../../../../services/APIS/Gavetero/gavetero.service';
@@ -58,4 +58,9 @@ export class GaveterosEditarComponent extends BaseTablaComponent {
   cerrar(){
     this.botoneditar.set(false);
   }
+  @HostListener('click', ['$event'])
+  onOverlayClick(event: MouseEvent) {
+    if (event.target === event.currentTarget) this.cerrar();
+  }
+
 }

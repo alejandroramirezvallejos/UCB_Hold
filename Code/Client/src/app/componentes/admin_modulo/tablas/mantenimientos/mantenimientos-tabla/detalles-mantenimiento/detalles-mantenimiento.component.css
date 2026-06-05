@@ -109,7 +109,7 @@
   transition: var(--transition);
 }
 .data-table tbody tr:hover {
-  background-color: rgba(37, 99, 235, 0.05);
+  background-color: rgba(255, 215, 0, 0.06);
 }
 .actions-column {
   width: 70px;

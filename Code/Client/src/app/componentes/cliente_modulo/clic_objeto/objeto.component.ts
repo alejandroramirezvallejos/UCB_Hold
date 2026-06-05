@@ -1,75 +1,91 @@
 import { CommonModule } from '@angular/common';
-import { Component, Input, signal, WritableSignal } from '@angular/core';
-import { ActivatedRoute, Router } from '@angular/router';
+import { Component, signal, WritableSignal } from '@angular/core';
+import { ActivatedRoute } from '@angular/router';
 import { GrupoequipoService } from '../../../services/APIS/GrupoEquipo/grupoequipo.service';
 import { GrupoEquipo } from '../../../models/grupo_equipo';
 import { CarritoService } from '../../../services/carrito/carrito.service';
 import { MostrarerrorComponent } from '../../pantallas_avisos/mostrarerror/mostrarerror.component';
 import { DisponibilidadService } from '../../../services/APIS/Disponibilidad/disponibilidad.service';
-import { extractErrorMessage } from '../../../utils/error-handler';
+import { CalendarioComponent } from '../carrito/calendario/calendario.component';
+import { FormsModule } from '@angular/forms';
+
 @Component({
   selector: 'app-objeto',
   standalone: true,
-  imports: [CommonModule , MostrarerrorComponent],
+  imports: [CommonModule, MostrarerrorComponent, CalendarioComponent, FormsModule],
   templateUrl: './objeto.component.html',
   styleUrl: './objeto.component.css'
 })
 export class ObjetoComponent {
-  @Input() id: string = ''
+  id: string = '';
   producto: GrupoEquipo = new GrupoEquipo();
   cantidadDisponible: number = 0;
   totalOperativo: number = 0;
   cargando: boolean = true;
   addedToCart = false;
-  error : WritableSignal<boolean> = signal(false);
-  mensajeerror : string = "";
+  error: WritableSignal<boolean> = signal(false);
+  mensajeerror: string = '';
   desabilitarboton: boolean = false;
   sinUnidadesOperativas: boolean = false;
-  constructor(private route: ActivatedRoute , private servicio : GrupoequipoService, private carrito : CarritoService, private SDisponibilidad : DisponibilidadService) { }
+
+  // Quantity
+  cantidad: number = 1;
+
+  // Availability modal
+  showCalendarioModal = false;
+  closeIconHover = false;
+  carritoCalendario: any = {};
+  fechaInicioCalendario: WritableSignal<Date | null> = signal(null);
+  fechaFinCalendario: WritableSignal<Date | null> = signal(null);
+
+  constructor(
+    private route: ActivatedRoute,
+    private servicio: GrupoequipoService,
+    private carrito: CarritoService,
+    private SDisponibilidad: DisponibilidadService
+  ) {}
+
   ngOnInit(): void {
     const routeId = this.route.snapshot.paramMap.get('id');
-    if (!routeId) {
-      console.error('ID no proporcionado en la URL');
-      return;
-    }
+    if (!routeId) return;
     this.id = routeId;
     this.servicio.getproducto(routeId).subscribe({
       next: (data) => {
         this.producto = data;
-        if (this.producto && this.producto.id) {
-            this.obtenerDisponibilidad();
+        if (this.producto?.id) {
+          this.carritoCalendario = {
+            [this.producto.id]: {
+              nombre: this.producto.nombre,
+              modelo: this.producto.modelo ?? '',
+              marca: this.producto.marca ?? '',
+              cantidad: 1,
+              fecha_inicio: null,
+              fecha_final: null,
+              imagen: this.producto.link ?? '',
+              precio: this.producto.CostoPromedio ?? 0,
+              cantidadMax: this.producto.Cantidad ?? 1
+            }
+          };
+          this.obtenerDisponibilidad();
         } else {
-            this.cargando = false;
+          this.cargando = false;
         }
       },
-      error: (error) => {
+      error: () => {
         this.desabilitarboton = true;
-        const errorMsg = extractErrorMessage(error, 'Error al cargar el producto, intente mas tarde');
-        this.mensajeerror = errorMsg;
-        console.error('Error completo del backend:', errorMsg);
-        this.producto = {
-          id: 0,
-          nombre: 'Error de carga',
-          descripcion: 'No se pudo cargar la información del producto. Intente más tarde.',
-          modelo: '',
-          marca: '',
-          url_data_sheet: '',
-          link: ''
-        };
+        this.mensajeerror = 'No se pudo cargar la información del equipo. Por favor, intenta más tarde.';
         this.cargando = false;
         this.error.set(true);
       }
     });
   }
-  obtenerDisponibilidad(){
-    this.SDisponibilidad.obtenerDisponibilidad(new Date(), new Date() , [this.producto.id]).subscribe({
+
+  obtenerDisponibilidad() {
+    this.SDisponibilidad.obtenerDisponibilidad(new Date(), new Date(), [this.producto.id]).subscribe({
       next: (data) => {
-        if(data && data.length > 0){
+        if (data?.length > 0) {
           this.cantidadDisponible = data[0].CantidadDisponible;
           this.totalOperativo = data[0].TotalOperativo ?? 0;
-        } else {
-          this.cantidadDisponible = 0;
-          this.totalOperativo = 0;
         }
         if (this.totalOperativo === 0) {
           this.sinUnidadesOperativas = true;
@@ -77,28 +93,43 @@ export class ObjetoComponent {
         }
         this.cargando = false;
       },
-      error: (error) => {
-        const errorMsg = extractErrorMessage(error, 'Error al obtener la disponibilidad del producto');
-        console.error('Error disponibilidad:', errorMsg);
-        this.mensajeerror = errorMsg;
+      error: () => {
+        this.mensajeerror = 'No se pudo obtener la disponibilidad del equipo. Por favor, intenta más tarde.';
         this.error.set(true);
         this.cargando = false;
       }
     });
   }
+
+  incrementar() {
+    if (this.cantidad < Math.min(this.cantidadDisponible, this.producto.Cantidad ?? 99))
+      this.cantidad++;
+  }
+
+  decrementar() {
+    if (this.cantidad > 1) this.cantidad--;
+  }
+
+  openCalendarioModal() { this.showCalendarioModal = true; document.body.style.overflow = 'hidden'; }
+  closeCalendarioModal() { this.showCalendarioModal = false; document.body.style.overflow = ''; }
+
   addproductocarrito() {
     if (this.addedToCart) {
+      this.carrito.quitarproducto(this.producto.id);
+      this.addedToCart = false;
       return;
     }
-    this.carrito.agregarproducto(
-      this.producto.id,
-      this.producto.nombre,
-      this.producto.link ?? '',
-      this.producto.marca ?? '',
-      this.producto.modelo ?? '',
-      this.producto.CostoPromedio ?? 0,
-      this.producto.Cantidad ?? 1
-    );
+    for (let i = 0; i < this.cantidad; i++) {
+      this.carrito.agregarproducto(
+        this.producto.id,
+        this.producto.nombre,
+        this.producto.link ?? '',
+        this.producto.marca ?? '',
+        this.producto.modelo ?? '',
+        this.producto.CostoPromedio ?? 0,
+        this.producto.Cantidad ?? 1
+      );
+    }
     this.addedToCart = true;
   }
 }

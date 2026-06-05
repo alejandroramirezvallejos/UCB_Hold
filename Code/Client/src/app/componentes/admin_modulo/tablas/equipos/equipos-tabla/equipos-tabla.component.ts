@@ -14,10 +14,11 @@ import { Tabla } from '../../base/tabla';
 import { extractErrorMessage } from '../../../../../utils/error-handler';
 import { HistorialEquipoInlineComponent } from "../../../inline/historial-equipo-inline.component";
 import { AuditPanelComponent } from "../../../audit-panel/audit-panel.component";
+import { StickyScrollDirective } from '../../../../../directives/sticky-scroll.directive';
 @Component({
   selector: 'app-equipos-tabla',
   standalone: true,
-  imports: [CommonModule, FormsModule, ReactiveFormsModule , EquiposCrearComponent , EquiposEditarComponent,AvisoEliminarComponent , MostrarerrorComponent, AvisoExitoComponent , BuscadorComponent, HistorialEquipoInlineComponent, AuditPanelComponent],
+  imports: [StickyScrollDirective, CommonModule, FormsModule, ReactiveFormsModule , EquiposCrearComponent , EquiposEditarComponent,AvisoEliminarComponent , MostrarerrorComponent, AvisoExitoComponent , BuscadorComponent, HistorialEquipoInlineComponent, AuditPanelComponent],
   templateUrl: './equipos-tabla.component.html',
   styleUrls: ['./equipos-tabla.component.css']
 })
@@ -125,4 +126,18 @@ cancelarEliminacion(){
   this.alertaeliminar = false;
   this.limpiarEquipoSeleccionado();
 }
+
+  override sortTable(e: {col: string, dir: 'asc' | 'desc'}) {
+    const m: Record<string, string> = {
+      'Nombre': 'NombreGrupoEquipo', 'EstadoEquipo': 'EstadoEquipo',
+      'Ubicacion': 'Ubicacion', 'Código IMT': 'CodigoImt', 'Costo': 'CostoReferencia'
+    };
+    const k = m[e.col]; if (!k) return;
+    this.equipos = [...this.equipos].sort((a, b) => {
+      const va = this.normalizeText(String((a as any)[k] ?? ''));
+      const vb = this.normalizeText(String((b as any)[k] ?? ''));
+      return e.dir === 'asc' ? va.localeCompare(vb) : vb.localeCompare(va);
+    });
+  }
+
 }

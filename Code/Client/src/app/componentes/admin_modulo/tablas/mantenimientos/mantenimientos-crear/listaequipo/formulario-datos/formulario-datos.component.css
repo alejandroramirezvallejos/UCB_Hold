@@ -84,7 +84,7 @@
 .form-input:focus {
   outline: none;
   border-color: var(--interactive);
-  box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.1);
+  box-shadow: 0 0 0 3px var(--interactive-subtle);
 }
 .form-input.ng-invalid.ng-touched {
   border-color: #dc2626 !important;

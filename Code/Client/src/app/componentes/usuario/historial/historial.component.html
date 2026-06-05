@@ -1,46 +1,39 @@
 <div class="container">
-  <div class="custom-dropdown">
-    <div class="dropdown-header" (click)="toggleDropdown()" (mouseenter)="onMouseEnter()" (mouseleave)="onMouseLeave()">
-      <span class="current-value">Préstamos {{ item }}s</span>
-      <img
-        [src]="isHovered || isOpen ? '/assets/down_solid.png' : '/assets/down_line.png'"
-        alt="Desplegar"
-        class="dropdown-arrow"
-      >
-    </div>
+  <div class="hist-dropdown">
+    <button
+      class="hist-trigger"
+      (click)="toggleDropdown()"
+      [attr.aria-expanded]="isOpen"
+      aria-haspopup="listbox"
+    >
+      <i class="fas fa-history"></i>
+      <span>Préstamos {{ item }}s</span>
+      <i class="fas fa-chevron-down hist-chevron" [class.open]="isOpen"></i>
+    </button>
     @if(isOpen) {
-      <ul class="dropdown-list">
+      <ul class="hist-menu" role="listbox">
         @for(estado of contenido; track $index) {
-          <li (click)="itemclick(estado)" [class.selected]="estado === item">
-            {{ estado }}
-          </li>
+          <li
+            class="hist-menu-item"
+            [class.active]="estado === item"
+            [attr.aria-selected]="estado === item"
+            role="option"
+            (click)="itemclick(estado)"
+          >{{ estado }}</li>
         }
       </ul>
     }
   </div>
-  <div class="items-wrapper">
+
+  <div class="items-wrapper" role="tabpanel">
     @if(show) {
-      @if(item=="Activo"){
-        <app-activo></app-activo>
-      }
-      @else if(item=="Aprobado"){
-        <app-aprobado></app-aprobado>
-      }
-      @else if(item=="Pendiente"){
-        <app-pendiente></app-pendiente>
-      }
-      @else if(item=="Rechazado"){
-        <app-rechazado></app-rechazado>
-      }
-      @else if(item=="Finalizado"){
-        <app-finalizado></app-finalizado>
-      }
-      @else if(item=="Cancelado"){
-        <app-cancelado></app-cancelado>
-      }
-      @else if(item=="Atrasado"){
-        <app-atrasado></app-atrasado>
-      }
+      @if(item=="Activo")    { <app-activo></app-activo> }
+      @else if(item=="Aprobado")  { <app-aprobado></app-aprobado> }
+      @else if(item=="Pendiente") { <app-pendiente></app-pendiente> }
+      @else if(item=="Rechazado") { <app-rechazado></app-rechazado> }
+      @else if(item=="Finalizado"){ <app-finalizado></app-finalizado> }
+      @else if(item=="Cancelado") { <app-cancelado></app-cancelado> }
+      @else if(item=="Atrasado")  { <app-atrasado></app-atrasado> }
     }
   </div>
 </div>

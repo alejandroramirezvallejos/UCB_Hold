@@ -2,7 +2,7 @@
   box-sizing: border-box;
   margin: 0;
   padding: 0;
-  font-family: var(--font);
+
 }
 .prestamos-container {
   padding: 0;
@@ -51,7 +51,7 @@
 .usuario-nombre {
   font-size: 1.3rem;
   font-weight: 700;
-  color: var(--interactive);
+  color: var(--ink);
   margin-bottom: 0.3rem;
   white-space: nowrap;
   overflow: hidden;
@@ -62,11 +62,11 @@
 .usuario-carnet {
   font-size: 0.9rem;
   color: var(--ink);
-  background: var(--sidebar);
-  padding: 0.3rem 0.8rem;
-  border-radius: 0.75rem;
-  display: inline-block;
-  border: 1px solid var(--border);
+
+
+
+
+
   font-weight: 500;
 }
 .equipo-info {
@@ -112,7 +112,7 @@
 .fecha-valor {
   font-size: 0.9rem;
   font-weight: 700;
-  color: var(--interactive);
+  color: var(--interactive-text);
   background: #ffffff;
   padding: 0.2rem 0.5rem;
   border-radius: 0.3rem;
@@ -141,7 +141,7 @@
 .cantidad-equipos {
   font-size: 0.8rem;
   color: var(--interactive);
-  background: rgba(37, 99, 235, 0.1);
+  background: var(--interactive-subtle);
   padding: 0.2rem 0.5rem;
   border-radius: 12px;
   display: inline-block;
@@ -199,10 +199,7 @@
     width: 6px;
     height: 6px;
 }
-::-webkit-scrollbar-thumb {
-    background-color: rgba(0, 0, 0, 0.3);
-    border-radius: 10px;
-}
+
 ::-webkit-scrollbar-track {
     background: rgba(0, 0, 0, 0.05);
     border-radius: 10px;
@@ -316,4 +313,107 @@
     padding: 0.5rem 0.75rem;
     font-size: 0.75rem;
   }
+}
+
+.hist-icon-title { font-size: 0.9em; margin-right: 0.375rem; color: var(--ink-secondary); }
+.text-warning { color: var(--error); }
+.fecha-icon { font-size: 0.85rem; color: var(--brand-text); margin-right: 0.25rem; }
+.empty-icon-fa { font-size: 2.5rem; color: var(--ink-muted); margin-bottom: 1rem; display: block; text-align: center; }
+.usuario-nombre { color: var(--ink) !important; font-weight: 700; }
+
+/* === Consistent empty state === */
+.hist-empty {
+  text-align: center;
+  padding: 3rem 2rem;
+  color: var(--ink-secondary);
+  background: var(--surface);
+  border: 2px dashed var(--border);
+  border-radius: var(--radius-lg);
+  animation: fadeSlide 200ms ease-out both;
+}
+.hist-empty i {
+  font-size: 2rem;
+  color: var(--ink-muted);
+  display: block;
+  margin-bottom: 0.75rem;
+}
+.hist-empty strong {
+  display: block;
+  font-size: 1rem;
+  font-weight: 700;
+  color: var(--ink);
+  margin-bottom: 0.375rem;
+}
+.hist-empty p {
+  font-size: 0.875rem;
+  color: var(--ink-muted);
+  margin: 0;
+}
+/* FA icon in card title */
+.hist-icon { font-size: 0.85em; color: var(--ink-secondary); margin-right: 0.375rem; }
+.text-atrasado { color: var(--error) !important; }
+/* Warning alert box */
+.aviso-atrasado {
+  font-size: 0.82rem;
+  color: #991b1b;
+  background: #fee2e2;
+  border: 1px solid #fca5a5;
+  border-radius: 8px;
+  padding: 0.6rem 0.875rem;
+  margin-bottom: 0.875rem;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+/* === Font + UX consistency patch === */
+.prestamo-item, .fecha-label, .fecha-valor, .codigo-imt, .usuario-nombre,
+.usuario-carnet, .cantidad-equipos {  }
+
+/* Cantidad equipos chip — visible */
+.cantidad-equipos {
+  display: inline-flex;
+  align-items: center;
+  background: var(--interactive-subtle);
+  color: var(--brand-text);
+  border: 1px solid rgba(255,215,0,0.4);
+  border-radius: var(--radius-full);
+  padding: 0.15rem 0.625rem;
+  font-size: 0.72rem;
+  font-weight: 700;
+}
+
+/* Icon in date labels */
+.fecha-label i { margin-right: 0.3rem; font-size: 0.82rem; color: var(--ink-secondary); }
+
+/* Ver detalles + Cancelar proper sizing */
+.btn.btn-sm.btn-ghost { min-width: 110px; padding: 0.625rem 1.25rem !important; font-size: 0.875rem !important; }
+.btn.btn-sm.btn-danger { min-width: 90px; padding: 0.625rem 1.125rem !important; font-size: 0.875rem !important; }
+
+
+/* Plain carnet text — no border pill */
+.usuario-carnet {
+  font-size: 0.8rem !important;
+  font-weight: 500 !important;
+  color: var(--ink-secondary) !important;
+  background: none !important;
+  padding: 0 !important;
+  border: none !important;
+  border-radius: 0 !important;
+  display: inline !important;
+}
+
+/* Ensure chip and carnet on separate lines with gap */
+.usuario-info { display: flex !important; flex-direction: column !important; gap: 0.375rem !important; }
+.cantidad-equipos { margin-top: 0 !important; margin-bottom: 0 !important; }
+.usuario-carnet { margin-top: 0 !important; font-size: 0.8rem !important; color: var(--ink-secondary) !important; }
+
+/* FINAL fix: cantidad-equipos must be auto-width inline chip */
+.cantidad-equipos {
+  display: inline-flex !important;
+  width: auto !important;
+  max-width: none !important;
+  align-self: flex-start !important;
+  flex-grow: 0 !important;
+  flex-shrink: 0 !important;
 }

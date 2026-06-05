@@ -1,20 +1,55 @@
 <div class="audit-panel-container">
   <div class="audit-filters">
-    <input type="date" [(ngModel)]="fechaDesde" [max]="today" (change)="cargar()" class="date-input">
-    <input type="date" [(ngModel)]="fechaHasta" [max]="today" (change)="cargar()" class="date-input">
-    <select [(ngModel)]="filtroAccion" (change)="cargar()" class="date-input">
-      <option value="">Todas las acciones</option>
-      @for(a of acciones; track a) { <option [value]="a">{{ a }}</option> }
-    </select>
+    <input
+      type="text"
+      appFlatpickr
+      [fpOptions]="{maxDate: 'today'}"
+      class="date-input"
+      placeholder="Fecha desde"
+      readonly
+      (fpChange)="onFechaDesde($event)"
+    />
+    <input
+      type="text"
+      appFlatpickr
+      [fpOptions]="{maxDate: 'today'}"
+      class="date-input"
+      placeholder="Fecha hasta"
+      readonly
+      (fpChange)="onFechaHasta($event)"
+    />
+    <div class="audit-select-wrap">
+      <div class="audit-select-trigger" (click)="toggleAcciones()" [class.open]="accionesOpen">
+        <span>{{ filtroAccion || 'Todas las acciones' }}</span>
+        <i class="fas fa-chevron-down audit-chevron" [class.open]="accionesOpen"></i>
+      </div>
+      @if(accionesOpen) {
+        <ul class="audit-select-menu">
+          <li class="audit-select-item" [class.active]="filtroAccion === ''" (click)="seleccionarAccion('')">Todas las acciones</li>
+          @for(a of acciones; track a) {
+            <li class="audit-select-item" [class.active]="filtroAccion === a" (click)="seleccionarAccion(a)">{{ a }}</li>
+          }
+        </ul>
+      }
+    </div>
     <input type="text" [(ngModel)]="filtroAdmin" (keyup.enter)="cargar()" placeholder="Buscar admin..." class="date-input admin-search">
-    <button class="btn btn-ghost btn-sm" (click)="limpiar()">Limpiar</button>
-    <button class="btn btn-ghost btn-sm" (click)="cargar()" title="Actualizar">↻</button>
+    <button class="btn btn-ghost btn-sm" (click)="limpiar()">
+      <i class="fas fa-times"></i> Limpiar
+    </button>
+    <button class="btn btn-ghost btn-sm" (click)="cargar()" title="Actualizar">
+      <i class="fas fa-sync-alt"></i>
+    </button>
   </div>
 
   @if(cargando) {
-    <div class="audit-loading">Cargando auditoría...</div>
+    <div class="audit-loading">
+      <i class="fas fa-spinner fa-spin"></i> Cargando auditoría...
+    </div>
   } @else if(logs.length === 0) {
-    <div class="audit-empty">Sin registros de auditoría para {{ entidad }}</div>
+    <div class="audit-empty">
+      <i class="fas fa-clipboard-list" style="font-size:2rem; color:var(--ink-muted); display:block; margin-bottom:0.5rem;"></i>
+      Sin registros de auditoría para {{ entidad }}
+    </div>
   } @else {
     <div class="audit-count">{{ logs.length }} registro{{ logs.length !== 1 ? 's' : '' }}</div>
     <div class="table-scroll">

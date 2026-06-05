@@ -3,9 +3,10 @@ import { CommonModule, DatePipe } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { AuditLogApiService } from '../../../services/APIS/AuditLog/auditlog-api.service';
 import { AuditLogDto } from '../../../models/admin/AuditLog';
+import { FlatpickrDirective } from '../../../directives/flatpickr.directive';
 
 const ACCIONES_POR_ENTIDAD: Record<string, string[]> = {
-  Prestamo:  ['Crear', 'Editar', 'Aprobar', 'Rechazar', 'Recoger', 'Devolver', 'Cancelar'],
+  Prestamo:  ['Aprobar', 'Rechazar', 'Recoger', 'Devolver', 'Cancelar'],
   Usuario:   ['Crear', 'Editar', 'Eliminar'],
   Equipo:    ['Crear', 'Editar', 'Eliminar'],
   GrupoEquipo:          ['Crear', 'Editar', 'Eliminar'],
@@ -22,7 +23,7 @@ const ACCIONES_POR_ENTIDAD: Record<string, string[]> = {
 @Component({
   selector: 'app-audit-panel',
   standalone: true,
-  imports: [CommonModule, DatePipe, FormsModule],
+  imports: [CommonModule, DatePipe, FormsModule, FlatpickrDirective],
   templateUrl: './audit-panel.component.html',
   styleUrl: './audit-panel.component.css'
 })
@@ -36,7 +37,6 @@ export class AuditPanelComponent implements OnChanges {
   fechaHasta = '';
   filtroAccion = '';
   filtroAdmin = '';
-  today = new Date().toISOString().split('T')[0];
 
   get acciones(): string[] {
     return ACCIONES_POR_ENTIDAD[this.entidad] ?? ['Crear', 'Editar', 'Eliminar'];
@@ -47,6 +47,16 @@ export class AuditPanelComponent implements OnChanges {
   ngOnChanges(changes: SimpleChanges) {
     if (changes['entidad'] || changes['refreshTrigger'])
       this.cargar();
+  }
+
+  onFechaDesde(dates: Date[]) {
+    this.fechaDesde = dates[0] ? dates[0].toISOString().split('T')[0] : '';
+    this.cargar();
+  }
+
+  onFechaHasta(dates: Date[]) {
+    this.fechaHasta = dates[0] ? dates[0].toISOString().split('T')[0] : '';
+    this.cargar();
   }
 
   cargar() {
@@ -67,11 +77,22 @@ export class AuditPanelComponent implements OnChanges {
     });
   }
 
+  accionesOpen = false;
+
+  toggleAcciones() { this.accionesOpen = !this.accionesOpen; }
+
+  seleccionarAccion(a: string) {
+    this.filtroAccion = a;
+    this.accionesOpen = false;
+    this.cargar();
+  }
+
   limpiar() {
     this.fechaDesde = '';
     this.fechaHasta = '';
     this.filtroAccion = '';
     this.filtroAdmin = '';
+    this.accionesOpen = false;
     this.cargar();
   }
 

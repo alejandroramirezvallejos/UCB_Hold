@@ -1,10 +1,10 @@
 .login-container {
   min-height: 100vh;
   display: flex;
-  align-items: flex-start;
+  align-items: center;
   justify-content: center;
   background: var(--bg);
-  padding: 10rem 2rem 1rem;
+  padding: 2rem;
 }
 .login-card {
   background: var(--surface);
@@ -63,7 +63,7 @@ label {
 .form-input::placeholder { color: var(--ink-muted); }
 .form-input:focus {
   outline: none;
-  border-color: var(--interactive);
+  border-color: var(--interactive-text);
   box-shadow: 0 0 0 3px var(--interactive-subtle);
 }
 .error-message {
@@ -104,7 +104,7 @@ label {
   gap: 0.75rem;
 }
 .forgot-password, .forgot-password-link a {
-  color: var(--interactive);
+  color: var(--interactive-text);
   text-decoration: none;
   font-size: 0.875rem;
   font-family: var(--font);
@@ -121,7 +121,7 @@ label {
   font-family: var(--font);
 }
 .register-link a {
-  color: var(--interactive);
+  color: var(--interactive-text);
   text-decoration: none;
   font-weight: 600;
 }

@@ -1,4 +1,4 @@
-import { Component, EventEmitter, Input, Output, signal, WritableSignal } from '@angular/core';
+import { Component, HostListener, EventEmitter, Input, Output, signal, WritableSignal } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { Accesorio } from '../../../../../models/admin/Accesorio';
 import { AccesoriosService } from '../../../../../services/APIS/Accesorio/accesorios.service';
@@ -63,8 +63,12 @@ export class AccesoriosEditarComponent extends BaseTablaComponent {
       }
     });
   }
-  
   cerrar(){
     this.botoneditar.set(false);
   }
+  @HostListener('click', ['$event'])
+  onOverlayClick(event: MouseEvent) {
+    if (event.target === event.currentTarget) this.cerrar();
+  }
+
 }

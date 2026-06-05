@@ -15,10 +15,11 @@ import { Tabla } from '../../base/tabla';
 import { extractErrorMessage } from '../../../../../utils/error-handler';
 import { EquiposInlineComponent } from "../../../inline/equipos-inline.component";
 import { AuditPanelComponent } from "../../../audit-panel/audit-panel.component";
+import { StickyScrollDirective } from '../../../../../directives/sticky-scroll.directive';
 @Component({
   selector: 'app-grupos-equipos-tabla',
   standalone: true,
-  imports: [CommonModule, FormsModule, ReactiveFormsModule, GruposEquiposCrearComponent, GruposEquiposEditarComponent,AvisoEliminarComponent , MostrarerrorComponent, AvisoExitoComponent, BuscadorComponent, EquiposInlineComponent, AuditPanelComponent],
+  imports: [StickyScrollDirective, CommonModule, FormsModule, ReactiveFormsModule, GruposEquiposCrearComponent, GruposEquiposEditarComponent,AvisoEliminarComponent , MostrarerrorComponent, AvisoExitoComponent, BuscadorComponent, EquiposInlineComponent, AuditPanelComponent],
   templateUrl: './grupos-equipos-tabla.component.html',
   styleUrl: './grupos-equipos-tabla.component.css'
 })
@@ -116,6 +117,21 @@ export class GruposEquiposTablaComponent extends Tabla implements OnInit {
   limpiarBusqueda() {
     this.aplicarFiltros();
   }
+
+  override sortTable(e: {col: string, dir: 'asc' | 'desc'}) {
+    const m: Record<string, string> = {
+      'Nombre': 'Nombre', 'Cantidad': 'Cantidad', 'Modelo': 'Modelo',
+      'Marca': 'Marca', 'Categoría': 'NombreCategoria', 'Descripción': 'Descripcion'
+    };
+    const k = m[e.col]; if (!k) return;
+    this.gruposEquipos = [...this.gruposEquipos].sort((a, b) => {
+      const va = this.normalizeText(String((a as any)[k] ?? ''));
+      const vb = this.normalizeText(String((b as any)[k] ?? ''));
+      return e.dir === 'asc' ? va.localeCompare(vb) : vb.localeCompare(va);
+    });
+    this.gruposEquiposFiltrados = [...this.gruposEquipos];
+  }
+
   editarGrupoEquipo(grupoequipo: GrupoEquipo) {
     this.botoncrear.set(false);
     this.grupoEquipoSeleccionado = { ...grupoequipo };

@@ -13,10 +13,11 @@ import { Tabla } from '../../base/tabla';
 import { BuscadorComponent } from '../../../buscador/buscador.component';
 import { extractErrorMessage } from '../../../../../utils/error-handler';
 import { AuditPanelComponent } from "../../../audit-panel/audit-panel.component";
+import { StickyScrollDirective } from '../../../../../directives/sticky-scroll.directive';
 @Component({
   selector: 'app-categorias-tabla',
   standalone: true,
-  imports: [CommonModule, FormsModule, CategoriasCrearComponent, CategoriasEditarComponent, AvisoEliminarComponent , MostrarerrorComponent , AvisoExitoComponent , BuscadorComponent, AuditPanelComponent],
+  imports: [StickyScrollDirective, CommonModule, FormsModule, CategoriasCrearComponent, CategoriasEditarComponent, AvisoEliminarComponent , MostrarerrorComponent , AvisoExitoComponent , BuscadorComponent, AuditPanelComponent],
   templateUrl: './categorias-tabla.component.html',
   styleUrl: './categorias-tabla.component.css'
 })
@@ -75,6 +76,14 @@ export class CategoriasTablaComponent extends Tabla {
   }
   limpiarBusqueda() {
     this.categorias = [...this.categoriascopia];
+  }
+
+  override sortTable(e: {col: string, dir: 'asc' | 'desc'}) {
+    this.categorias = [...this.categorias].sort((a, b) => {
+      const va = this.normalizeText(a.Nombre ?? '');
+      const vb = this.normalizeText(b.Nombre ?? '');
+      return e.dir === 'asc' ? va.localeCompare(vb) : vb.localeCompare(va);
+    });
   }
   editarCategoria(categoria: Categorias) {
     this.botoncrear.set(false);

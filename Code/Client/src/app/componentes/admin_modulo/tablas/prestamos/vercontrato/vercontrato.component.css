@@ -103,10 +103,7 @@
   width: 6px;
 }
 
-.modal-content::-webkit-scrollbar-thumb {
-  background-color: rgba(0, 0, 0, 0.3);
-  border-radius: 10px;
-}
+.modal-content
 
 .modal-content::-webkit-scrollbar-track {
   background: rgba(0, 0, 0, 0.05);

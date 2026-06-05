@@ -3,27 +3,35 @@
     <div class="grid-container" #gridContainer>
       @if (productosFiltrados.length > 0) {
         @for (item of productosActuales; track item.id) {
-          <div class="product-card"
-               title="{{ item.nombre + ' ' + item.modelo + ' ' + item.marca }}"
-          >
+          <div class="product-card" title="{{ item.nombre + ' ' + item.modelo + ' ' + item.marca }}">
             <a [routerLink]="['/Objeto', item.id]" class="product-card__link">
               <div class="product-card__image-wrapper">
-                <img
-                  [src]="item.link"
-                  alt="{{ item.nombre + ' ' + item.modelo + ' ' + item.marca }}"
-                  class="product-card__image"
-                  loading="lazy"
-                />
+                <img [src]="item.link" alt="{{ item.nombre + ' ' + item.modelo + ' ' + item.marca }}"
+                     class="product-card__image" loading="lazy" />
               </div>
               <div class="product-card__info">
-                <h3 class="product-card__title">
-                  {{ item.nombre + " " + item.modelo + " " + item.marca }}
-                </h3>
+                <h3 class="product-card__title">{{ item.nombre + " " + item.modelo + " " + item.marca }}</h3>
                 <div class="product-card__meta">
                   <span class="product-card__imt">IMT</span>
                 </div>
               </div>
             </a>
+            <!-- Cart controls -->
+            <div class="product-card__cart">
+              @if((item.Cantidad ?? 0) <= 0) {
+                <span class="card-no-stock">Sin unidades disponibles</span>
+              } @else {
+                <div class="card-stepper">
+                  <button class="card-stepper-btn" (click)="decrementarCantidad(item.id!, $event)" [disabled]="getCantidad(item.id!) <= 1">−</button>
+                  <span class="card-stepper-val">{{ getCantidad(item.id!) }}</span>
+                  <button class="card-stepper-btn" (click)="incrementarCantidad(item.id!, item.Cantidad ?? 99, $event)" [disabled]="getCantidad(item.id!) >= (item.Cantidad ?? 99)">+</button>
+                </div>
+                <button class="card-cart-btn" [class.added]="addedToCart[item.id!]"
+                        (click)="agregarAlCarrito(item, $event)" title="{{ addedToCart[item.id!] ? 'Quitar del carrito' : 'Agregar al carrito' }}">
+                  <i class="fas" [class.fa-cart-plus]="!addedToCart[item.id!]" [class.fa-check]="addedToCart[item.id!]"></i>
+                </button>
+              }
+            </div>
           </div>
         }
       }
@@ -84,7 +92,7 @@
     }
     <footer class="site-footer">
       <div class="footer-content">
-        <p>© Copyright Universidad Católica Boliviana San Pablo 2025</p>
+        <p>© Copyright Universidad Católica Boliviana San Pablo 2026</p>
       </div>
     </footer>
   </div>

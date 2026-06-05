@@ -1,9 +1,12 @@
 @if (sidebarService.isOpen()){
   <div class="sidebar-menu">
     <div class="contenido">
-        @for (item of contenido; track $index) {
-          <div class="item" [class.active]="item === activeItem" (click)="clickitem(item)">{{ item }}</div>
-        }
+      @for (nav of contenido; track $index) {
+        <div class="item" [class.active]="nav === activeItem" (click)="clickitem(nav)">
+          <i [class]="getIcon(nav)"></i>
+          <span class="item-text">{{ nav }}</span>
+        </div>
+      }
     </div>
   </div>
 }

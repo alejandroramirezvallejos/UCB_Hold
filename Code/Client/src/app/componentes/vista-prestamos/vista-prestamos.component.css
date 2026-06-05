@@ -77,8 +77,8 @@
 .vista-table tbody td:nth-child(2) {
 	white-space: nowrap;
 	word-break: normal;
-	font-family: monospace;
-	font-size: 0.85em;
+	font-family: var(--font); font-variant-numeric: tabular-nums;
+	font-size: inherit;
 }
 @media (max-width: 980px) {
 	.form-container.adaptativo {

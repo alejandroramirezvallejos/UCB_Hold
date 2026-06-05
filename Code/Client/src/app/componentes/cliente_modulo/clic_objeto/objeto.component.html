@@ -1,58 +1,90 @@
-@if(cargando){
-}
-@else{
+@if(cargando){}
+@else {
 <div class="contenedor-objeto">
   <div class="seccion-imagen">
     <div class="contenedor-imagen">
       <ng-container *ngIf="producto.link; else noImg">
-        <img
-          [src]="producto.link"
-          alt="{{ producto.nombre }}"
-          class="imagen-producto"
-        />
+        <img [src]="producto.link" alt="{{ producto.nombre }}" class="imagen-producto" />
       </ng-container>
       <ng-template #noImg>
-        <div class="imagen-no-encontrada">No se encontró la imagen</div>
+        <div class="imagen-no-encontrada">
+          <i class="fas fa-image"></i>
+          <span>Sin imagen</span>
+        </div>
       </ng-template>
     </div>
   </div>
+
   <div class="seccion-detalles">
-    <h2 class="nombre-objeto">
-      {{ producto.nombre + " " + producto.modelo + " " + producto.marca }}
-    </h2>
+    <h2 class="nombre-objeto">{{ producto.nombre }}</h2>
+    <p class="subtitulo-objeto">{{ producto.modelo }} · {{ producto.marca }}</p>
     <p class="descripcion-objeto">{{ producto.descripcion }}</p>
+
     @if(producto.url_data_sheet){
-       <a
-        class="ficha-link debajo-texto"
-        [href]="producto.url_data_sheet"
-        target="_blank"
-        rel="noopener noreferrer"
-        aria-label="Abrir ficha técnica en nueva pestaña"
-      >
-        Ver ficha técnica
+      <a class="ficha-link" [href]="producto.url_data_sheet" target="_blank" rel="noopener noreferrer">
+        <i class="fas fa-file-alt"></i> Ver ficha técnica
       </a>
     }
-    <div class ="seccion-compra">
-      <p>Cantidad disponible hoy : {{cantidadDisponible}}</p>
+
+    <div class="seccion-compra">
+      <p class="disponibilidad-texto">
+        <i class="fas fa-check-circle"></i>
+        {{ cantidadDisponible }} unidad{{ cantidadDisponible !== 1 ? 'es' : '' }} disponible{{ cantidadDisponible !== 1 ? 's' : '' }} hoy
+      </p>
+
       @if(sinUnidadesOperativas){
-        <p class="sin-operativas">Sin unidades operativas disponibles</p>
-      } @else if(desabilitarboton==false){
-        <button
-          (click)="addproductocarrito()"
-          class="boton-carrito"
-          [class.plomo]="addedToCart"
-          [disabled]="addedToCart"
-        >
-          {{ addedToCart ? "Agregado al carrito" : "Agregar al carrito" }}
-        </button>
+        <p class="sin-operativas">
+          <i class="fas fa-times-circle"></i> Sin unidades operativas disponibles
+        </p>
+      } @else if(!desabilitarboton){
+        <div class="cantidad-selector">
+          <span class="cantidad-label">Cantidad:</span>
+          <div class="stepper">
+            <button class="stepper-btn" (click)="decrementar()" [disabled]="cantidad <= 1" aria-label="Menos">−</button>
+            <span class="stepper-value">{{ cantidad }}</span>
+            <button class="stepper-btn" (click)="incrementar()" [disabled]="cantidad >= cantidadDisponible" aria-label="Más">+</button>
+          </div>
+        </div>
+
+        <div class="acciones-compra">
+          <button (click)="addproductocarrito()" class="boton-carrito" [class.plomo]="addedToCart">
+            <i class="fas" [class.fa-cart-plus]="!addedToCart" [class.fa-cart-arrow-down]="addedToCart"></i>
+            {{ addedToCart ? 'Quitar del carrito' : 'Agregar al carrito' }}
+          </button>
+          <button class="btn btn-secondary ver-disponibilidad-btn" (click)="openCalendarioModal()">
+            <i class="fas fa-calendar-alt"></i> Ver disponibilidad
+          </button>
+        </div>
       }
     </div>
   </div>
 </div>
 }
+
+<!-- Modal de disponibilidad -->
+@if(showCalendarioModal) {
+  <div class="disponibilidad-overlay" (click)="closeCalendarioModal()">
+    <div class="disponibilidad-modal" (click)="$event.stopPropagation()">
+      <button class="modal-close-btn" (click)="closeCalendarioModal()" aria-label="Cerrar">
+        <img src="/assets/x.png" alt="Cerrar"
+          (mouseenter)="closeIconHover = true" (mouseleave)="closeIconHover = false"
+          [src]="closeIconHover ? '/assets/x_color.png' : '/assets/x.png'" />
+      </button>
+      <div class="modal-header">
+        <h3>Disponibilidad del equipo</h3>
+        <p>Consulta los días libres y ocupados antes de hacer tu reserva.</p>
+      </div>
+      <div class="modal-scroll-body">
+        <app-calendario
+          [entradaCarrito]="carritoCalendario"
+          [fechaInicioSeleccionada]="fechaInicioCalendario"
+          [fechaFinSeleccionada]="fechaFinCalendario"
+        ></app-calendario>
+      </div>
+    </div>
+  </div>
+}
+
 @if(error()){
-  <app-mostrarerror
-  [error]="error"
-  [mensaje]="mensajeerror"
-  ></app-mostrarerror>
+  <app-mostrarerror [error]="error" [mensaje]="mensajeerror"></app-mostrarerror>
 }

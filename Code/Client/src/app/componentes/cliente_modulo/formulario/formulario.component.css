@@ -1,77 +1,78 @@
 .contrato-container {
-  background: #fff;
-  border-radius: 12px;
-  box-shadow: 0 8px 30px rgba(0,0,0,0.1);
+  background: var(--surface);
+  border-radius: var(--radius-xl);
+  box-shadow: var(--shadow-lg);
   max-width: 840px;
   margin: 2rem auto;
   padding: 2.5rem;
-  font-family: 'Segoe UI', system-ui, sans-serif;
+  font-family: var(--font);
+}
+@media (max-width: 768px) {
+  .contrato-container { margin: 1rem; padding: 1.5rem; }
+}
+@media (max-width: 480px) {
+  .contrato-container { margin: 0.5rem; padding: 1rem; }
 }
 .formulario {
   line-height: 1.6;
-  color: #333;
+  color: var(--ink);
   margin-bottom: 2.5rem;
-  background-color: #fff;
+  background-color: var(--surface);
 }
 .botones-container {
   display: flex;
-  gap: 1.5rem;
+  gap: 1rem;
   justify-content: center;
-  padding-top: 2rem;
-  border-top: 1px solid #eee;
-  margin-top: 2rem;
+  flex-wrap: wrap;
+  padding-top: 1.5rem;
+  border-top: 1px solid var(--border);
+  margin-top: 1.5rem;
+}
+@media (max-width: 480px) {
+  .botones-container { flex-direction: column; align-items: stretch; }
 }
 .boton {
   border: none;
-  border-radius: 50px;
+  border-radius: var(--radius-full);
   padding: 0.75rem 2rem;
-  font-size: 0.95rem;
-  font-weight: 600;
+  font-size: var(--btn-font-size);
+  font-weight: var(--btn-font-weight);
+  font-family: var(--font);
   cursor: pointer;
-  display: flex;
+  display: inline-flex;
   align-items: center;
-  gap: 0.75rem;
-  letter-spacing: 0.5px;
-  transition: none;
+  justify-content: center;
+  gap: 0.5rem;
+  transition: var(--btn-transition);
+  min-height: 44px;
 }
 .boton-firmar {
-  background: #8f9195;
-  color: white;
-  box-shadow: none;
+  background: transparent;
+  color: var(--ink-secondary);
+  border: 1px solid var(--border);
 }
-.boton-firmar:hover {
-  background: #8f9195;
-  transform: none;
-  box-shadow: none;
+@media (hover: hover) and (pointer: fine) {
+  .boton-firmar:hover {
+    background: var(--sidebar);
+    border-color: var(--border-strong);
+    color: var(--ink);
+  }
 }
+.boton-firmar:active { transform: scale(0.97); }
 .boton-aceptar {
   background: var(--brand);
-  color: #5f6368;
-  box-shadow: none;
+  color: var(--brand-text);
+  border: none;
 }
-.boton-aceptar:hover {
-  background: var(--brand);
-  transform: none;
-  box-shadow: none;
+@media (hover: hover) and (pointer: fine) {
+  .boton-aceptar:hover {
+    background: var(--brand-hover);
+    box-shadow: 0 4px 12px rgba(255,215,0,0.4);
+    transform: translateY(-1px);
+  }
 }
-.icono-firma::before {
-  content: '';
-  display: block;
-  width: 18px;
-  height: 18px;
-  background: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="white"><path d="M20 8h-2.81c-.45-.8-1.27-1.5-2.19-1.5s-1.74.7-2.19 1.5H4v2h8.81c.45.8 1.27 1.5 2.19 1.5s1.74-.7 2.19-1.5H20V8zm-5 2.5c-.83 0-1.5-.67-1.5-1.5s.67-1.5 1.5-1.5 1.5.67 1.5 1.5-.67 1.5-1.5 1.5zM3 5H1v16c0 1.1.9 2 2 2h16v-2H3V5z"/></svg>');
-}
-.icono-check::before {
-  content: '';
-  display: block;
-  width: 18px;
-  height: 18px;
-  background: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="%235f6368"><path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41L9 16.17z"/></svg>');
-}
-.boton:active {
-  transform: none;
-  box-shadow: none;
-}
+.boton-aceptar:active { transform: translateY(0) scale(0.97); box-shadow: none; }
+.boton-aceptar:disabled { opacity: 0.5; cursor: not-allowed; transform: none; }
  ::ng-deep .contrato-container {
       font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
       line-height: 1.35;
@@ -165,10 +166,7 @@
     width: 6px;
     height: 6px;
 }
-::-webkit-scrollbar-thumb {
-    background-color: rgba(0, 0, 0, 0.3);
-    border-radius: 10px;
-}
+
 ::-webkit-scrollbar-track {
     background: rgba(0, 0, 0, 0.05);
     border-radius: 10px;

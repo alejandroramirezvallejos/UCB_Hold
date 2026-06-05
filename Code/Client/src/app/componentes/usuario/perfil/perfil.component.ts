@@ -1,5 +1,5 @@
 import { Component, signal, WritableSignal } from '@angular/core';
-import { CommonModule, NgOptimizedImage } from '@angular/common';
+import { CommonModule } from '@angular/common';
 import { ReactiveFormsModule } from '@angular/forms';
 import { UsuarioService } from '../../../services/usuario/usuario.service';
 import { Usuario } from '../../../models/usuario';
@@ -7,7 +7,7 @@ import { EditarComponent } from './editar/editar.component';
 @Component({
   selector: 'app-perfil',
   standalone: true,
-  imports: [CommonModule, ReactiveFormsModule, NgOptimizedImage, EditarComponent],
+  imports: [CommonModule, ReactiveFormsModule, EditarComponent],
   templateUrl: './perfil.component.html',
   styleUrls: ['./perfil.component.css']
 })

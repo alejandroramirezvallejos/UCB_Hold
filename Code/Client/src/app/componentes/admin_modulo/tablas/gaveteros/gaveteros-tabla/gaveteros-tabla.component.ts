@@ -14,10 +14,11 @@ import { Tabla } from '../../base/tabla';
 import { extractErrorMessage } from '../../../../../utils/error-handler';
 import { EquiposGaveteroInlineComponent } from "../../../inline/equipos-gavetero-inline.component";
 import { AuditPanelComponent } from "../../../audit-panel/audit-panel.component";
+import { StickyScrollDirective } from '../../../../../directives/sticky-scroll.directive';
 @Component({
   selector: 'app-gaveteros-tabla',
   standalone: true,
-  imports: [CommonModule, FormsModule, ReactiveFormsModule , GaveterosCrearComponent , GaveterosEditarComponent,AvisoEliminarComponent , MostrarerrorComponent, AvisoExitoComponent , BuscadorComponent, EquiposGaveteroInlineComponent, AuditPanelComponent],
+  imports: [StickyScrollDirective, CommonModule, FormsModule, ReactiveFormsModule , GaveterosCrearComponent , GaveterosEditarComponent,AvisoEliminarComponent , MostrarerrorComponent, AvisoExitoComponent , BuscadorComponent, EquiposGaveteroInlineComponent, AuditPanelComponent],
   templateUrl: './gaveteros-tabla.component.html',
   styleUrls: ['./gaveteros-tabla.component.css']
 })
@@ -128,4 +129,17 @@ cancelarEliminacion(){
   this.alertaeliminar = false;
   this.limpiarGaveteroSeleccionado();
 }
+
+  override sortTable(e: {col: string, dir: 'asc' | 'desc'}) {
+    const m: Record<string, string> = {
+      'Nombre': 'Nombre', 'Tipo': 'Tipo', 'Nombre Mueble': 'NombreMueble'
+    };
+    const k = m[e.col]; if (!k) return;
+    this.gaveteros = [...this.gaveteros].sort((a, b) => {
+      const va = this.normalizeText(String((a as any)[k] ?? ''));
+      const vb = this.normalizeText(String((b as any)[k] ?? ''));
+      return e.dir === 'asc' ? va.localeCompare(vb) : vb.localeCompare(va);
+    });
+  }
+
 }

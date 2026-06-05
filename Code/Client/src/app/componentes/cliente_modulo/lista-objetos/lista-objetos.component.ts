@@ -1,14 +1,16 @@
 import { Component, Input, OnChanges, OnDestroy, signal, SimpleChanges, WritableSignal, HostListener, ViewChild, ElementRef, AfterViewInit } from '@angular/core';
 import { RouterModule } from '@angular/router';
+import { CommonModule } from '@angular/common';
 import { GrupoequipoService } from '../../../services/APIS/GrupoEquipo/grupoequipo.service';
 import { GrupoEquipo } from '../../../models/grupo_equipo';
 import { Router } from '@angular/router';
 import { MostrarerrorComponent } from '../../pantallas_avisos/mostrarerror/mostrarerror.component';
+import { CarritoService } from '../../../services/carrito/carrito.service';
 import { extractErrorMessage } from '../../../utils/error-handler';
 @Component({
   selector: 'app-lista-objetos',
   standalone: true,
-  imports: [RouterModule , MostrarerrorComponent],
+  imports: [RouterModule, MostrarerrorComponent, CommonModule],
   templateUrl: './lista-objetos.component.html',
   styleUrl: './lista-objetos.component.css'
 })
@@ -22,9 +24,43 @@ export class ListaObjetosComponent implements OnChanges, OnDestroy, AfterViewIni
   cantidadObjetos: number = 21;
   paginaActual: number = 0;
   totalPaginas: number = 0;
-  error : WritableSignal<boolean> = signal(false);
-  mensajeerror : string = "";
-  constructor(private servicio: GrupoequipoService) {}
+  error: WritableSignal<boolean> = signal(false);
+  mensajeerror: string = '';
+
+  // Cart quantity per product
+  cantidades: { [id: number]: number } = {};
+  addedToCart: { [id: number]: boolean } = {};
+
+  constructor(private servicio: GrupoequipoService, private carrito: CarritoService) {}
+
+  getCantidad(id: number): number { return this.cantidades[id] ?? 1; }
+  incrementarCantidad(id: number, max: number, event: Event) {
+    event.stopPropagation(); event.preventDefault();
+    const c = this.getCantidad(id);
+    if (c < (max || 99)) this.cantidades[id] = c + 1;
+  }
+  decrementarCantidad(id: number, event: Event) {
+    event.stopPropagation(); event.preventDefault();
+    const c = this.getCantidad(id);
+    if (c > 1) this.cantidades[id] = c - 1;
+  }
+  agregarAlCarrito(item: GrupoEquipo, event: Event) {
+    event.stopPropagation(); event.preventDefault();
+    if (this.addedToCart[item.id!]) {
+      this.carrito.quitarproducto(item.id!);
+      this.addedToCart[item.id!] = false;
+      return;
+    }
+    const n = this.getCantidad(item.id!);
+    for (let i = 0; i < n; i++) {
+      this.carrito.agregarproducto(
+        item.id!, item.nombre, item.link ?? '',
+        item.marca ?? '', item.modelo ?? '',
+        item.CostoPromedio ?? 0, item.Cantidad ?? 1
+      );
+    }
+    this.addedToCart[item.id!] = true;
+  }
   
   ngOnInit(): void {
     this.cantidadObjetos = this.servicio.cantidadObjetosGuardada || 21;
@@ -91,10 +127,8 @@ export class ListaObjetosComponent implements OnChanges, OnDestroy, AfterViewIni
         this.todosLosProductos = data;
         this.filtrarProductos();
       },
-      error: (error) => {
-        const errorMsg = extractErrorMessage(error, "Error al cargar los productos, intente mas tarde");
-        this.mensajeerror = errorMsg;
-        console.error(errorMsg);
+      error: () => {
+        this.mensajeerror = 'No se pudo cargar el catálogo de equipos. Por favor, recarga la página e inténtalo de nuevo.';
         this.error.set(true);
       }
     });

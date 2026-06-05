@@ -14,10 +14,11 @@ import { BuscadorComponent } from '../../../buscador/buscador.component';
 import { Tabla } from '../../base/tabla';
 import { extractErrorMessage } from '../../../../../utils/error-handler';
 import { AuditPanelComponent } from "../../../audit-panel/audit-panel.component";
+import { StickyScrollDirective } from '../../../../../directives/sticky-scroll.directive';
 @Component({
   selector: 'app-mantenimientos-tabla',
   standalone: true,
-  imports: [CommonModule, FormsModule, ReactiveFormsModule, MantenimientosCrearComponent , DetallesMantenimientoComponent,AvisoEliminarComponent, MostrarerrorComponent, AvisoExitoComponent,BuscadorComponent, AuditPanelComponent],
+  imports: [StickyScrollDirective, CommonModule, FormsModule, ReactiveFormsModule, MantenimientosCrearComponent , DetallesMantenimientoComponent,AvisoEliminarComponent, MostrarerrorComponent, AvisoExitoComponent,BuscadorComponent, AuditPanelComponent],
   templateUrl: './mantenimientos-tabla.component.html',
   styleUrl: './mantenimientos-tabla.component.css'
 })

@@ -5,9 +5,10 @@
       <p class="subtitle">Gestión de préstamos de equipos de mecatrónica</p>
     </div>
   </div>
+@if(activeTab==='tabla') {
   <app-buscador
     [columnas]="columnas"
-    (terminoBusqueda)="aplicarFiltros($event)"
+    (terminoBusqueda)="aplicarFiltros($event)" (sortChange)="sortTable($event)"
     (onToggle)="onBuscadorToggle($event)"
   >
     <div class="custom-dropdown">
@@ -17,7 +18,7 @@
              (mouseleave)="hover.filter = false">
             <span class="current-value">
               <i class="fas fa-filter" style="margin-right: 8px;"></i>
-              {{ estadoSeleccionado || 'Filtrar' }}
+              {{ estadoSeleccionado ? (estadoSeleccionado | titlecase) : 'Filtrar' }}
             </span>
             <img
               [src]="hover.filter || showEstados ? '/assets/down_solid.png' : '/assets/down_line.png'"
@@ -49,12 +50,13 @@
         }
     </div>
   </app-buscador>
+}
   <div class="admin-tabs">
     <button [class.active]="activeTab==='tabla'" (click)="activeTab='tabla'">Tabla</button>
     <button [class.active]="activeTab==='auditoria'" (click)="activeTab='auditoria'">Auditoría</button>
   </div>
   @if(activeTab==="tabla") {
-  <div class="table-responsive">
+  <div class="table-responsive" appStickyScroll>
     <table class="data-table">
       <thead>
         <tr>
@@ -144,7 +146,7 @@
               <div class="empty-state">
                 <i class="fas fa-search fa-3x"></i>
                 <p>No se encontraron préstamos</p>
-                <button class="btn btn-outline" (click)="limpiarFiltros()">Limpiar filtros</button>
+                
               </div>
             </td>
           </tr>

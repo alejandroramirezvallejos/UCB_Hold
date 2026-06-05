@@ -127,9 +127,16 @@ export class FormularioComponent implements OnInit {
           this.carrito.vaciarcarrito();
         },
         error: (error) => {
-          console.error('Error al crear préstamo:', error);
           this.error.set(true);
-          this.mensajeerror = `${error?.error?.error ?? 'Error'} - ${error?.error?.message ?? 'Intente más tarde'}`;
+          if (error?.status === 409) {
+            this.mensajeerror = 'Ya tienes una solicitud activa para este equipo. Espera a que finalice antes de hacer una nueva reserva.';
+          } else if (error?.status === 422) {
+            this.mensajeerror = 'Los datos de tu solicitud no son válidos. Revisa las fechas e intenta nuevamente.';
+          } else if (error?.status === 500) {
+            this.mensajeerror = 'Ocurrió un error en el servidor. Por favor, inténtalo de nuevo más tarde.';
+          } else {
+            this.mensajeerror = 'No se pudo procesar tu solicitud. Verifica tu conexión e inténtalo nuevamente.';
+          }
         }
       })
   }

@@ -17,8 +17,11 @@ body {
   background: var(--surface);
   border: 1px solid var(--border);
   border-radius: var(--radius-xl);
-  overflow: hidden;
+  overflow: visible;
+  display: flex;
+  flex-direction: column;
   transition: box-shadow var(--t-base), transform var(--t-base), border-color var(--t-base);
+  position: relative;
 }
 /* Efecto active para feedback táctil */
 .product-card:active {
@@ -41,9 +44,11 @@ body {
 .product-card__link {
   display: flex;
   flex-direction: column;
-  height: 100%;
+  flex: 1;
   text-decoration: none;
   color: inherit;
+  border-radius: var(--radius-xl) var(--radius-xl) 0 0;
+  overflow: hidden;
 }
 .product-card__image-wrapper {
   position: relative;
@@ -101,7 +106,7 @@ body {
   gap: 2.5rem;
   padding: 0 var(--sp-10);
   margin: 0;
-  margin-top: 3rem;
+  margin-top: 1.5rem;
 }
 @media (max-width: 1280px) {
   .grid-container {
@@ -229,11 +234,11 @@ body {
 }
 .site-footer {
   background-color: var(--bg);
-  padding: 30px 0;
+  padding: 24px 0;
   text-align: center;
   font-size: 0.875rem;
   color: var(--ink-muted);
-  margin-top: 1rem;
+  margin-top: auto;  /* pushed to bottom via flex parent */
 }
 .footer-content p {
   margin: 0;
@@ -390,11 +395,92 @@ body {
     width: 6px;
     height: 6px;
 }
-::-webkit-scrollbar-thumb {
-    background-color: rgba(0, 0, 0, 0.3);
-    border-radius: 10px;
-}
+
 ::-webkit-scrollbar-track {
     background: rgba(0, 0, 0, 0.05);
     border-radius: 10px;
 }
+
+/* === Product card cart controls === */
+.product-card__cart {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0.5rem 0.875rem 0.75rem;
+  gap: 0.5rem;
+  border-top: 1px solid var(--border);
+  background: var(--sidebar);
+  border-radius: 0 0 var(--radius-xl) var(--radius-xl);
+}
+.card-no-stock {
+  font-size: 0.72rem;
+  color: var(--ink-muted);
+  font-weight: 500;
+  font-style: italic;
+  padding: 0.25rem 0;
+  width: 100%;
+  text-align: center;
+}
+.card-stepper {
+  display: flex;
+  align-items: center;
+  border: 1.5px solid var(--border);
+  border-radius: var(--radius-full);
+  overflow: hidden;
+  flex-shrink: 0;
+}
+.card-stepper-btn {
+  width: 28px;
+  height: 28px;
+  border: none;
+  background: var(--sidebar);
+  color: var(--ink);
+  font-size: 1rem;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: background var(--t-fast);
+  min-height: unset;
+  min-width: unset;
+  padding: 0;
+}
+@media (hover: hover) and (pointer: fine) {
+  .card-stepper-btn:not(:disabled):hover { background: var(--interactive-subtle); }
+}
+.card-stepper-btn:disabled { opacity: 0.3; cursor: not-allowed; }
+.card-stepper-val {
+  min-width: 28px;
+  text-align: center;
+  font-size: 0.8rem;
+  font-weight: 700;
+  color: var(--ink);
+  padding: 0 2px;
+}
+.card-cart-btn {
+  width: 32px;
+  height: 32px;
+  border: 1.5px solid var(--border);
+  border-radius: 50%;
+  background: var(--surface);
+  color: var(--ink-secondary);
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 0.85rem;
+  transition: var(--btn-transition);
+  flex-shrink: 0;
+  min-height: unset;
+  min-width: unset;
+  padding: 0;
+}
+@media (hover: hover) and (pointer: fine) {
+  .card-cart-btn:not(.added):hover {
+    background: var(--interactive-subtle);
+    border-color: var(--brand);
+    color: var(--brand-text);
+    transform: scale(1.08);
+  }
+}
+.card-cart-btn.added { background: var(--success-bg); color: var(--success); border: 1.5px solid var(--success-border); }

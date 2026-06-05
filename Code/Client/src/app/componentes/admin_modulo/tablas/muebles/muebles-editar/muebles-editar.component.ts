@@ -1,4 +1,4 @@
-import { Component, EventEmitter, Input, Output, signal, WritableSignal, OnChanges } from '@angular/core';
+import { Component, HostListener, EventEmitter, Input, Output, signal, WritableSignal, OnChanges } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { Muebles } from '../../../../../models/admin/Muebles';
 import { MuebleService } from '../../../../../services/APIS/Mueble/mueble.service';
@@ -47,4 +47,9 @@ export class MueblesEditarComponent extends BaseTablaComponent implements OnChan
   cerrar() {
     this.botoneditar.set(false);
   }
+  @HostListener('click', ['$event'])
+  onOverlayClick(event: MouseEvent) {
+    if (event.target === event.currentTarget) this.cerrar();
+  }
+
 }

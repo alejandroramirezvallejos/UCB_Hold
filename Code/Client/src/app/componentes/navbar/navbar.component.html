@@ -48,7 +48,7 @@
     }
   </div>
   <div class="logo-container">
-    <img (click)="botonhome()" src="/assets/logo_universidad.png" alt="Logo UCB" class="logo-image" title="Ir al home" />
+    <img (click)="botonhome()" src="/assets/logo_universidad.png" alt="Logo UCB" class="logo-image" title="Ir al home" width="58" height="58" />
   </div>
   <div class="right-section">
    @if(showCart()) {
@@ -80,13 +80,13 @@
           class="icon-image user-icon"
         />
       </button>
+      @if(showUserMenu()) {
+        <app-usuario-previo
+          [showUserMenu]="showUserMenu"
+        ></app-usuario-previo>
+      }
     </div>
     }
   </div>
 </nav>
 <div class="navbar-spacer"></div>
-@if(showUserMenu()) {
-  <app-usuario-previo
-    [showUserMenu]="showUserMenu"
-  ></app-usuario-previo>
-}

@@ -1,76 +1,118 @@
 .signature-overlay {
   position: fixed;
-  top: 0;
-  left: 0;
-  width: 100%;
-  height: 100%;
-  background-color: rgba(0, 0, 0, 0.5);
+  inset: 0;
+  background: rgba(0, 0, 0, 0.45);
+  backdrop-filter: blur(2px);
+  -webkit-backdrop-filter: blur(2px);
   display: flex;
   justify-content: center;
   align-items: center;
-  z-index: 1000;
+  z-index: 9999;
+  animation: fadeIn 200ms ease-out both;
+  padding: 1rem;
 }
 .signature-container {
-  background-color: white;
-  padding: 20px;
-  border-radius: 16px;
-  box-shadow: 0 0 20px rgba(0, 0, 0, 0.3);
+  background: var(--surface);
+  padding: 2rem 1.75rem 1.5rem;
+  border-radius: var(--radius-lg);
+  border: 1px solid var(--border);
+  box-shadow: var(--shadow-xl);
   max-width: 90%;
   width: 600px;
   position: relative;
+  animation: slideIn 200ms ease-out both;
+}
+@media (max-width: 640px) {
+  .signature-container { padding: 1.5rem 1.25rem 1.25rem; }
 }
 .close-button {
   position: absolute;
-  color: black;
-  top: 10px;
-  right: 10px;
+  top: 1rem;
+  right: 1rem;
   background: none;
   border: none;
-  font-size: 1.5em;
   cursor: pointer;
+  width: 1.75rem;
+  height: 1.75rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: transform var(--t-fast);
+  min-height: unset;
+  min-width: unset;
+  padding: 0;
+}
+.close-button:hover { transform: scale(1.15); }
+.close-button img { width: 100%; height: 100%; object-fit: contain; }
+.signature-instructions {
+  font-size: 0.875rem;
+  font-family: var(--font);
+  color: var(--ink-secondary);
+  margin: 0 0 1rem;
+  text-align: center;
+  padding-right: 2rem;
 }
 .signature-pad {
   touch-action: none;
   width: 100%;
-  height: 300px;
-  border: 1px solid #e0e0e0;
-  border-radius: 12px;
-  background-color: #fff;
+  height: 260px;
+  border: 1.5px solid var(--border);
+  border-radius: var(--radius-md);
+  background-color: var(--sidebar);
+  display: block;
 }
 .buttons {
-  margin-top: 20px;
+  margin-top: 1.25rem;
   display: flex;
   justify-content: center;
-  gap: 1.5rem;
+  gap: 1rem;
+  flex-wrap: wrap;
 }
 .buttons button {
-  margin: 0;
-  padding: 0.6rem 1.5rem;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 44px;
+  padding: 0 var(--btn-pad-x);
   border: none;
-  border-radius: 50px;
+  border-radius: var(--btn-radius);
   cursor: pointer;
-  font-size: 0.9rem;
-  font-weight: 600;
-  font-family: 'Manrope', sans-serif;
+  font-size: var(--btn-font-size);
+  font-weight: var(--btn-font-weight);
+  font-family: var(--font);
+  transition: var(--btn-transition);
 }
+/* Limpiar = secondary/ghost */
 .buttons button:first-child {
-  background-color: #8f9195;
-  color: white;
+  background: transparent;
+  color: var(--ink-secondary);
+  border: 1px solid var(--border);
 }
-.buttons button:first-child:hover {
-  background-color: #8f9195;
+@media (hover: hover) and (pointer: fine) {
+  .buttons button:first-child:hover {
+    background: var(--sidebar);
+    border-color: var(--border-strong);
+    color: var(--ink);
+  }
 }
+.buttons button:first-child:active { transform: scale(0.97); }
+/* Guardar = primary */
 .buttons button:last-child {
-  background-color: var(--brand);
-  color: #5f6368;
+  background: var(--brand);
+  color: var(--brand-text);
+  border: none;
+  box-shadow: 0 2px 8px rgba(255,215,0,0.3);
 }
-.buttons button:last-child:hover {
-  background-color: var(--brand);
+@media (hover: hover) and (pointer: fine) {
+  .buttons button:last-child:hover {
+    background: var(--brand-hover);
+    box-shadow: 0 4px 12px rgba(255,215,0,0.4);
+    transform: translateY(-1px);
+  }
 }
-.signature-instructions {
-  font-size: 1.1em;
-  color: #555;
-  margin-top: 10px;
-  margin-bottom: 15px;
-  text-align: center;
+.buttons button:last-child:active { transform: translateY(0) scale(0.97); box-shadow: none; }
+@keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+@keyframes slideIn {
+  from { opacity: 0; transform: scale(0.95) translateY(-8px); }
+  to   { opacity: 1; transform: scale(1) translateY(0); }
 }

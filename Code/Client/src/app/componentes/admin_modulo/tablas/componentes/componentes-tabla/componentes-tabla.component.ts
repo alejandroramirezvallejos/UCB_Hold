@@ -13,10 +13,11 @@ import { BuscadorComponent } from '../../../buscador/buscador.component';
 import { Tabla } from '../../base/tabla';
 import { extractErrorMessage } from '../../../../../utils/error-handler';
 import { AuditPanelComponent } from "../../../audit-panel/audit-panel.component";
+import { StickyScrollDirective } from '../../../../../directives/sticky-scroll.directive';
 @Component({
   selector: 'app-componentes-tabla',
   standalone: true,
-  imports: [CommonModule, FormsModule, ComponentesCrearComponent, ComponentesEditarComponent , AvisoEliminarComponent , MostrarerrorComponent , AvisoExitoComponent , BuscadorComponent, AuditPanelComponent],
+  imports: [StickyScrollDirective, CommonModule, FormsModule, ComponentesCrearComponent, ComponentesEditarComponent , AvisoEliminarComponent , MostrarerrorComponent , AvisoExitoComponent , BuscadorComponent, AuditPanelComponent],
   templateUrl: './componentes-tabla.component.html',
   styleUrl: './componentes-tabla.component.css'
 })
@@ -90,6 +91,19 @@ export class ComponentesTablaComponent extends Tabla implements OnInit  {
     } else {
       this.componentes = [...this.componentescopia];
     }
+  }
+
+  override sortTable(e: {col: string, dir: 'asc' | 'desc'}) {
+    const m: Record<string, string> = {
+      'Nombre': 'Nombre', 'Modelo': 'Modelo', 'Tipo': 'Tipo',
+      'Código IMT del Equipo': 'CodigoImtEquipo', 'Precio Referencia': 'PrecioReferencia'
+    };
+    const k = m[e.col]; if (!k) return;
+    this.componentes = [...this.componentes].sort((a, b) => {
+      const va = this.normalizeText(String((a as any)[k] ?? ''));
+      const vb = this.normalizeText(String((b as any)[k] ?? ''));
+      return e.dir === 'asc' ? va.localeCompare(vb) : vb.localeCompare(va);
+    });
   }
   limpiarBusqueda() {
     this.componentes = [...this.componentescopia];

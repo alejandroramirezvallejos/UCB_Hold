@@ -5,20 +5,22 @@
       <p class="subtitle">Gestión de grupos de equipos del laboratorio</p>
     </div>
   </div>
+@if(activeTab==='tabla') {
   <app-buscador
     [columnas]="columnas"
-    (terminoBusqueda)="aplicarFiltros($event)"
+    (terminoBusqueda)="aplicarFiltros($event)" (sortChange)="sortTable($event)"
   >
     <button class="botoncrear boton-derecha" (click)="creargrupoequipo()">
        Nuevo Grupo de Equipo
     </button>
   </app-buscador>
+}
   <div class="admin-tabs">
     <button [class.active]="activeTab==='tabla'" (click)="activeTab='tabla'">Tabla</button>
     <button [class.active]="activeTab==='auditoria'" (click)="activeTab='auditoria'">Auditoría</button>
   </div>
   @if(activeTab==="tabla") {
-  <div class="table-responsive">
+  <div class="table-responsive" appStickyScroll>
     <table class="data-table">
       <thead>
         <tr>
@@ -37,7 +39,7 @@
             <td>{{grupoequipo.nombreCategoria || ''}}</td>
             <td>{{grupoequipo.descripcion}}</td>
             <td class="actions-column">
-              <button class="expand-btn" [class.open]="expandedRowId===grupoequipo.id" (click)="toggleExpand(grupoequipo.id!)">&#9654;</button>
+              <button class="expand-btn" [class.open]="expandedRowId===grupoequipo.id" (click)="toggleExpand(grupoequipo.id!)"><i class="fas fa-chevron-right"></i></button>
               <button class="btn-icon btn-delete" (click)="eliminarGrupoEquipo(grupoequipo)">
                 <i class="fas fa-trash-alt"></i>
               </button>
@@ -55,7 +57,7 @@
               <div class="empty-state">
                 <i class="fas fa-search fa-3x"></i>
                 <p>No se encontraron grupos de equipos</p>
-                <button class="btn btn-outline" (click)="limpiarBusqueda()">Limpiar filtros</button>
+                
               </div>
             </td>
           </tr>

@@ -96,7 +96,7 @@
 .search-input:focus {
   outline: none;
   border-color: var(--interactive);
-  box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.1);
+  box-shadow: 0 0 0 3px var(--interactive-subtle);
 }
 .clear-search {
   position: absolute;
@@ -118,6 +118,8 @@
 }
 .table-responsive {
   overflow-x: auto;
+  scrollbar-width: none;
+  -ms-overflow-style: none;
   background-color: var(--color-surface);
   border-radius: var(--radius);
   box-shadow: var(--shadow-sm);
@@ -126,10 +128,7 @@
 .table-responsive::-webkit-scrollbar {
   height: 6px;
 }
-.table-responsive::-webkit-scrollbar-thumb {
-  background-color: rgba(0, 0, 0, 0.3);
-  border-radius: 10px;
-}
+.table-responsive
 .table-responsive::-webkit-scrollbar-track {
   background: rgba(0, 0, 0, 0.05);
   border-radius: 10px;
@@ -162,11 +161,12 @@
   transition: var(--transition);
 }
 .data-table tbody tr:hover {
-  background-color: rgba(37, 99, 235, 0.05);
+  background-color: rgba(255, 215, 0, 0.06);
 }
 .actions-column {
-  width: 70px;
-  text-align: center;
+  width: 120px;
+  min-width: 120px;
+  text-align: right;
 }
 .precio-column {
   text-align: right;
@@ -186,7 +186,7 @@
   color: var(--ink);
 }
 .btn-outline:hover {
-  background-color: rgba(37, 99, 235, 0.05);
+  background-color: rgba(255, 215, 0, 0.06);
 }
 .btn-icon {
   display: inline-flex;
@@ -328,3 +328,6 @@
     max-width: none;
   }
 }
+
+td.actions-column { display: flex; align-items: center; justify-content: center; gap: 0.25rem; }
+.table-responsive::-webkit-scrollbar { display: none; }

@@ -1,42 +1,46 @@
 <div class="prestamos-container">
   <div class="prestamos-list">
-    @for (item of (datos | keyvalue) ; track item.key) {
-      <div class="prestamo-item" >        <!-- Header del préstamo -->
+    @for (item of (datos | keyvalue); track item.key) {
+      <div class="prestamo-item">
         <div class="item-header">
           <div class="usuario-info">
-            <h3 class="usuario-nombre">💻 {{ item.value.datosgrupo.NombreGrupoEquipo }}</h3>
+            <h3 class="usuario-nombre">
+              <i class="fas fa-laptop hist-icon"></i>
+              {{ item.value.datosgrupo.NombreGrupoEquipo }}
+            </h3>
             <span class="cantidad-equipos">{{ item.value.equipos ? item.value.equipos.length : 0 }} equipos</span>
-            <span class="usuario-carnet">{{ item.value.datosgrupo.NombreUsuario }} {{ item.value.datosgrupo.ApellidoPaternoUsuario }} - {{ item.value.datosgrupo.CarnetUsuario }}</span>
+            <span class="usuario-carnet">{{ item.value.datosgrupo.NombreUsuario }} {{ item.value.datosgrupo.ApellidoPaternoUsuario }} — {{ item.value.datosgrupo.CarnetUsuario }}</span>
           </div>
           <div class="equipo-info">
-                    <span class="codigo-imt">Numero de prestamo :  {{ item.key }}</span>
-            <span class="codigo-imt">Codigos IMTs : 📋 {{ item.value.datosgrupo.CodigoImt || 'N/A' }}</span>
+            <span class="codigo-imt">Préstamo #{{ item.key }}</span>
+            <span class="codigo-imt">{{ item.value.datosgrupo.CodigoImt || 'N/A' }}</span>
           </div>
         </div>
         <div class="fechas-info">
           <div class="fecha-item">
-            <span class="fecha-label">📅 Solicitud:</span>
+            <span class="fecha-label"><i class="fas fa-calendar-days"></i> Solicitud:</span>
             <span class="fecha-valor">{{ item.value.datosgrupo.FechaSolicitud ? (item.value.datosgrupo.FechaSolicitud | date:'dd/MM/yyyy':'America/La_Paz') : 'N/A' }}</span>
           </div>
           <div class="fecha-item">
-            <span class="fecha-label">📦 Fecha de Recogida:</span>
-            <span class="fecha-valor">{{ item.value.datosgrupo.FechaPrestamoEsperada ? (item.value.datosgrupo.FechaPrestamoEsperada |  date:'dd/MM/yyyy':'America/La_Paz') : item.value.datosgrupo.FechaPrestamoEsperada }}</span>
+            <span class="fecha-label"><i class="fas fa-box-archive"></i> Fecha de Recogida:</span>
+            <span class="fecha-valor">{{ item.value.datosgrupo.FechaPrestamoEsperada ? (item.value.datosgrupo.FechaPrestamoEsperada | date:'dd/MM/yyyy':'America/La_Paz') : 'N/A' }}</span>
           </div>
           <div class="fecha-item">
-            <span class="fecha-label">⏰ Devolución Esperada:</span>
+            <span class="fecha-label"><i class="fas fa-hourglass-half"></i> Devolución Esperada:</span>
             <span class="fecha-valor">{{ item.value.datosgrupo.FechaDevolucionEsperada ? (item.value.datosgrupo.FechaDevolucionEsperada | date:'dd/MM/yyyy') : 'N/A' }}</span>
           </div>
         </div>
-      <div class="botones">
-        <button class="ver-detalles" (click)="AbrirVista(item.value.equipos)"> VER DETALLES</button>
-      </div>
+        <div class="botones">
+          <div class="botones-izquierda"></div>
+          <button class="btn btn-sm btn-ghost" (click)="AbrirVista(item.value.equipos)">Ver detalles</button>
+        </div>
       </div>
     }
     @if (datos.size === 0) {
-      <div class="empty-state">
-        <div class="empty-icon">📥</div>
-        <h3>No hay préstamos activos</h3>
-        <p>Actualmente no tienes equipos en préstamo</p>
+      <div class="hist-empty">
+        <i class="fas fa-circle-xmark"></i>
+        <strong>Sin préstamos rechazados</strong>
+        <p>No tienes préstamos rechazados</p>
       </div>
     }
   </div>
@@ -45,8 +49,5 @@
   <app-vista-prestamos [prestamos]="prestamosVista" (cerrar)="cerrarVista()"></app-vista-prestamos>
 }
 @if(error()){
-  <app-mostrarerror
-  [error]="error"
-  [mensaje]="mensajeerror"
-  ></app-mostrarerror>
+  <app-mostrarerror [error]="error" [mensaje]="mensajeerror"></app-mostrarerror>
 }

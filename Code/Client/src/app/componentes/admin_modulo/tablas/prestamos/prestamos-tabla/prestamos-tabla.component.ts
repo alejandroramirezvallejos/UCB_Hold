@@ -16,10 +16,11 @@ import { AuditPanelComponent } from "../../../audit-panel/audit-panel.component"
 import { AvisoExitoComponent } from '../../../../pantallas_avisos/aviso-exito/aviso-exito.component';
 import { BuscadorComponent } from '../../../buscador/buscador.component';
 import { Tabla } from '../../base/tabla';
+import { StickyScrollDirective } from '../../../../../directives/sticky-scroll.directive';
 @Component({
   selector: 'app-prestamos-tabla',
   standalone: true,
-  imports: [CommonModule, FormsModule, ReactiveFormsModule , VercontratoComponent, PantallaCargaComponent , VistaPrestamosComponent , AvisoEliminarComponent , MostrarerrorComponent , Aviso ,AvisoExitoComponent , BuscadorComponent, AuditPanelComponent],
+  imports: [StickyScrollDirective, CommonModule, FormsModule, ReactiveFormsModule , VercontratoComponent, PantallaCargaComponent , VistaPrestamosComponent , AvisoEliminarComponent , MostrarerrorComponent , Aviso ,AvisoExitoComponent , BuscadorComponent, AuditPanelComponent],
   templateUrl: './prestamos-tabla.component.html',
   styleUrls: ['./prestamos-tabla.component.css']
 })
@@ -68,6 +69,10 @@ export class PrestamosTablaComponent extends Tabla implements OnInit {
   cargarPrestamos() {
     this.prestamosapi.obtenerPrestamos().subscribe({
       next :(data: PrestamoDto[]) => {
+        // Sort by most recent FechaSolicitud first (descending)
+        data.sort((a, b) =>
+          new Date(b.FechaSolicitud ?? 0).getTime() - new Date(a.FechaSolicitud ?? 0).getTime()
+        );
         this.agruparPrestamos(data);
         this.seleccionarEstado(this.estadoSeleccionado);
       },

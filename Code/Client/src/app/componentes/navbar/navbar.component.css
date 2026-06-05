@@ -5,9 +5,11 @@
   flex-direction: row;
   align-items: center;
   justify-content: space-between;
-  background-color: rgba(241, 245, 249, 0.85);
-  backdrop-filter: saturate(180%) blur(12px);
-  -webkit-backdrop-filter: saturate(180%) blur(12px);
+  background: rgba(241, 245, 249, 0.88);
+  backdrop-filter: var(--glass-backdrop);
+  -webkit-backdrop-filter: var(--glass-backdrop);
+  border-bottom: none;
+  box-shadow: none;
   position: fixed;
   top: 0;
   left: 0;
@@ -15,11 +17,9 @@
   padding: 0 12rem;
   min-height: 80px;
   z-index: 1000;
-  border-bottom: none;
-  box-shadow: none;
 }
 .navbar-spacer {
-  height: 29px;
+  height: 82px;
   width: 100%;
 }
 .navbar-container img:not(.logo-image) {

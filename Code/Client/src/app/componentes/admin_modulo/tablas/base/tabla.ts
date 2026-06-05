@@ -18,7 +18,11 @@ import { BaseTablaComponent } from "./base";
       .normalize('NFD')  // Descompone caracteres con acentos
       .replace(/[\u0300-\u036f]/g, '');  // Elimina diacríticos
   }
-  abstract aplicarFiltros(event?: [string, string]) : any ;
+  abstract aplicarFiltros(event?: [string, string]) : any;
+
+  sortTable(e: {col: string, dir: 'asc' | 'desc'}) {
+    // Default: no-op. Override in tablas that have sortable arrays.
+  }
   protected toLocalISOString(date: Date): string {
     const offset = date.getTimezoneOffset();
     const localDate = new Date(date.getTime() - offset * 60000);

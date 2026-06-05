@@ -13,10 +13,11 @@ import { Tabla } from '../../base/tabla';
 import { BuscadorComponent } from '../../../buscador/buscador.component';
 import { extractErrorMessage } from '../../../../../utils/error-handler';
 import { AuditPanelComponent } from "../../../audit-panel/audit-panel.component";
+import { StickyScrollDirective } from '../../../../../directives/sticky-scroll.directive';
 @Component({
   selector: 'app-empresas-mantenimiento-tabla',
   standalone: true,
-  imports: [CommonModule, FormsModule, EmpresasMantenimientoCrearComponent, EmpresasMantenimientoEditarComponent, AvisoEliminarComponent , MostrarerrorComponent, AvisoExitoComponent, BuscadorComponent, AuditPanelComponent],
+  imports: [StickyScrollDirective, CommonModule, FormsModule, EmpresasMantenimientoCrearComponent, EmpresasMantenimientoEditarComponent, AvisoEliminarComponent , MostrarerrorComponent, AvisoExitoComponent, BuscadorComponent, AuditPanelComponent],
   templateUrl: './empresas-mantenimiento-tabla.component.html',
   styleUrl: './empresas-mantenimiento-tabla.component.css'
 })

@@ -1,9 +1,10 @@
 .search-and-filter-row {
+  justify-content: space-between;
   display: flex;
   align-items: center;
-  gap: 4rem;
+  gap: 1rem;
   width: 100%;
-  padding-bottom: 2rem;
+  padding-bottom: 0.25rem;
 }
 .search-input-wrapper {
   flex: 1;
@@ -21,15 +22,15 @@
 .search-input {
   width: 100%;
   padding: 0.75rem 2.5rem;
-  border: 1px solid #e2e8f0;
-  border-radius: 0.5rem;
+  border: 1px solid var(--border);
+  border-radius: var(--radius-sm);
   font-size: 0.875rem;
   transition: color var(--t-fast), background-color var(--t-fast), border-color var(--t-fast), box-shadow var(--t-fast);
 }
 .search-input:focus {
   outline: none;
-  border-color: #d1d5db;
-  box-shadow: 0 0 0 3px rgba(107, 119, 134, 0.1);
+  border-color: var(--interactive-text);
+  box-shadow: 0 0 0 3px rgba(0, 69, 123, 0.12);
 }
 .clear-search {
   position: absolute;
@@ -51,10 +52,11 @@
 }
 .filter-container {
   position: relative;
-  display: flex; /* Changed to flex to allow ng-content (state filter) + custom dropdown side by side */
+  display: flex;
   gap: 1rem;
   align-items: center;
   flex-shrink: 0;
+  overflow: visible;  /* ensure dropdown isn't clipped */
 }
 .custom-dropdown {
   position: relative;
@@ -69,8 +71,8 @@
   cursor: pointer;
   padding: 0.5rem 1rem;
   user-select: none;
-  background-color: white;
-  border: 1px solid #e2e8f0;
+  background: var(--glass-bg); backdrop-filter: var(--glass-backdrop); -webkit-backdrop-filter: var(--glass-backdrop);
+  border: 1px solid var(--border);
   border-radius: 8px;
   height: 42px;
   box-sizing: border-box;
@@ -86,26 +88,26 @@
   color: #6b7786;
 }
 .dropdown-header:hover {
-  border-color: #d1d5db;
+  border-color: var(--interactive-text);
   background-color: #f8fafc;
 }
 .dropdown-arrow {
   width: 16px;
   height: 16px;
 }
-.dropdown-list {
+.dropdown-list { /* unified-dropdown */
   position: absolute;
   top: 100%;
   right: 0; /* Alinear a la derecha si es filtro */
   min-width: 200px;
-  background: white;
-  border-radius: 12px;
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+  background: var(--glass-bg);
+  border-radius: var(--dropdown-radius);
+  box-shadow: var(--dropdown-shadow);
   list-style: none;
   padding: 0;
   margin: 5px 0 0 0;
   z-index: 1000;
-  border: 1px solid #e2e8f0;
+  border: 1px solid var(--border);
   overflow-y: auto;
   max-height: 200px;
   backdrop-filter: blur(10px);
@@ -122,15 +124,8 @@
   align-items: center;
   gap: 0.5rem;
 }
-.dropdown-list li:hover {
-  color: var(--ink);
-  background-color: #fffde7;
-}
-.dropdown-list li.active {
-  color: #334155;
-  font-weight: 700;
-  background-color: #f1f5f9;
-}
+.dropdown-list li:hover { background: var(--dropdown-hover-bg); color: var(--dropdown-hover-color); }
+.dropdown-list li.active { background: var(--dropdown-active-bg); color: var(--dropdown-active-color); font-weight: 700; }
 .dropdown-list i {
   width: 16px;
   text-align: center;
@@ -140,8 +135,8 @@
   top: 100%;
   right: 0;
   background-color: #ffffff;
-  border: 1px solid #e2e8f0;
-  border-radius: 0.5rem;
+  border: 1px solid var(--border);
+  border-radius: var(--radius-sm);
   box-shadow: 0 10px 25px rgba(0, 0, 0, 0.15);
   z-index: 1000;
   margin-top: 0.5rem;
@@ -189,12 +184,12 @@
   border-radius: 0 0 0.5rem 0.5rem;
 }
 .estados-item-flotante:first-child:hover {
-  background-color: rgba(37, 99, 235, 0.1);
+  background-color: var(--interactive-subtle);
 }
 .estados-item-flotante:first-child.active {
-  background-color: rgba(37, 99, 235, 0.15);
-  color: #2563eb;
-  border-left: 3px solid #2563eb;
+  background-color: rgba(255, 215, 0, 0.18);
+  color: var(--brand);
+  border-left: 3px solid var(--brand);
   font-weight: 600;
 }
 .estados-item-flotante i {
@@ -214,6 +209,7 @@
 }
 @media (max-width: 768px) {
   .search-and-filter-row {
+  justify-content: space-between;
     flex-direction: column;
     gap: 0.75rem;
     padding-bottom: 1rem;
@@ -253,6 +249,7 @@
 
 @media (max-width: 480px) {
   .search-and-filter-row {
+  justify-content: space-between;
     gap: 0.5rem;
   }
   .filter-container {
@@ -280,6 +277,7 @@
 
 @media (max-width: 360px) {
   .search-and-filter-row {
+  justify-content: space-between;
     gap: 0.4rem;
   }
   .search-input {

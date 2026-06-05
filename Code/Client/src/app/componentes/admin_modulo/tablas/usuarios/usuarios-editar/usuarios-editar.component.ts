@@ -1,4 +1,4 @@
-import { Component, EventEmitter, Input, Output, signal, WritableSignal } from '@angular/core';
+import { Component, HostListener, EventEmitter, Input, Output, signal, WritableSignal } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { Usuario } from '../../../../../models/usuario';
 import { UsuarioServiceAPI } from '../../../../../services/APIS/Usuario/usuario.service';
@@ -44,4 +44,9 @@ export class UsuariosEditarComponent extends BaseTablaComponent {
   cerrar() {
     this.botoneditar.set(false);
   }
+  @HostListener('click', ['$event'])
+  onOverlayClick(event: MouseEvent) {
+    if (event.target === event.currentTarget) this.cerrar();
+  }
+
 }

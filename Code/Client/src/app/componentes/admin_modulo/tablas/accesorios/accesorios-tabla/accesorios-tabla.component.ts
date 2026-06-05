@@ -14,10 +14,11 @@ import { BuscadorComponent } from '../../../buscador/buscador.component';
 import { Tabla } from '../../base/tabla';
 import { extractErrorMessage } from '../../../../../utils/error-handler';
 import { AuditPanelComponent } from "../../../audit-panel/audit-panel.component";
+import { StickyScrollDirective } from '../../../../../directives/sticky-scroll.directive';
 @Component({
   selector: 'app-accesorios-tabla',
   standalone: true,
-  imports: [CommonModule, FormsModule, ReactiveFormsModule , AccesoriosCrearComponent , AccesoriosEditarComponent , AvisoEliminarComponent , MostrarerrorComponent , AvisoExitoComponent , Aviso , AvisoExitoComponent, BuscadorComponent, AuditPanelComponent],
+  imports: [StickyScrollDirective, CommonModule, FormsModule, ReactiveFormsModule , AccesoriosCrearComponent , AccesoriosEditarComponent , AvisoEliminarComponent , MostrarerrorComponent , AvisoExitoComponent , Aviso , AvisoExitoComponent, BuscadorComponent, AuditPanelComponent],
   templateUrl: './accesorios-tabla.component.html',
   styleUrls: ['./accesorios-tabla.component.css']
 })
@@ -140,4 +141,17 @@ cancelarEliminacion(){
   this.alertaeliminar = false;
   this.limpiarAccesorioSeleccionado();
 }
+
+  override sortTable(e: {col: string, dir: 'asc' | 'desc'}) {
+    const m: Record<string, string> = {
+      'Nombre': 'Nombre', 'Modelo': 'Modelo', 'Tipo': 'Tipo', 'Precio': 'Precio'
+    };
+    const k = m[e.col]; if (!k) return;
+    this.accesorios = [...this.accesorios].sort((a, b) => {
+      const va = this.normalizeText(String((a as any)[k] ?? ''));
+      const vb = this.normalizeText(String((b as any)[k] ?? ''));
+      return e.dir === 'asc' ? va.localeCompare(vb) : vb.localeCompare(va);
+    });
+  }
+
 }

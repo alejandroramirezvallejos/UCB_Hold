@@ -14,10 +14,11 @@ import { Tabla } from '../../base/tabla';
 import { extractErrorMessage } from '../../../../../utils/error-handler';
 import { GaveterosInlineComponent } from "../../../inline/gaveteros-inline.component";
 import { AuditPanelComponent } from "../../../audit-panel/audit-panel.component";
+import { StickyScrollDirective } from '../../../../../directives/sticky-scroll.directive';
 @Component({
   selector: 'app-muebles-tabla',
   standalone: true,
-  imports: [CommonModule, FormsModule, ReactiveFormsModule, MueblesCrearComponent, MueblesEditarComponent,AvisoEliminarComponent, MostrarerrorComponent, AvisoExitoComponent , BuscadorComponent, GaveterosInlineComponent, AuditPanelComponent],
+  imports: [StickyScrollDirective, CommonModule, FormsModule, ReactiveFormsModule, MueblesCrearComponent, MueblesEditarComponent,AvisoEliminarComponent, MostrarerrorComponent, AvisoExitoComponent , BuscadorComponent, GaveterosInlineComponent, AuditPanelComponent],
   templateUrl: './muebles-tabla.component.html',
   styleUrl: './muebles-tabla.component.css'
 })

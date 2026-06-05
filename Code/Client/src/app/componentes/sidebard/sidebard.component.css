@@ -1,29 +1,37 @@
 .sidebar-menu {
   position: fixed;
-  left: 12rem; /* Aligned with navbar icon */
-  top: 70px;
-  width: 200px;
-  background: rgba(255, 255, 255, 0.78);
-  backdrop-filter: saturate(180%) blur(14px);
-  -webkit-backdrop-filter: saturate(180%) blur(14px);
-  border: 1px solid rgba(255, 255, 255, 0.55);
-  border-radius: 12px;
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+  left: 12rem;
+  top: 72px;
+  width: 210px;
+  background: var(--glass-bg);
+  backdrop-filter: var(--glass-backdrop);
+  -webkit-backdrop-filter: var(--glass-backdrop);
+  border: 0.5px solid var(--glass-border);
+  border-radius: 14px;
+  box-shadow: var(--glass-shadow);
   display: flex;
   flex-direction: column;
   z-index: 1100;
   overflow: hidden;
-  animation: slideInLeft 0.2s ease-out;
-  font-family: "Manrope", sans-serif;
-  max-height: calc((100vh - 100px) * 0.6); /* Reducido al 60% (40% menos) */
+  animation: slideInLeft 180ms cubic-bezier(0.16, 1, 0.3, 1) both;
+  font-family: var(--font);
+  max-height: calc((100vh - 100px) * 0.65);
 }
+/* Match navbar padding breakpoints exactly */
+@media (max-width: 1280px) { .sidebar-menu { left: 6rem; } }
+@media (max-width: 1024px) { .sidebar-menu { left: 2.5rem; } }
 .contenido {
   display: flex;
   flex-direction: column;
   width: 100%;
   overflow-y: auto;
   height: 100%;
-  padding: 8px 0;
+  padding: 6px 0;
+}
+/* Use unified dropdown system */
+.sidebar-menu {
+  border-radius: var(--dropdown-radius) !important;
+  box-shadow: var(--dropdown-shadow) !important;
 }
 .contenido::-webkit-scrollbar {
   width: 4px;
@@ -49,10 +57,10 @@
   border-left: 3px solid transparent;
 }
 .item:hover {
-  background-color: #fffde7;
-  color: var(--ink);
+  background: var(--dropdown-hover-bg);
+  color: var(--dropdown-hover-color);
   border-left-color: transparent;
-  font-weight: 700;
+  font-weight: 600;
   box-shadow: inset 3px 0 0 0 var(--brand);
 }
 .item.active {

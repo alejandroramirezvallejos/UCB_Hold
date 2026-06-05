@@ -5,20 +5,22 @@
       <p class="subtitle">Gestión de empresas de mantenimiento para equipos</p>
     </div>
   </div>
+@if(activeTab==='tabla') {
   <app-buscador
     [columnas]="columnas"
-    (terminoBusqueda)="aplicarFiltros($event)"
+    (terminoBusqueda)="aplicarFiltros($event)" (sortChange)="sortTable($event)"
   >
     <button class="botoncrear boton-derecha" (click)="crearempresamantenimiento()">
        Nueva Empresa
     </button>
   </app-buscador>
+}
   <div class="admin-tabs">
     <button [class.active]="activeTab==='tabla'" (click)="activeTab='tabla'">Tabla</button>
     <button [class.active]="activeTab==='auditoria'" (click)="activeTab='auditoria'">Auditoría</button>
   </div>
   @if(activeTab==="tabla") {
-  <div class="table-responsive">
+  <div class="table-responsive" appStickyScroll>
     <table class="data-table">
       <thead>        <tr>
           @for(columna of columnas; track columna) {

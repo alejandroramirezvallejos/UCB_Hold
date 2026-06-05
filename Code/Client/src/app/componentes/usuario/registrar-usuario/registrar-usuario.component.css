@@ -92,7 +92,7 @@
 
 .form-input:focus {
   outline: none;
-  border-color: var(--interactive);
+  border-color: var(--interactive-text);
   box-shadow: 0 0 0 3px var(--interactive-subtle);
   background-color: var(--surface);
 }
@@ -175,7 +175,7 @@
 }
 
 .login-link a {
-  color: var(--interactive);
+  color: var(--interactive-text);
   text-decoration: none;
   font-weight: 500;
   cursor: pointer;
@@ -211,7 +211,7 @@
 }
 
 .dropdown-header:focus-within {
-  border-color: var(--interactive);
+  border-color: var(--interactive-text);
   box-shadow: 0 0 0 3px var(--interactive-subtle);
 }
 

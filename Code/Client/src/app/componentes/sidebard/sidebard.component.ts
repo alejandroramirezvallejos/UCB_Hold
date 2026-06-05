@@ -1,6 +1,22 @@
 import { CommonModule } from '@angular/common';
-import { Component, EventEmitter, Input, Output, ViewEncapsulation } from '@angular/core';
+import { Component, EventEmitter, HostListener, Input, Output, ViewEncapsulation } from '@angular/core';
 import { SidebarService } from '../../services/sidebar.service';
+
+const ICONS: Record<string, string> = {
+  'Prestamos':              'fas fa-handshake',
+  'Carreras':               'fas fa-graduation-cap',
+  'Usuarios':               'fas fa-users',
+  'Categorias':             'fas fa-tags',
+  'Accesorios':             'fas fa-plug',
+  'Componentes':            'fas fa-microchip',
+  'Equipos':                'fas fa-laptop',
+  'Grupos de Equipos':      'fas fa-layer-group',
+  'Gaveteros':              'fas fa-box',
+  'Muebles':                'fas fa-chair',
+  'Mantenimientos':         'fas fa-wrench',
+  'Empresas de Mantenimiento': 'fas fa-building',
+};
+
 @Component({
   selector: 'app-sidebard',
   imports: [CommonModule],
@@ -9,11 +25,22 @@ import { SidebarService } from '../../services/sidebar.service';
   encapsulation: ViewEncapsulation.None
 })
 export class SidebardComponent {
-  @Input() contenido : string[] = [];
-  @Output() item :EventEmitter<string> = new EventEmitter<string>();
-  @Input() activeItem: string = '';
+  @Input() contenido: string[] = [];
+  @Output() item = new EventEmitter<string>();
+  @Input() activeItem = '';
+
   constructor(public sidebarService: SidebarService) {}
-  clickitem(item : string){
+
+  @HostListener('window:scroll')
+  onScroll() {
+    if (this.sidebarService.isOpen()) this.sidebarService.close();
+  }
+
+  getIcon(label: string): string {
+    return ICONS[label] ?? 'fas fa-circle';
+  }
+
+  clickitem(item: string) {
     this.item.emit(item);
   }
 }

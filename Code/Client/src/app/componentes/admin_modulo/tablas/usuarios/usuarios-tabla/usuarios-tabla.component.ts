@@ -15,10 +15,11 @@ import { BuscadorComponent } from '../../../buscador/buscador.component';
 import { extractErrorMessage } from '../../../../../utils/error-handler';
 import { PrestamosInlineComponent } from "../../../inline/prestamos-inline.component";
 import { AuditPanelComponent } from "../../../audit-panel/audit-panel.component";
+import { StickyScrollDirective } from '../../../../../directives/sticky-scroll.directive';
 @Component({
   selector: 'app-usuarios-tabla',
   standalone: true,
-  imports: [CommonModule, FormsModule, ReactiveFormsModule, UsuariosCrearComponent, UsuariosEditarComponent,AvisoEliminarComponent, MostrarerrorComponent, AvisoExitoComponent, BuscadorComponent, PrestamosInlineComponent, AuditPanelComponent],
+  imports: [StickyScrollDirective, CommonModule, FormsModule, ReactiveFormsModule, UsuariosCrearComponent, UsuariosEditarComponent,AvisoEliminarComponent, MostrarerrorComponent, AvisoExitoComponent, BuscadorComponent, PrestamosInlineComponent, AuditPanelComponent],
   templateUrl: './usuarios-tabla.component.html',
   styleUrls: ['./usuarios-tabla.component.css']
 })
@@ -164,5 +165,20 @@ export class UsuariosTablaComponent extends Tabla implements OnInit {
   cancelarEliminacion() {
     this.alertaeliminar = false;
     this.valoreliminar = 0;
+  }
+
+  override sortTable(e: {col: string, dir: 'asc' | 'desc'}) {
+    const m: Record<string, string> = {
+      'Carnet': 'carnet', 'Nombre': 'nombre',
+      'Apellido Paterno': 'apellido_paterno', 'Apellido Materno': 'apellido_materno',
+      'Correo': 'correo', 'Teléfono': 'telefono', 'Rol': 'rol', 'Carrera': 'carrera'
+    };
+    const k = m[e.col];
+    if (!k) return;
+    this.usuarios = [...this.usuarios].sort((a, b) => {
+      const va = this.normalizeText(String((a as any)[k] ?? ''));
+      const vb = this.normalizeText(String((b as any)[k] ?? ''));
+      return e.dir === 'asc' ? va.localeCompare(vb) : vb.localeCompare(va);
+    });
   }
 }

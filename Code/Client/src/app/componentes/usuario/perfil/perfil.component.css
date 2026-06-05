@@ -9,15 +9,19 @@
 .profile-container {
   width: 100%;
   max-width: 520px;
-  background: var(--surface);
+  background: rgba(255,255,255,0.92);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
   border: 1px solid var(--border);
-  border-radius: var(--radius-lg);
-  box-shadow: var(--shadow-md);
+  border-top: 3px solid var(--brand);
+  border-radius: var(--radius-xl);
+  box-shadow: var(--shadow-lg);
   overflow: hidden;
+  animation: fadeSlide 200ms ease-out both;
 }
 .profile-header {
-  background: var(--surface);
-  border-bottom: 2px solid var(--brand);
+  background: transparent;
+  border-bottom: 1px solid var(--border);
   padding: 1.75rem 2rem 1.5rem;
   display: flex;
   align-items: center;
@@ -27,13 +31,17 @@
   position: relative;
   flex-shrink: 0;
 }
-.avatar {
-  width: 72px;
-  height: 72px;
+.avatar-icon {
+  width: 56px;
+  height: 56px;
   border-radius: 50%;
-  object-fit: cover;
-  border: 3px solid var(--brand);
-  box-shadow: var(--shadow-sm);
+  background: var(--sidebar);
+  border: 1.5px solid var(--border);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.25rem;
+  color: var(--ink-muted);
 }
 .profile-title-group {
   display: flex;
@@ -56,10 +64,10 @@
   padding: 1.5rem 2rem;
 }
 .section-label {
-  font-size: 0.7rem;
+  font-size: 0.8rem;
   font-weight: 700;
-  text-transform: uppercase;
-  letter-spacing: 0.08em;
+  text-transform: none;
+  letter-spacing: 0;
   color: var(--ink-secondary);
   margin: 0 0 0.875rem;
 }
@@ -78,11 +86,11 @@
   gap: 0.2rem;
 }
 .data-item label {
-  font-size: 0.72rem;
+  font-size: 0.75rem;
   font-weight: 600;
-  color: var(--ink-secondary);
-  text-transform: uppercase;
-  letter-spacing: 0.04em;
+  color: var(--ink-muted);
+  text-transform: none;
+  letter-spacing: 0;
   margin: 0;
 }
 .data-item p {

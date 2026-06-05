@@ -1,4 +1,4 @@
-import { Component, EventEmitter, Input, Output, signal, WritableSignal } from '@angular/core';
+import { Component, HostListener, EventEmitter, Input, Output, signal, WritableSignal } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { Equipos } from '../../../../../models/admin/Equipos';
 import { EquipoService } from '../../../../../services/APIS/Equipo/equipo.service';
@@ -87,4 +87,9 @@ export class EquiposEditarComponent extends BaseTablaComponent{
   cerrar(){
     this.botoneditar.set(false);
   }
+  @HostListener('click', ['$event'])
+  onOverlayClick(event: MouseEvent) {
+    if (event.target === event.currentTarget) this.cerrar();
+  }
+
 }
