@@ -1,4 +1,4 @@
-import { Component, Input, OnInit } from '@angular/core';
+import { Component, EventEmitter, Input, OnInit, Output } from '@angular/core';
 import { CommonModule, DatePipe } from '@angular/common';
 import { HttpClient } from '@angular/common/http';
 import { environment } from '../../../../environments/environment';
@@ -36,7 +36,11 @@ import { HistorialEquipoDto } from '../../../models/admin/HistorialEquipo';
                 <td>{{ (h.FechaDevolucion || h.FechaDevolucionEsperada) | date:'dd/MM/yyyy':'America/La_Paz' }}</td>
                 <td><span [class]="'badge badge-' + (h.EstadoPrestamo || 'cancelado')">{{ h.EstadoPrestamo }}</span></td>
                 <td><span [class]="'badge badge-estado-' + (h.EstadoEquipo || 'none')">{{ estadoEquipoLabel(h.EstadoEquipo) }}</span></td>
-                <td>{{ h.Observacion || '—' }}</td>
+                @if(h.Observacion) {
+                  <td class="obs-cell" (click)="observacionClick.emit(h.Observacion)" title="Ver observación completa">{{ h.Observacion }}</td>
+                } @else {
+                  <td>—</td>
+                }
               </tr>
             }
           </tbody>
@@ -49,10 +53,13 @@ import { HistorialEquipoDto } from '../../../models/admin/HistorialEquipo';
     .badge-estado-parcialmente_operativo { background: #fff7ed; color: #b45309; }
     .badge-estado-inoperativo { background: var(--error-bg); color: var(--error); }
     .badge-estado-none { background: var(--sidebar); color: var(--ink-muted); }
+    .obs-cell { max-width: 220px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; cursor: pointer; color: var(--interactive-text); }
+    .obs-cell:hover { text-decoration: underline; }
   `]
 })
 export class HistorialEquipoInlineComponent implements OnInit {
   @Input() equipoId!: number;
+  @Output() observacionClick = new EventEmitter<string>();
   items: HistorialEquipoDto[] = [];
   cargando = true;
 

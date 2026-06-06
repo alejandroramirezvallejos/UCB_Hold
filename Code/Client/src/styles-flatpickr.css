@@ -86,8 +86,12 @@
   padding: 0 !important;
 }
 .flatpickr-current-month .numInputWrapper {
-  width: 3.6ch !important;
-  margin-left: 0.35rem !important;
+  width: 4.5ch !important;
+  margin-left: 0.4rem !important;
+}
+.flatpickr-current-month input.cur-year {
+  width: 100% !important;
+  text-align: left !important;
 }
 /* Año = solo texto (no editable): ocultar flechas del spinner y bloquear interacción */
 .flatpickr-current-month .numInputWrapper span.arrowUp,

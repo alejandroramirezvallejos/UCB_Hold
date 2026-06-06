@@ -105,7 +105,7 @@
 .date-col { white-space: nowrap; color: var(--ink-muted); font-size: 0.75rem; }
 .id-col { font-size: 0.75rem; color: var(--ink-secondary); }
 .detail-col { color: var(--ink-muted); font-size: 0.75rem; max-width: 200px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
-.detail-clickable { cursor: pointer; color: var(--interactive-text); font-weight: 600; transition: color var(--t-fast); }
+.detail-clickable { cursor: pointer; color: var(--interactive-text); transition: color var(--t-fast); }
 .detail-clickable:hover { text-decoration: underline; }
 
 /* Modal de observación */
@@ -142,12 +142,12 @@
   background: none;
   border: none;
   cursor: pointer;
-  color: var(--ink-muted);
-  font-size: 1rem;
-  width: 1.75rem;
-  height: 1.75rem;
+  padding: 0;
+  width: 24px;
+  height: 24px;
 }
-.obs-close:hover { color: var(--ink); }
+.obs-close img { width: 100%; height: 100%; transition: opacity var(--t-fast); }
+.obs-close:hover img { opacity: 0.8; }
 .obs-title { margin: 0 0 0.5rem; font-size: 1.1rem; font-weight: 700; color: var(--ink); }
 .obs-text { margin: 0 0 1rem; font-size: 0.875rem; color: var(--ink-secondary); line-height: 1.5; white-space: pre-wrap; word-break: break-word; }
 .obs-subtitle { margin: 1rem 0 0.5rem; font-size: 0.8rem; font-weight: 700; color: var(--ink-secondary); text-transform: uppercase; letter-spacing: 0.03em; }

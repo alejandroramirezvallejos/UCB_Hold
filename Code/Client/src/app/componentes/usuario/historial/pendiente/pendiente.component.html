@@ -1,40 +1,85 @@
 <div class="prestamos-container">
   <div class="prestamos-list">
-    @for (item of (datos | keyvalue); track item.key) {
+    @for (item of datos | keyvalue; track item.key) {
       <div class="prestamo-item">
         <div class="item-header">
           <div class="usuario-info">
             <h3 class="usuario-nombre">
               <i class="fas fa-laptop hist-icon"></i>
-              {{ item.value.datosgrupo.NombreGrupoEquipo }}
+              {{
+                item.value.equipos[0].NombreGrupoEquipo ||
+                  item.value.datosgrupo.NombreGrupoEquipo
+              }}{{ item.value.equipos.length &gt; 1 ? " …" : "" }}
             </h3>
-            <span class="cantidad-equipos">{{ item.value.equipos ? item.value.equipos.length : 0 }} equipos</span>
-            <span class="usuario-carnet">{{ item.value.datosgrupo.NombreUsuario }} {{ item.value.datosgrupo.ApellidoPaternoUsuario }} — {{ item.value.datosgrupo.CarnetUsuario }}</span>
+            <span class="cantidad-equipos"
+              >{{
+                item.value.equipos ? item.value.equipos.length : 0
+              }}
+              equipos</span
+            >
+            <span class="usuario-carnet"
+              >{{ item.value.datosgrupo.NombreUsuario }}
+              {{ item.value.datosgrupo.ApellidoPaternoUsuario }} —
+              {{ item.value.datosgrupo.CarnetUsuario }}</span
+            >
           </div>
           <div class="equipo-info">
             <span class="codigo-imt">Préstamo #{{ item.key }}</span>
-            <span class="codigo-imt">{{ item.value.datosgrupo.CodigoImt || 'N/A' }}</span>
+            <span class="codigo-imt">{{
+              item.value.datosgrupo.CodigoImt || "N/A"
+            }}</span>
           </div>
         </div>
         <div class="fechas-info">
           <div class="fecha-item">
-            <span class="fecha-label"><i class="fas fa-calendar-days"></i> Solicitud:</span>
-            <span class="fecha-valor">{{ item.value.datosgrupo.FechaSolicitud ? (item.value.datosgrupo.FechaSolicitud | date:'dd/MM/yyyy':'America/La_Paz') : 'N/A' }}</span>
+            <span class="fecha-label"
+              ><i class="fas fa-calendar-days"></i> Solicitud:</span
+            >
+            <span class="fecha-valor">{{
+              item.value.datosgrupo.FechaSolicitud
+                ? (item.value.datosgrupo.FechaSolicitud
+                  | date: "dd/MM/yyyy" : "America/La_Paz")
+                : "N/A"
+            }}</span>
           </div>
           <div class="fecha-item">
-            <span class="fecha-label"><i class="fas fa-box-archive"></i> Fecha de Recogida:</span>
-            <span class="fecha-valor">{{ item.value.datosgrupo.FechaPrestamoEsperada ? (item.value.datosgrupo.FechaPrestamoEsperada | date:'dd/MM/yyyy':'America/La_Paz') : 'N/A' }}</span>
+            <span class="fecha-label"
+              ><i class="fas fa-box-archive"></i> Fecha de Recogida:</span
+            >
+            <span class="fecha-valor">{{
+              item.value.datosgrupo.FechaPrestamoEsperada
+                ? (item.value.datosgrupo.FechaPrestamoEsperada
+                  | date: "dd/MM/yyyy" : "America/La_Paz")
+                : "N/A"
+            }}</span>
           </div>
           <div class="fecha-item">
-            <span class="fecha-label"><i class="fas fa-hourglass-half"></i> Devolución Esperada:</span>
-            <span class="fecha-valor">{{ item.value.datosgrupo.FechaDevolucionEsperada ? (item.value.datosgrupo.FechaDevolucionEsperada | date:'dd/MM/yyyy') : 'N/A' }}</span>
+            <span class="fecha-label"
+              ><i class="fas fa-hourglass-half"></i> Devolución Esperada:</span
+            >
+            <span class="fecha-valor">{{
+              item.value.datosgrupo.FechaDevolucionEsperada
+                ? (item.value.datosgrupo.FechaDevolucionEsperada
+                  | date: "dd/MM/yyyy")
+                : "N/A"
+            }}</span>
           </div>
         </div>
         <div class="botones">
           <div class="botones-izquierda">
-            <button class="btn btn-sm btn-danger" (click)="$event.stopPropagation(); aviso(item.value.datosgrupo)">Cancelar</button>
+            <button
+              class="btn btn-sm btn-danger"
+              (click)="$event.stopPropagation(); aviso(item.value.datosgrupo)"
+            >
+              Cancelar
+            </button>
           </div>
-          <button class="btn btn-sm btn-ghost" (click)="AbrirVista(item.value.equipos)">Ver detalles</button>
+          <button
+            class="btn btn-sm btn-ghost"
+            (click)="AbrirVista(item.value.equipos)"
+          >
+            Ver detalles
+          </button>
         </div>
       </div>
     }
@@ -47,19 +92,27 @@
     }
   </div>
 </div>
-@if(avisocancelar()) {
+@if (avisocancelar()) {
   <app-aviso
-    [mensaje]="'¿Estás seguro de que deseas cancelar el préstamo de ' + itemSeleccionado?.NombreGrupoEquipo + '?'"
+    [mensaje]="
+      '¿Estás seguro de que deseas cancelar el préstamo de ' +
+      itemSeleccionado?.NombreGrupoEquipo +
+      '?'
+    "
     [cerrar]="avisocancelar"
-    (aceptar)="cancelar()">
+    (aceptar)="cancelar()"
+  >
   </app-aviso>
 }
-@if(abrirVistaPrestamos){
-  <app-vista-prestamos [prestamos]="prestamosVista" (cerrar)="cerrarVista()"></app-vista-prestamos>
+@if (abrirVistaPrestamos) {
+  <app-vista-prestamos
+    [prestamos]="prestamosVista"
+    (cerrar)="cerrarVista()"
+  ></app-vista-prestamos>
 }
-@if(error()){
+@if (error()) {
   <app-mostrarerror [error]="error" [mensaje]="mensajeerror"></app-mostrarerror>
 }
-@if(exito()){
+@if (exito()) {
   <app-aviso-exito [mensaje]="mensajeexito" [exito]="exito"></app-aviso-exito>
 }

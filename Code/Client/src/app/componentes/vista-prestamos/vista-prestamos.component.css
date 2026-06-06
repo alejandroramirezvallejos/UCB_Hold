@@ -185,48 +185,6 @@
 		height: 1.35rem;
 	}
 }
-.btn-close {
-	position: absolute;
-	top: 1rem;
-	right: 1rem;
-	background: #f3f4f6;
-	border: none;
-	font-size: 1.4rem;
-	color: #374151;
-	cursor: pointer;
-	width: 2rem;
-	height: 2rem;
-	display: flex;
-	align-items: center;
-	justify-content: center;
-	border-radius: 50%;
-	transition: color var(--t-fast), background-color var(--t-fast), border-color var(--t-fast), box-shadow var(--t-fast), transform var(--t-fast);
-	box-shadow: 0 2px 4px rgba(0,0,0,0.1);
-}
-.btn-close:hover {
-	background-color: #e1e5ea;
-	color: var(--ink);
-	box-shadow: 0 4px 8px rgba(0,0,0,0.15);
-}
-.vista-table {
-	width: 100%;
-	border-collapse: collapse;
-	margin-top: 0.5rem;
-	font-size: 0.95rem;
-}
-.vista-table thead th {
-	text-align: left;
-	padding: 0.75rem 0.75rem;
-	background: #fbfbfd;
-	color: var(--ink-secondary);
-	font-weight: 600;
-	border-bottom: 2px solid #f1f3f6;
-}
-.vista-table tbody td {
-	padding: 0.65rem 0.75rem;
-	border-bottom: 1px solid #f3f5f8;
-	color: #111827;
-}
 @keyframes fadeIn {
 	from {
 		opacity: 0;

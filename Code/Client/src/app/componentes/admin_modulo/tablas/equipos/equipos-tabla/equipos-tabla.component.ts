@@ -31,6 +31,10 @@ export class EquiposTablaComponent extends Tabla{
     this.expandedRowId = this.expandedRowId === id ? null : id;
   }
 
+  obsHistorial: string | null = null;
+  abrirObsHistorial(obs: string) { this.obsHistorial = obs; }
+  cerrarObsHistorial() { this.obsHistorial = null; }
+
   botoncrear : WritableSignal<boolean> = signal(false);
   botoneditar : WritableSignal<boolean> = signal(false);
   alertaeliminar : boolean = false;
@@ -38,6 +42,22 @@ export class EquiposTablaComponent extends Tabla{
   equiposcopia: any[] = [];
   equipoSeleccionado:  Equipos= new Equipos();
   override columnas: string[] = ['Nombre','EstadoEquipo','Ubicacion','Código IMT','Costo'];
+  // Filtro por estado del equipo
+  showEstados = false;
+  estadoSeleccionado = '';
+  estadosDisponibles = ['operativo', 'parcialmente_operativo', 'inoperativo'];
+  hover = { filter: false };
+  private busquedaActual?: [string, string];
+  mostrarEstados() { this.showEstados = !this.showEstados; }
+  seleccionarEstado(estado: string) { this.estadoSeleccionado = estado; this.showEstados = false; this.aplicarFiltros(); }
+  estadoEquipoLabel(estado: string): string {
+    switch (estado) {
+      case 'operativo': return 'Operativo';
+      case 'parcialmente_operativo': return 'Parcialmente operativo';
+      case 'inoperativo': return 'Inoperativo';
+      default: return estado;
+    }
+  }
   constructor(private equiposapi : EquipoService){
     super();
   };
@@ -66,31 +86,36 @@ export class EquiposTablaComponent extends Tabla{
     });
   }
   aplicarFiltros(event?: [string, string]){
-    if (event && event[0].trim() !== '') {
-        const busquedaNormalizada = this.normalizeText(event[0]);
-        this.equipos = this.equiposcopia.filter(equipo => {
-          switch (event[1]) {
-            case 'Nombre':
-              return this.normalizeText(equipo.NombreGrupoEquipo || '').includes(busquedaNormalizada);
-            case 'EstadoEquipo':
-              return this.normalizeText(equipo.EstadoEquipo || '').includes(busquedaNormalizada);
-            case 'Ubicacion':
-              return this.normalizeText(equipo.Ubicacion || '').includes(busquedaNormalizada);
-            case 'Código IMT':
-              return this.normalizeText(String(equipo.CodigoImt || '')).includes(busquedaNormalizada);
-            case 'Costo':
-              return this.normalizeText(String(equipo.CostoReferencia || '')).includes(busquedaNormalizada);
-            default:  // 'Todas las columnas'
-              return this.normalizeText(equipo.NombreGrupoEquipo || '').includes(busquedaNormalizada) ||
-                    this.normalizeText(equipo.EstadoEquipo || '').includes(busquedaNormalizada) ||
-                    this.normalizeText(equipo.Ubicacion || '').includes(busquedaNormalizada) ||
-                    this.normalizeText(String(equipo.CodigoImt || '')).includes(busquedaNormalizada) ||
-                    this.normalizeText(String(equipo.CostoReferencia || '')).includes(busquedaNormalizada);
-          }
-        });
-      } else {
-        this.equipos = [...this.equiposcopia];
-      }
+    if (event) this.busquedaActual = event;
+    let lista = [...this.equiposcopia];
+    const ev = this.busquedaActual;
+    if (ev && ev[0].trim() !== '') {
+      const busquedaNormalizada = this.normalizeText(ev[0]);
+      lista = lista.filter(equipo => {
+        switch (ev[1]) {
+          case 'Nombre':
+            return this.normalizeText(equipo.NombreGrupoEquipo || '').includes(busquedaNormalizada);
+          case 'EstadoEquipo':
+            return this.normalizeText(equipo.EstadoEquipo || '').includes(busquedaNormalizada);
+          case 'Ubicacion':
+            return this.normalizeText(equipo.Ubicacion || '').includes(busquedaNormalizada);
+          case 'Código IMT':
+            return this.normalizeText(String(equipo.CodigoImt || '')).includes(busquedaNormalizada);
+          case 'Costo':
+            return this.normalizeText(String(equipo.CostoReferencia || '')).includes(busquedaNormalizada);
+          default:
+            return this.normalizeText(equipo.NombreGrupoEquipo || '').includes(busquedaNormalizada) ||
+                  this.normalizeText(equipo.EstadoEquipo || '').includes(busquedaNormalizada) ||
+                  this.normalizeText(equipo.Ubicacion || '').includes(busquedaNormalizada) ||
+                  this.normalizeText(String(equipo.CodigoImt || '')).includes(busquedaNormalizada) ||
+                  this.normalizeText(String(equipo.CostoReferencia || '')).includes(busquedaNormalizada);
+        }
+      });
+    }
+    if (this.estadoSeleccionado !== '') {
+      lista = lista.filter(equipo => (equipo.EstadoEquipo || '') === this.estadoSeleccionado);
+    }
+    this.equipos = lista;
   }
 limpiarBusqueda(){
   this.equipos = [...this.equiposcopia];

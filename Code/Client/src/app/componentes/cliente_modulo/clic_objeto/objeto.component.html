@@ -4,7 +4,7 @@
   <div class="seccion-imagen">
     <div class="contenedor-imagen">
       <ng-container *ngIf="producto.link; else noImg">
-        <img [src]="producto.link" alt="{{ producto.nombre }}" class="imagen-producto" />
+        <img [src]="producto.link" alt="{{ producto.nombre }}" class="imagen-producto" (error)="producto.link = null" />
       </ng-container>
       <ng-template #noImg>
         <div class="imagen-no-encontrada">

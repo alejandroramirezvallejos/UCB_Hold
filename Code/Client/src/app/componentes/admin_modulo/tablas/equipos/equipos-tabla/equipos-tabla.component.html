@@ -10,6 +10,40 @@
     [columnas]="columnas"
     (terminoBusqueda)="aplicarFiltros($event)" (sortChange)="sortTable($event)"
   >
+    <div class="custom-dropdown">
+      <div class="dropdown-header"
+           (click)="mostrarEstados()"
+           (mouseenter)="hover.filter = true"
+           (mouseleave)="hover.filter = false">
+        <span class="current-value">
+          <i class="fas fa-filter" style="margin-right: 8px;"></i>
+          {{ estadoSeleccionado ? estadoEquipoLabel(estadoSeleccionado) : 'Filtrar' }}
+        </span>
+        <img
+          [src]="hover.filter || showEstados ? '/assets/down_solid.png' : '/assets/down_line.png'"
+          alt="Desplegar"
+          class="dropdown-arrow"
+        >
+      </div>
+      @if (showEstados) {
+        <ul class="dropdown-list">
+          <li (click)="seleccionarEstado('')" [class.active]="estadoSeleccionado === ''">
+            <i class="fas fa-list"></i>
+            Todos los estados
+          </li>
+          @for (estado of estadosDisponibles; track estado) {
+            <li (click)="seleccionarEstado(estado)" [class.active]="estadoSeleccionado === estado">
+              @switch (estado) {
+                @case ('operativo') { <i class="fas fa-check-circle text-success"></i> }
+                @case ('parcialmente_operativo') { <i class="fas fa-exclamation-circle text-warning"></i> }
+                @case ('inoperativo') { <i class="fas fa-times-circle text-danger"></i> }
+              }
+              {{ estadoEquipoLabel(estado) }}
+            </li>
+          }
+        </ul>
+      }
+    </div>
     <button class="botoncrear boton-derecha" (click)="crearequipo()">
        Nuevo Equipo
     </button>
@@ -49,7 +83,7 @@
             </td>
             </tr>
             @if(expandedRowId===equipo.Id) {
-              <tr class="expanded-row"><td colspan="99"><app-historial-equipo-inline [equipoId]="equipo.Id!"></app-historial-equipo-inline></td></tr>
+              <tr class="expanded-row"><td colspan="99"><app-historial-equipo-inline [equipoId]="equipo.Id!" (observacionClick)="abrirObsHistorial($event)"></app-historial-equipo-inline></td></tr>
             }
         }
         @if (equipos.length === 0) {
@@ -100,4 +134,16 @@
   [exito]="exito"
   [mensaje]="mensajeexito"
   ></app-aviso-exito>
+}
+@if(obsHistorial !== null) {
+  <div class="obs-overlay" (click)="cerrarObsHistorial()">
+    <div class="obs-modal" (click)="$event.stopPropagation()">
+      <button class="obs-close" (click)="cerrarObsHistorial()" aria-label="Cerrar">
+        <img #obsX src="/assets/x.png" alt="Cerrar"
+          (mouseenter)="obsX.src='/assets/x_color.png'" (mouseleave)="obsX.src='/assets/x.png'" />
+      </button>
+      <h3 class="obs-title">Observación del préstamo</h3>
+      <p class="obs-text">{{ obsHistorial }}</p>
+    </div>
+  </div>
 }

@@ -917,7 +917,7 @@ body select:not(.ng-select):not([multiple]):not([size]) {
   font-size: 0.875rem !important;
 }
 /* Headers: all centered; data cells: first col left, others center */
-.data-table td:first-child { text-align: left !important; padding-left: 1.25rem !important; }
+.data-table td:first-child { text-align: center !important; padding-left: 1.25rem !important; }
 .data-table th:first-child { text-align: center !important; padding-left: 1.25rem !important; }
 .data-table th:last-child, .data-table td:last-child { padding-right: 1.25rem !important; }
 .data-table tbody tr:hover {

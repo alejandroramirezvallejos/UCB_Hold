@@ -60,7 +60,7 @@
             <th>Administrador</th>
             <th>Acción</th>
             <th>ID</th>
-            <th>Observación</th>
+            @if(entidad === 'Prestamo') { <th>Observación</th> }
           </tr>
         </thead>
         <tbody>
@@ -73,12 +73,14 @@
               </td>
               <td><span [class]="'badge ' + badgeClass(log.Accion)">{{ log.Accion }}</span></td>
               <td class="id-col">{{ log.EntidadId }}</td>
-              @if(tieneDetalle(log)) {
-                <td class="detail-col detail-clickable" (click)="abrirObs(log)" title="Ver observación completa">
-                  {{ resumenObs(log) }}
-                </td>
-              } @else {
-                <td class="detail-col">—</td>
+              @if(entidad === 'Prestamo') {
+                @if(tieneDetalle(log)) {
+                  <td class="detail-col detail-clickable" (click)="abrirObs(log)" title="Ver observación completa">
+                    {{ resumenObs(log) }}
+                  </td>
+                } @else {
+                  <td class="detail-col">—</td>
+                }
               }
             </tr>
           }
@@ -91,7 +93,10 @@
 @if(obsAbierta) {
   <div class="obs-overlay" (click)="cerrarObs()">
     <div class="obs-modal" (click)="$event.stopPropagation()">
-      <button class="obs-close" (click)="cerrarObs()" aria-label="Cerrar"><i class="fas fa-times"></i></button>
+      <button class="obs-close" (click)="cerrarObs()" aria-label="Cerrar">
+        <img #obsX src="/assets/x.png" alt="Cerrar"
+          (mouseenter)="obsX.src='/assets/x_color.png'" (mouseleave)="obsX.src='/assets/x.png'" />
+      </button>
       <h3 class="obs-title">Observación</h3>
       <p class="obs-text">{{ obsAbierta.observacion || obsAbierta.texto || 'Sin observación' }}</p>
       @if(obsAbierta.equipos?.length) {
