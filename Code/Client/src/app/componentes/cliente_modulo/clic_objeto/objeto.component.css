@@ -112,7 +112,7 @@
   gap: 1rem;
   margin-top: 0.5rem;
   padding-top: 1.25rem;
-  border-top: 1px solid var(--border);
+  border-top: 1px solid var(--border-strong);
 }
 .disponibilidad-texto {
   display: flex;
@@ -131,10 +131,6 @@
   font-size: 0.875rem;
   font-weight: 600;
   color: var(--error);
-  background: var(--error-bg);
-  border: 1px solid var(--error-border);
-  border-radius: var(--radius-md);
-  padding: 0.625rem 0.875rem;
   margin: 0;
 }
 

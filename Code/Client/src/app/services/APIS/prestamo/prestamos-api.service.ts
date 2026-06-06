@@ -77,12 +77,18 @@ export class PrestamosAPIService {
 
 
 
-  cambiarEstadoPrestamo(Id: number, estado: string, observacion?: string) {
+  cambiarEstadoPrestamo(
+    Id: number,
+    estado: string,
+    observacion?: string,
+    equiposRetorno?: { CodigoImt: string; EstadoEquipo: string }[]
+  ) {
     let params = `estado=${encodeURIComponent(estado)}`;
     if (observacion !== undefined && observacion !== null && observacion !== '') {
       params += `&observacion=${encodeURIComponent(observacion)}`;
     }
-    return this.http.put(`${this.url}/${Id}/estado?${params}`, null);
+    const body = equiposRetorno && equiposRetorno.length > 0 ? { EquiposRetorno: equiposRetorno } : null;
+    return this.http.put(`${this.url}/${Id}/estado?${params}`, body);
   }
 
 

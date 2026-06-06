@@ -60,7 +60,7 @@
             <th>Administrador</th>
             <th>Acción</th>
             <th>ID</th>
-            <th>Detalle</th>
+            <th>Observación</th>
           </tr>
         </thead>
         <tbody>
@@ -73,7 +73,13 @@
               </td>
               <td><span [class]="'badge ' + badgeClass(log.Accion)">{{ log.Accion }}</span></td>
               <td class="id-col">{{ log.EntidadId }}</td>
-              <td class="detail-col">{{ log.Detalle || '—' }}</td>
+              @if(tieneDetalle(log)) {
+                <td class="detail-col detail-clickable" (click)="abrirObs(log)" title="Ver observación completa">
+                  {{ resumenObs(log) }}
+                </td>
+              } @else {
+                <td class="detail-col">—</td>
+              }
             </tr>
           }
         </tbody>
@@ -81,3 +87,28 @@
     </div>
   }
 </div>
+
+@if(obsAbierta) {
+  <div class="obs-overlay" (click)="cerrarObs()">
+    <div class="obs-modal" (click)="$event.stopPropagation()">
+      <button class="obs-close" (click)="cerrarObs()" aria-label="Cerrar"><i class="fas fa-times"></i></button>
+      <h3 class="obs-title">Observación</h3>
+      <p class="obs-text">{{ obsAbierta.observacion || obsAbierta.texto || 'Sin observación' }}</p>
+      @if(obsAbierta.equipos?.length) {
+        <h4 class="obs-subtitle">Estado de los equipos devueltos</h4>
+        <table class="obs-equipos">
+          <thead><tr><th>Código</th><th>Equipo</th><th>Estado</th></tr></thead>
+          <tbody>
+            @for(e of obsAbierta.equipos; track e.codigo) {
+              <tr>
+                <td>IMT {{ e.codigo }}</td>
+                <td>{{ e.nombre || '—' }}</td>
+                <td><span [class]="'badge badge-estado-' + e.estado">{{ estadoEquipoLabel(e.estado) }}</span></td>
+              </tr>
+            }
+          </tbody>
+        </table>
+      }
+    </div>
+  </div>
+}

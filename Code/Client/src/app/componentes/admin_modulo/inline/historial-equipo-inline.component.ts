@@ -20,9 +20,9 @@ import { HistorialEquipoDto } from '../../../models/admin/HistorialEquipo';
               <th>Usuario</th>
               <th>Carnet</th>
               <th>Fecha Préstamo</th>
-              <th>Dev. Esperada</th>
-              <th>Devuelto</th>
+              <th>Fecha Devolución</th>
               <th>Estado</th>
+              <th>Estado Equipo</th>
               <th>Observación</th>
             </tr>
           </thead>
@@ -33,9 +33,9 @@ import { HistorialEquipoDto } from '../../../models/admin/HistorialEquipo';
                 <td>{{ h.NombreUsuario }}</td>
                 <td>{{ h.Carnet }}</td>
                 <td>{{ h.FechaPrestamo | date:'dd/MM/yyyy':'America/La_Paz' }}</td>
-                <td>{{ h.FechaDevolucionEsperada | date:'dd/MM/yyyy':'America/La_Paz' }}</td>
-                <td>{{ h.FechaDevolucion ? (h.FechaDevolucion | date:'dd/MM/yyyy':'America/La_Paz') : '—' }}</td>
+                <td>{{ (h.FechaDevolucion || h.FechaDevolucionEsperada) | date:'dd/MM/yyyy':'America/La_Paz' }}</td>
                 <td><span [class]="'badge badge-' + (h.EstadoPrestamo || 'cancelado')">{{ h.EstadoPrestamo }}</span></td>
+                <td><span [class]="'badge badge-estado-' + (h.EstadoEquipo || 'none')">{{ estadoEquipoLabel(h.EstadoEquipo) }}</span></td>
                 <td>{{ h.Observacion || '—' }}</td>
               </tr>
             }
@@ -43,7 +43,13 @@ import { HistorialEquipoDto } from '../../../models/admin/HistorialEquipo';
         </table>
       }
     </div>
-  `
+  `,
+  styles: [`
+    .badge-estado-operativo { background: var(--success-bg); color: var(--success); }
+    .badge-estado-parcialmente_operativo { background: #fff7ed; color: #b45309; }
+    .badge-estado-inoperativo { background: var(--error-bg); color: var(--error); }
+    .badge-estado-none { background: var(--sidebar); color: var(--ink-muted); }
+  `]
 })
 export class HistorialEquipoInlineComponent implements OnInit {
   @Input() equipoId!: number;
@@ -51,6 +57,15 @@ export class HistorialEquipoInlineComponent implements OnInit {
   cargando = true;
 
   constructor(private http: HttpClient) {}
+
+  estadoEquipoLabel(estado?: string): string {
+    switch (estado) {
+      case 'operativo': return 'Operativo';
+      case 'parcialmente_operativo': return 'Parcialmente operativo';
+      case 'inoperativo': return 'Inoperativo';
+      default: return '—';
+    }
+  }
 
   ngOnInit() {
     this.http.get<any>(`${environment.apiUrl}/api/Equipo/${this.equipoId}/historial`).subscribe({

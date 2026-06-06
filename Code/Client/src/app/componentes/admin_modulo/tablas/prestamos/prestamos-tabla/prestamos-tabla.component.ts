@@ -17,10 +17,11 @@ import { AvisoExitoComponent } from '../../../../pantallas_avisos/aviso-exito/av
 import { BuscadorComponent } from '../../../buscador/buscador.component';
 import { Tabla } from '../../base/tabla';
 import { StickyScrollDirective } from '../../../../../directives/sticky-scroll.directive';
+import { CustomSelectComponent, OpcionSelect } from '../../../../compartidos/custom-select/custom-select.component';
 @Component({
   selector: 'app-prestamos-tabla',
   standalone: true,
-  imports: [StickyScrollDirective, CommonModule, FormsModule, ReactiveFormsModule , VercontratoComponent, PantallaCargaComponent , VistaPrestamosComponent , AvisoEliminarComponent , MostrarerrorComponent , Aviso ,AvisoExitoComponent , BuscadorComponent, AuditPanelComponent],
+  imports: [StickyScrollDirective, CommonModule, FormsModule, ReactiveFormsModule , VercontratoComponent, PantallaCargaComponent , VistaPrestamosComponent , AvisoEliminarComponent , MostrarerrorComponent , Aviso ,AvisoExitoComponent , BuscadorComponent, AuditPanelComponent, CustomSelectComponent],
   templateUrl: './prestamos-tabla.component.html',
   styleUrls: ['./prestamos-tabla.component.css']
 })
@@ -286,6 +287,14 @@ export class PrestamosTablaComponent extends Tabla implements OnInit {
   avisorecogido: WritableSignal<boolean> = signal(false);
   avisodevuelto: WritableSignal<boolean> = signal(false);
   observacionDevolucion: string = '';
+  estadoEquipoOpciones: OpcionSelect[] = [
+    { value: 'operativo', label: 'Operativo' },
+    { value: 'parcialmente_operativo', label: 'Parcialmente operativo' },
+    { value: 'inoperativo', label: 'Inoperativo' },
+  ];
+  // estado de retorno por CodigoImt (default operativo)
+  estadosRetorno: { [codigoImt: string]: string } = {};
+  equiposDevolucion: PrestamoDto[] = [];
 
   abrirVistaPrestamos(prestamos : PrestamoDto[]) {
     this.prestamosVista = prestamos;
@@ -304,6 +313,11 @@ export class PrestamosTablaComponent extends Tabla implements OnInit {
   validarDevuelto(key: number) {
     this.observacionDevolucion = '';
     this.prestamoKeySeleccionado = key;
+    this.equiposDevolucion = this.prestamos.get(key)?.equipos ?? [];
+    this.estadosRetorno = {};
+    for (const eq of this.equiposDevolucion) {
+      if (eq.CodigoImt) this.estadosRetorno[eq.CodigoImt] = 'operativo';
+    }
     this.avisodevuelto.set(true);
   }
 
@@ -327,7 +341,10 @@ export class PrestamosTablaComponent extends Tabla implements OnInit {
   }
 
   devolverprestamo(key: number) {
-    this.prestamosapi.cambiarEstadoPrestamo(this.prestamos.get(key)!.datosgrupo.Id, 'finalizado', this.observacionDevolucion).subscribe({
+    const equiposRetorno = this.equiposDevolucion
+      .filter(eq => !!eq.CodigoImt)
+      .map(eq => ({ CodigoImt: eq.CodigoImt!, EstadoEquipo: this.estadosRetorno[eq.CodigoImt!] ?? 'operativo' }));
+    this.prestamosapi.cambiarEstadoPrestamo(this.prestamos.get(key)!.datosgrupo.Id, 'finalizado', this.observacionDevolucion, equiposRetorno).subscribe({
       next: (response) => {
         this.mensajeexito = 'Préstamo marcado como devuelto con éxito.';
         this.exito.set(true);

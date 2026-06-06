@@ -96,6 +96,45 @@ export class AuditPanelComponent implements OnChanges {
     this.cargar();
   }
 
+  // === Observación: parseo + modal de detalle ===
+  obsAbierta: { observacion?: string; equipos?: { codigo: number; nombre?: string; estado: string }[]; texto?: string } | null = null;
+
+  parseDetalle(detalle?: string): { observacion?: string; equipos?: { codigo: number; nombre?: string; estado: string }[]; texto?: string } | null {
+    if (!detalle) return null;
+    try {
+      const o = JSON.parse(detalle);
+      if (o && typeof o === 'object') return o;
+    } catch { /* texto plano */ }
+    return { texto: detalle };
+  }
+
+  resumenObs(log: AuditLogDto): string {
+    const p = this.parseDetalle(log.Detalle);
+    if (!p) return '—';
+    return p.observacion || p.texto || (p.equipos?.length ? 'Ver estados de equipos' : '—');
+  }
+
+  tieneDetalle(log: AuditLogDto): boolean {
+    const p = this.parseDetalle(log.Detalle);
+    return !!p && !!(p.observacion || p.texto || p.equipos?.length);
+  }
+
+  abrirObs(log: AuditLogDto): void {
+    const p = this.parseDetalle(log.Detalle);
+    if (p) this.obsAbierta = p;
+  }
+
+  cerrarObs(): void { this.obsAbierta = null; }
+
+  estadoEquipoLabel(estado?: string): string {
+    switch (estado) {
+      case 'operativo': return 'Operativo';
+      case 'parcialmente_operativo': return 'Parcialmente operativo';
+      case 'inoperativo': return 'Inoperativo';
+      default: return estado || '—';
+    }
+  }
+
   badgeClass(accion: string | undefined): string {
     switch (accion?.toLowerCase()) {
       case 'crear':   return 'badge-aprobado';

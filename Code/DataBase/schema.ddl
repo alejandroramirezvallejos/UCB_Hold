@@ -435,17 +435,18 @@ create index ix_prestamos_carnet_estado
 
 create table detalles_prestamos
 (
-    id_detalle_prestamo integer generated always as identity
+    id_detalle_prestamo   integer generated always as identity
         primary key,
-    id_equipo           integer
+    id_equipo             integer
         constraint fk_equipo
             references equipos,
-    id_prestamo         integer               not null
+    id_prestamo           integer               not null
         constraint fk_prestamo
             references prestamos,
-    estado_eliminado    boolean default false not null,
-    id_grupo_equipo     integer               not null
-        references grupos_equipos
+    estado_eliminado      boolean default false not null,
+    id_grupo_equipo       integer               not null
+        references grupos_equipos,
+    estado_equipo_retorno estado_equipo
 );
 
 alter table detalles_prestamos

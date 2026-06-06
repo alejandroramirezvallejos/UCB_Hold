@@ -89,6 +89,13 @@
   width: 3.6ch !important;
   margin-left: 0.35rem !important;
 }
+/* Año = solo texto (no editable): ocultar flechas del spinner y bloquear interacción */
+.flatpickr-current-month .numInputWrapper span.arrowUp,
+.flatpickr-current-month .numInputWrapper span.arrowDown { display: none !important; }
+.flatpickr-current-month input.cur-year {
+  pointer-events: none !important;
+  cursor: default !important;
+}
 
 /* Nav arrows — override absolute positioning, match calendario-header button */
 .flatpickr-months .flatpickr-prev-month,

@@ -105,6 +105,63 @@
 .date-col { white-space: nowrap; color: var(--ink-muted); font-size: 0.75rem; }
 .id-col { font-size: 0.75rem; color: var(--ink-secondary); }
 .detail-col { color: var(--ink-muted); font-size: 0.75rem; max-width: 200px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.detail-clickable { cursor: pointer; color: var(--interactive-text); font-weight: 600; transition: color var(--t-fast); }
+.detail-clickable:hover { text-decoration: underline; }
+
+/* Modal de observación */
+.obs-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0,0,0,0.5);
+  backdrop-filter: blur(4px);
+  -webkit-backdrop-filter: blur(4px);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 11000;
+  padding: 1rem;
+  animation: fadeIn 200ms ease-out both;
+}
+.obs-modal {
+  position: relative;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-xl);
+  box-shadow: var(--shadow-xl);
+  padding: 1.75rem;
+  width: 100%;
+  max-width: 520px;
+  max-height: 85vh;
+  overflow-y: auto;
+  animation: slideUp 200ms ease-out both;
+}
+.obs-close {
+  position: absolute;
+  top: 1rem;
+  right: 1rem;
+  background: none;
+  border: none;
+  cursor: pointer;
+  color: var(--ink-muted);
+  font-size: 1rem;
+  width: 1.75rem;
+  height: 1.75rem;
+}
+.obs-close:hover { color: var(--ink); }
+.obs-title { margin: 0 0 0.5rem; font-size: 1.1rem; font-weight: 700; color: var(--ink); }
+.obs-text { margin: 0 0 1rem; font-size: 0.875rem; color: var(--ink-secondary); line-height: 1.5; white-space: pre-wrap; word-break: break-word; }
+.obs-subtitle { margin: 1rem 0 0.5rem; font-size: 0.8rem; font-weight: 700; color: var(--ink-secondary); text-transform: uppercase; letter-spacing: 0.03em; }
+.obs-equipos { width: 100%; border-collapse: collapse; font-size: 0.8rem; }
+.obs-equipos th { text-align: left; padding: 0.4rem 0.5rem; color: var(--ink-secondary); font-weight: 700; border-bottom: 1px solid var(--border); font-size: 0.72rem; }
+.obs-equipos td { padding: 0.5rem; border-bottom: 1px solid var(--border); color: var(--ink); vertical-align: middle; }
+.badge-estado-operativo { background: var(--success-bg); color: var(--success); }
+.badge-estado-parcialmente_operativo { background: #fff7ed; color: #b45309; }
+.badge-estado-inoperativo { background: var(--error-bg); color: var(--error); }
+@keyframes slideUp {
+  from { opacity: 0; transform: translateY(8px) scale(0.98); }
+  to   { opacity: 1; transform: translateY(0) scale(1); }
+}
+@keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
 .admin-name { display: block; font-weight: 600; color: var(--ink); font-size: 0.8rem; }
 .admin-carnet { display: block; font-size: 0.7rem; color: var(--ink-muted); }
 .audit-loading, .audit-empty {

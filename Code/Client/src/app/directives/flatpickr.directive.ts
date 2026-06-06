@@ -31,6 +31,13 @@ export class FlatpickrDirective implements OnInit, OnDestroy {
         this.el.nativeElement.dispatchEvent(new Event('change'));
       },
       onReady: (_dates, _str, instance) => {
+        const yearInput = instance.currentYearElement;
+        if (yearInput) {
+          yearInput.readOnly = true;
+          yearInput.tabIndex = -1;
+          yearInput.addEventListener('wheel', (e) => e.preventDefault(), { passive: false });
+          yearInput.addEventListener('keydown', (e) => e.preventDefault());
+        }
         this.fpReady.emit(instance);
       },
     }) as flatpickr.Instance;

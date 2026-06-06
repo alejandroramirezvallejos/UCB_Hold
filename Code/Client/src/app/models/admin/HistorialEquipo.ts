@@ -6,5 +6,6 @@ export interface HistorialEquipoDto {
   FechaDevolucionEsperada?: Date;
   FechaDevolucion?: Date;
   EstadoPrestamo?: string;
+  EstadoEquipo?: string;
   Observacion?: string;
 }

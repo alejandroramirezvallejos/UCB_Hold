@@ -5,7 +5,7 @@
   width: 100vw;
   height: 100vh;
   background-color: rgba(0, 0, 0, 0.5); /* Fondo oscuro semitransparente */
-  z-index: 1000; /* Mismo z-index alto que aviso-eliminar */
+  z-index: 11000; /* Por encima del navbar (1000) y sidebar (1100) */
   display: flex;
   justify-content: center;
   align-items: center;

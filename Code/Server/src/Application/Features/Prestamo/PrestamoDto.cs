@@ -23,4 +23,6 @@ public class PrestamoDto
     public string? UbicacionMueble { get; set; }
     public List<int>? GrupoEquipoId { get; set; }
     public string? Contrato { get; set; }
+    public string? EstadoEquipo { get; set; }
+    public List<PrestamoDto>? EquiposRetorno { get; set; }
 }

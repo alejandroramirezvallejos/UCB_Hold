@@ -1,5 +1,6 @@
 using Ardalis.Result;
 using IMT_Reservas.Server.Application.Features.Equipo;
+using IMT_Reservas.Server.Core.Entities;
 using IMT_Reservas.Server.Infrastructure.Config;
 using IMT_Reservas.Server.Infrastructure.Repositories.Abstraction;
 using Microsoft.EntityFrameworkCore;
@@ -55,7 +56,8 @@ public class EquipoRepository : Repository<EquipoEntity, EquipoDto>
             .ToListAsync();
 
     public async Task<List<HistorialEquipoDto>> GetHistorial(int equipoId)
-        => await DbContext.DetallesPrestamos
+    {
+        var rows = await DbContext.DetallesPrestamos
             .AsNoTracking()
             .IgnoreQueryFilters()
             .Where(d => d.IdEquipo == equipoId)
@@ -66,19 +68,42 @@ public class EquipoRepository : Repository<EquipoEntity, EquipoDto>
             .Join(DbContext.Usuarios.IgnoreQueryFilters(),
                 x => x.p.Carnet,
                 u => u.Carnet,
-                (x, u) => new HistorialEquipoDto
+                (x, u) => new
                 {
-                    IdPrestamo              = x.p.Id,
-                    Carnet                  = u.Carnet,
-                    NombreUsuario           = u.Nombre + " " + u.ApellidoPaterno,
-                    FechaPrestamo           = x.p.FechaPrestamo,
-                    FechaDevolucionEsperada = x.p.FechaDevolucionEsperada,
-                    FechaDevolucion         = x.p.FechaDevolucion,
-                    EstadoPrestamo          = x.p.EstadoPrestamo.ToString().ToLower(),
-                    Observacion             = x.p.Observacion
+                    x.p.Id,
+                    u.Carnet,
+                    u.Nombre,
+                    u.ApellidoPaterno,
+                    x.p.FechaPrestamo,
+                    x.p.FechaDevolucionEsperada,
+                    x.p.FechaDevolucion,
+                    x.p.EstadoPrestamo,
+                    x.d.EstadoEquipoRetorno,
+                    x.p.Observacion
                 })
-            .OrderByDescending(h => h.FechaPrestamo)
+            .OrderByDescending(r => r.FechaPrestamo)
             .ToListAsync();
+
+        return rows.Select(r => new HistorialEquipoDto
+        {
+            IdPrestamo              = r.Id,
+            Carnet                  = r.Carnet,
+            NombreUsuario           = r.Nombre + " " + r.ApellidoPaterno,
+            FechaPrestamo           = r.FechaPrestamo,
+            FechaDevolucionEsperada = r.FechaDevolucionEsperada,
+            FechaDevolucion         = r.FechaDevolucion,
+            EstadoPrestamo          = r.EstadoPrestamo.ToString().ToLower(),
+            EstadoEquipo            = r.EstadoEquipoRetorno.HasValue ? EstadoEquipoToPg(r.EstadoEquipoRetorno.Value) : null,
+            Observacion             = r.Observacion
+        }).ToList();
+    }
+
+    private static string EstadoEquipoToPg(EstadoEquipo estado) => estado switch
+    {
+        EstadoEquipo.ParcialmenteOperativo => "parcialmente_operativo",
+        EstadoEquipo.Inoperativo           => "inoperativo",
+        _                                  => "operativo"
+    };
 
     public override async Task<Result<object>> Delete(int id)
     {

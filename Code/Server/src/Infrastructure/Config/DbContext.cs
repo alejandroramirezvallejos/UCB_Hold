@@ -299,6 +299,7 @@ public class ApplicationDbContext : DbContext
             entity.Property(e => e.IdPrestamo).HasColumnName("id_prestamo");
             entity.Property(e => e.IdEquipo).HasColumnName("id_equipo");
             entity.Property(e => e.IdGrupoEquipo).HasColumnName("id_grupo_equipo");
+            entity.Property(e => e.EstadoEquipoRetorno).HasColumnType("estado_equipo").HasColumnName("estado_equipo_retorno");
             entity.Property(e => e.EstadoEliminado).HasColumnName("estado_eliminado");
             entity.HasOne<Prestamo>().WithMany().HasForeignKey(e => e.IdPrestamo).IsRequired();
             entity.HasOne<Equipo>().WithMany().HasForeignKey(e => e.IdEquipo).IsRequired(false);

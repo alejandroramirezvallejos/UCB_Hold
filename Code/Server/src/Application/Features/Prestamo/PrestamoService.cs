@@ -1,3 +1,4 @@
+using System.Text.Json;
 using Ardalis.Result;
 using FluentValidation;
 using IMT_Reservas.Server.Application.Abstraction;
@@ -14,10 +15,8 @@ public class PrestamoService : Service<PrestamoEntity, PrestamoRepository, Prest
 
     public PrestamoService(PrestamoRepository repository, PrestamoMapper mapper,
         IValidator<PrestamoDto> validator, AuditLogService audit)
-        : base(repository, validator, mapper, audit)
-    {
+        : base(repository, validator, mapper, audit) =>
         _mapper = mapper;
-    }
 
     public override async Task<Result<PrestamoDto>> Create(PrestamoDto dto)
     {
@@ -77,7 +76,7 @@ public class PrestamoService : Service<PrestamoEntity, PrestamoRepository, Prest
         return await Get(id);
     }
 
-    public async Task<Result<PrestamoDto>> UpdateStatus(int id, string newStatus, string? observacion = null)
+    public async Task<Result<PrestamoDto>> UpdateStatus(int id, string newStatus, string? observacion = null, PrestamoDto? body = null)
     {
         var prestamo = await Repository.FindById(id);
 
@@ -95,7 +94,7 @@ public class PrestamoService : Service<PrestamoEntity, PrestamoRepository, Prest
         if (parsedState.Value == EstadoPrestamo.Aprobado)
         {
             var assigned = await Repository.AssignEquiposOnApproval(id);
-            
+
             if (!assigned)
                 return Result<PrestamoDto>.Error("No se puede aprobar: no hay equipos disponibles para uno o más grupos en las fechas solicitadas");
 
@@ -107,7 +106,31 @@ public class PrestamoService : Service<PrestamoEntity, PrestamoRepository, Prest
         if (observacion != null)
             prestamo.Observacion = observacion;
 
+        if (parsedState.Value == EstadoPrestamo.Finalizado)
+            prestamo.FechaDevolucion = DateTime.UtcNow;
+
         await Repository.UpdateTracked(prestamo);
+
+        string? detalleAudit = null;
+        
+        if (parsedState.Value == EstadoPrestamo.Finalizado && body?.EquiposRetorno is { Count: > 0 })
+        {
+            var estadosPorCodigo = new Dictionary<int, EstadoEquipo>();
+
+            foreach (var item in body.EquiposRetorno)
+            {
+                if (int.TryParse(item.CodigoImt, out var codigo))
+                    estadosPorCodigo[codigo] = ParseEstadoEquipo(item.EstadoEquipo);
+            }
+
+            var aplicados = await Repository.AplicarEstadosRetorno(id, estadosPorCodigo);
+
+            detalleAudit = JsonSerializer.Serialize(new
+            {
+                observacion,
+                equipos = aplicados.Select(a => new { codigo = a.Codigo, nombre = a.Nombre, estado = a.Estado })
+            });
+        }
 
         var accionAudit = parsedState.Value switch
         {
@@ -120,10 +143,17 @@ public class PrestamoService : Service<PrestamoEntity, PrestamoRepository, Prest
             _                         => AuditAccion.Editar
         };
 
-        await Audit!.Log(accionAudit, typeof(PrestamoEntity).Name, id.ToString());
+        await Audit!.Log(accionAudit, typeof(PrestamoEntity).Name, id.ToString(), detalleAudit);
 
         return await Get(id);
     }
+
+    private static EstadoEquipo ParseEstadoEquipo(string? estado) => estado switch
+    {
+        "parcialmente_operativo" => EstadoEquipo.ParcialmenteOperativo,
+        "inoperativo"            => EstadoEquipo.Inoperativo,
+        _                        => EstadoEquipo.Operativo
+    };
 
     public async Task<Result<List<PrestamoDto>>> GetHistory(string carnetUsuario, string estadoPrestamo)
     {

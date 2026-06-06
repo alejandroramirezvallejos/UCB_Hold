@@ -9,5 +9,6 @@ public class HistorialEquipoDto
     public DateTime? FechaDevolucionEsperada { get; set; }
     public DateTime? FechaDevolucion { get; set; }
     public string? EstadoPrestamo { get; set; }
+    public string? EstadoEquipo { get; set; }
     public string? Observacion { get; set; }
 }

@@ -43,8 +43,9 @@ public class PrestamoController : Controller
     public async Task<IActionResult> UpdateStatus(
         int id,
         [FromQuery] string estado,
-        [FromQuery] string? observacion = null)
-        => ToResponse(await _service.UpdateStatus(id, estado, observacion));
+        [FromQuery] string? observacion = null,
+        [FromBody] PrestamoDto? body = null)
+        => ToResponse(await _service.UpdateStatus(id, estado, observacion, body));
 
     [HttpDelete("{id:int}")]
     public async Task<IActionResult> Delete(int id)

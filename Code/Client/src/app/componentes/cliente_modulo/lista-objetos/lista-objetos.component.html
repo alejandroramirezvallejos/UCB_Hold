@@ -6,8 +6,14 @@
           <div class="product-card" title="{{ item.nombre + ' ' + item.modelo + ' ' + item.marca }}">
             <a [routerLink]="['/Objeto', item.id]" class="product-card__link">
               <div class="product-card__image-wrapper">
-                <img [src]="item.link" alt="{{ item.nombre + ' ' + item.modelo + ' ' + item.marca }}"
-                     class="product-card__image" loading="lazy" />
+                @if(item.link) {
+                  <img [src]="item.link" alt="{{ item.nombre + ' ' + item.modelo + ' ' + item.marca }}"
+                       class="product-card__image" loading="lazy" (error)="item.link = null" />
+                } @else {
+                  <div class="product-card__no-image">
+                    <i class="fas fa-image"></i>
+                  </div>
+                }
               </div>
               <div class="product-card__info">
                 <h3 class="product-card__title">{{ item.nombre + " " + item.modelo + " " + item.marca }}</h3>

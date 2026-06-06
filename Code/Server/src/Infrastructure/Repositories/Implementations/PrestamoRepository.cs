@@ -2,7 +2,6 @@ using System.Text.RegularExpressions;
 using Ardalis.Result;
 using IMT_Reservas.Server.Application.Features.Prestamo;
 using IMT_Reservas.Server.Application.Features.Prestamo.State;
-using IMT_Reservas.Server.Core.Abstraction;
 using IMT_Reservas.Server.Core.Entities;
 using IMT_Reservas.Server.Infrastructure.Config;
 using IMT_Reservas.Server.Infrastructure.Repositories.Abstraction;
@@ -75,30 +74,52 @@ public class PrestamoRepository : Repository<PrestamoEntity, PrestamoDto>
         await DbContext.SaveChangesAsync();
     }
 
-    public async Task<bool> HasEquipoConflictoAlAprobar(int prestamoId)
+    public async Task<List<(int Codigo, string? Nombre, string Estado)>> AplicarEstadosRetorno(
+        int prestamoId, Dictionary<int, EstadoEquipo> estadosPorCodigo)
     {
-        var prestamo = await DbContext.Prestamos
-            .FirstOrDefaultAsync(p => p.Id == prestamoId);
-
-        if (prestamo == null) return false;
-
-        var equipoIds = await DbContext.DetallesPrestamos
-            .Where(d => d.IdPrestamo == prestamoId && !d.EstadoEliminado)
-            .Select(d => d.IdEquipo)
+        var detalles = await DbContext.DetallesPrestamos
+            .Where(d => d.IdPrestamo == prestamoId && d.IdEquipo != null)
             .ToListAsync();
 
-        if (equipoIds.Count == 0) return false;
+        var equipoIds = detalles.Select(d => d.IdEquipo!.Value).ToList();
 
-        return await DbContext.DetallesPrestamos
-            .Join(DbContext.Prestamos, d => d.IdPrestamo, p => p.Id, (d, p) => new { d, p })
-            .AnyAsync(x => equipoIds.Contains(x.d.IdEquipo)
-                        && x.d.IdPrestamo != prestamoId
-                        && !x.d.EstadoEliminado
-                        && (x.p.EstadoPrestamo == EstadoPrestamo.Aprobado
-                         || x.p.EstadoPrestamo == EstadoPrestamo.Activo)
-                        && x.p.FechaPrestamoEsperada.Date <= prestamo.FechaDevolucionEsperada.Date
-                        && x.p.FechaDevolucionEsperada.Date >= prestamo.FechaPrestamoEsperada.Date);
+        var equipos = await DbContext.Equipos
+            .Where(e => equipoIds.Contains(e.Id))
+            .ToListAsync();
+
+        var grupos = await DbContext.GruposEquipos
+            .Where(g => equipos.Select(e => e.IdGrupoEquipo).Contains(g.Id))
+            .ToDictionaryAsync(g => g.Id, g => g.Nombre);
+
+        var resultado = new List<(int, string?, string)>();
+
+        foreach (var equipo in equipos)
+        {
+            if (!estadosPorCodigo.TryGetValue(equipo.CodigoImt, out var estado))
+                continue;
+
+            equipo.EstadoEquipo = estado;
+
+            var detalle = detalles.FirstOrDefault(d => d.IdEquipo == equipo.Id);
+            
+            if (detalle != null)
+                detalle.EstadoEquipoRetorno = estado;
+
+            grupos.TryGetValue(equipo.IdGrupoEquipo, out var nombre);
+            resultado.Add((equipo.CodigoImt, nombre, EstadoEquipoToPg(estado)));
+        }
+
+        await DbContext.SaveChangesAsync();
+        
+        return resultado;
     }
+
+    private static string EstadoEquipoToPg(EstadoEquipo estado) => estado switch
+    {
+        EstadoEquipo.ParcialmenteOperativo => "parcialmente_operativo",
+        EstadoEquipo.Inoperativo           => "inoperativo",
+        _                                  => "operativo"
+    };
 
     public async Task<bool> HasAvailableEquipo(int grupoId, DateTime fechaInicio, DateTime fechaFin)
     {
@@ -253,7 +274,7 @@ public class PrestamoRepository : Repository<PrestamoEntity, PrestamoDto>
         if (string.IsNullOrEmpty(contratoHtml))
             return;
 
-        var contrato = new Core.Entities.Contrato { ContratoHtml = contratoHtml };
+        var contrato = new Contrato { ContratoHtml = contratoHtml };
         DbContext.Contratos.Add(contrato);
         await DbContext.SaveChangesAsync();
 

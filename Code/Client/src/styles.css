@@ -1064,27 +1064,16 @@ td.actions-column {
 /* === GLOBAL NAVIGATION POLISH === */
 html { scroll-behavior: smooth; }
 
-/* Routed view entrance — opacity-only fade so it never creates a containing
-   block that would break position:fixed modals rendered inside the route. */
-router-outlet + * {
-  display: block;
-  animation: routeEnter 260ms ease-out both;
-}
-@keyframes routeEnter {
-  from { opacity: 0; }
-  to   { opacity: 1; }
-}
-
 /* Tactile feedback on primary actions */
 .btn:active, button.btn:active { transform: translateY(0) scale(0.97); }
 
-/* Staggered rows for data/audit tables */
+/* Staggered rows for data/audit tables (opacity-only — never affects fixed overlays) */
 @media (prefers-reduced-motion: no-preference) {
   .data-table tbody tr, .audit-table tbody tr {
     animation: rowEnter 240ms ease-out both;
   }
   @keyframes rowEnter {
-    from { opacity: 0; transform: translateY(4px); }
-    to   { opacity: 1; transform: translateY(0); }
+    from { opacity: 0; }
+    to   { opacity: 1; }
   }
 }

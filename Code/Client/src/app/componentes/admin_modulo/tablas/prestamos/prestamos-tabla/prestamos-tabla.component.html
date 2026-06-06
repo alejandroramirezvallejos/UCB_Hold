@@ -224,8 +224,26 @@
   <div class="devuelto-overlay">
     <div class="devuelto-modal">
       <h3 class="devuelto-title">Marcar como devuelto</h3>
-      <p class="devuelto-text">¿Está seguro de marcar este préstamo como devuelto? Puede agregar observaciones opcionales:</p>
-      <textarea [(ngModel)]="observacionDevolucion" class="observaciones-input" placeholder="Escriba sus observaciones aquí..."></textarea>
+      <p class="devuelto-text">Indique el estado con el que se devuelve cada equipo y, opcionalmente, una observación.</p>
+      @if(equiposDevolucion.length > 0) {
+        <div class="devuelto-equipos">
+          @for(eq of equiposDevolucion; track eq.CodigoImt) {
+            <div class="devuelto-equipo-row">
+              <div class="devuelto-equipo-info">
+                <span class="devuelto-equipo-nombre">{{ eq.NombreGrupoEquipo }}</span>
+                <span class="devuelto-equipo-codigo">IMT {{ eq.CodigoImt }}</span>
+              </div>
+              <app-custom-select
+                class="devuelto-equipo-select"
+                [opciones]="estadoEquipoOpciones"
+                [(ngModel)]="estadosRetorno[eq.CodigoImt!]"
+                placeholder="Estado"
+              ></app-custom-select>
+            </div>
+          }
+        </div>
+      }
+      <textarea [(ngModel)]="observacionDevolucion" class="observaciones-input" placeholder="Observaciones (opcional)..."></textarea>
       <div class="devuelto-actions">
         <button class="devuelto-btn devuelto-btn-cancel" (click)="avisodevuelto.set(false)">Cancelar</button>
         <button class="devuelto-btn devuelto-btn-confirm" (click)="devolverprestamo(prestamoKeySeleccionado)">Aceptar</button>

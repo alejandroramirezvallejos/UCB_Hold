@@ -20,6 +20,8 @@ public partial class PrestamoMapper : IMapper<PrestamoEntity, PrestamoDto>
     [MapperIgnoreTarget(nameof(PrestamoDto.TelefonoUsuario))]
     [MapperIgnoreTarget(nameof(PrestamoDto.UbicacionEquipo))]
     [MapperIgnoreTarget(nameof(PrestamoDto.UbicacionMueble))]
+    [MapperIgnoreTarget(nameof(PrestamoDto.EstadoEquipo))]
+    [MapperIgnoreTarget(nameof(PrestamoDto.EquiposRetorno))]
     public partial PrestamoDto ToDto(PrestamoEntity entity);
 
     [MapProperty(nameof(PrestamoDto.CarnetUsuario), nameof(PrestamoEntity.Carnet))]
@@ -34,6 +36,8 @@ public partial class PrestamoMapper : IMapper<PrestamoEntity, PrestamoDto>
     [MapperIgnoreSource(nameof(PrestamoDto.TelefonoUsuario))]
     [MapperIgnoreSource(nameof(PrestamoDto.UbicacionEquipo))]
     [MapperIgnoreSource(nameof(PrestamoDto.UbicacionMueble))]
+    [MapperIgnoreSource(nameof(PrestamoDto.EstadoEquipo))]
+    [MapperIgnoreSource(nameof(PrestamoDto.EquiposRetorno))]
     public partial PrestamoEntity ToEntity(PrestamoDto dto);
 
     [MapProperty(nameof(PrestamoDto.CarnetUsuario), nameof(PrestamoEntity.Carnet))]
