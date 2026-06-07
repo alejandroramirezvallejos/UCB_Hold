@@ -14,6 +14,9 @@ export abstract class HistorialBase {
    exito: WritableSignal<boolean> = signal(false);
    mensajeexito: string= "";
   protected abstract estado: string;
+  // Mantiene el orden de inserción del Map (backend ya ordena por FechaSolicitud desc → más recientes arriba),
+  // en vez del orden ascendente por key que aplica el pipe keyvalue por defecto.
+  keepOrder = (_a: unknown, _b: unknown): number => 0;
   constructor(protected prestamoApi: PrestamosAPIService, protected usuario: UsuarioService) { };
   cargarDatos() {
     if (this.usuario.vacio() == false) {

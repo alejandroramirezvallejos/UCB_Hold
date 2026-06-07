@@ -63,7 +63,7 @@
           <th>Acciones</th>
         </tr>
       </thead>      <tbody>
-        @for (equipo of equipos; track $index ; let i = $index) {
+        @for (equipo of equipos; track equipo.Id) {
             <tr>
             <td>{{equipo.NombreGrupoEquipo}}</td>
             <td>{{equipo.EstadoEquipo}}</td>

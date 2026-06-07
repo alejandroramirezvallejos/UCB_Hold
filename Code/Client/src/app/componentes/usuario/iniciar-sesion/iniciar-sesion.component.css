@@ -1,10 +1,13 @@
 .login-container {
   min-height: 100vh;
   display: flex;
-  align-items: center;
+  align-items: flex-start;
   justify-content: center;
   background: var(--bg);
-  padding: 2rem;
+  padding: 3.5rem 2rem 2rem;
+}
+@media (max-width: 768px) {
+  .login-container { padding: 1.5rem 1rem 1rem; }
 }
 .login-card {
   background: var(--surface);

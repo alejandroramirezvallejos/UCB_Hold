@@ -28,10 +28,10 @@
             </tbody>
         </table>
     </div>
-    @if(prestamos.length > 0 && prestamos[0].Observacion) {
+    @if(prestamos.length > 0) {
         <div class="observacion-general">
             <span class="obs-label">Observaciones del préstamo:</span>
-            <p class="obs-texto">{{prestamos[0].Observacion}}</p>
+            <p class="obs-texto">{{ observacionTexto() }}</p>
         </div>
     }
 </div>

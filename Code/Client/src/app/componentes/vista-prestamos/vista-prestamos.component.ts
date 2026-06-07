@@ -12,4 +12,9 @@ export class VistaPrestamosComponent {
   cerrarVista(){
     this.cerrar.emit();
   }
+  // Datos de prueba antiguos guardaron literalmente "string" como observación; lo tratamos como vacío.
+  observacionTexto(): string {
+    const obs = this.prestamos[0]?.Observacion?.trim();
+    return obs && obs.toLowerCase() !== 'string' ? obs : 'Sin observación';
+  }
 }

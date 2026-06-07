@@ -1,5 +1,4 @@
-<body>
-  <div class="page-wrapper">
+<div class="page-wrapper">
     <div class="grid-container" #gridContainer>
       @if (productosFiltrados.length > 0) {
         @for (item of productosActuales; track item.id) {
@@ -102,7 +101,6 @@
       </div>
     </footer>
   </div>
-</body>
 @if(error()){
   <app-mostrarerror
   [error]="error"

@@ -293,22 +293,22 @@ public class PrestamoRepository : Repository<PrestamoEntity, PrestamoDto>
     {
         var rows = await (
             from prestamo in source.OrderByDescending(p => p.FechaSolicitud)
-            join usuario in DbContext.Usuarios.AsNoTracking()
+            join usuario in DbContext.Usuarios.AsNoTracking().IgnoreQueryFilters()
                 on prestamo.Carnet equals usuario.Carnet into usuarioJoin
             from usuario in usuarioJoin.DefaultIfEmpty()
-            join detalle in DbContext.DetallesPrestamos.AsNoTracking().Where(d => !d.EstadoEliminado)
+            join detalle in DbContext.DetallesPrestamos.AsNoTracking().IgnoreQueryFilters().Where(d => !d.EstadoEliminado)
                 on prestamo.Id equals detalle.IdPrestamo into detalleJoin
             from detalle in detalleJoin.DefaultIfEmpty()
-            join equipo in DbContext.Equipos.AsNoTracking()
+            join equipo in DbContext.Equipos.AsNoTracking().IgnoreQueryFilters()
                 on detalle.IdEquipo equals equipo.Id into equipoJoin
             from equipo in equipoJoin.DefaultIfEmpty()
-            join grupoReserva in DbContext.GruposEquipos.AsNoTracking()
+            join grupoReserva in DbContext.GruposEquipos.AsNoTracking().IgnoreQueryFilters()
                 on detalle.IdGrupoEquipo equals grupoReserva.Id into grupoReservaJoin
             from grupoReserva in grupoReservaJoin.DefaultIfEmpty()
-            join gavetero in DbContext.Gaveteros.AsNoTracking()
+            join gavetero in DbContext.Gaveteros.AsNoTracking().IgnoreQueryFilters()
                 on equipo.IdGavetero equals gavetero.Id into gaveteroJoin
             from gavetero in gaveteroJoin.DefaultIfEmpty()
-            join mueble in DbContext.Muebles.AsNoTracking()
+            join mueble in DbContext.Muebles.AsNoTracking().IgnoreQueryFilters()
                 on gavetero.IdMueble equals mueble.Id into muebleJoin
             from mueble in muebleJoin.DefaultIfEmpty()
             select new
