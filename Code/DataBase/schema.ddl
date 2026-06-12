@@ -42,15 +42,21 @@ create sequence carrera_id_carrera_seq;
 
 alter sequence carrera_id_carrera_seq owner to postgres;
 
-create sequence carreras_id_carrera_seq
-    as integer;
+create sequence carreras_id_carrera_seq;
 
 alter sequence carreras_id_carrera_seq owner to postgres;
 
-create sequence detalles_mantenimientos_id_detalle_mantenimiento_seq1
-    as integer;
+create sequence detalles_mantenimientos_id_detalle_mantenimiento_seq;
+
+alter sequence detalles_mantenimientos_id_detalle_mantenimiento_seq owner to postgres;
+
+create sequence detalles_mantenimientos_id_detalle_mantenimiento_seq1;
 
 alter sequence detalles_mantenimientos_id_detalle_mantenimiento_seq1 owner to postgres;
+
+create sequence detalles_prestamos_id_detalle_prestamo_seq;
+
+alter sequence detalles_prestamos_id_detalle_prestamo_seq owner to postgres;
 
 create sequence nombre_de_tu_tabla_id_seq;
 
@@ -78,7 +84,7 @@ alter type tipo_usuario owner to postgres;
 
 create table categorias
 (
-    id_categoria     integer generated always as identity
+    id_categoria     integer               not null
         constraint "Categoria_pk"
             primary key,
     nombre           varchar(255)          not null
@@ -97,7 +103,7 @@ create index idx_categorias_nombre
 
 create table empresas_mantenimiento
 (
-    id_empresa_mantenimiento integer generated always as identity
+    id_empresa_mantenimiento integer               not null
         constraint "Empresa_Mantenimiento_pk"
             primary key,
     nombre                   varchar(255)          not null
@@ -123,7 +129,7 @@ create index idx_empresas_mantenimiento
 
 create table grupos_equipos
 (
-    id_grupo_equipo  integer generated always as identity
+    id_grupo_equipo  integer                      not null
         constraint "Grupo_Equipo_pk"
             primary key,
     nombre           varchar(256)                 not null,
@@ -154,7 +160,7 @@ create index idx_grupos_equipos_identificadores
 
 create table mantenimientos
 (
-    id_mantenimiento          integer generated always as identity
+    id_mantenimiento          integer               not null
         constraint "Mantenimiento_pk"
             primary key,
     descripcion               text,
@@ -177,7 +183,7 @@ create index idx_mantenimientos_fecha_empresa
 
 create table muebles
 (
-    id_mueble        integer generated always as identity
+    id_mueble        integer               not null
         constraint "Mueble_pk"
             primary key,
     nombre           varchar(255)          not null
@@ -202,7 +208,7 @@ alter sequence "Mueble_Id_Mueble_seq" owned by muebles.id_mueble;
 
 create table gaveteros
 (
-    id_gavetero      integer generated always as identity
+    id_gavetero      integer               not null
         constraint "Gavetero_pk"
             primary key,
     nombre           varchar(255)          not null
@@ -225,7 +231,7 @@ alter sequence "Gavetero_Id_Gavetero_seq" owned by gaveteros.id_gavetero;
 
 create table equipos
 (
-    id_equipo            integer generated always as identity
+    id_equipo            integer                                             not null
         constraint "Equipo_pk"
             primary key,
     id_grupo_equipo      integer                                             not null
@@ -256,7 +262,7 @@ alter sequence "Equipo_Id_equipo_seq" owned by equipos.id_equipo;
 
 create table accesorios
 (
-    id_accesorio     integer generated always as identity
+    id_accesorio     integer               not null
         constraint "Accesorio_pk"
             primary key,
     nombre           varchar(255)          not null,
@@ -283,7 +289,7 @@ create index idx_accesorios_identificadores
 
 create table componentes
 (
-    id_componente     integer generated always as identity
+    id_componente     integer               not null
         constraint "Componente_pk"
             primary key,
     descripcion       text,
@@ -316,7 +322,7 @@ create index idx_gaveteros_identificadores
 
 create table carreras
 (
-    id_carrera       integer generated always as identity
+    id_carrera       integer               not null
         constraint carrera_pkey
             primary key,
     nombre           varchar(255)          not null
@@ -335,7 +341,7 @@ create index idx_carreras_nombre
 
 create table contratos
 (
-    id       integer generated always as identity
+    id       integer not null
         constraint contrato_id
             primary key,
     contrato text
@@ -348,7 +354,7 @@ alter sequence nombre_de_tu_tabla_id_seq owned by contratos.id;
 
 create table detalles_mantenimientos
 (
-    id_detalle_mantenimiento integer generated always as identity
+    id_detalle_mantenimiento integer               not null
         primary key,
     id_mantenimiento         integer               not null
         constraint fk_detalles_mantenimiento
@@ -363,6 +369,8 @@ create table detalles_mantenimientos
 
 alter table detalles_mantenimientos
     owner to postgres;
+
+alter sequence detalles_mantenimientos_id_detalle_mantenimiento_seq owned by detalles_mantenimientos.id_detalle_mantenimiento;
 
 create index idx_detalles_mantenimientos
     on detalles_mantenimientos (id_mantenimiento, estado_eliminado);
@@ -401,7 +409,7 @@ alter table usuarios
 
 create table prestamos
 (
-    id_prestamo               integer generated always as identity
+    id_prestamo               integer                                                             not null
         constraint "Prestamo_pk"
             primary key,
     fecha_solicitud           timestamp       default (now() AT TIME ZONE 'America/La_Paz'::text) not null,
@@ -435,7 +443,7 @@ create index ix_prestamos_carnet_estado
 
 create table detalles_prestamos
 (
-    id_detalle_prestamo   integer generated always as identity
+    id_detalle_prestamo   integer               not null
         primary key,
     id_equipo             integer
         constraint fk_equipo
@@ -451,6 +459,8 @@ create table detalles_prestamos
 
 alter table detalles_prestamos
     owner to postgres;
+
+alter sequence detalles_prestamos_id_detalle_prestamo_seq owned by detalles_prestamos.id_detalle_prestamo;
 
 create index idx_detalles_prestamos
     on detalles_prestamos (id_prestamo, estado_eliminado);
