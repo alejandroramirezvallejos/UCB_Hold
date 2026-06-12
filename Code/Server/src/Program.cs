@@ -222,6 +222,13 @@ else
     builder.Services.AddDistributedMemoryCache();
 builder.Services.AddSingleton<CacheRepository>();
 
+builder.Services.Configure<CookiePolicyOptions>(options =>
+{
+    options.MinimumSameSitePolicy = Microsoft.AspNetCore.Http.SameSiteMode.Strict;
+    options.HttpOnly = Microsoft.AspNetCore.CookiePolicy.HttpOnlyPolicy.Always;
+    options.Secure = Microsoft.AspNetCore.Http.CookieSecurePolicy.Always;
+});
+
 builder.Services.AddHttpContextAccessor();
 builder.Services.AddScoped<AuditLogRepository>();
 builder.Services.AddScoped<AuditLogService>();
@@ -261,6 +268,8 @@ builder.Services.AddRateLimiter(options =>
 
 var app = builder.Build();
 
+app.UseCookiePolicy();
+
 if (!app.Environment.IsDevelopment())
 {
     app.UseHsts();
@@ -274,6 +283,18 @@ app.Use(async (ctx, next) =>
     ctx.Response.Headers.Append("Referrer-Policy",         "strict-origin-when-cross-origin");
     ctx.Response.Headers.Append("Permissions-Policy",      "camera=(), microphone=(), geolocation=()");
     ctx.Response.Headers.Append("X-XSS-Protection",        "1; mode=block");
+
+    if (ctx.Request.Path.StartsWithSegments("/api"))
+    {
+        // Super strict CSP for API responses (no scripts/styles/inline needed)
+        ctx.Response.Headers.Append("Content-Security-Policy", "default-src 'self'; frame-ancestors 'none'; object-src 'none'; base-uri 'self'; form-action 'self';");
+    }
+    else
+    {
+        // Dashboard CSP for Hangfire (requires inline scripts/styles)
+        ctx.Response.Headers.Append("Content-Security-Policy", "default-src 'self'; script-src 'self' 'unsafe-inline'; style-src 'self' 'unsafe-inline'; frame-ancestors 'none'; object-src 'none'; base-uri 'self'; form-action 'self';");
+    }
+
     await next();
 });
 
