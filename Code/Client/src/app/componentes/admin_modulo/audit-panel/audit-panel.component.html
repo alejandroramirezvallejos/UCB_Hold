@@ -1,5 +1,9 @@
 <div class="audit-panel-container">
   <div class="audit-filters">
+    <div class="audit-search-wrap">
+      <i class="fas fa-search search-icon"></i>
+      <input type="text" [(ngModel)]="filtroAdmin" (keyup.enter)="cargar()" placeholder="Buscar admin..." class="admin-search">
+    </div>
     <input
       type="text"
       appFlatpickr
@@ -32,7 +36,6 @@
         </ul>
       }
     </div>
-    <input type="text" [(ngModel)]="filtroAdmin" (keyup.enter)="cargar()" placeholder="Buscar admin..." class="date-input admin-search">
     <div class="audit-filters-actions">
       <button class="btn btn-ghost btn-sm" (click)="limpiar()">
         <i class="fas fa-times"></i> Limpiar

@@ -1,6 +1,41 @@
 .audit-panel-container { padding: 0; }
 .audit-count { font-size: 0.75rem; color: var(--ink-muted); margin-bottom: 0.5rem; font-weight: 500; }
-.admin-search { min-width: 140px; }
+
+/* Search — styled like the admin table search (icon inside a pill wrapper) */
+.audit-search-wrap {
+  position: relative;
+  flex: 1 1 200px;
+  min-width: 180px;
+  max-width: 22rem;
+}
+.audit-search-wrap .search-icon {
+  position: absolute;
+  left: 1rem;
+  top: 50%;
+  transform: translateY(-50%);
+  color: var(--ink-muted);
+  font-size: 0.85rem;
+  pointer-events: none;
+}
+.admin-search {
+  width: 100%;
+  height: 42px;
+  padding: 0 1rem 0 2.5rem;
+  border: 1px solid var(--border);
+  border-radius: var(--radius-full);
+  font-size: 0.875rem;
+  font-family: var(--font);
+  color: var(--ink);
+  background: rgba(255,255,255,0.9);
+  box-sizing: border-box;
+  transition: border-color var(--t-fast), box-shadow var(--t-fast);
+}
+.admin-search::placeholder { color: #757575; }
+.admin-search:focus {
+  outline: none;
+  border-color: var(--interactive-text);
+  box-shadow: 0 0 0 3px rgba(0, 69, 123, 0.12);
+}
 
 /* Custom "Todas las acciones" dropdown */
 .audit-select-wrap { position: relative; z-index: 400; }
@@ -9,9 +44,9 @@
   align-items: center;
   justify-content: space-between;
   gap: 0.5rem;
-  padding: 0.5rem 1rem;
+  padding: 0.5rem 1.25rem;
   border: 1px solid var(--border);
-  border-radius: var(--radius-sm);
+  border-radius: var(--radius-full);
   font-size: 0.9rem;
   font-family: var(--font);
   color: var(--ink);
@@ -32,7 +67,8 @@
   position: absolute;
   top: calc(100% + 4px);
   left: 0;
-  min-width: 180px;
+  min-width: 100%;
+  width: max-content;
   background: var(--dropdown-bg);
   backdrop-filter: var(--dropdown-blur);
   -webkit-backdrop-filter: var(--dropdown-blur);
@@ -46,7 +82,7 @@
   animation: slideDown 150ms ease-out both;
 }
 .audit-select-item {
-  padding: 0.6rem 1rem;
+  padding: 0.6rem 1.25rem;
   font-size: 0.82rem;
   font-family: var(--font);
   font-weight: 500;
@@ -69,9 +105,9 @@
   gap: 0.625rem;
 }
 .date-input {
-  padding: 0.5rem 1rem;
+  padding: 0.5rem 1.25rem;
   border: 1px solid var(--border);
-  border-radius: var(--radius-sm);
+  border-radius: var(--radius-full);
   font-size: 0.875rem;
   font-family: var(--font);
   color: var(--ink);
@@ -186,17 +222,23 @@
     flex-direction: column;
     align-items: stretch;
   }
+  .audit-search-wrap,
   .date-input,
   .audit-select-wrap,
   .audit-select-trigger,
   .admin-search {
     width: 100%;
+    max-width: none;
     min-width: 0;
   }
   .date-input,
   .audit-select-trigger {
     height: 40px;
-    padding: 0.4rem 0.75rem;
+    padding: 0.4rem 1.1rem;
+    font-size: 16px;
+  }
+  .admin-search {
+    height: 40px;
     font-size: 16px;
   }
   .audit-select-menu {

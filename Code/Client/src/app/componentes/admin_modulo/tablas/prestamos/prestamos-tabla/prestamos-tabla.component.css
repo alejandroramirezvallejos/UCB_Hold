@@ -224,24 +224,17 @@ td.actions-column {
   transition: var(--transition);
 }
 .btn-view {
-  color: #64748b; /* Gray */
-}
-.btn-view i {
-    color: #64748b;
+  color: var(--ink-secondary);
 }
 .btn-view:hover {
-  background-color: rgba(100, 116, 139, 0.1);
-  color: #334155; /* Darker gray on hover */
+  color: var(--interactive);
+  background-color: var(--interactive-subtle);
 }
 .btn-delete {
-  color: #64748b; /* Gray as requested */
-}
-.btn-delete i {
-    color: #64748b;
+  color: var(--color-error);
 }
 .btn-delete:hover {
-  background-color: rgba(100, 116, 139, 0.1);
-  color: #ef4444; /* Red on hover */
+  background-color: rgba(239, 68, 68, 0.1);
 }
 .empty-table {
   padding: 3rem !important;
