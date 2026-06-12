@@ -105,17 +105,10 @@ public class EquipoRepository : Repository<EquipoEntity, EquipoDto>
         _                                  => "operativo"
     };
 
-    public override async Task<Result<object>> Delete(int id)
+    protected override async Task CascadeDelete(EquipoEntity equipo)
     {
-        var entity = await DbContext.Equipos
-            .FirstOrDefaultAsync(equipo => equipo.Id == id && !equipo.EstadoEliminado);
-
-        if (entity == null)
-            return Result<object>.NotFound();
-
-        entity.EstadoEliminado = true;
-        await DbContext.SaveChangesAsync();
-
-        return Result<object>.Success(null!);
+        await CascadeLeaf<Accesorio>(a => a.IdEquipo == equipo.Id);
+        await CascadeLeaf<Componente>(c => c.IdEquipo == equipo.Id);
+        await CascadeLeaf<DetalleMantenimiento>(d => d.IdEquipo == equipo.Id);
     }
 }

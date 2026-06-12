@@ -1,3 +1,4 @@
+using System.Linq.Expressions;
 using Ardalis.Result;
 using IMT_Reservas.Server.Application.Abstraction;
 using IMT_Reservas.Server.Core.Abstraction;
@@ -36,23 +37,51 @@ public class Repository<TEntity, TDto> where TEntity : Entity where TDto : class
 
     public virtual async Task<Result<object>> Delete(int id)
     {
-        var entity = await DbContext.FindAsync(typeof(TEntity), id);
+        var entity = await DbContext.Set<TEntity>().FirstOrDefaultAsync(e => e.Id == id);
 
-        if (entity == null) 
+        if (entity == null)
             return Result<object>.NotFound();
 
-        DbContext.Remove(entity);
+        await SoftDelete(entity);
         await DbContext.SaveChangesAsync();
 
         return Result<object>.Success(null!);
     }
+
+    internal async Task SoftDelete(TEntity entity)
+    {
+        entity.EstadoEliminado = true;
+        await CascadeDelete(entity);
+    }
+
+    protected async Task CascadeThrough<TChild, TChildDto>(
+        Repository<TChild, TChildDto> childRepository,
+        Expression<Func<TChild, bool>> dependents)
+        where TChild : Entity where TChildDto : class
+    {
+        var children = await DbContext.Set<TChild>().Where(dependents).ToListAsync();
+
+        foreach (var child in children)
+            await childRepository.SoftDelete(child);
+    }
+
+    protected async Task CascadeLeaf<TChild>(Expression<Func<TChild, bool>> dependents)
+        where TChild : Entity
+    {
+        var children = await DbContext.Set<TChild>().Where(dependents).ToListAsync();
+
+        foreach (var child in children)
+            child.EstadoEliminado = true;
+    }
+
+    protected virtual Task CascadeDelete(TEntity entity) => Task.CompletedTask;
 
     public virtual async Task<Result<TDto>> Get(int id)
     {
         var dto = await _mapper.ProjectTo(
             DbContext.Set<TEntity>().AsNoTracking().Where(e => e.Id == id))
             .FirstOrDefaultAsync();
-            
+
         return dto == null ? Result<TDto>.NotFound() : Result<TDto>.Success(dto);
     }
 

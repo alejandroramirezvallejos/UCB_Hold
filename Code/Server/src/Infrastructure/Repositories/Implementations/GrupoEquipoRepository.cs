@@ -1,4 +1,5 @@
 using IMT_Reservas.Server.Application.Features.GrupoEquipo;
+using IMT_Reservas.Server.Core.Entities;
 using IMT_Reservas.Server.Infrastructure.Config;
 using IMT_Reservas.Server.Infrastructure.Repositories.Abstraction;
 using Microsoft.EntityFrameworkCore;
@@ -7,8 +8,10 @@ namespace IMT_Reservas.Server.Infrastructure.Repositories.Implementations;
 
 public class GrupoEquipoRepository : Repository<GrupoEquipoEntity, GrupoEquipoDto>
 {
-    public GrupoEquipoRepository(ApplicationDbContext dbContext, GrupoEquipoMapper mapper)
-        : base(dbContext, mapper) { }
+    private readonly EquipoRepository _equipos;
+
+    public GrupoEquipoRepository(ApplicationDbContext dbContext, GrupoEquipoMapper mapper, EquipoRepository equipos)
+        : base(dbContext, mapper) => _equipos = equipos;
 
     public async Task<List<GrupoEquipoDto>> Search(string? nombre = null, string? categoria = null)
     {
@@ -29,4 +32,7 @@ public class GrupoEquipoRepository : Repository<GrupoEquipoEntity, GrupoEquipoDt
             .Where(c => c.Nombre == nombre && !c.EstadoEliminado)
             .Select(c => (int?)c.Id)
             .FirstOrDefaultAsync();
+
+    protected override async Task CascadeDelete(GrupoEquipoEntity grupo)
+        => await CascadeThrough(_equipos, (Equipo e) => e.IdGrupoEquipo == grupo.Id);
 }

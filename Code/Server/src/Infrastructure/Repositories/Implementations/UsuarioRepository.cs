@@ -9,8 +9,10 @@ namespace IMT_Reservas.Server.Infrastructure.Repositories.Implementations;
 
 public class UsuarioRepository : Repository<UsuarioEntity, UsuarioDto>
 {
-    public UsuarioRepository(ApplicationDbContext dbContext, UsuarioMapper mapper)
-        : base(dbContext, mapper) { }
+    private readonly PrestamoRepository _prestamos;
+
+    public UsuarioRepository(ApplicationDbContext dbContext, UsuarioMapper mapper, PrestamoRepository prestamos)
+        : base(dbContext, mapper) => _prestamos = prestamos;
 
     public override async Task<Result<List<UsuarioDto>>> GetAll()
     {
@@ -46,6 +48,7 @@ public class UsuarioRepository : Repository<UsuarioEntity, UsuarioDto>
         => await DbContext.Usuarios
             .FirstOrDefaultAsync(u => u.Carnet == carnet && !u.EstadoEliminado);
 
+    // Usuario's PK is Carnet (string), so it deletes by carnet instead of the base int id.
     public async Task<Result<object>> Delete(string carnet)
     {
         var entity = await DbContext.Usuarios
@@ -54,34 +57,23 @@ public class UsuarioRepository : Repository<UsuarioEntity, UsuarioDto>
         if (entity == null)
             return Result<object>.NotFound();
 
-        entity.EstadoEliminado = true;
-        DbContext.Update(entity);
-
-        var prestamos = await DbContext.Prestamos
-            .Where(p => p.Carnet == carnet && !p.EstadoEliminado)
-            .ToListAsync();
-
-        var prestamoIds = prestamos.Select(p => p.Id).ToList();
-
-        if (prestamoIds.Count > 0)
-        {
-            var detalles = await DbContext.DetallesPrestamos
-                .Where(d => prestamoIds.Contains(d.IdPrestamo) && !d.EstadoEliminado)
-                .ToListAsync();
-
-            foreach (var detalle in detalles)
-                detalle.EstadoEliminado = true;
-        }
-
-        foreach (var prestamo in prestamos)
-        {
-            prestamo.EstadoPrestamo  = EstadoPrestamo.Cancelado;
-            prestamo.EstadoEliminado = true;
-        }
-
+        await SoftDelete(entity);
         await DbContext.SaveChangesAsync();
 
         return Result<object>.Success(null!);
+    }
+
+    protected override async Task CascadeDelete(UsuarioEntity usuario)
+    {
+        var prestamos = await DbContext.Prestamos
+            .Where(p => p.Carnet == usuario.Carnet)
+            .ToListAsync();
+
+        foreach (var prestamo in prestamos)
+        {
+            prestamo.EstadoPrestamo = EstadoPrestamo.Cancelado;
+            await _prestamos.SoftDelete(prestamo);
+        }
     }
 
     public async Task<bool> ExistsByCarnet(string carnet)

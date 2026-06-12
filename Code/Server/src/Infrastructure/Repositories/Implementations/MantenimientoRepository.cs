@@ -71,20 +71,8 @@ public class MantenimientoRepository : Repository<MantenimientoEntity, Mantenimi
         return dto == null ? Result<MantenimientoDto>.NotFound() : Result<MantenimientoDto>.Success(dto);
     }
 
-    public override async Task<Result<object>> Delete(int id)
-    {
-        var entity = await DbContext.Mantenimientos
-            .FirstOrDefaultAsync(m => m.Id == id && !m.EstadoEliminado);
-
-        if (entity == null)
-            return Result<object>.NotFound();
-
-        entity.EstadoEliminado = true;
-        DbContext.Update(entity);
-        await DbContext.SaveChangesAsync();
-
-        return Result<object>.Success(null!);
-    }
+    protected override async Task CascadeDelete(MantenimientoEntity mantenimiento)
+        => await CascadeLeaf<DetalleMantenimiento>(d => d.IdMantenimiento == mantenimiento.Id);
 
     public async Task AddDetalles(int mantenimientoId, int[] codigosImt, string[]? tipos, string[]? descripciones)
     {

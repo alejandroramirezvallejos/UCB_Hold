@@ -37,27 +37,8 @@ public class PrestamoRepository : Repository<PrestamoEntity, PrestamoDto>
         return Result<List<PrestamoDto>>.Success(await GetPrestamoList(query));
     }
 
-    public override async Task<Result<object>> Delete(int id)
-    {
-        var entity = await DbContext.Prestamos
-            .FirstOrDefaultAsync(p => p.Id == id && !p.EstadoEliminado);
-
-        if (entity == null)
-            return Result<object>.NotFound();
-
-        var detalles = await DbContext.DetallesPrestamos
-            .Where(d => d.IdPrestamo == id && !d.EstadoEliminado)
-            .ToListAsync();
-
-        foreach (var detalle in detalles)
-            detalle.EstadoEliminado = true;
-
-        entity.EstadoEliminado = true;
-        DbContext.Update(entity);
-        await DbContext.SaveChangesAsync();
-
-        return Result<object>.Success(null!);
-    }
+    protected override async Task CascadeDelete(PrestamoEntity prestamo)
+        => await CascadeLeaf<DetallePrestamo>(d => d.IdPrestamo == prestamo.Id);
 
     public async Task<PrestamoEntity?> FindById(int id)
         => await DbContext.Prestamos.FirstOrDefaultAsync(p => p.Id == id);

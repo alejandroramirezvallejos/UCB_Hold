@@ -232,7 +232,7 @@ public class ApplicationDbContext : DbContext
         {
             entity.ToTable("usuarios");
             entity.HasKey(e => e.Carnet);
-            entity.Ignore(e => e.Id);  // Entity.Id ignored; PK is Carnet (string)
+            entity.Ignore(e => e.Id);  
             entity.Property(e => e.Carnet).HasMaxLength(20).HasColumnName("carnet");
             entity.Property(e => e.Nombre).IsRequired().HasMaxLength(64).HasColumnName("nombre");
             entity.Property(e => e.ApellidoPaterno).IsRequired().HasMaxLength(64).HasColumnName("apellido_paterno");
@@ -287,6 +287,7 @@ public class ApplicationDbContext : DbContext
         {
             entity.ToTable("contratos");
             entity.HasKey(e => e.Id);
+            entity.Ignore(e => e.EstadoEliminado); 
             entity.Property(e => e.Id).HasColumnName("id");
             entity.Property(e => e.ContratoHtml).HasColumnType("text").HasColumnName("contrato");
         });

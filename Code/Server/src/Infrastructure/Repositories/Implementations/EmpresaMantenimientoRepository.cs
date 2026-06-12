@@ -1,5 +1,5 @@
-using Ardalis.Result;
 using IMT_Reservas.Server.Application.Features.EmpresaMantenimiento;
+using IMT_Reservas.Server.Core.Entities;
 using IMT_Reservas.Server.Infrastructure.Config;
 using IMT_Reservas.Server.Infrastructure.Repositories.Abstraction;
 using Microsoft.EntityFrameworkCore;
@@ -8,8 +8,10 @@ namespace IMT_Reservas.Server.Infrastructure.Repositories.Implementations;
 
 public class EmpresaMantenimientoRepository : Repository<EmpresaMantenimientoEntity, EmpresaMantenimientoDto>
 {
-    public EmpresaMantenimientoRepository(ApplicationDbContext dbContext, EmpresaMantenimientoMapper mapper)
-        : base(dbContext, mapper) { }
+    private readonly MantenimientoRepository _mantenimientos;
+
+    public EmpresaMantenimientoRepository(ApplicationDbContext dbContext, EmpresaMantenimientoMapper mapper, MantenimientoRepository mantenimientos)
+        : base(dbContext, mapper) => _mantenimientos = mantenimientos;
 
     public async Task<int?> FindIdByNombre(string nombre)
         => await DbContext.EmpresasMantenimiento
@@ -22,18 +24,6 @@ public class EmpresaMantenimientoRepository : Repository<EmpresaMantenimientoEnt
         => await DbContext.EmpresasMantenimiento
             .AnyAsync(e => e.Nit == nit && !e.EstadoEliminado && e.Id != excludeId);
 
-    public override async Task<Result<object>> Delete(int id)
-    {
-        var entity = await DbContext.EmpresasMantenimiento
-            .FirstOrDefaultAsync(e => e.Id == id && !e.EstadoEliminado);
-
-        if (entity == null)
-            return Result<object>.NotFound();
-
-        entity.EstadoEliminado = true;
-        DbContext.Update(entity);
-        await DbContext.SaveChangesAsync();
-
-        return Result<object>.Success(null!);
-    }
+    protected override async Task CascadeDelete(EmpresaMantenimientoEntity empresa)
+        => await CascadeThrough(_mantenimientos, (Mantenimiento m) => m.IdEmpresa == empresa.Id);
 }
