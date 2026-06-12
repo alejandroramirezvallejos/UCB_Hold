@@ -20,7 +20,7 @@
     />
     <div class="audit-select-wrap">
       <div class="audit-select-trigger" (click)="toggleAcciones()" [class.open]="accionesOpen">
-        <span>{{ filtroAccion || 'Todas las acciones' }}</span>
+        <span [class.placeholder]="!filtroAccion">{{ filtroAccion || 'Todas las acciones' }}</span>
         <i class="fas fa-chevron-down audit-chevron" [class.open]="accionesOpen"></i>
       </div>
       @if(accionesOpen) {
@@ -33,12 +33,14 @@
       }
     </div>
     <input type="text" [(ngModel)]="filtroAdmin" (keyup.enter)="cargar()" placeholder="Buscar admin..." class="date-input admin-search">
-    <button class="btn btn-ghost btn-sm" (click)="limpiar()">
-      <i class="fas fa-times"></i> Limpiar
-    </button>
-    <button class="btn btn-ghost btn-sm" (click)="cargar()" title="Actualizar">
-      <i class="fas fa-sync-alt"></i>
-    </button>
+    <div class="audit-filters-actions">
+      <button class="btn btn-ghost btn-sm" (click)="limpiar()">
+        <i class="fas fa-times"></i> Limpiar
+      </button>
+      <button class="btn btn-ghost btn-sm" (click)="cargar()" title="Actualizar">
+        <i class="fas fa-sync-alt"></i>
+      </button>
+    </div>
   </div>
 
   @if(cargando) {
@@ -52,7 +54,7 @@
     </div>
   } @else {
     <div class="audit-count">{{ logs.length }} registro{{ logs.length !== 1 ? 's' : '' }}</div>
-    <div class="table-scroll">
+    <div class="table-responsive">
       <table class="audit-table">
         <thead>
           <tr>

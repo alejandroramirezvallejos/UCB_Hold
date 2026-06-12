@@ -252,11 +252,7 @@
   font-weight: 600;
   cursor: pointer;
   user-select: none;
-  background-color: #f8fafc;
   transition: var(--transition);
-}
-.data-table th:hover {
-  background-color: #f1f5f9;
 }
 .data-table th i {
   margin-left: 0.25rem;
@@ -458,6 +454,7 @@
     font-size: 11px;
     padding: 5px 10px;
     height: 30px;
+    align-self: flex-start;
   }
 }
 
@@ -501,11 +498,6 @@
   }
   .subtitle {
     font-size: 0.75rem;
-  }
-  .botoncrear {
-    padding: 6px 10px;
-    font-size: 0.75rem;
-    height: 30px;
   }
   .search-container {
     gap: 0.5rem;

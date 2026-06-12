@@ -50,6 +50,31 @@
   min-height: auto;
   color: var(--color-text);
   font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+  display: flex;
+  flex-direction: column;
+}
+
+/* En Auditoría: mostrar los filtros antes de las pestañas Tabla/Auditoría,
+   igual que el buscador aparece antes de las pestañas en Tabla. */
+::ng-deep app-audit-panel,
+::ng-deep .audit-panel-container {
+  display: contents;
+}
+app-buscador {
+  order: 1;
+}
+.admin-tabs {
+  order: 2;
+}
+::ng-deep .audit-filters {
+  order: 1;
+}
+.table-responsive,
+::ng-deep .audit-count,
+::ng-deep app-audit-panel .table-responsive,
+::ng-deep .audit-loading,
+::ng-deep .audit-empty {
+  order: 3;
 }
 .table-header {
   display: flex;
@@ -143,11 +168,7 @@
   font-weight: 600;
   cursor: pointer;
   user-select: none;
-  background-color: #f8fafc;
   transition: var(--transition);
-}
-.data-table th:hover {
-  background-color: #f1f5f9;
 }
 .data-table th i {
   margin-left: 0.25rem;
@@ -749,6 +770,12 @@ td.actions-column {
     flex-direction: column;
     align-items: flex-start;
     gap: 1rem;  }
+  .botoncrear {
+    padding: 6px 10px;
+    font-size: 0.75rem;
+    height: 30px;
+    align-self: flex-start;
+  }
 }
 @media (max-width: 360px) {
   .table-header {
@@ -759,11 +786,6 @@ td.actions-column {
   }
   .subtitle {
     font-size: 0.75rem;
-  }
-  .botoncrear {
-    padding: 6px 10px;
-    font-size: 0.75rem;
-    height: 30px;
   }
   .search-container {
     gap: 0.5rem;
@@ -944,6 +966,12 @@ td.actions-column {
     flex-direction: column;
     align-items: flex-start;
     gap: 1rem;  }
+  .botoncrear {
+    padding: 6px 10px;
+    font-size: 0.75rem;
+    height: 30px;
+    align-self: flex-start;
+  }
 }
 @media (max-width: 360px) {
   .table-header {
@@ -954,11 +982,6 @@ td.actions-column {
   }
   .subtitle {
     font-size: 0.75rem;
-  }
-  .botoncrear {
-    padding: 6px 10px;
-    font-size: 0.75rem;
-    height: 30px;
   }
   .search-container {
     gap: 0.5rem;

@@ -409,6 +409,7 @@ input[type="date"]::-webkit-calendar-picker-indicator:hover { opacity: 0.8; }
   ::-webkit-scrollbar { width: 3px; height: 3px; }
   input, select, textarea { font-size: 16px !important; }
   button, a, .icon-button { min-height: 44px; min-width: 44px; }
+  .botoncrear { min-height: auto; min-width: auto; }
 }
 
 @media (max-width: 375px) {
@@ -1062,7 +1063,6 @@ td.actions-column {
 }
 
 /* === GLOBAL NAVIGATION POLISH === */
-html { scroll-behavior: smooth; }
 
 /* Tactile feedback on primary actions */
 .btn:active, button.btn:active { transform: translateY(0) scale(0.97); }

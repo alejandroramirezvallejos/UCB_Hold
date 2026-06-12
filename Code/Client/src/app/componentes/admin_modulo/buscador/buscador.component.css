@@ -211,7 +211,7 @@
   .search-and-filter-row {
   justify-content: space-between;
     flex-direction: column;
-    gap: 0.75rem;
+    gap: 1.25rem;
     padding-bottom: 1rem;
   }
   .search-input-wrapper {
@@ -250,7 +250,7 @@
 @media (max-width: 480px) {
   .search-and-filter-row {
   justify-content: space-between;
-    gap: 0.5rem;
+    gap: 1.1rem;
   }
   .filter-container {
     gap: 0.5rem;
@@ -278,7 +278,7 @@
 @media (max-width: 360px) {
   .search-and-filter-row {
   justify-content: space-between;
-    gap: 0.4rem;
+    gap: 1rem;
   }
   .search-input {
     padding: 0.55rem 2rem;

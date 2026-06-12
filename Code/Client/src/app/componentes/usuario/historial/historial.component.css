@@ -1,7 +1,7 @@
 .container {
   display: flex;
   flex-direction: column;
-  padding-top: 4rem;
+  padding-top: 2rem;
   padding-left: 12rem;
   padding-right: 2rem;
   width: 100%;
@@ -109,13 +109,13 @@
 @media (max-width: 1280px) { .container { padding-left: 4rem; } }
 @media (max-width: 1200px) { .container { padding-left: 2rem; padding-right: 2rem; } }
 @media (max-width: 768px) {
-  .container { padding-top: 2rem; padding-left: 1rem; padding-right: 1rem; align-items: center; }
+  .container { padding-top: 1.5rem; padding-left: 1rem; padding-right: 1rem; align-items: center; }
   .hist-dropdown { width: 100%; }
   .hist-trigger { width: 100%; justify-content: space-between; }
   .hist-menu { width: 100%; }
   .items-wrapper { max-width: 100%; }
 }
 @media (max-width: 480px) {
-  .container { padding-top: 1.5rem; padding-left: 0.5rem; padding-right: 0.5rem; }
+  .container { padding-top: 1rem; padding-left: 0.5rem; padding-right: 0.5rem; }
   .hist-trigger { font-size: 1rem; }
 }

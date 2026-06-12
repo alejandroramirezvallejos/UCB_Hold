@@ -1,6 +1,6 @@
 .sidebar-menu {
   position: fixed;
-  left: 12rem;
+  left: 6rem;
   top: 72px;
   width: 210px;
   background: var(--glass-bg);
@@ -18,8 +18,9 @@
   max-height: calc((100vh - 100px) * 0.65);
 }
 /* Match navbar padding breakpoints exactly */
-@media (max-width: 1280px) { .sidebar-menu { left: 6rem; } }
-@media (max-width: 1024px) { .sidebar-menu { left: 2.5rem; } }
+@media (min-width: 1921px) { .sidebar-menu { left: calc((100vw - 1800px) / 2 + 3rem); } }
+@media (max-width: 1440px) { .sidebar-menu { left: 4rem; } }
+@media (max-width: 1200px) { .sidebar-menu { left: 2rem; } }
 .contenido {
   display: flex;
   flex-direction: column;
