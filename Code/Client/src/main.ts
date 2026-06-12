@@ -6,6 +6,7 @@ import { HttpClientModule, HTTP_INTERCEPTORS } from '@angular/common/http';
 import { registerLocaleData } from '@angular/common';
 import { JwtInterceptor } from './app/interceptors/jwt.interceptor';
 import { ResultResponseInterceptor } from './app/interceptors/result-response.interceptor';
+import { HttpCacheInterceptor } from './app/interceptors/http-cache.interceptor';
 import localeEs from '@angular/common/locales/es';
 registerLocaleData(localeEs);
 bootstrapApplication(AppComponent, {
@@ -13,6 +14,7 @@ bootstrapApplication(AppComponent, {
     importProvidersFrom(AppRoutingModule, HttpClientModule),
     { provide: LOCALE_ID, useValue: 'es' },
     { provide: HTTP_INTERCEPTORS, useClass: JwtInterceptor,           multi: true },
-    { provide: HTTP_INTERCEPTORS, useClass: ResultResponseInterceptor, multi: true }
+    { provide: HTTP_INTERCEPTORS, useClass: ResultResponseInterceptor, multi: true },
+    { provide: HTTP_INTERCEPTORS, useClass: HttpCacheInterceptor,      multi: true }
   ]
 }).catch(err => console.error(err));

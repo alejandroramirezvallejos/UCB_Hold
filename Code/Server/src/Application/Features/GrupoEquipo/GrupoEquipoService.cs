@@ -10,6 +10,7 @@ namespace IMT_Reservas.Server.Application.Features.GrupoEquipo;
 public class GrupoEquipoService : Service<GrupoEquipoEntity, GrupoEquipoRepository, GrupoEquipoDto>
 {
     private static readonly TimeSpan GrupoEquipoSearchTtl = TimeSpan.FromMinutes(5);
+    private static readonly TimeSpan VersionTtl = TimeSpan.FromDays(30);
     private readonly CacheRepository _cacheRepository;
 
     public GrupoEquipoService(GrupoEquipoRepository repository,
@@ -30,7 +31,7 @@ public class GrupoEquipoService : Service<GrupoEquipoEntity, GrupoEquipoReposito
 
         if (createResult.IsSuccess)
         {
-            _ = await _cacheRepository.Remove(CacheKeys.GrupoEquipoSearch(string.Empty, null));
+            await BumpSearchVersion();
             await Audit!.Log(AuditAccion.Crear, typeof(GrupoEquipoEntity).Name, createResult.Value?.Id?.ToString());
         }
 
@@ -53,7 +54,7 @@ public class GrupoEquipoService : Service<GrupoEquipoEntity, GrupoEquipoReposito
 
         if (updateResult.IsSuccess)
         {
-            _ = await _cacheRepository.Remove(CacheKeys.GrupoEquipoSearch(string.Empty, null));
+            await BumpSearchVersion();
             await Audit!.Log(AuditAccion.Editar, typeof(GrupoEquipoEntity).Name, id.ToString());
         }
 
@@ -65,23 +66,36 @@ public class GrupoEquipoService : Service<GrupoEquipoEntity, GrupoEquipoReposito
         var deleteResult = await base.Delete(id);
 
         if (deleteResult.IsSuccess)
-            _ = await _cacheRepository.Remove(CacheKeys.GrupoEquipoSearch(string.Empty, null));
+            await BumpSearchVersion();
         
         return deleteResult;
     }
 
     public async Task<Result<List<GrupoEquipoDto>>> Search(string? nombre = null, string? categoria = null)
     {
-        var cacheKey = CacheKeys.GrupoEquipoSearch(nombre ?? string.Empty, categoria);
+        var version = await GetSearchVersion();
+        var cacheKey = CacheKeys.GrupoEquipoSearch(nombre ?? string.Empty, categoria, version);
         var cacheResult = await _cacheRepository.Get<List<GrupoEquipoDto>>(cacheKey);
-       
-        if (cacheResult.IsSuccess) 
+
+        if (cacheResult.IsSuccess)
             return Result<List<GrupoEquipoDto>>.Success(cacheResult.Value);
 
         var equipos = await Repository.Search(nombre, categoria);
         _ = await _cacheRepository.Set(cacheKey, equipos, GrupoEquipoSearchTtl);
 
         return Result<List<GrupoEquipoDto>>.Success(equipos);
+    }
+
+    private async Task<long> GetSearchVersion()
+    {
+        var result = await _cacheRepository.Get<long>(CacheKeys.GrupoEquipoVersion);
+        return result.IsSuccess ? result.Value : 0;
+    }
+
+    private async Task BumpSearchVersion()
+    {
+        var next = await GetSearchVersion() + 1;
+        _ = await _cacheRepository.Set(CacheKeys.GrupoEquipoVersion, next, VersionTtl);
     }
 
     private async Task ResolveCategoria(GrupoEquipoDto dto)
