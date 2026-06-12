@@ -3,6 +3,7 @@ using FluentAssertions;
 using IMT_Reservas.Server.Application.Features.AuditLog;
 using Microsoft.AspNetCore.Http;
 using IMT_Reservas.Server.Application.Features.Jwt;
+using IMT_Reservas.Server.Application.Features.Prestamo;
 using IMT_Reservas.Server.Application.Features.Usuario;
 using IMT_Reservas.Server.Core.Entities;
 using IMT_Reservas.Server.Infrastructure.Config;
@@ -31,7 +32,7 @@ internal class UsuarioServiceTests : ServiceTest<UsuarioService>
     {
         var jwtOptions    = Options.Create(TestJwtSettings);
         var mapper        = new UsuarioMapper();
-        var repo          = new UsuarioRepository(db, mapper);
+        var repo          = new UsuarioRepository(db, mapper, new PrestamoRepository(db, new PrestamoMapper()));
         var validator     = new UsuarioValidator(db);
         var jwt           = new JwtService(jwtOptions);
         var memoryCache   = new MemoryDistributedCache(Options.Create(new MemoryDistributedCacheOptions()));
