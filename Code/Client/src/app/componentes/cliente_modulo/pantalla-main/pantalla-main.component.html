@@ -19,19 +19,6 @@
       (keydown.enter)="$event.preventDefault()"
       (focus)="showCategories = false"
     ></textarea>
-     @if(solicitud.length > 0) {
-        <img
-          class="icon clear-icon"
-          src="/assets/x.png"
-          alt="Limpiar búsqueda"
-          (click)="limpiar()"
-          (mouseenter)="hover.clear = true"
-          (mouseleave)="hover.clear = false"
-          [src]="
-            hover.clear ? '/assets/x_color.png' : '/assets/x.png'
-          "
-        />
-      }
     <img
       class="icon category-icon"
       src="/assets/categories_line.png"

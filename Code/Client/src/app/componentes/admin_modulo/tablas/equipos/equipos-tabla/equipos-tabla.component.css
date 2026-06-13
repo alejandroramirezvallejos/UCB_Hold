@@ -12,11 +12,11 @@
   justify-content: space-between;
   gap: 0.5rem;
   cursor: pointer;
-  padding: 0.5rem 1rem;
+  padding: 0.5rem 1.25rem;
   user-select: none;
-  background-color: white;
-  border: 1px solid #e2e8f0;
-  border-radius: 8px;
+  background: rgba(255, 255, 255, 0.9);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-full);
   height: 42px;
   box-sizing: border-box;
   transition: border-color var(--t-fast), background-color var(--t-fast);
@@ -24,44 +24,44 @@
 .dropdown-header .current-value {
   font-size: 0.9rem;
   font-weight: 600;
-  color: #6b7786;
+  color: var(--ink);
   white-space: nowrap;
   display: flex;
   align-items: center;
   gap: 0.5rem;
 }
-.dropdown-header .current-value i { color: #6b7786; }
-.dropdown-header:hover { border-color: #d1d5db; background-color: #f8fafc; }
+.dropdown-header .current-value i { color: var(--ink); }
+.dropdown-header:hover { border-color: var(--border-strong); background-color: #f8fafc; }
 .dropdown-arrow { width: 16px; height: 16px; }
 .dropdown-list {
   position: absolute;
   top: 100%;
   left: 0;
   min-width: 220px;
-  background-color: rgba(255, 255, 255, 0.97);
+  background: var(--dropdown-bg);
   backdrop-filter: blur(10px);
-  border-radius: 12px;
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+  border-radius: var(--dropdown-radius);
+  box-shadow: var(--dropdown-shadow);
   list-style: none;
   padding: 0;
   margin: 5px 0 0 0;
   z-index: 1000;
-  border: 1px solid #e2e8f0;
+  border: 1px solid var(--dropdown-border);
   overflow: hidden;
 }
 .dropdown-list li {
   padding: 0.75rem 1rem;
   font-size: 0.9rem;
   font-weight: 500;
-  color: #64748b;
+  color: var(--ink-secondary);
   cursor: pointer;
   transition: color var(--t-fast), background-color var(--t-fast);
   display: flex;
   align-items: center;
   gap: 0.5rem;
 }
-.dropdown-list li:hover { color: var(--ink); background-color: #fffde7; }
-.dropdown-list li.active { color: #334155; font-weight: 700; background-color: #f1f5f9; }
+.dropdown-list li:hover { color: var(--dropdown-hover-color); background-color: var(--dropdown-hover-bg); }
+.dropdown-list li.active { color: var(--dropdown-active-color); font-weight: 700; background-color: var(--dropdown-active-bg); }
 .dropdown-list i { width: 16px; text-align: center; }
 .text-success { color: #10b981; }
 .text-warning { color: #f59e0b; }

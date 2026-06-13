@@ -177,6 +177,10 @@
   margin-left: 4px;
   margin-right: 12px;
 }
+.icon.clear-icon {
+  width: 14px;
+  height: 14px;
+}
 .category-label {
   margin-left: 0px;
   color: #000000;
@@ -216,6 +220,10 @@
     width: 18px;
     height: 18px;
   }
+  .icon.clear-icon {
+    width: 13px;
+    height: 13px;
+  }
 }
 
 @media (max-width: 480px) {
@@ -239,6 +247,10 @@
     width: 16px;
     height: 16px;
     margin: 0 4px;
+  }
+  .icon.clear-icon {
+    width: 11px;
+    height: 11px;
   }
 }
 
@@ -267,5 +279,9 @@
     width: 15px;
     height: 15px;
     margin: 0 3px;
+  }
+  .icon.clear-icon {
+    width: 10px;
+    height: 10px;
   }
 }

@@ -1,9 +1,8 @@
-
 .botoncrear {
   display: flex;
   align-items: center;
   gap: 0.25rem;
-  background-color: #9CA3AF;
+  background-color: #9ca3af;
   color: white;
   padding: 6px 12px;
   border: none;
@@ -11,7 +10,11 @@
   font-size: 12px;
   font-weight: 600;
   cursor: pointer;
-  transition: color var(--t-base), background-color var(--t-base), border-color var(--t-base), box-shadow var(--t-base);
+  transition:
+    color var(--t-base),
+    background-color var(--t-base),
+    border-color var(--t-base),
+    box-shadow var(--t-base);
   box-shadow: none;
   white-space: nowrap;
   height: 32px;
@@ -38,7 +41,9 @@
   -ms-overflow-style: none;
   border: 1px solid var(--border);
 }
-.table-responsive::-webkit-scrollbar { height: 6px; }
+.table-responsive::-webkit-scrollbar {
+  height: 6px;
+}
 .table-responsive::-webkit-scrollbar-track {
   background: rgba(0, 0, 0, 0.03);
   border-radius: 10px;
@@ -49,7 +54,7 @@
   background-color: transparent; /* Remove gray bg here, let container or table handle it */
   min-height: auto;
   color: var(--color-text);
-  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+  font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
   display: flex;
   flex-direction: column;
 }
@@ -115,34 +120,21 @@ app-buscador {
 }
 .search-input {
   width: 100%;
-  padding: 0.75rem 2.5rem;
+  padding: 0.75rem 1.25rem 0.75rem 3.25rem;
   border: 1px solid var(--color-border);
   border-radius: var(--radius);
   font-size: 0.875rem;
+  font-weight: 400;
   transition: var(--transition);
+}
+.search-input::placeholder {
+  font-weight: 400 !important;
+  color: var(--color-text-secondary);
 }
 .search-input:focus {
   outline: none;
   border-color: var(--interactive);
   box-shadow: 0 0 0 3px var(--interactive-subtle);
-}
-.clear-search {
-  position: absolute;
-  right: 1rem;
-  top: 50%;
-  transform: translateY(-50%);
-  background: none;
-  border: none;
-  color: var(--color-text-secondary);
-  cursor: pointer;
-  padding: 0.25rem;
-  border-radius: var(--radius-full);
-  display: flex;
-  align-items: center;
-  justify-content: center;
-}
-.clear-search:hover {
-  background-color: rgba(0, 0, 0, 0.05);
 }
 .table-responsive {
   overflow-x: auto;
@@ -222,13 +214,6 @@ td.actions-column {
   border: none;
   cursor: pointer;
   transition: var(--transition);
-}
-.btn-view {
-  color: var(--ink-secondary);
-}
-.btn-view:hover {
-  color: var(--interactive);
-  background-color: var(--interactive-subtle);
 }
 .btn-delete {
   color: var(--color-error);
@@ -356,10 +341,21 @@ td.actions-column {
   box-shadow: 0 2px 8px rgba(255, 215, 0, 0.3);
 }
 @media (hover: hover) and (pointer: fine) {
-  .devuelto-btn-cancel:hover { background: var(--sidebar); border-color: var(--border-strong); color: var(--ink); }
-  .devuelto-btn-confirm:hover { background: var(--brand-hover); box-shadow: 0 4px 12px rgba(255, 215, 0, 0.4); transform: translateY(-1px); }
+  .devuelto-btn-cancel:hover {
+    background: var(--sidebar);
+    border-color: var(--border-strong);
+    color: var(--ink);
+  }
+  .devuelto-btn-confirm:hover {
+    background: var(--brand-hover);
+    box-shadow: 0 4px 12px rgba(255, 215, 0, 0.4);
+    transform: translateY(-1px);
+  }
 }
-.devuelto-btn:active { transform: scale(0.97); box-shadow: none; }
+.devuelto-btn:active {
+  transform: scale(0.97);
+  box-shadow: none;
+}
 .btn-action {
   display: inline-flex;
   align-items: center;
@@ -390,7 +386,10 @@ td.actions-column {
     transform: translateY(-1px);
   }
 }
-.btn-accept:active { transform: scale(0.97); box-shadow: none; }
+.btn-accept:active {
+  transform: scale(0.97);
+  box-shadow: none;
+}
 .btn-reject {
   background: var(--error-bg);
   color: var(--error);
@@ -405,7 +404,10 @@ td.actions-column {
     transform: translateY(-1px);
   }
 }
-.btn-reject:active { transform: scale(0.97); box-shadow: none; }
+.btn-reject:active {
+  transform: scale(0.97);
+  box-shadow: none;
+}
 .btn-action i {
   font-size: 0.7rem;
 }
@@ -429,18 +431,25 @@ td.actions-column {
   display: flex;
   align-items: center;
   gap: 0.5rem;
-  background-color: #5F6368;
-  color: white;
-  padding: 12px 16px;
-  border: none;
-  border-radius: 10px;
-  font-size: 14px;
+  background: rgba(255, 255, 255, 0.9);
+  color: var(--ink-muted) !important;
+  padding: 0.5rem 1.25rem;
+  border: 1px solid var(--border);
+  border-radius: var(--radius-full);
+  font-size: 0.9rem;
   font-weight: 600;
   cursor: pointer;
-  transition: color var(--t-base), background-color var(--t-base), border-color var(--t-base), box-shadow var(--t-base);
-  box-shadow: 0 2px 4px rgba(95, 99, 104, 0.2);
-  min-width: 120px;
+  transition:
+    color var(--t-base),
+    background-color var(--t-base),
+    border-color var(--t-base),
+    box-shadow var(--t-base);
+  box-shadow: none;
+  height: 42px;
   justify-content: space-between;
+}
+.btn-filter i {
+  color: var(--ink-muted) !important;
 }
 .btn-filter:hover {
   background-color: var(--brand);
@@ -483,7 +492,12 @@ td.actions-column {
   gap: 0.75rem;
   padding: 12px 16px;
   cursor: pointer;
-  transition: color var(--t-fast), background-color var(--t-fast), border-color var(--t-fast), box-shadow var(--t-fast), transform var(--t-fast);
+  transition:
+    color var(--t-fast),
+    background-color var(--t-fast),
+    border-color var(--t-fast),
+    box-shadow var(--t-fast),
+    transform var(--t-fast);
   font-size: 14px;
   color: var(--color-text);
   border-bottom: 1px solid rgba(226, 232, 240, 0.5);
@@ -588,7 +602,7 @@ td.actions-column {
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  width: 100px;   /* ancho fijo idéntico */
+  width: 100px; /* ancho fijo idéntico */
   height: 30px;
   box-sizing: border-box;
   border-radius: 9999px;
@@ -659,7 +673,7 @@ td.actions-column {
 }
 .estado-atrasado {
   background-color: #fff7ed; /* fondo naranja claro */
-  color: #b45309;            /* texto naranja oscuro */
+  color: #b45309; /* texto naranja oscuro */
   padding: 0.25rem 0.75rem;
   border-radius: 9999px;
   font-size: 0.75rem;
@@ -762,7 +776,8 @@ td.actions-column {
   .table-header {
     flex-direction: column;
     align-items: flex-start;
-    gap: 1rem;  }
+    gap: 1rem;
+  }
   .botoncrear {
     padding: 6px 10px;
     font-size: 0.75rem;
@@ -784,14 +799,11 @@ td.actions-column {
     gap: 0.5rem;
   }
   .search-input {
-    padding: 0.55rem 2rem;
+    padding: 0.55rem 0.75rem 0.55rem 2.75rem;
     font-size: 0.75rem;
   }
   .search-icon {
     left: 0.75rem;
-  }
-  .clear-search {
-    right: 0.75rem;
   }
   .data-table th,
   .data-table td {
@@ -831,71 +843,82 @@ td.actions-column {
   justify-content: space-between;
   gap: 0.5rem;
   cursor: pointer;
-  padding: 0.5rem 1rem;
+  padding: 0.5rem 1.25rem;
   user-select: none;
-  background-color: white;
-  border: 1px solid #e2e8f0;
-  border-radius: 8px;
+  background: rgba(255, 255, 255, 0.9);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-full);
   height: 42px;
+  color: var(--ink-muted);
   box-sizing: border-box;
-  transition: color var(--t-fast), background-color var(--t-fast), border-color var(--t-fast), box-shadow var(--t-fast), transform var(--t-fast);
+  transition:
+    color var(--t-fast),
+    background-color var(--t-fast),
+    border-color var(--t-fast),
+    box-shadow var(--t-fast),
+    transform var(--t-fast);
 }
 .dropdown-header .current-value {
   font-size: 0.9rem;
   font-weight: 600;
-  color: #6b7786;
+  color: var(--ink-muted) !important;
   white-space: nowrap;
   display: flex;
   align-items: center;
   gap: 0.5rem;
 }
 .dropdown-header .current-value i {
-  color: #6b7786;
+  color: var(--ink-muted) !important;
 }
 .dropdown-header:hover {
-  border-color: #d1d5db;
+  border-color: var(--border-strong);
   background-color: #f8fafc;
 }
 .dropdown-arrow {
   width: 16px;
   height: 16px;
+  color: var(--ink-muted);
 }
 .dropdown-list {
   position: absolute;
   top: 100%;
   left: 0; /* Alinear a la izquierda para el filtro */
   min-width: 200px;
-  background: white;
-  border-radius: 12px;
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+  background: var(--dropdown-bg);
+  border-radius: var(--dropdown-radius);
+  box-shadow: var(--dropdown-shadow);
   list-style: none;
   padding: 0;
   margin: 5px 0 0 0;
   z-index: 1000;
-  border: 1px solid #e2e8f0;
+  border: 1px solid var(--dropdown-border);
   overflow: hidden;
   backdrop-filter: blur(10px);
-  background-color: rgba(255, 255, 255, 0.95);
 }
 .dropdown-list li {
   padding: 0.75rem 1rem;
   font-size: 0.9rem;
   font-weight: 500;
-  color: #64748b;
+  color: var(--ink-secondary);
   cursor: pointer;
-  transition: color var(--t-fast), background-color var(--t-fast), border-color var(--t-fast), box-shadow var(--t-fast), transform var(--t-fast);
+  transition:
+    color var(--t-fast),
+    background-color var(--t-fast),
+    border-color var(--t-fast),
+    box-shadow var(--t-fast),
+    transform var(--t-fast);
   display: flex;
   align-items: center;
   gap: 0.5rem;
 }
 .dropdown-list li:hover {
-  color: var(--ink);
-  background-color: #fffde7;
+  color: var(--dropdown-hover-color);
+  background-color: var(--dropdown-hover-bg);
 }
 .dropdown-list li.active {
-  color: #334155;
+  color: var(--dropdown-active-color);
   font-weight: 700;
-  background-color: #f1f5f9;
+  background-color: var(--dropdown-active-bg);
 }
 .dropdown-list i {
   width: 16px;
@@ -958,7 +981,8 @@ td.actions-column {
   .table-header {
     flex-direction: column;
     align-items: flex-start;
-    gap: 1rem;  }
+    gap: 1rem;
+  }
   .botoncrear {
     padding: 6px 10px;
     font-size: 0.75rem;
@@ -980,14 +1004,11 @@ td.actions-column {
     gap: 0.5rem;
   }
   .search-input {
-    padding: 0.55rem 2rem;
+    padding: 0.55rem 0.75rem 0.55rem 2rem;
     font-size: 0.75rem;
   }
   .search-icon {
     left: 0.75rem;
-  }
-  .clear-search {
-    right: 0.75rem;
   }
   .data-table th,
   .data-table td {
@@ -1027,81 +1048,102 @@ td.actions-column {
   justify-content: space-between;
   gap: 0.5rem;
   cursor: pointer;
-  padding: 0.5rem 1rem;
+  padding: 0.5rem 1.25rem;
   user-select: none;
-  background-color: white;
-  border: 1px solid #e2e8f0;
-  border-radius: 8px;
+  background: rgba(255, 255, 255, 0.9);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-full);
   height: 42px;
+  color: var(--ink-muted);
   box-sizing: border-box;
-  transition: color var(--t-fast), background-color var(--t-fast), border-color var(--t-fast), box-shadow var(--t-fast), transform var(--t-fast);
+  transition:
+    color var(--t-fast),
+    background-color var(--t-fast),
+    border-color var(--t-fast),
+    box-shadow var(--t-fast),
+    transform var(--t-fast);
 }
 .dropdown-header .current-value {
   font-size: 0.9rem;
   font-weight: 600;
-  color: #6b7786;
+  color: var(--ink-muted) !important;
   white-space: nowrap;
   display: flex;
   align-items: center;
   gap: 0.5rem;
 }
 .dropdown-header .current-value i {
-  color: #6b7786;
+  color: var(--ink-muted) !important;
 }
 .dropdown-header:hover {
-  border-color: #d1d5db;
+  border-color: var(--border-strong);
   background-color: #f8fafc;
 }
 .dropdown-arrow {
   width: 16px;
   height: 16px;
+  color: var(--ink-muted);
 }
 .dropdown-list {
   position: absolute;
   top: 100%;
   left: 0; /* Alinear a la izquierda para el filtro */
   min-width: 200px;
-  background: white;
-  border-radius: 12px;
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+  background: var(--dropdown-bg);
+  border-radius: var(--dropdown-radius);
+  box-shadow: var(--dropdown-shadow);
   list-style: none;
   padding: 0;
   margin: 5px 0 0 0;
   z-index: 1000;
-  border: 1px solid #e2e8f0;
+  border: 1px solid var(--dropdown-border);
   overflow: hidden;
   backdrop-filter: blur(10px);
-  background-color: rgba(255, 255, 255, 0.95);
 }
 .dropdown-list li {
   padding: 0.75rem 1rem;
   font-size: 0.9rem;
   font-weight: 500;
-  color: #64748b;
+  color: var(--ink-secondary);
   cursor: pointer;
-  transition: color var(--t-fast), background-color var(--t-fast), border-color var(--t-fast), box-shadow var(--t-fast), transform var(--t-fast);
+  transition:
+    color var(--t-fast),
+    background-color var(--t-fast),
+    border-color var(--t-fast),
+    box-shadow var(--t-fast),
+    transform var(--t-fast);
   display: flex;
   align-items: center;
   gap: 0.5rem;
 }
 .dropdown-list li:hover {
-  color: var(--ink);
-  background-color: #fffde7;
+  color: var(--dropdown-hover-color);
+  background-color: var(--dropdown-hover-bg);
 }
 .dropdown-list li.active {
-  color: #334155;
+  color: var(--dropdown-active-color);
   font-weight: 700;
-  background-color: #f1f5f9;
+  background-color: var(--dropdown-active-bg);
 }
 .dropdown-list i {
   width: 16px;
   text-align: center;
 }
-.text-warning { color: #f59e0b; }
-.text-success { color: #10b981; }
-.text-danger { color: #ef4444; }
-.text-primary { color: #3b82f6; }
-.text-secondary { color: #64748b; }
+.text-warning {
+  color: #f59e0b;
+}
+.text-success {
+  color: #10b981;
+}
+.text-danger {
+  color: #ef4444;
+}
+.text-primary {
+  color: #3b82f6;
+}
+.text-secondary {
+  color: #64748b;
+}
 .observaciones-input {
   width: 100%;
   min-height: 100px;
@@ -1123,5 +1165,4 @@ td.actions-column {
   outline: none;
   border-color: var(--interactive);
   box-shadow: 0 0 0 3px var(--interactive-subtle);
-  background-color: #ffffff;
-}.table-responsive::-webkit-scrollbar { display: none; }
+}

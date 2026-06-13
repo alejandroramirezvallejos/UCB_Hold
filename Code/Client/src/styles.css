@@ -877,6 +877,10 @@ body select:not(.ng-select):not([multiple]):not([size]) {
 @media (hover: hover) and (pointer: fine) {
   .btn-icon.btn-edit:hover { color: var(--brand-text) !important; background: var(--interactive-subtle) !important; }
 }
+.btn-icon.btn-view { color: var(--ink-muted) !important; background: transparent !important; }
+@media (hover: hover) and (pointer: fine) {
+  .btn-icon.btn-view:hover { color: var(--brand-text) !important; background: var(--interactive-subtle) !important; }
+}
 .btn-icon.btn-history { color: var(--ink-muted) !important; background: transparent !important; }
 @media (hover: hover) and (pointer: fine) {
   .btn-icon.btn-history:hover { color: var(--interactive-text) !important; background: rgba(0,69,123,0.08) !important; }
