@@ -121,7 +121,7 @@
   scrollbar-width: none;
   -ms-overflow-style: none;
   background-color: var(--color-surface);
-  border-radius: var(--radius);
+  border-radius: 12px;
   box-shadow: var(--shadow-sm);
   margin-bottom: 1.5rem;
 }

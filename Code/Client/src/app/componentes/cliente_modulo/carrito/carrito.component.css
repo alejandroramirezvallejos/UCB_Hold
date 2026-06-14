@@ -191,7 +191,7 @@
   text-align: center;
   cursor: default;
 }
-.input-wrapper input[type="text"]::placeholder { color: var(--ink-muted); font-size: 0.62rem; }
+.input-wrapper input[type="text"]::placeholder { color: var(--ink-muted); }
 .input-wrapper input[type="text"]:focus { outline: none; }
 .error {
   color: var(--error);
@@ -333,9 +333,8 @@
   .dates-picker {
     padding: 0.75rem;
   }
-  .date-field input {
+  .input-wrapper input[type="text"] {
     padding: 0.5rem;
-    font-size: 0.85rem;
   }
   .boton-eliminar {
     grid-column: 3;
@@ -397,9 +396,6 @@
     font-size: 0.85rem;
   }
   .date-field label {
-    font-size: 0.8rem;
-  }
-  .date-field input {
     font-size: 0.8rem;
   }
 }

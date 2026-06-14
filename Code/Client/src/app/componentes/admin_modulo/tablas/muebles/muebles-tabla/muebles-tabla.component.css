@@ -36,11 +36,7 @@
   overflow-x: auto;
   scrollbar-width: none;
   -ms-overflow-style: none;
-  transform: scaleY(-1);
   border: 1px solid #e2e8f0;
-}
-.table-responsive > * {
-  transform: scaleY(-1);
 }
 .table-responsive::-webkit-scrollbar {
   height: 6px;

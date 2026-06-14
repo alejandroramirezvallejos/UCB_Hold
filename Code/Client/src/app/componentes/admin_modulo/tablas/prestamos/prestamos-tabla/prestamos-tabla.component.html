@@ -112,29 +112,29 @@
             </button>
             }
             @else if (prestamo.value.datosgrupo.EstadoPrestamo=='pendiente') {
-                <button class="btn-action btn-accept" (click)="validaraprobacion(prestamo.key)">
+                <button class="btn-action btn-accept" title="Aceptar" aria-label="Aceptar" (click)="validaraprobacion(prestamo.key)">
                   <i class="fas fa-check"></i>
-                  Aceptar
+                  <span class="btn-label">Aceptar</span>
                 </button>
-                <button class="btn-action btn-reject" (click)="validarrechazo(prestamo.key)">
+                <button class="btn-action btn-reject" title="Rechazar" aria-label="Rechazar" (click)="validarrechazo(prestamo.key)">
                   <i class="fas fa-times"></i>
-                  Rechazar
+                  <span class="btn-label">Rechazar</span>
                 </button>
             }
             @else if (prestamo.value.datosgrupo.EstadoPrestamo=='aprobado') {
-                <button class="btn-action btn-accept" (click)="validarRecogido(prestamo.key)">
-                  <i class="fas fa-hand-holding"></i>
-                  Recogido
+                <button class="btn-action btn-accept" title="Recogido" aria-label="Recogido" (click)="validarRecogido(prestamo.key)">
+                  <i class="fas fa-briefcase"></i>
+                  <span class="btn-label">Recogido</span>
                 </button>
-                <button class="btn-action btn-reject" (click)="validarcancelacion(prestamo.key)">
+                <button class="btn-action btn-reject" title="Cancelar" aria-label="Cancelar" (click)="validarcancelacion(prestamo.key)">
                   <i class="fas fa-times"></i>
-                  Cancelar
+                  <span class="btn-label">Cancelar</span>
                 </button>
             }
             @else if (getEstadoCalculado(prestamo.value) === 'activo' || getEstadoCalculado(prestamo.value) === 'atrasado') {
-                <button class="btn-action btn-accept" (click)="validarDevuelto(prestamo.key)">
+                <button class="btn-action btn-accept" title="Devuelto" aria-label="Devuelto" (click)="validarDevuelto(prestamo.key)">
                   <i class="fas fa-undo"></i>
-                  Devuelto
+                  <span class="btn-label">Devuelto</span>
                 </button>
             }
             </td>

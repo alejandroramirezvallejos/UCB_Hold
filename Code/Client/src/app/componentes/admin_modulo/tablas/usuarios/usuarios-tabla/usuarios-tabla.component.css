@@ -36,10 +36,6 @@
   overflow-x: auto;
   scrollbar-width: none;
   -ms-overflow-style: none;
-  transform: scaleY(-1);
-}
-.table-responsive > * {
-  transform: scaleY(-1);
 }
 .table-responsive::-webkit-scrollbar {
   height: 6px;
@@ -142,7 +138,7 @@
   scrollbar-width: none;
   -ms-overflow-style: none;
   background-color: var(--color-surface);
-  border-radius: var(--radius);
+  border-radius: 12px;
   box-shadow: var(--shadow-sm);
   margin-bottom: 1.5rem;
 }
