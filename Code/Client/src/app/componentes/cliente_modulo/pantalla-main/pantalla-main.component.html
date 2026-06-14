@@ -19,6 +19,11 @@
       (keydown.enter)="$event.preventDefault()"
       (focus)="showCategories = false"
     ></textarea>
+    @if (solicitud) {
+      <button class="clear-search" (click)="limpiarBusqueda()" title="Limpiar búsqueda" type="button">
+        <i class="fas fa-times"></i>
+      </button>
+    }
     <img
       class="icon category-icon"
       src="/assets/categories_line.png"

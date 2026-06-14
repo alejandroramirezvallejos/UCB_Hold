@@ -87,6 +87,11 @@ export class AuditPanelComponent implements OnChanges {
     this.cargar();
   }
 
+  limpiarFiltroAdmin() {
+    this.filtroAdmin = '';
+    this.cargar();
+  }
+
   limpiar() {
     this.fechaDesde = '';
     this.fechaHasta = '';

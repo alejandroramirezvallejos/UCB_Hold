@@ -23,11 +23,9 @@ export class PantallaMainComponent implements OnInit, OnDestroy {
   hover: {
     search: boolean;
     categories: boolean;
-    clear: boolean;
   } = {
     search: false,
     categories: false,
-    clear: false,
   };
   error : WritableSignal<boolean> = signal(false);
   mensajeerror : string = "";
@@ -64,7 +62,11 @@ export class PantallaMainComponent implements OnInit, OnDestroy {
     this.solicitud = '';
     this.categoriasSeleccionadas.clear();
     this.filtrosService.limpiar();
-    this.hover.clear = false;
+  }
+
+  limpiarBusqueda() {
+    this.solicitud = '';
+    this.filtrosService.solicitud = '';
   }
 
   mostrarcategorias() {

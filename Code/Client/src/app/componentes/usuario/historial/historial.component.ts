@@ -1,4 +1,7 @@
 import { Component, OnDestroy, OnInit, HostListener, ElementRef } from '@angular/core';
+import { FormsModule } from '@angular/forms';
+import { FlatpickrDirective } from '../../../directives/flatpickr.directive';
+import flatpickr from 'flatpickr';
 import { UsuarioService } from '../../../services/usuario/usuario.service';
 import { ActivoComponent } from './activo/activo.component';
 import { AprobadoComponent } from './aprobado/aprobado.component';
@@ -9,7 +12,7 @@ import { PendienteComponent } from './pendiente/pendiente.component';
 import { RechazadoComponent } from './rechazado/rechazado.component';
 @Component({
   selector: 'app-historial',
-  imports: [ActivoComponent, AprobadoComponent, AtrasadoComponent, CanceladoComponent, FinalizadoComponent, PendienteComponent, RechazadoComponent],
+  imports: [ActivoComponent, AprobadoComponent, AtrasadoComponent, CanceladoComponent, FinalizadoComponent, PendienteComponent, RechazadoComponent, FormsModule, FlatpickrDirective],
   templateUrl: './historial.component.html',
   styleUrl: './historial.component.css'
 })
@@ -19,6 +22,9 @@ export class HistorialComponent implements OnInit, OnDestroy {
   isOpen: boolean = false;
   isHovered: boolean = false;
   show: boolean = true;
+  filtroTexto: string = '';
+  fechaDesde: string = '';
+  fechaHasta: string = '';
   private pollInterval: ReturnType<typeof setInterval> | null = null;
 
   constructor(private usuario: UsuarioService, private el: ElementRef) { }
@@ -52,6 +58,25 @@ export class HistorialComponent implements OnInit, OnDestroy {
   toggleDropdown() {
     this.isOpen = !this.isOpen;
   }
+
+  onFechaDesde(dates: Date[]) {
+    this.fechaDesde = dates[0] ? dates[0].toISOString().split('T')[0] : '';
+  }
+
+  onFechaHasta(dates: Date[]) {
+    this.fechaHasta = dates[0] ? dates[0].toISOString().split('T')[0] : '';
+  }
+
+  limpiarFiltros() {
+    this.filtroTexto = '';
+    this.fechaDesde = '';
+    this.fechaHasta = '';
+    this.fpDesde?.clear();
+    this.fpHasta?.clear();
+  }
+
+  fpDesde?: flatpickr.Instance;
+  fpHasta?: flatpickr.Instance;
   onMouseEnter() {
     this.isHovered = true;
   }

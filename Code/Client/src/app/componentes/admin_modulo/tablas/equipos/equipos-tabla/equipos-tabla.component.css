@@ -24,13 +24,13 @@
 .dropdown-header .current-value {
   font-size: 0.9rem;
   font-weight: 600;
-  color: var(--ink);
+  color: var(--ink-muted) !important;
   white-space: nowrap;
   display: flex;
   align-items: center;
   gap: 0.5rem;
 }
-.dropdown-header .current-value i { color: var(--ink); }
+.dropdown-header .current-value i { color: var(--ink-muted) !important; }
 .dropdown-header:hover { border-color: var(--border-strong); background-color: #f8fafc; }
 .dropdown-arrow { width: 16px; height: 16px; }
 .dropdown-list {

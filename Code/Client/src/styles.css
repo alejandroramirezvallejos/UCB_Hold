@@ -888,6 +888,34 @@ body select:not(.ng-select):not([multiple]):not([size]) {
 .btn-icon.btn-history.active { color: var(--interactive-text) !important; background: rgba(0,69,123,0.08) !important; }
 .btn-icon:active { transform: scale(0.92) !important; }
 
+/* === CONSISTENT MODAL CLOSE BUTTON SIZE — smaller on mobile === */
+@media (max-width: 768px) {
+  .btn-close,
+  .obs-close,
+  .modal-close-btn,
+  .close-button {
+    width: 1.75rem !important;
+    height: 1.75rem !important;
+    min-width: unset !important;
+    min-height: unset !important;
+    top: 0.75rem !important;
+    right: 0.75rem !important;
+  }
+}
+@media (max-width: 480px) {
+  .btn-close,
+  .obs-close,
+  .modal-close-btn,
+  .close-button {
+    width: 1.5rem !important;
+    height: 1.5rem !important;
+    min-width: unset !important;
+    min-height: unset !important;
+    top: 0.6rem !important;
+    right: 0.6rem !important;
+  }
+}
+
 /* === DATA-TABLE — unified design matching audit table === */
 .data-table {
   width: 100%;

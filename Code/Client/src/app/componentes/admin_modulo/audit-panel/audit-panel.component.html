@@ -3,6 +3,11 @@
     <div class="audit-search-wrap">
       <i class="fas fa-search search-icon"></i>
       <input type="text" [(ngModel)]="filtroAdmin" (keyup.enter)="cargar()" placeholder="Buscar admin..." class="admin-search">
+      @if (filtroAdmin) {
+        <button class="clear-search" (click)="limpiarFiltroAdmin()" title="Limpiar búsqueda" type="button">
+          <i class="fas fa-times"></i>
+        </button>
+      }
     </div>
     <input
       type="text"
@@ -45,6 +50,8 @@
       </button>
     </div>
   </div>
+
+  <ng-content select="[admin-tabs]"></ng-content>
 
   @if(cargando) {
     <div class="audit-loading">

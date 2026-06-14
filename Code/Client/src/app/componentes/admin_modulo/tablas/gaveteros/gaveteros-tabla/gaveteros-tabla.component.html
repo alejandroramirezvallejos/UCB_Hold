@@ -15,11 +15,11 @@
     </button>
   </app-buscador>
 }
+  @if(activeTab==="tabla") {
   <div class="admin-tabs">
     <button [class.active]="activeTab==='tabla'" (click)="activeTab='tabla'">Tabla</button>
-    <button [class.active]="activeTab==='auditoria'" (click)="activeTab='auditoria'">Auditoría</button>
+    <button [class.active]="$any(activeTab)==='auditoria'" (click)="activeTab='auditoria'">Auditoría</button>
   </div>
-  @if(activeTab==="tabla") {
   <div class="table-responsive" appStickyScroll>
     <table class="data-table">
       <thead>        <tr>
@@ -63,7 +63,12 @@
       </tbody>
     </table>  </div>
   } @else {
-    <app-audit-panel [refreshTrigger]="auditRefresh" [entidad]="'Gavetero'"></app-audit-panel>
+    <app-audit-panel [refreshTrigger]="auditRefresh" [entidad]="'Gavetero'">
+      <div admin-tabs class="admin-tabs">
+        <button [class.active]="$any(activeTab)==='tabla'" (click)="activeTab='tabla'">Tabla</button>
+        <button [class.active]="activeTab==='auditoria'" (click)="activeTab='auditoria'">Auditoría</button>
+      </div>
+    </app-audit-panel>
   }  <!-- ALERTA DE ELIMINACIÓN -->
   @if(alertaeliminar){
       <app-aviso-eliminar
