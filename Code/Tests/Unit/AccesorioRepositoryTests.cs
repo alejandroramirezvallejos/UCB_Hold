@@ -73,7 +73,8 @@ public class AccesorioRepositoryTests
 
         result.IsSuccess.Should().BeTrue();
         var inDb = await _dbContext.Accesorios.FindAsync(entity.Id);
-        inDb.Should().BeNull();
+        inDb.Should().NotBeNull();
+        inDb!.EstadoEliminado.Should().BeTrue();
     }
 
     [Test]
