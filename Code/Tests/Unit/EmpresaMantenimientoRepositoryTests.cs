@@ -1,5 +1,6 @@
 using FluentAssertions;
 using IMT_Reservas.Server.Application.Features.EmpresaMantenimiento;
+using IMT_Reservas.Server.Application.Features.Mantenimiento;
 using IMT_Reservas.Server.Core.Entities;
 using IMT_Reservas.Server.Infrastructure.Config;
 using IMT_Reservas.Server.Infrastructure.Repositories.Implementations;
@@ -24,7 +25,9 @@ public class EmpresaMantenimientoRepositoryTests
 
         _dbContext = new ApplicationDbContext(options);
         _mapper = new EmpresaMantenimientoMapper();
-        _repository = new EmpresaMantenimientoRepository(_dbContext, _mapper);
+        var mantenimientoMapper = new MantenimientoMapper();
+        var mantenimientoRepository = new MantenimientoRepository(_dbContext, mantenimientoMapper);
+        _repository = new EmpresaMantenimientoRepository(_dbContext, _mapper, mantenimientoRepository);
     }
 
     [TearDown]

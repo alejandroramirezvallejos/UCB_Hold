@@ -1,4 +1,5 @@
 using FluentAssertions;
+using IMT_Reservas.Server.Application.Features.Equipo;
 using IMT_Reservas.Server.Application.Features.GrupoEquipo;
 using IMT_Reservas.Server.Core.Entities;
 using IMT_Reservas.Server.Infrastructure.Config;
@@ -24,7 +25,9 @@ public class GrupoEquipoRepositoryTests
 
         _dbContext = new ApplicationDbContext(options);
         _mapper = new GrupoEquipoMapper();
-        _repository = new GrupoEquipoRepository(_dbContext, _mapper);
+        var equipoMapper = new EquipoMapper();
+        var equipoRepository = new EquipoRepository(_dbContext, equipoMapper);
+        _repository = new GrupoEquipoRepository(_dbContext, _mapper, equipoRepository);
     }
 
     [TearDown]
