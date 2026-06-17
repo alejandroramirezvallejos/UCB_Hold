@@ -21,17 +21,17 @@ export class NavbarComponent {
   showBack: WritableSignal<boolean> = signal(true);
   showCart: WritableSignal<boolean> = signal(true);
   showProfile: WritableSignal<boolean> = signal(true);
-  private currentRole: string = '';
+  private readonly currentRole: string = '';
 
   private previousAdminRoute: boolean = false;
 
   constructor(
-    private carrito: CarritoService,
-    private router: Router,
-    private usuario: UsuarioService,
-    private location: Location,
-    private sidebarService: SidebarService,
-    private el: ElementRef
+    private readonly carrito: CarritoService,
+    private readonly router: Router,
+    private readonly usuario: UsuarioService,
+    private readonly location: Location,
+    private readonly sidebarService: SidebarService,
+    private readonly el: ElementRef
   ) {
     // 1. Ejecutar al iniciar el componente
     this.updateButtonVisibility(this.router.url);

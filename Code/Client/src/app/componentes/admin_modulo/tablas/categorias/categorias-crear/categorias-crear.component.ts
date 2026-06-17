@@ -18,7 +18,7 @@ export class CategoriasCrearComponent extends BaseTablaComponent {
   @Input() botoncrear: WritableSignal<boolean> = signal(true);
   @Output() Actualizar = new EventEmitter<void>();
   nombreCategoria: string = '';
-  constructor(private categoriaService: CategoriaService) {
+  constructor(private readonly categoriaService: CategoriaService) {
     super();
   }
   validarregistro(){

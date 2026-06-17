@@ -36,7 +36,7 @@ export class EmpresasMantenimientoTablaComponent extends Tabla implements OnInit
   empresascopia: EmpresaMantenimiento[] = [];
   empresaSeleccionada: EmpresaMantenimiento = new EmpresaMantenimiento();
   override columnas: string[] = ['Nombre Empresa','Responsable','Teléfono','NIT'];
-  constructor(private empresaService: EmpresamantenimientoService) {
+  constructor(private readonly empresaService: EmpresamantenimientoService) {
     super();
   }
   ngOnInit() {

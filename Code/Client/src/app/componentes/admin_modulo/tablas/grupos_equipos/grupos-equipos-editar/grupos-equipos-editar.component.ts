@@ -21,7 +21,7 @@ export class GruposEquiposEditarComponent extends BaseTablaComponent implements 
   @Input() categorias: string[] = [];
   @Input() grupoequipo: GrupoEquipo = new GrupoEquipo();
   grupoEquipo: GrupoEquipo = { ...this.grupoequipo };
-  constructor(private grupoEquipoapi: GrupoequipoService) {
+  constructor(private readonly grupoEquipoapi: GrupoequipoService) {
     super();
    }
   ngOnChanges() {

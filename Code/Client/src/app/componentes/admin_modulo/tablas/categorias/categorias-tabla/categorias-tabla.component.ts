@@ -37,7 +37,7 @@ export class CategoriasTablaComponent extends Tabla {
   categoriascopia: Categorias[] = [];
   categoriaSeleccionada: Categorias = new Categorias();
   override columnas: string[] = [' Nombre'];
-  constructor(private categoriaService: CategoriaService) {
+  constructor(private readonly categoriaService: CategoriaService) {
     super();
   }
   ngOnInit() {

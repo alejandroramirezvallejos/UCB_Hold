@@ -18,7 +18,7 @@ export class CarrerasCrearComponent extends BaseTablaComponent {
   @Output() Actualizar = new EventEmitter<void>();
   nombreCarrera: string = '';
 
-  constructor(private carreraService: CarreraService) {
+  constructor(private readonly carreraService: CarreraService) {
     super();
   }
 

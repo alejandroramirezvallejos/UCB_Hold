@@ -27,7 +27,7 @@ export class HistorialComponent implements OnInit, OnDestroy {
   fechaHasta: string = '';
   private pollInterval: ReturnType<typeof setInterval> | null = null;
 
-  constructor(private usuario: UsuarioService, private el: ElementRef) { }
+  constructor(private readonly usuario: UsuarioService, private el: ElementRef) { }
 
   @HostListener('document:click', ['$event'])
   onDocumentClick(event: MouseEvent) {

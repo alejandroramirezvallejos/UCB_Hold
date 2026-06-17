@@ -37,7 +37,7 @@ export class EquiposEditarComponent extends BaseTablaComponent{
   get gaveterosOpciones(): OpcionSelect[] {
     return [{ value: null, label: 'Sin gavetero' }, ...this.Gaveteros.map(g => ({ value: g, label: g.Nombre }))];
   }
-  constructor(private equipoapi: EquipoService ,  private grupoequipoAPI : GrupoequipoService , private gaveterosAPI : GaveteroService) {
+  constructor(private readonly equipoapi: EquipoService ,  private grupoequipoAPI : GrupoequipoService , private gaveterosAPI : GaveteroService) {
     super(); 
   }; 
   ngOnInit() {

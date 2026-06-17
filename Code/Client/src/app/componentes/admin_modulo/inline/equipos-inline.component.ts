@@ -53,7 +53,7 @@ export class EquiposInlineComponent implements OnInit {
   cargando = true;
   filtroTexto = '';
 
-  constructor(private http: HttpClient) {}
+  constructor(private readonly http: HttpClient) {}
 
   get itemsFiltrados(): any[] {
     const texto = this.filtroTexto.trim().toLowerCase();

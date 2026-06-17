@@ -13,7 +13,7 @@ export class UsuarioPrevioComponent {
   rol : string;
   isInAdminMode: boolean = false;
   @Input() showUserMenu : WritableSignal<Boolean> = signal(true);
-  constructor(private router: Router, private usuario: UsuarioService, private authService: AuthService){
+  constructor(private readonly router: Router, private usuario: UsuarioService, private authService: AuthService){
     this.sesion=!usuario.vacio();
     this.rol=usuario.obtenerrol();
     this.isInAdminMode = this.router.url.includes('/admin');

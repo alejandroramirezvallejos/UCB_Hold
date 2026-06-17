@@ -32,7 +32,7 @@ export class CalendarioComponent {
  inicio: Date = new Date();
  error : WritableSignal<boolean> = signal(false);
  mensajeerror : string ="Error desconocido , intente mas tarde";
- constructor(private ApiDisponibilidad : DisponibilidadService){};
+ constructor(private readonly ApiDisponibilidad : DisponibilidadService){};
 
   ngOnInit(): void { 
     this.diaActual.setHours(0, 0, 0, 0);

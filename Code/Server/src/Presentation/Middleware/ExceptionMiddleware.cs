@@ -24,7 +24,7 @@ public class ExceptionMiddleware
         }
         catch (KeyNotFoundException ex)
         {
-            _logger.LogWarning("Recurso no encontrado: {Message}", ex.Message);
+            _logger.LogWarning(ex, "Recurso no encontrado: {Message}", ex.Message);
             await HandleException(context, 404, [ex.Message]);
         }
         catch (DbUpdateException ex)
@@ -34,12 +34,12 @@ public class ExceptionMiddleware
         }
         catch (InvalidOperationException ex)
         {
-            _logger.LogWarning("Conflicto: {Message}", ex.Message);
+            _logger.LogWarning(ex, "Conflicto: {Message}", ex.Message);
             await HandleException(context, 409, [ex.Message]);
         }
         catch (ArgumentException ex)
         {
-            _logger.LogWarning("Validación: {Message}", ex.Message);
+            _logger.LogWarning(ex, "Validación: {Message}", ex.Message);
             await HandleException(context, 400, [ex.Message]);
         }
         catch (Exception ex)
@@ -49,7 +49,7 @@ public class ExceptionMiddleware
         }
     }
 
-    private Task HandleException(HttpContext context, int statusCode, List<string> errors)
+    private static Task HandleException(HttpContext context, int statusCode, List<string> errors)
     {
         context.Response.ContentType = "application/json";
         context.Response.StatusCode = statusCode;

@@ -12,7 +12,7 @@ import { CommonModule } from '@angular/common';
 export class AppComponent {
   cargando: WritableSignal<boolean> = signal(false);
 
-  constructor(private router: Router) {
+  constructor(private readonly router: Router) {
     this.router.events.subscribe((event) => {
       if (event instanceof NavigationStart) {
         this.cargando.set(true);

@@ -14,7 +14,7 @@ export class FlatpickrDirective implements OnInit, OnDestroy {
 
   private instance?: flatpickr.Instance;
 
-  constructor(private el: ElementRef<HTMLInputElement>) {}
+  constructor(private readonly el: ElementRef<HTMLInputElement>) {}
 
   ngOnInit() {
     this.instance = flatpickr(this.el.nativeElement, {

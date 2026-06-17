@@ -18,7 +18,7 @@ export class CarrerasEditarComponent extends BaseTablaComponent {
   @Input() botoneditar: WritableSignal<boolean> = signal(true);
   @Output() actualizar: EventEmitter<void> = new EventEmitter<void>();
   @Input() carrera: Carrera = new Carrera();
-  constructor(private carreraService: CarreraService) {
+  constructor(private readonly carreraService: CarreraService) {
     super();
   }
   validaredicion(){

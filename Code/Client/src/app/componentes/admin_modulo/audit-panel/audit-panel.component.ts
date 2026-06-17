@@ -42,7 +42,7 @@ export class AuditPanelComponent implements OnChanges {
     return ACCIONES_POR_ENTIDAD[this.entidad] ?? ['Crear', 'Editar', 'Eliminar'];
   }
 
-  constructor(private auditService: AuditLogApiService) {}
+  constructor(private readonly auditService: AuditLogApiService) {}
 
   ngOnChanges(changes: SimpleChanges) {
     if (changes['entidad'] || changes['refreshTrigger'])

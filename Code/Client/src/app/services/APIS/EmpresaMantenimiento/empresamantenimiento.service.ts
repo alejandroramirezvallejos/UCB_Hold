@@ -7,8 +7,8 @@ import { map } from 'rxjs';
   providedIn: 'root',
 })
 export class EmpresamantenimientoService {
-  private apiUrl = environment.apiUrl + '/api/EmpresaMantenimiento';
-  constructor(private http: HttpClient) {}
+  private readonly apiUrl = environment.apiUrl + '/api/EmpresaMantenimiento';
+  constructor(private readonly http: HttpClient) {}
   crearEmpresaMantenimiento(empresa: EmpresaMantenimiento) {
     const envio = {
       NombreEmpresa: empresa.NombreEmpresa,

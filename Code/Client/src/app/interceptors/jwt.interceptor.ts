@@ -14,9 +14,9 @@ import { AuthService } from '../services/auth/auth.service';
 @Injectable()
 export class JwtInterceptor implements HttpInterceptor {
   private activeRefresh       = false;
-  private pendingAccessToken$ = new BehaviorSubject<string | null>(null);
+  private readonly pendingAccessToken$ = new BehaviorSubject<string | null>(null);
 
-  constructor(private authService: AuthService, private router: Router) {}
+  constructor(private readonly authService: AuthService, private router: Router) {}
 
   intercept(outgoingRequest: HttpRequest<unknown>, nextHandler: HttpHandler): Observable<HttpEvent<unknown>> {
     const isAuthEndpoint = outgoingRequest.url.includes('/api/Usuario/login') ||

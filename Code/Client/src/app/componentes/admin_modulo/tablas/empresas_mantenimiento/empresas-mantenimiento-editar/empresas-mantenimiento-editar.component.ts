@@ -17,7 +17,7 @@ export class EmpresasMantenimientoEditarComponent extends BaseTablaComponent {
   @Input() botoneditar: WritableSignal<boolean> = signal(true);
   @Output() actualizar: EventEmitter<void> = new EventEmitter<void>();
   @Input() empresaMantenimiento : EmpresaMantenimiento =new EmpresaMantenimiento();
-  constructor(private empresaMantenimientoapi: EmpresamantenimientoService) {
+  constructor(private readonly empresaMantenimientoapi: EmpresamantenimientoService) {
     super();
   }
   validaredicion(){

@@ -113,23 +113,9 @@ public class PrestamoService : Service<PrestamoEntity, PrestamoRepository, Prest
 
         string? detalleAudit = null;
         
-        if (parsedState.Value == EstadoPrestamo.Finalizado && body?.EquiposRetorno is { Count: > 0 })
+        if (parsedState.Value == EstadoPrestamo.Finalizado)
         {
-            var estadosPorCodigo = new Dictionary<int, EstadoEquipo>();
-
-            foreach (var item in body.EquiposRetorno)
-            {
-                if (int.TryParse(item.CodigoImt, out var codigo))
-                    estadosPorCodigo[codigo] = ParseEstadoEquipo(item.EstadoEquipo);
-            }
-
-            var aplicados = await Repository.AplicarEstadosRetorno(id, estadosPorCodigo);
-
-            detalleAudit = JsonSerializer.Serialize(new
-            {
-                observacion,
-                equipos = aplicados.Select(a => new { codigo = a.Codigo, nombre = a.Nombre, estado = a.Estado })
-            });
+            detalleAudit = await HandleFinalizadoEquiposRetorno(id, observacion, body);
         }
 
         var accionAudit = parsedState.Value switch
@@ -146,6 +132,28 @@ public class PrestamoService : Service<PrestamoEntity, PrestamoRepository, Prest
         await Audit!.Log(accionAudit, typeof(PrestamoEntity).Name, id.ToString(), detalleAudit);
 
         return await Get(id);
+    }
+
+    private async Task<string?> HandleFinalizadoEquiposRetorno(int id, string? observacion, PrestamoDto? body)
+    {
+        if (body?.EquiposRetorno == null || body.EquiposRetorno.Count == 0)
+            return null;
+
+        var estadosPorCodigo = new Dictionary<int, EstadoEquipo>();
+
+        foreach (var item in body.EquiposRetorno)
+        {
+            if (int.TryParse(item.CodigoImt, out var codigo))
+                estadosPorCodigo[codigo] = ParseEstadoEquipo(item.EstadoEquipo);
+        }
+
+        var aplicados = await Repository.AplicarEstadosRetorno(id, estadosPorCodigo);
+
+        return JsonSerializer.Serialize(new
+        {
+            observacion,
+            equipos = aplicados.Select(a => new { codigo = a.Codigo, nombre = a.Nombre, estado = a.Estado })
+        });
     }
 
     private static EstadoEquipo ParseEstadoEquipo(string? estado) => estado switch

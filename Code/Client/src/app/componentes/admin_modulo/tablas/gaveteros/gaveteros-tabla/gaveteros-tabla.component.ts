@@ -38,7 +38,7 @@ export class GaveterosTablaComponent extends Tabla {
   gaveteroscopia: Gaveteros[] = [];
   gaveteroSeleccionado:  Gaveteros= new Gaveteros();
   override columnas: string[] = ['Nombre','Tipo','Nombre Mueble','Longitud','Altura','Profundidad'];
-  constructor(private gaveterosapi : GaveteroService){
+  constructor(private readonly gaveterosapi : GaveteroService){
     super();
   };
   ngOnInit(){

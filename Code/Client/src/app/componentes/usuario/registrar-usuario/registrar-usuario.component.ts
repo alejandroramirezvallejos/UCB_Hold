@@ -27,7 +27,7 @@ export class RegistrarUsuarioComponent {
   mensajeerror: string = "";
   aviso: WritableSignal<boolean> = signal(false);
   mensajeaviso: string = "Aviso desconocido , si ve esto es un error , avise al soporte si puede o intente mas tarde";
-  constructor(private usuarioS: UsuarioService, private router: Router, private registrarcuenta: UsuarioServiceAPI, private carrerasS: CarreraService) { }
+  constructor(private readonly usuarioS: UsuarioService, private router: Router, private registrarcuenta: UsuarioServiceAPI, private carrerasS: CarreraService) { }
   toggleDropdown() {
     this.isOpen = !this.isOpen;
   }

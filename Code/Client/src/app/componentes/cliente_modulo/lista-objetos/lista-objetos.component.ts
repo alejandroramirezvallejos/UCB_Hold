@@ -35,9 +35,9 @@ export class ListaObjetosComponent implements OnChanges, OnDestroy, AfterViewIni
   totalOperativo: { [id: number]: number } = {};
 
   constructor(
-    private servicio: GrupoequipoService,
-    private carrito: CarritoService,
-    private disponibilidad: DisponibilidadService
+    private readonly servicio: GrupoequipoService,
+    private readonly carrito: CarritoService,
+    private readonly disponibilidad: DisponibilidadService
   ) {}
 
   sinOperativos(id: number): boolean { return (this.totalOperativo[id] ?? 1) <= 0; }

@@ -8,8 +8,8 @@ import { PrestamoDto } from '../../../models/admin/Prestamos';
   providedIn: 'root'
 })
 export class PrestamosAPIService {
-  private url = environment.apiUrl + '/api/Prestamo';
-  constructor(private http: HttpClient) { }
+  private readonly url = environment.apiUrl + '/api/Prestamo';
+  constructor(private readonly http: HttpClient) { }
   private mapearPrestamo(item: any): PrestamoDto {
     return {
       Id: item.Id,

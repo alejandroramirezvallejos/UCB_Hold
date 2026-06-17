@@ -5,7 +5,7 @@
   >
     <img
       class="icon"
-      src="/assets/search_line.png"
+      src="assets/search_line.png"
       alt="Buscar"
       (mouseenter)="hover.search = true"
       (mouseleave)="hover.search = false"
@@ -19,6 +19,7 @@
       (keydown.enter)="$event.preventDefault()"
       (focus)="showCategories = false"
     ></textarea>
+    
     @if (solicitud) {
       <button class="clear-search" (click)="limpiarBusqueda()" title="Limpiar búsqueda" type="button">
         <i class="fas fa-times"></i>
@@ -26,7 +27,7 @@
     }
     <img
       class="icon category-icon"
-      src="/assets/categories_line.png"
+      src="assets/categories_line.png"
       alt="Categorías"
       (click)="mostrarcategorias()"
       (mouseenter)="hover.categories = true"

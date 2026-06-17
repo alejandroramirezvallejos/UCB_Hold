@@ -71,7 +71,7 @@ public class GrupoEquipoService : Service<GrupoEquipoEntity, GrupoEquipoReposito
         return deleteResult;
     }
 
-    public async Task<Result<List<GrupoEquipoDto>>> Search(string? nombre = null, string? categoria = null)
+    public virtual async Task<Result<List<GrupoEquipoDto>>> Search(string? nombre = null, string? categoria = null)
     {
         var version = await GetSearchVersion();
         var cacheKey = CacheKeys.GrupoEquipoSearch(nombre ?? string.Empty, categoria, version);

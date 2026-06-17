@@ -19,7 +19,7 @@ export class MueblesEditarComponent extends BaseTablaComponent implements OnChan
   @Output() actualizar: EventEmitter<void> = new EventEmitter<void>();
   @Input() muebleOriginal: Muebles = new Muebles();
   mueble: Muebles = { ...this.muebleOriginal };
-  constructor(private muebleapi: MuebleService) { 
+  constructor(private readonly muebleapi: MuebleService) { 
     super(); 
   }
   ngOnChanges() {

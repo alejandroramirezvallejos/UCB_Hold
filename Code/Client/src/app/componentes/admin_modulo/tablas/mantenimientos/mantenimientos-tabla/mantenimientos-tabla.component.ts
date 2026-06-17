@@ -38,7 +38,7 @@ export class MantenimientosTablaComponent extends Tabla implements OnInit {
   mantenimientosFiltrados: MantenimientosAgrupados[] = [];
   mantenimientoSeleccionado: Mantenimientos = new Mantenimientos();
   override columnas: string[] = ['Empresa','codigosIMT','Fecha Inicio','Fecha Fin','Costo'];
-  constructor(private mantenimientoapi: MantenimientoService) { 
+  constructor(private readonly mantenimientoapi: MantenimientoService) { 
     super();
   }
   ngOnInit() {

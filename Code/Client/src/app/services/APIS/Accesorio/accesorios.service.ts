@@ -7,8 +7,8 @@ import { Accesorio } from '../../../models/admin/Accesorio';
   providedIn: 'root',
 })
 export class AccesoriosService {
-  private apiurl = environment.apiUrl + '/api/Accesorio';
-  constructor(private http: HttpClient) {}
+  private readonly apiurl = environment.apiUrl + '/api/Accesorio';
+  constructor(private readonly http: HttpClient) {}
   obtenerAccesorios() {
     return this.http.get<any>(this.apiurl).pipe(
       map((data: any) =>

@@ -21,7 +21,7 @@ export class ComponentesEditarComponent extends BaseTablaComponent {
   @Output() actualizar: EventEmitter<void> = new EventEmitter<void>();
   @Input() componente: Componente = new Componente();
   equipos : Equipos[] = [];
-  constructor(private componenteService: ComponenteService, private equiposAPI : EquipoService) {
+  constructor(private readonly componenteService: ComponenteService, private equiposAPI : EquipoService) {
     super();
   }
    ngOnInit() {

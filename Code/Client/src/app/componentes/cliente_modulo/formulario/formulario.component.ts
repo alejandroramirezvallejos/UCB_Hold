@@ -40,13 +40,13 @@ export class FormularioComponent implements OnInit {
 
 
   constructor(
-    private http: HttpClient,
-    private sanitizer: DomSanitizer,
-    private renderer: Renderer2,
-    private carrito: CarritoService,
-    private router: Router,
-    private usuario: UsuarioService,
-    private mandarprestamo: PrestamosAPIService
+    private readonly http: HttpClient,
+    private readonly sanitizer: DomSanitizer,
+    private readonly renderer: Renderer2,
+    private readonly carrito: CarritoService,
+    private readonly router: Router,
+    private readonly usuario: UsuarioService,
+    private readonly mandarprestamo: PrestamosAPIService
   ) {
   }
 

@@ -85,12 +85,12 @@ public class EquipoService : Service<EquipoEntity, EquipoRepository, EquipoDto>
         return result;
     }
 
-    public async Task<Result<List<EquipoDto>>> GetByGrupo(int grupoId)
+    public virtual async Task<Result<List<EquipoDto>>> GetByGrupo(int grupoId)
         => Result<List<EquipoDto>>.Success(await Repository.GetByGrupo(grupoId));
 
-    public async Task<Result<List<EquipoDto>>> GetByGavetero(int gaveteroId)
+    public virtual async Task<Result<List<EquipoDto>>> GetByGavetero(int gaveteroId)
         => Result<List<EquipoDto>>.Success(await Repository.GetByGavetero(gaveteroId));
 
-    public async Task<Result<List<HistorialEquipoDto>>> GetHistorial(int equipoId)
+    public virtual async Task<Result<List<HistorialEquipoDto>>> GetHistorial(int equipoId)
         => Result<List<HistorialEquipoDto>>.Success(await Repository.GetHistorial(equipoId));
 }

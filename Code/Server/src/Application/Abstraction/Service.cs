@@ -1,3 +1,4 @@
+using System.Diagnostics.CodeAnalysis;
 using Ardalis.Result;
 using FluentValidation;
 using IMT_Reservas.Server.Application.Features.AuditLog;
@@ -5,6 +6,7 @@ using IMT_Reservas.Server.Core.Abstraction;
 using IMT_Reservas.Server.Infrastructure.Repositories.Abstraction;
 namespace IMT_Reservas.Server.Application.Abstraction;
 
+[SuppressMessage("Major Code Smell", "S2436:Types should not have too many generic parameters", Justification = "Necessary for strongly typed generic Service pattern without casting")]
 public class Service<TEntity, TRepository, TDto>
     where TEntity : Entity
     where TRepository : Repository<TEntity, TDto>

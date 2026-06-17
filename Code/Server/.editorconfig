@@ -1,0 +1,9 @@
+root = true
+
+[*.cs]
+# Riok.Mapperly RMG012: The member on the mapping target type was not found on the mapping source type
+dotnet_diagnostic.RMG012.severity = none
+# Riok.Mapperly RMG020: The member on the mapping source type is not mapped to any member on the mapping target type
+dotnet_diagnostic.RMG020.severity = none
+# Riok.Mapperly RMG068: Cannot inline user implemented queryable expression mapping
+dotnet_diagnostic.RMG068.severity = none

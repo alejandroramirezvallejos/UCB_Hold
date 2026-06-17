@@ -10,7 +10,7 @@ export class StickyScrollDirective implements AfterViewInit, OnDestroy {
   private syncing = false;
   private listeners: Array<() => void> = [];
 
-  constructor(private el: ElementRef<HTMLElement>) {}
+  constructor(private readonly el: ElementRef<HTMLElement>) {}
 
   ngAfterViewInit() {
     const host = this.el.nativeElement;

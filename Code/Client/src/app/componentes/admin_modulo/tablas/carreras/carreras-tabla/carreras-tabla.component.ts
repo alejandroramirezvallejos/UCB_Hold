@@ -38,7 +38,7 @@ export class CarrerasTablaComponent extends Tabla {
   carreraSeleccionada: Carrera = new Carrera();
   override columnas: string[] = ['Nombre'];
 
-  constructor(private carreraService: CarreraService) {
+  constructor(private readonly carreraService: CarreraService) {
     super();
   }
 

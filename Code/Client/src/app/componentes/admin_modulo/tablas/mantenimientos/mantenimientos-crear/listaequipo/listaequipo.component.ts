@@ -24,7 +24,7 @@ export class ListaequipoComponent extends BaseTablaComponent {
   backHover: boolean = false;
   sortColumn: string = 'Nombre';
   sortDirection: 'asc' | 'desc' = 'asc';
-  constructor(private equiposapi: EquipoService, public mantenimientoequipos: MantenimientosServiceEquipos) {
+  constructor(private readonly equiposapi: EquipoService, public mantenimientoequipos: MantenimientosServiceEquipos) {
     super();
   }
   ngOnInit(){

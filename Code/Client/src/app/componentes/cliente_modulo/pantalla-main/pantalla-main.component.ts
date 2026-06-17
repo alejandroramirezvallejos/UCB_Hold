@@ -30,7 +30,7 @@ export class PantallaMainComponent implements OnInit, OnDestroy {
   error : WritableSignal<boolean> = signal(false);
   mensajeerror : string = "";
 
-  constructor(private categorias: CategoriaService, private filtrosService: FiltrosService, private el: ElementRef) {}
+  constructor(private readonly categorias: CategoriaService, private filtrosService: FiltrosService, private el: ElementRef) {}
 
   @HostListener('document:click', ['$event'])
   onDocumentClick(event: MouseEvent) {

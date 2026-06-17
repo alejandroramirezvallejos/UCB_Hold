@@ -19,7 +19,7 @@ export class CategoriasEditarComponent  extends BaseTablaComponent{
   @Output() actualizar: EventEmitter<void> = new EventEmitter<void>();
   @Input() categoria: Categorias = new Categorias();
 
-  constructor(private categoriaService: CategoriaService) {
+  constructor(private readonly categoriaService: CategoriaService) {
     super();
   }
 

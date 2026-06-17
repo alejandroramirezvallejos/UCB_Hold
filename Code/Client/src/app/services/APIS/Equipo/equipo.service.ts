@@ -7,8 +7,8 @@ import { Equipos } from '../../../models/admin/Equipos';
   providedIn: 'root'
 })
 export class EquipoService {
-  private apiUrl = environment.apiUrl+ '/api/Equipo';
-  constructor(private http: HttpClient) { }
+  private readonly apiUrl = environment.apiUrl+ '/api/Equipo';
+  constructor(private readonly http: HttpClient) { }
   crearEquipo(equipo: any) {
     const envio = {
       IdGrupoEquipo: equipo.IdGrupoEquipo,

@@ -45,7 +45,7 @@ export class UsuariosTablaComponent extends Tabla implements OnInit {
   carreras: string[] = [];
   usuarioSeleccionado: Usuario = new Usuario();
   override columnas: string[] = ['Carnet','Nombre','Apellido Paterno','Apellido Materno','Correo','Teléfono','Rol','Carrera','Referencia','Tel. Referencia'];
-  constructor(private usuarioapi: UsuarioServiceAPI , private carrerasAPI : CarreraService) {
+  constructor(private readonly usuarioapi: UsuarioServiceAPI , private carrerasAPI : CarreraService) {
     super();
   }
   ngOnInit() {

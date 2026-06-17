@@ -25,7 +25,7 @@ export class UsuariosEditarComponent extends BaseTablaComponent {
     { value: 'docente', label: 'Docente' },
     { value: 'estudiante', label: 'Estudiante' },
   ];
-  constructor(private usuarioApi: UsuarioServiceAPI) {
+  constructor(private readonly usuarioApi: UsuarioServiceAPI) {
     super();
   }
   validareditar(){

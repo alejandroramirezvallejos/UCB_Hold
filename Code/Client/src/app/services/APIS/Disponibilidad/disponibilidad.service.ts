@@ -7,8 +7,8 @@ import { map } from 'rxjs';
   providedIn: 'root',
 })
 export class DisponibilidadService {
-  private url = environment.apiUrl + '/api/Carrito/disponibilidadEquipos';
-  constructor(private http: HttpClient) {}
+  private readonly url = environment.apiUrl + '/api/Carrito/disponibilidadEquipos';
+  constructor(private readonly http: HttpClient) {}
   private mapear(item: any): Disponibilidad {
     return {
       Fecha: item.Fecha ? new Date(item.Fecha) : null,

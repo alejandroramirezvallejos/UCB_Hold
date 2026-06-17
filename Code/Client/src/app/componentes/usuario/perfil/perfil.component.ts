@@ -14,7 +14,7 @@ import { EditarComponent } from './editar/editar.component';
 export class PerfilComponent {
   editar: WritableSignal<boolean> = signal(false);
   usuario: Usuario = new Usuario();
-  constructor(private usuarioS: UsuarioService) {
+  constructor(private readonly usuarioS: UsuarioService) {
     this.usuario = this.usuarioS.obtenerDatosUsuario();
   }
   toggleEdit() {

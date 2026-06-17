@@ -57,7 +57,7 @@ export class PrestamosTablaComponent extends Tabla implements OnInit {
   };
   abrirVista : boolean = false;
   prestamosVista : PrestamoDto[] = [];
-  constructor(private prestamosapi: PrestamosAPIService ) {
+  constructor(private readonly prestamosapi: PrestamosAPIService ) {
     super();
   }
   ngOnInit() {

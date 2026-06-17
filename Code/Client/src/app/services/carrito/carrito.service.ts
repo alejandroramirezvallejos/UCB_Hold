@@ -9,7 +9,6 @@ export class CarritoService {
   cantidadtotal: number = 0; 
   constructor() {}
   agregarproducto(id : number , nombre :string | null , link : string , marca : string , modelo : string ,precio : number , cantidadMax : number) {
-    nombre = nombre 
     if (nombre == '' || nombre == undefined) {
       return; 
     }

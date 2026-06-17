@@ -38,7 +38,7 @@ export class CustomSelectComponent implements ControlValueAccessor {
   private onChange: (valor: any) => void = () => {};
   private onTouched: () => void = () => {};
 
-  constructor(private elementRef: ElementRef) {}
+  constructor(private readonly elementRef: ElementRef) {}
 
   get etiquetaActual(): string {
     const opcion = this.opcionesNormalizadas.find((o) => o.value === this.valor);

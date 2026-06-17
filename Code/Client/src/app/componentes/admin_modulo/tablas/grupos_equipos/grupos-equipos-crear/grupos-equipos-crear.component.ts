@@ -20,7 +20,7 @@ export class GruposEquiposCrearComponent extends BaseTablaComponent {
   @Input() categorias: string[] = [];
   @Output() Actualizar = new EventEmitter<void>();
   grupoEquipo: GrupoEquipo = new GrupoEquipo();
-  constructor(private grupoEquipoapi: GrupoequipoService) { 
+  constructor(private readonly grupoEquipoapi: GrupoequipoService) { 
     super(); 
   }
   validarregistro(){

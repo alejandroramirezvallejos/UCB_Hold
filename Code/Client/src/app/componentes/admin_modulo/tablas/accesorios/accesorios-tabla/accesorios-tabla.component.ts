@@ -39,7 +39,7 @@ export class AccesoriosTablaComponent  extends Tabla{
   accesorioSeleccionado:  Accesorio= new Accesorio();
   override columnas: string[] = ['Nombre','Modelo','Tipo','Código IMT del Equipo','Precio'];
 
-  constructor(private accesoriosapi : AccesoriosService){
+  constructor(private readonly accesoriosapi : AccesoriosService){
     super();
   };
 

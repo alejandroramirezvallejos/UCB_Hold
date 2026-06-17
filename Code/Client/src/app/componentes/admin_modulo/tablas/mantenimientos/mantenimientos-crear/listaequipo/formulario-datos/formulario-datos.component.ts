@@ -13,7 +13,7 @@ export class FormularioDatosComponent {
   @Input() agregarEquipoSeleccionado: WritableSignal<boolean> = signal(false);
   @Input() equipo : Equipos = {} as Equipos;
   @Input() agregarequipo: WritableSignal<boolean> = signal(true);
-  constructor(private mantenimiento : MantenimientosServiceEquipos){}
+  constructor(private readonly mantenimiento : MantenimientosServiceEquipos){}
   tipomantenimiento: string = '';
   descripcion: string = '';
   submitted: boolean = false;

@@ -21,10 +21,10 @@ export class IniciarSesionComponent {
   errorraro : WritableSignal<boolean> = signal(false);
 
   constructor(
-    private usuario    : UsuarioService,
-    private router     : Router,
-    private usuarioapi : UsuarioServiceAPI,
-    private authService: AuthService
+    private readonly usuario    : UsuarioService,
+    private readonly router     : Router,
+    private readonly usuarioapi : UsuarioServiceAPI,
+    private readonly authService: AuthService
   ) {}
 
   

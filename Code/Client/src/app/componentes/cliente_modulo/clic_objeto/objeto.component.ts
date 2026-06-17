@@ -39,10 +39,10 @@ export class ObjetoComponent {
   fechaFinCalendario: WritableSignal<Date | null> = signal(null);
 
   constructor(
-    private route: ActivatedRoute,
-    private servicio: GrupoequipoService,
-    private carrito: CarritoService,
-    private SDisponibilidad: DisponibilidadService
+    private readonly route: ActivatedRoute,
+    private readonly servicio: GrupoequipoService,
+    private readonly carrito: CarritoService,
+    private readonly SDisponibilidad: DisponibilidadService
   ) {}
 
   ngOnInit(): void {

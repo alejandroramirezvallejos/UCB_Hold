@@ -7,8 +7,8 @@ import { map } from 'rxjs';
   providedIn: 'root',
 })
 export class ComponenteService {
-  private apiUrl = environment.apiUrl + '/api/Componente';
-  constructor(private http: HttpClient) {}
+  private readonly apiUrl = environment.apiUrl + '/api/Componente';
+  constructor(private readonly http: HttpClient) {}
   crearComponente(componente: Componente) {
     const envio = {
       Nombre: componente.Nombre,

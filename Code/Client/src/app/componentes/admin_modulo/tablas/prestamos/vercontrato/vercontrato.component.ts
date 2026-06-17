@@ -14,7 +14,7 @@ export class VercontratoComponent extends BaseTablaComponent {
   @Input() vercontraro : WritableSignal<boolean> = signal(true);
   @Input() idprestamo : number = 0;
   contratoContent: string = '';
-   constructor(private prestamo : PrestamosAPIService){
+   constructor(private readonly prestamo : PrestamosAPIService){
     super();
    };
   ngOnInit() {

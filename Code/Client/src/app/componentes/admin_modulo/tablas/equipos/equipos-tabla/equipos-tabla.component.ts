@@ -58,7 +58,7 @@ export class EquiposTablaComponent extends Tabla{
       default: return estado;
     }
   }
-  constructor(private equiposapi : EquipoService){
+  constructor(private readonly equiposapi : EquipoService){
     super();
   };
   ngOnInit(){

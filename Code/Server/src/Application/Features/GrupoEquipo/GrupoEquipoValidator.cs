@@ -14,16 +14,16 @@ public class GrupoEquipoValidator : AbstractValidator<GrupoEquipoDto>
         RuleFor(g => g.IdCategoria)
             .Cascade(CascadeMode.Stop)
             .NotNull().GreaterThan(0).WithMessage("IdCategoria requerido")
-            .MustAsync(async (id, _) => await dbContext.Categorias.AnyAsync(c => c.Id == id && !c.EstadoEliminado))
+            .MustAsync(async (id, cancellationToken) => await dbContext.Categorias.AnyAsync(c => c.Id == id && !c.EstadoEliminado, cancellationToken))
             .WithMessage("Categoría no existe");
 
         RuleFor(g => g)
-            .MustAsync(async (dto, _) =>
+            .MustAsync(async (dto, cancellationToken) =>
             {
                 var existing = await dbContext.GruposEquipos
                     .AsNoTracking()
                     .FirstOrDefaultAsync(g => g.Nombre == dto.Nombre && g.Modelo == dto.Modelo
-                                           && g.Marca == dto.Marca && !g.EstadoEliminado);
+                                           && g.Marca == dto.Marca && !g.EstadoEliminado, cancellationToken);
                 return existing == null || existing.Id == dto.Id;
             })
             .When(g => !string.IsNullOrEmpty(g.Nombre) && !string.IsNullOrEmpty(g.Modelo) && !string.IsNullOrEmpty(g.Marca))

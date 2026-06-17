@@ -37,7 +37,7 @@ export class ComponentesTablaComponent extends Tabla implements OnInit  {
   componentescopia: Componente[] = [];
   componenteSeleccionado: Componente = new Componente();
   override columnas: string[] = ['Nombre','Modelo','Tipo','Código IMT del Equipo','Precio Referencia'];
-  constructor(private componenteService: ComponenteService) {
+  constructor(private readonly componenteService: ComponenteService) {
     super();
   }
   ngOnInit() {

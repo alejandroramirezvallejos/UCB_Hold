@@ -7,11 +7,11 @@ import { GrupoEquipo } from '../../../models/grupo_equipo';
   providedIn: 'root'
 })
 export class GrupoequipoService {
-  private apiUrl = environment.apiUrl + '/api/GrupoEquipo';
+  private readonly apiUrl = environment.apiUrl + '/api/GrupoEquipo';
   private _cache: GrupoEquipo[] | null = null;
   paginaGuardada: number = 0;
   cantidadObjetosGuardada: number = 21;
-  constructor(private http: HttpClient) { }
+  constructor(private readonly http: HttpClient) { }
 
   invalidarCache() { this._cache = null; }
   crearGrupoEquipo(grupoEquipo: GrupoEquipo){

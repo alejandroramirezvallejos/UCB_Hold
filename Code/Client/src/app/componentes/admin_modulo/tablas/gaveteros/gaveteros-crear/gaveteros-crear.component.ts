@@ -21,7 +21,7 @@ export class GaveterosCrearComponent extends BaseTablaComponent{
   @Output() Actualizar = new EventEmitter<void>();
   muebles : string[] = [];
   gavetero : Gaveteros = new Gaveteros();
-  constructor(private gaveteroapi : GaveteroService , private mueblesAPI : MuebleService){
+  constructor(private readonly gaveteroapi : GaveteroService , private mueblesAPI : MuebleService){
     super();
   }; 
   ngOnInit(){

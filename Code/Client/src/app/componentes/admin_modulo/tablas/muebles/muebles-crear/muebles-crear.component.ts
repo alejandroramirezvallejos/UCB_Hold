@@ -18,7 +18,7 @@ export class MueblesCrearComponent extends BaseTablaComponent{
   @Input() botoncrear: WritableSignal<boolean> = signal(true);
   @Output() Actualizar = new EventEmitter<void>();
   mueble: Muebles = new Muebles();
-  constructor(private muebleapi: MuebleService) { 
+  constructor(private readonly muebleapi: MuebleService) { 
     super();
   }
   validarcreacion(){

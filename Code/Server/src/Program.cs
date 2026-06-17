@@ -233,11 +233,8 @@ builder.Services.AddHttpContextAccessor();
 builder.Services.AddScoped<AuditLogRepository>();
 builder.Services.AddScoped<AuditLogService>();
 
-builder.Services.AddHangfire(config => config.UsePostgreSqlStorage(options =>
-{ 
-    options.UseNpgsqlConnection(connectionString);
-}));
 
+builder.Services.AddHangfire(config => config.UsePostgreSqlStorage(options => options.UseNpgsqlConnection(connectionString)));
 builder.Services.AddHangfireServer();
 
 builder.Services.AddRateLimiter(options =>
@@ -245,7 +242,7 @@ builder.Services.AddRateLimiter(options =>
     options.OnRejected = async (context, ct) =>
     {
         context.HttpContext.Response.StatusCode = StatusCodes.Status429TooManyRequests;
-        context.HttpContext.Response.Headers["Retry-After"] = "60";
+        context.HttpContext.Response.Headers.RetryAfter = "60";
         await context.HttpContext.Response.WriteAsync("Demasiadas solicitudes.", ct);
     };
 
@@ -288,11 +285,13 @@ app.Use(async (HttpContext ctx, Func<Task> next) =>
     ctx.Response.Headers.Append("Permissions-Policy",      "camera=(), microphone=(), geolocation=()");
     ctx.Response.Headers.Append("X-XSS-Protection",        "1; mode=block");
 
-    if (ctx.Request.Path.StartsWithSegments("/api"))
+    if (ctx.Request.Path.StartsWithSegments("/api")){
         ctx.Response.Headers.Append("Content-Security-Policy", "default-src 'self'; frame-ancestors 'none'; object-src 'none'; base-uri 'self'; form-action 'self';");
-    else
+    }else{
+        #pragma warning disable S7039
         ctx.Response.Headers.Append("Content-Security-Policy", "default-src 'self'; script-src 'self' 'unsafe-inline'; style-src 'self' 'unsafe-inline'; frame-ancestors 'none'; object-src 'none'; base-uri 'self'; form-action 'self';");
-    
+        #pragma warning restore S7039
+    }
     await next();
 });
 
@@ -316,4 +315,4 @@ RecurringJob.AddOrUpdate<EstadoPrestamoJob>(
     job => job.Execute(),
     "*/10 * * * *");
 
-app.Run();
+await app.RunAsync();

@@ -20,7 +20,7 @@ public class UsuarioValidator : AbstractValidator<UsuarioDto>
             .When(usuario => !string.IsNullOrWhiteSpace(usuario.Contrasena));
 
         RuleFor(usuario => usuario.IdCarrera)
-            .MustAsync(async (id, _) => await dbContext.Carreras.AnyAsync(c => c.Id == id && !c.EstadoEliminado))
+            .MustAsync(async (id, cancellationToken) => await dbContext.Carreras.AnyAsync(c => c.Id == id && !c.EstadoEliminado, cancellationToken))
             .When(usuario => (usuario.IdCarrera ?? 0) > 0)
             .WithMessage("Carrera no existe");
     }

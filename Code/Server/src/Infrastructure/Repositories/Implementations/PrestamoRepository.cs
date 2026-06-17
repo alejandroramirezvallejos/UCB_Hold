@@ -121,7 +121,7 @@ public class PrestamoRepository : Repository<PrestamoEntity, PrestamoDto>
 
     public async Task SaveGrupoReservas(int prestamoId, List<int>? grupoEquipoIds)
     {
-        if (grupoEquipoIds == null || !grupoEquipoIds.Any())
+        if (grupoEquipoIds == null || grupoEquipoIds.Count == 0)
             return;
 
         foreach (var groupId in grupoEquipoIds)
@@ -228,15 +228,18 @@ public class PrestamoRepository : Repository<PrestamoEntity, PrestamoDto>
 
             html = Regex.Replace(html,
                 $@"<td[^>]*class=""imt-code""[^>]*data-grupo-id=""{grupoId}""[^>]*>.*?</td>",
-                $@"<td class=""imt-code"" data-grupo-id=""{grupoId}"">{imtCodes}</td>");
+                $@"<td class=""imt-code"" data-grupo-id=""{grupoId}"">{imtCodes}</td>",
+                RegexOptions.None, TimeSpan.FromMilliseconds(500));
 
             html = Regex.Replace(html,
                 $@"<td[^>]*class=""ucb-code""[^>]*data-grupo-id=""{grupoId}""[^>]*>.*?</td>",
-                $@"<td class=""ucb-code"" data-grupo-id=""{grupoId}"">{ucbCodes}</td>");
+                $@"<td class=""ucb-code"" data-grupo-id=""{grupoId}"">{ucbCodes}</td>",
+                RegexOptions.None, TimeSpan.FromMilliseconds(500));
 
             html = Regex.Replace(html,
                 $@"<td[^>]*class=""serial-code""[^>]*data-grupo-id=""{grupoId}""[^>]*>.*?</td>",
-                $@"<td class=""serial-code"" data-grupo-id=""{grupoId}"">{serials}</td>");
+                $@"<td class=""serial-code"" data-grupo-id=""{grupoId}"">{serials}</td>",
+                RegexOptions.None, TimeSpan.FromMilliseconds(500));
         }
 
         contrato.ContratoHtml = html;

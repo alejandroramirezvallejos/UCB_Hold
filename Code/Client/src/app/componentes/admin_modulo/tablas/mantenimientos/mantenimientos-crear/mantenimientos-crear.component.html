@@ -3,7 +3,7 @@
   <button class="btn-close" (click)="cerrar()">
     <img
       #closeIcon
-      src="/assets/x.png"
+      src="assets/x.png"
       alt="Cerrar"
       style="width:100%; height:100%;"
       (mouseenter)="closeIcon.src = '/assets/x_color.png'"
@@ -80,7 +80,7 @@
           <span class="equipo-nombre">{{item.value.nombre}}</span>
           <span class="equipo-tipo">{{item.value.TipoMantenimiento}}</span>
           <button class="btn-remove" (click)="eliminarEquipo(item.key)">
-            <img class="remove-icon" src="/assets/x.png" alt="Eliminar" width="12" height="12">
+            <img class="remove-icon" src="assets/x.png" alt="Eliminar" width="12" height="12">
           </button>
         </div>
       }

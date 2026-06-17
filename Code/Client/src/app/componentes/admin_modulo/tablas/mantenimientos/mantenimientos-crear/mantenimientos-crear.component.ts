@@ -30,7 +30,7 @@ export class MantenimientosCrearComponent extends BaseTablaComponent{
         TipoMantenimiento: string;
         DescripcionEquipo : string ; 
         nombre : string }> = new Map();
-  constructor(private mantenimientoapi: MantenimientoService , private mantenimientoequipo : MantenimientosServiceEquipos  , private empresa : EmpresamantenimientoService) {
+  constructor(private readonly mantenimientoapi: MantenimientoService , private mantenimientoequipo : MantenimientosServiceEquipos  , private empresa : EmpresamantenimientoService) {
     super();
    }
   ngOnInit() {

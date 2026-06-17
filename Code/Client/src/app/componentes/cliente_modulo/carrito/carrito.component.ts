@@ -35,10 +35,10 @@ export class CarritoComponent {
   cargando: boolean = false;
   constructor(
     public carritoS: CarritoService,
-    private router: Router,
-    private route: ActivatedRoute,
-    private usuario: UsuarioService,
-    private prestamosAPI: PrestamosAPIService
+    private readonly router: Router,
+    private readonly route: ActivatedRoute,
+    private readonly usuario: UsuarioService,
+    private readonly prestamosAPI: PrestamosAPIService
   ) {
     this.carrito = this.carritoS.obtenercarrito();
     this.hoy.setHours(0, 0, 0, 0);
@@ -46,7 +46,7 @@ export class CarritoComponent {
       this.step = params['step'] ? Number(params['step']) : 1;
     });
   }
-  private parseDateLocal = (dateString: string) => {
+  private readonly parseDateLocal = (dateString: string) => {
       const [year, month, day] = dateString.split('-').map(Number);
       return new Date(year, month - 1, day);
     };

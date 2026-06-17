@@ -7,8 +7,8 @@ import { map } from 'rxjs';
   providedIn: 'root',
 })
 export class GaveteroService {
-  private apiUrl = environment.apiUrl + '/api/Gavetero';
-  constructor(private http: HttpClient) {}
+  private readonly apiUrl = environment.apiUrl + '/api/Gavetero';
+  constructor(private readonly http: HttpClient) {}
   crearGavetero(gavetero: Gaveteros) {
     const envio = {
       Nombre: gavetero.Nombre,

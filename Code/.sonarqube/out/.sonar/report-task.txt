@@ -1,0 +1,6 @@
+projectKey=UCBHold
+serverUrl=http://localhost:9000
+serverVersion=26.4.0.121862
+dashboardUrl=http://localhost:9000/dashboard?id=UCBHold
+ceTaskId=8d7054c8-4765-4191-b37b-7ee14ef1ae03
+ceTaskUrl=http://localhost:9000/api/ce/task?id=8d7054c8-4765-4191-b37b-7ee14ef1ae03

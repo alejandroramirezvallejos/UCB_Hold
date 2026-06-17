@@ -7,8 +7,8 @@ import { map } from 'rxjs';
   providedIn: 'root',
 })
 export class MuebleService {
-  private apiUrl = environment.apiUrl + '/api/Mueble';
-  constructor(private http: HttpClient) {}
+  private readonly apiUrl = environment.apiUrl + '/api/Mueble';
+  constructor(private readonly http: HttpClient) {}
   crearMueble(mueble: Muebles) {
     const enviar = {
       Nombre: mueble.Nombre,

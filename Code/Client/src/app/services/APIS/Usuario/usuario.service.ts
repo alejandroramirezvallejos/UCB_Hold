@@ -7,8 +7,8 @@ import { map } from 'rxjs';
   providedIn: 'root'
 })
 export class UsuarioServiceAPI {
-  private apiUrl = environment.apiUrl + '/api/Usuario';
-  constructor(private http: HttpClient) { }
+  private readonly apiUrl = environment.apiUrl + '/api/Usuario';
+  constructor(private readonly http: HttpClient) { }
 
 
   registrarCuenta(usuario: Usuario, contrasena: string, rol: string | null) {

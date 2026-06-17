@@ -26,7 +26,7 @@ export class AccesoriosCrearComponent extends BaseTablaComponent {
     return this.equipos.map(e => ({ value: e.CodigoImt, label: `${e.NombreGrupoEquipo} ${e.Modelo} ${e.Marca} - ${e.CodigoImt}` }));
   }
 
-  constructor(private accesorioapi : AccesoriosService , private equipoAPI : EquipoService){
+  constructor(private readonly accesorioapi : AccesoriosService , private equipoAPI : EquipoService){
     super();
   }; 
 

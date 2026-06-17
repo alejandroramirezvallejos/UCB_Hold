@@ -74,7 +74,7 @@ internal class JwtServiceTests
     [Test]
     public void GenerateRefreshToken_ReturnsNonEmptyString()
     {
-        var refreshToken = _jwtService.GenerateRefreshToken();
+        var refreshToken = JwtService.GenerateRefreshToken();
 
         refreshToken.Should().NotBeNullOrWhiteSpace();
     }
@@ -82,8 +82,8 @@ internal class JwtServiceTests
     [Test]
     public void GenerateRefreshToken_IsDifferentEachCall()
     {
-        var firstToken  = _jwtService.GenerateRefreshToken();
-        var secondToken = _jwtService.GenerateRefreshToken();
+        var firstToken  = JwtService.GenerateRefreshToken();
+        var secondToken = JwtService.GenerateRefreshToken();
 
         firstToken.Should().NotBe(secondToken);
     }

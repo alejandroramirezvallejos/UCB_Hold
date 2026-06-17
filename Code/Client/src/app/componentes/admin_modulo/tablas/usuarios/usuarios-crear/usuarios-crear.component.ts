@@ -25,7 +25,7 @@ export class UsuariosCrearComponent extends BaseTablaComponent{
     { value: 'administrador', label: 'Administrador' },
     { value: 'estudiante', label: 'Estudiante' },
   ];
-  constructor(private usuarioApi: UsuarioServiceAPI) {
+  constructor(private readonly usuarioApi: UsuarioServiceAPI) {
     super();
   } 
   validarcrear(){

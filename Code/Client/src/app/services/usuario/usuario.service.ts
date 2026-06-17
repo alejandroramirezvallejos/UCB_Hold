@@ -7,7 +7,7 @@ const STORED_USER_KEY = 'ucbhold_user';
   providedIn: 'root'
 })
 export class UsuarioService {
-  private usuarioSignal: WritableSignal<Usuario> = signal(new Usuario());
+  private readonly usuarioSignal: WritableSignal<Usuario> = signal(new Usuario());
 
   constructor() {
     const storedJson = localStorage.getItem(STORED_USER_KEY);

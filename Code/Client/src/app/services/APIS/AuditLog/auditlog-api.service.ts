@@ -8,7 +8,7 @@ import { AuditLogDto } from '../../../models/admin/AuditLog';
 export class AuditLogApiService {
   private readonly url = `${environment.apiUrl}/api/AuditLog`;
 
-  constructor(private http: HttpClient) {}
+  constructor(private readonly http: HttpClient) {}
 
   getAuditLog(
     entidad?: string,

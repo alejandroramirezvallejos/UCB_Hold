@@ -7,8 +7,8 @@ import { Carrera } from '../../../models/admin/Carreras';
   providedIn: 'root',
 })
 export class CarreraService {
-  private apiUrl = environment.apiUrl + '/api/Carrera';
-  constructor(private http: HttpClient) {}
+  private readonly apiUrl = environment.apiUrl + '/api/Carrera';
+  constructor(private readonly http: HttpClient) {}
   obtenerCarreras() {
     return this.http.get<any>(this.apiUrl).pipe(
       map((response) =>

@@ -37,7 +37,7 @@ export class MueblesTablaComponent extends Tabla implements OnInit {
   mueblesFiltrados: Muebles[] = [];
   muebleSeleccionado: Muebles = new Muebles() ;
   override columnas: string[] = ['Nombre','Tipo','Ubicación','Costo','Gaveteros','Dimensiones'];
-  constructor(private muebleapi: MuebleService) {
+  constructor(private readonly muebleapi: MuebleService) {
     super();
   }
   ngOnInit() {

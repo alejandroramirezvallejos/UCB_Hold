@@ -6,12 +6,12 @@ import { map } from 'rxjs';
   providedIn: 'root'
 })
 export class MantenimientoService {
-  private apiUrl = environment.apiUrl + '/api/Mantenimiento'; 
-  constructor(private http: HttpClient) { }
+  private readonly apiUrl = environment.apiUrl + '/api/Mantenimiento'; 
+  constructor(private readonly http: HttpClient) { }
   crearMantenimiento(mantenimiento: any , equipos: Map<number, { TipoMantenimiento: string; DescripcionEquipo: string; nombre: string }> ) {
-    var codigosimt: number[] = [];
-    var tiposmantenimiento: string[] = [];
-    var descripcionequipos: string[] = [];
+    const codigosimt: number[] = [];
+    const tiposmantenimiento: string[] = [];
+    const descripcionequipos: string[] = [];
     equipos.forEach((value, key) => {
       codigosimt.push(key);
       tiposmantenimiento.push(value.TipoMantenimiento);

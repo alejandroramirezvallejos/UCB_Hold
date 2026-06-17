@@ -10,11 +10,11 @@ public class CarreraValidator : AbstractValidator<CarreraDto>
         RuleFor(carrera => carrera.Nombre).NotEmpty().WithMessage("Nombre requerido");
 
         RuleFor(carrera => carrera)
-            .MustAsync(async (dto, _) =>
+            .MustAsync(async (dto, cancellationToken) =>
             {
                 var existing = await dbContext.Carreras
                     .AsNoTracking()
-                    .FirstOrDefaultAsync(c => c.Nombre == dto.Nombre && !c.EstadoEliminado);
+                    .FirstOrDefaultAsync(c => c.Nombre == dto.Nombre && !c.EstadoEliminado, cancellationToken);
                 return existing == null || existing.Id == dto.Id;
             })
             .When(carrera => !string.IsNullOrEmpty(carrera.Nombre))

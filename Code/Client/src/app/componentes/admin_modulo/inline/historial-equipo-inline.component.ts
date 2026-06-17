@@ -251,7 +251,7 @@ export class HistorialEquipoInlineComponent implements OnInit {
   @Output() observacionClick = new EventEmitter<string>();
   items: HistorialEquipoDto[] = [];
   cargando = true;
-
+  
   filtroTexto = '';
   filtroEstado = '';
   fechaDesde = '';
@@ -260,7 +260,7 @@ export class HistorialEquipoInlineComponent implements OnInit {
   fpDesde?: flatpickr.Instance;
   fpHasta?: flatpickr.Instance;
 
-  constructor(private http: HttpClient) {}
+  constructor(private readonly http: HttpClient) {}
 
   get itemsFiltrados(): HistorialEquipoDto[] {
     const texto = this.filtroTexto.trim().toLowerCase();

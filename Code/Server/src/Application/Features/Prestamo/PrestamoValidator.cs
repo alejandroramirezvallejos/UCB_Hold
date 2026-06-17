@@ -10,7 +10,7 @@ public class PrestamoValidator : AbstractValidator<PrestamoDto>
         RuleFor(p => p.CarnetUsuario)
             .Cascade(CascadeMode.Stop)
             .NotEmpty().WithMessage("Carnet de usuario requerido")
-            .MustAsync(async (carnet, _) => await dbContext.Usuarios.AnyAsync(u => u.Carnet == carnet && !u.EstadoEliminado))
+            .MustAsync(async (carnet, cancellationToken) => await dbContext.Usuarios.AnyAsync(u => u.Carnet == carnet && !u.EstadoEliminado, cancellationToken))
             .WithMessage("Usuario no existe o está inactivo");
 
         RuleFor(p => p.FechaPrestamoEsperada)

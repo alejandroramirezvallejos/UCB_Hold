@@ -10,7 +10,7 @@ public class MantenimientoValidator : AbstractValidator<MantenimientoDto>
         RuleFor(m => m.IdEmpresa)
             .Cascade(CascadeMode.Stop)
             .NotNull().GreaterThan(0).WithMessage("IdEmpresa requerido")
-            .MustAsync(async (id, _) => await dbContext.EmpresasMantenimiento.AnyAsync(e => e.Id == id && !e.EstadoEliminado))
+            .MustAsync(async (id, cancellationToken) => await dbContext.EmpresasMantenimiento.AnyAsync(e => e.Id == id && !e.EstadoEliminado, cancellationToken))
             .WithMessage("Empresa mantenimiento no existe");
 
         RuleFor(m => m.FechaMantenimiento)

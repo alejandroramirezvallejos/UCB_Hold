@@ -140,7 +140,7 @@ public class UsuarioService : Service<UsuarioEntity, UsuarioRepository, UsuarioD
         dto.CarreraNombre = carreraNombre;
 
         var accessToken  = _jwtService.GenerateAccessToken(dto);
-        var refreshToken = _jwtService.GenerateRefreshToken();
+        var refreshToken = JwtService.GenerateRefreshToken();
 
         await Repository.UpdateRefreshToken(
             usuario.Carnet!,
@@ -169,7 +169,7 @@ public class UsuarioService : Service<UsuarioEntity, UsuarioRepository, UsuarioD
         dto.CarreraNombre = carreraNombre;
 
         var newAccessToken  = _jwtService.GenerateAccessToken(dto);
-        var newRefreshToken = _jwtService.GenerateRefreshToken();
+        var newRefreshToken = JwtService.GenerateRefreshToken();
 
         await Repository.UpdateRefreshToken(
             usuario.Carnet!,

@@ -39,7 +39,7 @@ export class GruposEquiposTablaComponent extends Tabla implements OnInit {
   categorias: string[] = [];
   grupoEquipoSeleccionado: GrupoEquipo = new GrupoEquipo();
   override columnas: string[] = ['Nombre','Cantidad','Modelo','Marca','Categoría','Descripción'];
-  constructor(private grupoequipoapi: GrupoequipoService , private categoriasAPI : CategoriaService) {
+  constructor(private readonly grupoequipoapi: GrupoequipoService , private categoriasAPI : CategoriaService) {
     super();
   }
   ngOnInit() {

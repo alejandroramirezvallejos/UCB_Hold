@@ -7,8 +7,8 @@ import { Categorias } from '../../../models/admin/Categorias';
   providedIn: 'root',
 })
 export class CategoriaService {
-  private apiurl = environment.apiUrl + '/api/Categoria';
-  constructor(private http: HttpClient) {}
+  private readonly apiurl = environment.apiUrl + '/api/Categoria';
+  constructor(private readonly http: HttpClient) {}
   obtenercategorias() {
     return this.http.get<any>(this.apiurl).pipe(
       map((data: any) =>

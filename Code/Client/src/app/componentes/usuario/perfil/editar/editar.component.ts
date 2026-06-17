@@ -33,9 +33,9 @@ export class EditarComponent {
   cargando: boolean = false;
 
   constructor(
-    private usuarioApi: UsuarioServiceAPI,
-    private carrerasAPI: CarreraService,
-    private usuarioStore: UsuarioService
+    private readonly usuarioApi: UsuarioServiceAPI,
+    private readonly carrerasAPI: CarreraService,
+    private readonly usuarioStore: UsuarioService
   ) {}
   toggleDropdown() {
     this.isOpen = !this.isOpen;

@@ -25,7 +25,7 @@ export class ComponentesCrearComponent extends BaseTablaComponent {
   get equiposOpciones(): OpcionSelect[] {
     return this.equipos.map(e => ({ value: e.CodigoImt, label: `${e.NombreGrupoEquipo} ${e.CodigoImt}` }));
   }
-  constructor(private componenteService: ComponenteService , private equiposAPI : EquipoService) {
+  constructor(private readonly componenteService: ComponenteService , private equiposAPI : EquipoService) {
     super();
   }
   ngOnInit() {
