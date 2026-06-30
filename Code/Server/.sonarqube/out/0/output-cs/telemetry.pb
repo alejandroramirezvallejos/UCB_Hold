@@ -1,1 +1,0 @@
-|Ro/Users/terrazasllanosfernando/Desktop/EquiposMecatronica/Codigo/UCB_Hold/Code/Server/IMT_Reservas.Server.csprojòCSharp12
