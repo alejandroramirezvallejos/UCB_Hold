@@ -2,48 +2,144 @@ name: Tests
 
 on:
   push:
-    branches: [ main, develop ]
+    branches: [main, develop]
   pull_request:
-    branches: [ main, develop ]
+    branches: [main, develop]
 
 jobs:
-  test:
+  quality:
     runs-on: ubuntu-latest
+    env:
+      DOTNET_VERSION: 8.0.x
+      NODE_VERSION: 20.x
+      BUILD_CONFIGURATION: Release
+      SONAR_HOST_URL: ${{ vars.SONAR_HOST_URL || 'https://sonarcloud.io' }}
+      SONAR_ORGANIZATION: ${{ vars.SONAR_ORGANIZATION }}
+      SONAR_PROJECT_KEY: ${{ secrets.SONAR_PROJECT_KEY }}
+      SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
 
     steps:
       - uses: actions/checkout@v4
 
-      - name: Setup .NET 8
+      - name: Setup .NET
         uses: actions/setup-dotnet@v4
         with:
-          dotnet-version: 8.0.x
+          dotnet-version: ${{ env.DOTNET_VERSION }}
 
-      - name: Restore
-        run: dotnet restore Code/Tests/IMT_Reservas.Tests.csproj
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+          cache: npm
+          cache-dependency-path: Code/Client/package-lock.json
 
-      - name: Build
-        run: dotnet build Code/Tests/IMT_Reservas.Tests.csproj --no-restore --configuration Release
+      - name: Restore frontend
+        working-directory: Code/Client
+        run: npm ci
 
-      - name: Test
+      - name: Restore backend
+        run: dotnet restore Code/IMT_Reservas.sln
+
+      - name: Install coverage report tool
+        run: dotnet tool install --global dotnet-reportgenerator-globaltool
+
+      - name: Install SonarQube scanner
+        if: env.SONAR_TOKEN != '' && env.SONAR_PROJECT_KEY != ''
+        run: dotnet tool install --global dotnet-sonarscanner
+
+      - name: Start SonarQube analysis
+        if: env.SONAR_TOKEN != '' && env.SONAR_PROJECT_KEY != ''
+        run: |
+          ORGANIZATION_ARG=""
+          if [ -n "$SONAR_ORGANIZATION" ]; then ORGANIZATION_ARG="/o:$SONAR_ORGANIZATION"; fi
+          dotnet sonarscanner begin \
+            /k:"$SONAR_PROJECT_KEY" \
+            $ORGANIZATION_ARG \
+            /d:sonar.host.url="$SONAR_HOST_URL" \
+            /d:sonar.token="$SONAR_TOKEN" \
+            /d:sonar.cs.opencover.reportsPaths="Code/Tests/TestResults/**/coverage.opencover.xml" \
+            /d:sonar.javascript.lcov.reportPaths="Code/Client/coverage/lcov.info" \
+            /d:sonar.coverage.exclusions="Code/Tests/**"
+
+      - name: Build backend
+        run: dotnet build Code/IMT_Reservas.sln --no-restore --configuration $BUILD_CONFIGURATION
+
+      - name: Test backend with coverage
         run: |
           dotnet test Code/Tests/IMT_Reservas.Tests.csproj \
             --no-build \
-            --configuration Release \
+            --configuration $BUILD_CONFIGURATION \
+            --settings Code/Tests/coverage.runsettings \
             --collect:"XPlat Code Coverage" \
-            --results-directory ./TestResults \
+            --results-directory Code/Tests/TestResults \
             --logger "console;verbosity=normal"
 
-      - name: Generate HTML coverage report
+      - name: Generate backend HTML coverage
         if: always()
-        uses: danielpalme/ReportGenerator-GitHub-Action@5
-        with:
-          reports: TestResults/**/coverage.cobertura.xml
-          targetdir: coverage-html
-          reporttypes: Html
+        run: |
+          reportgenerator \
+            -reports:"Code/Tests/TestResults/**/coverage.cobertura.xml" \
+            -targetdir:"Code/Tests/coveragereport" \
+            -reporttypes:"Html;TextSummary"
 
-      - name: Upload coverage
+      - name: Check frontend format
+        working-directory: Code/Client
+        run: npm run format:check
+
+      - name: Typecheck frontend app
+        working-directory: Code/Client
+        run: npx tsc -p tsconfig.app.json --noEmit
+
+      - name: Typecheck frontend tests
+        working-directory: Code/Client
+        run: npx tsc -p tsconfig.spec.json --noEmit
+
+      - name: Test frontend with coverage
+        working-directory: Code/Client
+        run: npm run test:coverage
+
+      - name: Build frontend
+        working-directory: Code/Client
+        run: npm run build
+
+      - name: Finish SonarQube analysis
+        if: env.SONAR_TOKEN != '' && env.SONAR_PROJECT_KEY != ''
+        run: dotnet sonarscanner end /d:sonar.token="$SONAR_TOKEN"
+
+      - name: Fetch SonarQube measures
+        if: env.SONAR_TOKEN != '' && env.SONAR_PROJECT_KEY != ''
+        run: |
+          mkdir -p Code/QualityReports
+          curl --fail --silent --show-error --user "$SONAR_TOKEN:" \
+            "$SONAR_HOST_URL/api/measures/component?component=$SONAR_PROJECT_KEY&metricKeys=alert_status,bugs,vulnerabilities,security_hotspots,code_smells,coverage,duplicated_lines_density" \
+            --output Code/QualityReports/sonar-measures.json
+
+      - name: Generate visual quality report
+        if: always()
+        run: |
+          node Code/QualityReports/generate-quality-report.js
+          mkdir -p Code/QualityReports/html/frontend-coverage
+          mkdir -p Code/QualityReports/html/backend-coverage
+          cp -r Code/Client/coverage/. Code/QualityReports/html/frontend-coverage/ || true
+          cp -r Code/Tests/coveragereport/. Code/QualityReports/html/backend-coverage/ || true
+
+      - name: Upload visual quality report
         if: always()
         uses: actions/upload-artifact@v4
         with:
-          name: coverage
-          path: coverage-html/
+          name: visual-quality-report
+          path: Code/QualityReports/html/
+
+      - name: Upload backend coverage
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: backend-coverage-html
+          path: Code/Tests/coveragereport/
+
+      - name: Upload frontend coverage
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: frontend-coverage
+          path: Code/Client/coverage/
