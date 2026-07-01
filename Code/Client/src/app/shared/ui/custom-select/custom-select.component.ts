@@ -26,6 +26,7 @@ import { OpcionSelect } from './opcion-select';
 export class CustomSelectComponent implements ControlValueAccessor {
   @Input() placeholder = 'Seleccionar';
   @Input() invalid = false;
+  @Input() searchThreshold = 8;
   @Input() set opciones(valor: Array<OpcionSelect | string>) {
     this.opcionesNormalizadas = (valor ?? []).map((o) =>
       typeof o === 'string' ? { value: o, label: o } : o,
@@ -36,6 +37,7 @@ export class CustomSelectComponent implements ControlValueAccessor {
   abierto = false;
   disabled = false;
   valor: unknown = null;
+  busqueda = '';
 
   private onChange: (valor: unknown) => void = () => {};
   private onTouched: () => void = () => {};
@@ -53,6 +55,20 @@ export class CustomSelectComponent implements ControlValueAccessor {
     return !this.opcionesNormalizadas.some((o) => o.value === this.valor);
   }
 
+  get debeMostrarBusqueda(): boolean {
+    return this.opcionesNormalizadas.length >= this.searchThreshold;
+  }
+
+  get opcionesFiltradas(): OpcionSelect[] {
+    const busquedaNormalizada = this.normalizarTexto(this.busqueda);
+
+    if (!busquedaNormalizada) return this.opcionesNormalizadas;
+
+    return this.opcionesNormalizadas.filter((opcion) =>
+      this.normalizarTexto(opcion.label).includes(busquedaNormalizada),
+    );
+  }
+
   alternar(): void {
     if (this.disabled) return;
     this.abierto = !this.abierto;
@@ -63,6 +79,11 @@ export class CustomSelectComponent implements ControlValueAccessor {
     this.valor = opcion.value;
     this.onChange(this.valor);
     this.abierto = false;
+    this.busqueda = '';
+  }
+
+  buscar(evento: Event): void {
+    this.busqueda = (evento.target as HTMLInputElement).value;
   }
 
   @HostListener('document:click', ['$event'])
@@ -72,6 +93,7 @@ export class CustomSelectComponent implements ControlValueAccessor {
       !this.elementRef.nativeElement.contains(evento.target)
     ) {
       this.abierto = false;
+      this.busqueda = '';
     }
   }
 
@@ -86,5 +108,12 @@ export class CustomSelectComponent implements ControlValueAccessor {
   }
   setDisabledState(disabled: boolean): void {
     this.disabled = disabled;
+  }
+
+  private normalizarTexto(texto: unknown): string {
+    return String(texto ?? '')
+      .toLowerCase()
+      .normalize('NFD')
+      .replace(/[\u0300-\u036f]/g, '');
   }
 }

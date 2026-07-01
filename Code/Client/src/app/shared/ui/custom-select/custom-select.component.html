@@ -13,16 +13,34 @@
     <i class="fas fa-chevron-down cs-chevron" [class.open]="abierto"></i>
   </button>
   @if (abierto) {
-    <ul class="cs-menu">
-      @for (opcion of opcionesNormalizadas; track opcion.value) {
-        <li
-          class="cs-item"
-          [class.active]="opcion.value === valor"
-          (click)="seleccionar(opcion)"
-        >
-          {{ opcion.label }}
-        </li>
+    <div class="cs-menu">
+      @if (debeMostrarBusqueda) {
+        <div class="cs-search">
+          <i class="fas fa-search cs-search__icon"></i>
+          <input
+            type="text"
+            class="cs-search__input"
+            [value]="busqueda"
+            (input)="buscar($event)"
+            (click)="$event.stopPropagation()"
+            placeholder="Buscar..."
+          />
+        </div>
       }
-    </ul>
+      <ul class="cs-options">
+        @for (opcion of opcionesFiltradas; track opcion.value) {
+          <li
+            class="cs-item"
+            [class.active]="opcion.value === valor"
+            (click)="seleccionar(opcion)"
+          >
+            {{ opcion.label }}
+          </li>
+        }
+        @if (opcionesFiltradas.length === 0) {
+          <li class="cs-empty">Sin resultados</li>
+        }
+      </ul>
+    </div>
   }
 </div>

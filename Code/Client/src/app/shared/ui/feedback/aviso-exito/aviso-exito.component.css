@@ -63,7 +63,7 @@ h1 {
 }
 p {
   font-size: 16px;
-  color: var(--color-text);
+  color: var(--ink);
   line-height: 1.5;
   text-align: center;
   padding: 0 5px;

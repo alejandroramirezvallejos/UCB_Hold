@@ -1,4 +1,4 @@
-export * from './ui/historial/BASE/HistorialBase';
+export * from './ui/historial/base/historial-base';
 export * from './ui/historial/activo/activo.component';
 export * from './ui/historial/aprobado/aprobado.component';
 export * from './ui/historial/atrasado/atrasado.component';

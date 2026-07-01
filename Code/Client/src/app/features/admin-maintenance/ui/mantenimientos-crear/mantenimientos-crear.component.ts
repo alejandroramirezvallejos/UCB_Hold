@@ -10,7 +10,7 @@ import { FormsModule } from '@angular/forms';
 import { EmpresaMantenimiento, Mantenimientos } from '@entities/admin';
 import { MantenimientoService } from '@entities/maintenance';
 import { ListaequipoComponent } from './listaequipo/listaequipo.component';
-import { MantenimientosServiceEquipos } from '../../model/mantenimientosEquipos.service';
+import { MantenimientosServiceEquipos } from '../../model/mantenimientos-equipos.service';
 import { CommonModule } from '@angular/common';
 import { EmpresamantenimientoService } from '@entities/maintenance-company';
 import { BaseTablaComponent } from '@shared/lib/admin-table';
@@ -19,6 +19,7 @@ import { Aviso } from '@shared/ui';
 import { AvisoExitoComponent } from '@shared/ui';
 import { extractErrorMessage } from '@shared/lib/error';
 import { CustomSelectComponent } from '@shared/ui';
+import { FlatpickrDirective } from '@shared/lib/directives';
 @Component({
   selector: 'app-mantenimientos-crear',
   standalone: true,
@@ -30,6 +31,7 @@ import { CustomSelectComponent } from '@shared/ui';
     Aviso,
     AvisoExitoComponent,
     CustomSelectComponent,
+    FlatpickrDirective,
   ],
   templateUrl: './mantenimientos-crear.component.html',
   styleUrl: './mantenimientos-crear.component.css',
@@ -81,13 +83,38 @@ export class MantenimientosCrearComponent extends BaseTablaComponent {
     }
     return true;
   }
-  fechamaxima(fecha: Date | null) {
-    if (!fecha) {
-      return null;
+
+  onFechaMantenimiento(dates: Date[]): void {
+    this.mantenimiento.FechaMantenimiento = dates[0] ?? null;
+
+    if (!this.validarFechaFinal()) {
+      this.mantenimiento.FechaFinalDeMantenimiento = null;
     }
+  }
+
+  onFechaFinalDeMantenimiento(dates: Date[]): void {
+    this.mantenimiento.FechaFinalDeMantenimiento = dates[0] ?? null;
+  }
+
+  fechamaxima(fecha: Date | null): Date | undefined {
+    if (!fecha) return undefined;
+
     const fechaMaxima = new Date(fecha);
     fechaMaxima.setFullYear(fechaMaxima.getFullYear() + 1);
     return fechaMaxima;
+  }
+
+  private validarFechaFinal(): boolean {
+    if (
+      !this.mantenimiento.FechaMantenimiento ||
+      !this.mantenimiento.FechaFinalDeMantenimiento
+    )
+      return true;
+
+    return (
+      new Date(this.mantenimiento.FechaFinalDeMantenimiento) >=
+      new Date(this.mantenimiento.FechaMantenimiento)
+    );
   }
   obtenereempresasMantenimiento() {
     this.empresa.obtenerEmpresaMantenimiento().subscribe({

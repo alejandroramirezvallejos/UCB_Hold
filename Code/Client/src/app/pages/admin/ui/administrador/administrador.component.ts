@@ -1,6 +1,6 @@
-import { Component, createNgModuleRef } from '@angular/core';
+import { Component } from '@angular/core';
 import { Router } from '@angular/router';
-import { SidebardComponent } from '@widgets/admin-sidebar';
+import { SidebarComponent } from '@widgets/admin-sidebar';
 import { AccesoriosTablaComponent } from '@features/admin-accessories';
 import { CarrerasTablaComponent } from '@features/admin-careers';
 import { CategoriasTablaComponent } from '@features/admin-categories';
@@ -18,7 +18,7 @@ import { UsuarioService } from '@entities/user';
   selector: 'app-administrador',
   standalone: true,
   imports: [
-    SidebardComponent,
+    SidebarComponent,
     AccesoriosTablaComponent,
     CarrerasTablaComponent,
     UsuariosTablaComponent,

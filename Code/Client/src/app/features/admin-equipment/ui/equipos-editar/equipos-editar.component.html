@@ -6,9 +6,9 @@
     <h2>Editar Equipo</h2>
     <form #form="ngForm" (ngSubmit)="validaredicion()">
       <div class="form-group">
-        <label for="grupo_equipo">Grupo Equipo</label>
+        <label for="grupo-equipo">Grupo Equipo</label>
         <app-custom-select
-          name="grupo_equipo"
+          name="grupo-equipo"
           [(ngModel)]="grupoequipoSeleccionado"
           [opciones]="gruposOpciones"
         ></app-custom-select>

@@ -1,17 +1,15 @@
 <div class="container">
-  <app-sidebard
+  <app-sidebar
     [contenido]="tablas"
     [activeItem]="item"
     (item)="clickitem($event)"
-  ></app-sidebard>
+  ></app-sidebar>
   @if (item == "Accesorios") {
     <app-accesorios-tabla></app-accesorios-tabla>
   } @else if (item == "Carreras") {
     <app-carreras-tabla></app-carreras-tabla>
   } @else if (item == "Usuarios") {
     <app-usuarios-tabla></app-usuarios-tabla>
-  } @else if (item == "Categorias") {
-    <app-categorias-tabla></app-categorias-tabla>
   } @else if (item == "Categorias") {
     <app-categorias-tabla></app-categorias-tabla>
   } @else if (item == "Componentes") {

@@ -18,7 +18,7 @@
   min-height: 100vh;
   box-sizing: border-box;
 }
-.container > *:not(app-sidebard) {
+.container > *:not(app-sidebar) {
   width: 100%;
 }
 @media (max-width: 1440px) {

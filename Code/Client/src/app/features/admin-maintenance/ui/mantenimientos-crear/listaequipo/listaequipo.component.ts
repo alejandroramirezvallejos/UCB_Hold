@@ -3,7 +3,7 @@ import { Equipos } from '@entities/admin';
 import { EquipoService } from '@entities/equipment';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
-import { MantenimientosServiceEquipos } from '../../../model/mantenimientosEquipos.service';
+import { MantenimientosServiceEquipos } from '../../../model/mantenimientos-equipos.service';
 import { FormularioDatosComponent } from './formulario-datos/formulario-datos.component';
 import { BaseTablaComponent } from '@shared/lib/admin-table';
 import { MostrarerrorComponent } from '@shared/ui';
@@ -40,6 +40,11 @@ export class ListaequipoComponent extends BaseTablaComponent {
   agregarEquipoSeleccionado: WritableSignal<boolean> = signal(false);
   sortColumn: EquipoOrdenColumna = 'Nombre';
   sortDirection: 'asc' | 'desc' = 'asc';
+
+  get equiposDisponibles(): Equipos[] {
+    return this.equipos.filter((equipo) => !this.equipoYaSeleccionado(equipo));
+  }
+
   constructor(
     private readonly equiposapi: EquipoService,
     public mantenimientoequipos: MantenimientosServiceEquipos,

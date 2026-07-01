@@ -8,7 +8,7 @@
       <input
         type="text"
         [(ngModel)]="terminoBusqueda"
-        (keydown.enter)="buscar()"
+        (input)="buscar()"
         placeholder="Buscar equipos..."
         class="search-input"
       />
@@ -87,31 +87,29 @@
         </tr>
       </thead>
       <tbody>
-        @for (equipo of equipos; track $index; let i = $index) {
-          @if (equipoYaSeleccionado(equipo)) {
-          } @else {
-            <tr>
-              <td>{{ equipo.NombreGrupoEquipo }}</td>
-              <td>{{ equipo.EstadoEquipo }}</td>
-              <td>{{ equipo.Ubicacion }}</td>
-              <td>{{ equipo.CodigoImt }}</td>
-              <td class="precio-column">
-                {{
-                  equipo.CostoReferencia | currency: "Bs " : "symbol" : "1.2-2"
-                }}
-              </td>
-              <td class="actions-column">
-                <button
-                  class="btn-icon btn-add"
-                  (click)="agregarEquipo(equipo)"
-                >
-                  <i class="fas fa-plus"></i>
-                </button>
-              </td>
-            </tr>
-          }
+        @for (equipo of equiposDisponibles; track equipo.Id) {
+          <tr>
+            <td>{{ equipo.NombreGrupoEquipo }}</td>
+            <td>{{ equipo.EstadoEquipo }}</td>
+            <td>{{ equipo.Ubicacion }}</td>
+            <td>{{ equipo.CodigoImt }}</td>
+            <td class="precio-column">
+              {{
+                equipo.CostoReferencia | currency: "Bs " : "symbol" : "1.2-2"
+              }}
+            </td>
+            <td class="actions-column">
+              <button
+                class="btn-icon btn-add"
+                (click)="agregarEquipo(equipo)"
+                title="Agregar equipo"
+              >
+                <i class="fas fa-plus"></i>
+              </button>
+            </td>
+          </tr>
         }
-        @if (equipos.length === 0) {
+        @if (equiposDisponibles.length === 0) {
           <tr>
             <td colspan="6" class="empty-table">
               <div class="empty-state">

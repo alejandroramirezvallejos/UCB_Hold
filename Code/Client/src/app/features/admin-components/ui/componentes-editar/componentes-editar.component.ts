@@ -17,10 +17,17 @@ import { AvisoExitoComponent } from '@shared/ui';
 import { Aviso } from '@shared/ui';
 import { MostrarerrorComponent } from '@shared/ui';
 import { extractErrorMessage } from '@shared/lib/error';
+import { CustomSelectComponent, OpcionSelect } from '@shared/ui';
 @Component({
   selector: 'app-componentes-editar',
   standalone: true,
-  imports: [FormsModule, MostrarerrorComponent, AvisoExitoComponent, Aviso],
+  imports: [
+    FormsModule,
+    MostrarerrorComponent,
+    AvisoExitoComponent,
+    Aviso,
+    CustomSelectComponent,
+  ],
   templateUrl: './componentes-editar.component.html',
   styleUrl: './componentes-editar.component.css',
 })
@@ -29,6 +36,13 @@ export class ComponentesEditarComponent extends BaseTablaComponent {
   @Output() actualizar: EventEmitter<void> = new EventEmitter<void>();
   @Input() componente: Componente = new Componente();
   equipos: Equipos[] = [];
+  get equiposOpciones(): OpcionSelect[] {
+    return this.equipos.map((equipo) => ({
+      value: equipo.CodigoImt,
+      label: `${equipo.NombreGrupoEquipo} ${equipo.CodigoImt}`,
+    }));
+  }
+
   constructor(
     private readonly componenteService: ComponenteService,
     private equiposAPI: EquipoService,

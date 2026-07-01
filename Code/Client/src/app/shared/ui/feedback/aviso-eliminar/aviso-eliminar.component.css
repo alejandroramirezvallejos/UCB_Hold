@@ -5,6 +5,8 @@
   width: 100vw;
   height: 100vh;
   background-color: rgba(0, 0, 0, 0.5);
+  backdrop-filter: blur(4px);
+  -webkit-backdrop-filter: blur(4px);
   display: flex;
   align-items: center;
   justify-content: center;
@@ -26,7 +28,7 @@
 .modal-content p {
   margin: 0 0 1.5rem 0;
   font-size: 1.1rem;
-  color: var(--color-text);
+  color: var(--ink);
   font-weight: 500;
   line-height: 1.5;
 }

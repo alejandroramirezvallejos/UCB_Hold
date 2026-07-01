@@ -1,5 +1,5 @@
 import { Component, Input, signal, WritableSignal } from '@angular/core';
-import { MantenimientosServiceEquipos } from '../../../../model/mantenimientosEquipos.service';
+import { MantenimientosServiceEquipos } from '../../../../model/mantenimientos-equipos.service';
 import { FormsModule } from '@angular/forms';
 import { Equipos } from '@entities/admin';
 import { CustomSelectComponent, OpcionSelect } from '@shared/ui';
