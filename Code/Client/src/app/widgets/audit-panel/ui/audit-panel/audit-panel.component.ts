@@ -34,6 +34,8 @@ export class AuditPanelComponent implements OnChanges {
   @Input() refreshTrigger: number = 0;
 
   logs: AuditLogDto[] = [];
+  sortColumn = '';
+  sortDirection: 'asc' | 'desc' = 'asc';
   cargando = true;
   fechaDesde = '';
   fechaHasta = '';
@@ -79,6 +81,7 @@ export class AuditPanelComponent implements OnChanges {
                   l.Accion?.toLowerCase() === this.filtroAccion.toLowerCase(),
               )
             : data;
+          this.aplicarOrdenActual();
           this.cargando = false;
         },
         error: () => {
@@ -111,6 +114,29 @@ export class AuditPanelComponent implements OnChanges {
     this.filtroAdmin = '';
     this.accionesOpen = false;
     this.cargar();
+  }
+
+  ordenarPorColumna(columna: string): void {
+    const columnaOrdenable = columna.trim();
+
+    if (!columnaOrdenable) return;
+
+    this.sortDirection =
+      this.sortColumn === columnaOrdenable && this.sortDirection === 'asc'
+        ? 'desc'
+        : 'asc';
+    this.sortColumn = columnaOrdenable;
+    this.aplicarOrdenActual();
+  }
+
+  esColumnaOrdenada(columna: string): boolean {
+    return this.sortColumn === columna.trim();
+  }
+
+  iconoOrdenColumna(columna: string): string {
+    if (!this.esColumnaOrdenada(columna)) return 'fa-sort';
+
+    return this.sortDirection === 'asc' ? 'fa-sort-up' : 'fa-sort-down';
   }
 
   obsAbierta: AuditObservationDetail | null = null;
@@ -209,5 +235,48 @@ export class AuditPanelComponent implements OnChanges {
       default:
         return 'badge-cancelado';
     }
+  }
+
+  private auditSortValue(log: AuditLogDto, columna: string): unknown {
+    const values: Record<string, unknown> = {
+      Fecha: log.Timestamp,
+      Administrador: log.AdminNombre || log.AdminCarnet,
+      Acción: log.Accion,
+      ID: log.EntidadId,
+      Observación: this.resumenObs(log),
+    };
+
+    return values[columna];
+  }
+
+  private aplicarOrdenActual(): void {
+    if (!this.sortColumn) return;
+
+    this.logs = [...this.logs].sort((a, b) =>
+      this.compareAuditValues(
+        this.auditSortValue(a, this.sortColumn),
+        this.auditSortValue(b, this.sortColumn),
+      ),
+    );
+  }
+
+  private compareAuditValues(
+    firstValue: unknown,
+    secondValue: unknown,
+  ): number {
+    const firstDate = firstValue instanceof Date ? firstValue.getTime() : NaN;
+    const secondDate =
+      secondValue instanceof Date ? secondValue.getTime() : NaN;
+
+    const result =
+      Number.isFinite(firstDate) && Number.isFinite(secondDate)
+        ? firstDate - secondDate
+        : String(firstValue ?? '').localeCompare(
+            String(secondValue ?? ''),
+            undefined,
+            { numeric: true, sensitivity: 'base' },
+          );
+
+    return this.sortDirection === 'asc' ? result : -result;
   }
 }

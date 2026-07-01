@@ -165,6 +165,7 @@ export class GruposEquiposTablaComponent extends Tabla implements OnInit {
     } else {
       this.gruposEquiposFiltrados = [...this.gruposEquipos];
     }
+    this.aplicarOrdenActualSiExiste();
   }
   limpiarBusqueda() {
     this.aplicarFiltros();
@@ -181,12 +182,9 @@ export class GruposEquiposTablaComponent extends Tabla implements OnInit {
     };
     const k = m[e.col];
     if (!k) return;
-    this.gruposEquipos = [...this.gruposEquipos].sort((a, b) => {
-      const va = this.sortableValue(a, k);
-      const vb = this.sortableValue(b, k);
-      return e.dir === 'asc' ? va.localeCompare(vb) : vb.localeCompare(va);
-    });
-    this.gruposEquiposFiltrados = [...this.gruposEquipos];
+    this.gruposEquiposFiltrados = [...this.gruposEquiposFiltrados].sort(
+      (a, b) => this.compareSortableValues(a[k], b[k], e.dir),
+    );
   }
 
   editarGrupoEquipo(grupoequipo: GrupoEquipo) {

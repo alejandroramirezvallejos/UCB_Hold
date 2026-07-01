@@ -71,6 +71,7 @@ export class ComponentesTablaComponent extends Tabla implements OnInit {
       next: (data: Componente[]) => {
         this.componentes = data;
         this.componentescopia = [...this.componentes];
+        this.aplicarOrdenActualSiExiste();
       },
       error: (error) => {
         const errorMsg = extractErrorMessage(
@@ -133,6 +134,7 @@ export class ComponentesTablaComponent extends Tabla implements OnInit {
     } else {
       this.componentes = [...this.componentescopia];
     }
+    this.aplicarOrdenActualSiExiste();
   }
 
   override sortTable(e: { col: string; dir: 'asc' | 'desc' }) {
@@ -145,14 +147,13 @@ export class ComponentesTablaComponent extends Tabla implements OnInit {
     };
     const k = m[e.col];
     if (!k) return;
-    this.componentes = [...this.componentes].sort((a, b) => {
-      const va = this.sortableValue(a, k);
-      const vb = this.sortableValue(b, k);
-      return e.dir === 'asc' ? va.localeCompare(vb) : vb.localeCompare(va);
-    });
+    this.componentes = [...this.componentes].sort((a, b) =>
+      this.compareSortableValues(a[k], b[k], e.dir),
+    );
   }
   limpiarBusqueda() {
     this.componentes = [...this.componentescopia];
+    this.aplicarOrdenActualSiExiste();
   }
   editarComponente(componente: Componente) {
     this.botoncrear.set(false);

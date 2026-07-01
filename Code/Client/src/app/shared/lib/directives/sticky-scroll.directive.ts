@@ -7,12 +7,13 @@ import { AfterViewInit, Directive, ElementRef, OnDestroy } from '@angular/core';
 export class StickyScrollDirective implements AfterViewInit, OnDestroy {
   private phantom!: HTMLDivElement;
   private inner!: HTMLDivElement;
+  private style!: HTMLStyleElement;
   private syncing = false;
   private listeners: Array<() => void> = [];
 
   constructor(private readonly el: ElementRef<HTMLElement>) {}
 
-  ngAfterViewInit() {
+  ngAfterViewInit(): void {
     const host = this.el.nativeElement;
 
     this.phantom = document.createElement('div');
@@ -28,13 +29,15 @@ export class StickyScrollDirective implements AfterViewInit, OnDestroy {
       cursor: 'default',
     });
 
-    const style = document.createElement('style');
-    style.textContent = `
-      .sticky-scroll-phantom::-webkit-scrollbar { height: 6px; }
-      .sticky-scroll-phantom::-webkit-scrollbar-thumb { background: rgba(0,0,0,0.2); border-radius: 999px; }
-      .sticky-scroll-phantom::-webkit-scrollbar-track { background: transparent; }
+    this.style = document.createElement('style');
+    this.style.textContent = `
+      .sticky-scroll-phantom { scrollbar-color: rgba(148, 163, 184, 0.65) transparent; scrollbar-width: thin; }
+      .sticky-scroll-phantom::-webkit-scrollbar { height: 8px; }
+      .sticky-scroll-phantom::-webkit-scrollbar-thumb { background: rgba(148, 163, 184, 0.65); border: 2px solid transparent; border-radius: 999px; background-clip: content-box; }
+      .sticky-scroll-phantom::-webkit-scrollbar-thumb:hover { background: rgba(100, 116, 139, 0.85); border: 2px solid transparent; background-clip: content-box; }
+      .sticky-scroll-phantom::-webkit-scrollbar-track { background: rgba(226, 232, 240, 0.35); }
     `;
-    document.head.appendChild(style);
+    document.head.appendChild(this.style);
     this.phantom.classList.add('sticky-scroll-phantom');
 
     this.inner = document.createElement('div');
@@ -84,8 +87,9 @@ export class StickyScrollDirective implements AfterViewInit, OnDestroy {
     setTimeout(update, 100);
   }
 
-  ngOnDestroy() {
+  ngOnDestroy(): void {
     this.listeners.forEach((fn) => fn());
     this.phantom?.remove();
+    this.style?.remove();
   }
 }

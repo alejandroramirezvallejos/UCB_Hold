@@ -81,6 +81,7 @@ export class GaveterosTablaComponent extends Tabla {
       next: (data: Gaveteros[]) => {
         this.gaveteros = data;
         this.gaveteroscopia = [...this.gaveteros];
+        this.aplicarOrdenActualSiExiste();
       },
       error: (error) => {
         const errorMsg = extractErrorMessage(
@@ -147,9 +148,11 @@ export class GaveterosTablaComponent extends Tabla {
     } else {
       this.gaveteros = [...this.gaveteroscopia];
     }
+    this.aplicarOrdenActualSiExiste();
   }
   limpiarBusqueda() {
     this.gaveteros = [...this.gaveteroscopia];
+    this.aplicarOrdenActualSiExiste();
   }
   editarGavetero(gavetero: Gaveteros) {
     this.botoncrear.set(false);
@@ -190,13 +193,14 @@ export class GaveterosTablaComponent extends Tabla {
       Nombre: 'Nombre',
       Tipo: 'Tipo',
       'Nombre Mueble': 'NombreMueble',
+      Longitud: 'Longitud',
+      Altura: 'Altura',
+      Profundidad: 'Profundidad',
     };
     const k = m[e.col];
     if (!k) return;
-    this.gaveteros = [...this.gaveteros].sort((a, b) => {
-      const va = this.sortableValue(a, k);
-      const vb = this.sortableValue(b, k);
-      return e.dir === 'asc' ? va.localeCompare(vb) : vb.localeCompare(va);
-    });
+    this.gaveteros = [...this.gaveteros].sort((a, b) =>
+      this.compareSortableValues(a[k], b[k], e.dir),
+    );
   }
 }

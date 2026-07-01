@@ -122,6 +122,7 @@ export class EquiposTablaComponent extends Tabla {
       next: (data: Equipos[]) => {
         this.equipos = data;
         this.equiposcopia = [...this.equipos];
+        this.aplicarOrdenActualSiExiste();
       },
       error: (error) => {
         const errorMsg = extractErrorMessage(
@@ -188,9 +189,11 @@ export class EquiposTablaComponent extends Tabla {
       );
     }
     this.equipos = lista;
+    this.aplicarOrdenActualSiExiste();
   }
   limpiarBusqueda() {
     this.equipos = [...this.equiposcopia];
+    this.aplicarOrdenActualSiExiste();
   }
   editarEquipo(equipo: Equipos) {
     this.botoncrear.set(false);
@@ -235,11 +238,8 @@ export class EquiposTablaComponent extends Tabla {
 
     if (!campo) return;
 
-    this.equipos = [...this.equipos].sort((a, b) => {
-      const va = this.normalizeText(a[campo]);
-      const vb = this.normalizeText(b[campo]);
-
-      return e.dir === 'asc' ? va.localeCompare(vb) : vb.localeCompare(va);
-    });
+    this.equipos = [...this.equipos].sort((a, b) =>
+      this.compareSortableValues(a[campo], b[campo], e.dir),
+    );
   }
 }

@@ -1,13 +1,14 @@
 <div class="calendario-container">
   <div class="calendario-header">
     <button
+      type="button"
       (click)="cambiarMes(-1)"
       [disabled]="diaActual.getTime() >= inicio.getTime()"
     >
       <i class="fas fa-chevron-left"></i>
     </button>
     <h3>{{ inicio | date: "MMMM yyyy" | uppercase }}</h3>
-    <button (click)="cambiarMes(1)">
+    <button type="button" (click)="cambiarMes(1)">
       <i class="fas fa-chevron-right"></i>
     </button>
   </div>
@@ -33,7 +34,7 @@
         <div
           class="dia-celda"
           [class.dia-celda-seleccionado]="esFechaSeleccionada(dia)"
-          (click)="selecionarFecha(dia)"
+          (click)="seleccionarFecha(dia)"
         >
           <span class="dia-numero">{{ dia.getDate() }}</span>
           <span class="pildora-disponible"> Libre </span>

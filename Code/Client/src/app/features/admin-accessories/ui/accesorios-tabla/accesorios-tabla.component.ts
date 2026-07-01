@@ -86,6 +86,7 @@ export class AccesoriosTablaComponent extends Tabla {
       next: (data: Accesorio[]) => {
         this.accesorios = data;
         this.accesorioscopia = [...this.accesorios];
+        this.aplicarOrdenActualSiExiste();
       },
       error: (error) => {
         const errorMsg = extractErrorMessage(
@@ -149,10 +150,12 @@ export class AccesoriosTablaComponent extends Tabla {
     } else {
       this.accesorios = [...this.accesorioscopia];
     }
+    this.aplicarOrdenActualSiExiste();
   }
 
   limpiarBusqueda() {
     this.accesorios = [...this.accesorioscopia];
+    this.aplicarOrdenActualSiExiste();
   }
 
   editarAccesorio(accesorio: Accesorio) {
@@ -199,14 +202,13 @@ export class AccesoriosTablaComponent extends Tabla {
       Nombre: 'nombre',
       Modelo: 'modelo',
       Tipo: 'tipo',
+      'Código IMT del Equipo': 'codigo_imt',
       Precio: 'precio',
     };
     const k = m[e.col];
     if (!k) return;
-    this.accesorios = [...this.accesorios].sort((a, b) => {
-      const va = this.sortableValue(a, k);
-      const vb = this.sortableValue(b, k);
-      return e.dir === 'asc' ? va.localeCompare(vb) : vb.localeCompare(va);
-    });
+    this.accesorios = [...this.accesorios].sort((a, b) =>
+      this.compareSortableValues(a[k], b[k], e.dir),
+    );
   }
 }

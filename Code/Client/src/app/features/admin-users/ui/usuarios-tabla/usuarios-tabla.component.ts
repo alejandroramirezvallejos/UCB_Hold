@@ -102,6 +102,7 @@ export class UsuariosTablaComponent extends Tabla implements OnInit {
       next: (data: Usuario[]) => {
         this.usuarios = data;
         this.usuarioscopia = [...this.usuarios];
+        this.aplicarOrdenActualSiExiste();
       },
       error: (error) => {
         const errorMsg = extractErrorMessage(
@@ -199,9 +200,11 @@ export class UsuariosTablaComponent extends Tabla implements OnInit {
     } else {
       this.usuarios = [...this.usuarioscopia];
     }
+    this.aplicarOrdenActualSiExiste();
   }
   limpiarBusqueda() {
     this.usuarios = [...this.usuarioscopia];
+    this.aplicarOrdenActualSiExiste();
   }
   editarUsuario(usuario: Usuario) {
     this.botoncrear.set(false);
@@ -251,6 +254,8 @@ export class UsuariosTablaComponent extends Tabla implements OnInit {
       Teléfono: 'telefono',
       Rol: 'rol',
       Carrera: 'carrera',
+      Referencia: 'nombre_referencia',
+      'Tel. Referencia': 'telefono_referencia',
     };
     const k = m[e.col];
     if (!k) return;

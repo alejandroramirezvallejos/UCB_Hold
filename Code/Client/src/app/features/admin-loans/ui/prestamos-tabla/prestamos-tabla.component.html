@@ -9,7 +9,7 @@
     <app-buscador
       [columnas]="columnas"
       (terminoBusqueda)="aplicarFiltros($event)"
-      (sortChange)="sortTable($event)"
+      (sortChange)="aplicarOrden($event)"
       (onToggle)="onBuscadorToggle($event)"
     >
       <div class="custom-dropdown">
@@ -95,9 +95,63 @@
         <thead>
           <tr>
             @for (columna of columnas; track columna) {
-              <th>{{ columna }}</th>
+              <th
+                class="sortable-th"
+                [class.sort-asc]="
+                  esColumnaOrdenada(columna) && sortDirection === 'asc'
+                "
+                [class.sort-desc]="
+                  esColumnaOrdenada(columna) && sortDirection === 'desc'
+                "
+                scope="col"
+              >
+                <button
+                  type="button"
+                  class="table-sort-button"
+                  (click)="ordenarPorColumna(columna)"
+                >
+                  <span>{{ columna }}</span>
+                  <i
+                    class="fas sort-icon"
+                    [class.fa-sort]="iconoOrdenColumna(columna) === 'fa-sort'"
+                    [class.fa-sort-up]="
+                      iconoOrdenColumna(columna) === 'fa-sort-up'
+                    "
+                    [class.fa-sort-down]="
+                      iconoOrdenColumna(columna) === 'fa-sort-down'
+                    "
+                  ></i>
+                </button>
+              </th>
             }
-            <th>Estado</th>
+            <th
+              class="sortable-th"
+              [class.sort-asc]="
+                esColumnaOrdenada('Estado') && sortDirection === 'asc'
+              "
+              [class.sort-desc]="
+                esColumnaOrdenada('Estado') && sortDirection === 'desc'
+              "
+              scope="col"
+            >
+              <button
+                type="button"
+                class="table-sort-button"
+                (click)="ordenarPorColumna('Estado')"
+              >
+                <span>Estado</span>
+                <i
+                  class="fas sort-icon"
+                  [class.fa-sort]="iconoOrdenColumna('Estado') === 'fa-sort'"
+                  [class.fa-sort-up]="
+                    iconoOrdenColumna('Estado') === 'fa-sort-up'
+                  "
+                  [class.fa-sort-down]="
+                    iconoOrdenColumna('Estado') === 'fa-sort-down'
+                  "
+                ></i>
+              </button>
+            </th>
             <th class="actions-column">Acciones</th>
           </tr>
         </thead>

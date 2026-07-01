@@ -106,12 +106,149 @@
       <table class="audit-table">
         <thead>
           <tr>
-            <th>Fecha</th>
-            <th>Administrador</th>
-            <th>Acción</th>
-            <th>ID</th>
+            <th
+              class="sortable-th"
+              [class.sort-asc]="
+                esColumnaOrdenada('Fecha') && sortDirection === 'asc'
+              "
+              [class.sort-desc]="
+                esColumnaOrdenada('Fecha') && sortDirection === 'desc'
+              "
+              scope="col"
+            >
+              <button
+                type="button"
+                class="table-sort-button"
+                (click)="ordenarPorColumna('Fecha')"
+              >
+                <span>Fecha</span>
+                <i
+                  class="fas sort-icon"
+                  [class.fa-sort]="iconoOrdenColumna('Fecha') === 'fa-sort'"
+                  [class.fa-sort-up]="
+                    iconoOrdenColumna('Fecha') === 'fa-sort-up'
+                  "
+                  [class.fa-sort-down]="
+                    iconoOrdenColumna('Fecha') === 'fa-sort-down'
+                  "
+                ></i>
+              </button>
+            </th>
+            <th
+              class="sortable-th"
+              [class.sort-asc]="
+                esColumnaOrdenada('Administrador') && sortDirection === 'asc'
+              "
+              [class.sort-desc]="
+                esColumnaOrdenada('Administrador') && sortDirection === 'desc'
+              "
+              scope="col"
+            >
+              <button
+                type="button"
+                class="table-sort-button"
+                (click)="ordenarPorColumna('Administrador')"
+              >
+                <span>Administrador</span>
+                <i
+                  class="fas sort-icon"
+                  [class.fa-sort]="
+                    iconoOrdenColumna('Administrador') === 'fa-sort'
+                  "
+                  [class.fa-sort-up]="
+                    iconoOrdenColumna('Administrador') === 'fa-sort-up'
+                  "
+                  [class.fa-sort-down]="
+                    iconoOrdenColumna('Administrador') === 'fa-sort-down'
+                  "
+                ></i>
+              </button>
+            </th>
+            <th
+              class="sortable-th"
+              [class.sort-asc]="
+                esColumnaOrdenada('Acción') && sortDirection === 'asc'
+              "
+              [class.sort-desc]="
+                esColumnaOrdenada('Acción') && sortDirection === 'desc'
+              "
+              scope="col"
+            >
+              <button
+                type="button"
+                class="table-sort-button"
+                (click)="ordenarPorColumna('Acción')"
+              >
+                <span>Acción</span>
+                <i
+                  class="fas sort-icon"
+                  [class.fa-sort]="iconoOrdenColumna('Acción') === 'fa-sort'"
+                  [class.fa-sort-up]="
+                    iconoOrdenColumna('Acción') === 'fa-sort-up'
+                  "
+                  [class.fa-sort-down]="
+                    iconoOrdenColumna('Acción') === 'fa-sort-down'
+                  "
+                ></i>
+              </button>
+            </th>
+            <th
+              class="sortable-th"
+              [class.sort-asc]="
+                esColumnaOrdenada('ID') && sortDirection === 'asc'
+              "
+              [class.sort-desc]="
+                esColumnaOrdenada('ID') && sortDirection === 'desc'
+              "
+              scope="col"
+            >
+              <button
+                type="button"
+                class="table-sort-button"
+                (click)="ordenarPorColumna('ID')"
+              >
+                <span>ID</span>
+                <i
+                  class="fas sort-icon"
+                  [class.fa-sort]="iconoOrdenColumna('ID') === 'fa-sort'"
+                  [class.fa-sort-up]="iconoOrdenColumna('ID') === 'fa-sort-up'"
+                  [class.fa-sort-down]="
+                    iconoOrdenColumna('ID') === 'fa-sort-down'
+                  "
+                ></i>
+              </button>
+            </th>
             @if (entidad === "Prestamo") {
-              <th>Observación</th>
+              <th
+                class="sortable-th"
+                [class.sort-asc]="
+                  esColumnaOrdenada('Observación') && sortDirection === 'asc'
+                "
+                [class.sort-desc]="
+                  esColumnaOrdenada('Observación') && sortDirection === 'desc'
+                "
+                scope="col"
+              >
+                <button
+                  type="button"
+                  class="table-sort-button"
+                  (click)="ordenarPorColumna('Observación')"
+                >
+                  <span>Observación</span>
+                  <i
+                    class="fas sort-icon"
+                    [class.fa-sort]="
+                      iconoOrdenColumna('Observación') === 'fa-sort'
+                    "
+                    [class.fa-sort-up]="
+                      iconoOrdenColumna('Observación') === 'fa-sort-up'
+                    "
+                    [class.fa-sort-down]="
+                      iconoOrdenColumna('Observación') === 'fa-sort-down'
+                    "
+                  ></i>
+                </button>
+              </th>
             }
           </tr>
         </thead>

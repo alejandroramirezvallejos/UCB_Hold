@@ -108,6 +108,11 @@
   --btn-transition:
     background-color var(--t-fast), box-shadow var(--t-fast),
     transform var(--t-fast), color var(--t-fast), border-color var(--t-fast);
+
+  --scrollbar-size: 8px;
+  --scrollbar-thumb: rgba(148, 163, 184, 0.65);
+  --scrollbar-thumb-hover: rgba(100, 116, 139, 0.85);
+  --scrollbar-track: rgba(226, 232, 240, 0.35);
 }
 
 *,
@@ -135,15 +140,97 @@ body {
 }
 
 ::-webkit-scrollbar {
-  width: 6px;
-  height: 6px;
+  width: var(--scrollbar-size);
+  height: var(--scrollbar-size);
 }
 ::-webkit-scrollbar-thumb {
-  background: rgba(0, 0, 0, 0.18);
+  background: var(--scrollbar-thumb);
+  border: 2px solid transparent;
   border-radius: var(--radius-full);
+  background-clip: content-box;
+}
+::-webkit-scrollbar-thumb:hover {
+  background: var(--scrollbar-thumb-hover);
+  border: 2px solid transparent;
+  background-clip: content-box;
 }
 ::-webkit-scrollbar-track {
-  background: transparent;
+  background: var(--scrollbar-track);
+}
+
+.form-container,
+.form-content,
+.modal,
+.modal-content,
+.modal-body,
+.obs-modal,
+.devuelto-modal,
+.mensaje-container,
+.custom-select__options,
+.dropdown-list,
+.audit-select-menu,
+.estados-panel-flotante,
+.estados-grid-flotante,
+.inline-panel {
+  scrollbar-color: var(--scrollbar-thumb) transparent;
+  scrollbar-width: thin;
+}
+
+.form-container::-webkit-scrollbar,
+.form-content::-webkit-scrollbar,
+.modal::-webkit-scrollbar,
+.modal-content::-webkit-scrollbar,
+.modal-body::-webkit-scrollbar,
+.obs-modal::-webkit-scrollbar,
+.devuelto-modal::-webkit-scrollbar,
+.mensaje-container::-webkit-scrollbar,
+.custom-select__options::-webkit-scrollbar,
+.dropdown-list::-webkit-scrollbar,
+.audit-select-menu::-webkit-scrollbar,
+.estados-panel-flotante::-webkit-scrollbar,
+.estados-grid-flotante::-webkit-scrollbar,
+.inline-panel::-webkit-scrollbar {
+  width: var(--scrollbar-size);
+  height: var(--scrollbar-size);
+}
+
+.form-container::-webkit-scrollbar-thumb,
+.form-content::-webkit-scrollbar-thumb,
+.modal::-webkit-scrollbar-thumb,
+.modal-content::-webkit-scrollbar-thumb,
+.modal-body::-webkit-scrollbar-thumb,
+.obs-modal::-webkit-scrollbar-thumb,
+.devuelto-modal::-webkit-scrollbar-thumb,
+.mensaje-container::-webkit-scrollbar-thumb,
+.custom-select__options::-webkit-scrollbar-thumb,
+.dropdown-list::-webkit-scrollbar-thumb,
+.audit-select-menu::-webkit-scrollbar-thumb,
+.estados-panel-flotante::-webkit-scrollbar-thumb,
+.estados-grid-flotante::-webkit-scrollbar-thumb,
+.inline-panel::-webkit-scrollbar-thumb {
+  background: var(--scrollbar-thumb);
+  border: 2px solid transparent;
+  border-radius: var(--radius-full);
+  background-clip: content-box;
+}
+
+.form-container::-webkit-scrollbar-thumb:hover,
+.form-content::-webkit-scrollbar-thumb:hover,
+.modal::-webkit-scrollbar-thumb:hover,
+.modal-content::-webkit-scrollbar-thumb:hover,
+.modal-body::-webkit-scrollbar-thumb:hover,
+.obs-modal::-webkit-scrollbar-thumb:hover,
+.devuelto-modal::-webkit-scrollbar-thumb:hover,
+.mensaje-container::-webkit-scrollbar-thumb:hover,
+.custom-select__options::-webkit-scrollbar-thumb:hover,
+.dropdown-list::-webkit-scrollbar-thumb:hover,
+.audit-select-menu::-webkit-scrollbar-thumb:hover,
+.estados-panel-flotante::-webkit-scrollbar-thumb:hover,
+.estados-grid-flotante::-webkit-scrollbar-thumb:hover,
+.inline-panel::-webkit-scrollbar-thumb:hover {
+  background: var(--scrollbar-thumb-hover);
+  border: 2px solid transparent;
+  background-clip: content-box;
 }
 
 .badge {
@@ -640,25 +727,62 @@ h2.title {
 }
 
 .sortable-th {
-  cursor: pointer;
   user-select: none;
-  transition: background-color var(--t-fast);
+  padding: 0 !important;
+  transition:
+    background-color var(--t-fast),
+    color var(--t-fast);
 }
 .sortable-th:hover {
   background: var(--interactive-subtle) !important;
 }
+.table-sort-button {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  width: 100%;
+  min-width: unset !important;
+  min-height: 2.25rem !important;
+  padding: 0.55rem 0.875rem;
+  border: 0;
+  border-radius: 0;
+  background: transparent;
+  color: inherit;
+  font: inherit;
+  font-weight: inherit;
+  line-height: 1.2;
+  cursor: pointer;
+}
+.table-sort-button:focus-visible {
+  outline: 2px solid var(--interactive-text);
+  outline-offset: -2px;
+}
 .sort-icon {
-  display: inline-block;
-  margin-left: 4px;
-  font-size: 0.6rem;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 1rem;
+  height: 1rem;
+  margin-left: 0;
+  border-radius: var(--radius-full);
+  font-size: 0.65rem;
   color: var(--ink-muted);
-  vertical-align: middle;
-  transition: color var(--t-fast);
+  line-height: 1;
+  transition:
+    color var(--t-fast),
+    background-color var(--t-fast),
+    transform var(--t-fast);
 }
 .sortable-th.sort-asc .sort-icon,
 .sortable-th.sort-desc .sort-icon {
   color: var(--brand-text);
+  background: var(--interactive-subtle);
   font-weight: 900;
+}
+.sortable-th.sort-asc .table-sort-button,
+.sortable-th.sort-desc .table-sort-button {
+  color: var(--ink);
 }
 
 .inline-panel {
@@ -815,6 +939,83 @@ h2.title {
   border: 1px solid var(--border);
   box-shadow: var(--shadow-sm);
   margin-bottom: 0.5rem;
+  scrollbar-color: var(--scrollbar-thumb) var(--scrollbar-track);
+  scrollbar-width: thin;
+}
+.table-responsive::-webkit-scrollbar {
+  display: block;
+  height: var(--scrollbar-size);
+}
+.table-responsive::-webkit-scrollbar-thumb {
+  background: var(--scrollbar-thumb);
+  border: 2px solid transparent;
+  border-radius: var(--radius-full);
+  background-clip: content-box;
+}
+.table-responsive::-webkit-scrollbar-thumb:hover {
+  background: var(--scrollbar-thumb-hover);
+  border: 2px solid transparent;
+  background-clip: content-box;
+}
+.table-responsive::-webkit-scrollbar-track {
+  background: var(--scrollbar-track);
+}
+
+.table-responsive--compact {
+  width: min(100%, 58rem);
+  margin-right: auto;
+}
+
+.data-table.data-table--compact {
+  table-layout: fixed;
+}
+
+.data-table.data-table--compact th:first-child,
+.data-table.data-table--compact td:first-child {
+  text-align: left !important;
+  padding-left: 1.75rem !important;
+}
+
+.data-table.data-table--compact th:first-child .table-sort-button {
+  justify-content: flex-start;
+  padding-left: 1.75rem;
+}
+
+.data-table.data-table--compact th.actions-column,
+.data-table.data-table--compact td.actions-column {
+  width: 9rem;
+  min-width: 8rem;
+}
+
+.data-table.data-table--compact td {
+  padding-block: 0.85rem !important;
+}
+
+@media (min-width: 1600px) {
+  .table-responsive--compact {
+    width: min(100%, 64rem);
+  }
+}
+
+@media (max-width: 640px) {
+  .table-responsive--compact {
+    width: 100%;
+  }
+
+  .data-table.data-table--compact th:first-child,
+  .data-table.data-table--compact td:first-child {
+    padding-left: 1rem !important;
+  }
+
+  .data-table.data-table--compact th:first-child .table-sort-button {
+    padding-left: 1rem;
+  }
+
+  .data-table.data-table--compact th.actions-column,
+  .data-table.data-table--compact td.actions-column {
+    width: 7.5rem;
+    min-width: 7.5rem;
+  }
 }
 
 td.actions-column {
@@ -1105,13 +1306,57 @@ body select:not(.ng-select):not([multiple]):not([size]) {
   margin-right: 8px;
 }
 
+.btn-close,
+.cerrar,
+.close-button,
+.modal-close-btn,
+.obs-close {
+  display: inline-flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  width: 2rem !important;
+  height: 2rem !important;
+  min-width: unset !important;
+  min-height: unset !important;
+  padding: 0 !important;
+  border: 1px solid var(--border) !important;
+  border-radius: var(--radius-full) !important;
+  background: var(--surface) !important;
+  color: var(--ink-muted) !important;
+  box-shadow: var(--shadow-xs) !important;
+  cursor: pointer !important;
+  transition:
+    background-color var(--t-fast),
+    border-color var(--t-fast),
+    box-shadow var(--t-fast),
+    transform var(--t-fast) !important;
+}
+@media (hover: hover) and (pointer: fine) {
+  .btn-close:hover,
+  .cerrar:hover,
+  .close-button:hover,
+  .modal-close-btn:hover,
+  .obs-close:hover {
+    background: var(--interactive-subtle) !important;
+    border-color: var(--brand) !important;
+    box-shadow: 0 4px 12px rgba(255, 215, 0, 0.18) !important;
+    transform: translateY(-1px) !important;
+  }
+}
+.btn-close:active,
+.cerrar:active,
+.close-button:active,
+.modal-close-btn:active,
+.obs-close:active {
+  transform: scale(0.94) !important;
+}
 .btn-close img,
 .cerrar img,
 .close-button img,
 .modal-close-btn img,
 .obs-close img {
-  width: 100%;
-  height: 100%;
+  width: 0.875rem !important;
+  height: 0.875rem !important;
   object-fit: contain;
 }
 
@@ -1170,6 +1415,14 @@ body select:not(.ng-select):not([multiple]):not([size]) {
   white-space: nowrap !important;
   vertical-align: middle !important;
 }
+.data-table th.sortable-th,
+.audit-table th.sortable-th {
+  padding: 0 !important;
+}
+.data-table th.sortable-th:first-child,
+.audit-table th.sortable-th:first-child {
+  padding-left: 0 !important;
+}
 .data-table td {
   padding: 0.75rem 0.875rem !important;
   border-bottom: 1px solid var(--border) !important;
@@ -1191,16 +1444,32 @@ body select:not(.ng-select):not([multiple]):not([size]) {
 .data-table td:last-child {
   padding-right: 1.25rem !important;
 }
-.data-table tbody tr:hover {
+.data-table tbody tr,
+.audit-table tbody tr {
+  background: var(--surface) !important;
+  color: var(--ink) !important;
+}
+.data-table tbody tr:nth-child(even),
+.audit-table tbody tr:nth-child(even) {
+  background: #fbfdff !important;
+}
+.data-table tbody tr:hover,
+.audit-table tbody tr:hover {
   background: rgba(255, 215, 0, 0.04) !important;
   box-shadow: inset 3px 0 0 rgba(255, 215, 0, 0.5) !important;
 }
 
 td.actions-column {
-  display: flex !important;
+  display: table-cell !important;
   align-items: center !important;
-  justify-content: center !important;
-  gap: 0.375rem !important;
+  text-align: center !important;
+  vertical-align: middle !important;
+  white-space: nowrap !important;
+}
+
+td.actions-column .btn-icon {
+  margin-inline: 0.125rem !important;
+  vertical-align: middle !important;
 }
 
 .data-table tbody tr:hover {

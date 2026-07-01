@@ -17,15 +17,16 @@
   align-items: center;
   margin-bottom: 0;
   padding: 1rem 1.5rem 0.75rem;
-  background: #fff;
+  background: var(--surface);
   border-radius: 12px 12px 0 0;
-  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.04);
-  border-bottom: 1px solid #f5f5f5;
+  box-shadow: var(--shadow-xs);
+  border: 1px solid var(--border);
+  border-bottom: none;
 }
 .calendario-header button {
-  background: transparent;
-  border: 1px solid #e0e0e0;
-  color: #6b7786;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  color: var(--ink-secondary);
   font-size: 0.75rem;
   width: 32px;
   height: 32px;
@@ -40,10 +41,29 @@
   display: flex;
   align-items: center;
   justify-content: center;
+  box-shadow: var(--shadow-xs);
+}
+.calendario-header button::before {
+  content: "";
+  width: 0.45rem;
+  height: 0.45rem;
+  border-color: currentColor;
+  border-style: solid;
+  border-width: 0 2px 2px 0;
+  display: block;
+}
+.calendario-header button:first-of-type::before {
+  transform: rotate(135deg);
+  margin-left: 0.12rem;
+}
+.calendario-header button:last-of-type::before {
+  transform: rotate(-45deg);
+  margin-right: 0.12rem;
 }
 .calendario-header button:hover {
   background: var(--brand);
-  border-color: #d0d0d0;
+  border-color: var(--brand-hover);
+  color: var(--brand-text);
   transform: none;
 }
 .calendario-header button:disabled {
@@ -55,34 +75,36 @@
   pointer-events: none;
 }
 .calendario-header button i {
-  font-size: 0.7rem;
+  display: none;
 }
 .calendario-header h3 {
   margin: 0;
   font-size: 0.95rem;
   font-weight: 600;
-  color: #333;
-  font-family: "Manrope", sans-serif;
+  color: var(--ink);
+  font-family: var(--font);
   text-transform: capitalize;
 }
 .calendario-grid {
   display: grid;
   grid-template-columns: repeat(7, 1fr);
   gap: 0.35rem;
-  background: white;
+  background: var(--surface);
   padding: 0.75rem 1rem 1rem;
   border-radius: 0 0 12px 12px;
-  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.04);
+  box-shadow: var(--shadow-xs);
+  border: 1px solid var(--border);
+  border-top: none;
   overflow: hidden;
 }
 .dia-semana {
   text-align: center;
   font-weight: 500;
   padding: 0.4rem 0.1rem;
-  color: #888;
+  color: var(--ink-muted);
   font-size: 0.65rem;
   border-bottom: none;
-  font-family: "Manrope", sans-serif;
+  font-family: var(--font);
   text-transform: uppercase;
   letter-spacing: 0.5px;
 }
@@ -97,7 +119,7 @@
   cursor: pointer;
   transition: all 0.15s ease;
   position: relative;
-  background: #ffffff;
+  background: var(--surface);
   padding: 0.3rem;
   min-height: 45px;
   max-width: 100%;
@@ -109,12 +131,12 @@
   flex-direction: column;
   align-items: center;
   justify-content: center;
-  border: 1px solid #f0f0f0;
+  border: 1px solid var(--border);
   border-radius: 8px;
   cursor: pointer;
   transition: all 0.15s ease;
   position: relative;
-  background: #ffffff;
+  background: var(--sidebar);
   padding: 0.3rem;
   min-height: 45px;
   max-width: 100%;
@@ -122,8 +144,8 @@
   cursor: default;
 }
 .dia-celda:hover {
-  background: #fffbf0;
-  border-color: var(--brand);
+  background: var(--interactive-subtle);
+  border-color: rgba(255, 215, 0, 0.5);
   transform: none;
 }
 .dia-celda-seleccionado {
@@ -132,13 +154,12 @@
   flex-direction: column;
   align-items: center;
   justify-content: center;
-  border: 1.85px solid #f0f0f0;
+  border: 1.85px solid var(--brand);
   border-radius: 8px;
   cursor: pointer;
   transition: all 0.15s ease;
   position: relative;
-  background: rgba(255, 251, 240, 0.5);
-  border-color: var(--brand);
+  background: var(--interactive-subtle);
   padding: 0.3rem;
   min-height: 45px;
   max-width: 100%;
@@ -152,12 +173,12 @@
   flex-direction: column;
   align-items: center;
   justify-content: center;
-  border: 1px solid #f0f0f0;
+  border: 1px solid transparent;
   border-radius: 8px;
   cursor: default;
   transition: all 0.15s ease;
   position: relative;
-  background: #ffffff;
+  background: transparent;
   padding: 0.3rem;
   min-height: 45px;
   max-width: 100%;
@@ -167,8 +188,8 @@
 .dia-numero {
   font-size: 0.85rem;
   font-weight: 500;
-  color: #333;
-  font-family: "Manrope", sans-serif;
+  color: var(--ink);
+  font-family: var(--font);
 }
 .cantidad-disponible {
   font-size: 0.6rem;
@@ -237,25 +258,25 @@
 }
 .pildora-disponible {
   font-size: 0.6rem;
-  color: #4caf50;
-  background: #e8f5e9;
+  color: var(--success);
+  background: var(--success-bg);
   padding: 0.15rem 0.35rem;
   border-radius: 8px;
   font-weight: 500;
   white-space: nowrap;
   margin-top: 0.2rem;
-  font-family: "Manrope", sans-serif;
+  font-family: var(--font);
 }
 .pildora-ocupada {
   font-size: 0.6rem;
-  color: #d35400;
-  background: #fdebd0;
+  color: var(--warning);
+  background: var(--warning-bg);
   padding: 0.15rem 0.35rem;
   border-radius: 8px;
   font-weight: 500;
   white-space: nowrap;
   margin-top: 0.2rem;
-  font-family: "Manrope", sans-serif;
+  font-family: var(--font);
 }
 @media (max-width: 768px) {
   .calendario-container {

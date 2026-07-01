@@ -107,7 +107,7 @@ export class CalendarioComponent {
     });
   }
 
-  selecionarFecha(fecha: Date): void {
+  seleccionarFecha(fecha: Date): void {
     if (
       !this.fechaInicioSeleccionada() ||
       (this.fechaInicioSeleccionada() && this.fechaFinSeleccionada())

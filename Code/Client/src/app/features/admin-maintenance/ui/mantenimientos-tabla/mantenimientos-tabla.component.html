@@ -9,7 +9,7 @@
     <app-buscador
       [columnas]="columnas"
       (terminoBusqueda)="aplicarFiltros($event)"
-      (sortChange)="sortTable($event)"
+      (sortChange)="aplicarOrden($event)"
     >
       <button class="botoncrear boton-derecha" (click)="crearmantenimiento()">
         Nuevo Mantenimiento
@@ -38,9 +38,68 @@
         <thead>
           <tr>
             @for (columna of columnas; track columna) {
-              <th>{{ columna }}</th>
+              <th
+                class="sortable-th"
+                [class.sort-asc]="
+                  esColumnaOrdenada(columna) && sortDirection === 'asc'
+                "
+                [class.sort-desc]="
+                  esColumnaOrdenada(columna) && sortDirection === 'desc'
+                "
+                scope="col"
+              >
+                <button
+                  type="button"
+                  class="table-sort-button"
+                  (click)="ordenarPorColumna(columna)"
+                >
+                  <span>{{ columna }}</span>
+                  <i
+                    class="fas sort-icon"
+                    [class.fa-sort]="iconoOrdenColumna(columna) === 'fa-sort'"
+                    [class.fa-sort-up]="
+                      iconoOrdenColumna(columna) === 'fa-sort-up'
+                    "
+                    [class.fa-sort-down]="
+                      iconoOrdenColumna(columna) === 'fa-sort-down'
+                    "
+                  ></i>
+                </button>
+              </th>
             }
-            <th>Tipo Y nombre equipos</th>
+            <th
+              class="sortable-th"
+              [class.sort-asc]="
+                esColumnaOrdenada('Tipo y nombre equipos') &&
+                sortDirection === 'asc'
+              "
+              [class.sort-desc]="
+                esColumnaOrdenada('Tipo y nombre equipos') &&
+                sortDirection === 'desc'
+              "
+              scope="col"
+            >
+              <button
+                type="button"
+                class="table-sort-button"
+                (click)="ordenarPorColumna('Tipo y nombre equipos')"
+              >
+                <span>Tipo y nombre equipos</span>
+                <i
+                  class="fas sort-icon"
+                  [class.fa-sort]="
+                    iconoOrdenColumna('Tipo y nombre equipos') === 'fa-sort'
+                  "
+                  [class.fa-sort-up]="
+                    iconoOrdenColumna('Tipo y nombre equipos') === 'fa-sort-up'
+                  "
+                  [class.fa-sort-down]="
+                    iconoOrdenColumna('Tipo y nombre equipos') ===
+                    'fa-sort-down'
+                  "
+                ></i>
+              </button>
+            </th>
             <th class="actions-column">Acciones</th>
           </tr>
         </thead>

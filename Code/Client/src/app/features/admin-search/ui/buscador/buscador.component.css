@@ -83,6 +83,7 @@
   gap: 0.625rem;
   align-items: center;
   flex-shrink: 0;
+  flex-wrap: wrap;
   overflow: visible;
 }
 .custom-dropdown {
@@ -98,14 +99,13 @@
   cursor: pointer;
   padding: 0.5rem 1rem;
   user-select: none;
-  background: var(--glass-bg);
-  backdrop-filter: var(--glass-backdrop);
-  -webkit-backdrop-filter: var(--glass-backdrop);
+  background: var(--sidebar);
   border: 1px solid var(--border);
   border-radius: var(--radius-full);
   height: 42px;
-  color: var(--ink-muted);
+  color: var(--ink-secondary);
   box-sizing: border-box;
+  box-shadow: var(--shadow-xs);
   transition:
     color var(--t-fast),
     background-color var(--t-fast),
@@ -113,18 +113,24 @@
     box-shadow var(--t-fast),
     transform var(--t-fast);
 }
+.dropdown-header--open {
+  border-color: var(--interactive-text);
+  background-color: var(--surface);
+  box-shadow: 0 0 0 3px rgba(0, 69, 123, 0.08);
+}
 .dropdown-header .current-value {
   font-size: 0.9rem;
   font-weight: 600;
-  color: var(--ink-muted) !important;
+  color: var(--ink-secondary) !important;
   white-space: nowrap;
 }
 .dropdown-header .current-value i {
   color: var(--ink-muted) !important;
 }
 .dropdown-header:hover {
-  border-color: var(--interactive-text);
-  background-color: #f8fafc;
+  border-color: var(--border-strong);
+  background-color: var(--bg);
+  color: var(--ink);
 }
 .dropdown-arrow {
   width: 16px;
@@ -136,7 +142,7 @@
   top: 100%;
   right: 0;
   min-width: 200px;
-  background: var(--glass-bg);
+  background: var(--dropdown-bg);
   border-radius: var(--dropdown-radius);
   box-shadow: var(--dropdown-shadow);
   list-style: none;
@@ -146,8 +152,10 @@
   border: 1px solid var(--border);
   overflow-y: auto;
   max-height: 200px;
-  backdrop-filter: blur(10px);
-  background-color: rgba(255, 255, 255, 0.95);
+  backdrop-filter: var(--dropdown-blur);
+  -webkit-backdrop-filter: var(--dropdown-blur);
+  scrollbar-color: var(--scrollbar-thumb) transparent;
+  scrollbar-width: thin;
 }
 .dropdown-list li {
   padding: 0.75rem 1rem;
@@ -177,6 +185,13 @@
 .dropdown-list i {
   width: 16px;
   text-align: center;
+}
+.sort-dropdown {
+  min-width: 10rem;
+}
+.sort-dropdown__list {
+  left: 0;
+  right: auto;
 }
 .estados-panel-flotante {
   position: absolute;

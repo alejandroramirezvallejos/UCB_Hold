@@ -3,9 +3,11 @@ import {
   ElementRef,
   EventEmitter,
   Input,
+  OnChanges,
   OnDestroy,
   OnInit,
   Output,
+  SimpleChanges,
 } from '@angular/core';
 import flatpickr from 'flatpickr';
 import { Spanish } from 'flatpickr/dist/l10n/es';
@@ -15,7 +17,7 @@ import { Options } from 'flatpickr/dist/types/options';
   selector: '[appFlatpickr]',
   standalone: true,
 })
-export class FlatpickrDirective implements OnInit, OnDestroy {
+export class FlatpickrDirective implements OnChanges, OnInit, OnDestroy {
   @Input() fpOptions: Partial<Options> = {};
   @Output() fpChange = new EventEmitter<Date[]>();
   @Output() fpReady = new EventEmitter<flatpickr.Instance>();
@@ -23,6 +25,14 @@ export class FlatpickrDirective implements OnInit, OnDestroy {
   private instance?: flatpickr.Instance;
 
   constructor(private readonly el: ElementRef<HTMLInputElement>) {}
+
+  ngOnChanges(changes: SimpleChanges): void {
+    if (!this.instance || !changes['fpOptions']) return;
+
+    for (const [key, value] of Object.entries(this.fpOptions)) {
+      this.instance.set(key as keyof Options, value);
+    }
+  }
 
   ngOnInit() {
     this.instance = flatpickr(this.el.nativeElement, {

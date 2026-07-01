@@ -72,6 +72,7 @@ export class EmpresasMantenimientoTablaComponent
       next: (data: EmpresaMantenimiento[]) => {
         this.empresas = data;
         this.empresascopia = [...this.empresas];
+        this.aplicarOrdenActualSiExiste();
       },
       error: (error) => {
         const errorMsg = extractErrorMessage(
@@ -126,10 +127,33 @@ export class EmpresasMantenimientoTablaComponent
     } else {
       this.empresas = [...this.empresascopia];
     }
+    this.aplicarOrdenActualSiExiste();
   }
   limpiarBusqueda() {
     this.empresas = [...this.empresascopia];
+    this.aplicarOrdenActualSiExiste();
   }
+
+  override sortTable(e: { col: string; dir: 'asc' | 'desc' }) {
+    const sortableValue: Record<
+      string,
+      (empresa: EmpresaMantenimiento) => unknown
+    > = {
+      'Nombre Empresa': (empresa) => empresa.NombreEmpresa,
+      Responsable: (empresa) =>
+        `${empresa.NombreResponsable ?? ''} ${empresa.ApellidoResponsable ?? ''}`,
+      Teléfono: (empresa) => empresa.Telefono,
+      NIT: (empresa) => empresa.Nit,
+    };
+    const value = sortableValue[e.col];
+
+    if (!value) return;
+
+    this.empresas = [...this.empresas].sort((a, b) =>
+      this.compareSortableValues(value(a), value(b), e.dir),
+    );
+  }
+
   editarEmpresaMantenimiento(empresa: EmpresaMantenimiento) {
     this.botoncrear.set(false);
     this.empresaSeleccionada = { ...empresa };

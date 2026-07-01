@@ -45,7 +45,7 @@ export class CategoriasTablaComponent extends Tabla {
   categorias: Categorias[] = [];
   categoriascopia: Categorias[] = [];
   categoriaSeleccionada: Categorias = new Categorias();
-  override columnas: string[] = [' Nombre'];
+  override columnas: string[] = ['Nombre'];
   constructor(private readonly categoriaService: CategoriaService) {
     super();
   }
@@ -64,6 +64,7 @@ export class CategoriasTablaComponent extends Tabla {
       next: (data: Categorias[]) => {
         this.categorias = data;
         this.categoriascopia = [...this.categorias];
+        this.aplicarOrdenActualSiExiste();
       },
       error: (error) => {
         const errorMsg = extractErrorMessage(
@@ -76,17 +77,19 @@ export class CategoriasTablaComponent extends Tabla {
     });
   }
   aplicarFiltros(event?: [string, string]) {
-    if (event && event[0].trim() === '') {
+    if (!event || event[0].trim() === '') {
       this.limpiarBusqueda();
       return;
     }
-    const busquedaNormalizada = this.normalizeText(event![0]);
+    const busquedaNormalizada = this.normalizeText(event[0]);
     this.categorias = this.categoriascopia.filter((categoria) =>
       this.normalizeText(categoria.Nombre || '').includes(busquedaNormalizada),
     );
+    this.aplicarOrdenActualSiExiste();
   }
   limpiarBusqueda() {
     this.categorias = [...this.categoriascopia];
+    this.aplicarOrdenActualSiExiste();
   }
 
   override sortTable(e: { col: string; dir: 'asc' | 'desc' }) {

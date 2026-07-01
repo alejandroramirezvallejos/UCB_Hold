@@ -1,6 +1,7 @@
 import { CommonModule } from '@angular/common';
 import { Component, EventEmitter, Input, Output } from '@angular/core';
 import { FormsModule } from '@angular/forms';
+import { AdminTableSort } from '@shared/lib/admin-table';
 
 @Component({
   selector: 'app-buscador',
@@ -9,13 +10,10 @@ import { FormsModule } from '@angular/forms';
   styleUrl: './buscador.component.css',
 })
 export class BuscadorComponent {
-  @Input() columnas!: string[];
+  @Input() columnas: string[] = [];
   @Output() terminoBusqueda = new EventEmitter<[string, string]>();
   @Output() onToggle = new EventEmitter<boolean>();
-  @Output() sortChange = new EventEmitter<{
-    col: string;
-    dir: 'asc' | 'desc';
-  }>();
+  @Output() sortChange = new EventEmitter<AdminTableSort>();
 
   terminoBusquedaLocal = '';
   columnaSeleccionada = '';
@@ -58,15 +56,23 @@ export class BuscadorComponent {
   }
 
   seleccionarColumna(columna: string) {
-    if (this.sortCol === columna)
+    const columnaOrdenable = columna.trim();
+
+    if (this.sortCol === columnaOrdenable)
       this.sortDir = this.sortDir === 'asc' ? 'desc' : 'asc';
     else {
-      this.sortCol = columna;
+      this.sortCol = columnaOrdenable;
       this.sortDir = 'asc';
     }
-    this.columnaSeleccionada = columna;
+    this.columnaSeleccionada = columnaOrdenable;
     this.mostrarColumnas = false;
 
     this.sortChange.emit({ col: this.sortCol, dir: this.sortDir });
+  }
+
+  iconoOrdenColumna(columna: string): string {
+    if (this.sortCol !== columna.trim()) return 'fa-sort';
+
+    return this.sortDir === 'asc' ? 'fa-sort-up' : 'fa-sort-down';
   }
 }

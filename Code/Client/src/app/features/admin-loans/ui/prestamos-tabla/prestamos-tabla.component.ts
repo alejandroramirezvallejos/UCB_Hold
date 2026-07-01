@@ -278,11 +278,47 @@ export class PrestamosTablaComponent extends Tabla implements OnInit {
       );
     }
     this.prestamos = new Map<number, PrestamoAgrupados>(prestamosFiltrados);
+    this.aplicarOrdenActualSiExiste();
   }
+
+  override sortTable(e: { col: string; dir: 'asc' | 'desc' }) {
+    const sortableValue: Record<
+      string,
+      (prestamo: PrestamoAgrupados) => unknown
+    > = {
+      Usuario: (prestamo) =>
+        `${prestamo.datosgrupo.NombreUsuario ?? ''} ${prestamo.datosgrupo.ApellidoPaternoUsuario ?? ''}`,
+      Carnet: (prestamo) => prestamo.datosgrupo.CarnetUsuario,
+      Teléfono: (prestamo) => prestamo.datosgrupo.TelefonoUsuario,
+      Equipos: (prestamo) => prestamo.datosgrupo.NombreGrupoEquipo,
+      'Fecha Solicitud': (prestamo) => prestamo.datosgrupo.FechaSolicitud,
+      'Fecha Préstamo Esperada': (prestamo) =>
+        prestamo.datosgrupo.FechaPrestamoEsperada,
+      'Fecha Devolución Esperada': (prestamo) =>
+        prestamo.datosgrupo.FechaDevolucionEsperada,
+      Estado: (prestamo) => this.getEstadoCalculado(prestamo),
+    };
+    const value = sortableValue[e.col];
+
+    if (!value) return;
+
+    const prestamosOrdenados = Array.from(this.prestamos.entries()).sort(
+      ([, firstPrestamo], [, secondPrestamo]) =>
+        this.compareSortableValues(
+          value(firstPrestamo),
+          value(secondPrestamo),
+          e.dir,
+        ),
+    );
+
+    this.prestamos = new Map<number, PrestamoAgrupados>(prestamosOrdenados);
+  }
+
   limpiarFiltros() {
     this.estadoSeleccionado = '';
     this.prestamos = new Map(this.prestamoscopia);
     this.showEstados = false;
+    this.aplicarOrdenActualSiExiste();
   }
   getEstadoCalculado(prestamo: PrestamoAgrupados): string {
     const estadoOrig = (

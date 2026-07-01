@@ -9,7 +9,7 @@
     <app-buscador
       [columnas]="columnas"
       (terminoBusqueda)="aplicarFiltros($event)"
-      (sortChange)="sortTable($event)"
+      (sortChange)="aplicarOrden($event)"
     >
       <button class="botoncrear boton-derecha" (click)="crearCategoria()">
         Nueva Categoría
@@ -33,18 +33,48 @@
         Auditoría
       </button>
     </div>
-    <div class="table-responsive" appStickyScroll>
-      <table class="data-table">
+    <div class="table-responsive table-responsive--compact" appStickyScroll>
+      <table class="data-table data-table--compact">
         <thead>
           <tr>
             @for (columna of columnas; track columna) {
-              <th>{{ columna }}</th>
+              <th
+                class="sortable-th"
+                [class.sort-asc]="
+                  esColumnaOrdenada(columna) && sortDirection === 'asc'
+                "
+                [class.sort-desc]="
+                  esColumnaOrdenada(columna) && sortDirection === 'desc'
+                "
+                scope="col"
+              >
+                <button
+                  type="button"
+                  class="table-sort-button"
+                  (click)="ordenarPorColumna(columna)"
+                >
+                  <span>{{ columna }}</span>
+                  <i
+                    class="fas sort-icon"
+                    [class.fa-sort]="iconoOrdenColumna(columna) === 'fa-sort'"
+                    [class.fa-sort-up]="
+                      iconoOrdenColumna(columna) === 'fa-sort-up'
+                    "
+                    [class.fa-sort-down]="
+                      iconoOrdenColumna(columna) === 'fa-sort-down'
+                    "
+                  ></i>
+                </button>
+              </th>
             }
             <th class="actions-column">Acciones</th>
           </tr>
         </thead>
         <tbody>
-          @for (categoria of categorias; track $index; let i = $index) {
+          @for (
+            categoria of categorias;
+            track categoria.Id ?? categoria.Nombre
+          ) {
             <tr>
               <td>{{ categoria.Nombre }}</td>
               <td class="actions-column">
