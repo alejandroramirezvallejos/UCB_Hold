@@ -176,6 +176,13 @@ body {
   scrollbar-width: thin;
 }
 
+.custom-select__options,
+.dropdown-list,
+.audit-select-menu {
+  max-height: min(16rem, calc(100vh - 8rem));
+  overflow-y: auto;
+}
+
 .form-container::-webkit-scrollbar,
 .form-content::-webkit-scrollbar,
 .modal::-webkit-scrollbar,

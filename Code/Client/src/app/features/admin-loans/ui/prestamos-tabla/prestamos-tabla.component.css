@@ -836,7 +836,7 @@ td.actions-column {
 }
 .dropdown-header .current-value {
   font-size: 0.9rem;
-  font-weight: 600;
+  font-weight: 400;
   color: var(--ink-muted) !important;
   white-space: nowrap;
   display: flex;
@@ -868,7 +868,10 @@ td.actions-column {
   margin: 5px 0 0 0;
   z-index: 1000;
   border: 1px solid var(--dropdown-border);
-  overflow: hidden;
+  overflow-y: auto;
+  max-height: 16rem;
+  scrollbar-color: var(--scrollbar-thumb) transparent;
+  scrollbar-width: thin;
   backdrop-filter: blur(10px);
 }
 .dropdown-list li {
@@ -1054,7 +1057,7 @@ td.actions-column {
 }
 .dropdown-header .current-value {
   font-size: 0.9rem;
-  font-weight: 600;
+  font-weight: 400;
   color: var(--ink-muted) !important;
   white-space: nowrap;
   display: flex;
@@ -1086,7 +1089,10 @@ td.actions-column {
   margin: 5px 0 0 0;
   z-index: 1000;
   border: 1px solid var(--dropdown-border);
-  overflow: hidden;
+  overflow-y: auto;
+  max-height: 16rem;
+  scrollbar-color: var(--scrollbar-thumb) transparent;
+  scrollbar-width: thin;
   backdrop-filter: blur(10px);
 }
 .dropdown-list li {
@@ -1199,6 +1205,7 @@ td.actions-column > * {
 
 .dropdown-header .current-value {
   color: var(--ink-secondary) !important;
+  font-weight: 400;
 }
 
 .dropdown-header:hover {

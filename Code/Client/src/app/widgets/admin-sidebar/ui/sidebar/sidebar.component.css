@@ -15,7 +15,7 @@
   overflow: hidden;
   animation: slideInLeft 180ms cubic-bezier(0.16, 1, 0.3, 1) both;
   font-family: var(--font);
-  max-height: calc((100vh - 100px) * 0.65);
+  max-height: min(34rem, calc(100vh - 6rem));
 }
 
 @media (min-width: 1921px) {
@@ -38,8 +38,10 @@
   flex-direction: column;
   width: 100%;
   overflow-y: auto;
-  height: 100%;
+  max-height: inherit;
   padding: 6px 0;
+  scrollbar-color: var(--scrollbar-thumb) transparent;
+  scrollbar-width: thin;
 }
 
 .sidebar-menu {
@@ -47,15 +49,17 @@
   box-shadow: var(--dropdown-shadow) !important;
 }
 .contenido::-webkit-scrollbar {
-  width: 4px;
+  width: var(--scrollbar-size);
 }
 .contenido::-webkit-scrollbar-thumb {
-  background-color: rgba(0, 0, 0, 0.2);
-  border-radius: 10px;
+  background: var(--scrollbar-thumb);
+  border: 2px solid transparent;
+  border-radius: var(--radius-full);
+  background-clip: content-box;
 }
 .contenido::-webkit-scrollbar-track {
   background: transparent;
-  margin: 20px 0;
+  margin: 12px 0;
 }
 .item {
   padding: 0.75rem 1rem;

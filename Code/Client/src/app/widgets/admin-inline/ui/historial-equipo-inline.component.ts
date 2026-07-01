@@ -28,8 +28,6 @@ const ESTADOS_PRESTAMO = [
     <div class="inline-panel">
       @if (cargando) {
         <p class="empty-inline">Cargando historial...</p>
-      } @else if (items.length === 0) {
-        <p class="empty-inline">Sin préstamos registrados para este equipo</p>
       } @else {
         <div class="audit-filters">
           <div class="audit-search-wrap">
@@ -83,7 +81,9 @@ const ESTADOS_PRESTAMO = [
             </button>
           </div>
         </div>
-        @if (itemsFiltrados.length === 0) {
+        @if (items.length === 0) {
+          <p class="empty-inline">Sin préstamos registrados para este equipo</p>
+        } @else if (itemsFiltrados.length === 0) {
           <p class="empty-inline">Ningún préstamo coincide con los filtros</p>
         } @else {
           <table>

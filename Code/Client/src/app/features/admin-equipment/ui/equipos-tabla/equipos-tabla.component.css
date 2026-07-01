@@ -27,7 +27,7 @@
 }
 .dropdown-header .current-value {
   font-size: 0.9rem;
-  font-weight: 600;
+  font-weight: 400;
   color: var(--ink-secondary) !important;
   white-space: nowrap;
   display: flex;
