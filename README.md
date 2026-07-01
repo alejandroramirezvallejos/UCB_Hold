@@ -30,6 +30,8 @@ Sistema web para reservar, aprobar, prestar y devolver equipos del Laboratorio d
 
 ---
 
+<a id="producto"></a>
+
 ## <img height="22" src="Images/readme-icons/product.svg" alt="" /> Producto
 
 UCB Hold centraliza el flujo completo de préstamos de laboratorio: búsqueda de equipos, carrito de reserva, validación de disponibilidad, aprobación administrativa, contrato, entrega, devolución, mantenimiento e historial.
@@ -46,6 +48,8 @@ UCB Hold centraliza el flujo completo de préstamos de laboratorio: búsqueda de
 
 ---
 
+<a id="stack"></a>
+
 ## <img height="22" src="Images/readme-icons/stack.svg" alt="" /> Stack
 
 | Capa     | Tecnología                                                 | Uso                                                                             |
@@ -58,6 +62,8 @@ UCB Hold centraliza el flujo completo de préstamos de laboratorio: búsqueda de
 | Entrega  | Docker Compose, Nginx                                      | Ejecución local y despliegue full-stack.                                        |
 
 ---
+
+<a id="arquitectura"></a>
 
 ## <img height="22" src="Images/readme-icons/architecture.svg" alt="" /> Arquitectura
 
@@ -75,6 +81,8 @@ El frontend sigue Feature-Sliced Design y convenciones actuales de Angular:
 Los archivos del cliente usan `kebab-case`, una clase/interfaz principal por archivo cuando aplica, barriles `index.ts` por slice y nombres explícitos alineados con Angular.
 
 ---
+
+<a id="inicio-rapido"></a>
 
 ## <img height="22" src="Images/readme-icons/quickstart.svg" alt="" /> Inicio Rápido
 
@@ -121,6 +129,8 @@ Guía completa: [Docs/SETUP.md](Docs/SETUP.md).
 
 ---
 
+<a id="calidad"></a>
+
 ## <img height="22" src="Images/readme-icons/quality.svg" alt="" /> Calidad
 
 ```bash
@@ -138,6 +148,8 @@ GitHub Actions publica reportes HTML visuales para cobertura, calidad y SonarQub
 
 ---
 
+<a id="documentacion"></a>
+
 ## <img height="22" src="Images/readme-icons/documentation.svg" alt="" /> Documentación
 
 | Documento                                | Contenido                                                        |
@@ -151,26 +163,37 @@ GitHub Actions publica reportes HTML visuales para cobertura, calidad y SonarQub
 
 ---
 
+<a id="equipo"></a>
+
 ## <img height="22" src="Images/readme-icons/team.svg" alt="" /> Equipo
 
 <table>
   <tr>
-    <td align="center">
+    <td align="center" width="33%">
       <a href="https://github.com/josue-balbontin">
-        <img src="https://avatars.githubusercontent.com/josue-balbontin" width="80" alt="Josue Balbontin" /><br />
+        <img src="https://avatars.githubusercontent.com/josue-balbontin" width="96" height="96" alt="Josue Balbontin" /><br />
         <strong>Josue Balbontin</strong>
+      </a><br />
+      <a href="https://github.com/josue-balbontin">
+        <img src="https://img.shields.io/badge/GitHub-Perfil-FFD700?style=flat-square&logo=github&logoColor=111827" alt="Perfil de Josue Balbontin" />
       </a>
     </td>
-    <td align="center">
+    <td align="center" width="33%">
       <a href="https://github.com/alejandroramirezvallejos">
-        <img src="https://avatars.githubusercontent.com/alejandroramirezvallejos" width="80" alt="Alejandro Ramirez" /><br />
+        <img src="https://avatars.githubusercontent.com/alejandroramirezvallejos" width="96" height="96" alt="Alejandro Ramirez" /><br />
         <strong>Alejandro Ramirez</strong>
+      </a><br />
+      <a href="https://github.com/alejandroramirezvallejos">
+        <img src="https://img.shields.io/badge/GitHub-Perfil-FFD700?style=flat-square&logo=github&logoColor=111827" alt="Perfil de Alejandro Ramirez" />
       </a>
     </td>
-    <td align="center">
+    <td align="center" width="33%">
       <a href="https://github.com/FernandoTerrazasLl">
-        <img src="https://avatars.githubusercontent.com/FernandoTerrazasLl" width="80" alt="Fernando Terrazas" /><br />
+        <img src="https://avatars.githubusercontent.com/FernandoTerrazasLl" width="96" height="96" alt="Fernando Terrazas" /><br />
         <strong>Fernando Terrazas</strong>
+      </a><br />
+      <a href="https://github.com/FernandoTerrazasLl">
+        <img src="https://img.shields.io/badge/GitHub-Perfil-FFD700?style=flat-square&logo=github&logoColor=111827" alt="Perfil de Fernando Terrazas" />
       </a>
     </td>
   </tr>
