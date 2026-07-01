@@ -1,62 +1,59 @@
+<div align="center">
+
 # Setup
 
-<div align="center">
+Ambiente local de UCB Hold: `.NET 8`, `Angular 19.2`, `PostgreSQL 14+`, `Redis 7` y `Docker Compose`.
 
-[![Typing SVG](https://readme-typing-svg.demolab.com?font=Fira+Code&size=13&pause=1000&color=6B7786&center=true&vCenter=true&width=480&lines=docker+compose+up+--build;dotnet+run+%2B+npm+start;Press+Run+in+Rider)](https://git.io/typing-svg)
-
-</div>
-
-Full-stack local environment: .NET 8 · Angular 18 · PostgreSQL 14 · Redis 7
-
----
-
-<h2><img height="20" src="../Images/icons/prerequisites.svg">&nbsp;&nbsp;Prerequisites</h2>
-
-<div align="center">
-
-[![My Skills](https://skillicons.dev/icons?i=dotnet,nodejs,docker,git)](https://skillicons.dev)
+[Volver al README](../README.md) · [API](API.md) · [Base de datos](DATABASE.md)
 
 </div>
 
-| Tool     | Min version | Install                                                       | Verify             |
-| -------- | ----------- | ------------------------------------------------------------- | ------------------ |
-| .NET SDK | 8.0 LTS     | [dotnet.microsoft.com](https://dotnet.microsoft.com/download) | `dotnet --version` |
-| Node.js  | 18 LTS      | [nodejs.org](https://nodejs.org)                              | `node -v`          |
-| Docker   | any         | [docker.com](https://www.docker.com/products/docker-desktop/) | `docker -v`        |
-| Git      | any         | [git-scm.com](https://git-scm.com)                            | `git --version`    |
+---
+
+## <img height="22" src="../Images/readme-icons/prerequisites.svg" alt="" /> Requisitos
+
+| Herramienta    | Versión mínima | Verificar          |
+| -------------- | -------------- | ------------------ |
+| .NET SDK       | 8.0 LTS        | `dotnet --version` |
+| Node.js        | 18.19+         | `node -v`          |
+| Docker Desktop | Actual         | `docker -v`        |
+| Git            | Actual         | `git --version`    |
 
 ---
 
-<h2><img height="20" src="../Images/icons/setup.svg">&nbsp;&nbsp;One-time setup</h2>
+## <img height="22" src="../Images/readme-icons/setup.svg" alt="" /> Configuración Inicial
 
-### Docker mode
+### Docker
 
-Create `Code/server.env` — gitignored, never commit it:
+Crear `Code/server.env`. Este archivo está ignorado por Git y no debe versionarse:
 
 ```ini
 ASPNETCORE_ENVIRONMENT=Production
 ASPNETCORE_URLS=http://+:80
 ConnectionStrings__PostgreSQL=Host=ucb_db;Port=5432;Database=IMT_Reservas;Username=postgres;Password=postgres;Pooling=true;MinPoolSize=2;MaxPoolSize=20
-Jwt__Key=<KEY>
+Jwt__Key=<clave-local-de-32-caracteres-o-mas>
 Redis__ConnectionString=ucb_redis:6379
 ```
 
-> `Jwt__Key` must be at least 32 characters. Generate one with `openssl rand -base64 32`.
+Generar una clave local:
 
-### Rider / Terminal mode
+```bash
+openssl rand -base64 32
+```
 
-Backend credentials via [dotnet user-secrets](https://learn.microsoft.com/en-us/aspnet/core/security/app-secrets):
+### Rider o Terminal
+
+Configurar secretos del backend:
 
 ```bash
 cd Code/Server
 dotnet user-secrets init
-dotnet user-secrets set "ConnectionStrings:PostgreSQL" \
-  "Host=localhost;Port=5432;Database=IMT_Reservas;Username=postgres;Password=postgres;Pooling=true;MinPoolSize=2;MaxPoolSize=20"
+dotnet user-secrets set "ConnectionStrings:PostgreSQL" "Host=localhost;Port=5432;Database=IMT_Reservas;Username=postgres;Password=postgres;Pooling=true;MinPoolSize=2;MaxPoolSize=20"
 dotnet user-secrets set "Jwt:Key" "local_dev_secret_at_least_32_chars!!"
 dotnet user-secrets set "Redis:ConnectionString" "localhost:6379"
 ```
 
-Frontend dependencies:
+Instalar dependencias del frontend:
 
 ```bash
 cd Code/Client
@@ -65,56 +62,60 @@ npm install
 
 ---
 
-<h2><img height="20" src="../Images/icons/running.svg">&nbsp;&nbsp;Running the project</h2>
+## <img height="22" src="../Images/readme-icons/running.svg" alt="" /> Ejecución
 
-### 1. Docker
+### Opción 1: Docker
 
 ```bash
 cd Code
 docker compose up --build
 ```
 
-| Service     | URL                   |
+| Servicio    | URL                   |
 | ----------- | --------------------- |
 | Frontend    | http://localhost:4200 |
 | Backend API | http://localhost:5000 |
 | PostgreSQL  | localhost:5432        |
 | Redis       | localhost:6379        |
 
+Comandos útiles:
+
 ```bash
-docker compose down        # stop, keep volumes
-docker compose down -v     # stop, wipe DB data
-docker logs -f ucb_server  # backend logs
+docker compose down
+docker compose down -v
+docker logs -f ucb_server
 ```
 
-### 2. Rider
+### Opción 2: Rider
 
-1. Open folder `Code/`
-2. Select run configuration `IMT_Reservas.FullStack`
-3. Press Run (`Shift+F10`)
+1. Abrir la carpeta `Code/`.
+2. Seleccionar la configuración `IMT_Reservas.FullStack`.
+3. Ejecutar con `Shift+F10`.
 
-DB and Redis start automatically before the backend via the `IMT_Reservas.Database` before-launch step.
+La base de datos y Redis se levantan como pasos previos desde la configuración del IDE.
 
-### 3. Two terminals
-
-Start infrastructure first:
+### Opción 3: Dos Terminales
 
 ```bash
 cd Code
 docker compose up -d ucb_db ucb_redis
 ```
 
-Then in two terminals:
+Backend:
 
 ```bash
-# Terminal 1 — Backend
-cd Code/Server && dotnet run
-
-# Terminal 2 — Frontend
-cd Code/Client && npm start
+cd Code/Server
+dotnet run
 ```
 
-| Service     | URL                            |
+Frontend:
+
+```bash
+cd Code/Client
+npm start
+```
+
+| Servicio    | URL                            |
 | ----------- | ------------------------------ |
 | Frontend    | http://localhost:4200          |
 | Backend API | https://localhost:7216         |
@@ -122,49 +123,34 @@ cd Code/Client && npm start
 
 ---
 
-<h2><img height="20" src="../Images/icons/tests.svg">&nbsp;&nbsp;Tests</h2>
+## <img height="22" src="../Images/readme-icons/verification.svg" alt="" /> Verificación
 
-All tests run against an **EF Core InMemory** database — no PostgreSQL required.
+Backend:
 
 ```bash
 dotnet test Code/Tests/IMT_Reservas.Tests.csproj
 ```
 
-Tests also run automatically on every push to `main` and `develop` via GitHub Actions. A browsable HTML coverage report is uploaded as the `coverage` artifact.
+Frontend:
+
+```bash
+cd Code/Client
+npm run format:check
+npx tsc -p tsconfig.app.json --noEmit
+npx tsc -p tsconfig.spec.json --noEmit
+npm run test:coverage
+npm run build
+```
 
 ---
 
-<h2><img height="20" src="../Images/icons/troubleshooting.svg">&nbsp;&nbsp;Troubleshooting</h2>
+## <img height="22" src="../Images/readme-icons/troubleshooting.svg" alt="" /> Solución de Problemas
 
-**`dotnet: command not found`** — install .NET 8 SDK from [dotnet.microsoft.com](https://dotnet.microsoft.com/download)
-
-**`Connection refused` on PostgreSQL or Redis**
-
-```bash
-cd Code && docker compose up -d ucb_db ucb_redis
-docker ps --format "table {{.Names}}\t{{.Status}}"
-```
-
-**`User Secrets not initialized`**
-
-```bash
-cd Code/Server && dotnet user-secrets init
-```
-
-**Docker — backend container restarting**
-
-```bash
-docker logs ucb_server
-```
-
-**Port 4200 in use**
-
-```bash
-ng serve --port 4300
-```
-
-**`Cannot find module '@angular/...'`**
-
-```bash
-cd Code/Client && npm install
-```
+| Problema                            | Acción                                                       |
+| ----------------------------------- | ------------------------------------------------------------ |
+| `dotnet: command not found`         | Instalar .NET 8 SDK desde `dotnet.microsoft.com`.            |
+| PostgreSQL o Redis rechaza conexión | Ejecutar `cd Code && docker compose up -d ucb_db ucb_redis`. |
+| `User Secrets not initialized`      | Ejecutar `cd Code/Server && dotnet user-secrets init`.       |
+| Backend en Docker reinicia          | Revisar `docker logs ucb_server`.                            |
+| Puerto `4200` ocupado               | Ejecutar `ng serve --port 4300`.                             |
+| Faltan paquetes Angular             | Ejecutar `cd Code/Client && npm install`.                    |

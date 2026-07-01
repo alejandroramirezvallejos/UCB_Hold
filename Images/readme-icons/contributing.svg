@@ -1,0 +1,41 @@
+<svg
+  width="28"
+  height="28"
+  viewBox="0 0 28 28"
+  fill="none"
+  xmlns="http://www.w3.org/2000/svg"
+>
+  <circle
+    cx="7"
+    cy="7"
+    r="3"
+    fill="#FFD700"
+    fill-opacity="0.14"
+    stroke="#FFD700"
+    stroke-width="2"
+  />
+  <circle
+    cx="21"
+    cy="21"
+    r="3"
+    fill="#FFD700"
+    fill-opacity="0.14"
+    stroke="#FFD700"
+    stroke-width="2"
+  />
+  <circle
+    cx="7"
+    cy="21"
+    r="3"
+    fill="#FFD700"
+    fill-opacity="0.14"
+    stroke="#FFD700"
+    stroke-width="2"
+  />
+  <path
+    d="M7 10V18M10 7H15C18 7 21 10 21 14V18"
+    stroke="#FFD700"
+    stroke-width="2"
+    stroke-linecap="round"
+  />
+</svg>

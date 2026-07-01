@@ -1,0 +1,38 @@
+<svg
+  width="28"
+  height="28"
+  viewBox="0 0 28 28"
+  fill="none"
+  xmlns="http://www.w3.org/2000/svg"
+>
+  <circle
+    cx="10"
+    cy="10"
+    r="4"
+    fill="#FFD700"
+    fill-opacity="0.14"
+    stroke="#FFD700"
+    stroke-width="2"
+  />
+  <circle
+    cx="19"
+    cy="11"
+    r="3"
+    fill="#FFD700"
+    fill-opacity="0.14"
+    stroke="#FFD700"
+    stroke-width="2"
+  />
+  <path
+    d="M4 23C5 18 8 16 12 16C16 16 18 18 19 23"
+    stroke="#FFD700"
+    stroke-width="2"
+    stroke-linecap="round"
+  />
+  <path
+    d="M16 17C20 17 22 19 23 23"
+    stroke="#FFD700"
+    stroke-width="2"
+    stroke-linecap="round"
+  />
+</svg>

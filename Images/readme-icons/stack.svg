@@ -1,0 +1,30 @@
+<svg
+  width="28"
+  height="28"
+  viewBox="0 0 28 28"
+  fill="none"
+  xmlns="http://www.w3.org/2000/svg"
+>
+  <path
+    d="M14 4L23 9L14 14L5 9L14 4Z"
+    fill="#FFD700"
+    fill-opacity="0.14"
+    stroke="#FFD700"
+    stroke-width="2"
+    stroke-linejoin="round"
+  />
+  <path
+    d="M5 14L14 19L23 14"
+    stroke="#FFD700"
+    stroke-width="2"
+    stroke-linecap="round"
+    stroke-linejoin="round"
+  />
+  <path
+    d="M5 19L14 24L23 19"
+    stroke="#FFD700"
+    stroke-width="2"
+    stroke-linecap="round"
+    stroke-linejoin="round"
+  />
+</svg>

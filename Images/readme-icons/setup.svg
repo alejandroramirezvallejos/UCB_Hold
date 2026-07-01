@@ -1,0 +1,23 @@
+<svg
+  width="28"
+  height="28"
+  viewBox="0 0 28 28"
+  fill="none"
+  xmlns="http://www.w3.org/2000/svg"
+>
+  <path
+    d="M14 5V8M14 20V23M23 14H20M8 14H5M20.4 7.6L18.3 9.7M9.7 18.3L7.6 20.4M20.4 20.4L18.3 18.3M9.7 9.7L7.6 7.6"
+    stroke="#FFD700"
+    stroke-width="2"
+    stroke-linecap="round"
+  />
+  <circle
+    cx="14"
+    cy="14"
+    r="5"
+    fill="#FFD700"
+    fill-opacity="0.14"
+    stroke="#FFD700"
+    stroke-width="2"
+  />
+</svg>

@@ -1,68 +1,68 @@
+<div align="center">
+
 # Contributing
 
-Thanks for your interest in improving UCB Hold. Contributions are welcome,
-including bug fixes, new features, and documentation updates.
+Guía para contribuir a UCB Hold con cambios pequeños, revisables y alineados con la arquitectura del proyecto.
 
-## Code of Conduct
+[README](README.md) · [Setup](Docs/SETUP.md) · [Security](SECURITY.md) · [Code of Conduct](CODE_OF_CONDUCT.md)
 
-Please read and follow the Code of Conduct in CODE_OF_CONDUCT.md.
+</div>
 
-## How to Start
+---
 
-- Check existing issues before starting work.
-- For large changes, open an issue or discussion to align on scope.
-- Keep changes focused and easy to review.
+## <img height="22" src="Images/readme-icons/contributing.svg" alt="" /> Flujo de Trabajo
 
-## Project Setup
+1. Revisar issues o abrir una propuesta si el cambio es grande.
+2. Crear una rama corta y descriptiva.
+3. Mantener el cambio enfocado en un solo objetivo.
+4. Actualizar documentación cuando cambien setup, API, arquitectura o comportamiento visible.
+5. Enviar PR con contexto, pasos de prueba y capturas si cambia la UI.
 
-See [Docs/SETUP.md](Docs/SETUP.md) for the full local setup and run instructions.
+---
 
-## Repository Structure
+## Convenciones
 
-- Code/Client: Angular frontend
-- Code/Server: ASP.NET Core backend
-- DataBase: database schema and backups
-- Tests: unit and integration tests
-- docs: project documentation
+| Área      | Regla                                                                                         |
+| --------- | --------------------------------------------------------------------------------------------- |
+| Commits   | Conventional Commits: `feat:`, `fix:`, `refactor:`, `test:`, `docs:`, `ci:`.                  |
+| Ramas     | `feature/<descripcion>`, `fix/<descripcion>`, `refactor/<descripcion>`, `docs/<descripcion>`. |
+| Frontend  | Feature-Sliced Design, BEM, archivos en `kebab-case`, TypeScript estricto.                    |
+| Backend   | Servicios con reglas de negocio, DTOs explícitos, validación centralizada y tests.            |
+| Seguridad | No versionar secretos; usar `dotnet user-secrets` o variables de entorno.                     |
 
-## Branching and Commits
+---
 
-Recommended branch naming:
+## Checklist Local
 
-- bugfix-<issue>-short-description
-- feature-<issue>-short-description
-- docs-<issue>-short-description
-- refactor-<issue>-short-description
+Backend:
 
-If there is no issue, omit the number and keep the description short.
+```bash
+dotnet build Code/Server/IMT_Reservas.Server.csproj
+dotnet test Code/Tests/IMT_Reservas.Tests.csproj
+```
 
-Commit messages should be clear and concise. Use a short summary line and add
-context in the body when needed.
+Frontend:
 
-## Quality Checklist
+```bash
+cd Code/Client
+npm run format:check
+npx tsc -p tsconfig.app.json --noEmit
+npx tsc -p tsconfig.spec.json --noEmit
+npm run test:coverage
+npm run build
+```
 
-Before submitting a pull request:
-
-- Backend build:
-  - cd Code/Server
-  - dotnet build
-- Backend tests:
-  - cd Code/Tests
-  - dotnet test
-- Frontend build:
-  - cd Code/Client
-  - ng build
-
-If you changed UI behavior, include screenshots or a short video in the PR.
+---
 
 ## Pull Requests
 
-- Explain what changed, why it changed, and how to test it.
-- Link related issues or discussions.
-- Avoid committing secrets (use dotnet user-secrets for local credentials).
-- Update documentation when behavior or setup changes.
+Un buen PR debe incluir:
 
-## Dependencies
+| Campo       | Qué incluir                                                |
+| ----------- | ---------------------------------------------------------- |
+| Qué cambió  | Resumen breve del cambio.                                  |
+| Por qué     | Problema, issue o deuda que resuelve.                      |
+| Cómo probar | Comandos ejecutados y escenarios manuales.                 |
+| Riesgo      | Migraciones, cambios visuales, seguridad o compatibilidad. |
 
-Avoid adding new dependencies without discussion. If you need one, explain the
-benefit, footprint, and any security impact in the PR.
+Evitar dependencias nuevas salvo que el beneficio, tamaño e impacto de seguridad estén justificados.

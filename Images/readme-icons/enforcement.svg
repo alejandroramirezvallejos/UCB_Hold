@@ -1,0 +1,29 @@
+<svg
+  width="28"
+  height="28"
+  viewBox="0 0 28 28"
+  fill="none"
+  xmlns="http://www.w3.org/2000/svg"
+>
+  <path
+    d="M8 6H20V23H8V6Z"
+    fill="#FFD700"
+    fill-opacity="0.14"
+    stroke="#FFD700"
+    stroke-width="2"
+    stroke-linejoin="round"
+  />
+  <path
+    d="M11 11H17M11 15H17"
+    stroke="#FFD700"
+    stroke-width="2"
+    stroke-linecap="round"
+  />
+  <path
+    d="M18.5 19L21 21.5L25 17"
+    stroke="#FFD700"
+    stroke-width="2"
+    stroke-linecap="round"
+    stroke-linejoin="round"
+  />
+</svg>

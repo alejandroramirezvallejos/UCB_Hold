@@ -1,81 +1,61 @@
+<div align="center">
+
 # Code of Conduct
 
-## Our Pledge
+Estándares de colaboración para mantener una comunidad profesional, segura y respetuosa.
 
-We pledge to make participation in this project and community a harassment-free
-experience for everyone, regardless of age, body size, visible or invisible
-ability, ethnicity, sex characteristics, gender identity and expression, level
-of experience, education, socio-economic status, nationality, personal
-appearance, race, religion, or sexual identity and orientation.
+[README](README.md) · [Contributing](CONTRIBUTING.md) · [Security](SECURITY.md)
 
-## Our Standards
+</div>
 
-Examples of behavior that contributes to a positive environment include:
+---
 
-- Using welcoming and inclusive language
-- Being respectful of differing viewpoints and experiences
-- Gracefully accepting constructive criticism
-- Focusing on what is best for the community
-- Showing empathy toward other community members
+## <img height="22" src="Images/readme-icons/community.svg" alt="" /> Nuestro Compromiso
 
-Examples of unacceptable behavior include:
+Nos comprometemos a hacer de la participación en UCB Hold una experiencia libre de acoso para todas las personas, sin distinción de edad, identidad o expresión de género, experiencia, educación, nacionalidad, apariencia, raza, religión, orientación sexual, discapacidad o condición socioeconómica.
 
-- The use of sexualized language or imagery and unwelcome sexual attention
-- Trolling, insulting or derogatory comments, and personal or political attacks
-- Public or private harassment
-- Publishing others' private information without explicit permission
-- Other conduct which could reasonably be considered inappropriate in a
-  professional setting
+---
 
-## Our Responsibilities
+## <img height="22" src="Images/readme-icons/standards.svg" alt="" /> Estándares
 
-Project maintainers are responsible for clarifying the standards of acceptable
-behavior and are expected to take appropriate and fair corrective action in
-response to any instances of unacceptable behavior.
+Comportamientos esperados:
 
-Project maintainers have the right and responsibility to remove, edit, or
-reject comments, commits, code, wiki edits, issues, and other contributions that
-are not aligned with this Code of Conduct, or to ban temporarily or permanently
-any contributor for behaviors that they deem inappropriate, threatening,
-offensive, or harmful.
+| Esperado                               | No aceptado                                          |
+| -------------------------------------- | ---------------------------------------------------- |
+| Usar lenguaje inclusivo y profesional. | Lenguaje sexualizado, insultos o ataques personales. |
+| Respetar puntos de vista distintos.    | Acoso público o privado.                             |
+| Aceptar crítica constructiva.          | Publicar información privada sin permiso.            |
+| Priorizar lo mejor para el proyecto.   | Conductas inapropiadas en un entorno profesional.    |
 
-## Scope
+---
 
-This Code of Conduct applies within all project spaces, and it also applies when
-an individual is representing the project or its community in public spaces.
-Examples of representing a project or community include using an official
-project email address, posting via an official social media account, or acting
-as an appointed representative at an online or offline event.
+## <img height="22" src="Images/readme-icons/responsibility.svg" alt="" /> Responsabilidades
 
-## Enforcement
+Los mantenedores pueden aclarar estándares, moderar conversaciones, cerrar discusiones, rechazar contribuciones o aplicar restricciones temporales o permanentes cuando una conducta afecte negativamente al proyecto.
 
-Instances of abusive, harassing, or otherwise unacceptable behavior may be
-reported to the maintainers listed in the Team section of the README. For
-non-sensitive reports, you may open a GitHub issue. For sensitive reports,
-please contact a maintainer directly via GitHub.
+---
 
-All complaints will be reviewed and investigated and will result in a response
-that is deemed necessary and appropriate to the circumstances. The project team
-is obligated to maintain confidentiality with regard to the reporter of an
-incident.
+## <img height="22" src="Images/readme-icons/scope.svg" alt="" /> Alcance
 
-## Enforcement Guidelines
+Este código aplica en espacios del proyecto y cuando una persona representa públicamente a UCB Hold, por ejemplo en issues, pull requests, discusiones, documentación, demos o comunicación comunitaria.
 
-Project maintainers will follow these community impact guidelines in determining
-the consequences for any action they deem in violation of this Code of Conduct:
+---
 
-1. **Correction**: A private, written warning providing clarity around the
-   nature of the violation and an explanation of why the behavior was
-   inappropriate. A public apology may be requested.
-2. **Warning**: A warning with consequences for continued behavior. No
-   interaction with the people involved, including unsolicited interaction with
-   those enforcing the Code of Conduct, for a specified period of time.
-3. **Temporary Ban**: A temporary ban from any sort of interaction or public
-   communication with the community for a specified period of time.
-4. **Permanent Ban**: A permanent ban from any sort of public interaction within
-   the community.
+## <img height="22" src="Images/readme-icons/enforcement.svg" alt="" /> Reportes y Aplicación
 
-## Attribution
+Los incidentes pueden reportarse a los mantenedores listados en el README. Para reportes sensibles, usar canales privados.
 
-This Code of Conduct is adapted from the Contributor Covenant, version 1.4,
-available at https://www.contributor-covenant.org/version/1/4/code-of-conduct.html.
+Consecuencias posibles:
+
+| Nivel                 | Acción                                           |
+| --------------------- | ------------------------------------------------ |
+| Corrección            | Advertencia privada con explicación.             |
+| Advertencia           | Restricciones temporales de interacción.         |
+| Suspensión temporal   | Pausa de participación por un periodo definido.  |
+| Suspensión permanente | Restricción indefinida de participación pública. |
+
+---
+
+## <img height="22" src="Images/readme-icons/attribution.svg" alt="" /> Atribución
+
+Este código se basa en Contributor Covenant 1.4: <https://www.contributor-covenant.org/version/1/4/code-of-conduct.html>.

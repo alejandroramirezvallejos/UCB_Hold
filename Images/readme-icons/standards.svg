@@ -1,0 +1,28 @@
+<svg
+  width="28"
+  height="28"
+  viewBox="0 0 28 28"
+  fill="none"
+  xmlns="http://www.w3.org/2000/svg"
+>
+  <path
+    d="M7 5H21V23H7V5Z"
+    fill="#FFD700"
+    fill-opacity="0.14"
+    stroke="#FFD700"
+    stroke-width="2"
+    stroke-linejoin="round"
+  />
+  <path
+    d="M11 11H18M11 15H18M11 19H15"
+    stroke="#FFD700"
+    stroke-width="2"
+    stroke-linecap="round"
+  />
+  <path
+    d="M18 4V8M10 4V8"
+    stroke="#FFD700"
+    stroke-width="2"
+    stroke-linecap="round"
+  />
+</svg>

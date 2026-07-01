@@ -1,63 +1,59 @@
+<div align="center">
+
 # Security Policy
 
-## Supported Versions
+Política para reportar vulnerabilidades de forma privada y responsable.
 
-We provide security updates for:
+[README](README.md) · [Contributing](CONTRIBUTING.md)
 
-- The latest release
-- The current main branch
+</div>
 
-If you are unsure whether your version is supported, please report the issue
-anyway and we will advise.
+---
 
-## Reporting a Vulnerability
+## <img height="22" src="Images/readme-icons/security.svg" alt="" /> Versiones Soportadas
 
-We take the security of UCB Hold seriously. If you believe you have found a
-security vulnerability, please let us know as soon as possible.
+| Versión        | Soporte       |
+| -------------- | ------------- |
+| Última release | Sí            |
+| Rama `main`    | Sí            |
+| Ramas antiguas | Caso por caso |
 
-Preferred report channels:
+---
 
-- GitHub Security Advisories (private):
-  https://github.com/ucb-hold/ucb-hold/security/advisories
-- If you cannot use Security Advisories, contact a maintainer listed in the
-  Team section of the README.
+## <img height="22" src="Images/readme-icons/vulnerability.svg" alt="" /> Reportar una Vulnerabilidad
 
-Please include:
+Usar GitHub Security Advisories cuando sea posible:
 
-- A clear description of the issue
-- Steps to reproduce, including any required data or setup
-- Impact assessment (what an attacker can do)
-- Affected components and versions (if known)
+<https://github.com/ucb-hold/ucb-hold/security/advisories>
 
-### Do
+Si no está disponible, contactar a un mantenedor listado en el README.
 
-- Privately disclose the details of any potential vulnerability
-- Provide enough information to reproduce the issue
-- Ask permission before running automated security tools against any production
-  infrastructure
+Incluir:
 
-### Do Not
+| Dato         | Detalle esperado                          |
+| ------------ | ----------------------------------------- |
+| Descripción  | Qué ocurre y dónde.                       |
+| Reproducción | Pasos, datos requeridos y entorno.        |
+| Impacto      | Qué podría hacer un atacante.             |
+| Alcance      | Componentes, versiones o rutas afectadas. |
 
-- Disclose vulnerability details publicly or to third parties before a fix
-- Exploit a vulnerability beyond what is strictly necessary to verify it
-- Run automated security tools against infrastructure without permission
+---
 
-### Our Responsibility
+## <img height="22" src="Images/readme-icons/disclosure.svg" alt="" /> Reglas de Divulgación
 
-We aim to:
+| Hacer                                                | Evitar                                                  |
+| ---------------------------------------------------- | ------------------------------------------------------- |
+| Reportar en privado.                                 | Publicar detalles antes de que exista una corrección.   |
+| Dar información suficiente para reproducir.          | Explotar más de lo necesario para verificar.            |
+| Pedir permiso antes de usar escáneres automatizados. | Ejecutar pruebas agresivas contra infraestructura real. |
 
-- Acknowledge your report within 7 business days
-- Keep you informed of the progress toward a fix
-- Handle your report and shared data with strict confidentiality
-- Credit you in any public advisory if you request it
+---
 
-## Security Advisories
+## <img height="22" src="Images/readme-icons/commitment.svg" alt="" /> Compromiso del Proyecto
 
-We use GitHub Security Advisories to coordinate fixes and to notify users once
-patched versions are available. Advisories are published after a fix is ready to
-reduce the risk of exploitation.
-
-## Security Updates
-
-Security updates are released as patch or minor updates depending on severity.
-We will avoid breaking changes in patch releases whenever possible.
+| Acción                    | Tiempo objetivo                           |
+| ------------------------- | ----------------------------------------- |
+| Acusar recibo del reporte | Hasta 7 días hábiles.                     |
+| Mantener comunicación     | Durante la investigación y corrección.    |
+| Publicar advisory         | Después de tener una mitigación lista.    |
+| Dar crédito               | Cuando la persona reportante lo solicite. |

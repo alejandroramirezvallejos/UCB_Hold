@@ -1,124 +1,125 @@
+<div align="center">
+
 # Database
 
-PostgreSQL 14+ with Entity Framework Core 8. Schema: [`Database/server.sql`](../Database/server.sql)
+PostgreSQL 14+ con Entity Framework Core 8. El esquema inicial vive en [`Code/DataBase/server.sql`](../Code/DataBase/server.sql).
+
+[Volver al README](../README.md) · [Setup](SETUP.md) · [API](API.md)
+
+</div>
 
 ---
 
-## <img height="20" src="../Images/icons/architecture.svg">&nbsp;&nbsp;Entity-Relation Diagram
+## <img height="22" src="../Images/readme-icons/database.svg" alt="" /> Diagrama ER
 
-![ER Diagram](../Images/diagram.png)
-
----
-
-## <img height="20" src="../Images/icons/features.svg">&nbsp;&nbsp;Tables
-
-| Table                     | Purpose                              | Soft Delete | Notable columns                    |
-| ------------------------- | ------------------------------------ | ----------- | ---------------------------------- |
-| `usuarios`                | Users and authentication             | Yes         | `carnet` PK, `email` (unique), `telefono` (unique) |
-| `prestamos`               | Loan lifecycle                       | Yes         | `estado_prestamo` enum, FK to `usuarios` |
-| `detalles_prestamos`      | Line items per loan                  | Yes         | FK to `prestamos`, FK to `equipos` |
-| `categorias`              | Equipment categories                 | Yes         | —                                  |
-| `carreras`                | Academic programs                    | Yes         | —                                  |
-| `empresas_mantenimiento`  | Third-party maintenance providers    | Yes         | `nit` (unique when provided)       |
-| `mantenimientos`          | Maintenance records                  | Yes         | FK to `empresas_mantenimiento`     |
-| `detalles_mantenimientos` | Line items per maintenance           | Yes         | `tipo_mantenimiento` enum          |
-| `grupos_equipos`          | Logical equipment groups             | Yes         | `cantidad`, `costo_promedio` (derived) |
-| `equipos`                 | Individual equipment units           | Yes         | `codigo_imt` (unique, sequential), `estado_equipo` enum |
-| `gaveteros`               | Storage compartments                 | Yes         | FK to `muebles`                    |
-| `muebles`                 | Furniture containing compartments    | Yes         | `numero_gaveteros` (derived)       |
-| `accesorios`              | Complementary accessories            | Yes         | —                                  |
-| `componentes`             | Internal components / spares         | Yes         | —                                  |
-| `contratos`               | Generated HTML contracts             | No          | `contrato TEXT`, FK from `prestamos` |
+![Diagrama entidad-relación](../Images/diagram.png)
 
 ---
 
-## <img height="20" src="../Images/icons/enums.svg">&nbsp;&nbsp;Enums
+## <img height="22" src="../Images/readme-icons/tables.svg" alt="" /> Tablas
 
-| SQL Enum             | Values                                                                         | Used in                   |
-| -------------------- | ------------------------------------------------------------------------------ | ------------------------- |
-| `estado_prestamo`    | `pendiente` · `aprobado` · `activo` · `finalizado` · `rechazado` · `cancelado` | `prestamos`               |
-| `estado_equipo`      | `operativo` · `parcialmente_operativo` · `inoperativo`                         | `equipos`                 |
-| `tipo_usuario`       | `docente` · `administrador` · `estudiante`                                     | `usuarios`                |
-| `tipo_mantenimiento` | `correctivo` · `preventivo`                                                    | `detalles_mantenimientos` |
-
-C# mapping: `[PgName]` attribute + `NpgsqlDataSourceBuilder.MapEnum<T>()` in `Program.cs`.
-Mapperly uses `EnumMappingStrategy.ByName` with a `StringToEstadoEquipo` helper for SQL-named enums with underscores.
-
----
-
-## <img height="20" src="../Images/icons/businesslogic.svg">&nbsp;&nbsp;Business Logic
-
-### Derived counters
-
-Maintained by two mechanisms. DB triggers fire first; the backend recalculates as a consistency backstop.
-
-| Level      | Event                              | Mechanism                                                                                                           | Field maintained                                           |
-| ---------- | ---------------------------------- | ------------------------------------------------------------------------------------------------------------------- | ---------------------------------------------------------- |
-| DB trigger | Equipo INSERT / UPDATE             | `fn_incrementar_cantidad_equipos`, `fn_actualizar_cantidad_equipo_por_estado`, `fn_actualizar_costo_promedio_grupo` | `grupos_equipos.cantidad`, `grupos_equipos.costo_promedio` |
-| DB trigger | Gavetero INSERT / UPDATE           | `fn_incrementar_numero_gaveteros`, `fn_actualizar_conteo_gaveteros_por_estado`                                      | `muebles.numero_gaveteros`                                 |
-| DB trigger | Prestamo UPDATE (soft-delete)      | `fn_estado_eliminado_prestamo_a_detalle`                                                                            | `detalles_prestamos.estado_eliminado`                      |
-| DB trigger | Mantenimiento UPDATE (soft-delete) | `fn_estado_eliminado_mantenimiento_a_detalle`                                                                       | `detalles_mantenimientos.estado_eliminado`                 |
-| Backend    | Equipo Create / Update / Delete    | `EquipoRepository.RecalcGrupoStats()`                                                                               | `grupos_equipos.cantidad`, `costo_promedio`                |
-| Backend    | Gavetero Create / Delete           | `GaveteroRepository.RecalcMuebleCount()`                                                                            | `muebles.numero_gaveteros`                                 |
-
-### Availability logic
-
-An equipment unit is considered **unavailable** for a date range when an existing loan for that unit has `estado_prestamo IN ('aprobado', 'activo')` and the date ranges overlap.
-
-`pendiente` loans do **not** block availability — they are not confirmed reservations.
-
-Two checks run per `Prestamo`:
-
-1. **Pre-create** (`HasAvailableEquipo`): verified before saving the loan. Returns error if no units in the requested group are available.
-2. **Pre-approve** (`HasEquipoConflictoAlAprobar`): re-verified when an admin transitions `pendiente → aprobado`. Prevents race conditions between concurrent approvals.
-
-### IMT code assignment
-
-`equipos.codigo_imt` is assigned sequentially (max existing + 1) on Create. It cannot be changed via Update — the field is read-only after creation.
+| Tabla                     | Propósito                        | Soft delete | Columnas relevantes                |
+| ------------------------- | -------------------------------- | ----------- | ---------------------------------- |
+| `usuarios`                | Usuarios y autenticación         | Sí          | `carnet`, `email`, `telefono`      |
+| `prestamos`               | Ciclo de vida del préstamo       | Sí          | `estado_prestamo`, FK a `usuarios` |
+| `detalles_prestamos`      | Equipos por préstamo             | Sí          | FK a `prestamos`, FK a `equipos`   |
+| `categorias`              | Categorías de equipos            | Sí          | `nombre`                           |
+| `carreras`                | Programas académicos             | Sí          | `nombre`                           |
+| `empresas_mantenimiento`  | Proveedores de mantenimiento     | Sí          | `nit`                              |
+| `mantenimientos`          | Registros de mantenimiento       | Sí          | FK a `empresas_mantenimiento`      |
+| `detalles_mantenimientos` | Equipos por mantenimiento        | Sí          | `tipo_mantenimiento`               |
+| `grupos_equipos`          | Agrupación lógica de equipos     | Sí          | `cantidad`, `costo_promedio`       |
+| `equipos`                 | Unidades físicas                 | Sí          | `codigo_imt`, `estado_equipo`      |
+| `gaveteros`               | Compartimentos de almacenamiento | Sí          | FK a `muebles`                     |
+| `muebles`                 | Muebles contenedores             | Sí          | `numero_gaveteros`                 |
+| `accesorios`              | Accesorios complementarios       | Sí          | `codigo_imt`                       |
+| `componentes`             | Componentes internos             | Sí          | `codigo_imt`                       |
+| `contratos`               | Contratos HTML generados         | No          | `contrato`, FK a `prestamos`       |
 
 ---
 
-## <img height="20" src="../Images/icons/prerequisites.svg">&nbsp;&nbsp;Indexes
+## <img height="22" src="../Images/readme-icons/enums.svg" alt="" /> Enums
 
-| Index                                           | Columns                                                               | Justification                  |
-| ----------------------------------------------- | --------------------------------------------------------------------- | ------------------------------ |
-| `idx_usuarios_email_estado`                     | `email, estado_eliminado`                                             | Login lookup                   |
-| `idx_usuarios_nombre_estado`                    | `nombre, estado_eliminado`                                            | User listing                   |
-| `idx_prestamos_temporal_usuario_estado`         | `fecha_prestamo, fecha_devolucion_esperada, carnet, estado_eliminado` | Date-range and history filters |
-| `idx_mantenimientos_temporal_empresa_estado`    | `fecha_inicio, fecha_final, id_empresa, estado_eliminado`             | Maintenance history            |
-| `idx_grupos_equipos_búsqueda`                   | `categoria, nombre, modelo, marca, estado_eliminado`                  | Equipment group search         |
-| `idx_gaveteros_ubicación`                       | `nombre, id_mueble, estado_eliminado`                                 | Storage location queries       |
-| `idx_equipos_agrupación`                        | `id_grupo_equipo, codigo_imt, estado_eliminado`                       | Joins with groups              |
-| `idx_empresas_mantenimiento_activas`            | `nombre, estado`                                                      | Provider selection             |
-| `idx_detalles_prestamos_por_prestamo`           | `id_prestamo, estado_eliminado`                                       | Loan line items                |
-| `idx_detalles_mantenimientos_por_mantenimiento` | `id_mantenimiento, estado_eliminado`                                  | Maintenance line items         |
-| `idx_categorias_nombre`                         | `nombre, estado_eliminado`                                            | Dropdown population            |
-| `idx_carreras_nombre`                           | `nombre, estado_eliminado`                                            | Dropdown population            |
-| `idx_accesorios_nombre`                         | `nombre, estado_eliminado`                                            | Accessory listing              |
+| Enum SQL             | Valores                                                                   | Uso                       |
+| -------------------- | ------------------------------------------------------------------------- | ------------------------- |
+| `estado_prestamo`    | `pendiente`, `aprobado`, `activo`, `finalizado`, `rechazado`, `cancelado` | `prestamos`               |
+| `estado_equipo`      | `operativo`, `parcialmente_operativo`, `inoperativo`                      | `equipos`                 |
+| `tipo_usuario`       | `docente`, `administrador`, `estudiante`                                  | `usuarios`                |
+| `tipo_mantenimiento` | `correctivo`, `preventivo`                                                | `detalles_mantenimientos` |
+
+El backend mapea enums con `PgName` y `NpgsqlDataSourceBuilder.MapEnum<T>()`.
 
 ---
 
-## <img height="20" src="../Images/icons/views.svg">&nbsp;&nbsp;SQL Views
+## <img height="22" src="../Images/readme-icons/business-logic.svg" alt="" /> Reglas de Negocio
 
-| View                                 | Purpose                                                               |
-| ------------------------------------ | --------------------------------------------------------------------- |
-| `vw_equipos_necesitan_mantenimiento` | Equipment requiring preventive maintenance in the last N months       |
-| `vw_ubicaciones_grupos_equipos`      | Physical location of equipment (mueble → gavetero → equipo hierarchy) |
+### Contadores derivados
+
+| Nivel   | Evento                       | Mecanismo                          | Campo mantenido                             |
+| ------- | ---------------------------- | ---------------------------------- | ------------------------------------------- |
+| DB      | `Equipo INSERT/UPDATE`       | Triggers de grupo y costo promedio | `grupos_equipos.cantidad`, `costo_promedio` |
+| DB      | `Gavetero INSERT/UPDATE`     | Triggers de conteo                 | `muebles.numero_gaveteros`                  |
+| DB      | Soft-delete de préstamo      | Cascada lógica a detalles          | `detalles_prestamos.estado_eliminado`       |
+| DB      | Soft-delete de mantenimiento | Cascada lógica a detalles          | `detalles_mantenimientos.estado_eliminado`  |
+| Backend | Crear/editar/eliminar equipo | Recalculo de repositorio           | `cantidad`, `costo_promedio`                |
+| Backend | Crear/eliminar gavetero      | Recalculo de repositorio           | `numero_gaveteros`                          |
+
+### Disponibilidad
+
+Una unidad no está disponible cuando existe un préstamo del mismo equipo en estado `aprobado` o `activo` con fechas superpuestas.
+
+Los préstamos `pendiente` no bloquean capacidad porque todavía no son reservas confirmadas.
+
+Validaciones relevantes:
+
+| Momento          | Validación                                                               |
+| ---------------- | ------------------------------------------------------------------------ |
+| Antes de crear   | Verifica que exista al menos una unidad disponible del grupo solicitado. |
+| Antes de aprobar | Revalida conflictos para evitar aprobaciones concurrentes incompatibles. |
+
+### Código IMT
+
+`equipos.codigo_imt` se asigna de forma secuencial al crear una unidad. No debe cambiarse en actualizaciones posteriores.
 
 ---
 
-## <img height="20" src="../Images/icons/setup.svg">&nbsp;&nbsp;Restore
+## <img height="22" src="../Images/readme-icons/indexes.svg" alt="" /> Índices
+
+| Índice                                          | Uso                                             |
+| ----------------------------------------------- | ----------------------------------------------- |
+| `idx_usuarios_email_estado`                     | Login y búsqueda por email.                     |
+| `idx_usuarios_nombre_estado`                    | Listado de usuarios.                            |
+| `idx_prestamos_temporal_usuario_estado`         | Historial y filtros por rango de fechas.        |
+| `idx_mantenimientos_temporal_empresa_estado`    | Historial de mantenimiento.                     |
+| `idx_grupos_equipos_busqueda`                   | Búsqueda por categoría, nombre, modelo y marca. |
+| `idx_equipos_agrupacion`                        | Joins entre equipos y grupos.                   |
+| `idx_detalles_prestamos_por_prestamo`           | Detalle por préstamo.                           |
+| `idx_detalles_mantenimientos_por_mantenimiento` | Detalle por mantenimiento.                      |
+
+---
+
+## <img height="22" src="../Images/readme-icons/views.svg" alt="" /> Vistas SQL
+
+| Vista                                | Propósito                                          |
+| ------------------------------------ | -------------------------------------------------- |
+| `vw_equipos_necesitan_mantenimiento` | Equipos que requieren mantenimiento preventivo.    |
+| `vw_ubicaciones_grupos_equipos`      | Ubicación física de equipos por mueble y gavetero. |
+
+---
+
+## <img height="22" src="../Images/readme-icons/restoration.svg" alt="" /> Restauración
 
 ```bash
 psql -U postgres -c "CREATE DATABASE IMT_Reservas;"
-psql -U postgres -d IMT_Reservas -f Database/server.sql
+psql -U postgres -d IMT_Reservas -f Code/DataBase/server.sql
 psql -U postgres -d IMT_Reservas -c "\dt"
 ```
 
-Docker alternative:
+Con Docker:
 
 ```bash
-cd Code && docker compose up -d ucb_db
+cd Code
+docker compose up -d ucb_db
 ```
 
-The `ucb_db` container runs `DataBase/server.sql` automatically on first startup.
+El contenedor `ucb_db` ejecuta `Code/DataBase/server.sql` en el primer arranque.

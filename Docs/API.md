@@ -1,15 +1,18 @@
+<div align="center">
+
 # API Reference
 
-Backend `.NET 8` — REST endpoints under `/api/{Controller}`.
-Interactive documentation: [`https://ucbhold.dev/swagger`](https://ucbhold.dev/swagger) (Development only) · local: `https://localhost:7216/swagger`
+Backend `.NET 8` con endpoints REST bajo `/api/{Controller}` y respuestas normalizadas con `Ardalis.Result`.
+
+[Volver al README](../README.md) · [Setup](SETUP.md) · [Base de datos](DATABASE.md)
+
+</div>
 
 ---
 
-## <img height="20" src="../Images/icons/response.svg">&nbsp;&nbsp;Response Format
+## <img height="22" src="../Images/readme-icons/response.svg" alt="" /> Formato de Respuesta
 
-All responses use the [Ardalis.Result](https://github.com/ardalis/Result) envelope.
-
-**Success `200`**
+### `200 OK`
 
 ```json
 {
@@ -20,7 +23,7 @@ All responses use the [Ardalis.Result](https://github.com/ardalis/Result) envelo
 }
 ```
 
-**Created `201`**
+### `201 Created`
 
 ```json
 {
@@ -29,7 +32,7 @@ All responses use the [Ardalis.Result](https://github.com/ardalis/Result) envelo
 }
 ```
 
-**Validation error `400`**
+### `400 Validation`
 
 ```json
 {
@@ -40,17 +43,7 @@ All responses use the [Ardalis.Result](https://github.com/ardalis/Result) envelo
 }
 ```
 
-**Not found `404`**
-
-```json
-{
-  "Status": 404,
-  "Value": null,
-  "Errors": ["Not Found"]
-}
-```
-
-**Unauthorized `401`**
+### `401 Unauthorized`
 
 ```json
 {
@@ -60,153 +53,118 @@ All responses use the [Ardalis.Result](https://github.com/ardalis/Result) envelo
 }
 ```
 
+### `404 Not Found`
+
+```json
+{
+  "Status": 404,
+  "Value": null,
+  "Errors": ["Not Found"]
+}
+```
+
 ---
 
-## <img height="20" src="../Images/icons/endpoints.svg">&nbsp;&nbsp;Endpoints
+## <img height="22" src="../Images/readme-icons/endpoints.svg" alt="" /> Endpoints
 
 ### Usuario
 
-| Method | Path                        | Description                         |
-| ------ | --------------------------- | ----------------------------------- |
-| GET    | `/api/Usuario`              | List all active users               |
-| GET    | `/api/Usuario/{carnet}`     | Get user by carnet                  |
-| POST   | `/api/Usuario`              | Create user (hashes password)       |
-| PUT    | `/api/Usuario/{carnet}`     | Update user (password optional)     |
-| DELETE | `/api/Usuario/{carnet}`     | Soft-delete user                    |
-| POST   | `/api/Usuario/login`        | Authenticate and return user data   |
+| Método   | Ruta                    | Uso                                  |
+| -------- | ----------------------- | ------------------------------------ |
+| `GET`    | `/api/Usuario`          | Lista usuarios activos.              |
+| `GET`    | `/api/Usuario/{carnet}` | Obtiene un usuario por carnet.       |
+| `POST`   | `/api/Usuario`          | Crea usuario y hashea contraseña.    |
+| `PUT`    | `/api/Usuario/{carnet}` | Actualiza datos del usuario.         |
+| `DELETE` | `/api/Usuario/{carnet}` | Elimina lógicamente al usuario.      |
+| `POST`   | `/api/Usuario/login`    | Autentica y retorna datos de sesión. |
 
 ### Equipo
 
-| Method | Path                        | Description                         |
-| ------ | --------------------------- | ----------------------------------- |
-| GET    | `/api/Equipo`               | List all active equipment           |
-| GET    | `/api/Equipo/{id}`          | Get equipment by id                 |
-| POST   | `/api/Equipo`               | Create equipment unit               |
-| PUT    | `/api/Equipo/{id}`          | Update equipment unit               |
-| DELETE | `/api/Equipo/{id}`          | Soft-delete equipment unit          |
+| Método   | Ruta               | Uso                            |
+| -------- | ------------------ | ------------------------------ |
+| `GET`    | `/api/Equipo`      | Lista equipos activos.         |
+| `GET`    | `/api/Equipo/{id}` | Obtiene equipo por id.         |
+| `POST`   | `/api/Equipo`      | Crea una unidad de equipo.     |
+| `PUT`    | `/api/Equipo/{id}` | Actualiza una unidad.          |
+| `DELETE` | `/api/Equipo/{id}` | Elimina lógicamente la unidad. |
 
 ### GrupoEquipo
 
-| Method | Path                            | Description                        |
-| ------ | ------------------------------- | ---------------------------------- |
-| GET    | `/api/GrupoEquipo`              | List all active groups             |
-| GET    | `/api/GrupoEquipo/{id}`         | Get group by id                    |
-| POST   | `/api/GrupoEquipo`              | Create group                       |
-| PUT    | `/api/GrupoEquipo/{id}`         | Update group                       |
-| DELETE | `/api/GrupoEquipo/{id}`         | Soft-delete group                  |
+| Método   | Ruta                    | Uso                           |
+| -------- | ----------------------- | ----------------------------- |
+| `GET`    | `/api/GrupoEquipo`      | Lista grupos activos.         |
+| `GET`    | `/api/GrupoEquipo/{id}` | Obtiene grupo por id.         |
+| `POST`   | `/api/GrupoEquipo`      | Crea grupo.                   |
+| `PUT`    | `/api/GrupoEquipo/{id}` | Actualiza grupo.              |
+| `DELETE` | `/api/GrupoEquipo/{id}` | Elimina lógicamente el grupo. |
 
 ### Prestamo
 
-| Method | Path                                  | Description                              |
-| ------ | ------------------------------------- | ---------------------------------------- |
-| GET    | `/api/Prestamo`                       | List all loans (admin)                   |
-| GET    | `/api/Prestamo/{id}`                  | Get loan by id                           |
-| GET    | `/api/Prestamo/historial/{carnet}`    | Loan history for a user                  |
-| POST   | `/api/Prestamo`                       | Create loan request                      |
-| PUT    | `/api/Prestamo/{id}/estado`           | Transition loan status                   |
-| DELETE | `/api/Prestamo/{id}`                  | Soft-delete loan                         |
+| Método   | Ruta                               | Uso                                  |
+| -------- | ---------------------------------- | ------------------------------------ |
+| `GET`    | `/api/Prestamo`                    | Lista préstamos para administración. |
+| `GET`    | `/api/Prestamo/{id}`               | Obtiene préstamo por id.             |
+| `GET`    | `/api/Prestamo/historial/{carnet}` | Historial de un usuario.             |
+| `POST`   | `/api/Prestamo`                    | Crea solicitud de préstamo.          |
+| `PUT`    | `/api/Prestamo/{id}/estado`        | Cambia estado del préstamo.          |
+| `DELETE` | `/api/Prestamo/{id}`               | Elimina lógicamente el préstamo.     |
 
-### Carrito (Availability)
+### Disponibilidad
 
-| Method | Path                                  | Description                                          |
-| ------ | ------------------------------------- | ---------------------------------------------------- |
-| POST   | `/api/Carrito/disponibilidad`         | Get available units per group for a date range       |
+| Método | Ruta                          | Uso                                                       |
+| ------ | ----------------------------- | --------------------------------------------------------- |
+| `POST` | `/api/Carrito/disponibilidad` | Calcula unidades disponibles por grupo y rango de fechas. |
 
 ### Mantenimiento
 
-| Method | Path                            | Description                        |
-| ------ | ------------------------------- | ---------------------------------- |
-| GET    | `/api/Mantenimiento`            | List all maintenance records       |
-| GET    | `/api/Mantenimiento/{id}`       | Get maintenance record             |
-| POST   | `/api/Mantenimiento`            | Create maintenance record          |
-| PUT    | `/api/Mantenimiento/{id}`       | Update maintenance record          |
-| DELETE | `/api/Mantenimiento/{id}`       | Soft-delete maintenance record     |
+| Método   | Ruta                      | Uso                                |
+| -------- | ------------------------- | ---------------------------------- |
+| `GET`    | `/api/Mantenimiento`      | Lista mantenimientos.              |
+| `GET`    | `/api/Mantenimiento/{id}` | Obtiene mantenimiento.             |
+| `POST`   | `/api/Mantenimiento`      | Crea mantenimiento.                |
+| `PUT`    | `/api/Mantenimiento/{id}` | Actualiza mantenimiento.           |
+| `DELETE` | `/api/Mantenimiento/{id}` | Elimina lógicamente mantenimiento. |
 
-### Catalogs
+### Catálogos
 
-| Controller             | Path                           | Operations |
-| ---------------------- | ------------------------------ | ---------- |
-| `Categoria`            | `/api/Categoria`               | CRUD       |
-| `Carrera`              | `/api/Carrera`                 | CRUD       |
-| `Accesorio`            | `/api/Accesorio`               | CRUD       |
-| `Componente`           | `/api/Componente`              | CRUD       |
-| `EmpresaMantenimiento` | `/api/EmpresaMantenimiento`    | CRUD       |
-| `Mueble`               | `/api/Mueble`                  | CRUD       |
-| `Gavetero`             | `/api/Gavetero`                | CRUD       |
-
----
-
-## <img height="20" src="../Images/icons/validation.svg">&nbsp;&nbsp;Validation Rules
-
-### Usuario
-
-| Field        | Rule                                                                  |
-| ------------ | --------------------------------------------------------------------- |
-| `Carnet`     | Required. Must be unique across all users.                            |
-| `Email`      | Required. Valid email format. Must be unique across all users.        |
-| `Telefono`   | Optional. Must be unique if provided.                                 |
-| `Contrasena` | Required on Create. Min 8 chars. Must include: uppercase, number, special character (`!@#$%^&*`). |
-
-**Password validation errors:**
-- `"Contraseña requerida"` — empty on create
-- `"Contraseña debe tener al menos una mayúscula"`
-- `"Contraseña debe tener al menos un número"`
-- `"Contraseña debe tener al menos un carácter especial"`
-
-**Uniqueness errors:**
-- `"Carnet ya existe"`
-- `"Email ya existe"`
-- `"Teléfono ya registrado"`
-
-### Equipo
-
-| Field           | Rule                                               |
-| --------------- | -------------------------------------------------- |
-| `IdGrupoEquipo` | Required. Referenced group must exist.             |
-| `EstadoEquipo`  | Required. One of: `operativo`, `parcialmente_operativo`, `inoperativo`. |
-| `CodigoImt`     | Auto-assigned on Create (max + 1). Read-only — updates are ignored. |
-
-**Validation errors:**
-- `"Grupo equipo no existe"`
-
-### EmpresaMantenimiento
-
-| Field  | Rule                                   |
-| ------ | -------------------------------------- |
-| `NIT`  | Optional. Must be unique if provided.  |
-
-**Validation errors:**
-- `"NIT ya registrado"`
-
-### Prestamo
-
-| Field                    | Rule                                                      |
-| ------------------------ | --------------------------------------------------------- |
-| `CarnetUsuario`          | Required. Referenced user must exist.                     |
-| `GrupoEquipoId`          | Required. At least one group. Each group must exist.      |
-| `FechaPrestamoEsperada`  | Required.                                                 |
-| `FechaDevolucionEsperada`| Required. Must be after start date.                       |
-
-**Availability rule:** an equipment unit is blocked only when an existing loan for the same unit is in state `aprobado` or `activo` with overlapping dates. `pendiente` loans do **not** block availability.
-
-**Status transitions:**
-
-```
-pendiente ──► aprobado ──► activo ──► finalizado
-    │              │          │
-    └──► rechazado └──► cancelado ◄──┘
-```
-
-All terminal states (`finalizado`, `rechazado`, `cancelado`) cannot transition further.
-
-Approval (`pendiente → aprobado`) re-validates that the assigned equipment has no conflicts at the moment of approval.
+| Controller             | Ruta                        | Operaciones |
+| ---------------------- | --------------------------- | ----------- |
+| `Categoria`            | `/api/Categoria`            | CRUD        |
+| `Carrera`              | `/api/Carrera`              | CRUD        |
+| `Accesorio`            | `/api/Accesorio`            | CRUD        |
+| `Componente`           | `/api/Componente`           | CRUD        |
+| `EmpresaMantenimiento` | `/api/EmpresaMantenimiento` | CRUD        |
+| `Mueble`               | `/api/Mueble`               | CRUD        |
+| `Gavetero`             | `/api/Gavetero`             | CRUD        |
 
 ---
 
-## <img height="20" src="../Images/icons/health.svg">&nbsp;&nbsp;Health Check
+## <img height="22" src="../Images/readme-icons/validation.svg" alt="" /> Reglas de Validación
 
+| Entidad              | Regla                                                                     |
+| -------------------- | ------------------------------------------------------------------------- |
+| Usuario              | `Carnet` y `Email` requeridos y únicos. `Telefono` único cuando se envía. |
+| Contraseña           | Mínimo 8 caracteres, una mayúscula, un número y un carácter especial.     |
+| Equipo               | `IdGrupoEquipo` requerido. `CodigoImt` se asigna al crear y no se edita.  |
+| EmpresaMantenimiento | `NIT` único cuando se envía.                                              |
+| Prestamo             | Usuario, grupo, fecha de préstamo y fecha de devolución son obligatorios. |
+
+Transiciones de préstamo:
+
+```text
+pendiente -> aprobado -> activo -> finalizado
+    |             |          |
+    +-> rechazado +-> cancelado
 ```
+
+La aprobación revalida conflictos antes de confirmar el préstamo.
+
+---
+
+## <img height="22" src="../Images/readme-icons/health.svg" alt="" /> Health Check
+
+```http
 GET /api/health
 ```
 
-Returns `200 OK` with `"Healthy"` when the backend and database connection are operational.
+Retorna `200 OK` con `Healthy` cuando la API y la base de datos están operativas.

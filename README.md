@@ -1,188 +1,177 @@
 <div align="center">
 
-<img src="Images/logo.png" alt="UCB Hold" width="160" />
+<img src="Images/logo.png" alt="UCB Hold" width="128" />
 
 # UCB Hold
 
-**Reservation System — UCB Mechatronics Lab**
+Sistema web para reservar, aprobar, prestar y devolver equipos del Laboratorio de Mecatrónica de la Universidad Católica Boliviana.
 
-Web platform for managing loans of equipment, accessories, and tools from the **Universidad Católica Boliviana** Mechatronics Lab.
+<p>
+  <a href="#inicio-rapido">Inicio rápido</a>
+  ·
+  <a href="#arquitectura">Arquitectura</a>
+  ·
+  <a href="Docs/API.md">API</a>
+  ·
+  <a href="Docs/DATABASE.md">Base de datos</a>
+  ·
+  <a href="CONTRIBUTING.md">Contribuir</a>
+</p>
 
-[![Typing SVG](https://readme-typing-svg.demolab.com?font=Fira+Code&size=13&pause=1000&color=6B7786&center=true&vCenter=true&width=480&lines=Equipment+%C2%B7+Accessories+%C2%B7+Tools;Request+%E2%86%92+Approval+%E2%86%92+Checkout+%E2%86%92+Return;.NET+8+%C2%B7+Angular+18+%C2%B7+PostgreSQL+%C2%B7+Redis)](https://git.io/typing-svg)
-
-[![Live](https://img.shields.io/badge/Live-ucbhold.dev-22c55e?style=flat-square&logo=vercel&logoColor=white)](https://ucbhold.dev)
 [![Tests](https://github.com/alejandroramirezvallejos/UCB_Hold/actions/workflows/tests.yml/badge.svg)](https://github.com/alejandroramirezvallejos/UCB_Hold/actions/workflows/tests.yml)
 [![.NET](https://img.shields.io/badge/.NET-8.0-512BD4?style=flat-square&logo=dotnet)](https://dotnet.microsoft.com/)
-[![Angular](https://img.shields.io/badge/Angular-18-DD0031?style=flat-square&logo=angular)](https://angular.io/)
-[![PostgreSQL](https://img.shields.io/badge/PostgreSQL-14-4169E1?style=flat-square&logo=postgresql)](https://www.postgresql.org/)
+[![Angular](https://img.shields.io/badge/Angular-19.2-DD0031?style=flat-square&logo=angular)](https://angular.dev/)
+[![PostgreSQL](https://img.shields.io/badge/PostgreSQL-14+-4169E1?style=flat-square&logo=postgresql)](https://www.postgresql.org/)
 [![Redis](https://img.shields.io/badge/Redis-7-DC382D?style=flat-square&logo=redis&logoColor=white)](https://redis.io/)
-[![EF Core](https://img.shields.io/badge/EF_Core-8.0-512BD4?style=flat-square&logo=nuget)](https://learn.microsoft.com/en-us/ef/core/)
+[![FSD](https://img.shields.io/badge/Architecture-Feature--Sliced%20Design-0EA5E9?style=flat-square)](https://feature-sliced.design/)
 [![Docker](https://img.shields.io/badge/Docker-compose-2496ED?style=flat-square&logo=docker&logoColor=white)](https://www.docker.com/)
 
 </div>
 
 ---
 
-<h2><img height="20" src="Images/icons/features.svg">&nbsp;&nbsp;Features</h2>
+## <img height="22" src="Images/readme-icons/product.svg" alt="" /> Producto
 
-|                                  |                                                                                                        |
-| -------------------------------- | ------------------------------------------------------------------------------------------------------ |
-| 📦 **Equipment management**      | Inventory with groups, drawers, and cabinets. IMT code, status, and average cost auto-calculated.      |
-| 📋 **Loans with contract**       | End-to-end flow: request → approval → checkout → return. Generates an attached HTML contract.          |
-| 📅 **Real-time availability**    | Cart calculates available units per group per day. Only `aprobado` and `activo` loans block capacity.  |
-| 🔒 **Conflict prevention**       | Pre-create check + approval-time conflict check prevent double-booking at every transition.             |
-| 🔧 **Maintenance**               | Records corrective and preventive maintenance by external company with per-item details.               |
-| 🗂️ **Full catalogs**             | Degrees, categories, accessories, components, companies, and cabinets with full CRUD.                  |
-| 🛡️ **Validation**                | Password strength (uppercase + number + special char). Carnet, email, NIT, and phone uniqueness.       |
-| ♻️ **Logical delete**            | No data is physically deleted. `estado_eliminado = true` with automatic cascade to details.            |
-| ⚡ **Optimized queries**         | Single SQL projection with LEFT JOINs across repositories. `AsNoTracking` + composite indexes.         |
-| 🧪 **Tested**                    | 90 integration + unit tests with NUnit, FluentAssertions, and EF Core InMemory. CI on every push.      |
-| 🐳 **Docker**                    | One-command full-stack deployment via `docker compose up`.                                             |
+UCB Hold centraliza el flujo completo de préstamos de laboratorio: búsqueda de equipos, carrito de reserva, validación de disponibilidad, aprobación administrativa, contrato, entrega, devolución, mantenimiento e historial.
+
+| Área           | Capacidades                                                                                   |
+| -------------- | --------------------------------------------------------------------------------------------- |
+| Inventario     | Equipos, grupos, gaveteros, muebles, accesorios, componentes y catálogos administrativos.     |
+| Reservas       | Flujo `pendiente -> aprobado -> activo -> finalizado`, con rechazo y cancelación controlados. |
+| Disponibilidad | Cálculo por rango de fechas; solo préstamos `aprobado` y `activo` bloquean capacidad.         |
+| Auditoría      | Panel de observaciones y trazabilidad para acciones administrativas.                          |
+| Contratos      | Generación de contrato HTML asociado al préstamo.                                             |
+| Mantenimiento  | Registro preventivo/correctivo por empresa y detalle de equipos intervenidos.                 |
+| Seguridad      | JWT, refresh token, guards, validación de formularios y sanitización de HTML sensible.        |
 
 ---
 
-<h2><img height="20" src="Images/icons/stack.svg">&nbsp;&nbsp;Stack</h2>
+## <img height="22" src="Images/readme-icons/stack.svg" alt="" /> Stack
 
-<div align="center">
-
-[![Skills](https://skillicons.dev/icons?i=dotnet,angular,ts,postgres,redis,docker,nginx,github)](https://skillicons.dev)
-
-</div>
-
-| Layer          | Technology                       | Version     |
-| -------------- | -------------------------------- | ----------- |
-| Frontend       | Angular                          | 18          |
-| Backend        | ASP.NET Core                     | .NET 8      |
-| ORM            | Entity Framework Core + Npgsql   | 8.0.10      |
-| Database       | PostgreSQL                       | 14+         |
-| Cache          | Redis                            | 7           |
-| Mapping        | Riok.Mapperly (source-generated) | 3.6.0       |
-| Validation     | FluentValidation                 | 11.9.0      |
-| Result pattern | Ardalis.Result                   | 10.1.0      |
-| Passwords      | BCrypt.Net-Next                  | 4.0.3       |
-| Testing        | NUnit + FluentAssertions         | 3.14 / 6.12 |
-| CI             | GitHub Actions                   | —           |
+| Capa     | Tecnología                                                 | Uso                                                                             |
+| -------- | ---------------------------------------------------------- | ------------------------------------------------------------------------------- |
+| Frontend | Angular 19.2, TypeScript, RxJS, ts-results-es              | UI reactiva, guards, interceptors, cache HTTP y manejo explícito de resultados. |
+| Backend  | ASP.NET Core 8, Ardalis.Result, FluentValidation, Mapperly | API REST, reglas de negocio, validación y contratos de respuesta.               |
+| Datos    | PostgreSQL 14+, EF Core 8, Npgsql                          | Persistencia, índices, enums nativos y proyecciones optimizadas.                |
+| Cache    | Redis 7                                                    | Soporte de infraestructura y rendimiento.                                       |
+| Calidad  | Jasmine/Karma, NUnit, GitHub Actions, SonarQube            | Tests, cobertura HTML, reporte de calidad y pipeline CI.                        |
+| Entrega  | Docker Compose, Nginx                                      | Ejecución local y despliegue full-stack.                                        |
 
 ---
 
-<h2><img height="20" src="Images/icons/quickstart.svg">&nbsp;&nbsp;Quick Start</h2>
+## <img height="22" src="Images/readme-icons/architecture.svg" alt="" /> Arquitectura
 
-Three ways to run — see [Docs/SETUP.md](Docs/SETUP.md) for full instructions.
+El frontend sigue Feature-Sliced Design y convenciones actuales de Angular:
 
-**Docker**
+| Capa                            | Responsabilidad                                               | Ejemplos                                               |
+| ------------------------------- | ------------------------------------------------------------- | ------------------------------------------------------ |
+| `app` / `providers` / `routing` | Configuración global, rutas, guards e interceptors.           | `app.config.ts`, `app.routes.ts`, `jwt.interceptor.ts` |
+| `pages`                         | Pantallas enrutable completas.                                | `home`, `admin`, `cart`, `loan-history`                |
+| `widgets`                       | Bloques grandes reutilizables compuestos.                     | `navigation`, `admin-sidebar`, `audit-panel`           |
+| `features`                      | Casos de uso y acciones de negocio.                           | `admin-equipment`, `cart`, `availability-selector`     |
+| `entities`                      | Modelos, servicios API y UI ligada a entidades.               | `loan`, `equipment-group`, `user`                      |
+| `shared`                        | Utilidades, componentes base, directivas y tipos compartidos. | `custom-select`, `api-response`, `error-handler`       |
+
+Los archivos del cliente usan `kebab-case`, una clase/interfaz principal por archivo cuando aplica, barriles `index.ts` por slice y nombres explícitos alineados con Angular.
+
+---
+
+## <img height="22" src="Images/readme-icons/quickstart.svg" alt="" /> Inicio Rápido
+
+### Docker
+
+Crear `Code/server.env`:
 
 ```ini
-# Code/server.env
 ASPNETCORE_ENVIRONMENT=Production
 ASPNETCORE_URLS=http://+:80
 ConnectionStrings__PostgreSQL=Host=ucb_db;Port=5432;Database=IMT_Reservas;Username=postgres;Password=postgres;Pooling=true;MinPoolSize=2;MaxPoolSize=20
-Jwt__Key=<at least 32 chars>
+Jwt__Key=<clave-local-de-32-caracteres-o-mas>
 Redis__ConnectionString=ucb_redis:6379
 ```
 
-```bash
-cd Code && docker compose up --build
-```
-
-| Service     | URL                   |
-| ----------- | --------------------- |
-| Frontend    | http://localhost:4200 |
-| Backend API | http://localhost:5000 |
-
-**Rider** — Open `Code/`, select `IMT_Reservas.FullStack`, press **Run** (`Shift+F10`). Infrastructure starts automatically.
-
-**Two terminals**
+Levantar el stack:
 
 ```bash
-cd Code && docker compose up -d ucb_db ucb_redis
-cd Code/Server && dotnet run    # terminal 1
-cd Code/Client && npm start     # terminal 2
+cd Code
+docker compose up --build
 ```
+
+| Servicio      | URL                            |
+| ------------- | ------------------------------ |
+| Frontend      | http://localhost:4200          |
+| Backend API   | http://localhost:5000          |
+| Swagger local | https://localhost:7216/swagger |
+
+### Desarrollo Local
+
+```bash
+cd Code
+docker compose up -d ucb_db ucb_redis
+
+cd Code/Server
+dotnet run
+
+cd Code/Client
+npm install
+npm start
+```
+
+Guía completa: [Docs/SETUP.md](Docs/SETUP.md).
 
 ---
 
-<h2><img height="20" src="Images/icons/tests.svg">&nbsp;&nbsp;Tests</h2>
+## <img height="22" src="Images/readme-icons/quality.svg" alt="" /> Calidad
 
 ```bash
 dotnet test Code/Tests/IMT_Reservas.Tests.csproj
+
+cd Code/Client
+npm run format:check
+npx tsc -p tsconfig.app.json --noEmit
+npx tsc -p tsconfig.spec.json --noEmit
+npm run test:coverage
+npm run build
 ```
 
-Tests run automatically on every push to `main` and `develop` via GitHub Actions. Coverage is uploaded as a browsable HTML artifact.
-
-| Suite                         | Count | Description                                         |
-| ----------------------------- | ----- | --------------------------------------------------- |
-| `Unit/PrestamoStateTests`     | 17    | State machine transitions and string parsing        |
-| `Integration/UsuarioService`  | 13    | User creation, login, validation, soft-delete       |
-| `Integration/EquipoService`   | 10    | IMT code assignment, date, group stat recalculation |
-| `Integration/PrestamoService` | 12    | Availability checks, status transitions, history   |
-| `Integration/CarritoService`  | 8     | Capacity math with concurrent loans                 |
+GitHub Actions publica reportes HTML visuales para cobertura, calidad y SonarQube.
 
 ---
 
-<h2><img height="20" src="Images/icons/architecture.svg">&nbsp;&nbsp;Architecture</h2>
+## <img height="22" src="Images/readme-icons/documentation.svg" alt="" /> Documentación
 
-```
-┌─────────────────────────────────────────────────────┐
-│                    Angular 18                       │
-│              (Client - localhost:4200)              │
-└──────────────────────┬──────────────────────────────┘
-                       │ HTTP /api/*
-┌──────────────────────▼──────────────────────────────┐
-│              ASP.NET Core 8 — Controllers           │
-│         Result<T> · FluentValidation · Mapperly     │
-├─────────────────────────────────────────────────────┤
-│                    Services                         │
-│   Business logic · State machines · Recalculations  │
-├─────────────────────────────────────────────────────┤
-│                  Repositories                       │
-│    EF Core · AsNoTracking · SQL projections         │
-├─────────────────────────────────────────────────────┤
-│           PostgreSQL 14 — ApplicationDbContext      │
-│    Native enums · Composite indexes · Pool 2–20     │
-└─────────────────────────────────────────────────────┘
-```
+| Documento                                | Contenido                                                        |
+| ---------------------------------------- | ---------------------------------------------------------------- |
+| [Docs/SETUP.md](Docs/SETUP.md)           | Instalación local, Docker, user-secrets y solución de problemas. |
+| [Docs/API.md](Docs/API.md)               | Endpoints REST, DTOs, errores y reglas de validación.            |
+| [Docs/DATABASE.md](Docs/DATABASE.md)     | Tablas, enums, índices, vistas y reglas de disponibilidad.       |
+| [CONTRIBUTING.md](CONTRIBUTING.md)       | Flujo de trabajo, commits, PRs y checklist de calidad.           |
+| [SECURITY.md](SECURITY.md)               | Política de reporte y tratamiento de vulnerabilidades.           |
+| [CODE_OF_CONDUCT.md](CODE_OF_CONDUCT.md) | Estándares de colaboración del proyecto.                         |
 
 ---
 
-<h2><img height="20" src="Images/icons/documentation.svg">&nbsp;&nbsp;Documentation</h2>
-
-| Document                             | Content                                                   |
-| ------------------------------------ | --------------------------------------------------------- |
-| [Docs/SETUP.md](Docs/SETUP.md)       | Local setup, Docker, user-secrets, 3 run modes            |
-| [Docs/API.md](Docs/API.md)           | All endpoints, DTOs, validation rules, and response codes |
-| [Docs/DATABASE.md](Docs/DATABASE.md) | ER schema, tables, enums, indexes, business logic         |
-
----
-
-<h2><img height="20" src="Images/icons/team.svg">&nbsp;&nbsp;Team</h2>
+## <img height="22" src="Images/readme-icons/team.svg" alt="" /> Equipo
 
 <table>
   <tr>
     <td align="center">
       <a href="https://github.com/josue-balbontin">
-        <img src="https://avatars.githubusercontent.com/josue-balbontin" width="80" style="border-radius:50%" /><br/>
-        <b>Josue Balbontin</b>
+        <img src="https://avatars.githubusercontent.com/josue-balbontin" width="80" alt="Josue Balbontin" /><br />
+        <strong>Josue Balbontin</strong>
       </a>
     </td>
     <td align="center">
       <a href="https://github.com/alejandroramirezvallejos">
-        <img src="https://avatars.githubusercontent.com/alejandroramirezvallejos" width="80" style="border-radius:50%" /><br/>
-        <b>Alejandro Ramirez</b>
+        <img src="https://avatars.githubusercontent.com/alejandroramirezvallejos" width="80" alt="Alejandro Ramirez" /><br />
+        <strong>Alejandro Ramirez</strong>
       </a>
     </td>
     <td align="center">
       <a href="https://github.com/FernandoTerrazasLl">
-        <img src="https://avatars.githubusercontent.com/FernandoTerrazasLl" width="80" style="border-radius:50%" /><br/>
-        <b>Fernando Terrazas</b>
+        <img src="https://avatars.githubusercontent.com/FernandoTerrazasLl" width="80" alt="Fernando Terrazas" /><br />
+        <strong>Fernando Terrazas</strong>
       </a>
     </td>
   </tr>
 </table>
-
----
-
-<h2><img height="20" src="Images/icons/contributing.svg">&nbsp;&nbsp;Contributing</h2>
-
-See [CONTRIBUTING.md](CONTRIBUTING.md) for the workflow, standards, and review expectations.
-
-Please review [CODE_OF_CONDUCT.md](CODE_OF_CONDUCT.md) before contributing.
