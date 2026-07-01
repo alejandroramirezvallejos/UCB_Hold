@@ -1,1 +1,1 @@
-export * from './model/Comentario';
+export * from './model/comentario';

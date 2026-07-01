@@ -1,5 +1,5 @@
-import { Basemodel } from '@shared/model';
-export class Carrera extends Basemodel {
+import { BaseModel } from '@shared/model';
+export class Carrera extends BaseModel {
   Nombre?: string | null;
   constructor() {
     super();

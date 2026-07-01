@@ -2,7 +2,7 @@ import { Component } from '@angular/core';
 import { UsuarioService } from '@entities/user';
 import { PrestamosAPIService } from '@entities/loan';
 import { CommonModule, DatePipe } from '@angular/common';
-import { HistorialBase } from '../BASE/HistorialBase';
+import { HistorialBase } from '../base/historial-base';
 import { VistaPrestamosComponent } from '@entities/loan';
 import { AvisoExitoComponent } from '@shared/ui';
 

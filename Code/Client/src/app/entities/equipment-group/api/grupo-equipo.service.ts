@@ -2,7 +2,7 @@ import { Injectable } from '@angular/core';
 import { environment } from '@environments/environment';
 import { HttpClient } from '@angular/common/http';
 import { map, Observable, of, tap } from 'rxjs';
-import { GrupoEquipo } from '../model/grupo_equipo';
+import { GrupoEquipo } from '../model/grupo-equipo';
 import { ApiResponse, extractApiValue } from '@shared/api';
 import { GrupoEquipoApiItem } from './grupo-equipo-api-item';
 @Injectable({

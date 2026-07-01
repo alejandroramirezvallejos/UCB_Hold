@@ -1,5 +1,5 @@
-import { Basemodel } from '@shared/model';
-export class EmpresaMantenimiento extends Basemodel {
+import { BaseModel } from '@shared/model';
+export class EmpresaMantenimiento extends BaseModel {
   NombreEmpresa?: string | null;
   NombreResponsable?: string | null;
   ApellidoResponsable?: string | null;

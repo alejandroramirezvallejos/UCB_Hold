@@ -1,5 +1,5 @@
-import { Basemodel } from '@shared/model';
-export class Categorias extends Basemodel {
+import { BaseModel } from '@shared/model';
+export class Categorias extends BaseModel {
   Nombre?: string | null;
   constructor() {
     super();

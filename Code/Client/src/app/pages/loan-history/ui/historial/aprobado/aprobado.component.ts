@@ -4,7 +4,7 @@ import { UsuarioService } from '@entities/user';
 import { PrestamosAPIService } from '@entities/loan';
 import { CommonModule } from '@angular/common';
 import { PrestamoAgrupados } from '@entities/loan';
-import { HistorialBase } from '../BASE/HistorialBase';
+import { HistorialBase } from '../base/historial-base';
 import { VistaPrestamosComponent } from '@entities/loan';
 import { Aviso } from '@shared/ui';
 import { AvisoExitoComponent } from '@shared/ui';

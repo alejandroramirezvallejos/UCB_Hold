@@ -1,5 +1,5 @@
-import { Basemodel } from '@shared/model';
-export class PrestamoDto extends Basemodel {
+import { BaseModel } from '@shared/model';
+export class PrestamoDto extends BaseModel {
   CarnetUsuario: string | null = null;
   NombreUsuario: string | null = null;
   ApellidoPaternoUsuario: string | null = null;

@@ -1,6 +1,6 @@
 import { TestBed } from '@angular/core/testing';
 import { withDefaultTestingProviders } from '@shared/lib/testing';
-import { EmpresamantenimientoService } from './empresamantenimiento.service';
+import { EmpresamantenimientoService } from './empresa-mantenimiento.service';
 describe('EmpresamantenimientoService', () => {
   let service: EmpresamantenimientoService;
   beforeEach(() => {

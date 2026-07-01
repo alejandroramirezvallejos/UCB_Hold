@@ -1,1 +1,1 @@
-export * from './model/Notificacion';
+export * from './model/notificacion';

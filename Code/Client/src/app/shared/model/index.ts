@@ -1,1 +1,1 @@
-export * from './Basemodel';
+export * from './base-model';

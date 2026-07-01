@@ -1,5 +1,5 @@
-import { Basemodel } from '@shared/model';
-export class Equipos extends Basemodel {
+import { BaseModel } from '@shared/model';
+export class Equipos extends BaseModel {
   CodigoImt: number | null = null;
   CodigoUcb: string | null = null;
   NumeroSerial: string | null = null;

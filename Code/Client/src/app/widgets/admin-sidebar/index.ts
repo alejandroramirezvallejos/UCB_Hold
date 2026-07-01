@@ -1,2 +1,2 @@
 export * from './model/sidebar.service';
-export * from './ui/sidebard/sidebard.component';
+export * from './ui/sidebar/sidebar.component';

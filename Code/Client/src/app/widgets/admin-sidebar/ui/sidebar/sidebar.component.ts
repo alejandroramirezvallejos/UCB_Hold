@@ -25,13 +25,13 @@ const ICONS: Record<string, string> = {
 };
 
 @Component({
-  selector: 'app-sidebard',
+  selector: 'app-sidebar',
   imports: [CommonModule],
-  templateUrl: './sidebard.component.html',
-  styleUrl: './sidebard.component.css',
+  templateUrl: './sidebar.component.html',
+  styleUrl: './sidebar.component.css',
   encapsulation: ViewEncapsulation.None,
 })
-export class SidebardComponent {
+export class SidebarComponent {
   @Input() contenido: string[] = [];
   @Output() item = new EventEmitter<string>();
   @Input() activeItem = '';

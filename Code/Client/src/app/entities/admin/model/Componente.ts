@@ -1,5 +1,5 @@
-import { Basemodel } from '@shared/model';
-export class Componente extends Basemodel {
+import { BaseModel } from '@shared/model';
+export class Componente extends BaseModel {
   Nombre: string | null = null;
   Modelo: string | null = null;
   Tipo: string | null = null;
