@@ -2,6 +2,7 @@ import { Injectable } from '@angular/core';
 
 @Injectable({ providedIn: 'root' })
 export class ImageCacheService {
+  private readonly blockedOrigins = new Set(['https://kingsunmachining.com']);
   private readonly loadedUrls = new Set<string>();
   private readonly failedUrls = new Set<string>();
   private readonly requestedUrls = new Set<string>();
@@ -20,6 +21,21 @@ export class ImageCacheService {
     const normalizedUrl = this.normalizeUrl(url);
 
     return normalizedUrl ? this.failedUrls.has(normalizedUrl) : false;
+  }
+
+  canDisplay(url: string | null | undefined): boolean {
+    const normalizedUrl = this.normalizeUrl(url);
+
+    if (!normalizedUrl) return false;
+
+    const absoluteUrlProtocol = /^[a-z][a-z0-9+.-]*:/i;
+
+    if (!absoluteUrlProtocol.test(normalizedUrl)) return true;
+    if (!/^https?:\/\//i.test(normalizedUrl)) return false;
+
+    const origin = normalizedUrl.match(/^(https?:\/\/[^/]+)/i)?.[1];
+
+    return origin ? !this.blockedOrigins.has(origin.toLowerCase()) : false;
   }
 
   markLoaded(url: string): void {
@@ -44,6 +60,7 @@ export class ImageCacheService {
     const normalizedUrl = this.normalizeUrl(url);
 
     if (!normalizedUrl) return;
+    if (!this.canDisplay(normalizedUrl)) return;
     if (this.loadedUrls.has(normalizedUrl)) return;
     if (this.failedUrls.has(normalizedUrl)) return;
     if (this.requestedUrls.has(normalizedUrl)) return;

@@ -2,7 +2,7 @@
   <div class="contenedor-objeto">
     <div class="seccion-imagen">
       <div class="contenedor-imagen">
-        @if (producto.link; as imageUrl) {
+        @if (obtenerImagenProducto(); as imageUrl) {
           <img
             [ngSrc]="imageUrl"
             alt="{{ producto.nombre }}"

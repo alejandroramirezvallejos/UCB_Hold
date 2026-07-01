@@ -315,6 +315,7 @@ export class ListaObjetosComponent
     const imageUrl = item.link?.trim();
 
     if (!imageUrl) return null;
+    if (!this.imageCache.canDisplay(imageUrl)) return null;
     if (this.imageCache.hasFailed(imageUrl)) return null;
 
     return imageUrl;
@@ -338,7 +339,9 @@ export class ListaObjetosComponent
       this.paginaActual + NEXT_PAGE_PRELOAD_OFFSET,
     ];
     const imageUrls = paginasCercanas.flatMap((pagina) =>
-      (this.productosPaginados[pagina] ?? []).map((producto) => producto.link),
+      (this.productosPaginados[pagina] ?? [])
+        .map((producto) => producto.link)
+        .filter((url) => this.imageCache.canDisplay(url)),
     );
 
     this.imageCache.preload(imageUrls);

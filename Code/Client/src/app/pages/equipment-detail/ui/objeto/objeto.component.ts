@@ -15,6 +15,7 @@ import { MostrarerrorComponent } from '@shared/ui';
 import { DisponibilidadService } from '@entities/availability';
 import { CalendarioComponent } from '@features/availability-selector';
 import { FormsModule } from '@angular/forms';
+import { ImageCacheService } from '@shared/lib/image/image-cache.service';
 
 const MINIMUM_CART_QUANTITY = 1;
 const FALLBACK_MAXIMUM_QUANTITY = 99;
@@ -57,6 +58,7 @@ export class ObjetoComponent {
     private readonly servicio: GrupoequipoService,
     private readonly carrito: CarritoService,
     private readonly disponibilidadService: DisponibilidadService,
+    private readonly imageCache: ImageCacheService,
     private readonly renderer: Renderer2,
     @Inject(DOCUMENT) private readonly document: Document,
   ) {}
@@ -151,7 +153,18 @@ export class ObjetoComponent {
   }
 
   ocultarImagenProducto(): void {
+    if (this.producto.link) this.imageCache.markFailed(this.producto.link);
     this.producto.link = null;
+  }
+
+  obtenerImagenProducto(): string | null {
+    const imageUrl = this.producto.link?.trim();
+
+    if (!imageUrl) return null;
+    if (!this.imageCache.canDisplay(imageUrl)) return null;
+    if (this.imageCache.hasFailed(imageUrl)) return null;
+
+    return imageUrl;
   }
 
   detenerPropagacion(event: Event): void {
