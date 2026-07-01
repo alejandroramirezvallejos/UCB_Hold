@@ -22,14 +22,6 @@ import { HistorialEquipoInlineComponent } from '@widgets/admin-inline';
 import { AuditPanelComponent } from '@widgets/audit-panel';
 import { StickyScrollDirective } from '@shared/lib/directives';
 
-const EQUIPO_COLUMNA_CAMPO: Record<string, keyof Equipos> = {
-  Nombre: 'NombreGrupoEquipo',
-  EstadoEquipo: 'EstadoEquipo',
-  Ubicacion: 'Ubicacion',
-  'Código IMT': 'CodigoImt',
-  Costo: 'CostoReferencia',
-};
-
 @Component({
   selector: 'app-equipos-tabla',
   standalone: true,
@@ -233,13 +225,13 @@ export class EquiposTablaComponent extends Tabla {
     event.stopPropagation();
   }
 
-  override sortTable(e: { col: string; dir: 'asc' | 'desc' }) {
-    const campo = EQUIPO_COLUMNA_CAMPO[e.col];
-
-    if (!campo) return;
-
-    this.equipos = [...this.equipos].sort((a, b) =>
-      this.compareSortableValues(a[campo], b[campo], e.dir),
-    );
+  override sortTable(e: { col: string; dir: 'asc' | 'desc' }): void {
+    this.equipos = this.sortByColumn(this.equipos, e, {
+      Nombre: (equipo) => equipo.NombreGrupoEquipo,
+      EstadoEquipo: (equipo) => equipo.EstadoEquipo,
+      Ubicacion: (equipo) => equipo.Ubicacion,
+      'Código IMT': (equipo) => equipo.CodigoImt,
+      Costo: (equipo) => equipo.CostoReferencia,
+    });
   }
 }

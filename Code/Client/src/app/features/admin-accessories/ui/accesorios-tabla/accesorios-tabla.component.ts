@@ -197,18 +197,13 @@ export class AccesoriosTablaComponent extends Tabla {
     this.limpiarAccesorioSeleccionado();
   }
 
-  override sortTable(e: { col: string; dir: 'asc' | 'desc' }) {
-    const m: Record<string, keyof Accesorio> = {
-      Nombre: 'nombre',
-      Modelo: 'modelo',
-      Tipo: 'tipo',
-      'Código IMT del Equipo': 'codigo_imt',
-      Precio: 'precio',
-    };
-    const k = m[e.col];
-    if (!k) return;
-    this.accesorios = [...this.accesorios].sort((a, b) =>
-      this.compareSortableValues(a[k], b[k], e.dir),
-    );
+  override sortTable(e: { col: string; dir: 'asc' | 'desc' }): void {
+    this.accesorios = this.sortByColumn(this.accesorios, e, {
+      Nombre: (accesorio) => accesorio.nombre,
+      Modelo: (accesorio) => accesorio.modelo,
+      Tipo: (accesorio) => accesorio.tipo,
+      'Código IMT del Equipo': (accesorio) => accesorio.codigo_imt,
+      Precio: (accesorio) => accesorio.precio,
+    });
   }
 }

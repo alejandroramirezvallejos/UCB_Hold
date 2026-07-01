@@ -134,24 +134,14 @@ export class EmpresasMantenimientoTablaComponent
     this.aplicarOrdenActualSiExiste();
   }
 
-  override sortTable(e: { col: string; dir: 'asc' | 'desc' }) {
-    const sortableValue: Record<
-      string,
-      (empresa: EmpresaMantenimiento) => unknown
-    > = {
+  override sortTable(e: { col: string; dir: 'asc' | 'desc' }): void {
+    this.empresas = this.sortByColumn(this.empresas, e, {
       'Nombre Empresa': (empresa) => empresa.NombreEmpresa,
       Responsable: (empresa) =>
         `${empresa.NombreResponsable ?? ''} ${empresa.ApellidoResponsable ?? ''}`,
       Teléfono: (empresa) => empresa.Telefono,
       NIT: (empresa) => empresa.Nit,
-    };
-    const value = sortableValue[e.col];
-
-    if (!value) return;
-
-    this.empresas = [...this.empresas].sort((a, b) =>
-      this.compareSortableValues(value(a), value(b), e.dir),
-    );
+    });
   }
 
   editarEmpresaMantenimiento(empresa: EmpresaMantenimiento) {

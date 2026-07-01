@@ -211,29 +211,23 @@ export class MantenimientosTablaComponent extends Tabla implements OnInit {
     this.mostrardetalles.set(true);
   }
 
-  override sortTable(e: { col: string; dir: 'asc' | 'desc' }) {
-    const sortableValue: Record<
-      string,
-      (mantenimiento: MantenimientosAgrupados) => unknown
-    > = {
-      Empresa: (mantenimiento) =>
-        mantenimiento.datosgrupo.NombreEmpresaMantenimiento,
-      'Códigos IMT': (mantenimiento) =>
-        mantenimiento.datosgrupo.CodigoImtEquipo,
-      'Fecha Inicio': (mantenimiento) =>
-        mantenimiento.datosgrupo.FechaMantenimiento,
-      'Fecha Fin': (mantenimiento) =>
-        mantenimiento.datosgrupo.FechaFinalDeMantenimiento,
-      Costo: (mantenimiento) => mantenimiento.datosgrupo.Costo,
-      'Tipo y nombre equipos': (mantenimiento) =>
-        `${mantenimiento.datosgrupo.TipoMantenimiento ?? ''} ${mantenimiento.datosgrupo.NombreGrupoEquipo ?? ''}`,
-    };
-    const value = sortableValue[e.col];
-
-    if (!value) return;
-
-    this.mantenimientosFiltrados = [...this.mantenimientosFiltrados].sort(
-      (a, b) => this.compareSortableValues(value(a), value(b), e.dir),
+  override sortTable(e: { col: string; dir: 'asc' | 'desc' }): void {
+    this.mantenimientosFiltrados = this.sortByColumn(
+      this.mantenimientosFiltrados,
+      e,
+      {
+        Empresa: (mantenimiento) =>
+          mantenimiento.datosgrupo.NombreEmpresaMantenimiento,
+        'Códigos IMT': (mantenimiento) =>
+          mantenimiento.datosgrupo.CodigoImtEquipo,
+        'Fecha Inicio': (mantenimiento) =>
+          mantenimiento.datosgrupo.FechaMantenimiento,
+        'Fecha Fin': (mantenimiento) =>
+          mantenimiento.datosgrupo.FechaFinalDeMantenimiento,
+        Costo: (mantenimiento) => mantenimiento.datosgrupo.Costo,
+        'Tipo y nombre equipos': (mantenimiento) =>
+          `${mantenimiento.datosgrupo.TipoMantenimiento ?? ''} ${mantenimiento.datosgrupo.NombreGrupoEquipo ?? ''}`,
+      },
     );
   }
 }

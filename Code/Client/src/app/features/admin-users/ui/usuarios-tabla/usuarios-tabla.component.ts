@@ -244,25 +244,18 @@ export class UsuariosTablaComponent extends Tabla implements OnInit {
     this.valoreliminar = 0;
   }
 
-  override sortTable(e: { col: string; dir: 'asc' | 'desc' }) {
-    const m: Record<string, keyof Usuario> = {
-      Carnet: 'carnet',
-      Nombre: 'nombre',
-      'Apellido Paterno': 'apellido_paterno',
-      'Apellido Materno': 'apellido_materno',
-      Correo: 'correo',
-      Teléfono: 'telefono',
-      Rol: 'rol',
-      Carrera: 'carrera',
-      Referencia: 'nombre_referencia',
-      'Tel. Referencia': 'telefono_referencia',
-    };
-    const k = m[e.col];
-    if (!k) return;
-    this.usuarios = [...this.usuarios].sort((a, b) => {
-      const va = this.sortableValue(a, k);
-      const vb = this.sortableValue(b, k);
-      return e.dir === 'asc' ? va.localeCompare(vb) : vb.localeCompare(va);
+  override sortTable(e: { col: string; dir: 'asc' | 'desc' }): void {
+    this.usuarios = this.sortByColumn(this.usuarios, e, {
+      Carnet: (usuario) => usuario.carnet,
+      Nombre: (usuario) => usuario.nombre,
+      'Apellido Paterno': (usuario) => usuario.apellido_paterno,
+      'Apellido Materno': (usuario) => usuario.apellido_materno,
+      Correo: (usuario) => usuario.correo,
+      Teléfono: (usuario) => usuario.telefono,
+      Rol: (usuario) => usuario.rol,
+      Carrera: (usuario) => usuario.carrera,
+      Referencia: (usuario) => usuario.nombre_referencia,
+      'Tel. Referencia': (usuario) => usuario.telefono_referencia,
     });
   }
 }

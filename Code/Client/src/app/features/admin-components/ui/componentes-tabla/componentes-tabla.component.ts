@@ -137,19 +137,14 @@ export class ComponentesTablaComponent extends Tabla implements OnInit {
     this.aplicarOrdenActualSiExiste();
   }
 
-  override sortTable(e: { col: string; dir: 'asc' | 'desc' }) {
-    const m: Record<string, keyof Componente> = {
-      Nombre: 'Nombre',
-      Modelo: 'Modelo',
-      Tipo: 'Tipo',
-      'Código IMT del Equipo': 'CodigoImtEquipo',
-      'Precio Referencia': 'PrecioReferencia',
-    };
-    const k = m[e.col];
-    if (!k) return;
-    this.componentes = [...this.componentes].sort((a, b) =>
-      this.compareSortableValues(a[k], b[k], e.dir),
-    );
+  override sortTable(e: { col: string; dir: 'asc' | 'desc' }): void {
+    this.componentes = this.sortByColumn(this.componentes, e, {
+      Nombre: (componente) => componente.Nombre,
+      Modelo: (componente) => componente.Modelo,
+      Tipo: (componente) => componente.Tipo,
+      'Código IMT del Equipo': (componente) => componente.CodigoImtEquipo,
+      'Precio Referencia': (componente) => componente.PrecioReferencia,
+    });
   }
   limpiarBusqueda() {
     this.componentes = [...this.componentescopia];

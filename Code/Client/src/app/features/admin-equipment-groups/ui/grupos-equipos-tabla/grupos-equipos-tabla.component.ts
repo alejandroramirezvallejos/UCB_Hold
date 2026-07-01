@@ -171,19 +171,18 @@ export class GruposEquiposTablaComponent extends Tabla implements OnInit {
     this.aplicarFiltros();
   }
 
-  override sortTable(e: { col: string; dir: 'asc' | 'desc' }) {
-    const m: Record<string, keyof GrupoEquipo> = {
-      Nombre: 'nombre',
-      Cantidad: 'Cantidad',
-      Modelo: 'modelo',
-      Marca: 'marca',
-      Categoría: 'nombreCategoria',
-      Descripción: 'descripcion',
-    };
-    const k = m[e.col];
-    if (!k) return;
-    this.gruposEquiposFiltrados = [...this.gruposEquiposFiltrados].sort(
-      (a, b) => this.compareSortableValues(a[k], b[k], e.dir),
+  override sortTable(e: { col: string; dir: 'asc' | 'desc' }): void {
+    this.gruposEquiposFiltrados = this.sortByColumn(
+      this.gruposEquiposFiltrados,
+      e,
+      {
+        Nombre: (grupoEquipo) => grupoEquipo.nombre,
+        Cantidad: (grupoEquipo) => grupoEquipo.Cantidad,
+        Modelo: (grupoEquipo) => grupoEquipo.modelo,
+        Marca: (grupoEquipo) => grupoEquipo.marca,
+        Categoría: (grupoEquipo) => grupoEquipo.nombreCategoria,
+        Descripción: (grupoEquipo) => grupoEquipo.descripcion,
+      },
     );
   }
 

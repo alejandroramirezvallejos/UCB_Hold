@@ -149,8 +149,8 @@ export class MueblesTablaComponent extends Tabla implements OnInit {
     this.aplicarFiltros();
   }
 
-  override sortTable(e: { col: string; dir: 'asc' | 'desc' }) {
-    const sortableValue: Record<string, (mueble: Muebles) => unknown> = {
+  override sortTable(e: { col: string; dir: 'asc' | 'desc' }): void {
+    this.mueblesFiltrados = this.sortByColumn(this.mueblesFiltrados, e, {
       Nombre: (mueble) => mueble.Nombre,
       Tipo: (mueble) => mueble.Tipo,
       Ubicación: (mueble) => mueble.Ubicacion,
@@ -158,14 +158,7 @@ export class MueblesTablaComponent extends Tabla implements OnInit {
       Gaveteros: (mueble) => mueble.NumeroGaveteros,
       Dimensiones: (mueble) =>
         `${mueble.Longitud ?? ''}x${mueble.Profundidad ?? ''}x${mueble.Altura ?? ''}`,
-    };
-    const value = sortableValue[e.col];
-
-    if (!value) return;
-
-    this.mueblesFiltrados = [...this.mueblesFiltrados].sort((a, b) =>
-      this.compareSortableValues(value(a), value(b), e.dir),
-    );
+    });
   }
 
   editarMueble(mueble: Muebles) {

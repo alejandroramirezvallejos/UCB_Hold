@@ -188,19 +188,14 @@ export class GaveterosTablaComponent extends Tabla {
     this.limpiarGaveteroSeleccionado();
   }
 
-  override sortTable(e: { col: string; dir: 'asc' | 'desc' }) {
-    const m: Record<string, keyof Gaveteros> = {
-      Nombre: 'Nombre',
-      Tipo: 'Tipo',
-      'Nombre Mueble': 'NombreMueble',
-      Longitud: 'Longitud',
-      Altura: 'Altura',
-      Profundidad: 'Profundidad',
-    };
-    const k = m[e.col];
-    if (!k) return;
-    this.gaveteros = [...this.gaveteros].sort((a, b) =>
-      this.compareSortableValues(a[k], b[k], e.dir),
-    );
+  override sortTable(e: { col: string; dir: 'asc' | 'desc' }): void {
+    this.gaveteros = this.sortByColumn(this.gaveteros, e, {
+      Nombre: (gavetero) => gavetero.Nombre,
+      Tipo: (gavetero) => gavetero.Tipo,
+      'Nombre Mueble': (gavetero) => gavetero.NombreMueble,
+      Longitud: (gavetero) => gavetero.Longitud,
+      Altura: (gavetero) => gavetero.Altura,
+      Profundidad: (gavetero) => gavetero.Profundidad,
+    });
   }
 }

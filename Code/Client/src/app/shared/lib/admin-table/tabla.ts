@@ -36,10 +36,6 @@ export abstract class Tabla extends BaseTablaComponent {
       .replace(/[\u0300-\u036f]/g, '');
   }
 
-  protected sortableValue<T extends object>(item: T, key: keyof T): string {
-    return this.normalizeText(item[key]);
-  }
-
   ordenarPorColumna(columna: string): void {
     const columnaOrdenable = columna.trim();
 
@@ -77,6 +73,20 @@ export abstract class Tabla extends BaseTablaComponent {
     const result = this.compareUnknownValues(firstValue, secondValue);
 
     return direction === 'asc' ? result : -result;
+  }
+
+  protected sortByColumn<T>(
+    items: readonly T[],
+    sort: AdminTableSort,
+    accessors: Record<string, (item: T) => unknown>,
+  ): T[] {
+    const value = accessors[sort.col];
+
+    if (!value) return [...items];
+
+    return [...items].sort((firstItem, secondItem) =>
+      this.compareSortableValues(value(firstItem), value(secondItem), sort.dir),
+    );
   }
 
   abstract aplicarFiltros(event?: [string, string]): void;
