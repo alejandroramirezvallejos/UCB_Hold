@@ -12,7 +12,9 @@ Code/coveragereport
 Code/Server/.sonarqube
 Code/Tests/coveragereport
 Code/Tests/TestResults/
-Code/QualityReports
+Code/QualityReports/*
+!Code/QualityReports/
+!Code/QualityReports/generate-quality-report.js
 .vs/
 .vscode/
 .agents
