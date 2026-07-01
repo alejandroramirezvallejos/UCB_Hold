@@ -18,6 +18,14 @@ import { GrupoEquipo, GrupoequipoService } from '@entities/equipment-group';
 import { MostrarerrorComponent } from '@shared/ui';
 import { CarritoService } from '@features/cart';
 import { DisponibilidadService } from '@entities/availability';
+import { ImageCacheService } from '@shared/lib/image/image-cache.service';
+
+const DEFAULT_PRODUCTS_PER_PAGE = 21;
+const DESIRED_GRID_ROWS = 4;
+const MIN_VISIBLE_PRODUCTS = 6;
+const PAGINATION_BUTTON_COUNT = 5;
+const NEXT_PAGE_PRELOAD_OFFSET = 1;
+const DEFAULT_MAX_QUANTITY = 99;
 
 @Component({
   selector: 'app-lista-objetos',
@@ -42,7 +50,7 @@ export class ListaObjetosComponent
 
   productosFiltrados: GrupoEquipo[] = [];
   productosPaginados: GrupoEquipo[][] = [];
-  cantidadObjetos: number = 21;
+  cantidadObjetos: number = DEFAULT_PRODUCTS_PER_PAGE;
   paginaActual: number = 0;
   totalPaginas: number = 0;
   error: WritableSignal<boolean> = signal(false);
@@ -56,6 +64,7 @@ export class ListaObjetosComponent
     private readonly servicio: GrupoequipoService,
     private readonly carrito: CarritoService,
     private readonly disponibilidad: DisponibilidadService,
+    private readonly imageCache: ImageCacheService,
   ) {}
 
   sinOperativos(id: number): boolean {
@@ -70,7 +79,7 @@ export class ListaObjetosComponent
     this.detenerEvento(event);
     const c = this.getCantidad(id);
 
-    if (c < (max || 99)) this.cantidades[id] = c + 1;
+    if (c < (max || DEFAULT_MAX_QUANTITY)) this.cantidades[id] = c + 1;
   }
 
   decrementarCantidad(id: number, event: Event): void {
@@ -110,7 +119,8 @@ export class ListaObjetosComponent
   }
 
   ngOnInit(): void {
-    this.cantidadObjetos = this.servicio.cantidadObjetosGuardada || 21;
+    this.cantidadObjetos =
+      this.servicio.cantidadObjetosGuardada || DEFAULT_PRODUCTS_PER_PAGE;
     this.paginaActual = this.servicio.paginaGuardada;
     this.cargarProductos();
   }
@@ -137,11 +147,10 @@ export class ListaObjetosComponent
       columnas = gridColumns.trim().split(/\s+/).length;
     }
 
-    const filasDeseadas = 4;
-    let nuevaCantidad = columnas * filasDeseadas;
+    let nuevaCantidad = columnas * DESIRED_GRID_ROWS;
 
-    if (nuevaCantidad < 6) {
-      nuevaCantidad = 6;
+    if (nuevaCantidad < MIN_VISIBLE_PRODUCTS) {
+      nuevaCantidad = MIN_VISIBLE_PRODUCTS;
     }
 
     if (this.cantidadObjetos !== nuevaCantidad) {
@@ -245,6 +254,8 @@ export class ListaObjetosComponent
     if (this.paginaActual >= this.totalPaginas) {
       this.paginaActual = Math.max(0, this.totalPaginas - 1);
     }
+
+    this.precargarImagenesCercanas();
   }
 
   paginar(productos: GrupoEquipo[]): GrupoEquipo[][] {
@@ -256,7 +267,7 @@ export class ListaObjetosComponent
   }
 
   obtenerRangoPaginas(): number[] {
-    const maxBotones = 5;
+    const maxBotones = PAGINATION_BUTTON_COUNT;
     if (this.totalPaginas <= maxBotones) {
       return Array.from({ length: this.totalPaginas }, (_, i) => i);
     }
@@ -279,6 +290,7 @@ export class ListaObjetosComponent
     if (pagina >= 0 && pagina < this.totalPaginas) {
       this.paginaActual = pagina;
       this.servicio.paginaGuardada = pagina;
+      this.precargarImagenesCercanas();
     }
   }
 
@@ -297,5 +309,38 @@ export class ListaObjetosComponent
   private detenerEvento(event: Event): void {
     event.stopPropagation();
     event.preventDefault();
+  }
+
+  obtenerImagenEquipo(item: GrupoEquipo): string | null {
+    const imageUrl = item.link?.trim();
+
+    if (!imageUrl) return null;
+    if (this.imageCache.hasFailed(imageUrl)) return null;
+
+    return imageUrl;
+  }
+
+  imagenCargada(imageUrl: string | null | undefined): boolean {
+    return this.imageCache.isLoaded(imageUrl);
+  }
+
+  registrarImagenCargada(imageUrl: string): void {
+    this.imageCache.markLoaded(imageUrl);
+  }
+
+  registrarImagenFallida(imageUrl: string): void {
+    this.imageCache.markFailed(imageUrl);
+  }
+
+  private precargarImagenesCercanas(): void {
+    const paginasCercanas = [
+      this.paginaActual,
+      this.paginaActual + NEXT_PAGE_PRELOAD_OFFSET,
+    ];
+    const imageUrls = paginasCercanas.flatMap((pagina) =>
+      (this.productosPaginados[pagina] ?? []).map((producto) => producto.link),
+    );
+
+    this.imageCache.preload(imageUrls);
   }
 }

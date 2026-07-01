@@ -7,17 +7,27 @@
           title="{{ item.nombre + ' ' + item.modelo + ' ' + item.marca }}"
         >
           <a [routerLink]="['/Objeto', item.id]" class="product-card__link">
-            <div class="product-card__image-wrapper">
-              @if (item.link; as imageUrl) {
+            <div
+              class="product-card__image-wrapper"
+              [class.product-card__image-wrapper--loaded]="
+                imagenCargada(item.link)
+              "
+              [class.product-card__image-wrapper--empty]="
+                !obtenerImagenEquipo(item)
+              "
+            >
+              @if (obtenerImagenEquipo(item); as imageUrl) {
                 <img
                   [ngSrc]="imageUrl"
                   alt="{{ item.nombre + ' ' + item.modelo + ' ' + item.marca }}"
                   class="product-card__image"
+                  [class.product-card__image--loaded]="imagenCargada(imageUrl)"
                   fill
                   sizes="(max-width: 480px) 45vw, (max-width: 1024px) 33vw, 16vw"
                   loading="lazy"
                   decoding="async"
-                  (error)="item.link = null"
+                  (load)="registrarImagenCargada(imageUrl)"
+                  (error)="registrarImagenFallida(imageUrl)"
                 />
               } @else {
                 <div class="product-card__no-image">
