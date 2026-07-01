@@ -53,12 +53,6 @@ export abstract class Tabla extends BaseTablaComponent {
     this.sortTable({ col: columnaOrdenable, dir: this.sortDirection });
   }
 
-  aplicarOrden(event: AdminTableSort): void {
-    this.sortColumn = event.col.trim();
-    this.sortDirection = event.dir;
-    this.sortTable({ col: this.sortColumn, dir: this.sortDirection });
-  }
-
   protected aplicarOrdenActualSiExiste(): void {
     if (!this.sortColumn) return;
 
@@ -112,9 +106,8 @@ export abstract class Tabla extends BaseTablaComponent {
 
     if (bothAreNumbers) return firstNumber - secondNumber;
 
-    const firstDate = firstValue instanceof Date ? firstValue.getTime() : NaN;
-    const secondDate =
-      secondValue instanceof Date ? secondValue.getTime() : NaN;
+    const firstDate = this.toComparableTime(firstValue);
+    const secondDate = this.toComparableTime(secondValue);
 
     if (Number.isFinite(firstDate) && Number.isFinite(secondDate))
       return firstDate - secondDate;
@@ -124,5 +117,18 @@ export abstract class Tabla extends BaseTablaComponent {
       undefined,
       { numeric: true, sensitivity: 'base' },
     );
+  }
+
+  private toComparableTime(value: unknown): number {
+    if (value instanceof Date) return value.getTime();
+
+    if (typeof value !== 'string') return NaN;
+
+    const normalizedValue = value.trim();
+
+    if (!normalizedValue) return NaN;
+    if (Number.isFinite(Number(normalizedValue))) return NaN;
+
+    return Date.parse(normalizedValue);
   }
 }

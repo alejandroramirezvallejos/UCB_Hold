@@ -35,7 +35,7 @@ export class CarrerasTablaComponent extends Tabla {
   expandedRowId: number | null = null;
   auditRefresh = 0;
 
-  toggleExpand(id: number) {
+  toggleExpand(id: number): void {
     this.expandedRowId = this.expandedRowId === id ? null : id;
   }
 
@@ -45,31 +45,29 @@ export class CarrerasTablaComponent extends Tabla {
   carreras: Carrera[] = [];
   carrerascopia: Carrera[] = [];
   carreraSeleccionada: Carrera = new Carrera();
-  override columnas: string[] = ['Nombre'];
 
   constructor(private readonly carreraService: CarreraService) {
     super();
   }
 
-  ngOnInit() {
+  ngOnInit(): void {
     this.cargarCarreras();
   }
 
-  limpiarCarreraSeleccionada() {
+  limpiarCarreraSeleccionada(): void {
     this.carreraSeleccionada = new Carrera();
   }
 
-  crearCarrera() {
+  crearCarrera(): void {
     this.botoneditar.set(false);
     this.botoncrear.set(true);
   }
 
-  cargarCarreras() {
+  cargarCarreras(): void {
     this.carreraService.obtenerCarreras().subscribe({
       next: (data: Carrera[]) => {
         this.carreras = data;
         this.carrerascopia = [...this.carreras];
-        this.aplicarOrdenActualSiExiste();
       },
       error: (error) => {
         const errorMsg = extractErrorMessage(
@@ -82,7 +80,7 @@ export class CarrerasTablaComponent extends Tabla {
     });
   }
 
-  aplicarFiltros(event?: [string, string]) {
+  aplicarFiltros(event?: [string, string]): void {
     if (event && event[0].trim() !== '') {
       const busquedaNormalizada = this.normalizeText(event[0]);
       this.carreras = this.carrerascopia.filter((carrera) => {
@@ -100,39 +98,29 @@ export class CarrerasTablaComponent extends Tabla {
     } else {
       this.carreras = [...this.carrerascopia];
     }
-    this.aplicarOrdenActualSiExiste();
   }
 
-  limpiarBusqueda() {
+  limpiarBusqueda(): void {
     this.carreras = [...this.carrerascopia];
-    this.aplicarOrdenActualSiExiste();
   }
 
-  override sortTable(e: { col: string; dir: 'asc' | 'desc' }) {
-    this.carreras = [...this.carreras].sort((a, b) => {
-      const va = this.normalizeText(a.Nombre ?? '');
-      const vb = this.normalizeText(b.Nombre ?? '');
-      return e.dir === 'asc' ? va.localeCompare(vb) : vb.localeCompare(va);
-    });
-  }
-
-  editarCarrera(carrera: Carrera) {
+  editarCarrera(carrera: Carrera): void {
     this.botoncrear.set(false);
     this.carreraSeleccionada = { ...carrera };
     this.botoneditar.set(true);
   }
 
-  eliminarCarrera(carrera: Carrera) {
+  eliminarCarrera(carrera: Carrera): void {
     this.carreraSeleccionada = carrera;
     this.alertaeliminar = true;
   }
 
-  confirmarEliminacion() {
+  confirmarEliminacion(): void {
     if (this.carreraSeleccionada.Id) {
       this.carreraService
         .eliminarCarrera(this.carreraSeleccionada.Id)
         .subscribe({
-          next: (response) => {
+          next: () => {
             this.cargarCarreras();
             this.mensajeexito = 'Carrera eliminada correctamente';
             this.exito.set(true);
@@ -151,7 +139,8 @@ export class CarrerasTablaComponent extends Tabla {
     this.limpiarCarreraSeleccionada();
     this.alertaeliminar = false;
   }
-  cancelarEliminacion() {
+
+  cancelarEliminacion(): void {
     this.alertaeliminar = false;
     this.limpiarCarreraSeleccionada();
   }

@@ -35,7 +35,7 @@ export class CategoriasTablaComponent extends Tabla {
   expandedRowId: number | null = null;
   auditRefresh = 0;
 
-  toggleExpand(id: number) {
+  toggleExpand(id: number): void {
     this.expandedRowId = this.expandedRowId === id ? null : id;
   }
 
@@ -45,26 +45,29 @@ export class CategoriasTablaComponent extends Tabla {
   categorias: Categorias[] = [];
   categoriascopia: Categorias[] = [];
   categoriaSeleccionada: Categorias = new Categorias();
-  override columnas: string[] = ['Nombre'];
+
   constructor(private readonly categoriaService: CategoriaService) {
     super();
   }
-  ngOnInit() {
+
+  ngOnInit(): void {
     this.cargarCategorias();
   }
-  limpiarCategoriaSeleccionada() {
+
+  limpiarCategoriaSeleccionada(): void {
     this.categoriaSeleccionada = new Categorias();
   }
-  crearCategoria() {
+
+  crearCategoria(): void {
     this.botoneditar.set(false);
     this.botoncrear.set(true);
   }
-  cargarCategorias() {
+
+  cargarCategorias(): void {
     this.categoriaService.obtenercategorias().subscribe({
       next: (data: Categorias[]) => {
         this.categorias = data;
         this.categoriascopia = [...this.categorias];
-        this.aplicarOrdenActualSiExiste();
       },
       error: (error) => {
         const errorMsg = extractErrorMessage(
@@ -76,7 +79,7 @@ export class CategoriasTablaComponent extends Tabla {
       },
     });
   }
-  aplicarFiltros(event?: [string, string]) {
+  aplicarFiltros(event?: [string, string]): void {
     if (!event || event[0].trim() === '') {
       this.limpiarBusqueda();
       return;
@@ -85,35 +88,29 @@ export class CategoriasTablaComponent extends Tabla {
     this.categorias = this.categoriascopia.filter((categoria) =>
       this.normalizeText(categoria.Nombre || '').includes(busquedaNormalizada),
     );
-    this.aplicarOrdenActualSiExiste();
-  }
-  limpiarBusqueda() {
-    this.categorias = [...this.categoriascopia];
-    this.aplicarOrdenActualSiExiste();
   }
 
-  override sortTable(e: { col: string; dir: 'asc' | 'desc' }) {
-    this.categorias = [...this.categorias].sort((a, b) => {
-      const va = this.normalizeText(a.Nombre ?? '');
-      const vb = this.normalizeText(b.Nombre ?? '');
-      return e.dir === 'asc' ? va.localeCompare(vb) : vb.localeCompare(va);
-    });
+  limpiarBusqueda(): void {
+    this.categorias = [...this.categoriascopia];
   }
-  editarCategoria(categoria: Categorias) {
+
+  editarCategoria(categoria: Categorias): void {
     this.botoncrear.set(false);
     this.categoriaSeleccionada = { ...categoria };
     this.botoneditar.set(true);
   }
-  eliminarCategoria(categoria: Categorias) {
+
+  eliminarCategoria(categoria: Categorias): void {
     this.categoriaSeleccionada = categoria;
     this.alertaeliminar = true;
   }
-  confirmarEliminacion() {
+
+  confirmarEliminacion(): void {
     if (this.categoriaSeleccionada.Id) {
       this.categoriaService
         .eliminarCategoria(this.categoriaSeleccionada.Id)
         .subscribe({
-          next: (response) => {
+          next: () => {
             this.cargarCategorias();
             this.mensajeexito = 'Categoría eliminada con éxito';
             this.exito.set(true);
@@ -132,7 +129,8 @@ export class CategoriasTablaComponent extends Tabla {
     this.limpiarCategoriaSeleccionada();
     this.alertaeliminar = false;
   }
-  cancelarEliminacion() {
+
+  cancelarEliminacion(): void {
     this.alertaeliminar = false;
     this.limpiarCategoriaSeleccionada();
   }

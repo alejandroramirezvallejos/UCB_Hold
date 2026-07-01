@@ -6,11 +6,7 @@
     </div>
   </div>
   @if (activeTab === "tabla") {
-    <app-buscador
-      [columnas]="columnas"
-      (terminoBusqueda)="aplicarFiltros($event)"
-      (sortChange)="aplicarOrden($event)"
-    >
+    <app-buscador (terminoBusqueda)="aplicarFiltros($event)">
       <button class="botoncrear boton-derecha" (click)="crearmueble()">
         Nuevo Mueble
       </button>

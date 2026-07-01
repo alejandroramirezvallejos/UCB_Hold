@@ -245,6 +245,7 @@ td.actions-column {
   animation: fadeIn 200ms ease-out both;
 }
 .devuelto-modal {
+  position: relative;
   background: var(--surface);
   border: 1px solid var(--border);
   border-radius: var(--radius-xl);
@@ -255,6 +256,11 @@ td.actions-column {
   max-height: 85vh;
   overflow-y: auto;
   animation: slideIn 200ms ease-out both;
+}
+.devuelto-modal .modal-close-btn {
+  position: absolute;
+  top: 1rem;
+  right: 1rem;
 }
 .devuelto-title {
   margin: 0 0 0.5rem;
@@ -425,43 +431,6 @@ td.actions-column {
   display: inline-block;
   flex-shrink: 0;
 }
-.btn-filter {
-  display: flex;
-  align-items: center;
-  gap: 0.5rem;
-  background: var(--surface);
-  color: var(--ink-muted) !important;
-  padding: 0.5rem 1.25rem;
-  border: 1px solid var(--border);
-  border-radius: var(--radius-full);
-  font-size: 0.9rem;
-  font-weight: 600;
-  cursor: pointer;
-  transition:
-    color var(--t-base),
-    background-color var(--t-base),
-    border-color var(--t-base),
-    box-shadow var(--t-base);
-  box-shadow: none;
-  height: 42px;
-  justify-content: space-between;
-}
-.btn-filter i {
-  color: var(--ink-muted) !important;
-}
-.btn-filter:hover {
-  background-color: var(--brand);
-  color: #333;
-  transform: translateY(-1px);
-  box-shadow: 0 4px 8px rgba(255, 207, 0, 0.3);
-}
-.btn-filter i:first-child {
-  font-size: 14px;
-}
-.btn-filter i:last-child {
-  font-size: 12px;
-  transition: transform 0.3s ease;
-}
 .estados-panel-flotante {
   position: absolute;
   top: 100%;
@@ -578,10 +547,6 @@ td.actions-column {
   }
   .filter-container {
     width: 100%;
-  }
-  .btn-filter {
-    width: 100%;
-    min-width: auto;
   }
   .estados-panel-flotante {
     right: 0;
@@ -1224,8 +1189,7 @@ td.actions-column > * {
   vertical-align: middle;
 }
 
-.dropdown-header,
-.btn-filter {
+.dropdown-header {
   background: var(--sidebar);
   border: 1px solid var(--border);
   border-radius: var(--radius-full);
@@ -1233,13 +1197,11 @@ td.actions-column > * {
   color: var(--ink-secondary) !important;
 }
 
-.dropdown-header .current-value,
-.btn-filter .current-value {
+.dropdown-header .current-value {
   color: var(--ink-secondary) !important;
 }
 
-.dropdown-header:hover,
-.btn-filter:hover {
+.dropdown-header:hover {
   background: var(--bg);
   border-color: var(--border-strong);
   color: var(--ink) !important;

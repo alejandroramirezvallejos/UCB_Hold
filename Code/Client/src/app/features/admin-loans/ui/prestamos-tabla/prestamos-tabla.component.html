@@ -6,14 +6,14 @@
     </div>
   </div>
   @if (activeTab === "tabla") {
-    <app-buscador
-      [columnas]="columnas"
-      (terminoBusqueda)="aplicarFiltros($event)"
-      (sortChange)="aplicarOrden($event)"
-      (onToggle)="onBuscadorToggle($event)"
-    >
+    <app-buscador (terminoBusqueda)="aplicarFiltros($event)">
       <div class="custom-dropdown">
-        <div class="dropdown-header" (click)="mostrarEstados()">
+        <button
+          type="button"
+          class="dropdown-header"
+          (click)="mostrarEstados()"
+          [attr.aria-expanded]="showEstados"
+        >
           <span class="current-value">
             <i class="fas fa-filter dropdown-filter-icon"></i>
             {{
@@ -27,7 +27,7 @@
             alt="Desplegar"
             class="dropdown-arrow"
           />
-        </div>
+        </button>
         @if (showEstados) {
           <ul class="dropdown-list">
             <li
@@ -60,6 +60,9 @@
                   }
                   @case ("cancelado") {
                     <i class="fas fa-ban text-danger"></i>
+                  }
+                  @case ("atrasado") {
+                    <i class="fas fa-exclamation-triangle text-warning"></i>
                   }
                   @default {
                     <i class="fas fa-question-circle"></i>
@@ -395,6 +398,14 @@
 @if (avisodevuelto()) {
   <div class="devuelto-overlay">
     <div class="devuelto-modal">
+      <button
+        type="button"
+        class="modal-close-btn"
+        (click)="avisodevuelto.set(false)"
+        aria-label="Cerrar"
+      >
+        <img src="assets/x.png" alt="" />
+      </button>
       <h3 class="devuelto-title">Marcar como devuelto</h3>
       <p class="devuelto-text">
         Indique el estado con el que se devuelve cada equipo y, opcionalmente,

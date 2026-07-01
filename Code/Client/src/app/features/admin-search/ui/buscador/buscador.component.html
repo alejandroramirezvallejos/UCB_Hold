@@ -20,54 +20,6 @@
     }
   </div>
   <div class="filter-container">
-    @if (columnas.length > 0) {
-      <div class="custom-dropdown sort-dropdown">
-        <button
-          type="button"
-          class="dropdown-header"
-          (click)="toggleColumnas()"
-          [class.dropdown-header--open]="mostrarColumnas"
-          [attr.aria-expanded]="mostrarColumnas"
-          aria-label="Ordenar tabla"
-        >
-          <span class="current-value">
-            <i class="fas fa-sort dropdown-filter-icon"></i>
-            {{ sortCol || "Ordenar" }}
-          </span>
-          <img
-            [src]="
-              mostrarColumnas
-                ? '/assets/down_solid.png'
-                : '/assets/down_line.png'
-            "
-            alt=""
-            class="dropdown-arrow"
-          />
-        </button>
-        @if (mostrarColumnas) {
-          <ul class="dropdown-list sort-dropdown__list">
-            @for (columna of columnas; track columna) {
-              <li
-                (click)="seleccionarColumna(columna)"
-                [class.active]="sortCol === columna.trim()"
-              >
-                <i
-                  class="fas"
-                  [class.fa-sort]="iconoOrdenColumna(columna) === 'fa-sort'"
-                  [class.fa-sort-up]="
-                    iconoOrdenColumna(columna) === 'fa-sort-up'
-                  "
-                  [class.fa-sort-down]="
-                    iconoOrdenColumna(columna) === 'fa-sort-down'
-                  "
-                ></i>
-                {{ columna }}
-              </li>
-            }
-          </ul>
-        }
-      </div>
-    }
     <ng-content></ng-content>
     <ng-content select=".boton-derecha"></ng-content>
   </div>

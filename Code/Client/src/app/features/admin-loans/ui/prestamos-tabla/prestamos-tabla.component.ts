@@ -1,10 +1,4 @@
-import {
-  Component,
-  OnInit,
-  signal,
-  WritableSignal,
-  ViewChild,
-} from '@angular/core';
+import { Component, OnInit, signal, WritableSignal } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import {
   FormsModule,
@@ -61,7 +55,6 @@ export class PrestamosTablaComponent extends Tabla implements OnInit {
   toggleExpand(id: number) {
     this.expandedRowId = this.expandedRowId === id ? null : id;
   }
-  @ViewChild(BuscadorComponent) buscador!: BuscadorComponent;
   botoncrear: WritableSignal<boolean> = signal(false);
   cargando: boolean = false;
   alertaeliminar: boolean = false;
@@ -187,14 +180,6 @@ export class PrestamosTablaComponent extends Tabla implements OnInit {
   }
   mostrarEstados() {
     this.showEstados = !this.showEstados;
-    if (this.showEstados && this.buscador) {
-      this.buscador.cerrarColumnas();
-    }
-  }
-  onBuscadorToggle(isOpen: boolean) {
-    if (isOpen) {
-      this.showEstados = false;
-    }
   }
   seleccionarEstado(estado: string) {
     this.estadoSeleccionado = estado;
