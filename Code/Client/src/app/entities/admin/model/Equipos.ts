@@ -1,0 +1,19 @@
+import { Basemodel } from '@shared/model';
+export class Equipos extends Basemodel {
+  CodigoImt: number | null = null;
+  CodigoUcb: string | null = null;
+  NumeroSerial: string | null = null;
+  EstadoEquipo: string | null = null;
+  Ubicacion: string | null = null;
+  CostoReferencia: number | null = null;
+  Descripcion: string | null = null;
+  TiempoMaximoPrestamo: number | null = null;
+  Procedencia: string | null = null;
+  NombreGrupoEquipo: string | null = null;
+  IdGrupoEquipo: number | null = null;
+  Modelo?: string | null = null;
+  Marca?: string | null = null;
+  NombreGavetero: string | null = null;
+  IdGavetero?: number | null = null;
+  FechaIngresoEquipo?: Date | null = null;
+}

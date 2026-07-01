@@ -1,0 +1,55 @@
+import { Injectable } from '@angular/core';
+import { Disponibilidad } from '../model/disponibilidad';
+import { HttpClient } from '@angular/common/http';
+import { environment } from '@environments/environment';
+import { map } from 'rxjs';
+import { DisponibilidadApiItem } from './disponibilidad-api-item';
+import { DisponibilidadApiResponse } from './disponibilidad-api-response';
+@Injectable({
+  providedIn: 'root',
+})
+export class DisponibilidadService {
+  private readonly url =
+    environment.apiUrl + '/api/Carrito/disponibilidadEquipos';
+  constructor(private readonly http: HttpClient) {}
+  private mapear(item: DisponibilidadApiItem): Disponibilidad {
+    return {
+      Fecha: item.Fecha ? new Date(item.Fecha) : null,
+      IdGrupoEquipo: item.IdGrupoEquipo,
+      CantidadDisponible: item.CantidadDisponible,
+      TotalOperativo: item.TotalOperativo ?? 0,
+    } as Disponibilidad;
+  }
+  obtenerDisponibilidad(
+    fechaInicio: Date,
+    fechaFin: Date,
+    grupoEquipoIds: number[],
+  ) {
+    const toLocalDate = (date: Date): string => {
+      const year = date.getFullYear();
+      const month = String(date.getMonth() + 1).padStart(2, '0');
+      const day = String(date.getDate()).padStart(2, '0');
+      return `${year}-${month}-${day}T00:00:00`;
+    };
+
+    const payload = {
+      FechaInicio: toLocalDate(fechaInicio),
+      FechaFin: toLocalDate(fechaFin),
+      ArrayIds: grupoEquipoIds,
+    };
+    return this.http
+      .post<DisponibilidadApiResponse | DisponibilidadApiItem[]>(
+        this.url,
+        payload,
+      )
+      .pipe(
+        map((response) => {
+          const data = Array.isArray(response)
+            ? response
+            : (response.Value ?? response.value ?? response.data ?? []);
+
+          return data.map((item) => this.mapear(item));
+        }),
+      );
+  }
+}

@@ -1,0 +1,36 @@
+<div class="search-and-filter-row">
+  <div class="search-input-wrapper">
+    <i class="fas fa-search search-icon"></i>
+    <input
+      type="text"
+      [(ngModel)]="terminoBusquedaLocal"
+      (ngModelChange)="onSearchInput()"
+      (keydown.enter)="buscar()"
+      placeholder="Buscar ..."
+      class="search-input"
+    />
+    @if (terminoBusquedaLocal) {
+      <button
+        class="clear-search"
+        (click)="limpiarBusqueda()"
+        title="Limpiar búsqueda"
+      >
+        <i class="fas fa-times"></i>
+      </button>
+    }
+  </div>
+  <div class="filter-container">
+    <ng-content></ng-content>
+    <ng-content select=".boton-derecha"></ng-content>
+  </div>
+</div>
+@if (terminoBusquedaLocal) {
+  <div class="filter-chips">
+    <span class="filter-chip">
+      "{{ terminoBusquedaLocal }}"
+      <button (click)="limpiarBusqueda()" aria-label="Limpiar búsqueda">
+        <i class="fas fa-times"></i>
+      </button>
+    </span>
+  </div>
+}

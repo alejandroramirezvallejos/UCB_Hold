@@ -1,0 +1,137 @@
+import {
+  Component,
+  EventEmitter,
+  Input,
+  Output,
+  signal,
+  WritableSignal,
+} from '@angular/core';
+import { FormsModule } from '@angular/forms';
+import { Equipos } from '@entities/admin';
+import { EquipoService } from '@entities/equipment';
+import { GrupoequipoService } from '@entities/equipment-group';
+import { GrupoEquipo } from '@entities/equipment-group';
+import { Gaveteros } from '@entities/admin';
+import { GaveteroService } from '@entities/locker';
+import { BaseTablaComponent } from '@shared/lib/admin-table';
+import { MostrarerrorComponent } from '@shared/ui';
+import { Aviso } from '@shared/ui';
+import { AvisoExitoComponent } from '@shared/ui';
+import { extractErrorMessage } from '@shared/lib/error';
+import { CustomSelectComponent, OpcionSelect } from '@shared/ui';
+@Component({
+  selector: 'app-equipos-crear',
+  standalone: true,
+  imports: [
+    FormsModule,
+    MostrarerrorComponent,
+    Aviso,
+    AvisoExitoComponent,
+    CustomSelectComponent,
+  ],
+  templateUrl: './equipos-crear.component.html',
+  styleUrl: './equipos-crear.component.css',
+})
+export class EquiposCrearComponent extends BaseTablaComponent {
+  @Input() botoncrear: WritableSignal<boolean> = signal(true);
+  @Output() Actualizar = new EventEmitter<void>();
+  grupoequipo: GrupoEquipo[] = [];
+  equipo: Equipos = new Equipos();
+  grupoequipoSeleccionado: GrupoEquipo | null = null;
+  gaveteros: Gaveteros[] = [];
+  gaveteroSeleccionado: Gaveteros | null = null;
+  estadoOpciones: OpcionSelect[] = [
+    { value: 'operativo', label: 'Operativo' },
+    { value: 'parcialmente_operativo', label: 'Parcialmente Operativo' },
+    { value: 'inoperativo', label: 'Inoperativo' },
+  ];
+  get gruposOpciones(): OpcionSelect[] {
+    return this.grupoequipo.map((g) => ({
+      value: g,
+      label: `${g.nombre} ${g.modelo} ${g.marca}`,
+    }));
+  }
+  get gaveterosOpciones(): OpcionSelect[] {
+    return [
+      { value: null, label: 'Sin gavetero' },
+      ...this.gaveteros.map((g) => ({ value: g, label: g.Nombre ?? '' })),
+    ];
+  }
+  constructor(
+    private readonly equipoapi: EquipoService,
+    private grupoequipoAPI: GrupoequipoService,
+    private gaveterosAPI: GaveteroService,
+  ) {
+    super();
+  }
+  ngOnInit() {
+    this.equipo.EstadoEquipo = 'operativo';
+    this.cargarGruposEquipos();
+    this.cargarGaveteros();
+  }
+  cargarGaveteros() {
+    this.gaveterosAPI.obtenerGaveteros().subscribe({
+      next: (data) => {
+        this.gaveteros = data;
+      },
+      error: (error) => {
+        const errorMsg = extractErrorMessage(
+          error,
+          'Error al cargar los gaveteros. Intente mas tarde',
+        );
+        this.mensajeerror = errorMsg;
+        this.error.set(true);
+      },
+    });
+  }
+  cargarGruposEquipos() {
+    this.grupoequipoAPI.obtenersinfiltroGruposEquipos().subscribe({
+      next: (data) => {
+        this.grupoequipo = data;
+      },
+      error: (error) => {
+        const errorMsg = extractErrorMessage(
+          error,
+          'Error al cargar los grupos equipos. Intente mas tarde',
+        );
+        this.mensajeerror = errorMsg;
+        this.error.set(true);
+      },
+    });
+  }
+  validarcreacion() {
+    if (!this.grupoequipoSeleccionado) {
+      this.mensajeerror = 'Debe seleccionar un grupo de equipo.';
+      this.error.set(true);
+      return;
+    }
+    this.mensajeaviso = 'Esta seguro de crear el equipo?';
+    this.aviso.set(true);
+  }
+  registrar() {
+    this.equipo.IdGrupoEquipo = this.grupoequipoSeleccionado!.id;
+    this.equipo.NombreGrupoEquipo = this.grupoequipoSeleccionado!.nombre;
+    this.equipo.IdGavetero = this.gaveteroSeleccionado?.Id ?? null;
+    this.equipo.Marca = this.grupoequipoSeleccionado!.marca ?? null;
+    this.equipo.Modelo = this.grupoequipoSeleccionado!.modelo ?? null;
+    this.equipoapi.crearEquipo(this.equipo).subscribe({
+      next: () => {
+        this.Actualizar.emit();
+        this.grupoequipoSeleccionado = null;
+        this.mensajeexito = 'Equipo creado con exito';
+        this.exito.set(true);
+      },
+      error: (error) => {
+        const errorMsg = extractErrorMessage(
+          error,
+          'Error al crear el equipo. Intente mas tarde',
+        );
+        this.mensajeerror = errorMsg;
+        this.error.set(true);
+      },
+    });
+  }
+  cerrar() {
+    this.botoncrear.set(false);
+  }
+}

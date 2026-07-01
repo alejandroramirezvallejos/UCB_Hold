@@ -1,0 +1,146 @@
+<div class="muebles-container">
+  <div class="table-header">
+    <div class="header-title">
+      <h1>Muebles</h1>
+      <p class="subtitle">Gestión de muebles del laboratorio</p>
+    </div>
+  </div>
+  @if (activeTab === "tabla") {
+    <app-buscador
+      [columnas]="columnas"
+      (terminoBusqueda)="aplicarFiltros($event)"
+      (sortChange)="sortTable($event)"
+    >
+      <button class="botoncrear boton-derecha" (click)="crearmueble()">
+        Nuevo Mueble
+      </button>
+    </app-buscador>
+  }
+  @if (activeTab === "tabla") {
+    <div class="admin-tabs">
+      <button
+        class="admin-tabs__button"
+        [class.admin-tabs__button--active]="estaTabActiva('tabla')"
+        (click)="seleccionarTab('tabla')"
+      >
+        Tabla
+      </button>
+      <button
+        class="admin-tabs__button"
+        [class.admin-tabs__button--active]="estaTabActiva('auditoria')"
+        (click)="seleccionarTab('auditoria')"
+      >
+        Auditoría
+      </button>
+    </div>
+    <div class="table-responsive" appStickyScroll>
+      <table class="data-table">
+        <thead>
+          <tr>
+            @for (columna of columnas; track columna) {
+              <th>{{ columna }}</th>
+            }
+            <th class="actions-column">Acciones</th>
+          </tr>
+        </thead>
+        <tbody>
+          @for (mueble of mueblesFiltrados; track $index; let i = $index) {
+            <tr>
+              <td>{{ mueble.Nombre }}</td>
+              <td>{{ mueble.Tipo }}</td>
+              <td>{{ mueble.Ubicacion }}</td>
+              <td class="precio-column">
+                Bs {{ mueble.Costo | number: "1.2-2" }}
+              </td>
+              <td>{{ mueble.NumeroGaveteros || "N/A" }}</td>
+              <td>
+                {{ mueble.Longitud }}x{{ mueble.Profundidad }}x{{
+                  mueble.Altura
+                }}
+                cm
+              </td>
+              <td class="actions-column">
+                <button
+                  class="btn-icon btn-delete"
+                  (click)="eliminarMueble(mueble)"
+                >
+                  <i class="fas fa-trash-alt"></i>
+                </button>
+                <button
+                  class="btn-icon btn-edit"
+                  (click)="editarMueble(mueble)"
+                >
+                  <i class="fas fa-pencil-alt"></i>
+                </button>
+              </td>
+            </tr>
+            @if (expandedRowId === mueble.Id) {
+              <tr class="expanded-row">
+                <td colspan="99">
+                  <app-gaveteros-inline
+                    [muebleId]="mueble.Id!"
+                  ></app-gaveteros-inline>
+                </td>
+              </tr>
+            }
+          }
+          @if (mueblesFiltrados.length === 0) {
+            <tr>
+              <td colspan="7" class="empty-table">
+                <div class="empty-state">
+                  <i class="fas fa-search fa-3x"></i>
+                  <p>No se encontraron muebles</p>
+                </div>
+              </td>
+            </tr>
+          }
+        </tbody>
+      </table>
+    </div>
+  } @else {
+    <app-audit-panel [refreshTrigger]="auditRefresh" [entidad]="'Mueble'">
+      <div admin-tabs class="admin-tabs">
+        <button
+          class="admin-tabs__button"
+          [class.admin-tabs__button--active]="estaTabActiva('tabla')"
+          (click)="seleccionarTab('tabla')"
+        >
+          Tabla
+        </button>
+        <button
+          class="admin-tabs__button"
+          [class.admin-tabs__button--active]="estaTabActiva('auditoria')"
+          (click)="seleccionarTab('auditoria')"
+        >
+          Auditoría
+        </button>
+      </div>
+    </app-audit-panel>
+  }
+  @if (alertaeliminar) {
+    <app-aviso-eliminar
+      [mensaje]="'¿Estás seguro de que deseas eliminar este mueble?'"
+      (aceptar)="confirmarEliminacion()"
+      (cancelar)="cancelarEliminacion()"
+    ></app-aviso-eliminar>
+  }
+</div>
+@if (botoncrear()) {
+  <app-muebles-crear
+    [botoncrear]="botoncrear"
+    (Actualizar)="cargarMuebles()"
+  ></app-muebles-crear>
+}
+@if (botoneditar()) {
+  <app-muebles-editar
+    [botoneditar]="botoneditar"
+    [muebleOriginal]="muebleSeleccionado"
+    (actualizar)="cargarMuebles()"
+  ></app-muebles-editar>
+}
+@if (error()) {
+  <app-mostrarerror [error]="error" [mensaje]="mensajeerror"></app-mostrarerror>
+}
+@if (exito()) {
+  <app-aviso-exito [exito]="exito" [mensaje]="mensajeexito"></app-aviso-exito>
+}

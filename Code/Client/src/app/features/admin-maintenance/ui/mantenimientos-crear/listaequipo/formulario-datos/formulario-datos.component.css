@@ -1,0 +1,213 @@
+:host {
+  font-family: var(--font);
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  background: rgba(0, 0, 0, 0.5);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 1001;
+  animation: fadeIn 0.3s ease-in-out;
+}
+
+.form-container {
+  background: white;
+  padding: 2rem;
+  border-radius: 1rem;
+  border: 1px solid #e1e5ea;
+  border-top: 3px solid var(--brand);
+  box-shadow: 0 15px 25px rgba(0, 0, 0, 0.1);
+  width: 100%;
+  max-width: 500px;
+  max-height: 85vh;
+  overflow-y: auto;
+  position: relative;
+  animation: slideIn 0.3s ease-out;
+}
+.btn-close {
+  position: absolute;
+  top: 1rem;
+  right: 1rem;
+  background: none;
+  border: none;
+  font-size: 1.2rem;
+  color: #64748b;
+  cursor: pointer;
+  width: 1.5rem;
+  height: 1.5rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 50%;
+  transition:
+    color var(--t-fast),
+    background-color var(--t-fast),
+    border-color var(--t-fast),
+    box-shadow var(--t-fast),
+    transform var(--t-fast);
+}
+.btn-close:hover {
+  background-color: rgba(0, 0, 0, 0.1);
+  color: var(--text-color);
+}
+.form-container h2 {
+  text-align: center;
+  color: var(--ink);
+  margin-bottom: 1.5rem;
+  font-size: 1.6rem;
+  font-weight: 700;
+  padding-right: 1.5rem;
+}
+.form-container form {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+.form-group {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+.form-group label {
+  font-weight: 500;
+  color: var(--text-color);
+  font-size: 0.9rem;
+}
+.form-input {
+  padding: 0.75rem;
+  border: 2px solid #e1e5ea !important;
+  border-radius: 0.5rem;
+  font-size: 1rem;
+  transition: border-color 0.2s;
+  background-color: white !important;
+  font-family: inherit;
+}
+.form-input:focus {
+  outline: none;
+  border-color: var(--interactive);
+  box-shadow: 0 0 0 3px var(--interactive-subtle);
+}
+.form-input.ng-invalid.ng-touched {
+  border-color: #dc2626 !important;
+  border-width: 2px !important;
+}
+select.form-input {
+  cursor: pointer;
+}
+select.form-input option {
+  padding: 0.5rem;
+}
+textarea.form-input {
+  resize: vertical;
+  min-height: 100px;
+  font-family: inherit;
+}
+.form-submit {
+  margin-top: 1rem;
+  text-align: center;
+}
+.register-button {
+  background-color: var(--brand);
+  color: #6b7786;
+  padding: 0.65rem 1.5rem;
+  border: none;
+  border-radius: 16px;
+  font-size: 0.95rem;
+  font-weight: var(--btn-font-weight);
+  cursor: pointer;
+  transition:
+    color var(--t-base),
+    background-color var(--t-base),
+    border-color var(--t-base),
+    box-shadow var(--t-base);
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+
+  max-width: 300px;
+  margin: 0 auto;
+}
+.register-button:hover {
+  background: var(--brand-hover);
+  transform: scale(1.05);
+  box-shadow: 0 4px 12px rgba(255, 216, 20, 0.4);
+}
+.register-button:active {
+  background: var(--brand);
+  transform: scale(0.98);
+  box-shadow: inset 0 3px 5px rgba(0, 0, 0, 0.125);
+}
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+@keyframes slideIn {
+  from {
+    transform: scale(0.8);
+    opacity: 0;
+  }
+  to {
+    transform: scale(1);
+    opacity: 1;
+  }
+}
+@media (max-width: 768px) {
+  .form-container {
+    margin: 1rem;
+    padding: 1.5rem;
+    max-width: calc(100vw - 2rem);
+  }
+  .form-container h2 {
+    font-size: 1.4rem;
+    padding-right: 1rem;
+  }
+}
+@media (max-width: 480px) {
+  .form-container {
+    padding: 1rem;
+  }
+  .form-container h2 {
+    font-size: 1.2rem;
+  }
+  .form-group label {
+    font-size: 0.85rem;
+  }
+}
+@media (max-width: 360px) {
+  .form-container {
+    margin: 0.5rem;
+    padding: 1rem;
+    max-width: calc(100vw - 1rem);
+  }
+  .form-container h2 {
+    font-size: 1.1rem;
+    padding-right: 0.5rem;
+  }
+  .form-group label {
+    font-size: 0.8rem;
+  }
+  .form-input {
+    padding: 0.55rem;
+    font-size: 0.85rem;
+  }
+  .register-button {
+    width: 100%;
+    max-width: none;
+    padding: 0.6rem 1rem;
+    font-size: 0.85rem;
+  }
+  .btn-close {
+    top: 0.5rem;
+    right: 0.5rem;
+    width: 1.3rem;
+    height: 1.3rem;
+  }
+}

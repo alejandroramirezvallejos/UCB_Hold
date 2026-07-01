@@ -1,0 +1,152 @@
+<div class="grupos-equipos-container">
+  <div class="table-header">
+    <div class="header-title">
+      <h1>Grupos de Equipos</h1>
+      <p class="subtitle">Gestión de grupos de equipos del laboratorio</p>
+    </div>
+  </div>
+  @if (activeTab === "tabla") {
+    <app-buscador
+      [columnas]="columnas"
+      (terminoBusqueda)="aplicarFiltros($event)"
+      (sortChange)="sortTable($event)"
+    >
+      <button class="botoncrear boton-derecha" (click)="creargrupoequipo()">
+        Nuevo Grupo de Equipo
+      </button>
+    </app-buscador>
+  }
+  @if (activeTab === "tabla") {
+    <div class="admin-tabs">
+      <button
+        class="admin-tabs__button"
+        [class.admin-tabs__button--active]="estaTabActiva('tabla')"
+        (click)="seleccionarTab('tabla')"
+      >
+        Tabla
+      </button>
+      <button
+        class="admin-tabs__button"
+        [class.admin-tabs__button--active]="estaTabActiva('auditoria')"
+        (click)="seleccionarTab('auditoria')"
+      >
+        Auditoría
+      </button>
+    </div>
+    <div class="table-responsive" appStickyScroll>
+      <table class="data-table">
+        <thead>
+          <tr>
+            @for (columna of columnas; track columna) {
+              <th>{{ columna }}</th>
+            }
+            <th class="actions-column">Acciones</th>
+          </tr>
+        </thead>
+        <tbody>
+          @for (
+            grupoequipo of gruposEquiposFiltrados;
+            track $index;
+            let i = $index
+          ) {
+            <tr>
+              <td>{{ grupoequipo.nombre }}</td>
+              <td>{{ grupoequipo.Cantidad }}</td>
+              <td>{{ grupoequipo.modelo }}</td>
+              <td>{{ grupoequipo.marca }}</td>
+              <td>{{ grupoequipo.nombreCategoria || "" }}</td>
+              <td>{{ grupoequipo.descripcion }}</td>
+              <td class="actions-column">
+                <button
+                  class="expand-btn"
+                  [class.open]="expandedRowId === grupoequipo.id"
+                  (click)="toggleExpand(grupoequipo.id!)"
+                >
+                  <i class="fas fa-chevron-right"></i>
+                </button>
+                <button
+                  class="btn-icon btn-delete"
+                  (click)="eliminarGrupoEquipo(grupoequipo)"
+                >
+                  <i class="fas fa-trash-alt"></i>
+                </button>
+                <button
+                  class="btn-icon btn-edit"
+                  (click)="editarGrupoEquipo(grupoequipo)"
+                >
+                  <i class="fas fa-pencil-alt"></i>
+                </button>
+              </td>
+            </tr>
+            @if (expandedRowId === grupoequipo.id) {
+              <tr class="expanded-row">
+                <td colspan="99">
+                  <app-equipos-inline
+                    [grupoEquipoId]="grupoequipo.id!"
+                  ></app-equipos-inline>
+                </td>
+              </tr>
+            }
+          }
+          @if (gruposEquiposFiltrados.length === 0) {
+            <tr>
+              <td colspan="6" class="empty-table">
+                <div class="empty-state">
+                  <i class="fas fa-search fa-3x"></i>
+                  <p>No se encontraron grupos de equipos</p>
+                </div>
+              </td>
+            </tr>
+          }
+        </tbody>
+      </table>
+    </div>
+  } @else {
+    <app-audit-panel [refreshTrigger]="auditRefresh" [entidad]="'GrupoEquipo'">
+      <div admin-tabs class="admin-tabs">
+        <button
+          class="admin-tabs__button"
+          [class.admin-tabs__button--active]="estaTabActiva('tabla')"
+          (click)="seleccionarTab('tabla')"
+        >
+          Tabla
+        </button>
+        <button
+          class="admin-tabs__button"
+          [class.admin-tabs__button--active]="estaTabActiva('auditoria')"
+          (click)="seleccionarTab('auditoria')"
+        >
+          Auditoría
+        </button>
+      </div>
+    </app-audit-panel>
+  }
+  @if (alertaeliminar) {
+    <app-aviso-eliminar
+      [mensaje]="'¿Estás seguro de que deseas eliminar este grupo de equipo?'"
+      (aceptar)="confirmarEliminacion()"
+      (cancelar)="cancelarEliminacion()"
+    ></app-aviso-eliminar>
+  }
+</div>
+@if (botoncrear()) {
+  <app-grupos-equipos-crear
+    [botoncrear]="botoncrear"
+    [categorias]="categorias"
+    (Actualizar)="cargarGruposEquipos()"
+  ></app-grupos-equipos-crear>
+}
+@if (botoneditar()) {
+  <app-grupos-equipos-editar
+    [botoneditar]="botoneditar"
+    [grupoequipo]="grupoEquipoSeleccionado"
+    [categorias]="categorias"
+    (actualizar)="cargarGruposEquipos()"
+  ></app-grupos-equipos-editar>
+}
+@if (error()) {
+  <app-mostrarerror [error]="error" [mensaje]="mensajeerror"></app-mostrarerror>
+}
+@if (exito()) {
+  <app-aviso-exito [exito]="exito" [mensaje]="mensajeexito"></app-aviso-exito>
+}

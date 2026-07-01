@@ -1,0 +1,146 @@
+<div class="gaveteros-container">
+  <div class="table-header">
+    <div class="header-title">
+      <h1>Gaveteros</h1>
+      <p class="subtitle">Gestión de gaveteros del laboratorio</p>
+    </div>
+  </div>
+  @if (activeTab === "tabla") {
+    <app-buscador
+      [columnas]="columnas"
+      (terminoBusqueda)="aplicarFiltros($event)"
+      (sortChange)="sortTable($event)"
+    >
+      <button class="botoncrear boton-derecha" (click)="creargarvetero()">
+        Nuevo Gavetero
+      </button>
+    </app-buscador>
+  }
+  @if (activeTab === "tabla") {
+    <div class="admin-tabs">
+      <button
+        class="admin-tabs__button"
+        [class.admin-tabs__button--active]="estaTabActiva('tabla')"
+        (click)="seleccionarTab('tabla')"
+      >
+        Tabla
+      </button>
+      <button
+        class="admin-tabs__button"
+        [class.admin-tabs__button--active]="estaTabActiva('auditoria')"
+        (click)="seleccionarTab('auditoria')"
+      >
+        Auditoría
+      </button>
+    </div>
+    <div class="table-responsive" appStickyScroll>
+      <table class="data-table">
+        <thead>
+          <tr>
+            @for (columna of columnas; track columna) {
+              <th>{{ columna }}</th>
+            }
+            <th class="actions-column">Acciones</th>
+          </tr>
+        </thead>
+        <tbody>
+          @for (gavetero of gaveteros; track $index; let i = $index) {
+            <tr>
+              <td>{{ gavetero.Nombre }}</td>
+              <td>{{ gavetero.Tipo }}</td>
+              <td>{{ gavetero.NombreMueble }}</td>
+              <td>{{ gavetero.Longitud }} m</td>
+              <td>{{ gavetero.Altura }} m</td>
+              <td>{{ gavetero.Profundidad }} m</td>
+              <td class="actions-column">
+                <button
+                  class="expand-btn"
+                  [class.open]="expandedRowId === gavetero.Id"
+                  (click)="toggleExpand(gavetero.Id!)"
+                >
+                  <i class="fas fa-chevron-right"></i>
+                </button>
+                <button
+                  class="btn-icon btn-delete"
+                  (click)="eliminarGavetero(gavetero)"
+                >
+                  <i class="fas fa-trash-alt"></i>
+                </button>
+                <button
+                  class="btn-icon btn-edit"
+                  (click)="editarGavetero(gavetero)"
+                >
+                  <i class="fas fa-pencil-alt"></i>
+                </button>
+              </td>
+            </tr>
+            @if (expandedRowId === gavetero.Id) {
+              <tr class="expanded-row">
+                <td colspan="99">
+                  <app-equipos-gavetero-inline
+                    [gaveteroId]="gavetero.Id!"
+                  ></app-equipos-gavetero-inline>
+                </td>
+              </tr>
+            }
+          }
+          @if (gaveteros.length === 0) {
+            <tr>
+              <td colspan="6" class="empty-table">
+                <div class="empty-state">
+                  <i class="fas fa-search fa-3x"></i>
+                  <p>No se encontraron gaveteros</p>
+                </div>
+              </td>
+            </tr>
+          }
+        </tbody>
+      </table>
+    </div>
+  } @else {
+    <app-audit-panel [refreshTrigger]="auditRefresh" [entidad]="'Gavetero'">
+      <div admin-tabs class="admin-tabs">
+        <button
+          class="admin-tabs__button"
+          [class.admin-tabs__button--active]="estaTabActiva('tabla')"
+          (click)="seleccionarTab('tabla')"
+        >
+          Tabla
+        </button>
+        <button
+          class="admin-tabs__button"
+          [class.admin-tabs__button--active]="estaTabActiva('auditoria')"
+          (click)="seleccionarTab('auditoria')"
+        >
+          Auditoría
+        </button>
+      </div>
+    </app-audit-panel>
+  }
+  @if (alertaeliminar) {
+    <app-aviso-eliminar
+      [mensaje]="'¿Estás seguro de que deseas eliminar este gavetero?'"
+      (aceptar)="confirmarEliminacion()"
+      (cancelar)="cancelarEliminacion()"
+    ></app-aviso-eliminar>
+  }
+</div>
+@if (botoncrear()) {
+  <app-gaveteros-crear
+    [botoncrear]="botoncrear"
+    (Actualizar)="cargarGaveteros()"
+  ></app-gaveteros-crear>
+}
+@if (botoneditar()) {
+  <app-gaveteros-editar
+    [botoneditar]="botoneditar"
+    [gavetero]="gaveteroSeleccionado"
+    (actualizar)="cargarGaveteros()"
+  ></app-gaveteros-editar>
+}
+@if (error()) {
+  <app-mostrarerror [error]="error" [mensaje]="mensajeerror"></app-mostrarerror>
+}
+@if (exito()) {
+  <app-aviso-exito [exito]="exito" [mensaje]="mensajeexito"></app-aviso-exito>
+}

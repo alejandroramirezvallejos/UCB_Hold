@@ -1,0 +1,58 @@
+<div class="container-search">
+  <div class="search-input" [class.open]="showCategories">
+    <img class="icon" src="assets/search_line.png" alt="Buscar" />
+    <textarea
+      [(ngModel)]="solicitud"
+      placeholder="Buscar..."
+      rows="1"
+      (keydown.enter)="$event.preventDefault()"
+      (focus)="ocultarCategorias()"
+    ></textarea>
+
+    @if (solicitud) {
+      <button
+        class="clear-search"
+        (click)="limpiarBusqueda()"
+        title="Limpiar búsqueda"
+        type="button"
+      >
+        <i class="fas fa-times"></i>
+      </button>
+    }
+    <img
+      class="icon category-icon"
+      src="assets/categories_line.png"
+      alt="Categorías"
+      (click)="alternarCategorias()"
+    />
+  </div>
+  @if (showCategories) {
+    <div class="categories-panel">
+      <div class="categories-list">
+        <div
+          class="category-item"
+          [class.selected]="estaCategoriaSeleccionada('sinCategoria')"
+          (click)="seleccionarCategoria('sinCategoria')"
+        >
+          Sin categoría
+        </div>
+        @for (item of items; track item.Nombre) {
+          <div
+            class="category-item"
+            [class.selected]="estaCategoriaSeleccionada(item.Nombre!)"
+            (click)="seleccionarCategoria(item.Nombre!)"
+          >
+            {{ item.Nombre }}
+          </div>
+        }
+      </div>
+    </div>
+  }
+</div>
+<app-lista-objetos
+  [categorias]="categoriasArray"
+  [producto]="solicitud"
+></app-lista-objetos>
+@if (error()) {
+  <app-mostrarerror [error]="error" [mensaje]="mensajeerror"></app-mostrarerror>
+}

@@ -1,0 +1,10 @@
+<div class="alerta-eliminar">
+  <div class="modal-content">
+    <button class="cerrar" (click)="onCancelar()" aria-label="Cerrar">
+      <img src="assets/x.png" alt="Cerrar" />
+    </button>
+    <p>{{ mensaje }}</p>
+    <button class="btn btn-confirm" (click)="onAceptar()">Sí</button>
+    <button class="btn btn-cancel" (click)="onCancelar()">No</button>
+  </div>
+</div>

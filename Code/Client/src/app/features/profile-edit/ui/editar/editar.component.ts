@@ -1,0 +1,114 @@
+import {
+  Component,
+  EventEmitter,
+  Input,
+  Output,
+  signal,
+  WritableSignal,
+} from '@angular/core';
+import { Usuario } from '@entities/user';
+import { UsuarioServiceAPI } from '@entities/user';
+import { UsuarioService } from '@entities/user';
+import { CommonModule } from '@angular/common';
+import { FormsModule } from '@angular/forms';
+import { CarreraService } from '@entities/career';
+import { Carrera } from '@entities/admin';
+import { AvisoExitoComponent } from '@shared/ui';
+import { MostrarerrorComponent } from '@shared/ui';
+import { extractErrorMessage } from '@shared/lib/error';
+import { PantallaCargaComponent } from '@shared/ui';
+import { finalize } from 'rxjs';
+
+const CLOSE_SUCCESS_DELAY_MS = 2000;
+
+@Component({
+  selector: 'app-editar',
+  imports: [
+    CommonModule,
+    FormsModule,
+    AvisoExitoComponent,
+    MostrarerrorComponent,
+    PantallaCargaComponent,
+  ],
+  templateUrl: './editar.component.html',
+  styleUrl: './editar.component.css',
+})
+export class EditarComponent {
+  @Input() botoneditar: WritableSignal<boolean> = signal(true);
+  @Input() usuario: Usuario = new Usuario();
+  @Output() guardado = new EventEmitter<Usuario>();
+  localUsuario: Usuario = new Usuario();
+  exito: WritableSignal<boolean> = signal(false);
+  mensajeexito: string = '';
+  error: WritableSignal<boolean> = signal(false);
+  mensajeerror: string = '';
+  carreras: string[] = [];
+  isOpen: boolean = false;
+  isHovered: boolean = false;
+  contrasena: string = '';
+  cargando: boolean = false;
+
+  constructor(
+    private readonly usuarioApi: UsuarioServiceAPI,
+    private readonly carrerasAPI: CarreraService,
+    private readonly usuarioStore: UsuarioService,
+  ) {}
+  toggleDropdown() {
+    this.isOpen = !this.isOpen;
+  }
+  selectCarrera(carrera: string) {
+    this.localUsuario.carrera = carrera;
+    this.isOpen = false;
+  }
+  onMouseEnter() {
+    this.isHovered = true;
+  }
+  onMouseLeave() {
+    this.isHovered = false;
+  }
+  ngOnInit() {
+    this.localUsuario = { ...this.usuario };
+    this.cargarcarrera();
+  }
+  cargarcarrera() {
+    this.carrerasAPI.obtenerCarreras().subscribe({
+      next: (data: Carrera[]) => {
+        this.carreras = data.map((carrera) => carrera.Nombre ?? '');
+      },
+      error: (error) => {
+        const errorMsg = extractErrorMessage(
+          error,
+          'Error al obtener las carreras, intente mas tarde',
+        );
+        this.mensajeerror = errorMsg;
+        this.error.set(true);
+      },
+    });
+  }
+  confirmar() {
+    this.cargando = true;
+    this.usuarioApi
+      .editarUsuario(this.localUsuario, this.contrasena)
+      .pipe(finalize(() => (this.cargando = false)))
+      .subscribe({
+        next: () => {
+          this.usuarioStore.actualizarUsuario({ ...this.localUsuario });
+          this.guardado.emit({ ...this.localUsuario });
+          this.mensajeexito = 'Perfil actualizado correctamente';
+          this.exito.set(true);
+          setTimeout(() => this.cerrar(), CLOSE_SUCCESS_DELAY_MS);
+        },
+        error: (error) => {
+          const errorMsg = extractErrorMessage(
+            error,
+            'Error al actualizar el usuario, intente mas tarde',
+          );
+          this.mensajeerror = errorMsg;
+          this.error.set(true);
+        },
+      });
+  }
+  cerrar() {
+    this.botoneditar.set(false);
+  }
+}

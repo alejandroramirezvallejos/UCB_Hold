@@ -1,0 +1,46 @@
+<div class="form-container">
+  <button class="btn-close" (click)="cerrar()">
+    <img src="assets/x.png" alt="Cerrar" />
+  </button>
+  <div class="form-content">
+    <h2>Editar Carrera</h2>
+    <form #form="ngForm" (ngSubmit)="validaredicion()">
+      <div class="form-group">
+        <label for="nombre">Nombre</label>
+        <input
+          type="text"
+          id="nombre"
+          name="nombre"
+          [(ngModel)]="carrera.Nombre"
+          required
+          maxlength="50"
+          minlength="3"
+          placeholder="Ingresa el nombre de la carrera"
+          class="form-input"
+        />
+      </div>
+      <div class="form-submit">
+        <button type="submit" class="register-button" [disabled]="!form.valid">
+          <span>Actualizar Carrera</span>
+        </button>
+      </div>
+    </form>
+  </div>
+</div>
+@if (error()) {
+  <app-mostrarerror [error]="error" [mensaje]="mensajeerror"></app-mostrarerror>
+}
+@if (aviso()) {
+  <app-aviso
+    [cerrar]="aviso"
+    [mensaje]="mensajeaviso"
+    (aceptar)="confirmar()"
+  ></app-aviso>
+}
+@if (exito()) {
+  <app-aviso-exito
+    [exito]="exito"
+    [mensaje]="mensajeexito"
+    (accion)="cerrar()"
+  ></app-aviso-exito>
+}

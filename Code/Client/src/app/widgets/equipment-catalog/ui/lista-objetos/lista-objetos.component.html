@@ -1,0 +1,154 @@
+<div class="page-wrapper">
+  <div class="grid-container" #gridContainer>
+    @if (productosFiltrados.length > 0) {
+      @for (item of productosActuales; track item.id) {
+        <div
+          class="product-card"
+          title="{{ item.nombre + ' ' + item.modelo + ' ' + item.marca }}"
+        >
+          <a [routerLink]="['/Objeto', item.id]" class="product-card__link">
+            <div class="product-card__image-wrapper">
+              @if (item.link; as imageUrl) {
+                <img
+                  [ngSrc]="imageUrl"
+                  alt="{{ item.nombre + ' ' + item.modelo + ' ' + item.marca }}"
+                  class="product-card__image"
+                  fill
+                  sizes="(max-width: 480px) 45vw, (max-width: 1024px) 200px, 240px"
+                  loading="lazy"
+                  decoding="async"
+                  (error)="item.link = null"
+                />
+              } @else {
+                <div class="product-card__no-image">
+                  <i class="fas fa-image"></i>
+                </div>
+              }
+            </div>
+            <div class="product-card__info">
+              <h3 class="product-card__title">
+                {{ item.nombre + " " + item.modelo + " " + item.marca }}
+              </h3>
+              <div class="product-card__meta">
+                <span class="product-card__imt">IMT</span>
+              </div>
+            </div>
+          </a>
+
+          <div class="product-card__cart">
+            @if ((item.Cantidad ?? 0) <= 0 || sinOperativos(item.id!)) {
+              <span class="product-card__stock-message"
+                >Sin unidades disponibles</span
+              >
+            } @else {
+              <div class="product-card__stepper">
+                <button
+                  class="product-card__stepper-button"
+                  (click)="decrementarCantidad(item.id!, $event)"
+                  [disabled]="getCantidad(item.id!) <= 1"
+                >
+                  −
+                </button>
+                <span class="product-card__stepper-value">{{
+                  getCantidad(item.id!)
+                }}</span>
+                <button
+                  class="product-card__stepper-button"
+                  (click)="
+                    incrementarCantidad(item.id!, item.Cantidad ?? 99, $event)
+                  "
+                  [disabled]="getCantidad(item.id!) >= (item.Cantidad ?? 99)"
+                >
+                  +
+                </button>
+              </div>
+              <button
+                class="product-card__cart-button"
+                [class.product-card__cart-button--added]="addedToCart[item.id!]"
+                (click)="agregarAlCarrito(item, $event)"
+                title="{{
+                  addedToCart[item.id!]
+                    ? 'Quitar del carrito'
+                    : 'Agregar al carrito'
+                }}"
+              >
+                <i
+                  class="fas"
+                  [class.fa-cart-plus]="!addedToCart[item.id!]"
+                  [class.fa-check]="addedToCart[item.id!]"
+                ></i>
+              </button>
+            }
+          </div>
+        </div>
+      }
+    }
+  </div>
+  @if (productosFiltrados.length === 0) {
+    <div class="no-results">
+      <div class="no-results__content">
+        <img
+          src="assets/sad_line.png"
+          alt="Sin resultados"
+          class="no-results__icon"
+          width="18"
+          height="18"
+          loading="lazy"
+          decoding="async"
+        />
+        <p class="no-results__text">Sin resultados</p>
+      </div>
+    </div>
+  }
+  @if (totalPaginas > 1) {
+    <div class="pagination">
+      <button
+        class="pagination__arrow-btn"
+        [class.pagination__arrow--disabled]="!hayPaginasAnteriores"
+        (click)="actualizarPagina(paginaActual - 1)"
+        aria-label="Página anterior"
+      >
+        <img
+          src="assets/back_line.png"
+          alt="Anterior"
+          class="pagination__arrow-img"
+          width="29"
+          height="29"
+        />
+      </button>
+      <div class="pagination__numbers">
+        @for (pagina of obtenerRangoPaginas(); track pagina) {
+          <button
+            class="pagination__button"
+            [class.pagination__button--active]="pagina === paginaActual"
+            (click)="actualizarPagina(pagina)"
+          >
+            {{ pagina + 1 }}
+          </button>
+        }
+      </div>
+      <button
+        class="pagination__arrow-btn"
+        [class.pagination__arrow--disabled]="!hayPaginasSiguientes"
+        (click)="actualizarPagina(paginaActual + 1)"
+        aria-label="Página siguiente"
+      >
+        <img
+          src="assets/forward_line.png"
+          alt="Siguiente"
+          class="pagination__arrow-img"
+          width="29"
+          height="29"
+        />
+      </button>
+    </div>
+  }
+  <footer class="site-footer">
+    <div class="site-footer__content">
+      <p>© Copyright Universidad Católica Boliviana San Pablo 2026</p>
+    </div>
+  </footer>
+</div>
+@if (error()) {
+  <app-mostrarerror [error]="error" [mensaje]="mensajeError"></app-mostrarerror>
+}
