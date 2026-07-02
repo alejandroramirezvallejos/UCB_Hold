@@ -1,10 +1,11 @@
 using Ardalis.Result;
 using FluentValidation;
 using IMT_Reservas.Server.Application.Abstraction;
-using IMT_Reservas.Server.Application.Features.Cache;
 using IMT_Reservas.Server.Application.Features.AuditLog;
+using IMT_Reservas.Server.Application.Features.Cache;
 using IMT_Reservas.Server.Infrastructure.Repositories.Implementations;
 using GrupoEquipoEntity = IMT_Reservas.Server.Core.Entities.GrupoEquipo;
+
 namespace IMT_Reservas.Server.Application.Features.GrupoEquipo;
 
 public class GrupoEquipoService : Service<GrupoEquipoEntity, GrupoEquipoRepository, GrupoEquipoDto>
@@ -12,19 +13,28 @@ public class GrupoEquipoService : Service<GrupoEquipoEntity, GrupoEquipoReposito
     private static readonly TimeSpan GrupoEquipoSearchTtl = TimeSpan.FromMinutes(5);
     private static readonly TimeSpan VersionTtl = TimeSpan.FromDays(30);
     private readonly CacheRepository _cacheRepository;
+    private readonly ISearchIndex<GrupoEquipoDto> _searchIndex;
 
-    public GrupoEquipoService(GrupoEquipoRepository repository,
-        GrupoEquipoMapper mapper, IValidator<GrupoEquipoDto> validator,
-        CacheRepository cacheRepository, AuditLogService audit)
-        : base(repository, validator, mapper, audit) => 
+    public GrupoEquipoService(
+        GrupoEquipoRepository repository,
+        GrupoEquipoMapper mapper,
+        IValidator<GrupoEquipoDto> validator,
+        CacheRepository cacheRepository,
+        AuditLogService audit,
+        ISearchIndex<GrupoEquipoDto> searchIndex
+    )
+        : base(repository, validator, mapper, audit)
+    {
         _cacheRepository = cacheRepository;
+        _searchIndex = searchIndex;
+    }
 
     public override async Task<Result<GrupoEquipoDto>> Create(GrupoEquipoDto dto)
     {
         await ResolveCategoria(dto);
         var validation = await Validator.ValidateAsync(dto);
 
-        if (!validation.IsValid) 
+        if (!validation.IsValid)
             return validation.ToResult<GrupoEquipoDto>();
 
         var createResult = await CreateEntity(MapToEntity(dto));
@@ -32,7 +42,12 @@ public class GrupoEquipoService : Service<GrupoEquipoEntity, GrupoEquipoReposito
         if (createResult.IsSuccess)
         {
             await BumpSearchVersion();
-            await Audit!.Log(AuditAccion.Crear, typeof(GrupoEquipoEntity).Name, createResult.Value?.Id?.ToString());
+            await IndexGrupo(createResult.Value);
+            await Audit!.Log(
+                AuditAccion.Crear,
+                typeof(GrupoEquipoEntity).Name,
+                createResult.Value?.Id?.ToString()
+            );
         }
 
         return createResult;
@@ -44,7 +59,7 @@ public class GrupoEquipoService : Service<GrupoEquipoEntity, GrupoEquipoReposito
         await ResolveCategoria(dto);
         var validation = await Validator.ValidateAsync(dto);
 
-        if (!validation.IsValid) 
+        if (!validation.IsValid)
             return validation.ToResult<GrupoEquipoDto>();
 
         var entity = MapToEntity(dto);
@@ -55,6 +70,7 @@ public class GrupoEquipoService : Service<GrupoEquipoEntity, GrupoEquipoReposito
         if (updateResult.IsSuccess)
         {
             await BumpSearchVersion();
+            await IndexGrupo(updateResult.Value);
             await Audit!.Log(AuditAccion.Editar, typeof(GrupoEquipoEntity).Name, id.ToString());
         }
 
@@ -66,12 +82,43 @@ public class GrupoEquipoService : Service<GrupoEquipoEntity, GrupoEquipoReposito
         var deleteResult = await base.Delete(id);
 
         if (deleteResult.IsSuccess)
+        {
             await BumpSearchVersion();
-        
+            await _searchIndex.Remove(id);
+        }
+
         return deleteResult;
     }
 
-    public virtual async Task<Result<List<GrupoEquipoDto>>> Search(string? nombre = null, string? categoria = null)
+    public virtual async Task<Result<List<GrupoEquipoDto>>> Search(
+        string? nombre = null,
+        string? categoria = null
+    )
+    {
+        if (_searchIndex.Enabled && !string.IsNullOrWhiteSpace(nombre))
+            return await SearchInIndex(nombre, categoria);
+
+        return await SearchInDatabase(nombre, categoria);
+    }
+
+    private async Task<Result<List<GrupoEquipoDto>>> SearchInIndex(string nombre, string? categoria)
+    {
+        var searchResult = await _searchIndex.Search(
+            new SearchQuery(nombre, ["Nombre", "Modelo", "Marca"])
+        );
+
+        if (!searchResult.IsSuccess)
+            return await SearchInDatabase(nombre, categoria);
+
+        return Result<List<GrupoEquipoDto>>.Success(
+            await Repository.GetByIds([.. searchResult.Value], categoria)
+        );
+    }
+
+    private async Task<Result<List<GrupoEquipoDto>>> SearchInDatabase(
+        string? nombre,
+        string? categoria
+    )
     {
         var version = await GetSearchVersion();
         var cacheKey = CacheKeys.GrupoEquipoSearch(nombre ?? string.Empty, categoria, version);
@@ -84,6 +131,12 @@ public class GrupoEquipoService : Service<GrupoEquipoEntity, GrupoEquipoReposito
         _ = await _cacheRepository.Set(cacheKey, equipos, GrupoEquipoSearchTtl);
 
         return Result<List<GrupoEquipoDto>>.Success(equipos);
+    }
+
+    private async Task IndexGrupo(GrupoEquipoDto? grupo)
+    {
+        if (grupo?.Id is int id)
+            await _searchIndex.Index(id, grupo);
     }
 
     private async Task<long> GetSearchVersion()
@@ -100,11 +153,11 @@ public class GrupoEquipoService : Service<GrupoEquipoEntity, GrupoEquipoReposito
 
     private async Task ResolveCategoria(GrupoEquipoDto dto)
     {
-        if ((dto.IdCategoria ?? 0) > 0) 
+        if ((dto.IdCategoria ?? 0) > 0)
             return;
-        if (string.IsNullOrWhiteSpace(dto.NombreCategoria)) 
+        if (string.IsNullOrWhiteSpace(dto.NombreCategoria))
             return;
-            
+
         dto.IdCategoria = await Repository.FindCategoriaIdByNombre(dto.NombreCategoria);
     }
 }

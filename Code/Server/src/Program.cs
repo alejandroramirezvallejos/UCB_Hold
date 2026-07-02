@@ -1,43 +1,44 @@
 using System.Text;
 using System.Threading.RateLimiting;
-using Microsoft.AspNetCore.Authentication.JwtBearer;
-using Microsoft.AspNetCore.RateLimiting;
-using Microsoft.EntityFrameworkCore;
-using Microsoft.IdentityModel.Tokens;
-using Microsoft.OpenApi.Models;
-using Npgsql;
+using Elastic.Clients.Elasticsearch;
 using FluentValidation;
-using StackExchange.Redis;
+using Hangfire;
+using Hangfire.PostgreSql;
 using IMT_Reservas.Server.Application.Abstraction;
 using IMT_Reservas.Server.Application.Features.Accesorio;
+using IMT_Reservas.Server.Application.Features.AuditLog;
 using IMT_Reservas.Server.Application.Features.Carrera;
+using IMT_Reservas.Server.Application.Features.Carrito;
 using IMT_Reservas.Server.Application.Features.Categoria;
 using IMT_Reservas.Server.Application.Features.Componente;
-using IMT_Reservas.Server.Application.Features.Equipo;
+using IMT_Reservas.Server.Application.Features.Contrato;
 using IMT_Reservas.Server.Application.Features.EmpresaMantenimiento;
+using IMT_Reservas.Server.Application.Features.Equipo;
 using IMT_Reservas.Server.Application.Features.Gavetero;
 using IMT_Reservas.Server.Application.Features.GrupoEquipo;
 using IMT_Reservas.Server.Application.Features.Mantenimiento;
 using IMT_Reservas.Server.Application.Features.Mueble;
 using IMT_Reservas.Server.Application.Features.Prestamo;
 using IMT_Reservas.Server.Application.Features.Usuario;
-using JwtSettings  = IMT_Reservas.Server.Application.Features.Jwt.JwtSettings;
-using JwtSvc       = IMT_Reservas.Server.Application.Features.Jwt.JwtService;
-using IMT_Reservas.Server.Application.Features.Carrito;
-using IMT_Reservas.Server.Application.Features.AuditLog;
-using IMT_Reservas.Server.Application.Features.Contrato;
-using Hangfire;
-using Hangfire.PostgreSql;
 using IMT_Reservas.Server.Core.Entities;
-using IMT_Reservas.Server.Infrastructure.Jobs;
 using IMT_Reservas.Server.Infrastructure.Config;
+using IMT_Reservas.Server.Infrastructure.Jobs;
 using IMT_Reservas.Server.Infrastructure.Repositories.Abstraction;
 using IMT_Reservas.Server.Infrastructure.Repositories.Implementations;
-using IMT_Reservas.Server.Presentation.Middleware;
+using IMT_Reservas.Server.Presentation.Errors;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.AspNetCore.RateLimiting;
+using Microsoft.EntityFrameworkCore;
+using Microsoft.IdentityModel.Tokens;
+using Microsoft.OpenApi.Models;
+using Npgsql;
+using StackExchange.Redis;
 using CarreraEntity = IMT_Reservas.Server.Core.Entities.Carrera;
 using CategoriaEntity = IMT_Reservas.Server.Core.Entities.Categoria;
-using MuebleEntity = IMT_Reservas.Server.Core.Entities.Mueble;
 using EmpresaMantenimientoEntity = IMT_Reservas.Server.Core.Entities.EmpresaMantenimiento;
+using JwtSettings = IMT_Reservas.Server.Application.Features.Jwt.JwtSettings;
+using JwtSvc = IMT_Reservas.Server.Application.Features.Jwt.JwtService;
+using MuebleEntity = IMT_Reservas.Server.Core.Entities.Mueble;
 
 AppContext.SetSwitch("Npgsql.EnableLegacyTimestampBehavior", true);
 
@@ -50,47 +51,62 @@ dataSourceBuilder.MapEnum<TipoUsuario>("tipo_usuario");
 dataSourceBuilder.MapEnum<EstadoEquipo>("estado_equipo");
 var dataSource = dataSourceBuilder.Build();
 
-builder.Services.AddDbContext<ApplicationDbContext>(options =>
-    options.UseNpgsql(dataSource));
+builder.Services.AddDbContext<ApplicationDbContext>(options => options.UseNpgsql(dataSource));
 
-builder.Services.AddControllers().AddJsonOptions(options =>
-{
-    options.JsonSerializerOptions.PropertyNamingPolicy = null;
-});
+builder
+    .Services.AddControllers()
+    .AddJsonOptions(options =>
+    {
+        options.JsonSerializerOptions.PropertyNamingPolicy = null;
+    });
 
 var allowedOrigins = builder.Configuration.GetSection("AllowedOrigins").Get<string[]>() ?? [];
 
 builder.Services.AddCors(options =>
 {
-    options.AddPolicy("AllowFrontend", corsBuilder =>
-    {
-        corsBuilder.WithOrigins(allowedOrigins)
-               .AllowAnyMethod()
-               .AllowAnyHeader()
-               .AllowCredentials();
-    });
+    options.AddPolicy(
+        "AllowFrontend",
+        corsBuilder =>
+        {
+            corsBuilder
+                .WithOrigins(allowedOrigins)
+                .AllowAnyMethod()
+                .AllowAnyHeader()
+                .AllowCredentials();
+        }
+    );
 });
 
 builder.Services.AddEndpointsApiExplorer();
+builder.Services.AddExceptionHandler<ExceptionHandler>();
 builder.Services.AddSwaggerGen(options =>
 {
-    options.AddSecurityDefinition("Bearer", new OpenApiSecurityScheme
-    {
-        Type         = SecuritySchemeType.Http,
-        Scheme       = "bearer",
-        BearerFormat = "JWT",
-        Description  = "Paste your JWT access token here"
-    });
-    options.AddSecurityRequirement(new OpenApiSecurityRequirement
-    {
+    options.AddSecurityDefinition(
+        "Bearer",
+        new OpenApiSecurityScheme
         {
-            new OpenApiSecurityScheme
-            {
-                Reference = new OpenApiReference { Type = ReferenceType.SecurityScheme, Id = "Bearer" }
-            },
-            Array.Empty<string>()
+            Type = SecuritySchemeType.Http,
+            Scheme = "bearer",
+            BearerFormat = "JWT",
+            Description = "Paste your JWT access token here",
         }
-    });
+    );
+    options.AddSecurityRequirement(
+        new OpenApiSecurityRequirement
+        {
+            {
+                new OpenApiSecurityScheme
+                {
+                    Reference = new OpenApiReference
+                    {
+                        Type = ReferenceType.SecurityScheme,
+                        Id = "Bearer",
+                    },
+                },
+                Array.Empty<string>()
+            },
+        }
+    );
 });
 builder.Services.AddHealthChecks();
 
@@ -99,23 +115,23 @@ builder.Services.AddSingleton<JwtSvc>();
 
 var jwtSettings = builder.Configuration.GetSection("Jwt").Get<JwtSettings>()!;
 
-builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
+builder
+    .Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
     .AddJwtBearer(options =>
     {
         options.MapInboundClaims = false;
         options.TokenValidationParameters = new TokenValidationParameters
         {
-            ValidateIssuer           = true,
-            ValidateAudience         = true,
-            ValidateLifetime         = true,
+            ValidateIssuer = true,
+            ValidateAudience = true,
+            ValidateLifetime = true,
             ValidateIssuerSigningKey = true,
-            ValidIssuer              = jwtSettings.Issuer,
-            ValidAudience            = jwtSettings.Audience,
-            IssuerSigningKey         = new SymmetricSecurityKey(
-                                           Encoding.UTF8.GetBytes(jwtSettings.Key)),
-            RoleClaimType            = "role",
-            NameClaimType            = "sub",
-            ClockSkew                = TimeSpan.Zero
+            ValidIssuer = jwtSettings.Issuer,
+            ValidAudience = jwtSettings.Audience,
+            IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(jwtSettings.Key)),
+            RoleClaimType = "role",
+            NameClaimType = "sub",
+            ClockSkew = TimeSpan.Zero,
         };
     });
 
@@ -144,10 +160,16 @@ builder.Services.AddScoped<GaveteroService>();
 builder.Services.AddScoped<ContratoService>();
 builder.Services.AddScoped<ComponenteService>();
 
-builder.Services.AddScoped<Service<CarreraEntity, Repository<CarreraEntity, CarreraDto>, CarreraDto>>();
-builder.Services.AddScoped<Service<CategoriaEntity, Repository<CategoriaEntity, CategoriaDto>, CategoriaDto>>();
+builder.Services.AddScoped<
+    Service<CarreraEntity, Repository<CarreraEntity, CarreraDto>, CarreraDto>
+>();
+builder.Services.AddScoped<
+    Service<CategoriaEntity, Repository<CategoriaEntity, CategoriaDto>, CategoriaDto>
+>();
 builder.Services.AddScoped<Service<MuebleEntity, Repository<MuebleEntity, MuebleDto>, MuebleDto>>();
-builder.Services.AddScoped<Service<EmpresaMantenimientoEntity, EmpresaMantenimientoRepository, EmpresaMantenimientoDto>>();
+builder.Services.AddScoped<
+    Service<EmpresaMantenimientoEntity, EmpresaMantenimientoRepository, EmpresaMantenimientoDto>
+>();
 
 builder.Services.AddSingleton<UsuarioMapper>();
 builder.Services.AddSingleton<PrestamoMapper>();
@@ -163,32 +185,45 @@ builder.Services.AddSingleton<AccesorioMapper>();
 builder.Services.AddSingleton<ComponenteMapper>();
 builder.Services.AddSingleton<ContratoMapper>();
 
-builder.Services.AddSingleton<IMapper<Usuario, UsuarioDto>>(
-    sp => sp.GetRequiredService<UsuarioMapper>());
-builder.Services.AddSingleton<IMapper<Prestamo, PrestamoDto>>(
-    sp => sp.GetRequiredService<PrestamoMapper>());
-builder.Services.AddSingleton<IMapper<Equipo, EquipoDto>>(
-    sp => sp.GetRequiredService<EquipoMapper>());
-builder.Services.AddSingleton<IMapper<CarreraEntity, CarreraDto>>(
-    sp => sp.GetRequiredService<CarreraMapper>());
-builder.Services.AddSingleton<IMapper<CategoriaEntity, CategoriaDto>>(
-    sp => sp.GetRequiredService<CategoriaMapper>());
-builder.Services.AddSingleton<IMapper<GrupoEquipo, GrupoEquipoDto>>(
-    sp => sp.GetRequiredService<GrupoEquipoMapper>());
-builder.Services.AddSingleton<IMapper<Gavetero, GaveteroDto>>(
-    sp => sp.GetRequiredService<GaveteroMapper>());
-builder.Services.AddSingleton<IMapper<MuebleEntity, MuebleDto>>(
-    sp => sp.GetRequiredService<MuebleMapper>());
-builder.Services.AddSingleton<IMapper<Mantenimiento, MantenimientoDto>>(
-    sp => sp.GetRequiredService<MantenimientoMapper>());
-builder.Services.AddSingleton<IMapper<EmpresaMantenimientoEntity, EmpresaMantenimientoDto>>(
-    sp => sp.GetRequiredService<EmpresaMantenimientoMapper>());
-builder.Services.AddSingleton<IMapper<Accesorio, AccesorioDto>>(
-    sp => sp.GetRequiredService<AccesorioMapper>());
-builder.Services.AddSingleton<IMapper<Componente, ComponenteDto>>(
-    sp => sp.GetRequiredService<ComponenteMapper>());
-builder.Services.AddSingleton<IMapper<Contrato, ContratoDto>>(
-    sp => sp.GetRequiredService<ContratoMapper>());
+builder.Services.AddSingleton<IMapper<Usuario, UsuarioDto>>(sp =>
+    sp.GetRequiredService<UsuarioMapper>()
+);
+builder.Services.AddSingleton<IMapper<Prestamo, PrestamoDto>>(sp =>
+    sp.GetRequiredService<PrestamoMapper>()
+);
+builder.Services.AddSingleton<IMapper<Equipo, EquipoDto>>(sp =>
+    sp.GetRequiredService<EquipoMapper>()
+);
+builder.Services.AddSingleton<IMapper<CarreraEntity, CarreraDto>>(sp =>
+    sp.GetRequiredService<CarreraMapper>()
+);
+builder.Services.AddSingleton<IMapper<CategoriaEntity, CategoriaDto>>(sp =>
+    sp.GetRequiredService<CategoriaMapper>()
+);
+builder.Services.AddSingleton<IMapper<GrupoEquipo, GrupoEquipoDto>>(sp =>
+    sp.GetRequiredService<GrupoEquipoMapper>()
+);
+builder.Services.AddSingleton<IMapper<Gavetero, GaveteroDto>>(sp =>
+    sp.GetRequiredService<GaveteroMapper>()
+);
+builder.Services.AddSingleton<IMapper<MuebleEntity, MuebleDto>>(sp =>
+    sp.GetRequiredService<MuebleMapper>()
+);
+builder.Services.AddSingleton<IMapper<Mantenimiento, MantenimientoDto>>(sp =>
+    sp.GetRequiredService<MantenimientoMapper>()
+);
+builder.Services.AddSingleton<IMapper<EmpresaMantenimientoEntity, EmpresaMantenimientoDto>>(sp =>
+    sp.GetRequiredService<EmpresaMantenimientoMapper>()
+);
+builder.Services.AddSingleton<IMapper<Accesorio, AccesorioDto>>(sp =>
+    sp.GetRequiredService<AccesorioMapper>()
+);
+builder.Services.AddSingleton<IMapper<Componente, ComponenteDto>>(sp =>
+    sp.GetRequiredService<ComponenteMapper>()
+);
+builder.Services.AddSingleton<IMapper<Contrato, ContratoDto>>(sp =>
+    sp.GetRequiredService<ContratoMapper>()
+);
 
 builder.Services.AddScoped<IValidator<AccesorioDto>, AccesorioValidator>();
 builder.Services.AddScoped<IValidator<CarreraDto>, CarreraValidator>();
@@ -208,19 +243,32 @@ var redisConnectionString = builder.Configuration["Redis:ConnectionString"];
 if (!string.IsNullOrWhiteSpace(redisConnectionString))
 {
     var redisConfig = ConfigurationOptions.Parse(redisConnectionString);
-    redisConfig.ConnectTimeout     = 5000;
-    redisConfig.SyncTimeout        = 1000;
+    redisConfig.ConnectTimeout = 5000;
+    redisConfig.SyncTimeout = 1000;
     redisConfig.AbortOnConnectFail = false;
-    redisConfig.ConnectRetry       = 3;
+    redisConfig.ConnectRetry = 3;
     builder.Services.AddStackExchangeRedisCache(options =>
     {
         options.ConfigurationOptions = redisConfig;
-        options.InstanceName         = builder.Configuration["Redis:InstanceName"];
+        options.InstanceName = builder.Configuration["Redis:InstanceName"];
     });
 }
 else
     builder.Services.AddDistributedMemoryCache();
 builder.Services.AddSingleton<CacheRepository>();
+
+var elasticUri = builder.Configuration["Elasticsearch:Uri"];
+if (!string.IsNullOrWhiteSpace(elasticUri))
+{
+    var elasticSettings = new ElasticsearchClientSettings(
+        new Uri(elasticUri)
+    ).DefaultFieldNameInferrer(name => name);
+    builder.Services.AddSingleton(new ElasticsearchClient(elasticSettings));
+    builder.Services.AddSingleton(typeof(ISearchIndex<>), typeof(ElasticSearchIndex<>));
+    builder.Services.AddHostedService<SearchReindexer>();
+}
+else
+    builder.Services.AddSingleton(typeof(ISearchIndex<>), typeof(NullSearchIndex<>));
 
 builder.Services.Configure<CookiePolicyOptions>(options =>
 {
@@ -233,8 +281,9 @@ builder.Services.AddHttpContextAccessor();
 builder.Services.AddScoped<AuditLogRepository>();
 builder.Services.AddScoped<AuditLogService>();
 
-
-builder.Services.AddHangfire(config => config.UsePostgreSqlStorage(options => options.UseNpgsqlConnection(connectionString)));
+builder.Services.AddHangfire(config =>
+    config.UsePostgreSqlStorage(options => options.UseNpgsqlConnection(connectionString))
+);
 builder.Services.AddHangfireServer();
 
 builder.Services.AddRateLimiter(options =>
@@ -246,25 +295,30 @@ builder.Services.AddRateLimiter(options =>
         await context.HttpContext.Response.WriteAsync("Demasiadas solicitudes.", ct);
     };
 
-    options.AddFixedWindowLimiter("auth", o =>
-    {
-        o.PermitLimit          = 10;
-        o.Window               = TimeSpan.FromMinutes(1);
-        o.QueueProcessingOrder = QueueProcessingOrder.OldestFirst;
-        o.QueueLimit           = 0;
-    });
+    options.AddFixedWindowLimiter(
+        "auth",
+        o =>
+        {
+            o.PermitLimit = 10;
+            o.Window = TimeSpan.FromMinutes(1);
+            o.QueueProcessingOrder = QueueProcessingOrder.OldestFirst;
+            o.QueueLimit = 0;
+        }
+    );
 
     options.GlobalLimiter = PartitionedRateLimiter.Create<HttpContext, string>(ctx =>
         RateLimitPartition.GetSlidingWindowLimiter(
             ctx.Connection.RemoteIpAddress?.ToString() ?? "unknown",
             _ => new SlidingWindowRateLimiterOptions
             {
-                PermitLimit          = 100,
-                Window               = TimeSpan.FromMinutes(1),
-                SegmentsPerWindow    = 6,
+                PermitLimit = 100,
+                Window = TimeSpan.FromMinutes(1),
+                SegmentsPerWindow = 6,
                 QueueProcessingOrder = QueueProcessingOrder.OldestFirst,
-                QueueLimit           = 0
-            }));
+                QueueLimit = 0,
+            }
+        )
+    );
 });
 
 var app = builder.Build();
@@ -277,27 +331,41 @@ if (!app.Environment.IsDevelopment())
     app.UseHttpsRedirection();
 }
 
-app.Use(async (HttpContext ctx, Func<Task> next) =>
-{
-    ctx.Response.Headers.Append("X-Content-Type-Options",  "nosniff");
-    ctx.Response.Headers.Append("X-Frame-Options",         "DENY");
-    ctx.Response.Headers.Append("Referrer-Policy",         "strict-origin-when-cross-origin");
-    ctx.Response.Headers.Append("Permissions-Policy",      "camera=(), microphone=(), geolocation=()");
-    ctx.Response.Headers.Append("X-XSS-Protection",        "1; mode=block");
+app.Use(
+    async (HttpContext ctx, Func<Task> next) =>
+    {
+        ctx.Response.Headers.Append("X-Content-Type-Options", "nosniff");
+        ctx.Response.Headers.Append("X-Frame-Options", "DENY");
+        ctx.Response.Headers.Append("Referrer-Policy", "strict-origin-when-cross-origin");
+        ctx.Response.Headers.Append(
+            "Permissions-Policy",
+            "camera=(), microphone=(), geolocation=()"
+        );
+        ctx.Response.Headers.Append("X-XSS-Protection", "1; mode=block");
 
-    if (ctx.Request.Path.StartsWithSegments("/api")){
-        ctx.Response.Headers.Append("Content-Security-Policy", "default-src 'self'; frame-ancestors 'none'; object-src 'none'; base-uri 'self'; form-action 'self';");
-    }else{
-        #pragma warning disable S7039
-        ctx.Response.Headers.Append("Content-Security-Policy", "default-src 'self'; script-src 'self' 'unsafe-inline'; style-src 'self' 'unsafe-inline'; frame-ancestors 'none'; object-src 'none'; base-uri 'self'; form-action 'self';");
-        #pragma warning restore S7039
+        if (ctx.Request.Path.StartsWithSegments("/api"))
+        {
+            ctx.Response.Headers.Append(
+                "Content-Security-Policy",
+                "default-src 'self'; frame-ancestors 'none'; object-src 'none'; base-uri 'self'; form-action 'self';"
+            );
+        }
+        else
+        {
+#pragma warning disable S7039
+            ctx.Response.Headers.Append(
+                "Content-Security-Policy",
+                "default-src 'self'; script-src 'self' 'unsafe-inline'; style-src 'self' 'unsafe-inline'; frame-ancestors 'none'; object-src 'none'; base-uri 'self'; form-action 'self';"
+            );
+#pragma warning restore S7039
+        }
+        await next();
     }
-    await next();
-});
+);
 
 app.UseRateLimiter();
 app.UseCors("AllowFrontend");
-app.UseExceptionMiddleware();
+app.UseExceptionHandler(_ => { });
 
 if (app.Environment.IsDevelopment())
 {
@@ -313,6 +381,7 @@ app.UseHangfireDashboard();
 RecurringJob.AddOrUpdate<EstadoPrestamoJob>(
     "estado-prestamo",
     job => job.Execute(),
-    "*/10 * * * *");
+    "*/10 * * * *"
+);
 
 await app.RunAsync();
