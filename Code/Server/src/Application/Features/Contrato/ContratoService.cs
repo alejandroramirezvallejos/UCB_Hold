@@ -3,11 +3,16 @@ using FluentValidation;
 using IMT_Reservas.Server.Application.Abstraction;
 using IMT_Reservas.Server.Infrastructure.Repositories.Implementations;
 using ContratoEntity = IMT_Reservas.Server.Core.Entities.Contrato;
+
 namespace IMT_Reservas.Server.Application.Features.Contrato;
 
 public class ContratoService : Service<ContratoEntity, ContratoRepository, ContratoDto>
 {
-    public ContratoService(ContratoRepository repository, ContratoMapper mapper, IValidator<ContratoDto> validator)
+    public ContratoService(
+        ContratoRepository repository,
+        ContratoMapper mapper,
+        IValidator<ContratoDto> validator
+    )
         : base(repository, validator, mapper) { }
 
     public async Task<Result<ContratoDto>> CreateForPrestamo(int prestamoId, string contenidoHtml)
@@ -30,7 +35,9 @@ public class ContratoService : Service<ContratoEntity, ContratoRepository, Contr
         var result = await Repository.Create(contrato);
 
         if (!result.IsSuccess)
-            return Result<ContratoDto>.Error(result.Errors.FirstOrDefault() ?? "Error al crear contrato");
+            return Result<ContratoDto>.Error(
+                result.Errors.FirstOrDefault() ?? "Error al crear contrato"
+            );
 
         prestamo.IdContrato = result.Value.Id;
         await Repository.SavePrestamo(prestamo);
@@ -43,7 +50,9 @@ public class ContratoService : Service<ContratoEntity, ContratoRepository, Contr
         var result = await Repository.GetEntityByPrestamoId(prestamoId);
 
         if (!result.IsSuccess)
-            return Result<ContratoDto>.Error(result.Errors.FirstOrDefault() ?? "Contrato no encontrado");
+            return Result<ContratoDto>.Error(
+                result.Errors.FirstOrDefault() ?? "Contrato no encontrado"
+            );
 
         return Result<ContratoDto>.Success(MapToDto(result.Value));
     }

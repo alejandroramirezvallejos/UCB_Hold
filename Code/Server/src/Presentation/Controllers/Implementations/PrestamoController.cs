@@ -1,8 +1,9 @@
 using IMT_Reservas.Server.Application.Features.Contrato;
 using IMT_Reservas.Server.Application.Features.Prestamo;
-using Controller = IMT_Reservas.Server.Presentation.Controllers.Abstraction.Controller;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using Controller = IMT_Reservas.Server.Presentation.Controllers.Abstraction.Controller;
+
 namespace IMT_Reservas.Server.Presentation.Controllers.Implementations;
 
 [Authorize]
@@ -20,12 +21,10 @@ public class PrestamoController : Controller
 
     [Authorize(Roles = "administrador")]
     [HttpGet]
-    public async Task<IActionResult> GetAll()
-        => ToResponse(await _service.GetAll());
+    public async Task<IActionResult> GetAll() => ToResponse(await _service.GetAll());
 
     [HttpGet("{id:int}")]
-    public async Task<IActionResult> Get(int id)
-        => ToResponse(await _service.Get(id));
+    public async Task<IActionResult> Get(int id) => ToResponse(await _service.Get(id));
 
     [HttpPost]
     public async Task<IActionResult> Create([FromBody] PrestamoDto request)
@@ -35,8 +34,8 @@ public class PrestamoController : Controller
     }
 
     [HttpPut("{id:int}")]
-    public async Task<IActionResult> Update(int id, [FromBody] PrestamoDto dto)
-        => ToResponse(await _service.Update(id, dto));
+    public async Task<IActionResult> Update(int id, [FromBody] PrestamoDto dto) =>
+        ToResponse(await _service.Update(id, dto));
 
     [Authorize(Roles = "administrador")]
     [HttpPut("{id:int}/estado")]
@@ -44,21 +43,22 @@ public class PrestamoController : Controller
         int id,
         [FromQuery] string estado,
         [FromQuery] string? observacion = null,
-        [FromBody] PrestamoDto? body = null)
-        => ToResponse(await _service.UpdateStatus(id, estado, observacion, body));
+        [FromBody] PrestamoDto? body = null
+    ) => ToResponse(await _service.UpdateStatus(id, estado, observacion, body));
 
     [HttpDelete("{id:int}")]
-    public async Task<IActionResult> Delete(int id)
-        => ToDeleteResponse(await _service.Delete(id));
+    public async Task<IActionResult> Delete(int id) => ToDeleteResponse(await _service.Delete(id));
 
     [HttpGet("historial")]
-    public async Task<IActionResult> GetHistory([FromQuery] string carnetUsuario, [FromQuery] string estadoPrestamo)
-        => ToResponse(await _service.GetHistory(carnetUsuario, estadoPrestamo));
+    public async Task<IActionResult> GetHistory(
+        [FromQuery] string carnetUsuario,
+        [FromQuery] string estadoPrestamo
+    ) => ToResponse(await _service.GetHistory(carnetUsuario, estadoPrestamo));
 
     [Authorize(Roles = "administrador")]
     [HttpGet("byUsuario/{carnet}")]
-    public async Task<IActionResult> GetByUsuario(string carnet)
-        => ToResponse(await _service.GetHistory(carnet, string.Empty));
+    public async Task<IActionResult> GetByUsuario(string carnet) =>
+        ToResponse(await _service.GetHistory(carnet, string.Empty));
 
     [HttpGet("contrato/{prestamoId}")]
     public async Task<IActionResult> GetContrato(int prestamoId)

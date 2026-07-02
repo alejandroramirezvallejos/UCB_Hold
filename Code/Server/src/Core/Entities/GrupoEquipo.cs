@@ -1,5 +1,6 @@
 using System.ComponentModel.DataAnnotations.Schema;
 using IMT_Reservas.Server.Core.Abstraction;
+
 namespace IMT_Reservas.Server.Core.Entities;
 
 public class GrupoEquipo : Entity
@@ -13,7 +14,7 @@ public class GrupoEquipo : Entity
     public string? UrlDataSheet { get; set; }
     public int Cantidad { get; set; }
     public decimal? CostoPromedio { get; set; }
+
     [ForeignKey("IdCategoria")]
     public Categoria? Categoria { get; set; }
 }
-

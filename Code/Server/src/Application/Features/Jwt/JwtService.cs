@@ -5,6 +5,7 @@ using System.Text;
 using IMT_Reservas.Server.Application.Features.Usuario;
 using Microsoft.Extensions.Options;
 using Microsoft.IdentityModel.Tokens;
+
 namespace IMT_Reservas.Server.Application.Features.Jwt;
 
 public class JwtService
@@ -15,28 +16,33 @@ public class JwtService
 
     public string GenerateAccessToken(UsuarioDto usuario)
     {
-        var signingKey         = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_settings.Key));
+        var signingKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_settings.Key));
         var signingCredentials = new SigningCredentials(signingKey, SecurityAlgorithms.HmacSha256);
-        var issuedAt           = DateTime.UtcNow;
-        var expiresAt          = issuedAt.AddMinutes(_settings.ExpiresInMinutes);
+        var issuedAt = DateTime.UtcNow;
+        var expiresAt = issuedAt.AddMinutes(_settings.ExpiresInMinutes);
 
         var claims = new[]
         {
-            new Claim(JwtRegisteredClaimNames.Sub,   usuario.Carnet ?? string.Empty),
-            new Claim(JwtRegisteredClaimNames.Email, usuario.Email  ?? string.Empty),
-            new Claim(JwtRegisteredClaimNames.Jti,   Guid.NewGuid().ToString()),
-            new Claim(JwtRegisteredClaimNames.Iat,   new DateTimeOffset(issuedAt).ToUnixTimeSeconds().ToString(), ClaimValueTypes.Integer64),
-            new Claim("role",   usuario.Rol?.ToLower() ?? "estudiante"),
+            new Claim(JwtRegisteredClaimNames.Sub, usuario.Carnet ?? string.Empty),
+            new Claim(JwtRegisteredClaimNames.Email, usuario.Email ?? string.Empty),
+            new Claim(JwtRegisteredClaimNames.Jti, Guid.NewGuid().ToString()),
+            new Claim(
+                JwtRegisteredClaimNames.Iat,
+                new DateTimeOffset(issuedAt).ToUnixTimeSeconds().ToString(),
+                ClaimValueTypes.Integer64
+            ),
+            new Claim("role", usuario.Rol?.ToLower() ?? "estudiante"),
             new Claim("nombre", usuario.Nombre ?? string.Empty),
         };
 
         var securityToken = new JwtSecurityToken(
-            issuer:             _settings.Issuer,
-            audience:           _settings.Audience,
-            claims:             claims,
-            notBefore:          issuedAt,
-            expires:            expiresAt,
-            signingCredentials: signingCredentials);
+            issuer: _settings.Issuer,
+            audience: _settings.Audience,
+            claims: claims,
+            notBefore: issuedAt,
+            expires: expiresAt,
+            signingCredentials: signingCredentials
+        );
 
         return new JwtSecurityTokenHandler().WriteToken(securityToken);
     }
@@ -45,7 +51,7 @@ public class JwtService
     {
         var randomBytes = new byte[64];
         RandomNumberGenerator.Fill(randomBytes);
-       
+
         return Convert.ToBase64String(randomBytes);
     }
 }

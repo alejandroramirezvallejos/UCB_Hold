@@ -4,9 +4,12 @@ using IMT_Reservas.Server.Application.Abstraction;
 using IMT_Reservas.Server.Core.Abstraction;
 using IMT_Reservas.Server.Infrastructure.Config;
 using Microsoft.EntityFrameworkCore;
+
 namespace IMT_Reservas.Server.Infrastructure.Repositories.Abstraction;
 
-public class Repository<TEntity, TDto> where TEntity : Entity where TDto : class
+public class Repository<TEntity, TDto>
+    where TEntity : Entity
+    where TDto : class
 {
     protected readonly ApplicationDbContext DbContext;
     private readonly IMapper<TEntity, TDto> _mapper;
@@ -56,8 +59,10 @@ public class Repository<TEntity, TDto> where TEntity : Entity where TDto : class
 
     protected async Task CascadeThrough<TChild, TChildDto>(
         Repository<TChild, TChildDto> childRepository,
-        Expression<Func<TChild, bool>> dependents)
-        where TChild : Entity where TChildDto : class
+        Expression<Func<TChild, bool>> dependents
+    )
+        where TChild : Entity
+        where TChildDto : class
     {
         var children = await DbContext.Set<TChild>().Where(dependents).ToListAsync();
 
@@ -78,8 +83,8 @@ public class Repository<TEntity, TDto> where TEntity : Entity where TDto : class
 
     public virtual async Task<Result<TDto>> Get(int id)
     {
-        var dto = await _mapper.ProjectTo(
-            DbContext.Set<TEntity>().AsNoTracking().Where(e => e.Id == id))
+        var dto = await _mapper
+            .ProjectTo(DbContext.Set<TEntity>().AsNoTracking().Where(e => e.Id == id))
             .FirstOrDefaultAsync();
 
         return dto == null ? Result<TDto>.NotFound() : Result<TDto>.Success(dto);

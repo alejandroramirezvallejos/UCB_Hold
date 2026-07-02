@@ -5,6 +5,7 @@ using IMT_Reservas.Server.Infrastructure.Repositories.Abstraction;
 using Microsoft.EntityFrameworkCore;
 using ContratoEntity = IMT_Reservas.Server.Core.Entities.Contrato;
 using PrestamoEntity = IMT_Reservas.Server.Core.Entities.Prestamo;
+
 namespace IMT_Reservas.Server.Infrastructure.Repositories.Implementations;
 
 public class ContratoRepository : Repository<ContratoEntity, ContratoDto>
@@ -14,12 +15,15 @@ public class ContratoRepository : Repository<ContratoEntity, ContratoDto>
 
     public async Task<Result<ContratoEntity>> GetEntityByPrestamoId(int prestamoId)
     {
-        var prestamo = await DbContext.Prestamos.AsNoTracking().FirstOrDefaultAsync(prestamo => prestamo.Id == prestamoId);
+        var prestamo = await DbContext
+            .Prestamos.AsNoTracking()
+            .FirstOrDefaultAsync(prestamo => prestamo.Id == prestamoId);
 
         if (prestamo == null || !prestamo.IdContrato.HasValue)
             return Result<ContratoEntity>.Error("Préstamo no encontrado o no tiene contrato");
 
-        var contrato = await DbContext.Contratos.AsNoTracking()
+        var contrato = await DbContext
+            .Contratos.AsNoTracking()
             .FirstOrDefaultAsync(contrato => contrato.Id == prestamo.IdContrato.Value);
 
         if (contrato == null)
@@ -35,7 +39,9 @@ public class ContratoRepository : Repository<ContratoEntity, ContratoDto>
         if (prestamo == null || !prestamo.IdContrato.HasValue)
             return Result<object>.Error("Préstamo no encontrado o no tiene contrato");
 
-        var contrato = await DbContext.Contratos.FirstOrDefaultAsync(contrato => contrato.Id == prestamo.IdContrato.Value);
+        var contrato = await DbContext.Contratos.FirstOrDefaultAsync(contrato =>
+            contrato.Id == prestamo.IdContrato.Value
+        );
 
         if (contrato == null)
             return Result<object>.Error("Contrato no encontrado");
@@ -48,8 +54,8 @@ public class ContratoRepository : Repository<ContratoEntity, ContratoDto>
         return Result<object>.Success(new { });
     }
 
-    public async Task<PrestamoEntity?> FindPrestamoById(int prestamoId)
-        => await DbContext.Prestamos.FirstOrDefaultAsync(p => p.Id == prestamoId);
+    public async Task<PrestamoEntity?> FindPrestamoById(int prestamoId) =>
+        await DbContext.Prestamos.FirstOrDefaultAsync(p => p.Id == prestamoId);
 
     public async Task SavePrestamo(PrestamoEntity prestamo)
     {

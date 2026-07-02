@@ -7,16 +7,20 @@ using IMT_Reservas.Server.Application.Features.Prestamo.State;
 using IMT_Reservas.Server.Core.Entities;
 using IMT_Reservas.Server.Infrastructure.Repositories.Implementations;
 using PrestamoEntity = IMT_Reservas.Server.Core.Entities.Prestamo;
+
 namespace IMT_Reservas.Server.Application.Features.Prestamo;
 
 public class PrestamoService : Service<PrestamoEntity, PrestamoRepository, PrestamoDto>
 {
     private readonly PrestamoMapper _mapper;
 
-    public PrestamoService(PrestamoRepository repository, PrestamoMapper mapper,
-        IValidator<PrestamoDto> validator, AuditLogService audit)
-        : base(repository, validator, mapper, audit) =>
-        _mapper = mapper;
+    public PrestamoService(
+        PrestamoRepository repository,
+        PrestamoMapper mapper,
+        IValidator<PrestamoDto> validator,
+        AuditLogService audit
+    )
+        : base(repository, validator, mapper, audit) => _mapper = mapper;
 
     public override async Task<Result<PrestamoDto>> Create(PrestamoDto dto)
     {
@@ -28,7 +32,9 @@ public class PrestamoService : Service<PrestamoEntity, PrestamoRepository, Prest
         var entity = MapToEntity(dto);
 
         if (await Repository.HasAtrasadoPrestamo(entity.Carnet!))
-            return Result<PrestamoDto>.Error("Tiene un préstamo con devolución atrasada. Devuelva los equipos antes de realizar una nueva reserva.");
+            return Result<PrestamoDto>.Error(
+                "Tiene un préstamo con devolución atrasada. Devuelva los equipos antes de realizar una nueva reserva."
+            );
 
         entity.FechaSolicitud = dto.FechaSolicitud ?? DateTime.UtcNow;
         entity.FechaPrestamo = dto.FechaPrestamo ?? dto.FechaPrestamoEsperada;
@@ -39,14 +45,18 @@ public class PrestamoService : Service<PrestamoEntity, PrestamoRepository, Prest
         foreach (var grupoId in dto.GrupoEquipoId ?? [])
         {
             var disponible = await Repository.HasAvailableEquipo(
-                grupoId, entity.FechaPrestamoEsperada, entity.FechaDevolucionEsperada);
+                grupoId,
+                entity.FechaPrestamoEsperada,
+                entity.FechaDevolucionEsperada
+            );
 
             if (!disponible)
             {
                 var nombre = await Repository.GetGrupoEquipoNombre(grupoId);
-                
+
                 return Result<PrestamoDto>.Error(
-                    $"'{nombre ?? grupoId.ToString()}' no tiene unidades disponibles en las fechas seleccionadas");
+                    $"'{nombre ?? grupoId.ToString()}' no tiene unidades disponibles en las fechas seleccionadas"
+                );
             }
         }
 
@@ -76,7 +86,12 @@ public class PrestamoService : Service<PrestamoEntity, PrestamoRepository, Prest
         return await Get(id);
     }
 
-    public async Task<Result<PrestamoDto>> UpdateStatus(int id, string newStatus, string? observacion = null, PrestamoDto? body = null)
+    public async Task<Result<PrestamoDto>> UpdateStatus(
+        int id,
+        string newStatus,
+        string? observacion = null,
+        PrestamoDto? body = null
+    )
     {
         var prestamo = await Repository.FindById(id);
 
@@ -89,14 +104,18 @@ public class PrestamoService : Service<PrestamoEntity, PrestamoRepository, Prest
             return Result<PrestamoDto>.Error($"Estado '{newStatus}' no reconocido");
 
         if (!PrestamoState.CanTransition(prestamo.EstadoPrestamo, parsedState.Value))
-            return Result<PrestamoDto>.Error($"Transición '{PrestamoState.ToText(prestamo.EstadoPrestamo)}' → '{newStatus}' no permitida");
+            return Result<PrestamoDto>.Error(
+                $"Transición '{PrestamoState.ToText(prestamo.EstadoPrestamo)}' → '{newStatus}' no permitida"
+            );
 
         if (parsedState.Value == EstadoPrestamo.Aprobado)
         {
             var assigned = await Repository.AssignEquiposOnApproval(id);
 
             if (!assigned)
-                return Result<PrestamoDto>.Error("No se puede aprobar: no hay equipos disponibles para uno o más grupos en las fechas solicitadas");
+                return Result<PrestamoDto>.Error(
+                    "No se puede aprobar: no hay equipos disponibles para uno o más grupos en las fechas solicitadas"
+                );
 
             await Repository.UpdateContratoWithEquipos(id);
         }
@@ -112,7 +131,7 @@ public class PrestamoService : Service<PrestamoEntity, PrestamoRepository, Prest
         await Repository.UpdateTracked(prestamo);
 
         string? detalleAudit = null;
-        
+
         if (parsedState.Value == EstadoPrestamo.Finalizado)
         {
             detalleAudit = await HandleFinalizadoEquiposRetorno(id, observacion, body);
@@ -120,13 +139,13 @@ public class PrestamoService : Service<PrestamoEntity, PrestamoRepository, Prest
 
         var accionAudit = parsedState.Value switch
         {
-            EstadoPrestamo.Aprobado   => AuditAccion.Aprobar,
-            EstadoPrestamo.Rechazado  => AuditAccion.Rechazar,
-            EstadoPrestamo.Activo     => AuditAccion.Recoger,
+            EstadoPrestamo.Aprobado => AuditAccion.Aprobar,
+            EstadoPrestamo.Rechazado => AuditAccion.Rechazar,
+            EstadoPrestamo.Activo => AuditAccion.Recoger,
             EstadoPrestamo.Finalizado => AuditAccion.Devolver,
-            EstadoPrestamo.Cancelado  => AuditAccion.Cancelar,
-            EstadoPrestamo.Atrasado   => AuditAccion.AtrasadoAutomatico,
-            _                         => AuditAccion.Editar
+            EstadoPrestamo.Cancelado => AuditAccion.Cancelar,
+            EstadoPrestamo.Atrasado => AuditAccion.AtrasadoAutomatico,
+            _ => AuditAccion.Editar,
         };
 
         await Audit!.Log(accionAudit, typeof(PrestamoEntity).Name, id.ToString(), detalleAudit);
@@ -134,7 +153,11 @@ public class PrestamoService : Service<PrestamoEntity, PrestamoRepository, Prest
         return await Get(id);
     }
 
-    private async Task<string?> HandleFinalizadoEquiposRetorno(int id, string? observacion, PrestamoDto? body)
+    private async Task<string?> HandleFinalizadoEquiposRetorno(
+        int id,
+        string? observacion,
+        PrestamoDto? body
+    )
     {
         if (body?.EquiposRetorno == null || body.EquiposRetorno.Count == 0)
             return null;
@@ -149,21 +172,32 @@ public class PrestamoService : Service<PrestamoEntity, PrestamoRepository, Prest
 
         var aplicados = await Repository.AplicarEstadosRetorno(id, estadosPorCodigo);
 
-        return JsonSerializer.Serialize(new
-        {
-            observacion,
-            equipos = aplicados.Select(a => new { codigo = a.Codigo, nombre = a.Nombre, estado = a.Estado })
-        });
+        return JsonSerializer.Serialize(
+            new
+            {
+                observacion,
+                equipos = aplicados.Select(a => new
+                {
+                    codigo = a.Codigo,
+                    nombre = a.Nombre,
+                    estado = a.Estado,
+                }),
+            }
+        );
     }
 
-    private static EstadoEquipo ParseEstadoEquipo(string? estado) => estado switch
-    {
-        "parcialmente_operativo" => EstadoEquipo.ParcialmenteOperativo,
-        "inoperativo"            => EstadoEquipo.Inoperativo,
-        _                        => EstadoEquipo.Operativo
-    };
+    private static EstadoEquipo ParseEstadoEquipo(string? estado) =>
+        estado switch
+        {
+            "parcialmente_operativo" => EstadoEquipo.ParcialmenteOperativo,
+            "inoperativo" => EstadoEquipo.Inoperativo,
+            _ => EstadoEquipo.Operativo,
+        };
 
-    public async Task<Result<List<PrestamoDto>>> GetHistory(string carnetUsuario, string estadoPrestamo)
+    public async Task<Result<List<PrestamoDto>>> GetHistory(
+        string carnetUsuario,
+        string estadoPrestamo
+    )
     {
         if (string.IsNullOrEmpty(carnetUsuario))
             return Result<List<PrestamoDto>>.Error("Carnet requerido");
@@ -180,5 +214,4 @@ public class PrestamoService : Service<PrestamoEntity, PrestamoRepository, Prest
 
         return await Repository.GetHistoryWithDetails(carnetUsuario, estado);
     }
-
 }

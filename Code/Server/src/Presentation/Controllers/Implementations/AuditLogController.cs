@@ -1,8 +1,8 @@
 using Ardalis.Result;
 using IMT_Reservas.Server.Application.Features.AuditLog;
-using Controller = IMT_Reservas.Server.Presentation.Controllers.Abstraction.Controller;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using Controller = IMT_Reservas.Server.Presentation.Controllers.Abstraction.Controller;
 
 namespace IMT_Reservas.Server.Presentation.Controllers.Implementations;
 
@@ -19,6 +19,6 @@ public class AuditLogController : Controller
         [FromQuery] string? entidad,
         [FromQuery] string? carnet,
         [FromQuery] DateTime? desde,
-        [FromQuery] DateTime? hasta)
-        => ToResponse(await _service.GetFiltered(entidad, carnet, desde, hasta));
+        [FromQuery] DateTime? hasta
+    ) => ToResponse(await _service.GetFiltered(entidad, carnet, desde, hasta));
 }

@@ -1,7 +1,8 @@
 using IMT_Reservas.Server.Core.Abstraction;
+
 namespace IMT_Reservas.Server.Core.Entities;
 
-public class Usuario : Entity  
+public class Usuario : Entity
 {
     public string Carnet { get; set; } = string.Empty;
     public string Nombre { get; set; } = string.Empty;
@@ -17,6 +18,6 @@ public class Usuario : Entity
     public int IdCarrera { get; set; }
     public byte[]? ImagenFrenteCarnet { get; set; }
     public byte[]? ImagenAtrasCarnet { get; set; }
-    public string? RefreshToken       { get; set; }
+    public string? RefreshToken { get; set; }
     public DateTime? RefreshTokenExpiry { get; set; }
 }

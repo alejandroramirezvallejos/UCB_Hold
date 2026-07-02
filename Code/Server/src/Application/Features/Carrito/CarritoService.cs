@@ -1,5 +1,6 @@
 using Ardalis.Result;
 using IMT_Reservas.Server.Infrastructure.Repositories.Implementations;
+
 namespace IMT_Reservas.Server.Application.Features.Carrito;
 
 public class CarritoService
@@ -15,22 +16,32 @@ public class CarritoService
 
     public async Task<Result<List<CarritoDto>>> GetDisponibilidad(CarritoDto request)
     {
-        if (request.FechaInicio == null || request.FechaFin == null
-            || request.ArrayIds == null || request.ArrayIds.Count == 0)
+        if (
+            request.FechaInicio == null
+            || request.FechaFin == null
+            || request.ArrayIds == null
+            || request.ArrayIds.Count == 0
+        )
         {
             _logger.LogWarning(
                 "Disponibilidad request missing fields or empty IDs: Inicio={Inicio}, Fin={Fin}, IdsCount={IdsCount}",
-                request.FechaInicio, request.FechaFin, request.ArrayIds?.Count);
+                request.FechaInicio,
+                request.FechaFin,
+                request.ArrayIds?.Count
+            );
 
             return Result<List<CarritoDto>>.Success([]);
         }
 
         var fechaInicio = request.FechaInicio.Value.Date;
-        var fechaFin    = request.FechaFin.Value.Date;
+        var fechaFin = request.FechaFin.Value.Date;
 
-        var cantidades       = await _repository.GetCantidadesByGrupos(request.ArrayIds);
+        var cantidades = await _repository.GetCantidadesByGrupos(request.ArrayIds);
         var prestamosActivos = await _repository.GetPrestamosActivosEnRango(
-            request.ArrayIds, fechaInicio, fechaFin);
+            request.ArrayIds,
+            fechaInicio,
+            fechaFin
+        );
 
         var response = new List<CarritoDto>();
 
@@ -43,15 +54,18 @@ public class CarritoService
                 var ocupados = prestamosActivos.Count(p =>
                     p.IdGrupoEquipo == grupoId
                     && p.FechaPrestamo.Date <= date
-                    && p.FechaDevolucion.Date >= date);
+                    && p.FechaDevolucion.Date >= date
+                );
 
-                response.Add(new CarritoDto
-                {
-                    Fecha = date,
-                    IdGrupoEquipo = grupoId,
-                    CantidadDisponible = Math.Max(0, total - ocupados),
-                    TotalOperativo = total
-                });
+                response.Add(
+                    new CarritoDto
+                    {
+                        Fecha = date,
+                        IdGrupoEquipo = grupoId,
+                        CantidadDisponible = Math.Max(0, total - ocupados),
+                        TotalOperativo = total,
+                    }
+                );
             }
         }
 

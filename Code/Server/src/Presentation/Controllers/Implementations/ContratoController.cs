@@ -1,7 +1,8 @@
 using IMT_Reservas.Server.Application.Features.Contrato;
-using Controller = IMT_Reservas.Server.Presentation.Controllers.Abstraction.Controller;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using Controller = IMT_Reservas.Server.Presentation.Controllers.Abstraction.Controller;
+
 namespace IMT_Reservas.Server.Presentation.Controllers.Implementations;
 
 [Authorize]
@@ -10,7 +11,8 @@ public class ContratoController : Controller
 {
     private readonly ContratoService _contratoService;
 
-    public ContratoController(ContratoService contratoService) => _contratoService = contratoService;
+    public ContratoController(ContratoService contratoService) =>
+        _contratoService = contratoService;
 
     [HttpPost("crear")]
     [Consumes("multipart/form-data")]
@@ -25,15 +27,15 @@ public class ContratoController : Controller
         }
 
         var resultado = await _contratoService.CreateForPrestamo(prestamoId ?? 0, contenido ?? "");
-        
+
         return ToResponse(resultado);
     }
 
     [HttpGet("{prestamoId}")]
-    public async Task<IActionResult> GetByPrestamoId(int prestamoId)
-        => ToResponse(await _contratoService.GetByPrestamoId(prestamoId));
+    public async Task<IActionResult> GetByPrestamoId(int prestamoId) =>
+        ToResponse(await _contratoService.GetByPrestamoId(prestamoId));
 
     [HttpDelete("{prestamoId}")]
-    public async Task<IActionResult> Delete(int prestamoId)
-        => ToDeleteResponse(await _contratoService.Delete(prestamoId));
+    public async Task<IActionResult> Delete(int prestamoId) =>
+        ToDeleteResponse(await _contratoService.Delete(prestamoId));
 }

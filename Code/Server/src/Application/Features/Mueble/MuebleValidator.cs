@@ -1,4 +1,5 @@
 using FluentValidation;
+
 namespace IMT_Reservas.Server.Application.Features.Mueble;
 
 public class MuebleValidator : AbstractValidator<MuebleDto>

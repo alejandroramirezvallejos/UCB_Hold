@@ -1,8 +1,9 @@
-using Riok.Mapperly.Abstractions;
 using IMT_Reservas.Server.Application.Abstraction;
 using IMT_Reservas.Server.Application.Features.Prestamo.State;
 using IMT_Reservas.Server.Core.Entities;
+using Riok.Mapperly.Abstractions;
 using PrestamoEntity = IMT_Reservas.Server.Core.Entities.Prestamo;
+
 namespace IMT_Reservas.Server.Application.Features.Prestamo;
 
 [Mapper(EnumMappingStrategy = EnumMappingStrategy.ByName, EnumMappingIgnoreCase = true)]
@@ -45,5 +46,6 @@ public partial class PrestamoMapper : IMapper<PrestamoEntity, PrestamoDto>
 
     public partial IQueryable<PrestamoDto> ProjectTo(IQueryable<PrestamoEntity> source);
 
-    private static string EstadoPrestamoToString(EstadoPrestamo estado) => PrestamoState.ToText(estado);
+    private static string EstadoPrestamoToString(EstadoPrestamo estado) =>
+        PrestamoState.ToText(estado);
 }

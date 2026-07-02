@@ -10,5 +10,5 @@ public enum AuditAccion
     Recoger,
     Devolver,
     Cancelar,
-    AtrasadoAutomatico
+    AtrasadoAutomatico,
 }

@@ -4,19 +4,24 @@ using IMT_Reservas.Server.Application.Abstraction;
 using IMT_Reservas.Server.Application.Features.AuditLog;
 using IMT_Reservas.Server.Infrastructure.Repositories.Implementations;
 using EquipoEntity = IMT_Reservas.Server.Core.Entities.Equipo;
+
 namespace IMT_Reservas.Server.Application.Features.Equipo;
 
 public class EquipoService : Service<EquipoEntity, EquipoRepository, EquipoDto>
 {
-    public EquipoService(EquipoRepository repository, EquipoMapper mapper,
-        IValidator<EquipoDto> validator, AuditLogService audit)
+    public EquipoService(
+        EquipoRepository repository,
+        EquipoMapper mapper,
+        IValidator<EquipoDto> validator,
+        AuditLogService audit
+    )
         : base(repository, validator, mapper, audit) { }
 
     public override async Task<Result<EquipoDto>> Create(EquipoDto dto)
     {
         var validation = await Validator.ValidateAsync(dto);
 
-        if (!validation.IsValid) 
+        if (!validation.IsValid)
             return validation.ToResult<EquipoDto>();
 
         var entity = MapToEntity(dto);
@@ -31,7 +36,11 @@ public class EquipoService : Service<EquipoEntity, EquipoRepository, EquipoDto>
         if (result.IsSuccess)
         {
             await Repository.RecalcGrupoStats(entity.IdGrupoEquipo);
-            await Audit!.Log(AuditAccion.Crear, typeof(EquipoEntity).Name, result.Value?.Id?.ToString());
+            await Audit!.Log(
+                AuditAccion.Crear,
+                typeof(EquipoEntity).Name,
+                result.Value?.Id?.ToString()
+            );
         }
 
         return result;
@@ -41,12 +50,12 @@ public class EquipoService : Service<EquipoEntity, EquipoRepository, EquipoDto>
     {
         var validation = await Validator.ValidateAsync(dto);
 
-        if (!validation.IsValid) 
+        if (!validation.IsValid)
             return validation.ToResult<EquipoDto>();
 
         var existing = await Repository.FindById(id);
 
-        if (existing == null) 
+        if (existing == null)
             return Result<EquipoDto>.NotFound();
 
         var entity = MapToEntity(dto);
@@ -57,7 +66,7 @@ public class EquipoService : Service<EquipoEntity, EquipoRepository, EquipoDto>
 
         var result = await UpdateEntity(entity);
 
-        if (!result.IsSuccess) 
+        if (!result.IsSuccess)
             return result;
 
         await Repository.RecalcGrupoStats(entity.IdGrupoEquipo);
@@ -74,7 +83,7 @@ public class EquipoService : Service<EquipoEntity, EquipoRepository, EquipoDto>
     {
         var existing = await Repository.FindById(id);
 
-        if (existing == null) 
+        if (existing == null)
             return Result<object>.NotFound();
 
         var result = await base.Delete(id);
@@ -85,12 +94,12 @@ public class EquipoService : Service<EquipoEntity, EquipoRepository, EquipoDto>
         return result;
     }
 
-    public virtual async Task<Result<List<EquipoDto>>> GetByGrupo(int grupoId)
-        => Result<List<EquipoDto>>.Success(await Repository.GetByGrupo(grupoId));
+    public virtual async Task<Result<List<EquipoDto>>> GetByGrupo(int grupoId) =>
+        Result<List<EquipoDto>>.Success(await Repository.GetByGrupo(grupoId));
 
-    public virtual async Task<Result<List<EquipoDto>>> GetByGavetero(int gaveteroId)
-        => Result<List<EquipoDto>>.Success(await Repository.GetByGavetero(gaveteroId));
+    public virtual async Task<Result<List<EquipoDto>>> GetByGavetero(int gaveteroId) =>
+        Result<List<EquipoDto>>.Success(await Repository.GetByGavetero(gaveteroId));
 
-    public virtual async Task<Result<List<HistorialEquipoDto>>> GetHistorial(int equipoId)
-        => Result<List<HistorialEquipoDto>>.Success(await Repository.GetHistorial(equipoId));
+    public virtual async Task<Result<List<HistorialEquipoDto>>> GetHistorial(int equipoId) =>
+        Result<List<HistorialEquipoDto>>.Success(await Repository.GetHistorial(equipoId));
 }

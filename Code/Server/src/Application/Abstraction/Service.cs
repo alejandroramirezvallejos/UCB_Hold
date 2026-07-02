@@ -1,4 +1,3 @@
-using System.Diagnostics.CodeAnalysis;
 using Ardalis.Result;
 using FluentValidation;
 using IMT_Reservas.Server.Application.Features.AuditLog;
@@ -6,7 +5,7 @@ using IMT_Reservas.Server.Core.Abstraction;
 using IMT_Reservas.Server.Infrastructure.Repositories.Abstraction;
 namespace IMT_Reservas.Server.Application.Abstraction;
 
-[SuppressMessage("Major Code Smell", "S2436:Types should not have too many generic parameters", Justification = "Necessary for strongly typed generic Service pattern without casting")]
+
 public class Service<TEntity, TRepository, TDto>
     where TEntity : Entity
     where TRepository : Repository<TEntity, TDto>
@@ -17,25 +16,34 @@ public class Service<TEntity, TRepository, TDto>
     protected AuditLogService? Audit;
     private readonly IMapper<TEntity, TDto> _mapper;
 
-    public Service(TRepository repository, IValidator<TDto> validator, IMapper<TEntity, TDto> mapper)
+    public Service(
+        TRepository repository,
+        IValidator<TDto> validator,
+        IMapper<TEntity, TDto> mapper
+    )
     {
         Repository = repository;
         Validator = validator;
         _mapper = mapper;
     }
 
-    public Service(TRepository repository, IValidator<TDto> validator, IMapper<TEntity, TDto> mapper, AuditLogService audit)
+    public Service(
+        TRepository repository,
+        IValidator<TDto> validator,
+        IMapper<TEntity, TDto> mapper,
+        AuditLogService audit
+    )
         : this(repository, validator, mapper) => Audit = audit;
 
     protected TEntity MapToEntity(TDto dto) => _mapper.ToEntity(dto);
 
     protected TDto MapToDto(TEntity entity) => _mapper.ToDto(entity);
 
-    protected async Task<Result<TDto>> CreateEntity(TEntity entity)
-        => await Repository.Create(entity);
+    protected async Task<Result<TDto>> CreateEntity(TEntity entity) =>
+        await Repository.Create(entity);
 
-    protected async Task<Result<TDto>> UpdateEntity(TEntity entity)
-        => await Repository.Update(entity);
+    protected async Task<Result<TDto>> UpdateEntity(TEntity entity) =>
+        await Repository.Update(entity);
 
     public virtual async Task<Result<TDto>> Create(TDto dto)
     {
@@ -70,17 +78,15 @@ public class Service<TEntity, TRepository, TDto>
         return result;
     }
 
-    public virtual async Task<Result<TDto>> Get(int id)
-        => await Repository.Get(id);
+    public virtual async Task<Result<TDto>> Get(int id) => await Repository.Get(id);
 
-    public virtual async Task<Result<List<TDto>>> GetAll()
-        => await Repository.GetAll();
+    public virtual async Task<Result<List<TDto>>> GetAll() => await Repository.GetAll();
 
     protected async Task<Result<TDto>> ValidateAndCreate(TDto dto)
     {
         var validation = await Validator.ValidateAsync(dto);
 
-        if (!validation.IsValid) 
+        if (!validation.IsValid)
             return validation.ToResult<TDto>();
 
         return await CreateEntity(MapToEntity(dto));
@@ -90,7 +96,7 @@ public class Service<TEntity, TRepository, TDto>
     {
         var validation = await Validator.ValidateAsync(dto);
 
-        if (!validation.IsValid) 
+        if (!validation.IsValid)
             return validation.ToResult<TDto>();
 
         var entity = MapToEntity(dto);

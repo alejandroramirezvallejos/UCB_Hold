@@ -1,7 +1,8 @@
 using IMT_Reservas.Server.Application.Features.Carrito;
-using Controller = IMT_Reservas.Server.Presentation.Controllers.Abstraction.Controller;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using Controller = IMT_Reservas.Server.Presentation.Controllers.Abstraction.Controller;
+
 namespace IMT_Reservas.Server.Presentation.Controllers.Implementations;
 
 [Authorize]
@@ -13,6 +14,6 @@ public class CarritoController : Controller
     public CarritoController(CarritoService service) => _service = service;
 
     [HttpPost("disponibilidadEquipos")]
-    public async Task<IActionResult> DisponibilidadEquipos([FromBody] CarritoDto request)
-        => ToResponse(await _service.GetDisponibilidad(request));
+    public async Task<IActionResult> DisponibilidadEquipos([FromBody] CarritoDto request) =>
+        ToResponse(await _service.GetDisponibilidad(request));
 }
