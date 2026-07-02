@@ -1,39 +1,51 @@
 using Ardalis.Result;
-using BCryptLib = BCrypt.Net.BCrypt;
 using FluentValidation;
 using IMT_Reservas.Server.Application.Abstraction;
-using IMT_Reservas.Server.Application.Features.Cache;
 using IMT_Reservas.Server.Application.Features.AuditLog;
+using IMT_Reservas.Server.Application.Features.Cache;
 using IMT_Reservas.Server.Application.Features.Jwt;
 using IMT_Reservas.Server.Infrastructure.Repositories.Implementations;
 using Microsoft.Extensions.Options;
+using BCryptLib = BCrypt.Net.BCrypt;
 using UsuarioEntity = IMT_Reservas.Server.Core.Entities.Usuario;
+
 namespace IMT_Reservas.Server.Application.Features.Usuario;
 
 public class UsuarioService : Service<UsuarioEntity, UsuarioRepository, UsuarioDto>
 {
     private static readonly TimeSpan UsuarioCacheTtl = TimeSpan.FromMinutes(30);
-    private readonly UsuarioMapper   _mapper;
-    private readonly JwtService      _jwtService;
-    private readonly JwtSettings     _jwtSettings;
+    private readonly UsuarioMapper _mapper;
+    private readonly JwtService _jwtService;
+    private readonly JwtSettings _jwtSettings;
     private readonly CacheRepository _cacheRepository;
 
-    public UsuarioService(UsuarioRepository repository,
-        UsuarioMapper mapper, IValidator<UsuarioDto> validator,
-        JwtService jwtService, IOptions<JwtSettings> jwtSettings,
-        CacheRepository cacheRepository, AuditLogService audit)
+    public UsuarioService(
+        UsuarioRepository repository,
+        UsuarioMapper mapper,
+        IValidator<UsuarioDto> validator,
+        JwtService jwtService,
+        IOptions<JwtSettings> jwtSettings,
+        CacheRepository cacheRepository,
+        AuditLogService audit
+    )
         : base(repository, validator, mapper, audit)
     {
-        _mapper          = mapper;
-        _jwtService      = jwtService;
-        _jwtSettings     = jwtSettings.Value;
+        _mapper = mapper;
+        _jwtService = jwtService;
+        _jwtSettings = jwtSettings.Value;
         _cacheRepository = cacheRepository;
     }
 
-    public override async Task<Result<UsuarioDto>> Create(UsuarioDto dto)
+    public override async Task<Result<UsuarioDto>> Create(UsuarioDto dto) =>
+        await Create(dto, esAdmin: false);
+
+    public async Task<Result<UsuarioDto>> Create(UsuarioDto dto, bool esAdmin)
     {
         if (string.IsNullOrWhiteSpace(dto.Contrasena))
             return Result<UsuarioDto>.Error("Contraseña requerida");
+
+        if (!esAdmin)
+            dto.Rol = null;
 
         await ResolveCarrera(dto);
 
@@ -48,7 +60,10 @@ public class UsuarioService : Service<UsuarioEntity, UsuarioRepository, UsuarioD
         if (await Repository.ExistsByEmail(dto.Email!))
             return Result<UsuarioDto>.Error("Email ya existe");
 
-        if (!string.IsNullOrWhiteSpace(dto.Telefono) && await Repository.ExistsByTelefono(dto.Telefono))
+        if (
+            !string.IsNullOrWhiteSpace(dto.Telefono)
+            && await Repository.ExistsByTelefono(dto.Telefono)
+        )
             return Result<UsuarioDto>.Error("Teléfono ya registrado");
 
         var entity = MapToEntity(dto);
@@ -64,8 +79,16 @@ public class UsuarioService : Service<UsuarioEntity, UsuarioRepository, UsuarioD
         return result;
     }
 
-    public async Task<Result<UsuarioDto>> Update(string carnet, UsuarioDto dto)
+    public async Task<Result<UsuarioDto>> Update(
+        string carnet,
+        UsuarioDto dto,
+        string? callerCarnet,
+        bool esAdmin = false
+    )
     {
+        if (!esAdmin && !string.Equals(callerCarnet, carnet, StringComparison.Ordinal))
+            return Result<UsuarioDto>.Forbidden();
+
         var validation = await Validator.ValidateAsync(dto);
 
         if (!validation.IsValid)
@@ -76,8 +99,14 @@ public class UsuarioService : Service<UsuarioEntity, UsuarioRepository, UsuarioD
         if (existing == null)
             return Result<UsuarioDto>.NotFound();
 
-        if (!string.IsNullOrWhiteSpace(dto.Telefono) && await Repository.ExistsByTelefono(dto.Telefono, carnet))
+        if (
+            !string.IsNullOrWhiteSpace(dto.Telefono)
+            && await Repository.ExistsByTelefono(dto.Telefono, carnet)
+        )
             return Result<UsuarioDto>.Error("Teléfono ya registrado");
+
+        if (!esAdmin)
+            dto.Rol = null;
 
         await ResolveCarrera(dto);
         _mapper.Update(dto, existing);
@@ -103,8 +132,8 @@ public class UsuarioService : Service<UsuarioEntity, UsuarioRepository, UsuarioD
     {
         var cacheKey = CacheKeys.Usuario(carnet);
         var cacheResult = await _cacheRepository.Get<UsuarioDto>(cacheKey);
-        
-        if (cacheResult.IsSuccess) 
+
+        if (cacheResult.IsSuccess)
             return Result<UsuarioDto>.Success(cacheResult.Value);
 
         var usuario = await Repository.GetByCarnet(carnet);
@@ -130,8 +159,9 @@ public class UsuarioService : Service<UsuarioEntity, UsuarioRepository, UsuarioD
         if (usuario == null)
             return Result<LoginDto>.Unauthorized("Credenciales inválidas");
 
-        var passwordValid = !string.IsNullOrWhiteSpace(usuario.Contrasena)
-                         && BCryptLib.Verify(password, usuario.Contrasena);
+        var passwordValid =
+            !string.IsNullOrWhiteSpace(usuario.Contrasena)
+            && BCryptLib.Verify(password, usuario.Contrasena);
 
         if (!passwordValid)
             return Result<LoginDto>.Unauthorized("Credenciales inválidas");
@@ -139,20 +169,23 @@ public class UsuarioService : Service<UsuarioEntity, UsuarioRepository, UsuarioD
         var dto = _mapper.ToDto(usuario);
         dto.CarreraNombre = carreraNombre;
 
-        var accessToken  = _jwtService.GenerateAccessToken(dto);
+        var accessToken = _jwtService.GenerateAccessToken(dto);
         var refreshToken = JwtService.GenerateRefreshToken();
 
         await Repository.UpdateRefreshToken(
             usuario.Carnet!,
             refreshToken,
-            DateTime.UtcNow.AddDays(_jwtSettings.RefreshTokenExpiryDays));
+            DateTime.UtcNow.AddDays(_jwtSettings.RefreshTokenExpiryDays)
+        );
 
-        return Result<LoginDto>.Success(new LoginDto
-        {
-            AccessToken  = accessToken,
-            RefreshToken = refreshToken,
-            Usuario      = dto
-        });
+        return Result<LoginDto>.Success(
+            new LoginDto
+            {
+                AccessToken = accessToken,
+                RefreshToken = refreshToken,
+                Usuario = dto,
+            }
+        );
     }
 
     public async Task<Result<LoginDto>> Refresh(string refreshToken)
@@ -168,20 +201,23 @@ public class UsuarioService : Service<UsuarioEntity, UsuarioRepository, UsuarioD
         var dto = _mapper.ToDto(usuario);
         dto.CarreraNombre = carreraNombre;
 
-        var newAccessToken  = _jwtService.GenerateAccessToken(dto);
+        var newAccessToken = _jwtService.GenerateAccessToken(dto);
         var newRefreshToken = JwtService.GenerateRefreshToken();
 
         await Repository.UpdateRefreshToken(
             usuario.Carnet!,
             newRefreshToken,
-            DateTime.UtcNow.AddDays(_jwtSettings.RefreshTokenExpiryDays));
+            DateTime.UtcNow.AddDays(_jwtSettings.RefreshTokenExpiryDays)
+        );
 
-        return Result<LoginDto>.Success(new LoginDto
-        {
-            AccessToken  = newAccessToken,
-            RefreshToken = newRefreshToken,
-            Usuario      = dto
-        });
+        return Result<LoginDto>.Success(
+            new LoginDto
+            {
+                AccessToken = newAccessToken,
+                RefreshToken = newRefreshToken,
+                Usuario = dto,
+            }
+        );
     }
 
     public async Task<Result<object>> Delete(string carnet)

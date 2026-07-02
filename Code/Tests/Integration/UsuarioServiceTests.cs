@@ -115,7 +115,10 @@ internal class UsuarioServiceTests : ServiceTest<UsuarioService>
         var result = await Sut.Create(dto);
 
         result.IsSuccess.Should().BeFalse();
-        result.Errors.Should().Contain("Contraseña debe tener al menos una mayúscula");
+        result.ValidationErrors
+            .Select(error => error.ErrorMessage)
+            .Should()
+            .Contain("Contraseña debe tener al menos una mayúscula");
     }
 
     [Test]
@@ -126,7 +129,10 @@ internal class UsuarioServiceTests : ServiceTest<UsuarioService>
         var result = await Sut.Create(dto);
 
         result.IsSuccess.Should().BeFalse();
-        result.Errors.Should().Contain("Contraseña debe tener al menos un carácter especial");
+        result.ValidationErrors
+            .Select(error => error.ErrorMessage)
+            .Should()
+            .Contain("Contraseña debe tener al menos un carácter especial");
     }
 
     [Test]
@@ -137,7 +143,10 @@ internal class UsuarioServiceTests : ServiceTest<UsuarioService>
         var result = await Sut.Create(dto);
 
         result.IsSuccess.Should().BeFalse();
-        result.Errors.Should().Contain("Contraseña debe tener al menos un número");
+        result.ValidationErrors
+            .Select(error => error.ErrorMessage)
+            .Should()
+            .Contain("Contraseña debe tener al menos un número");
     }
 
     [Test]
@@ -226,7 +235,7 @@ internal class UsuarioServiceTests : ServiceTest<UsuarioService>
     {
         await Sut.Create(BuildValidUsuario("U001", "u001@ucb.edu.bo", telefono: "77777777"));
 
-        var result = await Sut.Update("U001", BuildValidUsuario("U001", "u001@ucb.edu.bo", telefono: "77777777", contrasena: null));
+        var result = await Sut.Update("U001", BuildValidUsuario("U001", "u001@ucb.edu.bo", telefono: "77777777", contrasena: null), callerCarnet: "U001");
 
         result.IsSuccess.Should().BeTrue();
     }
@@ -237,10 +246,69 @@ internal class UsuarioServiceTests : ServiceTest<UsuarioService>
         await Sut.Create(BuildValidUsuario("U001", "u001@ucb.edu.bo", telefono: "77777777"));
         await Sut.Create(BuildValidUsuario("U002", "u002@ucb.edu.bo", telefono: "88888888"));
 
-        var result = await Sut.Update("U002", BuildValidUsuario("U002", "u002@ucb.edu.bo", telefono: "77777777", contrasena: null));
+        var result = await Sut.Update("U002", BuildValidUsuario("U002", "u002@ucb.edu.bo", telefono: "77777777", contrasena: null), callerCarnet: "U002");
 
         result.IsSuccess.Should().BeFalse();
         result.Errors.Should().Contain("Teléfono ya registrado");
+    }
+
+    [Test]
+    public async Task Update_DifferentUserNotAdmin_ReturnsForbidden()
+    {
+        await Sut.Create(BuildValidUsuario("U001", "u001@ucb.edu.bo"));
+        await Sut.Create(BuildValidUsuario("U002", "u002@ucb.edu.bo"));
+
+        var result = await Sut.Update("U002", BuildValidUsuario("U002", "u002@ucb.edu.bo", contrasena: null), callerCarnet: "U001");
+
+        result.IsSuccess.Should().BeFalse();
+        result.Status.Should().Be(Ardalis.Result.ResultStatus.Forbidden);
+    }
+
+    [Test]
+    public async Task Update_AdminEditingOtherUser_Succeeds()
+    {
+        await Sut.Create(BuildValidUsuario("U001", "u001@ucb.edu.bo"));
+
+        var result = await Sut.Update("U001", BuildValidUsuario("U001", "u001@ucb.edu.bo", contrasena: null), callerCarnet: "U999", esAdmin: true);
+
+        result.IsSuccess.Should().BeTrue();
+    }
+
+    [Test]
+    public async Task Update_NonAdminSendingRol_IsIgnored()
+    {
+        await Sut.Create(BuildValidUsuario("U001", "u001@ucb.edu.bo"));
+        var dto = BuildValidUsuario("U001", "u001@ucb.edu.bo", contrasena: null);
+        dto.Rol = "administrador";
+
+        var result = await Sut.Update("U001", dto, callerCarnet: "U001");
+
+        result.IsSuccess.Should().BeTrue();
+        Db.Usuarios.Single(u => u.Carnet == "U001").Rol.Should().Be(TipoUsuario.Estudiante);
+    }
+
+    [Test]
+    public async Task Create_AnonymousWithAdminRole_IsForcedToEstudiante()
+    {
+        var dto = BuildValidUsuario("U001", "u001@ucb.edu.bo");
+        dto.Rol = "administrador";
+
+        var result = await Sut.Create(dto, esAdmin: false);
+
+        result.IsSuccess.Should().BeTrue();
+        Db.Usuarios.Single(u => u.Carnet == "U001").Rol.Should().Be(TipoUsuario.Estudiante);
+    }
+
+    [Test]
+    public async Task Create_AdminCreatingWithRole_IsHonored()
+    {
+        var dto = BuildValidUsuario("U001", "u001@ucb.edu.bo");
+        dto.Rol = "administrador";
+
+        var result = await Sut.Create(dto, esAdmin: true);
+
+        result.IsSuccess.Should().BeTrue();
+        Db.Usuarios.Single(u => u.Carnet == "U001").Rol.Should().Be(TipoUsuario.Administrador);
     }
 
     [Test]
