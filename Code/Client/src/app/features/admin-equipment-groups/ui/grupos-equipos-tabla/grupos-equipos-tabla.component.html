@@ -76,7 +76,10 @@
         <tbody>
           @for (
             grupoequipo of gruposEquiposFiltrados;
-            track grupoequipo.id;
+            track grupoequipo.id ||
+              grupoequipo.nombre ||
+              grupoequipo.modelo ||
+              $index;
             let i = $index
           ) {
             <tr>
@@ -120,7 +123,7 @@
           }
           @if (gruposEquiposFiltrados.length === 0) {
             <tr>
-              <td colspan="6" class="empty-table">
+              <td colspan="7" class="empty-table">
                 <div class="empty-state">
                   <i class="fas fa-search fa-3x"></i>
                   <p>No se encontraron grupos de equipos</p>

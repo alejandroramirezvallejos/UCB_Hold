@@ -175,7 +175,10 @@
         <tbody>
           @for (
             prestamo of prestamos | keyvalue: keepOrder;
-            track prestamo.key
+            track prestamo.key ||
+              prestamo.value.datosgrupo.Id ||
+              prestamo.value.datosgrupo.CarnetUsuario ||
+              $index
           ) {
             <tr>
               <td class="nombre-usuario">
@@ -321,7 +324,7 @@
           }
           @if (prestamos.size === 0) {
             <tr>
-              <td colspan="10" class="empty-table">
+              <td colspan="9" class="empty-table">
                 <div class="empty-state">
                   <i class="fas fa-search fa-3x"></i>
                   <p>No se encontraron préstamos</p>

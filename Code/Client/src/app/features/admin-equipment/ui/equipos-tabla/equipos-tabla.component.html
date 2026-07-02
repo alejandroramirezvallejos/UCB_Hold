@@ -128,7 +128,13 @@
           </tr>
         </thead>
         <tbody>
-          @for (equipo of equipos; track equipo.Id) {
+          @for (
+            equipo of equipos;
+            track equipo.Id ||
+              equipo.CodigoImt ||
+              equipo.NombreGrupoEquipo ||
+              $index
+          ) {
             <tr>
               <td>{{ equipo.NombreGrupoEquipo }}</td>
               <td>{{ equipo.EstadoEquipo }}</td>

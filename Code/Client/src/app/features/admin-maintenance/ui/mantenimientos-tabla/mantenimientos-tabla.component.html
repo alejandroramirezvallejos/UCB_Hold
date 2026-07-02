@@ -120,7 +120,10 @@
         <tbody>
           @for (
             mantenimiento of mantenimientosFiltrados;
-            track mantenimiento;
+            track mantenimiento.datosgrupo.Id ||
+              mantenimiento.datosgrupo.CodigoImtEquipo ||
+              mantenimiento.datosgrupo.NombreEmpresaMantenimiento ||
+              $index;
             let i = $index
           ) {
             <tr>

@@ -76,7 +76,10 @@
         <tbody>
           @for (
             componente of componentes;
-            track componente.Id;
+            track componente.Id ||
+              componente.CodigoImtEquipo ||
+              componente.Nombre ||
+              $index;
             let i = $index
           ) {
             <tr>

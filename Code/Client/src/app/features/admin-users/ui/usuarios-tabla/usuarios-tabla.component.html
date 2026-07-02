@@ -74,7 +74,11 @@
           </tr>
         </thead>
         <tbody>
-          @for (usuario of usuarios; track usuario.id; let i = $index) {
+          @for (
+            usuario of usuarios;
+            track usuario.id || usuario.carnet || usuario.correo || $index;
+            let i = $index
+          ) {
             <tr>
               <td>{{ usuario.carnet }}</td>
               <td>{{ usuario.nombre }}</td>

@@ -53,7 +53,10 @@ import { PrestamoInlineItem } from '../model';
               </tr>
             </thead>
             <tbody>
-              @for (p of itemsFiltrados; track p.Id) {
+              @for (
+                p of itemsFiltrados;
+                track p.Id || p.NombreGrupoEquipo || $index
+              ) {
                 <tr>
                   <td>#{{ p.Id }}</td>
                   <td>{{ p.NombreGrupoEquipo || '—' }}</td>

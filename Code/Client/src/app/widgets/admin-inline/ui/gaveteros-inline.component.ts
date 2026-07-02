@@ -50,7 +50,7 @@ import { GaveteroInlineItem } from '../model';
               </tr>
             </thead>
             <tbody>
-              @for (g of itemsFiltrados; track g.Id) {
+              @for (g of itemsFiltrados; track g.Id || g.Nombre || $index) {
                 <tr>
                   <td>{{ g.Nombre }}</td>
                   <td>{{ g.NumeroGaveteros ?? 0 }}</td>

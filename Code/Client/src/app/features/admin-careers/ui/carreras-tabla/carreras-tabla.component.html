@@ -34,47 +34,16 @@
         <thead>
           <tr>
             @for (columna of columnas; track columna) {
-              <th
-                class="sortable-th"
-                [class.sort-asc]="
-                  esColumnaOrdenada(columna) && sortDirection === 'asc'
-                "
-                [class.sort-desc]="
-                  esColumnaOrdenada(columna) && sortDirection === 'desc'
-                "
-                scope="col"
-                [attr.aria-sort]="ariaOrdenColumna(columna)"
-                tabindex="0"
-                (click)="ordenarPorColumna(columna)"
-                (keydown.enter)="ordenarPorColumna(columna)"
-                (keydown.space)="
-                  ordenarPorColumna(columna); $event.preventDefault()
-                "
-              >
-                <button
-                  type="button"
-                  class="table-sort-button"
-                  (click)="$event.stopPropagation(); ordenarPorColumna(columna)"
-                >
-                  <span>{{ columna }}</span>
-                  <i
-                    class="fas sort-icon"
-                    [class.fa-sort]="iconoOrdenColumna(columna) === 'fa-sort'"
-                    [class.fa-sort-up]="
-                      iconoOrdenColumna(columna) === 'fa-sort-up'
-                    "
-                    [class.fa-sort-down]="
-                      iconoOrdenColumna(columna) === 'fa-sort-down'
-                    "
-                  ></i>
-                </button>
-              </th>
+              <th scope="col">{{ columna }}</th>
             }
             <th class="actions-column">Acciones</th>
           </tr>
         </thead>
         <tbody>
-          @for (carrera of carreras; track carrera.Id ?? carrera.Nombre) {
+          @for (
+            carrera of carreras;
+            track carrera.Id || carrera.Nombre || $index
+          ) {
             <tr>
               <td>{{ carrera.Nombre }}</td>
               <td class="actions-column">

@@ -74,7 +74,14 @@
           </tr>
         </thead>
         <tbody>
-          @for (accesorio of accesorios; track accesorio.Id; let i = $index) {
+          @for (
+            accesorio of accesorios;
+            track accesorio.Id ||
+              accesorio.codigo_imt ||
+              accesorio.nombre ||
+              $index;
+            let i = $index
+          ) {
             <tr>
               <td>{{ accesorio.nombre }}</td>
               <td>{{ accesorio.modelo }}</td>

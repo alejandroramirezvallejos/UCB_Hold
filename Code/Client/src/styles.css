@@ -1012,31 +1012,44 @@ h2.title {
 
 .table-responsive--compact {
   width: 100%;
+  max-width: 100%;
 }
 
 .data-table.data-table--compact {
   table-layout: fixed;
+  min-width: 100%;
+}
+
+.data-table.data-table--compact th {
+  cursor: default !important;
 }
 
 .data-table.data-table--compact th:first-child,
 .data-table.data-table--compact td:first-child {
   text-align: left !important;
-  padding-left: 1.75rem !important;
+  padding-left: 2rem !important;
+  width: auto;
 }
 
 .data-table.data-table--compact th.actions-column,
 .data-table.data-table--compact td.actions-column {
-  width: 9rem;
-  min-width: 8rem;
+  width: 12rem;
+  min-width: 12rem;
+  text-align: center !important;
 }
 
 .data-table.data-table--compact td {
-  padding-block: 0.85rem !important;
+  height: 4.25rem;
+  padding-block: 0.9rem !important;
 }
 
 @media (max-width: 640px) {
   .table-responsive--compact {
     width: 100%;
+  }
+
+  .data-table.data-table--compact {
+    min-width: 30rem;
   }
 
   .data-table.data-table--compact th:first-child,
@@ -1046,8 +1059,8 @@ h2.title {
 
   .data-table.data-table--compact th.actions-column,
   .data-table.data-table--compact td.actions-column {
-    width: 7.5rem;
-    min-width: 7.5rem;
+    width: 8.75rem;
+    min-width: 8.75rem;
   }
 }
 

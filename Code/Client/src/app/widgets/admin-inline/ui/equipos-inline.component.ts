@@ -52,7 +52,7 @@ import { EquipoInlineItem } from '../model';
               </tr>
             </thead>
             <tbody>
-              @for (e of itemsFiltrados; track e.Id) {
+              @for (e of itemsFiltrados; track e.Id || e.CodigoImt || $index) {
                 <tr>
                   <td>
                     <strong>IMT-{{ e.CodigoImt }}</strong>

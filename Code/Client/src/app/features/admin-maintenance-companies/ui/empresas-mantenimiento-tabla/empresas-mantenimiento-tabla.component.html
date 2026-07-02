@@ -77,7 +77,10 @@
           </tr>
         </thead>
         <tbody>
-          @for (empresa of empresas; track empresa.Id) {
+          @for (
+            empresa of empresas;
+            track empresa.Id || empresa.Nit || empresa.NombreEmpresa || $index
+          ) {
             <tr>
               <td>{{ empresa.NombreEmpresa }}</td>
               <td>
