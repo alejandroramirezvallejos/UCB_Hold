@@ -142,7 +142,10 @@ internal class EquipoServiceTests : ServiceTest<EquipoService>
         var result = await Sut.Create(dto);
 
         result.IsSuccess.Should().BeFalse();
-        result.Errors.Should().Contain("Grupo equipo no existe");
+        result.ValidationErrors
+            .Select(error => error.ErrorMessage)
+            .Should()
+            .Contain("Grupo equipo no existe");
     }
 
     private static EquipoDto BuildValidEquipo(int idGrupo) => new()
