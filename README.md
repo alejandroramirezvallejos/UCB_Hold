@@ -93,7 +93,7 @@ Crear `Code/server.env`:
 ```ini
 ASPNETCORE_ENVIRONMENT=Production
 ASPNETCORE_URLS=http://+:80
-ConnectionStrings__PostgreSQL=Host=ucb_db;Port=5432;Database=IMT_Reservas;Username=postgres;Password=postgres;Pooling=true;MinPoolSize=2;MaxPoolSize=20
+ConnectionStrings__PostgreSQL=Host=ucb_db;Port=5432;Database=IMT_Reservas;Username=username;Password=password;Pooling=true;MinPoolSize=2;MaxPoolSize=20
 Jwt__Key=<clave-local-de-32-caracteres-o-mas>
 Redis__ConnectionString=ucb_redis:6379
 ```
