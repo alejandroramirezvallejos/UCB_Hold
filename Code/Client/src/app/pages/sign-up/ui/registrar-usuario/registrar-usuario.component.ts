@@ -25,6 +25,8 @@ export class RegistrarUsuarioComponent {
   nuevoUsuario: Usuario = new Usuario();
   password: string = '';
   confirmPassword: string = '';
+  mostrarPassword = false;
+  mostrarConfirmPassword = false;
   carreras: string[] = [];
   isOpen: boolean = false;
   isHovered: boolean = false;
@@ -100,6 +102,15 @@ export class RegistrarUsuarioComponent {
   irALogin() {
     this.router.navigate(['/Iniciar-Sesion']);
   }
+
+  alternarVisibilidadPassword(): void {
+    this.mostrarPassword = !this.mostrarPassword;
+  }
+
+  alternarVisibilidadConfirmPassword(): void {
+    this.mostrarConfirmPassword = !this.mostrarConfirmPassword;
+  }
+
   validartelefono(telefono: string | null | undefined): boolean {
     const regex = /^[-+0-9]+$/;
     return !regex.test(<string>telefono);

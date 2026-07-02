@@ -46,11 +46,18 @@
                   esColumnaOrdenada(columna) && sortDirection === 'desc'
                 "
                 scope="col"
+                [attr.aria-sort]="ariaOrdenColumna(columna)"
+                tabindex="0"
+                (click)="ordenarPorColumna(columna)"
+                (keydown.enter)="ordenarPorColumna(columna)"
+                (keydown.space)="
+                  ordenarPorColumna(columna); $event.preventDefault()
+                "
               >
                 <button
                   type="button"
                   class="table-sort-button"
-                  (click)="ordenarPorColumna(columna)"
+                  (click)="$event.stopPropagation(); ordenarPorColumna(columna)"
                 >
                   <span>{{ columna }}</span>
                   <i

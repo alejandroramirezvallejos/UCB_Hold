@@ -41,21 +41,26 @@ describe('GruposEquiposTablaComponent', () => {
     ).toEqual(['Zeta', 'Alpha']);
   });
 
-  it('should sort when the column header is clicked once', () => {
+  it('should reorder the rendered rows when the header icon is clicked', () => {
     component.gruposEquiposFiltrados = [
       Object.assign(new GrupoEquipo(), { id: 1, nombre: 'Zeta' }),
       Object.assign(new GrupoEquipo(), { id: 2, nombre: 'Alpha' }),
     ];
     fixture.detectChanges();
 
-    const boton: HTMLElement = fixture.nativeElement.querySelector(
-      '.sortable-th .table-sort-button',
+    const filasNombre = (): string[] =>
+      Array.from(
+        fixture.nativeElement.querySelectorAll('tbody tr td:first-child'),
+      ).map((celda) => (celda as HTMLElement).textContent!.trim());
+
+    expect(filasNombre()).toEqual(['Zeta', 'Alpha']);
+
+    const icono: HTMLElement = fixture.nativeElement.querySelector(
+      '.sortable-th .sort-icon',
     );
-    boton.click();
+    icono.click();
     fixture.detectChanges();
 
-    expect(
-      component.gruposEquiposFiltrados.map((grupo) => grupo.nombre),
-    ).toEqual(['Alpha', 'Zeta']);
+    expect(filasNombre()).toEqual(['Alpha', 'Zeta']);
   });
 });

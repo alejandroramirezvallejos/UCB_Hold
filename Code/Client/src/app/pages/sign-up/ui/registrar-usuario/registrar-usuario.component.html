@@ -224,17 +224,33 @@
         <h3>Seguridad</h3>
         <div class="form-group">
           <label for="password">Contraseña</label>
-          <input
-            type="password"
-            name="password"
-            [(ngModel)]="password"
-            required
-            minlength="8"
-            pattern="^(?=.*[A-Z])(?=.*[0-9])(?=.*[^a-zA-Z0-9]).{8,}$"
-            placeholder="••••••••"
-            class="form-input"
-            #passwordInput="ngModel"
-          />
+          <div class="password-field">
+            <input
+              [type]="mostrarPassword ? 'text' : 'password'"
+              name="password"
+              [(ngModel)]="password"
+              required
+              minlength="8"
+              pattern="^(?=.*[A-Z])(?=.*[0-9])(?=.*[^a-zA-Z0-9]).{8,}$"
+              placeholder="••••••••"
+              class="form-input password-field__input"
+              #passwordInput="ngModel"
+            />
+            <button
+              type="button"
+              class="password-field__toggle"
+              [attr.aria-label]="
+                mostrarPassword ? 'Ocultar contraseña' : 'Mostrar contraseña'
+              "
+              (click)="alternarVisibilidadPassword()"
+            >
+              <i
+                class="fas"
+                [class.fa-eye]="!mostrarPassword"
+                [class.fa-eye-slash]="mostrarPassword"
+              ></i>
+            </button>
+          </div>
           @if (
             passwordInput.invalid &&
             (passwordInput.dirty || passwordInput.touched || submitted)
@@ -257,15 +273,33 @@
         </div>
         <div class="form-group">
           <label for="confirmPassword">Confirmar contraseña </label>
-          <input
-            type="password"
-            name="confirmPassword"
-            [(ngModel)]="confirmPassword"
-            required
-            placeholder="••••••••"
-            class="form-input"
-            #confirmPasswordInput="ngModel"
-          />
+          <div class="password-field">
+            <input
+              [type]="mostrarConfirmPassword ? 'text' : 'password'"
+              name="confirmPassword"
+              [(ngModel)]="confirmPassword"
+              required
+              placeholder="••••••••"
+              class="form-input password-field__input"
+              #confirmPasswordInput="ngModel"
+            />
+            <button
+              type="button"
+              class="password-field__toggle"
+              [attr.aria-label]="
+                mostrarConfirmPassword
+                  ? 'Ocultar contraseña'
+                  : 'Mostrar contraseña'
+              "
+              (click)="alternarVisibilidadConfirmPassword()"
+            >
+              <i
+                class="fas"
+                [class.fa-eye]="!mostrarConfirmPassword"
+                [class.fa-eye-slash]="mostrarConfirmPassword"
+              ></i>
+            </button>
+          </div>
           @if (
             (confirmPasswordInput.invalid &&
               (confirmPasswordInput.dirty ||

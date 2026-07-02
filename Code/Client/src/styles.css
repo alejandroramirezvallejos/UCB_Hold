@@ -752,6 +752,10 @@ h2.title {
 .sortable-th:hover {
   background: var(--interactive-subtle) !important;
 }
+.sortable-th:focus-visible {
+  outline: 2px solid var(--interactive-text);
+  outline-offset: -2px;
+}
 .table-sort-button {
   display: inline-flex;
   align-items: center;
@@ -781,20 +785,23 @@ h2.title {
   width: 1rem;
   height: 1rem;
   margin-left: 0;
-  border-radius: var(--radius-full);
-  font-size: 0.65rem;
+  font-size: 0.7rem;
   color: var(--ink-muted);
+  opacity: 0.4;
   line-height: 1;
   transition:
     color var(--t-fast),
-    background-color var(--t-fast),
+    opacity var(--t-fast),
     transform var(--t-fast);
+}
+.sortable-th:hover .sort-icon {
+  opacity: 0.85;
 }
 .sortable-th.sort-asc .sort-icon,
 .sortable-th.sort-desc .sort-icon {
-  color: var(--brand-text);
-  background: var(--interactive-subtle);
-  font-weight: 900;
+  color: var(--ink);
+  opacity: 1;
+  transform: scale(1.08);
 }
 .sortable-th.sort-asc .table-sort-button,
 .sortable-th.sort-desc .table-sort-button {

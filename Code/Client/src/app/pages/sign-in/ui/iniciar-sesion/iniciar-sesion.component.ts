@@ -24,6 +24,7 @@ export class IniciarSesionComponent {
   contrasena: string = '';
   loading: boolean = false;
   incorrecto: boolean = false;
+  mostrarContrasena = false;
   errorraro: WritableSignal<boolean> = signal(false);
 
   constructor(
@@ -77,5 +78,9 @@ export class IniciarSesionComponent {
   }
   registrarUsuario() {
     this.router.navigate(['/Registrar-Usuario']);
+  }
+
+  alternarVisibilidadContrasena(): void {
+    this.mostrarContrasena = !this.mostrarContrasena;
   }
 }

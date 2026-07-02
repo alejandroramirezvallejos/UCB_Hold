@@ -43,11 +43,18 @@
                   esColumnaOrdenada(columna) && sortDirection === 'desc'
                 "
                 scope="col"
+                [attr.aria-sort]="ariaOrdenColumna(columna)"
+                tabindex="0"
+                (click)="ordenarPorColumna(columna)"
+                (keydown.enter)="ordenarPorColumna(columna)"
+                (keydown.space)="
+                  ordenarPorColumna(columna); $event.preventDefault()
+                "
               >
                 <button
                   type="button"
                   class="table-sort-button"
-                  (click)="ordenarPorColumna(columna)"
+                  (click)="$event.stopPropagation(); ordenarPorColumna(columna)"
                 >
                   <span>{{ columna }}</span>
                   <i
@@ -74,11 +81,22 @@
                 sortDirection === 'desc'
               "
               scope="col"
+              [attr.aria-sort]="ariaOrdenColumna('Tipo y nombre equipos')"
+              tabindex="0"
+              (click)="ordenarPorColumna('Tipo y nombre equipos')"
+              (keydown.enter)="ordenarPorColumna('Tipo y nombre equipos')"
+              (keydown.space)="
+                ordenarPorColumna('Tipo y nombre equipos');
+                $event.preventDefault()
+              "
             >
               <button
                 type="button"
                 class="table-sort-button"
-                (click)="ordenarPorColumna('Tipo y nombre equipos')"
+                (click)="
+                  $event.stopPropagation();
+                  ordenarPorColumna('Tipo y nombre equipos')
+                "
               >
                 <span>Tipo y nombre equipos</span>
                 <i

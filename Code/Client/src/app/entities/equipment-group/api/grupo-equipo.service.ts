@@ -1,6 +1,6 @@
 import { Injectable } from '@angular/core';
 import { environment } from '@environments/environment';
-import { HttpClient } from '@angular/common/http';
+import { HttpClient, HttpParams } from '@angular/common/http';
 import { map, Observable, of, tap } from 'rxjs';
 import { GrupoEquipo } from '../model/grupo-equipo';
 import { ApiResponse, extractApiValue } from '@shared/api';
@@ -14,13 +14,13 @@ export class GrupoequipoService {
     Id: 0,
     Nombre: null,
   };
-  private _cache: GrupoEquipo[] | null = null;
+  private readonly cache = new Map<string, GrupoEquipo[]>();
   paginaGuardada: number = 0;
   cantidadObjetosGuardada: number = 21;
   constructor(private readonly http: HttpClient) {}
 
   invalidarCache() {
-    this._cache = null;
+    this.cache.clear();
   }
 
   private mapearGrupoEquipo(item: GrupoEquipoApiItem): GrupoEquipo {
@@ -71,15 +71,31 @@ export class GrupoequipoService {
     categoria: string,
     producto: string,
   ): Observable<GrupoEquipo[]> {
-    if (this._cache !== null) return of(this._cache);
-    const url =
-      this.apiUrl + '/buscar?nombre=' + producto + '&categoria=' + categoria;
-    return this.http.get<ApiResponse<GrupoEquipoApiItem[]>>(url).pipe(
+    const categoriaNormalizada = categoria.trim();
+    const productoNormalizado = producto.trim();
+    const cacheKey = `${productoNormalizado}|${categoriaNormalizada}`;
+    const cached = this.cache.get(cacheKey);
+
+    if (cached) return of(cached);
+
+    const request =
+      productoNormalizado || categoriaNormalizada
+        ? this.http.get<ApiResponse<GrupoEquipoApiItem[]>>(
+            `${this.apiUrl}/buscar`,
+            {
+              params: new HttpParams()
+                .set('nombre', productoNormalizado)
+                .set('categoria', categoriaNormalizada),
+            },
+          )
+        : this.http.get<ApiResponse<GrupoEquipoApiItem[]>>(this.apiUrl);
+
+    return request.pipe(
       map((data) =>
         extractApiValue(data, []).map((item) => this.mapearGrupoEquipo(item)),
       ),
       tap((result) => {
-        this._cache = result;
+        this.cache.set(cacheKey, result);
       }),
     );
   }

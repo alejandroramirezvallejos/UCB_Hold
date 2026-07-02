@@ -100,6 +100,44 @@
   background-color: var(--surface);
 }
 
+.password-field {
+  position: relative;
+  display: flex;
+  align-items: center;
+}
+
+.password-field__input {
+  width: 100%;
+  padding-right: 2.75rem;
+}
+
+.password-field__toggle {
+  position: absolute;
+  right: 0.45rem;
+  width: 2rem;
+  height: 2rem;
+  min-width: 2rem !important;
+  min-height: 2rem !important;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  border: 0;
+  border-radius: var(--radius-full);
+  background: transparent;
+  color: var(--ink-muted);
+  cursor: pointer;
+  transition:
+    background-color var(--t-fast),
+    color var(--t-fast);
+}
+
+.password-field__toggle:hover,
+.password-field__toggle:focus-visible {
+  background: var(--interactive-subtle);
+  color: var(--ink);
+  outline: none;
+}
+
 .error-message {
   color: #dc2626;
   font-size: 0.875rem;
