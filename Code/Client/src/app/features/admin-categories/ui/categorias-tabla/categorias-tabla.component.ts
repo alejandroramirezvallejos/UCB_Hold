@@ -69,6 +69,7 @@ export class CategoriasTablaComponent extends Tabla {
       next: (data: Categorias[]) => {
         this.categorias = data;
         this.categoriascopia = [...this.categorias];
+        this.aplicarOrdenActualSiExiste();
       },
       error: (error) => {
         const errorMsg = extractErrorMessage(
@@ -89,10 +90,18 @@ export class CategoriasTablaComponent extends Tabla {
     this.categorias = this.categoriascopia.filter((categoria) =>
       this.normalizeText(categoria.Nombre || '').includes(busquedaNormalizada),
     );
+    this.aplicarOrdenActualSiExiste();
   }
 
   limpiarBusqueda(): void {
     this.categorias = [...this.categoriascopia];
+    this.aplicarOrdenActualSiExiste();
+  }
+
+  override sortTable(e: { col: string; dir: 'asc' | 'desc' }): void {
+    this.categorias = this.sortByColumn(this.categorias, e, {
+      Nombre: (categoria) => categoria.Nombre,
+    });
   }
 
   editarCategoria(categoria: Categorias): void {

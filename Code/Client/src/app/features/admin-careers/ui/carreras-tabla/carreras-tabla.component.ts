@@ -69,6 +69,7 @@ export class CarrerasTablaComponent extends Tabla {
       next: (data: Carrera[]) => {
         this.carreras = data;
         this.carrerascopia = [...this.carreras];
+        this.aplicarOrdenActualSiExiste();
       },
       error: (error) => {
         const errorMsg = extractErrorMessage(
@@ -99,10 +100,18 @@ export class CarrerasTablaComponent extends Tabla {
     } else {
       this.carreras = [...this.carrerascopia];
     }
+    this.aplicarOrdenActualSiExiste();
   }
 
   limpiarBusqueda(): void {
     this.carreras = [...this.carrerascopia];
+    this.aplicarOrdenActualSiExiste();
+  }
+
+  override sortTable(e: { col: string; dir: 'asc' | 'desc' }): void {
+    this.carreras = this.sortByColumn(this.carreras, e, {
+      Nombre: (carrera) => carrera.Nombre,
+    });
   }
 
   editarCarrera(carrera: Carrera): void {

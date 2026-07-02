@@ -65,6 +65,12 @@ export abstract class Tabla extends BaseTablaComponent {
     return this.sortDirection === 'asc' ? 'fa-sort-up' : 'fa-sort-down';
   }
 
+  ariaOrdenColumna(columna: string): 'none' | 'ascending' | 'descending' {
+    if (!this.esColumnaOrdenada(columna)) return 'none';
+
+    return this.sortDirection === 'asc' ? 'ascending' : 'descending';
+  }
+
   protected compareSortableValues(
     firstValue: unknown,
     secondValue: unknown,
