@@ -67,7 +67,7 @@
           </tr>
         </thead>
         <tbody>
-          @for (gavetero of gaveteros; track $index; let i = $index) {
+          @for (gavetero of gaveteros; track gavetero.Id; let i = $index) {
             <tr>
               <td>{{ gavetero.Nombre }}</td>
               <td>{{ gavetero.Tipo }}</td>

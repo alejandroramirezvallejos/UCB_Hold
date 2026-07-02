@@ -67,7 +67,11 @@
           </tr>
         </thead>
         <tbody>
-          @for (componente of componentes; track $index; let i = $index) {
+          @for (
+            componente of componentes;
+            track componente.Id;
+            let i = $index
+          ) {
             <tr>
               <td>{{ componente.Nombre }}</td>
               <td>{{ componente.Modelo }}</td>

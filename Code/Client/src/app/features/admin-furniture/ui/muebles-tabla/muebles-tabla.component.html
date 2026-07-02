@@ -67,7 +67,7 @@
           </tr>
         </thead>
         <tbody>
-          @for (mueble of mueblesFiltrados; track $index; let i = $index) {
+          @for (mueble of mueblesFiltrados; track mueble.Id; let i = $index) {
             <tr>
               <td>{{ mueble.Nombre }}</td>
               <td>{{ mueble.Tipo }}</td>

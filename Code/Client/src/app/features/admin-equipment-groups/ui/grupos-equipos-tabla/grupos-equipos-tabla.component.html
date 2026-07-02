@@ -69,7 +69,7 @@
         <tbody>
           @for (
             grupoequipo of gruposEquiposFiltrados;
-            track $index;
+            track grupoequipo.id;
             let i = $index
           ) {
             <tr>
