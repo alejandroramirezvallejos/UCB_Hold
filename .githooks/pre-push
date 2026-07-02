@@ -1,0 +1,13 @@
+#!/bin/sh
+set -e
+
+dotnet format Code/Server/IMT_Reservas.Server.sln
+
+cd Code/Client
+npm run format
+cd ../..
+
+if ! git diff --quiet -- Code/Server Code/Client; then
+  echo "Los formateadores hicieron cambios. Revisa y commitea esos archivos antes de hacer push."
+  exit 1
+fi
