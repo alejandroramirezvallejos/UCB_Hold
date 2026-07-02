@@ -1195,6 +1195,83 @@ td.actions-column > * {
   vertical-align: middle;
 }
 
+.data-table--loans {
+  table-layout: fixed;
+  min-width: 78rem;
+}
+
+.data-table--loans th,
+.data-table--loans td {
+  text-align: center !important;
+  vertical-align: middle !important;
+}
+
+.data-table--loans .table-sort-button {
+  justify-content: center;
+  text-align: center;
+}
+
+.data-table--loans .loans-table__col--usuario {
+  width: 11rem;
+}
+
+.data-table--loans .loans-table__col--carnet {
+  width: 8.5rem;
+}
+
+.data-table--loans .loans-table__col--telefono {
+  width: 9rem;
+}
+
+.data-table--loans .loans-table__col--equipos {
+  width: 10rem;
+}
+
+.data-table--loans .loans-table__col--fecha-solicitud {
+  width: 12rem;
+}
+
+.data-table--loans .loans-table__col--fecha-prestamo,
+.data-table--loans .loans-table__col--fecha-devolucion {
+  width: 14rem;
+}
+
+.data-table--loans .loans-table__col--estado {
+  width: 9.5rem;
+}
+
+.data-table--loans .loans-table__col--acciones {
+  width: 9rem;
+}
+
+.data-table--loans .actions-column {
+  width: 9rem;
+  min-width: 9rem;
+  max-width: 9rem;
+}
+
+.data-table--loans td.actions-column {
+  padding-inline: 0.75rem !important;
+}
+
+.data-table--loans .equipos-info {
+  align-items: center;
+  text-align: center;
+}
+
+@media (max-width: 768px) {
+  .data-table--loans {
+    min-width: 72rem;
+  }
+
+  .data-table--loans .loans-table__col--acciones,
+  .data-table--loans .actions-column {
+    width: 8rem;
+    min-width: 8rem;
+    max-width: 8rem;
+  }
+}
+
 .dropdown-header {
   background: var(--sidebar);
   border: 1px solid var(--border);

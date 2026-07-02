@@ -21,7 +21,7 @@ import { extractErrorMessage } from '@shared/lib/error';
 import { AuditPanelComponent } from '@widgets/audit-panel';
 import { AvisoExitoComponent } from '@shared/ui';
 import { BuscadorComponent } from '@features/admin-search';
-import { Tabla } from '@shared/lib/admin-table';
+import { AdminTableSort, Tabla } from '@shared/lib/admin-table';
 import { StickyScrollDirective } from '@shared/lib/directives';
 import { CustomSelectComponent, OpcionSelect } from '@shared/ui';
 @Component({
@@ -47,10 +47,10 @@ import { CustomSelectComponent, OpcionSelect } from '@shared/ui';
   styleUrls: ['./prestamos-tabla.component.css'],
 })
 export class PrestamosTablaComponent extends Tabla implements OnInit {
+  override sortColumn = 'Fecha Solicitud';
+  override sortDirection: AdminTableSort['dir'] = 'desc';
   expandedRowId: number | null = null;
   auditRefresh = 0;
-
-  keepOrder = (_a: unknown, _b: unknown): number => 0;
 
   toggleExpand(id: number) {
     this.expandedRowId = this.expandedRowId === id ? null : id;
@@ -66,6 +66,14 @@ export class PrestamosTablaComponent extends Tabla implements OnInit {
     number,
     PrestamoAgrupados
   >();
+
+  get prestamosTabla() {
+    return Array.from(this.prestamos.entries(), ([key, value]) => ({
+      key,
+      value,
+    }));
+  }
+
   vercontrato: WritableSignal<boolean> = signal(false);
   prestamoSeleccionado: PrestamoDto = new PrestamoDto();
   prestamoKeySeleccionado: number = 0;

@@ -94,7 +94,18 @@
       </button>
     </div>
     <div class="table-responsive" appStickyScroll>
-      <table class="data-table">
+      <table class="data-table data-table--loans">
+        <colgroup>
+          <col class="loans-table__col loans-table__col--usuario" />
+          <col class="loans-table__col loans-table__col--carnet" />
+          <col class="loans-table__col loans-table__col--telefono" />
+          <col class="loans-table__col loans-table__col--equipos" />
+          <col class="loans-table__col loans-table__col--fecha-solicitud" />
+          <col class="loans-table__col loans-table__col--fecha-prestamo" />
+          <col class="loans-table__col loans-table__col--fecha-devolucion" />
+          <col class="loans-table__col loans-table__col--estado" />
+          <col class="loans-table__col loans-table__col--acciones" />
+        </colgroup>
         <thead>
           <tr>
             @for (columna of columnas; track columna) {
@@ -174,7 +185,7 @@
         </thead>
         <tbody>
           @for (
-            prestamo of prestamos | keyvalue: keepOrder;
+            prestamo of prestamosTabla;
             track prestamo.key ||
               prestamo.value.datosgrupo.Id ||
               prestamo.value.datosgrupo.CarnetUsuario ||

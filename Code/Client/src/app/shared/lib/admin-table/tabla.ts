@@ -71,14 +71,44 @@ export abstract class Tabla extends BaseTablaComponent {
     return this.sortDirection === 'asc' ? 'ascending' : 'descending';
   }
 
-  protected compareSortableValues(
-    firstValue: unknown,
-    secondValue: unknown,
+  protected sortByText<T>(
+    items: readonly T[],
     direction: AdminTableSort['dir'],
-  ): number {
-    const result = this.compareUnknownValues(firstValue, secondValue);
+    accessor: (item: T) => unknown,
+  ): T[] {
+    return this.sortByAccessor(items, direction, accessor, (first, second) =>
+      this.compareTextValues(first, second),
+    );
+  }
 
-    return direction === 'asc' ? result : -result;
+  protected sortByNumber<T>(
+    items: readonly T[],
+    direction: AdminTableSort['dir'],
+    accessor: (item: T) => unknown,
+  ): T[] {
+    return this.sortByAccessor(items, direction, accessor, (first, second) =>
+      this.compareNumberValues(first, second),
+    );
+  }
+
+  protected sortByDate<T>(
+    items: readonly T[],
+    direction: AdminTableSort['dir'],
+    accessor: (item: T) => unknown,
+  ): T[] {
+    return this.sortByAccessor(items, direction, accessor, (first, second) =>
+      this.compareDateValues(first, second),
+    );
+  }
+
+  protected sortByAuto<T>(
+    items: readonly T[],
+    direction: AdminTableSort['dir'],
+    accessor: (item: T) => unknown,
+  ): T[] {
+    return this.sortByAccessor(items, direction, accessor, (first, second) =>
+      this.compareAutoValues(first, second),
+    );
   }
 
   protected sortByColumn<T>(
@@ -90,9 +120,7 @@ export abstract class Tabla extends BaseTablaComponent {
 
     if (!value) return [...items];
 
-    return [...items].sort((firstItem, secondItem) =>
-      this.compareSortableValues(value(firstItem), value(secondItem), sort.dir),
-    );
+    return this.sortByAuto(items, sort.dir, value);
   }
 
   abstract aplicarFiltros(event?: [string, string]): void;
@@ -106,33 +134,78 @@ export abstract class Tabla extends BaseTablaComponent {
     return localDate.toISOString().split('T')[0];
   }
 
-  private compareUnknownValues(
-    firstValue: unknown,
-    secondValue: unknown,
-  ): number {
-    const firstNumber = Number(firstValue);
-    const secondNumber = Number(secondValue);
-    const bothAreNumbers =
-      firstValue !== null &&
-      firstValue !== '' &&
-      secondValue !== null &&
-      secondValue !== '' &&
-      Number.isFinite(firstNumber) &&
-      Number.isFinite(secondNumber);
+  private sortByAccessor<T>(
+    items: readonly T[],
+    direction: AdminTableSort['dir'],
+    accessor: (item: T) => unknown,
+    compare: (firstValue: unknown, secondValue: unknown) => number,
+  ): T[] {
+    return [...items].sort((firstItem, secondItem) => {
+      const result = compare(accessor(firstItem), accessor(secondItem));
 
-    if (bothAreNumbers) return firstNumber - secondNumber;
+      return direction === 'asc' ? result : -result;
+    });
+  }
 
+  private compareAutoValues(firstValue: unknown, secondValue: unknown): number {
     const firstDate = this.toComparableTime(firstValue);
     const secondDate = this.toComparableTime(secondValue);
 
     if (Number.isFinite(firstDate) && Number.isFinite(secondDate))
-      return firstDate - secondDate;
+      return this.compareDateValues(firstValue, secondValue);
 
+    const firstNumber = this.toComparableNumber(firstValue);
+    const secondNumber = this.toComparableNumber(secondValue);
+
+    if (Number.isFinite(firstNumber) && Number.isFinite(secondNumber))
+      return this.compareNumberValues(firstValue, secondValue);
+
+    return this.compareTextValues(firstValue, secondValue);
+  }
+
+  private compareTextValues(firstValue: unknown, secondValue: unknown): number {
     return this.normalizeText(firstValue).localeCompare(
       this.normalizeText(secondValue),
       undefined,
       { numeric: true, sensitivity: 'base' },
     );
+  }
+
+  private compareNumberValues(
+    firstValue: unknown,
+    secondValue: unknown,
+  ): number {
+    const firstNumber = this.toComparableNumber(firstValue);
+    const secondNumber = this.toComparableNumber(secondValue);
+
+    if (!Number.isFinite(firstNumber) && !Number.isFinite(secondNumber))
+      return 0;
+    if (!Number.isFinite(firstNumber)) return 1;
+    if (!Number.isFinite(secondNumber)) return -1;
+
+    return firstNumber - secondNumber;
+  }
+
+  private compareDateValues(firstValue: unknown, secondValue: unknown): number {
+    const firstDate = this.toComparableTime(firstValue);
+    const secondDate = this.toComparableTime(secondValue);
+
+    if (!Number.isFinite(firstDate) && !Number.isFinite(secondDate)) return 0;
+    if (!Number.isFinite(firstDate)) return 1;
+    if (!Number.isFinite(secondDate)) return -1;
+
+    return firstDate - secondDate;
+  }
+
+  private toComparableNumber(value: unknown): number {
+    if (typeof value === 'number') return value;
+    if (typeof value !== 'string') return NaN;
+
+    const normalizedValue = value.trim();
+
+    if (!normalizedValue) return NaN;
+
+    return Number(normalizedValue);
   }
 
   private toComparableTime(value: unknown): number {
