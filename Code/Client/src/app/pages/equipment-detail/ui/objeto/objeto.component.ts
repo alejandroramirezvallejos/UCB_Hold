@@ -17,7 +17,10 @@ import { GrupoEquipo, GrupoequipoService } from '@entities/equipment-group';
 import { CalendarioComponent } from '@features/availability-selector';
 import { CarritoService } from '@features/cart';
 import { ImageCacheService } from '@shared/lib/image/image-cache.service';
-import { MostrarerrorComponent } from '@shared/ui';
+import {
+  EquipmentImagePlaceholderComponent,
+  MostrarerrorComponent,
+} from '@shared/ui';
 
 const MINIMUM_CART_QUANTITY = 1;
 const FALLBACK_MAXIMUM_QUANTITY = 99;
@@ -28,6 +31,7 @@ const FALLBACK_MAXIMUM_QUANTITY = 99;
   imports: [
     CommonModule,
     MostrarerrorComponent,
+    EquipmentImagePlaceholderComponent,
     CalendarioComponent,
     FormsModule,
     NgOptimizedImage,

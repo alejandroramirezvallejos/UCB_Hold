@@ -11,6 +11,7 @@ import { extractErrorMessage } from '@shared/lib/error';
 import {
   Aviso,
   AvisoExitoComponent,
+  EquipmentImagePlaceholderComponent,
   MostrarerrorComponent,
   PantallaCargaComponent,
 } from '@shared/ui';
@@ -27,6 +28,7 @@ import { finalize } from 'rxjs';
     AvisoExitoComponent,
     PantallaCargaComponent,
     CalendarioComponent,
+    EquipmentImagePlaceholderComponent,
   ],
   templateUrl: './carrito.component.html',
   styleUrl: './carrito.component.css',
@@ -182,6 +184,10 @@ export class CarritoComponent {
 
   generarCantidadesMax(cantidad: number): number[] {
     return Array.from({ length: cantidad }, (_, i) => i + 1);
+  }
+
+  tieneImagenProducto(imagen: string | null | undefined): boolean {
+    return !!imagen?.trim();
   }
 
   cambiarCantidad(key: string, n: number): void {

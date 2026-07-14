@@ -4,15 +4,22 @@
       <ul class="cart__list">
         @for (item of carrito | keyvalue; track item.key) {
           <li class="cart__item">
-            <img
-              class="cart__product-image"
-              [src]="item.value.imagen || ''"
-              alt="{{ item.value.nombre }}"
-              width="70"
-              height="70"
-              loading="lazy"
-              decoding="async"
-            />
+            @if (tieneImagenProducto(item.value.imagen)) {
+              <img
+                class="cart__product-image"
+                [src]="item.value.imagen"
+                alt="{{ item.value.nombre }}"
+                width="70"
+                height="70"
+                loading="lazy"
+                decoding="async"
+              />
+            } @else {
+              <app-equipment-image-placeholder
+                class="cart__product-image cart__product-image--empty"
+                label=""
+              ></app-equipment-image-placeholder>
+            }
             <div class="cart__product-info">
               <h3 class="cart__product-title">{{ item.value.nombre }}</h3>
               <p class="cart__product-owner">Propietario: IMT</p>

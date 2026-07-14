@@ -30,9 +30,10 @@
                   (error)="registrarImagenFallida(imageUrl)"
                 />
               } @else {
-                <div class="product-card__no-image">
-                  <i class="fas fa-image"></i>
-                </div>
+                <app-equipment-image-placeholder
+                  class="product-card__no-image"
+                  label=""
+                ></app-equipment-image-placeholder>
               }
             </div>
             <div class="product-card__info">

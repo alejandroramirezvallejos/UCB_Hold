@@ -18,7 +18,10 @@ import { DisponibilidadService } from '@entities/availability';
 import { GrupoEquipo, GrupoequipoService } from '@entities/equipment-group';
 import { CarritoService } from '@features/cart';
 import { ImageCacheService } from '@shared/lib/image/image-cache.service';
-import { MostrarerrorComponent } from '@shared/ui';
+import {
+  EquipmentImagePlaceholderComponent,
+  MostrarerrorComponent,
+} from '@shared/ui';
 
 const DEFAULT_PRODUCTS_PER_PAGE = 21;
 const DESIRED_GRID_ROWS = 4;
@@ -33,6 +36,7 @@ const DEFAULT_MAX_QUANTITY = 99;
   imports: [
     RouterModule,
     MostrarerrorComponent,
+    EquipmentImagePlaceholderComponent,
     CommonModule,
     NgOptimizedImage,
   ],

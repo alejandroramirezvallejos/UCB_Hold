@@ -98,13 +98,8 @@
 .product-card__no-image {
   position: absolute;
   inset: 0;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  background: #f1f5f9;
-  color: var(--ink-muted);
-  font-size: 2.5rem;
   border-radius: 20px;
+  overflow: hidden;
 }
 @keyframes imageSkeleton {
   from {

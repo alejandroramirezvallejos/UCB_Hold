@@ -14,10 +14,9 @@
             (error)="ocultarImagenProducto()"
           />
         } @else {
-          <div class="imagen-no-encontrada">
-            <i class="fas fa-image"></i>
-            <span>Sin imagen</span>
-          </div>
+          <app-equipment-image-placeholder
+            class="imagen-no-encontrada"
+          ></app-equipment-image-placeholder>
         }
       </div>
     </div>

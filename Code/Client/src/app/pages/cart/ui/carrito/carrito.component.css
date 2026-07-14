@@ -63,6 +63,12 @@
   height: 70px;
   object-fit: cover;
   border-radius: 8px;
+  overflow: hidden;
+  background: var(--sidebar);
+  border: 1px solid var(--border);
+}
+.cart__product-image--empty {
+  display: block;
 }
 .cart__product-info {
   display: flex;
