@@ -15,51 +15,51 @@ public class ContratoRepository : Repository<ContratoEntity, ContratoDto>
 
     public async Task<Result<ContratoEntity>> GetEntityByPrestamoId(int prestamoId)
     {
-        var prestamo = await DbContext
+        var loan = await DbContext
             .Prestamos.AsNoTracking()
-            .FirstOrDefaultAsync(prestamo => prestamo.Id == prestamoId);
+            .FirstOrDefaultAsync(loan => loan.Id == prestamoId);
 
-        if (prestamo == null || !prestamo.IdContrato.HasValue)
+        if (loan == null || !loan.IdContrato.HasValue)
             return Result<ContratoEntity>.Error("Préstamo no encontrado o no tiene contrato");
 
-        var contrato = await DbContext
+        var contract = await DbContext
             .Contratos.AsNoTracking()
-            .FirstOrDefaultAsync(contrato => contrato.Id == prestamo.IdContrato.Value);
+            .FirstOrDefaultAsync(contract => contract.Id == loan.IdContrato.Value);
 
-        if (contrato == null)
+        if (contract == null)
             return Result<ContratoEntity>.Error("Contrato no encontrado");
 
-        return Result<ContratoEntity>.Success(contrato);
+        return Result<ContratoEntity>.Success(contract);
     }
 
-    public override async Task<Result<object>> Delete(int id) // id = prestamoId
+    public override async Task<Result<object>> Delete(int id)
     {
-        var prestamo = await DbContext.Prestamos.FirstOrDefaultAsync(prestamo => prestamo.Id == id);
+        var loan = await DbContext.Prestamos.FirstOrDefaultAsync(loan => loan.Id == id);
 
-        if (prestamo == null || !prestamo.IdContrato.HasValue)
+        if (loan == null || !loan.IdContrato.HasValue)
             return Result<object>.Error("Préstamo no encontrado o no tiene contrato");
 
-        var contrato = await DbContext.Contratos.FirstOrDefaultAsync(contrato =>
-            contrato.Id == prestamo.IdContrato.Value
+        var contract = await DbContext.Contratos.FirstOrDefaultAsync(contract =>
+            contract.Id == loan.IdContrato.Value
         );
 
-        if (contrato == null)
+        if (contract == null)
             return Result<object>.Error("Contrato no encontrado");
 
-        DbContext.Contratos.Remove(contrato);
-        prestamo.IdContrato = null;
-        DbContext.Prestamos.Update(prestamo);
+        DbContext.Contratos.Remove(contract);
+        loan.IdContrato = null;
+        DbContext.Prestamos.Update(loan);
         await DbContext.SaveChangesAsync();
 
         return Result<object>.Success(new { });
     }
 
     public async Task<PrestamoEntity?> FindPrestamoById(int prestamoId) =>
-        await DbContext.Prestamos.FirstOrDefaultAsync(p => p.Id == prestamoId);
+        await DbContext.Prestamos.FirstOrDefaultAsync(loan => loan.Id == prestamoId);
 
-    public async Task SavePrestamo(PrestamoEntity prestamo)
+    public async Task SavePrestamo(PrestamoEntity loan)
     {
-        DbContext.Prestamos.Update(prestamo);
+        DbContext.Prestamos.Update(loan);
         await DbContext.SaveChangesAsync();
     }
 }

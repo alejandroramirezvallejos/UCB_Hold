@@ -25,13 +25,13 @@ public class GaveteroRepository : Repository<GaveteroEntity, GaveteroDto>
 
     public async Task RecalcMuebleCount(int muebleId)
     {
-        var mueble = await DbContext.Muebles.FirstOrDefaultAsync(m => m.Id == muebleId);
+        var furniture = await DbContext.Muebles.FirstOrDefaultAsync(mueble => mueble.Id == muebleId);
 
-        if (mueble == null)
+        if (furniture == null)
             return;
 
-        mueble.NumeroGaveteros = await DbContext.Gaveteros.CountAsync(g =>
-            g.IdMueble == muebleId && !g.EstadoEliminado
+        furniture.NumeroGaveteros = await DbContext.Gaveteros.CountAsync(gavetero =>
+            gavetero.IdMueble == muebleId && !gavetero.EstadoEliminado
         );
 
         await DbContext.SaveChangesAsync();

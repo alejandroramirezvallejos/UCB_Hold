@@ -1,3 +1,4 @@
+using System.Globalization;
 using Ardalis.Result;
 using FluentValidation;
 using IMT_Reservas.Server.Application.Abstraction;
@@ -35,7 +36,7 @@ public class GaveteroService : Service<GaveteroEntity, GaveteroRepository, Gavet
             await Audit!.Log(
                 AuditAccion.Crear,
                 typeof(GaveteroEntity).Name,
-                result.Value?.Id?.ToString()
+                result.Value?.Id?.ToString(CultureInfo.InvariantCulture)
             );
         }
 
@@ -67,7 +68,11 @@ public class GaveteroService : Service<GaveteroEntity, GaveteroRepository, Gavet
         if (previousMuebleId.HasValue && previousMuebleId.Value != muebleId)
             await Repository.RecalcMuebleCount(previousMuebleId.Value);
 
-        await Audit!.Log(AuditAccion.Editar, typeof(GaveteroEntity).Name, id.ToString());
+        await Audit!.Log(
+            AuditAccion.Editar,
+            typeof(GaveteroEntity).Name,
+            id.ToString(CultureInfo.InvariantCulture)
+        );
         return result;
     }
 

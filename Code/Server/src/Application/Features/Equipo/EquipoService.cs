@@ -1,3 +1,4 @@
+using System.Globalization;
 using Ardalis.Result;
 using FluentValidation;
 using IMT_Reservas.Server.Application.Abstraction;
@@ -39,7 +40,7 @@ public class EquipoService : Service<EquipoEntity, EquipoRepository, EquipoDto>
             await Audit!.Log(
                 AuditAccion.Crear,
                 typeof(EquipoEntity).Name,
-                result.Value?.Id?.ToString()
+                result.Value?.Id?.ToString(CultureInfo.InvariantCulture)
             );
         }
 
@@ -74,7 +75,11 @@ public class EquipoService : Service<EquipoEntity, EquipoRepository, EquipoDto>
         if (existing.IdGrupoEquipo != entity.IdGrupoEquipo)
             await Repository.RecalcGrupoStats(existing.IdGrupoEquipo);
 
-        await Audit!.Log(AuditAccion.Editar, typeof(EquipoEntity).Name, id.ToString());
+        await Audit!.Log(
+            AuditAccion.Editar,
+            typeof(EquipoEntity).Name,
+            id.ToString(CultureInfo.InvariantCulture)
+        );
 
         return result;
     }

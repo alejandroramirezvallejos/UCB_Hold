@@ -15,32 +15,32 @@ public class ContratoService : Service<ContratoEntity, ContratoRepository, Contr
     )
         : base(repository, validator, mapper) { }
 
-    public async Task<Result<ContratoDto>> CreateForPrestamo(int prestamoId, string contenidoHtml)
+    public async Task<Result<ContratoDto>> CreateForPrestamo(int prestamoId, string htmlContent)
     {
-        var dto = new ContratoDto { ContratoHtml = contenidoHtml, PrestamoId = prestamoId };
+        var dto = new ContratoDto { ContratoHtml = htmlContent, PrestamoId = prestamoId };
         var validation = await Validator.ValidateAsync(dto);
 
         if (!validation.IsValid)
             return validation.ToResult<ContratoDto>();
 
-        var prestamo = await Repository.FindPrestamoById(prestamoId);
+        var loan = await Repository.FindPrestamoById(prestamoId);
 
-        if (prestamo == null)
+        if (loan == null)
             return Result<ContratoDto>.Error("Préstamo no existe");
 
-        if (prestamo.IdContrato.HasValue)
+        if (loan.IdContrato.HasValue)
             return Result<ContratoDto>.Error("Contrato ya existe para este préstamo");
 
-        var contrato = MapToEntity(dto);
-        var result = await Repository.Create(contrato);
+        var contract = MapToEntity(dto);
+        var result = await Repository.Create(contract);
 
         if (!result.IsSuccess)
             return Result<ContratoDto>.Error(
                 result.Errors.FirstOrDefault() ?? "Error al crear contrato"
             );
 
-        prestamo.IdContrato = result.Value.Id;
-        await Repository.SavePrestamo(prestamo);
+        loan.IdContrato = result.Value.Id;
+        await Repository.SavePrestamo(loan);
 
         return result;
     }

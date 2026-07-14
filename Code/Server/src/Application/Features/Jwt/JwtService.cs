@@ -1,4 +1,5 @@
 using System.IdentityModel.Tokens.Jwt;
+using System.Globalization;
 using System.Security.Claims;
 using System.Security.Cryptography;
 using System.Text;
@@ -28,10 +29,12 @@ public class JwtService
             new Claim(JwtRegisteredClaimNames.Jti, Guid.NewGuid().ToString()),
             new Claim(
                 JwtRegisteredClaimNames.Iat,
-                new DateTimeOffset(issuedAt).ToUnixTimeSeconds().ToString(),
+                new DateTimeOffset(issuedAt)
+                    .ToUnixTimeSeconds()
+                    .ToString(CultureInfo.InvariantCulture),
                 ClaimValueTypes.Integer64
             ),
-            new Claim("role", usuario.Rol?.ToLower() ?? "estudiante"),
+            new Claim("role", usuario.Rol?.ToLowerInvariant() ?? "estudiante"),
             new Claim("nombre", usuario.Nombre ?? string.Empty),
         };
 

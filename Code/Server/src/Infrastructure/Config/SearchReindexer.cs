@@ -15,9 +15,9 @@ public sealed class SearchReindexer : IHostedService
         using var scope = _scopeFactory.CreateScope();
         var repository = scope.ServiceProvider.GetRequiredService<GrupoEquipoRepository>();
         var index = scope.ServiceProvider.GetRequiredService<ISearchIndex<GrupoEquipoDto>>();
-        var grupos = await repository.Search();
+        var groups = await repository.Search();
 
-        await index.IndexMany(grupos, grupo => grupo.Id ?? 0);
+        await index.IndexMany(groups, group => group.Id ?? 0);
     }
 
     public Task StopAsync(CancellationToken cancellationToken) => Task.CompletedTask;

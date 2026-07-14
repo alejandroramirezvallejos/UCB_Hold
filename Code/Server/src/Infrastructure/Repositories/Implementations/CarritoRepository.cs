@@ -12,16 +12,19 @@ public class CarritoRepository
 
     public async Task<Dictionary<int, int>> GetCantidadesByGrupos(List<int> grupoIds)
     {
-        var grupoIdsPorEquipo = await _dbContext
-            .Equipos.Where(e =>
+        if (grupoIds.Count == 0)
+            return [];
+
+        return await _dbContext
+            .Equipos.AsNoTracking()
+            .Where(e =>
                 grupoIds.Contains(e.IdGrupoEquipo)
                 && !e.EstadoEliminado
                 && e.EstadoEquipo == EstadoEquipo.Operativo
             )
-            .Select(e => e.IdGrupoEquipo)
-            .ToListAsync();
-
-        return grupoIdsPorEquipo.GroupBy(id => id).ToDictionary(g => g.Key, g => g.Count());
+            .GroupBy(e => e.IdGrupoEquipo)
+            .Select(group => new { GrupoId = group.Key, Cantidad = group.Count() })
+            .ToDictionaryAsync(group => group.GrupoId, group => group.Cantidad);
     }
 
     public async Task<
@@ -29,9 +32,10 @@ public class CarritoRepository
     > GetPrestamosActivosEnRango(List<int> grupoIds, DateTime fechaInicio, DateTime fechaFin)
     {
         var rows = await (
-            from detalle in _dbContext.DetallesPrestamos
-            join prestamo in _dbContext.Prestamos on detalle.IdPrestamo equals prestamo.Id
-            join equipo in _dbContext.Equipos on detalle.IdEquipo equals equipo.Id
+            from detalle in _dbContext.DetallesPrestamos.AsNoTracking()
+            join prestamo in _dbContext.Prestamos.AsNoTracking()
+                on detalle.IdPrestamo equals prestamo.Id
+            join equipo in _dbContext.Equipos.AsNoTracking() on detalle.IdEquipo equals equipo.Id
             where
                 grupoIds.Contains(equipo.IdGrupoEquipo)
                 && (

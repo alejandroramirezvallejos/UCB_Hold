@@ -1,3 +1,4 @@
+using System.Globalization;
 using Ardalis.Result;
 using FluentValidation;
 using IMT_Reservas.Server.Application.Abstraction;
@@ -44,7 +45,7 @@ public class MantenimientoService
         await Audit!.Log(
             AuditAccion.Crear,
             typeof(MantenimientoEntity).Name,
-            result.Value?.Id?.ToString()
+            result.Value?.Id?.ToString(CultureInfo.InvariantCulture)
         );
 
         return result;

@@ -46,9 +46,9 @@ public class GrupoEquipoRepository : Repository<GrupoEquipoEntity, GrupoEquipoDt
         if (!string.IsNullOrWhiteSpace(categoria))
             query = query.Where(g => g.Categoria != null && g.Categoria.Nombre == categoria);
 
-        var encontrados = await ProjectTo(query).ToListAsync();
+        var encontrados = await ProjectTo(query).ToDictionaryAsync(g => g.Id!.Value);
 
-        return ids.Select(id => encontrados.Find(g => g.Id == id))
+        return ids.Select(id => encontrados.GetValueOrDefault(id))
             .OfType<GrupoEquipoDto>()
             .ToList();
     }

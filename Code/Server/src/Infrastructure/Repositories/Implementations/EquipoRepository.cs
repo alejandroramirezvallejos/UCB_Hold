@@ -28,24 +28,28 @@ public class EquipoRepository : Repository<EquipoEntity, EquipoDto>
 
     public async Task RecalcGrupoStats(int idGrupoEquipo)
     {
-        var grupo = await DbContext.GruposEquipos.FirstOrDefaultAsync(g => g.Id == idGrupoEquipo);
+        var group = await DbContext.GruposEquipos.FirstOrDefaultAsync(group =>
+            group.Id == idGrupoEquipo
+        );
 
-        if (grupo == null)
+        if (group == null)
             return;
 
         var stats = await DbContext
             .Equipos.Where(e => e.IdGrupoEquipo == idGrupoEquipo && !e.EstadoEliminado)
-            .Select(e => new { e.CostoReferencia })
-            .ToListAsync();
+            .GroupBy(e => e.IdGrupoEquipo)
+            .Select(group => new
+            {
+                Cantidad = group.Count(),
+                CostoTotal = group.Sum(e => e.CostoReferencia ?? 0),
+            })
+            .FirstOrDefaultAsync();
 
-        grupo.Cantidad = stats.Count;
-        grupo.CostoPromedio =
-            stats.Count == 0
+        group.Cantidad = stats?.Cantidad ?? 0;
+        group.CostoPromedio =
+            stats == null || stats.Cantidad == 0
                 ? 0
-                : (decimal)(
-                    stats.Where(e => e.CostoReferencia.HasValue).Sum(e => e.CostoReferencia ?? 0)
-                    / Math.Max(1, stats.Count)
-                );
+                : (decimal)(stats.CostoTotal / stats.Cantidad);
 
         await DbContext.SaveChangesAsync();
     }
@@ -104,27 +108,27 @@ public class EquipoRepository : Repository<EquipoEntity, EquipoDto>
             FechaPrestamo = r.FechaPrestamo,
             FechaDevolucionEsperada = r.FechaDevolucionEsperada,
             FechaDevolucion = r.FechaDevolucion,
-            EstadoPrestamo = r.EstadoPrestamo.ToString().ToLower(),
+            EstadoPrestamo = r.EstadoPrestamo.ToString().ToLowerInvariant(),
             EstadoEquipo = r.EstadoEquipoRetorno.HasValue
-                    ? EstadoEquipoToPg(r.EstadoEquipoRetorno.Value)
+                    ? ToPostgresEstadoEquipo(r.EstadoEquipoRetorno.Value)
                     : null,
             Observacion = r.Observacion,
         })
             .ToList();
     }
 
-    private static string EstadoEquipoToPg(EstadoEquipo estado) =>
-        estado switch
+    private static string ToPostgresEstadoEquipo(EstadoEquipo state) =>
+        state switch
         {
             EstadoEquipo.ParcialmenteOperativo => "parcialmente_operativo",
             EstadoEquipo.Inoperativo => "inoperativo",
             _ => "operativo",
         };
 
-    protected override async Task CascadeDelete(EquipoEntity equipo)
+    protected override async Task CascadeDelete(EquipoEntity equipment)
     {
-        await CascadeLeaf<Accesorio>(a => a.IdEquipo == equipo.Id);
-        await CascadeLeaf<Componente>(c => c.IdEquipo == equipo.Id);
-        await CascadeLeaf<DetalleMantenimiento>(d => d.IdEquipo == equipo.Id);
+        await CascadeLeaf<Accesorio>(accessory => accessory.IdEquipo == equipment.Id);
+        await CascadeLeaf<Componente>(component => component.IdEquipo == equipment.Id);
+        await CascadeLeaf<DetalleMantenimiento>(detail => detail.IdEquipo == equipment.Id);
     }
 }

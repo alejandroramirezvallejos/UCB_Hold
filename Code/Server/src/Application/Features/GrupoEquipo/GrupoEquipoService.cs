@@ -1,3 +1,4 @@
+using System.Globalization;
 using Ardalis.Result;
 using FluentValidation;
 using IMT_Reservas.Server.Application.Abstraction;
@@ -46,7 +47,7 @@ public class GrupoEquipoService : Service<GrupoEquipoEntity, GrupoEquipoReposito
             await Audit!.Log(
                 AuditAccion.Crear,
                 typeof(GrupoEquipoEntity).Name,
-                createResult.Value?.Id?.ToString()
+                createResult.Value?.Id?.ToString(CultureInfo.InvariantCulture)
             );
         }
 
@@ -71,7 +72,11 @@ public class GrupoEquipoService : Service<GrupoEquipoEntity, GrupoEquipoReposito
         {
             await BumpSearchVersion();
             await IndexGrupo(updateResult.Value);
-            await Audit!.Log(AuditAccion.Editar, typeof(GrupoEquipoEntity).Name, id.ToString());
+            await Audit!.Log(
+                AuditAccion.Editar,
+                typeof(GrupoEquipoEntity).Name,
+                id.ToString(CultureInfo.InvariantCulture)
+            );
         }
 
         return updateResult;
@@ -127,16 +132,16 @@ public class GrupoEquipoService : Service<GrupoEquipoEntity, GrupoEquipoReposito
         if (cacheResult.IsSuccess)
             return Result<List<GrupoEquipoDto>>.Success(cacheResult.Value);
 
-        var equipos = await Repository.Search(nombre, categoria);
-        _ = await _cacheRepository.Set(cacheKey, equipos, GrupoEquipoSearchTtl);
+        var results = await Repository.Search(nombre, categoria);
+        _ = await _cacheRepository.Set(cacheKey, results, GrupoEquipoSearchTtl);
 
-        return Result<List<GrupoEquipoDto>>.Success(equipos);
+        return Result<List<GrupoEquipoDto>>.Success(results);
     }
 
-    private async Task IndexGrupo(GrupoEquipoDto? grupo)
+    private async Task IndexGrupo(GrupoEquipoDto? group)
     {
-        if (grupo?.Id is int id)
-            await _searchIndex.Index(id, grupo);
+        if (group?.Id is int id)
+            await _searchIndex.Index(id, group);
     }
 
     private async Task<long> GetSearchVersion()

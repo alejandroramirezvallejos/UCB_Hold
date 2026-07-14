@@ -1,3 +1,4 @@
+using System.Globalization;
 using Ardalis.Result;
 using IMT_Reservas.Server.Application.Features.Mantenimiento;
 using IMT_Reservas.Server.Core.Abstraction;
@@ -34,23 +35,35 @@ public class MantenimientoRepository : Repository<MantenimientoEntity, Mantenimi
                 on equipo.IdGrupoEquipo equals grupo.Id
                 into grupoJoin
             from grupo in grupoJoin.DefaultIfEmpty()
-            select new MantenimientoDto
+            select new
             {
-                Id = mantenimiento.Id,
-                IdEmpresa = mantenimiento.IdEmpresa,
-                NombreEmpresaMantenimiento = empresa != null ? empresa.Nombre : null,
-                FechaMantenimiento = mantenimiento.FechaMantenimiento,
-                FechaFinalMantenimiento = mantenimiento.FechaFinalMantenimiento,
-                Costo = mantenimiento.Costo,
-                Descripcion = mantenimiento.Descripcion,
+                Mantenimiento = mantenimiento,
+                NombreEmpresa = empresa != null ? empresa.Nombre : null,
                 TipoMantenimiento = detalle != null ? detalle.TipoMantenimiento : null,
-                CodigoImtEquipo = equipo != null ? equipo.CodigoImt.ToString() : null,
-                NombreGrupoEquipo = grupo != null ? grupo.Nombre : null,
+                CodigoImt = equipo != null ? (int?)equipo.CodigoImt : null,
+                NombreGrupo = grupo != null ? grupo.Nombre : null,
                 DescripcionEquipo = detalle != null ? detalle.Descripcion : null,
             }
         ).ToListAsync();
 
-        return Result<List<MantenimientoDto>>.Success(rows);
+        var dtos = rows
+            .Select(row => new MantenimientoDto
+            {
+                Id = row.Mantenimiento.Id,
+                IdEmpresa = row.Mantenimiento.IdEmpresa,
+                NombreEmpresaMantenimiento = row.NombreEmpresa,
+                FechaMantenimiento = row.Mantenimiento.FechaMantenimiento,
+                FechaFinalMantenimiento = row.Mantenimiento.FechaFinalMantenimiento,
+                Costo = row.Mantenimiento.Costo,
+                Descripcion = row.Mantenimiento.Descripcion,
+                TipoMantenimiento = row.TipoMantenimiento,
+                CodigoImtEquipo = row.CodigoImt?.ToString(CultureInfo.InvariantCulture),
+                NombreGrupoEquipo = row.NombreGrupo,
+                DescripcionEquipo = row.DescripcionEquipo,
+            })
+            .ToList();
+
+        return Result<List<MantenimientoDto>>.Success(dtos);
     }
 
     public override async Task<Result<MantenimientoDto>> Get(int id)
@@ -89,20 +102,20 @@ public class MantenimientoRepository : Repository<MantenimientoEntity, Mantenimi
         string[]? descripciones
     )
     {
+        var equipoIdPorCodigo = await DbContext
+            .Equipos.Where(e => codigosImt.Contains(e.CodigoImt) && !e.EstadoEliminado)
+            .ToDictionaryAsync(e => e.CodigoImt, e => e.Id);
+
         for (var i = 0; i < codigosImt.Length; i++)
         {
-            var equipo = await DbContext.Equipos.FirstOrDefaultAsync(e =>
-                e.CodigoImt == codigosImt[i] && !e.EstadoEliminado
-            );
-
-            if (equipo == null)
+            if (!equipoIdPorCodigo.TryGetValue(codigosImt[i], out var equipoId))
                 continue;
 
             DbContext.DetallesMantenimientos.Add(
                 new DetalleMantenimiento
                 {
                     IdMantenimiento = mantenimientoId,
-                    IdEquipo = equipo.Id,
+                    IdEquipo = equipoId,
                     TipoMantenimiento = tipos?.ElementAtOrDefault(i),
                     Descripcion = descripciones?.ElementAtOrDefault(i),
                     EstadoEliminado = false,
