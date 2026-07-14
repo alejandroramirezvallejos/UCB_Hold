@@ -3,7 +3,7 @@ import { AuthService } from '@features/auth-session';
 import { NotificacionApiService } from '../api/notificacion.service';
 import { Notificacion } from './notificacion.model';
 
-const INTERVALO_MS = 30000;
+const INTERVALO_MS = 10000;
 
 @Injectable({
   providedIn: 'root',
@@ -11,8 +11,20 @@ const INTERVALO_MS = 30000;
 export class NotificacionStoreService {
   private readonly _notificaciones: WritableSignal<Notificacion[]> = signal([]);
   readonly notificaciones = this._notificaciones.asReadonly();
+  readonly notificacionesUsuario = computed(() =>
+    this._notificaciones().filter((n) => !this.esNotificacionAdmin(n)),
+  );
+  readonly notificacionesAdmin = computed(() =>
+    this._notificaciones().filter((n) => this.esNotificacionAdmin(n)),
+  );
   readonly noLeidas = computed(
     () => this._notificaciones().filter((n) => !n.Leido).length,
+  );
+  readonly noLeidasUsuario = computed(
+    () => this.notificacionesUsuario().filter((n) => !n.Leido).length,
+  );
+  readonly noLeidasAdmin = computed(
+    () => this.notificacionesAdmin().filter((n) => !n.Leido).length,
   );
   private intervalo: ReturnType<typeof setInterval> | null = null;
 
@@ -65,5 +77,9 @@ export class NotificacionStoreService {
         ),
       error: () => {},
     });
+  }
+
+  private esNotificacionAdmin(notificacion: Notificacion): boolean {
+    return notificacion.Tipo?.startsWith('Admin') ?? false;
   }
 }

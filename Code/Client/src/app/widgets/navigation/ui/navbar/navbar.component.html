@@ -79,7 +79,7 @@
           aria-haspopup="true"
           (click)="toggleNotifications()"
         >
-          <i class="fas fa-bell notif__icon"></i>
+          <i class="fa-regular fa-bell notif__icon"></i>
           @if (notifStore.noLeidas() > 0) {
             <span class="notif__badge">{{ notifStore.noLeidas() }}</span>
           }
@@ -88,7 +88,7 @@
           <div class="notif__dropdown" role="menu">
             <div class="notif__header">
               <span>Notificaciones</span>
-              @if (notifStore.noLeidas() > 0) {
+              @if (noLeidasVisibles() > 0) {
                 <button
                   type="button"
                   class="notif__mark-all"
@@ -98,8 +98,38 @@
                 </button>
               }
             </div>
+            @if (esAdministrador()) {
+              <div class="notif__tabs" role="tablist">
+                <button
+                  type="button"
+                  class="notif__tab"
+                  [class.notif__tab--active]="
+                    activeNotificationTab() === 'usuario'
+                  "
+                  (click)="seleccionarTabNotificaciones('usuario')"
+                >
+                  Usuario
+                  @if (notifStore.noLeidasUsuario() > 0) {
+                    <span>{{ notifStore.noLeidasUsuario() }}</span>
+                  }
+                </button>
+                <button
+                  type="button"
+                  class="notif__tab"
+                  [class.notif__tab--active]="
+                    activeNotificationTab() === 'admin'
+                  "
+                  (click)="seleccionarTabNotificaciones('admin')"
+                >
+                  Admin
+                  @if (notifStore.noLeidasAdmin() > 0) {
+                    <span>{{ notifStore.noLeidasAdmin() }}</span>
+                  }
+                </button>
+              </div>
+            }
             <div class="notif__list">
-              @for (n of notifStore.notificaciones(); track n.Id) {
+              @for (n of notificacionesVisibles(); track n.Id) {
                 <button
                   type="button"
                   class="notif__item"
@@ -110,9 +140,53 @@
                   @if (n.Contenido) {
                     <span class="notif__body">{{ n.Contenido }}</span>
                   }
+                  @if (tieneDetalleOrganizado(n)) {
+                    <button
+                      type="button"
+                      class="notif__details-toggle"
+                      (click)="alternarDetalleNotificacion(n, $event)"
+                    >
+                      {{
+                        expandedNotificationId() === n.Id
+                          ? "Ocultar detalle"
+                          : "Ver detalle"
+                      }}
+                    </button>
+                    @if (
+                      expandedNotificationId() === n.Id &&
+                        obtenerDetalleOrganizado(n);
+                      as detalle
+                    ) {
+                      <div class="notif__detail-panel">
+                        @if (detalle.observacion) {
+                          <span class="notif__detail-label">Observación</span>
+                          <span class="notif__detail-text">{{
+                            detalle.observacion
+                          }}</span>
+                        }
+                        @if (detalle.equipos.length > 0) {
+                          <span class="notif__detail-label">Equipos</span>
+                          @for (
+                            equipo of detalle.equipos;
+                            track equipo.codigo
+                          ) {
+                            <span class="notif__equipment">
+                              <strong>{{ equipo.nombre }}</strong>
+                              <small
+                                >IMT {{ equipo.codigo }} ·
+                                {{ equipo.estado }}</small
+                              >
+                            </span>
+                          }
+                        }
+                      </div>
+                    }
+                  } @else if (obtenerDetalleTexto(n); as detalleTexto) {
+                    <span class="notif__detail">{{ detalleTexto }}</span>
+                  }
                 </button>
               }
-              @if (notifStore.notificaciones().length === 0) {
+              @if (notificacionesVisibles().length === 0) {
                 <div class="notif__empty">Sin notificaciones</div>
               }
             </div>
