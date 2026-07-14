@@ -41,6 +41,18 @@ public class UsuarioController : Controller
     public async Task<IActionResult> Delete(string carnet) =>
         ToDeleteResponse(await _service.Delete(carnet));
 
+    [Authorize(Roles = "administrador")]
+    [HttpPut("{carnet}/bloqueo")]
+    public async Task<IActionResult> SetBlocked(string carnet, [FromBody] UsuarioDto request) =>
+        ToResponse(
+            await _service.SetBlocked(
+                carnet,
+                request.Bloqueado ?? false,
+                request.MotivoBloqueo,
+                User.IsInRole("administrador")
+            )
+        );
+
     [AllowAnonymous]
     [EnableRateLimiting("auth")]
     [HttpPost("login")]

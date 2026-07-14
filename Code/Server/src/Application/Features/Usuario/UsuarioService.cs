@@ -4,6 +4,7 @@ using IMT_Reservas.Server.Application.Abstraction;
 using IMT_Reservas.Server.Application.Features.AuditLog;
 using IMT_Reservas.Server.Application.Features.Cache;
 using IMT_Reservas.Server.Application.Features.Jwt;
+using IMT_Reservas.Server.Application.Features.Notificacion;
 using IMT_Reservas.Server.Infrastructure.Repositories.Implementations;
 using Microsoft.Extensions.Options;
 using BCryptLib = BCrypt.Net.BCrypt;
@@ -18,6 +19,7 @@ public class UsuarioService : Service<UsuarioEntity, UsuarioRepository, UsuarioD
     private readonly JwtService _jwtService;
     private readonly JwtSettings _jwtSettings;
     private readonly CacheRepository _cacheRepository;
+    private readonly NotificacionService _notifications;
 
     public UsuarioService(
         UsuarioRepository repository,
@@ -26,7 +28,8 @@ public class UsuarioService : Service<UsuarioEntity, UsuarioRepository, UsuarioD
         JwtService jwtService,
         IOptions<JwtSettings> jwtSettings,
         CacheRepository cacheRepository,
-        AuditLogService audit
+        AuditLogService audit,
+        NotificacionService notifications
     )
         : base(repository, validator, mapper, audit)
     {
@@ -34,17 +37,59 @@ public class UsuarioService : Service<UsuarioEntity, UsuarioRepository, UsuarioD
         _jwtService = jwtService;
         _jwtSettings = jwtSettings.Value;
         _cacheRepository = cacheRepository;
+        _notifications = notifications;
+    }
+
+    public async Task<Result<object>> SetBlocked(
+        string carnet,
+        bool isBlocked,
+        string? blockReason,
+        bool isAdmin
+    )
+    {
+        if (!isAdmin)
+            return Result<object>.Forbidden();
+
+        var user = await Repository.GetTrackedByCarnet(carnet);
+
+        if (user == null)
+            return Result<object>.NotFound();
+
+        user.Bloqueado = isBlocked;
+        user.MotivoBloqueo = isBlocked ? blockReason : null;
+        await Repository.UpdateEntity(user);
+
+        await Audit!.Log(
+            isBlocked ? AuditAccion.Bloquear : AuditAccion.Desbloquear,
+            typeof(UsuarioEntity).Name,
+            carnet,
+            blockReason
+        );
+
+        if (isBlocked)
+            await _notifications.Create(
+                carnet,
+                TipoNotificacion.UsuarioBloqueado,
+                "Cuenta bloqueada para reservas",
+                string.IsNullOrWhiteSpace(blockReason)
+                    ? "Un administrador bloqueó tu cuenta para nuevas reservas."
+                    : blockReason
+            );
+
+        _ = await _cacheRepository.Remove(CacheKeys.Usuario(carnet));
+
+        return Result<object>.Success(null!);
     }
 
     public override async Task<Result<UsuarioDto>> Create(UsuarioDto dto) =>
-        await Create(dto, esAdmin: false);
+        await Create(dto, isAdmin: false);
 
-    public async Task<Result<UsuarioDto>> Create(UsuarioDto dto, bool esAdmin)
+    public async Task<Result<UsuarioDto>> Create(UsuarioDto dto, bool isAdmin)
     {
         if (string.IsNullOrWhiteSpace(dto.Contrasena))
             return Result<UsuarioDto>.Error("Contraseña requerida");
 
-        if (!esAdmin)
+        if (!isAdmin)
             dto.Rol = null;
 
         await ResolveCarrera(dto);
@@ -83,10 +128,10 @@ public class UsuarioService : Service<UsuarioEntity, UsuarioRepository, UsuarioD
         string carnet,
         UsuarioDto dto,
         string? callerCarnet,
-        bool esAdmin = false
+        bool isAdmin = false
     )
     {
-        if (!esAdmin && !string.Equals(callerCarnet, carnet, StringComparison.Ordinal))
+        if (!isAdmin && !string.Equals(callerCarnet, carnet, StringComparison.Ordinal))
             return Result<UsuarioDto>.Forbidden();
 
         var validation = await Validator.ValidateAsync(dto);
@@ -105,7 +150,7 @@ public class UsuarioService : Service<UsuarioEntity, UsuarioRepository, UsuarioD
         )
             return Result<UsuarioDto>.Error("Teléfono ya registrado");
 
-        if (!esAdmin)
+        if (!isAdmin)
             dto.Rol = null;
 
         await ResolveCarrera(dto);
@@ -136,13 +181,13 @@ public class UsuarioService : Service<UsuarioEntity, UsuarioRepository, UsuarioD
         if (cacheResult.IsSuccess)
             return Result<UsuarioDto>.Success(cacheResult.Value);
 
-        var usuario = await Repository.GetByCarnet(carnet);
+        var user = await Repository.GetByCarnet(carnet);
 
-        if (usuario == null)
+        if (user == null)
             return Result<UsuarioDto>.NotFound();
 
-        var dto = _mapper.ToDto(usuario);
-        dto.CarreraNombre = await Repository.GetCarreraName(usuario.IdCarrera);
+        var dto = _mapper.ToDto(user);
+        dto.CarreraNombre = await Repository.GetCarreraName(user.IdCarrera);
 
         _ = await _cacheRepository.Set(cacheKey, dto, UsuarioCacheTtl);
 
@@ -154,26 +199,26 @@ public class UsuarioService : Service<UsuarioEntity, UsuarioRepository, UsuarioD
         if (string.IsNullOrWhiteSpace(email) || string.IsNullOrWhiteSpace(password))
             return Result<LoginDto>.Unauthorized("Credenciales requeridas");
 
-        var (usuario, carreraNombre) = await Repository.GetByEmailWithCarrera(email);
+        var (user, carreraNombre) = await Repository.GetByEmailWithCarrera(email);
 
-        if (usuario == null)
+        if (user == null)
             return Result<LoginDto>.Unauthorized("Credenciales inválidas");
 
         var passwordValid =
-            !string.IsNullOrWhiteSpace(usuario.Contrasena)
-            && BCryptLib.Verify(password, usuario.Contrasena);
+            !string.IsNullOrWhiteSpace(user.Contrasena)
+            && BCryptLib.Verify(password, user.Contrasena);
 
         if (!passwordValid)
             return Result<LoginDto>.Unauthorized("Credenciales inválidas");
 
-        var dto = _mapper.ToDto(usuario);
+        var dto = _mapper.ToDto(user);
         dto.CarreraNombre = carreraNombre;
 
         var accessToken = _jwtService.GenerateAccessToken(dto);
         var refreshToken = JwtService.GenerateRefreshToken();
 
         await Repository.UpdateRefreshToken(
-            usuario.Carnet!,
+            user.Carnet!,
             refreshToken,
             DateTime.UtcNow.AddDays(_jwtSettings.RefreshTokenExpiryDays)
         );
@@ -193,19 +238,19 @@ public class UsuarioService : Service<UsuarioEntity, UsuarioRepository, UsuarioD
         if (string.IsNullOrWhiteSpace(refreshToken))
             return Result<LoginDto>.Unauthorized("Refresh token requerido");
 
-        var (usuario, carreraNombre) = await Repository.GetByRefreshTokenWithCarrera(refreshToken);
+        var (user, carreraNombre) = await Repository.GetByRefreshTokenWithCarrera(refreshToken);
 
-        if (usuario == null || usuario.RefreshTokenExpiry < DateTime.UtcNow)
+        if (user == null || user.RefreshTokenExpiry < DateTime.UtcNow)
             return Result<LoginDto>.Unauthorized("Refresh token inválido o expirado");
 
-        var dto = _mapper.ToDto(usuario);
+        var dto = _mapper.ToDto(user);
         dto.CarreraNombre = carreraNombre;
 
         var newAccessToken = _jwtService.GenerateAccessToken(dto);
         var newRefreshToken = JwtService.GenerateRefreshToken();
 
         await Repository.UpdateRefreshToken(
-            usuario.Carnet!,
+            user.Carnet!,
             newRefreshToken,
             DateTime.UtcNow.AddDays(_jwtSettings.RefreshTokenExpiryDays)
         );

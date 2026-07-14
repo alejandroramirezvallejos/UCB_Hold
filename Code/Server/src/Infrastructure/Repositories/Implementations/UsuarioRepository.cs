@@ -10,14 +10,14 @@ namespace IMT_Reservas.Server.Infrastructure.Repositories.Implementations;
 
 public class UsuarioRepository : Repository<UsuarioEntity, UsuarioDto>
 {
-    private readonly PrestamoRepository _prestamos;
+    private readonly PrestamoRepository _prestamoRepository;
 
     public UsuarioRepository(
         ApplicationDbContext dbContext,
         UsuarioMapper mapper,
-        PrestamoRepository prestamos
+        PrestamoRepository prestamoRepository
     )
-        : base(dbContext, mapper) => _prestamos = prestamos;
+        : base(dbContext, mapper) => _prestamoRepository = prestamoRepository;
 
     public override async Task<Result<List<UsuarioDto>>> GetAll()
     {
@@ -42,8 +42,8 @@ public class UsuarioRepository : Repository<UsuarioEntity, UsuarioDto>
                         TelefonoReferencia = usuario.TelefonoReferencia,
                         NombreReferencia = usuario.NombreReferencia,
                         EmailReferencia = usuario.EmailReferencia,
-                        ImagenFrenteCarnet = usuario.ImagenFrenteCarnet,
-                        ImagenAtrasCarnet = usuario.ImagenAtrasCarnet,
+                        Bloqueado = usuario.Bloqueado,
+                        MotivoBloqueo = usuario.MotivoBloqueo,
                     }
             )
             .ToListAsync();
@@ -59,7 +59,6 @@ public class UsuarioRepository : Repository<UsuarioEntity, UsuarioDto>
     public async Task<UsuarioEntity?> GetTrackedByCarnet(string carnet) =>
         await DbContext.Usuarios.FirstOrDefaultAsync(u => u.Carnet == carnet && !u.EstadoEliminado);
 
-    // Usuario's PK is Carnet (string), so it deletes by carnet instead of the base int id.
     public async Task<Result<object>> Delete(string carnet)
     {
         var entity = await DbContext.Usuarios.FirstOrDefaultAsync(u =>
@@ -75,16 +74,16 @@ public class UsuarioRepository : Repository<UsuarioEntity, UsuarioDto>
         return Result<object>.Success(null!);
     }
 
-    protected override async Task CascadeDelete(UsuarioEntity usuario)
+    protected override async Task CascadeDelete(UsuarioEntity user)
     {
-        var prestamos = await DbContext
-            .Prestamos.Where(p => p.Carnet == usuario.Carnet)
+        var loans = await DbContext
+            .Prestamos.Where(loan => loan.Carnet == user.Carnet)
             .ToListAsync();
 
-        foreach (var prestamo in prestamos)
+        foreach (var loan in loans)
         {
-            prestamo.EstadoPrestamo = EstadoPrestamo.Cancelado;
-            await _prestamos.SoftDelete(prestamo);
+            loan.EstadoPrestamo = EstadoPrestamo.Cancelado;
+            await _prestamoRepository.SoftDelete(loan);
         }
     }
 
@@ -178,11 +177,6 @@ public class UsuarioRepository : Repository<UsuarioEntity, UsuarioDto>
         DbContext.Usuarios.Update(entity);
         await DbContext.SaveChangesAsync();
     }
-
-    public async Task<UsuarioEntity?> GetByRefreshToken(string token) =>
-        await DbContext
-            .Usuarios.IgnoreQueryFilters()
-            .FirstOrDefaultAsync(u => u.RefreshToken == token);
 
     public async Task<(UsuarioEntity? Usuario, string? CarreraNombre)> GetByRefreshTokenWithCarrera(
         string token

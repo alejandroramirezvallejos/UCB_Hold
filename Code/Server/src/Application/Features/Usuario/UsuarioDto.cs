@@ -12,6 +12,8 @@ public class UsuarioDto
     public string? CarreraNombre { get; set; }
     public int? IdCarrera { get; set; }
     public string? Telefono { get; set; }
+    public bool? Bloqueado { get; set; }
+    public string? MotivoBloqueo { get; set; }
     public string? NombreReferencia { get; set; }
     public string? TelefonoReferencia { get; set; }
     public string? EmailReferencia { get; set; }

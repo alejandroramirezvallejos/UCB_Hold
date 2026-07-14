@@ -126,7 +126,7 @@ export class UsuarioServiceAPI {
   bloquearUsuario(carnet: string, bloqueado: boolean, motivo: string | null) {
     return this.http.put(`${this.apiUrl}/${carnet}/bloqueo`, {
       Bloqueado: bloqueado,
-      Motivo: motivo,
+      MotivoBloqueo: motivo,
     });
   }
 }
