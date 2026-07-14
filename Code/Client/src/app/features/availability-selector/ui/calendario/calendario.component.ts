@@ -1,10 +1,16 @@
 import { CommonModule } from '@angular/common';
-import { Component, Input, signal, WritableSignal } from '@angular/core';
-import { DisponibilidadService } from '@entities/availability';
-import { Disponibilidad } from '@entities/availability';
+import {
+  Component,
+  EventEmitter,
+  Input,
+  Output,
+  signal,
+  WritableSignal,
+} from '@angular/core';
+import { Disponibilidad, DisponibilidadService } from '@entities/availability';
 import { Carrito } from '@entities/cart';
-import { MostrarerrorComponent } from '@shared/ui';
 import { extractErrorMessage } from '@shared/lib/error';
+import { MostrarerrorComponent } from '@shared/ui';
 @Component({
   selector: 'app-calendario',
   imports: [CommonModule, MostrarerrorComponent],
@@ -25,6 +31,7 @@ export class CalendarioComponent {
   }
   @Input() fechaInicioSeleccionada: WritableSignal<Date | null> = signal(null);
   @Input() fechaFinSeleccionada: WritableSignal<Date | null> = signal(null);
+  @Output() avisarDisponibilidad = new EventEmitter<string>();
   carrito: Carrito = {};
   disponibilidadPorFecha: Map<string, Map<number, number>> = new Map();
   diasDelMes: (Date | null)[] = [];
@@ -171,6 +178,10 @@ export class CalendarioComponent {
     }
     return this.disponibilidadPorFecha.size > 0;
   }
+  emitirAviso(dia: Date): void {
+    this.avisarDisponibilidad.emit(this.toLocalISOString(dia));
+  }
+
   private toLocalISOString(date: Date): string {
     const pad = (n: number) => String(n).padStart(2, '0');
     return `${date.getFullYear()}-${pad(date.getMonth() + 1)}-${pad(date.getDate())}`;

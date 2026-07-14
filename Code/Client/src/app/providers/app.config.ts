@@ -1,16 +1,16 @@
-import { ApplicationConfig, LOCALE_ID } from '@angular/core';
+import { registerLocaleData } from '@angular/common';
 import {
   HTTP_INTERCEPTORS,
   provideHttpClient,
   withInterceptorsFromDi,
 } from '@angular/common/http';
-import { registerLocaleData } from '@angular/common';
 import localeEs from '@angular/common/locales/es';
+import { ApplicationConfig, LOCALE_ID } from '@angular/core';
 import { provideRouter, withInMemoryScrolling } from '@angular/router';
-import { routes } from '@app/routing/app.routes';
 import { HttpCacheInterceptor } from '@app/providers/http-interceptors/http-cache.interceptor';
 import { JwtInterceptor } from '@app/providers/http-interceptors/jwt.interceptor';
 import { ResultResponseInterceptor } from '@app/providers/http-interceptors/result-response.interceptor';
+import { routes } from '@app/routing/app.routes';
 
 registerLocaleData(localeEs);
 

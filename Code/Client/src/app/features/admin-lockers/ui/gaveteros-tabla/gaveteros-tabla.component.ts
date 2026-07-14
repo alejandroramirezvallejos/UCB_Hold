@@ -1,26 +1,21 @@
-import { Component, OnInit, signal, WritableSignal } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import {
-  FormsModule,
-  ReactiveFormsModule,
-  FormBuilder,
-  FormGroup,
-  Validators,
-} from '@angular/forms';
+import { Component, signal, WritableSignal } from '@angular/core';
+import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { Gaveteros } from '@entities/admin';
-import { GaveterosCrearComponent } from '../gaveteros-crear/gaveteros-crear.component';
-import { GaveterosEditarComponent } from '../gaveteros-editar/gaveteros-editar.component';
 import { GaveteroService } from '@entities/locker';
-import { AvisoEliminarComponent } from '@shared/ui';
-import { BaseTablaComponent } from '@shared/lib/admin-table';
-import { MostrarerrorComponent } from '@shared/ui';
-import { AvisoExitoComponent } from '@shared/ui';
 import { BuscadorComponent } from '@features/admin-search';
 import { Tabla } from '@shared/lib/admin-table';
+import { StickyScrollDirective } from '@shared/lib/directives';
 import { extractErrorMessage } from '@shared/lib/error';
+import {
+  AvisoEliminarComponent,
+  AvisoExitoComponent,
+  MostrarerrorComponent,
+} from '@shared/ui';
 import { EquiposGaveteroInlineComponent } from '@widgets/admin-inline';
 import { AuditPanelComponent } from '@widgets/audit-panel';
-import { StickyScrollDirective } from '@shared/lib/directives';
+import { GaveterosCrearComponent } from '../gaveteros-crear/gaveteros-crear.component';
+import { GaveterosEditarComponent } from '../gaveteros-editar/gaveteros-editar.component';
 @Component({
   selector: 'app-gaveteros-tabla',
   standalone: true,
@@ -165,7 +160,7 @@ export class GaveterosTablaComponent extends Tabla {
   }
   confirmarEliminacion() {
     this.gaveterosapi.eliminarGavetero(this.gaveteroSeleccionado.Id).subscribe({
-      next: (response) => {
+      next: (_response) => {
         this.mensajeexito = 'Gavetero eliminado con exito';
         this.exito.set(true);
         this.auditRefresh++;

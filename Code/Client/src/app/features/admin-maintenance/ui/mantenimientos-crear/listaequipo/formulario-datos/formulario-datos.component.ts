@@ -1,8 +1,8 @@
 import { Component, Input, signal, WritableSignal } from '@angular/core';
-import { MantenimientosServiceEquipos } from '../../../../model/mantenimientos-equipos.service';
 import { FormsModule } from '@angular/forms';
 import { Equipos } from '@entities/admin';
 import { CustomSelectComponent, OpcionSelect } from '@shared/ui';
+import { MantenimientosServiceEquipos } from '../../../../model/mantenimientos-equipos.service';
 @Component({
   selector: 'app-formulario-datos',
   imports: [FormsModule, CustomSelectComponent],

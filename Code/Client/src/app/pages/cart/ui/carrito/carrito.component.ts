@@ -3,11 +3,10 @@ import { Component, computed, signal, WritableSignal } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
 import { Carrito } from '@entities/cart';
-import { UsuarioService } from '@entities/user';
 import { PrestamosAPIService } from '@entities/loan';
+import { UsuarioService } from '@entities/user';
 import { CalendarioComponent } from '@features/availability-selector';
 import { CarritoService, CartDateValidationService } from '@features/cart';
-import { finalize } from 'rxjs';
 import { extractErrorMessage } from '@shared/lib/error';
 import {
   Aviso,
@@ -15,6 +14,7 @@ import {
   MostrarerrorComponent,
   PantallaCargaComponent,
 } from '@shared/ui';
+import { finalize } from 'rxjs';
 
 @Component({
   selector: 'app-carrito',
@@ -41,6 +41,8 @@ export class CarritoComponent {
   fechaFinal: WritableSignal<Date | null> = signal(null);
   carrito: Carrito = {};
   cargando = false;
+  puedeReservar: WritableSignal<boolean> = signal(true);
+  motivoBloqueo: WritableSignal<string> = signal('');
 
   private readonly fechaActual: Date = new Date();
 
@@ -65,6 +67,16 @@ export class CarritoComponent {
     this.route.queryParams.subscribe((params) => {
       this.step = params['step'] ? Number(params['step']) : 1;
     });
+
+    if (!this.usuarioService.estaVacio()) {
+      this.prestamosApiService.estadoReserva().subscribe({
+        next: (estado) => {
+          this.puedeReservar.set(estado.puedeReservar);
+          this.motivoBloqueo.set(estado.motivo ?? '');
+        },
+        error: () => {},
+      });
+    }
   }
 
   private parseDateLocal(dateString: string): Date {
@@ -163,6 +175,7 @@ export class CarritoComponent {
 
   botonDeshabilitado(): boolean {
     if (this.carritoEstaVacio()) return true;
+    if (!this.puedeReservar()) return true;
 
     return !this.validacionFechas().isValid;
   }

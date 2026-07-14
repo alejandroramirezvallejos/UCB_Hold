@@ -1,6 +1,6 @@
+import { CommonModule } from '@angular/common';
 import { Component, Input, signal, WritableSignal } from '@angular/core';
 import { Mantenimientos } from '@entities/admin';
-import { CommonModule } from '@angular/common';
 @Component({
   selector: 'app-detalles-mantenimiento',
   imports: [CommonModule],

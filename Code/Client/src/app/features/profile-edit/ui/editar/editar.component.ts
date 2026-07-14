@@ -1,3 +1,4 @@
+import { CommonModule } from '@angular/common';
 import {
   Component,
   EventEmitter,
@@ -6,17 +7,16 @@ import {
   signal,
   WritableSignal,
 } from '@angular/core';
-import { Usuario } from '@entities/user';
-import { UsuarioServiceAPI } from '@entities/user';
-import { UsuarioService } from '@entities/user';
-import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
-import { CarreraService } from '@entities/career';
 import { Carrera } from '@entities/admin';
-import { AvisoExitoComponent } from '@shared/ui';
-import { MostrarerrorComponent } from '@shared/ui';
+import { CarreraService } from '@entities/career';
+import { Usuario, UsuarioService, UsuarioServiceAPI } from '@entities/user';
 import { extractErrorMessage } from '@shared/lib/error';
-import { PantallaCargaComponent } from '@shared/ui';
+import {
+  AvisoExitoComponent,
+  MostrarerrorComponent,
+  PantallaCargaComponent,
+} from '@shared/ui';
 import { finalize } from 'rxjs';
 
 const CLOSE_SUCCESS_DELAY_MS = 2000;

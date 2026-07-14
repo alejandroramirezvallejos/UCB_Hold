@@ -1,7 +1,7 @@
 import {
   Component,
-  HostListener,
   EventEmitter,
+  HostListener,
   Input,
   Output,
   signal,
@@ -11,10 +11,8 @@ import { FormsModule } from '@angular/forms';
 import { EmpresaMantenimiento } from '@entities/admin';
 import { EmpresamantenimientoService } from '@entities/maintenance-company';
 import { BaseTablaComponent } from '@shared/lib/admin-table';
-import { MostrarerrorComponent } from '@shared/ui';
-import { Aviso } from '@shared/ui';
-import { AvisoExitoComponent } from '@shared/ui';
 import { extractErrorMessage } from '@shared/lib/error';
+import { Aviso, AvisoExitoComponent, MostrarerrorComponent } from '@shared/ui';
 @Component({
   selector: 'app-empresas-mantenimiento-editar',
   imports: [FormsModule, MostrarerrorComponent, Aviso, AvisoExitoComponent],

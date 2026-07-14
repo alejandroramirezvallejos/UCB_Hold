@@ -1,4 +1,4 @@
-import { Component, input, Input, Signal, WritableSignal } from '@angular/core';
+import { Component, Input, WritableSignal } from '@angular/core';
 @Component({
   selector: 'app-mostrarerror',
   imports: [],

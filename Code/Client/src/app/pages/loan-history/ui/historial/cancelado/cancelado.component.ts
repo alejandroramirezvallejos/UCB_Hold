@@ -1,12 +1,9 @@
-import { Component } from '@angular/core';
-import { PrestamoAgrupados } from '@entities/loan';
-import { UsuarioService } from '@entities/user';
-import { PrestamosAPIService } from '@entities/loan';
-import { PrestamoDto } from '@entities/admin';
 import { CommonModule } from '@angular/common';
-import { HistorialBase } from '../base/historial-base';
-import { VistaPrestamosComponent } from '@entities/loan';
+import { Component } from '@angular/core';
+import { PrestamosAPIService, VistaPrestamosComponent } from '@entities/loan';
+import { UsuarioService } from '@entities/user';
 import { MostrarerrorComponent } from '@shared/ui';
+import { HistorialBase } from '../base/historial-base';
 @Component({
   selector: 'app-cancelado',
   imports: [CommonModule, VistaPrestamosComponent, MostrarerrorComponent],

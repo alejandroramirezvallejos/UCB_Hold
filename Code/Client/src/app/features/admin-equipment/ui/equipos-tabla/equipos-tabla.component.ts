@@ -1,26 +1,21 @@
-import { Component, OnInit, signal, WritableSignal } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import {
-  FormsModule,
-  ReactiveFormsModule,
-  FormBuilder,
-  FormGroup,
-  Validators,
-} from '@angular/forms';
+import { Component, signal, WritableSignal } from '@angular/core';
+import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { Equipos } from '@entities/admin';
-import { EquiposCrearComponent } from '../equipos-crear/equipos-crear.component';
-import { EquiposEditarComponent } from '../equipos-editar/equipos-editar.component';
 import { EquipoService } from '@entities/equipment';
-import { AvisoEliminarComponent } from '@shared/ui';
-import { BaseTablaComponent } from '@shared/lib/admin-table';
-import { MostrarerrorComponent } from '@shared/ui';
-import { AvisoExitoComponent } from '@shared/ui';
 import { BuscadorComponent } from '@features/admin-search';
 import { Tabla } from '@shared/lib/admin-table';
+import { StickyScrollDirective } from '@shared/lib/directives';
 import { extractErrorMessage } from '@shared/lib/error';
+import {
+  AvisoEliminarComponent,
+  AvisoExitoComponent,
+  MostrarerrorComponent,
+} from '@shared/ui';
 import { HistorialEquipoInlineComponent } from '@widgets/admin-inline';
 import { AuditPanelComponent } from '@widgets/audit-panel';
-import { StickyScrollDirective } from '@shared/lib/directives';
+import { EquiposCrearComponent } from '../equipos-crear/equipos-crear.component';
+import { EquiposEditarComponent } from '../equipos-editar/equipos-editar.component';
 
 @Component({
   selector: 'app-equipos-tabla',
@@ -198,7 +193,7 @@ export class EquiposTablaComponent extends Tabla {
   }
   confirmarEliminacion() {
     this.equiposapi.eliminarEquipo(this.equipoSeleccionado.Id).subscribe({
-      next: (response) => {
+      next: (_response) => {
         this.mensajeexito = 'Equipo eliminado con éxito';
         this.exito.set(true);
         this.auditRefresh++;

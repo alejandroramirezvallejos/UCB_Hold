@@ -1,21 +1,19 @@
 import {
   Component,
-  HostListener,
   EventEmitter,
+  HostListener,
   Input,
+  OnChanges,
   Output,
   signal,
   WritableSignal,
-  OnChanges,
 } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { Muebles } from '@entities/admin';
 import { MuebleService } from '@entities/furniture';
 import { BaseTablaComponent } from '@shared/lib/admin-table';
-import { MostrarerrorComponent } from '@shared/ui';
-import { Aviso } from '@shared/ui';
-import { AvisoExitoComponent } from '@shared/ui';
 import { extractErrorMessage } from '@shared/lib/error';
+import { Aviso, AvisoExitoComponent, MostrarerrorComponent } from '@shared/ui';
 @Component({
   selector: 'app-muebles-editar',
   standalone: true,
@@ -43,7 +41,7 @@ export class MueblesEditarComponent
   }
   confirmar() {
     this.muebleapi.actualizarMueble(this.mueble).subscribe({
-      next: (response) => {
+      next: (_response) => {
         this.actualizar.emit();
         this.mensajeexito = 'Mueble editado exitosamente.';
         this.exito.set(true);

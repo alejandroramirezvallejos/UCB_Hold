@@ -1,13 +1,13 @@
+import { CommonModule } from '@angular/common';
 import { Component, Input, signal, WritableSignal } from '@angular/core';
+import { FormsModule } from '@angular/forms';
 import { Equipos } from '@entities/admin';
 import { EquipoService } from '@entities/equipment';
-import { CommonModule } from '@angular/common';
-import { FormsModule } from '@angular/forms';
+import { BaseTablaComponent } from '@shared/lib/admin-table';
+import { extractErrorMessage } from '@shared/lib/error';
+import { MostrarerrorComponent } from '@shared/ui';
 import { MantenimientosServiceEquipos } from '../../../model/mantenimientos-equipos.service';
 import { FormularioDatosComponent } from './formulario-datos/formulario-datos.component';
-import { BaseTablaComponent } from '@shared/lib/admin-table';
-import { MostrarerrorComponent } from '@shared/ui';
-import { extractErrorMessage } from '@shared/lib/error';
 
 type EquipoOrdenColumna =
   'Nombre' | 'EstadoEquipo' | 'Ubicacion' | 'CodigoImt' | 'CostoReferencia';

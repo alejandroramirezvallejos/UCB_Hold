@@ -1,7 +1,6 @@
 import { Directive, Input, signal, WritableSignal } from '@angular/core';
 import { PrestamoDto } from '@entities/admin';
-import { PrestamoAgrupados } from '@entities/loan';
-import { PrestamosAPIService } from '@entities/loan';
+import { PrestamoAgrupados, PrestamosAPIService } from '@entities/loan';
 import { UsuarioService } from '@entities/user';
 import { extractErrorMessage } from '@shared/lib/error';
 @Directive()

@@ -1,7 +1,7 @@
 import {
   Component,
-  HostListener,
   EventEmitter,
+  HostListener,
   Input,
   Output,
   signal,
@@ -10,15 +10,17 @@ import {
 import { FormsModule } from '@angular/forms';
 import { Equipos, Gaveteros } from '@entities/admin';
 import { EquipoService } from '@entities/equipment';
-import { GrupoEquipo } from '@entities/equipment-group';
-import { GrupoequipoService } from '@entities/equipment-group';
+import { GrupoEquipo, GrupoequipoService } from '@entities/equipment-group';
 import { GaveteroService } from '@entities/locker';
 import { BaseTablaComponent } from '@shared/lib/admin-table';
-import { MostrarerrorComponent } from '@shared/ui';
-import { Aviso } from '@shared/ui';
-import { AvisoExitoComponent } from '@shared/ui';
 import { extractErrorMessage } from '@shared/lib/error';
-import { CustomSelectComponent, OpcionSelect } from '@shared/ui';
+import {
+  Aviso,
+  AvisoExitoComponent,
+  CustomSelectComponent,
+  MostrarerrorComponent,
+  OpcionSelect,
+} from '@shared/ui';
 @Component({
   selector: 'app-equipos-editar',
   imports: [

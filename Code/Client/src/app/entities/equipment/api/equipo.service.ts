@@ -1,8 +1,8 @@
-import { Injectable } from '@angular/core';
-import { environment } from '@environments/environment';
 import { HttpClient } from '@angular/common/http';
-import { map } from 'rxjs';
+import { Injectable } from '@angular/core';
 import { Equipos } from '@entities/admin';
+import { environment } from '@environments/environment';
+import { map } from 'rxjs';
 import { EquipoApiResponse } from './equipo-api-response';
 
 @Injectable({

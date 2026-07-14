@@ -8,13 +8,13 @@ import {
   signal,
   WritableSignal,
 } from '@angular/core';
-import { ListaObjetosComponent } from '@widgets/equipment-catalog';
 import { FormsModule } from '@angular/forms';
-import { CategoriaService } from '@entities/category';
 import { Categorias } from '@entities/admin';
-import { MostrarerrorComponent } from '@shared/ui';
-import { extractErrorMessage } from '@shared/lib/error';
+import { CategoriaService } from '@entities/category';
 import { FiltrosService } from '@features/catalog-filter';
+import { extractErrorMessage } from '@shared/lib/error';
+import { MostrarerrorComponent } from '@shared/ui';
+import { ListaObjetosComponent } from '@widgets/equipment-catalog';
 
 @Component({
   selector: 'app-pantalla-main',

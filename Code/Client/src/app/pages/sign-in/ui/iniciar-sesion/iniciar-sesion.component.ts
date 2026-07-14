@@ -1,9 +1,8 @@
+import { CommonModule } from '@angular/common';
 import { Component, signal, WritableSignal } from '@angular/core';
 import { FormsModule } from '@angular/forms';
-import { CommonModule, NgFor, NgIf } from '@angular/common';
-import { UsuarioService } from '@entities/user';
 import { Router } from '@angular/router';
-import { UsuarioServiceAPI } from '@entities/user';
+import { UsuarioService, UsuarioServiceAPI } from '@entities/user';
 import { AuthService } from '@features/auth-session';
 import { MostrarerrorComponent } from '@shared/ui';
 

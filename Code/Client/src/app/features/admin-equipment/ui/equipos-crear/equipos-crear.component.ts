@@ -7,18 +7,19 @@ import {
   WritableSignal,
 } from '@angular/core';
 import { FormsModule } from '@angular/forms';
-import { Equipos } from '@entities/admin';
+import { Equipos, Gaveteros } from '@entities/admin';
 import { EquipoService } from '@entities/equipment';
-import { GrupoequipoService } from '@entities/equipment-group';
-import { GrupoEquipo } from '@entities/equipment-group';
-import { Gaveteros } from '@entities/admin';
+import { GrupoEquipo, GrupoequipoService } from '@entities/equipment-group';
 import { GaveteroService } from '@entities/locker';
 import { BaseTablaComponent } from '@shared/lib/admin-table';
-import { MostrarerrorComponent } from '@shared/ui';
-import { Aviso } from '@shared/ui';
-import { AvisoExitoComponent } from '@shared/ui';
 import { extractErrorMessage } from '@shared/lib/error';
-import { CustomSelectComponent, OpcionSelect } from '@shared/ui';
+import {
+  Aviso,
+  AvisoExitoComponent,
+  CustomSelectComponent,
+  MostrarerrorComponent,
+  OpcionSelect,
+} from '@shared/ui';
 @Component({
   selector: 'app-equipos-crear',
   standalone: true,

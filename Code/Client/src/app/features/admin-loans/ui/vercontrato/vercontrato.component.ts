@@ -1,3 +1,4 @@
+import { CommonModule } from '@angular/common';
 import {
   Component,
   ElementRef,
@@ -6,11 +7,10 @@ import {
   ViewChild,
   WritableSignal,
 } from '@angular/core';
-import { CommonModule } from '@angular/common';
 import { PrestamosAPIService } from '@entities/loan';
 import { BaseTablaComponent } from '@shared/lib/admin-table';
-import { MostrarerrorComponent } from '@shared/ui';
 import { extractErrorMessage } from '@shared/lib/error';
+import { MostrarerrorComponent } from '@shared/ui';
 
 const PRINT_DELAY_MS = 250;
 

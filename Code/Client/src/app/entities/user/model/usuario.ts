@@ -12,6 +12,8 @@ export class Usuario {
   nombre_referencia?: string | null;
   telefono_referencia?: string | null;
   email_referencia?: string | null;
+  bloqueado?: boolean;
+  motivo_bloqueo?: string | null;
   constructor() {
     this.id = '';
     this.carnet = null;

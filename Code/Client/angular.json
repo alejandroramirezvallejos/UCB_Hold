@@ -40,6 +40,10 @@
               "src/styles-flatpickr.css",
               "node_modules/@fortawesome/fontawesome-free/css/all.min.css"
             ],
+            "allowedCommonJsDependencies": [
+              "flatpickr",
+              "flatpickr/dist/l10n/es"
+            ],
             "scripts": []
           },
           "configurations": {

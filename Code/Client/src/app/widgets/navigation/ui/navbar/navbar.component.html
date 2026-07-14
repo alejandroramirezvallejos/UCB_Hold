@@ -71,6 +71,56 @@
       </button>
     }
     @if (showProfile()) {
+      <div class="notif">
+        <button
+          type="button"
+          class="icon-button notif__button"
+          aria-label="Notificaciones"
+          aria-haspopup="true"
+          (click)="toggleNotifications()"
+        >
+          <i class="fas fa-bell notif__icon"></i>
+          @if (notifStore.noLeidas() > 0) {
+            <span class="notif__badge">{{ notifStore.noLeidas() }}</span>
+          }
+        </button>
+        @if (showNotifications()) {
+          <div class="notif__dropdown" role="menu">
+            <div class="notif__header">
+              <span>Notificaciones</span>
+              @if (notifStore.noLeidas() > 0) {
+                <button
+                  type="button"
+                  class="notif__mark-all"
+                  (click)="marcarTodasLeidas()"
+                >
+                  Marcar todas
+                </button>
+              }
+            </div>
+            <div class="notif__list">
+              @for (n of notifStore.notificaciones(); track n.Id) {
+                <button
+                  type="button"
+                  class="notif__item"
+                  [class.notif__item--unread]="!n.Leido"
+                  (click)="abrirNotificacion(n)"
+                >
+                  <span class="notif__title">{{ n.Titulo }}</span>
+                  @if (n.Contenido) {
+                    <span class="notif__body">{{ n.Contenido }}</span>
+                  }
+                </button>
+              }
+              @if (notifStore.notificaciones().length === 0) {
+                <div class="notif__empty">Sin notificaciones</div>
+              }
+            </div>
+          </div>
+        }
+      </div>
+    }
+    @if (showProfile()) {
       <div class="user-menu">
         <button
           type="button"

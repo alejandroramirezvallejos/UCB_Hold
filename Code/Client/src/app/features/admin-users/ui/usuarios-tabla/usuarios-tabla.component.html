@@ -80,7 +80,16 @@
             let i = $index
           ) {
             <tr>
-              <td>{{ usuario.carnet }}</td>
+              <td>
+                {{ usuario.carnet }}
+                @if (usuario.bloqueado) {
+                  <span
+                    class="bloqueo__badge"
+                    title="{{ usuario.motivo_bloqueo }}"
+                    >Bloqueado</span
+                  >
+                }
+              </td>
               <td>{{ usuario.nombre }}</td>
               <td>{{ usuario.apellido_paterno }}</td>
               <td>{{ usuario.apellido_materno }}</td>
@@ -110,6 +119,18 @@
                   (click)="editarUsuario(usuario)"
                 >
                   <i class="fas fa-pencil-alt"></i>
+                </button>
+                <button
+                  class="btn-icon"
+                  [class.btn-icon--block-active]="usuario.bloqueado"
+                  (click)="alternarBloqueo(usuario)"
+                  [title]="usuario.bloqueado ? 'Desbloquear' : 'Bloquear'"
+                >
+                  <i
+                    class="fas"
+                    [class.fa-lock]="usuario.bloqueado"
+                    [class.fa-lock-open]="!usuario.bloqueado"
+                  ></i>
                 </button>
               </td>
             </tr>
@@ -162,6 +183,35 @@
       (aceptar)="confirmarEliminacion()"
       (cancelar)="cancelarEliminacion()"
     ></app-aviso-eliminar>
+  }
+  @if (bloqueoModalVisible) {
+    <div class="bloqueo" (click)="cerrarBloqueo()">
+      <div class="bloqueo__modal" (click)="$event.stopPropagation()">
+        <h3 class="bloqueo__title">Bloquear usuario</h3>
+        <p class="bloqueo__text">
+          El usuario no podrá realizar nuevas reservas. Indica el motivo.
+        </p>
+        <textarea
+          [(ngModel)]="motivoBloqueo"
+          class="bloqueo__input"
+          placeholder="Motivo del bloqueo..."
+        ></textarea>
+        <div class="bloqueo__actions">
+          <button
+            class="bloqueo__btn bloqueo__btn--cancel"
+            (click)="cerrarBloqueo()"
+          >
+            Cancelar
+          </button>
+          <button
+            class="bloqueo__btn bloqueo__btn--confirm"
+            (click)="confirmarBloqueo()"
+          >
+            Bloquear
+          </button>
+        </div>
+      </div>
+    </div>
   }
 </div>
 @if (botoncrear()) {

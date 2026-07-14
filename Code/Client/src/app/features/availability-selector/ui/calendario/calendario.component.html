@@ -26,7 +26,11 @@
       } @else if (dia.getTime() < diaActual.getTime()) {
         <div class="dia-celda-pasado"></div>
       } @else if (estaOcupado(dia)) {
-        <div class="dia-celda-ocupado">
+        <div
+          class="dia-celda-ocupado"
+          title="Avisarme si se libera"
+          (click)="emitirAviso(dia)"
+        >
           <span class="dia-numero">{{ dia.getDate() }}</span>
           <span class="pildora-ocupada"> Lleno </span>
         </div>

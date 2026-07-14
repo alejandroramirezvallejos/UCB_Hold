@@ -1,10 +1,10 @@
 import { HttpClient } from '@angular/common/http';
 import { Injectable } from '@angular/core';
-import { environment } from '@environments/environment';
-import { map } from 'rxjs';
-import { Carrito } from '@entities/cart';
 import { PrestamoDto } from '@entities/admin';
+import { Carrito } from '@entities/cart';
+import { environment } from '@environments/environment';
 import { ApiResponse, extractApiValue } from '@shared/api';
+import { map } from 'rxjs';
 import { PrestamoApiItem } from './prestamo-api-item';
 @Injectable({
   providedIn: 'root',
@@ -60,9 +60,9 @@ export class PrestamosAPIService {
 
   crearPrestamo(carrito: Carrito, carnet: string, contrato: string | null) {
     const grupoid: number[] = [];
-    for (const [key, value] of Object.entries(carrito)) {
-      if (carrito[Number(key)].cantidad > 0) {
-        for (let i = 0; i < carrito[Number(key)].cantidad; i++) {
+    for (const [key, item] of Object.entries(carrito)) {
+      if (item.cantidad > 0) {
+        for (let i = 0; i < item.cantidad; i++) {
           grupoid.push(Number(key));
         }
       }
@@ -81,6 +81,25 @@ export class PrestamosAPIService {
 
   eliminarPrestamo(id: number) {
     return this.http.delete(`${this.url}/${id}`);
+  }
+
+  estadoReserva() {
+    return this.http
+      .get<ApiResponse<{ PuedeReservar: boolean; Motivo: string | null }>>(
+        `${this.url}/estado-reserva`,
+      )
+      .pipe(
+        map((data) => {
+          const valor = extractApiValue(data, {
+            PuedeReservar: true,
+            Motivo: null,
+          });
+          return {
+            puedeReservar: valor.PuedeReservar,
+            motivo: valor.Motivo,
+          };
+        }),
+      );
   }
 
   cambiarEstadoPrestamo(

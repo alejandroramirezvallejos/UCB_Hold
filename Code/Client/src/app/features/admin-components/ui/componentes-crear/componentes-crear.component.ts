@@ -7,16 +7,18 @@ import {
   WritableSignal,
 } from '@angular/core';
 import { FormsModule } from '@angular/forms';
-import { Componente } from '@entities/admin';
+import { Componente, Equipos } from '@entities/admin';
 import { ComponenteService } from '@entities/component';
-import { Equipos } from '@entities/admin';
 import { EquipoService } from '@entities/equipment';
 import { BaseTablaComponent } from '@shared/lib/admin-table';
-import { MostrarerrorComponent } from '@shared/ui';
-import { Aviso } from '@shared/ui';
-import { AvisoExitoComponent } from '@shared/ui';
 import { extractErrorMessage } from '@shared/lib/error';
-import { CustomSelectComponent, OpcionSelect } from '@shared/ui';
+import {
+  Aviso,
+  AvisoExitoComponent,
+  CustomSelectComponent,
+  MostrarerrorComponent,
+  OpcionSelect,
+} from '@shared/ui';
 @Component({
   selector: 'app-componentes-crear',
   standalone: true,
@@ -71,12 +73,12 @@ export class ComponentesCrearComponent extends BaseTablaComponent {
   }
   registrar() {
     this.componenteService.crearComponente(this.componente).subscribe({
-      next: (response) => {
+      next: (_response) => {
         this.Actualizar.emit();
         this.mensajeexito = 'Componente creado con exito';
         this.exito.set(true);
       },
-      error: (error) => {
+      error: (_error) => {
         this.mensajeerror = 'Error al crear el componente , Intente mas tarde ';
         this.error.set(true);
       },

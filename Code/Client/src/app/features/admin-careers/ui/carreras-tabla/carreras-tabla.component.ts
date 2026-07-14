@@ -1,18 +1,20 @@
-import { Component, OnInit, signal, WritableSignal } from '@angular/core';
 import { CommonModule } from '@angular/common';
+import { Component, signal, WritableSignal } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { Carrera } from '@entities/admin';
-import { CarrerasCrearComponent } from '../carreras-crear/carreras-crear.component';
-import { CarrerasEditarComponent } from '../carreras-editar/carreras-editar.component';
 import { CarreraService } from '@entities/career';
-import { AvisoEliminarComponent } from '@shared/ui';
-import { MostrarerrorComponent } from '@shared/ui';
-import { AvisoExitoComponent } from '@shared/ui';
 import { BuscadorComponent } from '@features/admin-search';
 import { Tabla } from '@shared/lib/admin-table';
-import { extractErrorMessage } from '@shared/lib/error';
-import { AuditPanelComponent } from '@widgets/audit-panel';
 import { StickyScrollDirective } from '@shared/lib/directives';
+import { extractErrorMessage } from '@shared/lib/error';
+import {
+  AvisoEliminarComponent,
+  AvisoExitoComponent,
+  MostrarerrorComponent,
+} from '@shared/ui';
+import { AuditPanelComponent } from '@widgets/audit-panel';
+import { CarrerasCrearComponent } from '../carreras-crear/carreras-crear.component';
+import { CarrerasEditarComponent } from '../carreras-editar/carreras-editar.component';
 @Component({
   selector: 'app-carreras-tabla',
   standalone: true,

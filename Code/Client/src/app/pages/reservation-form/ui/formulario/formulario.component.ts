@@ -1,27 +1,29 @@
+import { CommonModule } from '@angular/common';
 import { HttpClient } from '@angular/common/http';
 import {
   Component,
-  OnInit,
   ElementRef,
-  ViewChild,
+  OnInit,
   Renderer2,
+  ViewChild,
   WritableSignal,
   signal,
 } from '@angular/core';
-import { FirmaComponent } from '@features/signature';
-import { CommonModule } from '@angular/common';
-import { CarritoService } from '@features/cart';
-import { Carrito } from '@entities/cart';
 import { Router } from '@angular/router';
-import { UsuarioService } from '@entities/user';
+import { Carrito } from '@entities/cart';
 import { PrestamosAPIService } from '@entities/loan';
-import { finalize } from 'rxjs';
-import { PantallaCargaComponent } from '@shared/ui';
-import { MostrarerrorComponent } from '@shared/ui';
-import { Aviso } from '@shared/ui';
-import { AvisoExitoComponent } from '@shared/ui';
+import { UsuarioService } from '@entities/user';
+import { CarritoService } from '@features/cart';
+import { FirmaComponent } from '@features/signature';
 import { extractErrorMessage } from '@shared/lib/error';
 import { escapeHtmlValue } from '@shared/lib/html';
+import {
+  Aviso,
+  AvisoExitoComponent,
+  MostrarerrorComponent,
+  PantallaCargaComponent,
+} from '@shared/ui';
+import { finalize } from 'rxjs';
 
 const MILLISECONDS_PER_DAY = 86_400_000;
 const CONFLICT_STATUS = 409;
@@ -162,7 +164,7 @@ export class FormularioComponent implements OnInit {
       )
       .pipe(finalize(() => (this.cargando = false)))
       .subscribe({
-        next: (response) => {
+        next: (_response) => {
           this.mensajeexito = 'El préstamo ha sido creado exitosamente.';
           this.avisoexito.set(true);
           this.carrito.vaciarCarrito();
@@ -205,7 +207,7 @@ export class FormularioComponent implements OnInit {
 
   private primeradelobjeto(carrito: Carrito): string {
     const items = Object.entries(carrito).filter(
-      ([key, item]) => typeof item === 'object' && 'nombre' in item,
+      ([, item]) => typeof item === 'object' && 'nombre' in item,
     );
     return `
       ${items
@@ -230,7 +232,7 @@ export class FormularioComponent implements OnInit {
 
   private quintavalordebienes(carrito: Carrito): string {
     const items = Object.entries(carrito).filter(
-      ([key, item]) => typeof item === 'object' && 'nombre' in item,
+      ([, item]) => typeof item === 'object' && 'nombre' in item,
     );
     return `
       ${items

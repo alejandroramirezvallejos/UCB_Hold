@@ -1,12 +1,11 @@
 import { CommonModule } from '@angular/common';
 import {
   Component,
-  ViewChild,
   ElementRef,
-  AfterViewInit,
-  Output,
   EventEmitter,
   Input,
+  Output,
+  ViewChild,
   WritableSignal,
   signal,
 } from '@angular/core';

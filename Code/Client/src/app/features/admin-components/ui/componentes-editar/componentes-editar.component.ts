@@ -1,23 +1,25 @@
 import {
   Component,
-  HostListener,
   EventEmitter,
+  HostListener,
   Input,
   Output,
   signal,
   WritableSignal,
 } from '@angular/core';
 import { FormsModule } from '@angular/forms';
-import { Componente } from '@entities/admin';
+import { Componente, Equipos } from '@entities/admin';
 import { ComponenteService } from '@entities/component';
 import { EquipoService } from '@entities/equipment';
-import { Equipos } from '@entities/admin';
 import { BaseTablaComponent } from '@shared/lib/admin-table';
-import { AvisoExitoComponent } from '@shared/ui';
-import { Aviso } from '@shared/ui';
-import { MostrarerrorComponent } from '@shared/ui';
 import { extractErrorMessage } from '@shared/lib/error';
-import { CustomSelectComponent, OpcionSelect } from '@shared/ui';
+import {
+  Aviso,
+  AvisoExitoComponent,
+  CustomSelectComponent,
+  MostrarerrorComponent,
+  OpcionSelect,
+} from '@shared/ui';
 @Component({
   selector: 'app-componentes-editar',
   standalone: true,
@@ -73,7 +75,7 @@ export class ComponentesEditarComponent extends BaseTablaComponent {
   }
   confirmar() {
     this.componenteService.actualizarComponente(this.componente).subscribe({
-      next: (response) => {
+      next: (_response) => {
         this.actualizar.emit();
         this.mensajeexito = 'Componente actualizado satisfactoriamente';
         this.exito.set(true);

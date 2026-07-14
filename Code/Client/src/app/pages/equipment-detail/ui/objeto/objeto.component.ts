@@ -6,16 +6,18 @@ import {
   signal,
   WritableSignal,
 } from '@angular/core';
-import { ActivatedRoute } from '@angular/router';
-import { Carrito } from '@entities/cart';
-import { GrupoequipoService } from '@entities/equipment-group';
-import { GrupoEquipo } from '@entities/equipment-group';
-import { CarritoService } from '@features/cart';
-import { MostrarerrorComponent } from '@shared/ui';
-import { DisponibilidadService } from '@entities/availability';
-import { CalendarioComponent } from '@features/availability-selector';
 import { FormsModule } from '@angular/forms';
+import { ActivatedRoute } from '@angular/router';
+import {
+  AvisoDisponibilidadService,
+  DisponibilidadService,
+} from '@entities/availability';
+import { Carrito } from '@entities/cart';
+import { GrupoEquipo, GrupoequipoService } from '@entities/equipment-group';
+import { CalendarioComponent } from '@features/availability-selector';
+import { CarritoService } from '@features/cart';
 import { ImageCacheService } from '@shared/lib/image/image-cache.service';
+import { MostrarerrorComponent } from '@shared/ui';
 
 const MINIMUM_CART_QUANTITY = 1;
 const FALLBACK_MAXIMUM_QUANTITY = 99;
@@ -53,11 +55,16 @@ export class ObjetoComponent {
   fechaInicioCalendario: WritableSignal<Date | null> = signal(null);
   fechaFinCalendario: WritableSignal<Date | null> = signal(null);
 
+  showAvisoModal = false;
+  avisoFecha = '';
+  avisoRegistrado = false;
+
   constructor(
     private readonly route: ActivatedRoute,
     private readonly servicio: GrupoequipoService,
     private readonly carrito: CarritoService,
     private readonly disponibilidadService: DisponibilidadService,
+    private readonly avisoDisponibilidad: AvisoDisponibilidadService,
     private readonly imageCache: ImageCacheService,
     private readonly renderer: Renderer2,
     @Inject(DOCUMENT) private readonly document: Document,
@@ -150,6 +157,32 @@ export class ObjetoComponent {
   cerrarCalendarioModal(): void {
     this.showCalendarioModal = false;
     this.renderer.removeStyle(this.document.body, 'overflow');
+  }
+
+  onAvisarDisponibilidad(fecha: string): void {
+    this.avisoFecha = fecha;
+    this.avisoRegistrado = false;
+    this.showAvisoModal = true;
+  }
+
+  confirmarAviso(): void {
+    if (!this.producto.id) return;
+
+    this.avisoDisponibilidad
+      .registrar(this.producto.id, this.avisoFecha)
+      .subscribe({
+        next: () => (this.avisoRegistrado = true),
+        error: () => {
+          this.mensajeerror = 'No se pudo registrar el aviso.';
+          this.error.set(true);
+          this.showAvisoModal = false;
+        },
+      });
+  }
+
+  cerrarAvisoModal(): void {
+    this.showAvisoModal = false;
+    this.avisoRegistrado = false;
   }
 
   ocultarImagenProducto(): void {

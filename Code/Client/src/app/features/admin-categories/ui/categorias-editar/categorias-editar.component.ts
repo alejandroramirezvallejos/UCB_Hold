@@ -1,7 +1,7 @@
 import {
   Component,
-  HostListener,
   EventEmitter,
+  HostListener,
   Input,
   Output,
   signal,
@@ -11,10 +11,8 @@ import { FormsModule } from '@angular/forms';
 import { Categorias } from '@entities/admin';
 import { CategoriaService } from '@entities/category';
 import { BaseTablaComponent } from '@shared/lib/admin-table';
-import { MostrarerrorComponent } from '@shared/ui';
-import { AvisoExitoComponent } from '@shared/ui';
-import { Aviso } from '@shared/ui';
 import { extractErrorMessage } from '@shared/lib/error';
+import { Aviso, AvisoExitoComponent, MostrarerrorComponent } from '@shared/ui';
 @Component({
   selector: 'app-categorias-editar',
   standalone: true,
@@ -43,7 +41,7 @@ export class CategoriasEditarComponent extends BaseTablaComponent {
 
   confirmar() {
     this.categoriaService.actualizarCategoria(this.categoria).subscribe({
-      next: (response) => {
+      next: (_response) => {
         this.actualizar.emit();
         this.mensajeexito = 'Categoría actualizada con éxito';
         this.exito.set(true);

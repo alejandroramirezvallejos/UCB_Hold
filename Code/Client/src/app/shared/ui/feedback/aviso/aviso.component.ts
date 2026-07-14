@@ -2,9 +2,7 @@ import {
   Component,
   EventEmitter,
   Input,
-  input,
   Output,
-  output,
   signal,
   WritableSignal,
 } from '@angular/core';

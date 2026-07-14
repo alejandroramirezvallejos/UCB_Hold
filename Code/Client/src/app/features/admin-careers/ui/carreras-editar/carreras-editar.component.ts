@@ -1,7 +1,7 @@
 import {
   Component,
-  HostListener,
   EventEmitter,
+  HostListener,
   Input,
   Output,
   signal,
@@ -11,10 +11,8 @@ import { FormsModule } from '@angular/forms';
 import { Carrera } from '@entities/admin';
 import { CarreraService } from '@entities/career';
 import { BaseTablaComponent } from '@shared/lib/admin-table';
-import { MostrarerrorComponent } from '@shared/ui';
-import { Aviso } from '@shared/ui';
-import { AvisoExitoComponent } from '@shared/ui';
 import { extractErrorMessage } from '@shared/lib/error';
+import { Aviso, AvisoExitoComponent, MostrarerrorComponent } from '@shared/ui';
 @Component({
   selector: 'app-carreras-editar',
   standalone: true,
@@ -40,7 +38,7 @@ export class CarrerasEditarComponent extends BaseTablaComponent {
   }
   confirmar() {
     this.carreraService.actualizarCarrera(this.carrera).subscribe({
-      next: (response) => {
+      next: (_response) => {
         this.actualizar.emit();
         this.mensajeexito = 'Carrera editada con éxito.';
         this.exito.set(true);

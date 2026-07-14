@@ -1,7 +1,7 @@
 import {
   Component,
-  HostListener,
   EventEmitter,
+  HostListener,
   Input,
   Output,
   signal,
@@ -9,14 +9,16 @@ import {
 } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { Gaveteros, Muebles } from '@entities/admin';
-import { GaveteroService } from '@entities/locker';
 import { MuebleService } from '@entities/furniture';
+import { GaveteroService } from '@entities/locker';
 import { BaseTablaComponent } from '@shared/lib/admin-table';
-import { MostrarerrorComponent } from '@shared/ui';
-import { Aviso } from '@shared/ui';
-import { AvisoExitoComponent } from '@shared/ui';
 import { extractErrorMessage } from '@shared/lib/error';
-import { CustomSelectComponent } from '@shared/ui';
+import {
+  Aviso,
+  AvisoExitoComponent,
+  CustomSelectComponent,
+  MostrarerrorComponent,
+} from '@shared/ui';
 @Component({
   selector: 'app-gaveteros-editar',
   imports: [

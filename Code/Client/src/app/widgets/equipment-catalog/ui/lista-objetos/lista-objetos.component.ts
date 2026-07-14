@@ -1,3 +1,4 @@
+import { CommonModule, NgOptimizedImage } from '@angular/common';
 import {
   AfterViewInit,
   Component,
@@ -13,12 +14,11 @@ import {
   WritableSignal,
 } from '@angular/core';
 import { RouterModule } from '@angular/router';
-import { CommonModule, NgOptimizedImage } from '@angular/common';
-import { GrupoEquipo, GrupoequipoService } from '@entities/equipment-group';
-import { MostrarerrorComponent } from '@shared/ui';
-import { CarritoService } from '@features/cart';
 import { DisponibilidadService } from '@entities/availability';
+import { GrupoEquipo, GrupoequipoService } from '@entities/equipment-group';
+import { CarritoService } from '@features/cart';
 import { ImageCacheService } from '@shared/lib/image/image-cache.service';
+import { MostrarerrorComponent } from '@shared/ui';
 
 const DEFAULT_PRODUCTS_PER_PAGE = 21;
 const DESIRED_GRID_ROWS = 4;

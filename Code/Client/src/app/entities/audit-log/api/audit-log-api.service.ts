@@ -1,9 +1,9 @@
-import { Injectable } from '@angular/core';
 import { HttpClient, HttpParams } from '@angular/common/http';
-import { map, Observable } from 'rxjs';
-import { environment } from '@environments/environment';
+import { Injectable } from '@angular/core';
 import { AuditLogDto } from '@entities/admin';
+import { environment } from '@environments/environment';
 import { ApiResponse, extractApiValue } from '@shared/api';
+import { map, Observable } from 'rxjs';
 import { AuditLogApiItem } from './audit-log-api-item';
 
 @Injectable({ providedIn: 'root' })

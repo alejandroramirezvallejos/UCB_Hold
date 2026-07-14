@@ -7,16 +7,18 @@ import {
   WritableSignal,
 } from '@angular/core';
 import { FormsModule } from '@angular/forms';
-import { Accesorio } from '@entities/admin';
 import { AccesoriosService } from '@entities/accessory';
+import { Accesorio, Equipos } from '@entities/admin';
 import { EquipoService } from '@entities/equipment';
-import { Equipos } from '@entities/admin';
-import { MostrarerrorComponent } from '@shared/ui';
 import { BaseTablaComponent } from '@shared/lib/admin-table';
-import { Aviso } from '@shared/ui';
-import { AvisoExitoComponent } from '@shared/ui';
 import { extractErrorMessage } from '@shared/lib/error';
-import { CustomSelectComponent, OpcionSelect } from '@shared/ui';
+import {
+  Aviso,
+  AvisoExitoComponent,
+  CustomSelectComponent,
+  MostrarerrorComponent,
+  OpcionSelect,
+} from '@shared/ui';
 @Component({
   selector: 'app-accesorios-crear',
   standalone: true,
@@ -71,7 +73,7 @@ export class AccesoriosCrearComponent extends BaseTablaComponent {
 
   registrar() {
     this.accesorioapi.crearAccesorio(this.accesorio).subscribe({
-      next: (response) => {
+      next: (_response) => {
         this.Actualizar.emit();
         this.mensajeexito = 'Accesorio creado exitosamente.';
         this.exito.set(true);

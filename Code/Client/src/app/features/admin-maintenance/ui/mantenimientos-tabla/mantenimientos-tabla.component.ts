@@ -1,20 +1,23 @@
-import { Component, OnInit, signal, WritableSignal } from '@angular/core';
 import { CommonModule } from '@angular/common';
+import { Component, OnInit, signal, WritableSignal } from '@angular/core';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { Mantenimientos } from '@entities/admin';
-import { MantenimientosCrearComponent } from '../mantenimientos-crear/mantenimientos-crear.component';
-import { MantenimientoService } from '@entities/maintenance';
-import { MantenimientosAgrupados } from '@entities/maintenance';
-import { DetallesMantenimientoComponent } from './detalles-mantenimiento/detalles-mantenimiento.component';
-import { AvisoEliminarComponent } from '@shared/ui';
-import { BaseTablaComponent } from '@shared/lib/admin-table';
-import { MostrarerrorComponent } from '@shared/ui';
-import { AvisoExitoComponent } from '@shared/ui';
+import {
+  MantenimientosAgrupados,
+  MantenimientoService,
+} from '@entities/maintenance';
 import { BuscadorComponent } from '@features/admin-search';
 import { Tabla } from '@shared/lib/admin-table';
-import { extractErrorMessage } from '@shared/lib/error';
-import { AuditPanelComponent } from '@widgets/audit-panel';
 import { StickyScrollDirective } from '@shared/lib/directives';
+import { extractErrorMessage } from '@shared/lib/error';
+import {
+  AvisoEliminarComponent,
+  AvisoExitoComponent,
+  MostrarerrorComponent,
+} from '@shared/ui';
+import { AuditPanelComponent } from '@widgets/audit-panel';
+import { MantenimientosCrearComponent } from '../mantenimientos-crear/mantenimientos-crear.component';
+import { DetallesMantenimientoComponent } from './detalles-mantenimiento/detalles-mantenimiento.component';
 @Component({
   selector: 'app-mantenimientos-tabla',
   standalone: true,

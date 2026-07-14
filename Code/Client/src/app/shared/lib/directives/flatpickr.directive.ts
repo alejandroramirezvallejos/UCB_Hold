@@ -42,7 +42,7 @@ export class FlatpickrDirective implements OnChanges, OnInit, OnDestroy {
       disableMobile: true,
       monthSelectorType: 'static',
       ...this.fpOptions,
-      onChange: (dates, dateStr) => {
+      onChange: (dates, _dateStr) => {
         this.fpChange.emit(dates);
 
         this.el.nativeElement.dispatchEvent(new Event('input'));

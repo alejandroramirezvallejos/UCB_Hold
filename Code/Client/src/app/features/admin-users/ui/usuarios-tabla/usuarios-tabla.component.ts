@@ -1,21 +1,22 @@
-import { Component, OnInit, signal, WritableSignal } from '@angular/core';
 import { CommonModule } from '@angular/common';
+import { Component, OnInit, signal, WritableSignal } from '@angular/core';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
-import { Usuario } from '@entities/user';
 import { Carrera } from '@entities/admin';
-import { UsuariosCrearComponent } from '../usuarios-crear/usuarios-crear.component';
-import { UsuariosEditarComponent } from '../usuarios-editar/usuarios-editar.component';
-import { UsuarioServiceAPI } from '@entities/user';
 import { CarreraService } from '@entities/career';
-import { AvisoEliminarComponent } from '@shared/ui';
-import { MostrarerrorComponent } from '@shared/ui';
-import { AvisoExitoComponent } from '@shared/ui';
-import { Tabla } from '@shared/lib/admin-table';
+import { Usuario, UsuarioServiceAPI } from '@entities/user';
 import { BuscadorComponent } from '@features/admin-search';
+import { Tabla } from '@shared/lib/admin-table';
+import { StickyScrollDirective } from '@shared/lib/directives';
 import { extractErrorMessage } from '@shared/lib/error';
+import {
+  AvisoEliminarComponent,
+  AvisoExitoComponent,
+  MostrarerrorComponent,
+} from '@shared/ui';
 import { PrestamosInlineComponent } from '@widgets/admin-inline';
 import { AuditPanelComponent } from '@widgets/audit-panel';
-import { StickyScrollDirective } from '@shared/lib/directives';
+import { UsuariosCrearComponent } from '../usuarios-crear/usuarios-crear.component';
+import { UsuariosEditarComponent } from '../usuarios-editar/usuarios-editar.component';
 @Component({
   selector: 'app-usuarios-tabla',
   standalone: true,
@@ -52,6 +53,9 @@ export class UsuariosTablaComponent extends Tabla implements OnInit {
   botoneditar: WritableSignal<boolean> = signal(false);
   alertaeliminar: boolean = false;
   valoreliminar: number = 0;
+  bloqueoModalVisible = false;
+  usuarioBloqueo: Usuario | null = null;
+  motivoBloqueo = '';
   usuarios: Usuario[] = [];
   usuarioscopia: Usuario[] = [];
   carreras: string[] = [];
@@ -78,6 +82,57 @@ export class UsuariosTablaComponent extends Tabla implements OnInit {
     this.cargarUsuarios();
     this.cargarCarreras();
   }
+  alternarBloqueo(usuario: Usuario) {
+    if (usuario.bloqueado) {
+      this.aplicarBloqueo(usuario, false, null);
+      return;
+    }
+
+    this.usuarioBloqueo = usuario;
+    this.motivoBloqueo = '';
+    this.bloqueoModalVisible = true;
+  }
+
+  confirmarBloqueo() {
+    if (this.usuarioBloqueo) {
+      this.aplicarBloqueo(this.usuarioBloqueo, true, this.motivoBloqueo);
+    }
+    this.cerrarBloqueo();
+  }
+
+  cerrarBloqueo() {
+    this.bloqueoModalVisible = false;
+    this.usuarioBloqueo = null;
+    this.motivoBloqueo = '';
+  }
+
+  private aplicarBloqueo(
+    usuario: Usuario,
+    bloqueado: boolean,
+    motivo: string | null,
+  ) {
+    this.usuarioapi
+      .bloquearUsuario(usuario.carnet!, bloqueado, motivo)
+      .subscribe({
+        next: () => {
+          usuario.bloqueado = bloqueado;
+          usuario.motivo_bloqueo = bloqueado ? motivo : null;
+          this.mensajeexito = bloqueado
+            ? 'Usuario bloqueado'
+            : 'Usuario desbloqueado';
+          this.exito.set(true);
+          this.auditRefresh++;
+        },
+        error: (error) => {
+          this.mensajeerror = extractErrorMessage(
+            error,
+            'Error al cambiar el bloqueo del usuario',
+          );
+          this.error.set(true);
+        },
+      });
+  }
+
   crearusuario() {
     this.botoneditar.set(false);
     this.botoncrear.set(true);
@@ -218,7 +273,7 @@ export class UsuariosTablaComponent extends Tabla implements OnInit {
   confirmarEliminacion() {
     const usuarioAEliminar = this.usuarios[this.valoreliminar];
     this.usuarioapi.eliminarUsuario(usuarioAEliminar.id || '').subscribe({
-      next: (response) => {
+      next: (_response) => {
         this.mensajeexito = 'Usuario eliminado exitosamente.';
         this.exito.set(true);
         this.auditRefresh++;

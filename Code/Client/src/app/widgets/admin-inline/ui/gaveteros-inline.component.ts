@@ -1,11 +1,11 @@
-import { Component, Input, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { FormsModule } from '@angular/forms';
 import { HttpClient } from '@angular/common/http';
+import { Component, Input, OnInit } from '@angular/core';
+import { FormsModule } from '@angular/forms';
 import { environment } from '@environments/environment';
-import { INLINE_SEARCH_STYLES } from './inline-search.styles';
 import { ApiResponse, extractApiValue } from '@shared/api';
 import { GaveteroInlineItem } from '../model';
+import { INLINE_SEARCH_STYLES } from './inline-search.styles';
 
 @Component({
   selector: 'app-gaveteros-inline',

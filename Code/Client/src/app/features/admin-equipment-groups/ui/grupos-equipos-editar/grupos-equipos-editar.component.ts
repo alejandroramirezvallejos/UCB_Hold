@@ -1,22 +1,23 @@
 import {
   Component,
-  HostListener,
   EventEmitter,
+  HostListener,
   Input,
+  OnChanges,
   Output,
   signal,
   WritableSignal,
-  OnChanges,
 } from '@angular/core';
 import { FormsModule } from '@angular/forms';
-import { GrupoEquipo } from '@entities/equipment-group';
-import { GrupoequipoService } from '@entities/equipment-group';
+import { GrupoEquipo, GrupoequipoService } from '@entities/equipment-group';
 import { BaseTablaComponent } from '@shared/lib/admin-table';
-import { MostrarerrorComponent } from '@shared/ui';
-import { Aviso } from '@shared/ui';
-import { AvisoExitoComponent } from '@shared/ui';
 import { extractErrorMessage } from '@shared/lib/error';
-import { CustomSelectComponent } from '@shared/ui';
+import {
+  Aviso,
+  AvisoExitoComponent,
+  CustomSelectComponent,
+  MostrarerrorComponent,
+} from '@shared/ui';
 @Component({
   selector: 'app-grupos-equipos-editar',
   standalone: true,
@@ -52,7 +53,7 @@ export class GruposEquiposEditarComponent
   }
   confirmar() {
     this.grupoEquipoapi.editarGrupoEquipo(this.grupoEquipo).subscribe({
-      next: (response) => {
+      next: (_response) => {
         this.actualizar.emit();
         this.mensajeexito = 'Grupo de equipo editado exitosamente';
         this.exito.set(true);

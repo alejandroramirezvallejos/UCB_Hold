@@ -1,7 +1,5 @@
-import { Injectable } from '@angular/core';
 import { HttpBackend, HttpClient } from '@angular/common/http';
-import { Observable } from 'rxjs';
-import { map, tap } from 'rxjs/operators';
+import { Injectable } from '@angular/core';
 import { Usuario } from '@entities/user';
 import { environment } from '@environments/environment';
 import { decodeBase64JsonResult, parseJsonResult } from '@shared/lib/result';
@@ -9,6 +7,8 @@ import {
   BrowserSessionStorageService,
   SESSION_STORAGE_KEYS,
 } from '@shared/lib/session';
+import { Observable } from 'rxjs';
+import { map, tap } from 'rxjs/operators';
 import { AccessTokenPayload } from './access-token-payload';
 import { RefreshTokenResponse } from './refresh-token-response';
 

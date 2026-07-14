@@ -1,18 +1,20 @@
-import { Component, OnInit, signal, WritableSignal } from '@angular/core';
 import { CommonModule } from '@angular/common';
+import { Component, signal, WritableSignal } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { Categorias } from '@entities/admin';
+import { CategoriaService } from '@entities/category';
+import { BuscadorComponent } from '@features/admin-search';
+import { Tabla } from '@shared/lib/admin-table';
+import { StickyScrollDirective } from '@shared/lib/directives';
+import { extractErrorMessage } from '@shared/lib/error';
+import {
+  AvisoEliminarComponent,
+  AvisoExitoComponent,
+  MostrarerrorComponent,
+} from '@shared/ui';
+import { AuditPanelComponent } from '@widgets/audit-panel';
 import { CategoriasCrearComponent } from '../categorias-crear/categorias-crear.component';
 import { CategoriasEditarComponent } from '../categorias-editar/categorias-editar.component';
-import { CategoriaService } from '@entities/category';
-import { AvisoEliminarComponent } from '@shared/ui';
-import { MostrarerrorComponent } from '@shared/ui';
-import { AvisoExitoComponent } from '@shared/ui';
-import { Tabla } from '@shared/lib/admin-table';
-import { BuscadorComponent } from '@features/admin-search';
-import { extractErrorMessage } from '@shared/lib/error';
-import { AuditPanelComponent } from '@widgets/audit-panel';
-import { StickyScrollDirective } from '@shared/lib/directives';
 @Component({
   selector: 'app-categorias-tabla',
   standalone: true,

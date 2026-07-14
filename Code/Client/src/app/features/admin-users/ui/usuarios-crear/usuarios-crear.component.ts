@@ -7,14 +7,16 @@ import {
   WritableSignal,
 } from '@angular/core';
 import { FormsModule } from '@angular/forms';
-import { Usuario } from '@entities/user';
-import { UsuarioServiceAPI } from '@entities/user';
+import { Usuario, UsuarioServiceAPI } from '@entities/user';
 import { BaseTablaComponent } from '@shared/lib/admin-table';
-import { MostrarerrorComponent } from '@shared/ui';
-import { AvisoExitoComponent } from '@shared/ui';
-import { Aviso } from '@shared/ui';
 import { extractErrorMessage } from '@shared/lib/error';
-import { CustomSelectComponent, OpcionSelect } from '@shared/ui';
+import {
+  Aviso,
+  AvisoExitoComponent,
+  CustomSelectComponent,
+  MostrarerrorComponent,
+  OpcionSelect,
+} from '@shared/ui';
 @Component({
   selector: 'app-usuarios-crear',
   standalone: true,
@@ -49,7 +51,7 @@ export class UsuariosCrearComponent extends BaseTablaComponent {
     this.usuarioApi
       .registrarCuenta(this.usuario, this.contrasena, this.usuario.rol!)
       .subscribe({
-        next: (response) => {
+        next: (_response) => {
           this.Actualizar.emit();
           this.mensajeexito = 'Usuario creado exitosamente';
           this.exito.set(true);

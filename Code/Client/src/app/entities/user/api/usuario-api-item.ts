@@ -11,4 +11,6 @@ export interface UsuarioApiItem {
   TelefonoReferencia: string | null;
   EmailReferencia: string | null;
   IdCarrera?: number | null;
+  Bloqueado?: boolean;
+  MotivoBloqueo?: string | null;
 }

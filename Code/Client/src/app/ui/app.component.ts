@@ -8,8 +8,8 @@ import {
   Router,
   RouterOutlet,
 } from '@angular/router';
-import { NavbarComponent } from '@widgets/navigation';
 import { PantallaCargaComponent } from '@shared/ui';
+import { NavbarComponent } from '@widgets/navigation';
 
 @Component({
   selector: 'app-root',

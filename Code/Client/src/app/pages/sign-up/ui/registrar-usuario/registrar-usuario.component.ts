@@ -1,15 +1,12 @@
-import { Component, signal, WritableSignal } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { UsuarioService } from '@entities/user';
-import { Usuario } from '@entities/user';
+import { Component, signal, WritableSignal } from '@angular/core';
 import { FormsModule, NgForm } from '@angular/forms';
 import { Router } from '@angular/router';
-import { UsuarioServiceAPI } from '@entities/user';
-import { CarreraService } from '@entities/career';
 import { Carrera } from '@entities/admin';
-import { AvisoExitoComponent } from '@shared/ui';
-import { MostrarerrorComponent } from '@shared/ui';
+import { CarreraService } from '@entities/career';
+import { Usuario, UsuarioService, UsuarioServiceAPI } from '@entities/user';
 import { extractErrorMessage } from '@shared/lib/error';
+import { AvisoExitoComponent, MostrarerrorComponent } from '@shared/ui';
 @Component({
   selector: 'app-registrar-usuario',
   imports: [
@@ -84,7 +81,7 @@ export class RegistrarUsuarioComponent {
     this.registrarcuenta
       .registrarCuenta(this.nuevoUsuario, this.password, 'estudiante')
       .subscribe({
-        next: (response) => {
+        next: (_response) => {
           this.mensajeaviso = 'Usuario registrado exitosamente';
           this.usuarioS.guardarSesion(this.nuevoUsuario);
           this.aviso.set(true);

@@ -1,14 +1,13 @@
 import {
   Component,
+  ElementRef,
+  HostListener,
   OnDestroy,
   OnInit,
-  HostListener,
-  ElementRef,
 } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { FlatpickrDirective } from '@shared/lib/directives';
 import flatpickr from 'flatpickr';
-import { UsuarioService } from '@entities/user';
 import { ActivoComponent } from './activo/activo.component';
 import { AprobadoComponent } from './aprobado/aprobado.component';
 import { AtrasadoComponent } from './atrasado/atrasado.component';
@@ -51,10 +50,7 @@ export class HistorialComponent implements OnInit, OnDestroy {
   fechaHasta: string = '';
   private pollInterval: ReturnType<typeof setInterval> | null = null;
 
-  constructor(
-    private readonly usuario: UsuarioService,
-    private el: ElementRef,
-  ) {}
+  constructor(private el: ElementRef) {}
 
   @HostListener('document:click', ['$event'])
   onDocumentClick(event: MouseEvent) {

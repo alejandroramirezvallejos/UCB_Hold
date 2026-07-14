@@ -1,19 +1,19 @@
+import { CommonModule, Location } from '@angular/common';
 import {
   Component,
+  effect,
+  ElementRef,
+  HostListener,
   signal,
   WritableSignal,
-  effect,
-  HostListener,
-  ElementRef,
 } from '@angular/core';
-import { RouterModule } from '@angular/router';
-import { CarritoService } from '@features/cart';
-import { CommonModule, Location } from '@angular/common';
-import { Router, NavigationEnd } from '@angular/router';
-import { UsuarioPrevioComponent } from './usuario-previo/usuario-previo.component';
+import { NavigationEnd, Router, RouterModule } from '@angular/router';
+import { Notificacion, NotificacionStoreService } from '@entities/notification';
 import { UsuarioService } from '@entities/user';
-import { filter } from 'rxjs';
+import { CarritoService } from '@features/cart';
 import { SidebarService } from '@widgets/admin-sidebar';
+import { filter } from 'rxjs';
+import { UsuarioPrevioComponent } from './usuario-previo/usuario-previo.component';
 @Component({
   selector: 'app-navbar',
   standalone: true,
@@ -23,14 +23,12 @@ import { SidebarService } from '@widgets/admin-sidebar';
 })
 export class NavbarComponent {
   showUserMenu: WritableSignal<boolean> = signal(false);
+  showNotifications: WritableSignal<boolean> = signal(false);
   showAdminSidebarToggle: WritableSignal<boolean> = signal(false);
   showHome: WritableSignal<boolean> = signal(true);
   showBack: WritableSignal<boolean> = signal(true);
   showCart: WritableSignal<boolean> = signal(true);
   showProfile: WritableSignal<boolean> = signal(true);
-  private readonly currentRole: string = '';
-
-  private previousAdminRoute: boolean = false;
 
   constructor(
     private readonly carrito: CarritoService,
@@ -39,13 +37,16 @@ export class NavbarComponent {
     private readonly location: Location,
     private readonly sidebarService: SidebarService,
     private readonly el: ElementRef,
+    readonly notifStore: NotificacionStoreService,
   ) {
     this.updateButtonVisibility(this.router.url);
+    this.notifStore.iniciarPolling();
 
     this.router.events
       .pipe(filter((event) => event instanceof NavigationEnd))
       .subscribe((event: NavigationEnd) => {
         this.updateButtonVisibility(event.urlAfterRedirects || event.url);
+        this.notifStore.refrescar();
       });
 
     effect(() => {
@@ -82,14 +83,12 @@ export class NavbarComponent {
       this.showBack.set(false);
       this.showHome.set(false);
       this.showAdminSidebarToggle.set(true);
-      this.previousAdminRoute = true;
     } else {
       this.showAdminSidebarToggle.set(false);
 
       if (cleanUrl.includes('/home')) {
         this.showHome.set(false);
         this.showBack.set(false);
-        this.previousAdminRoute = false;
       } else if (
         cleanUrl.includes('/Carrito') ||
         cleanUrl.includes('/Objeto') ||
@@ -122,6 +121,20 @@ export class NavbarComponent {
     this.showUserMenu.set(!this.showUserMenu());
   }
 
+  toggleNotifications() {
+    this.showNotifications.set(!this.showNotifications());
+  }
+
+  abrirNotificacion(notificacion: Notificacion) {
+    if (!notificacion.Leido) {
+      this.notifStore.marcarLeida(notificacion.Id);
+    }
+  }
+
+  marcarTodasLeidas() {
+    this.notifStore.marcarTodasLeidas();
+  }
+
   toggleSidebar() {
     this.sidebarService.toggle();
   }
@@ -146,6 +159,12 @@ export class NavbarComponent {
   onDocumentClick(event: MouseEvent) {
     if (this.showUserMenu() && !this.el.nativeElement.contains(event.target)) {
       this.showUserMenu.set(false);
+    }
+    if (
+      this.showNotifications() &&
+      !this.el.nativeElement.contains(event.target)
+    ) {
+      this.showNotifications.set(false);
     }
     if (
       this.sidebarService.isOpen() &&

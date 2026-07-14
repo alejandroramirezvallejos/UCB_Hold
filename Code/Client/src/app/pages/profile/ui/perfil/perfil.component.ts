@@ -1,8 +1,7 @@
-import { Component, signal, WritableSignal } from '@angular/core';
 import { CommonModule } from '@angular/common';
+import { Component, signal, WritableSignal } from '@angular/core';
 import { ReactiveFormsModule } from '@angular/forms';
-import { UsuarioService } from '@entities/user';
-import { Usuario } from '@entities/user';
+import { Usuario, UsuarioService } from '@entities/user';
 import { EditarComponent } from '@features/profile-edit';
 @Component({
   selector: 'app-perfil',

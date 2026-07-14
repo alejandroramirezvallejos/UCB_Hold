@@ -1,20 +1,21 @@
-import { Component, OnInit, signal, WritableSignal } from '@angular/core';
 import { CommonModule } from '@angular/common';
+import { Component, OnInit, signal, WritableSignal } from '@angular/core';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { Muebles } from '@entities/admin';
-import { MueblesCrearComponent } from '../muebles-crear/muebles-crear.component';
-import { MueblesEditarComponent } from '../muebles-editar/muebles-editar.component';
 import { MuebleService } from '@entities/furniture';
-import { AvisoEliminarComponent } from '@shared/ui';
-import { BaseTablaComponent } from '@shared/lib/admin-table';
-import { MostrarerrorComponent } from '@shared/ui';
-import { AvisoExitoComponent } from '@shared/ui';
 import { BuscadorComponent } from '@features/admin-search';
 import { Tabla } from '@shared/lib/admin-table';
+import { StickyScrollDirective } from '@shared/lib/directives';
 import { extractErrorMessage } from '@shared/lib/error';
+import {
+  AvisoEliminarComponent,
+  AvisoExitoComponent,
+  MostrarerrorComponent,
+} from '@shared/ui';
 import { GaveterosInlineComponent } from '@widgets/admin-inline';
 import { AuditPanelComponent } from '@widgets/audit-panel';
-import { StickyScrollDirective } from '@shared/lib/directives';
+import { MueblesCrearComponent } from '../muebles-crear/muebles-crear.component';
+import { MueblesEditarComponent } from '../muebles-editar/muebles-editar.component';
 @Component({
   selector: 'app-muebles-tabla',
   standalone: true,
@@ -172,7 +173,7 @@ export class MueblesTablaComponent extends Tabla implements OnInit {
   }
   confirmarEliminacion() {
     this.muebleapi.eliminarMueble(this.muebleSeleccionado.Id).subscribe({
-      next: (response) => {
+      next: (_response) => {
         this.mensajeexito = 'Mueble eliminado exitosamente.';
         this.exito.set(true);
         this.auditRefresh++;

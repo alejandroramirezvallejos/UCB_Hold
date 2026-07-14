@@ -1,3 +1,4 @@
+import { CommonModule } from '@angular/common';
 import {
   Component,
   EventEmitter,
@@ -9,17 +10,18 @@ import {
 import { FormsModule } from '@angular/forms';
 import { EmpresaMantenimiento, Mantenimientos } from '@entities/admin';
 import { MantenimientoService } from '@entities/maintenance';
-import { ListaequipoComponent } from './listaequipo/listaequipo.component';
-import { MantenimientosServiceEquipos } from '../../model/mantenimientos-equipos.service';
-import { CommonModule } from '@angular/common';
 import { EmpresamantenimientoService } from '@entities/maintenance-company';
 import { BaseTablaComponent } from '@shared/lib/admin-table';
-import { MostrarerrorComponent } from '@shared/ui';
-import { Aviso } from '@shared/ui';
-import { AvisoExitoComponent } from '@shared/ui';
-import { extractErrorMessage } from '@shared/lib/error';
-import { CustomSelectComponent } from '@shared/ui';
 import { FlatpickrDirective } from '@shared/lib/directives';
+import { extractErrorMessage } from '@shared/lib/error';
+import {
+  Aviso,
+  AvisoExitoComponent,
+  CustomSelectComponent,
+  MostrarerrorComponent,
+} from '@shared/ui';
+import { MantenimientosServiceEquipos } from '../../model/mantenimientos-equipos.service';
+import { ListaequipoComponent } from './listaequipo/listaequipo.component';
 @Component({
   selector: 'app-mantenimientos-crear',
   standalone: true,
@@ -160,7 +162,7 @@ export class MantenimientosCrearComponent extends BaseTablaComponent {
         this.mantenimientoSeleccionado,
       )
       .subscribe({
-        next: (response) => {
+        next: (_response) => {
           this.Actualizar.emit();
           this.mensajeexito = 'Mantenimiento creado con éxito.';
           this.exito.set(true);

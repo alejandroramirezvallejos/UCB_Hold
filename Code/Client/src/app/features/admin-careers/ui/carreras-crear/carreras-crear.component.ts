@@ -9,10 +9,8 @@ import {
 import { FormsModule } from '@angular/forms';
 import { CarreraService } from '@entities/career';
 import { BaseTablaComponent } from '@shared/lib/admin-table';
-import { MostrarerrorComponent } from '@shared/ui';
-import { AvisoExitoComponent } from '@shared/ui';
-import { Aviso } from '@shared/ui';
 import { extractErrorMessage } from '@shared/lib/error';
+import { Aviso, AvisoExitoComponent, MostrarerrorComponent } from '@shared/ui';
 @Component({
   selector: 'app-carreras-crear',
   standalone: true,
@@ -42,7 +40,7 @@ export class CarrerasCrearComponent extends BaseTablaComponent {
 
   registrar() {
     this.carreraService.crearCarrera(this.nombreCarrera).subscribe({
-      next: (response) => {
+      next: (_response) => {
         this.Actualizar.emit();
         this.mensajeexito = 'Carrera creada exitosamente.';
         this.exito.set(true);

@@ -466,6 +466,10 @@
         class="observaciones-input"
         placeholder="Observaciones (opcional)..."
       ></textarea>
+      <label class="devuelto-bloqueo">
+        <input type="checkbox" [(ngModel)]="bloquearAlDevolver" />
+        <span>Bloquear a este usuario para nuevas reservas</span>
+      </label>
       <div class="devuelto-actions">
         <button
           class="devuelto-btn devuelto-btn-cancel"

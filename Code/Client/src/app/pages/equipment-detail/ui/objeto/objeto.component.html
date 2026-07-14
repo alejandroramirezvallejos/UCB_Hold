@@ -123,8 +123,52 @@
           [entradaCarrito]="carritoCalendario"
           [fechaInicioSeleccionada]="fechaInicioCalendario"
           [fechaFinSeleccionada]="fechaFinCalendario"
+          (avisarDisponibilidad)="onAvisarDisponibilidad($event)"
         ></app-calendario>
       </div>
+    </div>
+  </div>
+}
+
+@if (showAvisoModal) {
+  <div class="aviso" (click)="cerrarAvisoModal()">
+    <div class="aviso__modal" (click)="detenerPropagacion($event)">
+      @if (!avisoRegistrado) {
+        <h3 class="aviso__title">Avisarme si se libera</h3>
+        <p class="aviso__text">
+          Te enviaremos una notificación si este equipo queda disponible el
+          <strong>{{ avisoFecha }}</strong
+          >.
+        </p>
+        <div class="aviso__actions">
+          <button
+            class="aviso__btn aviso__btn--cancel"
+            (click)="cerrarAvisoModal()"
+          >
+            Cancelar
+          </button>
+          <button
+            class="aviso__btn aviso__btn--confirm"
+            (click)="confirmarAviso()"
+          >
+            Avisarme
+          </button>
+        </div>
+      } @else {
+        <h3 class="aviso__title">Aviso registrado</h3>
+        <p class="aviso__text">
+          Te notificaremos si se libera el <strong>{{ avisoFecha }}</strong
+          >.
+        </p>
+        <div class="aviso__actions">
+          <button
+            class="aviso__btn aviso__btn--confirm"
+            (click)="cerrarAvisoModal()"
+          >
+            Entendido
+          </button>
+        </div>
+      }
     </div>
   </div>
 }

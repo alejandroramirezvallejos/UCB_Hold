@@ -1,19 +1,19 @@
 import { Component } from '@angular/core';
 import { Router } from '@angular/router';
-import { SidebarComponent } from '@widgets/admin-sidebar';
+import { UsuarioService } from '@entities/user';
 import { AccesoriosTablaComponent } from '@features/admin-accessories';
 import { CarrerasTablaComponent } from '@features/admin-careers';
 import { CategoriasTablaComponent } from '@features/admin-categories';
-import { UsuariosTablaComponent } from '@features/admin-users';
 import { ComponentesTablaComponent } from '@features/admin-components';
-import { EmpresasMantenimientoTablaComponent } from '@features/admin-maintenance-companies';
 import { EquiposTablaComponent } from '@features/admin-equipment';
-import { GaveterosTablaComponent } from '@features/admin-lockers';
 import { GruposEquiposTablaComponent } from '@features/admin-equipment-groups';
-import { MantenimientosTablaComponent } from '@features/admin-maintenance';
 import { MueblesTablaComponent } from '@features/admin-furniture';
 import { PrestamosTablaComponent } from '@features/admin-loans';
-import { UsuarioService } from '@entities/user';
+import { GaveterosTablaComponent } from '@features/admin-lockers';
+import { MantenimientosTablaComponent } from '@features/admin-maintenance';
+import { EmpresasMantenimientoTablaComponent } from '@features/admin-maintenance-companies';
+import { UsuariosTablaComponent } from '@features/admin-users';
+import { SidebarComponent } from '@widgets/admin-sidebar';
 @Component({
   selector: 'app-administrador',
   standalone: true,

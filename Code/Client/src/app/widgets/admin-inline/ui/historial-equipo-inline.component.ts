@@ -1,12 +1,12 @@
-import { Component, EventEmitter, Input, OnInit, Output } from '@angular/core';
 import { CommonModule, DatePipe } from '@angular/common';
-import { FormsModule } from '@angular/forms';
 import { HttpClient } from '@angular/common/http';
-import { environment } from '@environments/environment';
+import { Component, EventEmitter, Input, OnInit, Output } from '@angular/core';
+import { FormsModule } from '@angular/forms';
 import { HistorialEquipoDto } from '@entities/admin';
+import { environment } from '@environments/environment';
+import { ApiResponse, extractApiValue } from '@shared/api';
 import { FlatpickrDirective } from '@shared/lib/directives';
 import flatpickr from 'flatpickr';
-import { ApiResponse, extractApiValue } from '@shared/api';
 import { EquipoHistorialInlineItem } from '../model';
 import { INLINE_SEARCH_STYLES } from './inline-search.styles';
 

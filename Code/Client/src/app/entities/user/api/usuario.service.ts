@@ -1,8 +1,8 @@
+import { HttpClient } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { environment } from '@environments/environment';
-import { HttpClient } from '@angular/common/http';
-import { Usuario } from '../model/usuario';
 import { map } from 'rxjs';
+import { Usuario } from '../model/usuario';
 import { UsuarioApiItem } from './usuario-api-item';
 import { UsuarioListApiResponse } from './usuario-list-api-response';
 import { UsuarioLoginApiResponse } from './usuario-login-api-response';
@@ -118,6 +118,15 @@ export class UsuarioServiceAPI {
       email_referencia: item.EmailReferencia,
       carrera_Id: item.IdCarrera ?? null,
       carrera: item.CarreraNombre,
+      bloqueado: item.Bloqueado ?? false,
+      motivo_bloqueo: item.MotivoBloqueo ?? null,
     };
+  }
+
+  bloquearUsuario(carnet: string, bloqueado: boolean, motivo: string | null) {
+    return this.http.put(`${this.apiUrl}/${carnet}/bloqueo`, {
+      Bloqueado: bloqueado,
+      Motivo: motivo,
+    });
   }
 }

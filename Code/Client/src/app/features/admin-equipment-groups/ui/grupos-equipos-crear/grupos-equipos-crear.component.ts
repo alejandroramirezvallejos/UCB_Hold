@@ -7,14 +7,15 @@ import {
   WritableSignal,
 } from '@angular/core';
 import { FormsModule } from '@angular/forms';
-import { GrupoEquipo } from '@entities/equipment-group';
-import { GrupoequipoService } from '@entities/equipment-group';
+import { GrupoEquipo, GrupoequipoService } from '@entities/equipment-group';
 import { BaseTablaComponent } from '@shared/lib/admin-table';
-import { MostrarerrorComponent } from '@shared/ui';
-import { Aviso } from '@shared/ui';
-import { AvisoExitoComponent } from '@shared/ui';
 import { extractErrorMessage } from '@shared/lib/error';
-import { CustomSelectComponent } from '@shared/ui';
+import {
+  Aviso,
+  AvisoExitoComponent,
+  CustomSelectComponent,
+  MostrarerrorComponent,
+} from '@shared/ui';
 @Component({
   selector: 'app-grupos-equipos-crear',
   standalone: true,
@@ -42,7 +43,7 @@ export class GruposEquiposCrearComponent extends BaseTablaComponent {
   }
   registrar() {
     this.grupoEquipoapi.crearGrupoEquipo(this.grupoEquipo).subscribe({
-      next: (response) => {
+      next: (_response) => {
         this.Actualizar.emit();
         this.mensajeexito = 'Grupo de equipo registrado exitosamente';
         this.exito.set(true);

@@ -1,19 +1,20 @@
-import { Component, OnInit, signal, WritableSignal } from '@angular/core';
 import { CommonModule } from '@angular/common';
+import { Component, OnInit, signal, WritableSignal } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { Componente } from '@entities/admin';
-import { ComponentesCrearComponent } from '../componentes-crear/componentes-crear.component';
-import { ComponentesEditarComponent } from '../componentes-editar/componentes-editar.component';
 import { ComponenteService } from '@entities/component';
-import { AvisoEliminarComponent } from '@shared/ui';
-import { BaseTablaComponent } from '@shared/lib/admin-table';
-import { MostrarerrorComponent } from '@shared/ui';
-import { AvisoExitoComponent } from '@shared/ui';
 import { BuscadorComponent } from '@features/admin-search';
 import { Tabla } from '@shared/lib/admin-table';
-import { extractErrorMessage } from '@shared/lib/error';
-import { AuditPanelComponent } from '@widgets/audit-panel';
 import { StickyScrollDirective } from '@shared/lib/directives';
+import { extractErrorMessage } from '@shared/lib/error';
+import {
+  AvisoEliminarComponent,
+  AvisoExitoComponent,
+  MostrarerrorComponent,
+} from '@shared/ui';
+import { AuditPanelComponent } from '@widgets/audit-panel';
+import { ComponentesCrearComponent } from '../componentes-crear/componentes-crear.component';
+import { ComponentesEditarComponent } from '../componentes-editar/componentes-editar.component';
 @Component({
   selector: 'app-componentes-tabla',
   standalone: true,
@@ -164,7 +165,7 @@ export class ComponentesTablaComponent extends Tabla implements OnInit {
       this.componenteService
         .eliminarComponente(this.componenteSeleccionado.Id)
         .subscribe({
-          next: (response) => {
+          next: (_response) => {
             this.cargarComponentes();
             this.mensajeexito = 'Componente eliminado exitosamente';
             this.exito.set(true);

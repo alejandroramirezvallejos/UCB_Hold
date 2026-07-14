@@ -7,13 +7,11 @@ import {
   WritableSignal,
 } from '@angular/core';
 import { FormsModule } from '@angular/forms';
-import { CategoriaService } from '@entities/category';
 import { Categorias } from '@entities/admin';
+import { CategoriaService } from '@entities/category';
 import { BaseTablaComponent } from '@shared/lib/admin-table';
-import { MostrarerrorComponent } from '@shared/ui';
-import { AvisoExitoComponent } from '@shared/ui';
-import { Aviso } from '@shared/ui';
 import { extractErrorMessage } from '@shared/lib/error';
+import { Aviso, AvisoExitoComponent, MostrarerrorComponent } from '@shared/ui';
 @Component({
   selector: 'app-categorias-crear',
   standalone: true,
@@ -43,7 +41,7 @@ export class CategoriasCrearComponent extends BaseTablaComponent {
       Nombre: this.nombreCategoria,
     };
     this.categoriaService.crearCategoria(categoria).subscribe({
-      next: (response) => {
+      next: (_response) => {
         this.Actualizar.emit();
         this.mensajeexito = 'Categoria creada exitosamente';
         this.exito.set(true);

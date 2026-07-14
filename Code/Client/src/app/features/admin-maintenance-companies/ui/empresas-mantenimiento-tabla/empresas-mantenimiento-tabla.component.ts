@@ -1,19 +1,20 @@
-import { Component, OnInit, signal, WritableSignal } from '@angular/core';
 import { CommonModule } from '@angular/common';
+import { Component, OnInit, signal, WritableSignal } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { EmpresaMantenimiento } from '@entities/admin';
+import { EmpresamantenimientoService } from '@entities/maintenance-company';
+import { BuscadorComponent } from '@features/admin-search';
+import { Tabla } from '@shared/lib/admin-table';
+import { StickyScrollDirective } from '@shared/lib/directives';
+import { extractErrorMessage } from '@shared/lib/error';
+import {
+  AvisoEliminarComponent,
+  AvisoExitoComponent,
+  MostrarerrorComponent,
+} from '@shared/ui';
+import { AuditPanelComponent } from '@widgets/audit-panel';
 import { EmpresasMantenimientoCrearComponent } from '../empresas-mantenimiento-crear/empresas-mantenimiento-crear.component';
 import { EmpresasMantenimientoEditarComponent } from '../empresas-mantenimiento-editar/empresas-mantenimiento-editar.component';
-import { EmpresamantenimientoService } from '@entities/maintenance-company';
-import { AvisoEliminarComponent } from '@shared/ui';
-import { BaseTablaComponent } from '@shared/lib/admin-table';
-import { MostrarerrorComponent } from '@shared/ui';
-import { AvisoExitoComponent } from '@shared/ui';
-import { Tabla } from '@shared/lib/admin-table';
-import { BuscadorComponent } from '@features/admin-search';
-import { extractErrorMessage } from '@shared/lib/error';
-import { AuditPanelComponent } from '@widgets/audit-panel';
-import { StickyScrollDirective } from '@shared/lib/directives';
 @Component({
   selector: 'app-empresas-mantenimiento-tabla',
   standalone: true,
@@ -158,7 +159,7 @@ export class EmpresasMantenimientoTablaComponent
       this.empresaService
         .eliminarEmpresaMantenimiento(this.empresaSeleccionada.Id)
         .subscribe({
-          next: (response) => {
+          next: (_response) => {
             this.cargarEmpresas();
             this.mensajeexito =
               'Empresa de mantenimiento eliminada exitosamente.';

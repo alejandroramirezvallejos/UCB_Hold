@@ -1,15 +1,11 @@
-import { Component, signal, WritableSignal } from '@angular/core';
-import { PrestamoAgrupados } from '@entities/loan';
-import { UsuarioService } from '@entities/user';
-import { PrestamosAPIService } from '@entities/loan';
-import { PrestamoDto } from '@entities/admin';
 import { CommonModule } from '@angular/common';
-import { HistorialBase } from '../base/historial-base';
-import { VistaPrestamosComponent } from '@entities/loan';
-import { Aviso } from '@shared/ui';
-import { MostrarerrorComponent } from '@shared/ui';
-import { AvisoExitoComponent } from '@shared/ui';
+import { Component, signal, WritableSignal } from '@angular/core';
+import { PrestamoDto } from '@entities/admin';
+import { PrestamosAPIService, VistaPrestamosComponent } from '@entities/loan';
+import { UsuarioService } from '@entities/user';
 import { extractErrorMessage } from '@shared/lib/error';
+import { Aviso, AvisoExitoComponent, MostrarerrorComponent } from '@shared/ui';
+import { HistorialBase } from '../base/historial-base';
 @Component({
   selector: 'app-pendiente',
   imports: [
@@ -46,7 +42,7 @@ export class PendienteComponent extends HistorialBase {
     this.prestamoApi
       .cambiarEstadoPrestamo(this.itemSeleccionado!.Id, 'cancelado')
       .subscribe({
-        next: (response) => {
+        next: (_response) => {
           this.cargarDatos();
           this.itemSeleccionado = null;
           this.avisocancelar.set(false);

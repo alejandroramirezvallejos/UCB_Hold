@@ -81,6 +81,11 @@
         </div>
       </div>
       <div class="cart__error">{{ validacionFechas().message }}</div>
+      @if (!puedeReservar()) {
+        <div class="cart__bloqueo">
+          <i class="fas fa-ban"></i> {{ motivoBloqueo() }}
+        </div>
+      }
       <button
         (click)="confirmarSolicitud()"
         class="cart__button"

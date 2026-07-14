@@ -1,8 +1,8 @@
-import { Component, Input, OnChanges, SimpleChanges } from '@angular/core';
 import { CommonModule, DatePipe } from '@angular/common';
+import { Component, Input, OnChanges, SimpleChanges } from '@angular/core';
 import { FormsModule } from '@angular/forms';
-import { AuditLogApiService } from '@entities/audit-log';
 import { AuditLogDto } from '@entities/admin';
+import { AuditLogApiService } from '@entities/audit-log';
 import { FlatpickrDirective } from '@shared/lib/directives';
 import { parseJsonResult } from '@shared/lib/result';
 import { AuditObservationDetail } from '../../model/audit-observation-detail';

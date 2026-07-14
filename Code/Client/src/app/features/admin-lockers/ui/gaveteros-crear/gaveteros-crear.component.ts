@@ -8,14 +8,16 @@ import {
 } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { Gaveteros, Muebles } from '@entities/admin';
-import { GaveteroService } from '@entities/locker';
 import { MuebleService } from '@entities/furniture';
+import { GaveteroService } from '@entities/locker';
 import { BaseTablaComponent } from '@shared/lib/admin-table';
-import { MostrarerrorComponent } from '@shared/ui';
-import { Aviso } from '@shared/ui';
-import { AvisoExitoComponent } from '@shared/ui';
 import { extractErrorMessage } from '@shared/lib/error';
-import { CustomSelectComponent } from '@shared/ui';
+import {
+  Aviso,
+  AvisoExitoComponent,
+  CustomSelectComponent,
+  MostrarerrorComponent,
+} from '@shared/ui';
 @Component({
   selector: 'app-gaveteros-crear',
   standalone: true,
@@ -64,7 +66,7 @@ export class GaveterosCrearComponent extends BaseTablaComponent {
   }
   registrar() {
     this.gaveteroapi.crearGavetero(this.gavetero).subscribe({
-      next: (response) => {
+      next: (_response) => {
         this.Actualizar.emit();
         this.mensajeexito = 'Gavetero registrado con exito';
         this.exito.set(true);

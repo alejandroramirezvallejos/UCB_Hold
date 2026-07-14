@@ -1,6 +1,6 @@
-import { BaseTablaComponent } from './base';
 import { AdminTableSort } from './admin-table-sort';
 import { AdminTableTab } from './admin-table-tab';
+import { BaseTablaComponent } from './base';
 
 export abstract class Tabla extends BaseTablaComponent {
   public columnas: string[] = [];
@@ -125,7 +125,7 @@ export abstract class Tabla extends BaseTablaComponent {
 
   abstract aplicarFiltros(event?: [string, string]): void;
 
-  sortTable(event: AdminTableSort): void {}
+  sortTable(_event: AdminTableSort): void {}
 
   protected toLocalISOString(date: Date): string {
     const offset = date.getTimezoneOffset();

@@ -1,9 +1,9 @@
+import { HttpClient, HttpParams } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { environment } from '@environments/environment';
-import { HttpClient, HttpParams } from '@angular/common/http';
+import { ApiResponse, extractApiValue } from '@shared/api';
 import { map, Observable, of, tap } from 'rxjs';
 import { GrupoEquipo } from '../model/grupo-equipo';
-import { ApiResponse, extractApiValue } from '@shared/api';
 import { GrupoEquipoApiItem } from './grupo-equipo-api-item';
 @Injectable({
   providedIn: 'root',

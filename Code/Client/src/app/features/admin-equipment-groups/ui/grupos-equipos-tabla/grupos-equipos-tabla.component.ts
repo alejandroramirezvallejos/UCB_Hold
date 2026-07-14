@@ -1,21 +1,22 @@
-import { Component, OnInit, signal, WritableSignal } from '@angular/core';
 import { CommonModule } from '@angular/common';
+import { Component, OnInit, signal, WritableSignal } from '@angular/core';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { Categorias } from '@entities/admin';
-import { GrupoEquipo } from '@entities/equipment-group';
-import { GruposEquiposCrearComponent } from '../grupos-equipos-crear/grupos-equipos-crear.component';
-import { GruposEquiposEditarComponent } from '../grupos-equipos-editar/grupos-equipos-editar.component';
-import { GrupoequipoService } from '@entities/equipment-group';
 import { CategoriaService } from '@entities/category';
-import { AvisoEliminarComponent } from '@shared/ui';
-import { MostrarerrorComponent } from '@shared/ui';
-import { AvisoExitoComponent } from '@shared/ui';
+import { GrupoEquipo, GrupoequipoService } from '@entities/equipment-group';
 import { BuscadorComponent } from '@features/admin-search';
 import { Tabla } from '@shared/lib/admin-table';
+import { StickyScrollDirective } from '@shared/lib/directives';
 import { extractErrorMessage } from '@shared/lib/error';
+import {
+  AvisoEliminarComponent,
+  AvisoExitoComponent,
+  MostrarerrorComponent,
+} from '@shared/ui';
 import { EquiposInlineComponent } from '@widgets/admin-inline';
 import { AuditPanelComponent } from '@widgets/audit-panel';
-import { StickyScrollDirective } from '@shared/lib/directives';
+import { GruposEquiposCrearComponent } from '../grupos-equipos-crear/grupos-equipos-crear.component';
+import { GruposEquiposEditarComponent } from '../grupos-equipos-editar/grupos-equipos-editar.component';
 @Component({
   selector: 'app-grupos-equipos-tabla',
   standalone: true,
@@ -199,7 +200,7 @@ export class GruposEquiposTablaComponent extends Tabla implements OnInit {
     this.grupoequipoapi
       .eliminarGrupoEquipo(this.grupoEquipoSeleccionado.id)
       .subscribe({
-        next: (response) => {
+        next: (_response) => {
           this.mensajeexito = 'Grupo de equipo eliminado exitosamente';
           this.exito.set(true);
           this.auditRefresh++;

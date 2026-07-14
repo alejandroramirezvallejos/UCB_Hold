@@ -1,26 +1,21 @@
-import { Component, OnInit, signal, WritableSignal } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import {
-  FormsModule,
-  ReactiveFormsModule,
-  FormBuilder,
-  FormGroup,
-  Validators,
-} from '@angular/forms';
-import { Accesorio } from '@entities/admin';
-import { AccesoriosCrearComponent } from '../accesorios-crear/accesorios-crear.component';
-import { AccesoriosEditarComponent } from '../accesorios-editar/accesorios-editar.component';
+import { Component, signal, WritableSignal } from '@angular/core';
+import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { AccesoriosService } from '@entities/accessory';
-import { AvisoEliminarComponent } from '@shared/ui';
-import { BaseTablaComponent } from '@shared/lib/admin-table';
-import { MostrarerrorComponent } from '@shared/ui';
-import { AvisoExitoComponent } from '@shared/ui';
-import { Aviso } from '@shared/ui';
+import { Accesorio } from '@entities/admin';
 import { BuscadorComponent } from '@features/admin-search';
 import { Tabla } from '@shared/lib/admin-table';
-import { extractErrorMessage } from '@shared/lib/error';
-import { AuditPanelComponent } from '@widgets/audit-panel';
 import { StickyScrollDirective } from '@shared/lib/directives';
+import { extractErrorMessage } from '@shared/lib/error';
+import {
+  Aviso,
+  AvisoEliminarComponent,
+  AvisoExitoComponent,
+  MostrarerrorComponent,
+} from '@shared/ui';
+import { AuditPanelComponent } from '@widgets/audit-panel';
+import { AccesoriosCrearComponent } from '../accesorios-crear/accesorios-crear.component';
+import { AccesoriosEditarComponent } from '../accesorios-editar/accesorios-editar.component';
 @Component({
   selector: 'app-accesorios-tabla',
   standalone: true,
@@ -173,7 +168,7 @@ export class AccesoriosTablaComponent extends Tabla {
     this.accesoriosapi
       .eliminarAccesorio(this.accesorioSeleccionado.Id)
       .subscribe({
-        next: (response) => {
+        next: (_response) => {
           this.cargarAccesorios();
           this.mensajeexito = 'Accesorio eliminado exitosamente.';
           this.exito.set(true);

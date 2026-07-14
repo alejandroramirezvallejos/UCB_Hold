@@ -1,29 +1,29 @@
-import { Component, OnInit, signal, WritableSignal } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import {
-  FormsModule,
-  ReactiveFormsModule,
-  FormBuilder,
-  FormGroup,
-  Validators,
-} from '@angular/forms';
+import { Component, OnInit, signal, WritableSignal } from '@angular/core';
+import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { PrestamoDto } from '@entities/admin';
-import { PrestamosAPIService } from '@entities/loan';
-import { PrestamoAgrupados } from '@entities/loan';
-import { VercontratoComponent } from '../vercontrato/vercontrato.component';
-import { finalize } from 'rxjs';
-import { VistaPrestamosComponent } from '@entities/loan';
-import { PantallaCargaComponent } from '@shared/ui';
-import { AvisoEliminarComponent } from '@shared/ui';
-import { MostrarerrorComponent } from '@shared/ui';
-import { Aviso } from '@shared/ui';
-import { extractErrorMessage } from '@shared/lib/error';
-import { AuditPanelComponent } from '@widgets/audit-panel';
-import { AvisoExitoComponent } from '@shared/ui';
+import {
+  PrestamoAgrupados,
+  PrestamosAPIService,
+  VistaPrestamosComponent,
+} from '@entities/loan';
+import { UsuarioServiceAPI } from '@entities/user';
 import { BuscadorComponent } from '@features/admin-search';
 import { AdminTableSort, Tabla } from '@shared/lib/admin-table';
 import { StickyScrollDirective } from '@shared/lib/directives';
-import { CustomSelectComponent, OpcionSelect } from '@shared/ui';
+import { extractErrorMessage } from '@shared/lib/error';
+import {
+  Aviso,
+  AvisoEliminarComponent,
+  AvisoExitoComponent,
+  CustomSelectComponent,
+  MostrarerrorComponent,
+  OpcionSelect,
+  PantallaCargaComponent,
+} from '@shared/ui';
+import { AuditPanelComponent } from '@widgets/audit-panel';
+import { finalize } from 'rxjs';
+import { VercontratoComponent } from '../vercontrato/vercontrato.component';
 @Component({
   selector: 'app-prestamos-tabla',
   standalone: true,
@@ -105,7 +105,10 @@ export class PrestamosTablaComponent extends Tabla implements OnInit {
   ];
   abrirVista: boolean = false;
   prestamosVista: PrestamoDto[] = [];
-  constructor(private readonly prestamosapi: PrestamosAPIService) {
+  constructor(
+    private readonly prestamosapi: PrestamosAPIService,
+    private readonly usuarioapi: UsuarioServiceAPI,
+  ) {
     super();
   }
   ngOnInit() {
@@ -164,7 +167,7 @@ export class PrestamosTablaComponent extends Tabla implements OnInit {
       .eliminarPrestamo(this.prestamoSeleccionado.Id)
       .pipe(finalize(() => (this.cargando = false)))
       .subscribe({
-        next: (response) => {
+        next: (_response) => {
           this.mensajeexito = 'Préstamo eliminado con éxito.';
           this.exito.set(true);
           this.auditRefresh++;
@@ -329,7 +332,7 @@ export class PrestamosTablaComponent extends Tabla implements OnInit {
     this.prestamosapi
       .cambiarEstadoPrestamo(this.prestamos.get(key)!.datosgrupo.Id, 'aprobado')
       .subscribe({
-        next: (response) => {
+        next: (_response) => {
           this.mensajeexito = 'Préstamo aprobado con éxito.';
           this.exito.set(true);
           this.auditRefresh++;
@@ -356,7 +359,7 @@ export class PrestamosTablaComponent extends Tabla implements OnInit {
         'rechazado',
       )
       .subscribe({
-        next: (response) => {
+        next: (_response) => {
           this.mensajeexito = 'Préstamo rechazado con éxito.';
           this.exito.set(true);
           this.auditRefresh++;
@@ -385,7 +388,7 @@ export class PrestamosTablaComponent extends Tabla implements OnInit {
         'cancelado',
       )
       .subscribe({
-        next: (response) => {
+        next: (_response) => {
           this.mensajeexito = 'Préstamo cancelado con éxito.';
           this.exito.set(true);
           this.auditRefresh++;
@@ -432,8 +435,11 @@ export class PrestamosTablaComponent extends Tabla implements OnInit {
     this.avisorecogido.set(true);
   }
 
+  bloquearAlDevolver = false;
+
   validarDevuelto(key: number) {
     this.observacionDevolucion = '';
+    this.bloquearAlDevolver = false;
     this.prestamoKeySeleccionado = key;
     this.equiposDevolucion = this.prestamos.get(key)?.equipos ?? [];
     this.estadosRetorno = {};
@@ -447,7 +453,7 @@ export class PrestamosTablaComponent extends Tabla implements OnInit {
     this.prestamosapi
       .cambiarEstadoPrestamo(this.prestamos.get(key)!.datosgrupo.Id, 'activo')
       .subscribe({
-        next: (response) => {
+        next: (_response) => {
           this.mensajeexito = 'Préstamo marcado como recogido con éxito.';
           this.exito.set(true);
           this.auditRefresh++;
@@ -478,10 +484,15 @@ export class PrestamosTablaComponent extends Tabla implements OnInit {
         equiposRetorno,
       )
       .subscribe({
-        next: (response) => {
+        next: (_response) => {
           this.mensajeexito = 'Préstamo marcado como devuelto con éxito.';
           this.exito.set(true);
           this.auditRefresh++;
+          if (this.bloquearAlDevolver) {
+            this.bloquearUsuarioDevolucion(
+              this.prestamos.get(key)!.datosgrupo.CarnetUsuario || '',
+            );
+          }
           this.cargarPrestamos();
         },
         error: (error) => {
@@ -492,5 +503,13 @@ export class PrestamosTablaComponent extends Tabla implements OnInit {
       });
     this.prestamoKeySeleccionado = 0;
     this.avisodevuelto.set(false);
+  }
+
+  private bloquearUsuarioDevolucion(carnet: string) {
+    if (!carnet) return;
+
+    this.usuarioapi
+      .bloquearUsuario(carnet, true, this.observacionDevolucion || null)
+      .subscribe({ next: () => {}, error: () => {} });
   }
 }
