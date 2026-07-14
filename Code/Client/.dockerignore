@@ -1,3 +1,11 @@
-angular/
-node_modules/
+node_modules
+dist
+coverage
+.angular
+.sonarqube
+npm-debug.log*
+*.log
+*.tmp
+*.temp
 Dockerfile
+.dockerignore

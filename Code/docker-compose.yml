@@ -1,16 +1,12 @@
 services:
   ucb_db:
     container_name: ucb_db
-    image: postgres:14
+    image: postgres:16-alpine
     restart: on-failure
-    ports:
-      - "5432:5432"
-    environment:
-      - POSTGRES_USER=postgres
-      - POSTGRES_PASSWORD=postgres
-      - POSTGRES_DB=IMT_Reservas
+    env_file:
+      - server.env
     healthcheck:
-      test: ["CMD-SHELL", "pg_isready -U postgres"]
+      test: ["CMD-SHELL", "pg_isready -U $${POSTGRES_USER} -d $${POSTGRES_DB}"]
       interval: 10s
       timeout: 5s
       retries: 5
@@ -22,13 +18,14 @@ services:
     container_name: ucb_redis
     image: redis:7-alpine
     restart: on-failure
-    ports:
-      - "6379:6379"
+    command: ["redis-server", "--appendonly", "yes"]
     healthcheck:
       test: ["CMD", "redis-cli", "ping"]
       interval: 5s
       timeout: 3s
       retries: 5
+    volumes:
+      - ucb_redis_data:/data
 
   ucb_elastic:
     container_name: ucb_elastic
@@ -38,8 +35,6 @@ services:
       - discovery.type=single-node
       - xpack.security.enabled=false
       - ES_JAVA_OPTS=-Xms512m -Xmx512m
-    ports:
-      - "9200:9200"
     healthcheck:
       test: ["CMD-SHELL", "curl -s http://localhost:9200/_cluster/health || exit 1"]
       interval: 10s
@@ -52,12 +47,19 @@ services:
     container_name: ucb_server
     build: ./Server
     restart: on-failure
+    init: true
+    security_opt:
+      - no-new-privileges:true
     ports:
-      - "5000:80"
+      - "127.0.0.1:5000:8080"
     env_file:
       - server.env
     environment:
-      - Elasticsearch__Uri=http://ucb_elastic:9200
+      ASPNETCORE_ENVIRONMENT: Production
+      ASPNETCORE_HTTP_PORTS: 8080
+      HttpsRedirection__Enabled: "false"
+      Elasticsearch__Uri: http://ucb_elastic:9200
+      Redis__ConnectionString: ucb_redis:6379
     depends_on:
       ucb_db:
         condition: service_healthy
@@ -70,11 +72,21 @@ services:
     container_name: ucb_client
     build: ./Client
     restart: on-failure
+    init: true
+    security_opt:
+      - no-new-privileges:true
     ports:
-      - "4200:80"
+      - "127.0.0.1:4200:8080"
     depends_on:
-      - ucb_server
+      ucb_server:
+        condition: service_started
+    healthcheck:
+      test: ["CMD-SHELL", "wget -qO- http://localhost:8080/health || exit 1"]
+      interval: 10s
+      timeout: 3s
+      retries: 5
 
 volumes:
   ucb_db_data:
+  ucb_redis_data:
   ucb_elastic_data:

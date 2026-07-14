@@ -1,12 +1,12 @@
-FROM node:20-alpine AS copilar
+FROM node:20-alpine AS build
 WORKDIR /app
 COPY package*.json ./
-RUN npm install
+RUN npm ci
 COPY . .
 RUN npm run build -- --configuration=production
 
-FROM nginx:latest
-COPY --from=copilar /app/dist/imt_reservas.client/browser /usr/share/nginx/html
+FROM nginxinc/nginx-unprivileged:alpine
+COPY --chown=nginx:nginx --from=build /app/dist/imt_reservas.client/browser /usr/share/nginx/html
 COPY nginx.conf /etc/nginx/conf.d/default.conf
-EXPOSE 80
+EXPOSE 8080
 CMD ["nginx", "-g", "daemon off;"]
