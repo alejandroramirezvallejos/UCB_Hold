@@ -72,8 +72,8 @@ public class UsuarioService : Service<UsuarioEntity, UsuarioRepository, UsuarioD
                 TipoNotificacion.UsuarioBloqueado,
                 "Cuenta bloqueada para reservas",
                 string.IsNullOrWhiteSpace(blockReason)
-                    ? "Un administrador bloqueó tu cuenta para nuevas reservas."
-                    : blockReason
+                    ? "Tu cuenta fue bloqueada para nuevas reservas. Contacta con un administrador para revisar tu caso."
+                    : $"{blockReason}. Contacta con un administrador para revisar tu caso."
             );
 
         _ = await _cacheRepository.Remove(CacheKeys.Usuario(carnet));

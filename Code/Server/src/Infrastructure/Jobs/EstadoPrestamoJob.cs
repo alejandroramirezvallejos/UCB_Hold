@@ -12,18 +12,21 @@ public class EstadoPrestamoJob
     private readonly NotificacionService _notifications;
     private readonly AuditLogService _audit;
     private readonly PrestamoRepository _prestamoRepository;
+    private readonly UsuarioRepository _usuarioRepository;
     private readonly AvisoDisponibilidadRepository _availabilityWatches;
 
     public EstadoPrestamoJob(
         NotificacionService notifications,
         AuditLogService audit,
         PrestamoRepository prestamoRepository,
+        UsuarioRepository usuarioRepository,
         AvisoDisponibilidadRepository availabilityWatches
     )
     {
         _notifications = notifications;
         _audit = audit;
         _prestamoRepository = prestamoRepository;
+        _usuarioRepository = usuarioRepository;
         _availabilityWatches = availabilityWatches;
     }
 
@@ -45,6 +48,14 @@ public class EstadoPrestamoJob
             return;
 
         await _prestamoRepository.MarkAsOverdue(overdue.Select(GetLoanId).ToList());
+        await _usuarioRepository.SetBlockedStatus(
+            overdue.Select(loan => loan.CarnetUsuario ?? string.Empty)
+                .Where(carnet => !string.IsNullOrWhiteSpace(carnet))
+                .Distinct()
+                .ToList(),
+            true,
+            "Cuenta bloqueada automáticamente por préstamo atrasado."
+        );
 
         await _audit.LogMany(
             overdue
@@ -63,9 +74,9 @@ public class EstadoPrestamoJob
                 {
                     CarnetUsuario = loan.CarnetUsuario,
                     Tipo = nameof(TipoNotificacion.PrestamoAtrasado),
-                    Titulo = "Préstamo atrasado",
+                    Titulo = "Cuenta bloqueada por atraso",
                     Contenido =
-                        "Tu préstamo está atrasado. Devuelve los equipos; no podrás reservar hasta regularizarlo.",
+                        "Tu préstamo está atrasado. Tu cuenta queda bloqueada para nuevas reservas hasta que devuelvas los equipos. Si necesitas ayuda, contacta con un administrador.",
                 })
                 .ToList()
         );

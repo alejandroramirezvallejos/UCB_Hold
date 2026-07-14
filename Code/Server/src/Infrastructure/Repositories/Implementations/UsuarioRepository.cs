@@ -178,6 +178,24 @@ public class UsuarioRepository : Repository<UsuarioEntity, UsuarioDto>
         await DbContext.SaveChangesAsync();
     }
 
+    public async Task SetBlockedStatus(
+        IReadOnlyCollection<string> carnets,
+        bool isBlocked,
+        string? reason
+    )
+    {
+        if (carnets.Count == 0)
+            return;
+
+        await DbContext
+            .Usuarios.Where(user => carnets.Contains(user.Carnet))
+            .ExecuteUpdateAsync(update =>
+                update
+                    .SetProperty(user => user.Bloqueado, isBlocked)
+                    .SetProperty(user => user.MotivoBloqueo, isBlocked ? reason : null)
+            );
+    }
+
     public async Task<(UsuarioEntity? Usuario, string? CarreraNombre)> GetByRefreshTokenWithCarrera(
         string token
     )

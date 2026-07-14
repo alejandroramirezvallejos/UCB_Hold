@@ -1,6 +1,7 @@
 using FluentAssertions;
 using IMT_Reservas.Server.Application.Features.AuditLog;
 using IMT_Reservas.Server.Application.Features.Notificacion;
+using IMT_Reservas.Server.Application.Features.Usuario;
 using Microsoft.AspNetCore.Http;
 using IMT_Reservas.Server.Application.Features.Prestamo;
 using IMT_Reservas.Server.Core.Entities;
@@ -24,7 +25,18 @@ internal class PrestamoServiceTests : ServiceTest<PrestamoService>
 
         var audit = new AuditLogService(new AuditLogRepository(db), new HttpContextAccessor());
         var notifications = new NotificacionService(new NotificacionRepository(db));
-        return new PrestamoService(repo, mapper, validator, audit, notifications);
+        var userRepository = new UsuarioRepository(db, new UsuarioMapper(), repo);
+        var availabilityRepository = new AvisoDisponibilidadRepository(db);
+
+        return new PrestamoService(
+            repo,
+            mapper,
+            validator,
+            audit,
+            notifications,
+            userRepository,
+            availabilityRepository
+        );
     }
 
     [SetUp]

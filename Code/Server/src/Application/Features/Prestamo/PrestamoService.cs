@@ -16,18 +16,24 @@ public class PrestamoService : Service<PrestamoEntity, PrestamoRepository, Prest
 {
     private readonly PrestamoMapper _mapper;
     private readonly NotificacionService _notifications;
+    private readonly UsuarioRepository _usuarioRepository;
+    private readonly AvisoDisponibilidadRepository _availabilityWatches;
 
     public PrestamoService(
         PrestamoRepository repository,
         PrestamoMapper mapper,
         IValidator<PrestamoDto> validator,
         AuditLogService audit,
-        NotificacionService notifications
+        NotificacionService notifications,
+        UsuarioRepository usuarioRepository,
+        AvisoDisponibilidadRepository availabilityWatches
     )
         : base(repository, validator, mapper, audit)
     {
         _mapper = mapper;
         _notifications = notifications;
+        _usuarioRepository = usuarioRepository;
+        _availabilityWatches = availabilityWatches;
     }
 
     public override async Task<Result<PrestamoDto>> Create(PrestamoDto dto)
@@ -76,10 +82,13 @@ public class PrestamoService : Service<PrestamoEntity, PrestamoRepository, Prest
             typeof(PrestamoEntity).Name,
             entity.Id.ToString(CultureInfo.InvariantCulture)
         );
+
+        var userDisplayName = await Repository.GetUsuarioDisplayName(entity.Carnet!);
+
         await _notifications.CreateForAdmins(
             TipoNotificacion.AdminNuevoPrestamo,
             "Nueva reserva",
-            $"El usuario {entity.Carnet} realizó una reserva."
+            $"{userDisplayName} realizó una reserva."
         );
 
         return await Repository.Get(entity.Id);
@@ -148,10 +157,15 @@ public class PrestamoService : Service<PrestamoEntity, PrestamoRepository, Prest
         await Repository.UpdateTracked(loan);
 
         string? auditDetail = null;
+        string? equipmentObservationMessage = null;
+        var hasDamagedEquipment = false;
 
         if (parsedState.Value == EstadoPrestamo.Finalizado)
         {
-            auditDetail = await HandleFinalizadoEquiposRetorno(id, observacion, body);
+            var returnResult = await HandleFinalizadoEquiposRetorno(id, observacion, body);
+            auditDetail = returnResult.AuditDetail;
+            equipmentObservationMessage = returnResult.UserMessage;
+            hasDamagedEquipment = returnResult.HasDamagedEquipment;
         }
 
         var auditAction = parsedState.Value switch
@@ -172,29 +186,76 @@ public class PrestamoService : Service<PrestamoEntity, PrestamoRepository, Prest
             auditDetail
         );
 
-        var hasDamagedEquipment =
-            parsedState.Value == EstadoPrestamo.Finalizado
-            && body?.EquiposRetorno != null
-            && body.EquiposRetorno.Any(e =>
-                ParseEstadoEquipo(e.EstadoEquipo) != EstadoEquipo.Operativo
-            );
-
         await NotifyStatusChange(
             loan.Carnet!,
             parsedState.Value,
             observacion,
-            auditDetail,
+            equipmentObservationMessage,
             hasDamagedEquipment
         );
 
+        if (parsedState.Value == EstadoPrestamo.Finalizado)
+            await UnblockIfNoOverdueLoans(loan.Carnet!);
+
+        if (ReleasesAvailability(parsedState.Value))
+            await NotifyAvailabilityWatches();
+
         return await Get(id);
+    }
+
+    private static bool ReleasesAvailability(EstadoPrestamo estado) =>
+        estado is EstadoPrestamo.Finalizado or EstadoPrestamo.Cancelado or EstadoPrestamo.Rechazado;
+
+    private async Task UnblockIfNoOverdueLoans(string carnet)
+    {
+        if (await Repository.HasAtrasadoPrestamo(carnet))
+            return;
+
+        await _usuarioRepository.SetBlockedStatus([carnet], false, null);
+    }
+
+    private async Task NotifyAvailabilityWatches()
+    {
+        var pending = await _availabilityWatches.GetPending();
+
+        if (pending.Count == 0)
+            return;
+
+        var notified = new List<int>();
+        var notifications = new List<NotificacionDto>();
+
+        foreach (var watch in pending)
+        {
+            var date = watch.Fecha.ToDateTime(TimeOnly.MinValue);
+
+            if (!await Repository.HasAvailableEquipo(watch.IdGrupoEquipo, date, date))
+                continue;
+
+            notifications.Add(
+                new NotificacionDto
+                {
+                    CarnetUsuario = watch.CarnetUsuario,
+                    Tipo = nameof(TipoNotificacion.DisponibilidadLiberada),
+                    Titulo = "Disponibilidad liberada",
+                    Contenido =
+                        $"Un equipo que esperabas está disponible para el {watch.Fecha:dd/MM/yyyy}.",
+                }
+            );
+            notified.Add(watch.Id);
+        }
+
+        if (notified.Count == 0)
+            return;
+
+        await _notifications.CreateMany(notifications);
+        await _availabilityWatches.MarkAsNotified(notified);
     }
 
     private async Task NotifyStatusChange(
         string carnet,
         EstadoPrestamo estado,
         string? observacion,
-        string? detalle,
+        string? userMessage,
         bool hasDamagedEquipment
     )
     {
@@ -205,7 +266,7 @@ public class PrestamoService : Service<PrestamoEntity, PrestamoRepository, Prest
                     carnet,
                     TipoNotificacion.PrestamoAprobado,
                     "Préstamo aprobado",
-                    "Tu solicitud de préstamo fue aprobada."
+                    "Tu solicitud de préstamo fue aprobada. Ya puedes revisar los detalles de recogida."
                 );
                 break;
             case EstadoPrestamo.Rechazado:
@@ -213,29 +274,31 @@ public class PrestamoService : Service<PrestamoEntity, PrestamoRepository, Prest
                     carnet,
                     TipoNotificacion.PrestamoRechazado,
                     "Préstamo rechazado",
-                    observacion ?? "Tu solicitud de préstamo fue rechazada."
+                    string.IsNullOrWhiteSpace(observacion)
+                        ? "Tu solicitud de préstamo fue rechazada."
+                        : $"Tu solicitud de préstamo fue rechazada: {observacion}"
                 );
                 break;
             case EstadoPrestamo.Finalizado when hasDamagedEquipment:
                 await _notifications.Create(
                     carnet,
                     TipoNotificacion.EquipoObservacion,
-                    "Estado de equipo actualizado",
-                    observacion,
-                    detalle
+                    "Equipo marcado como inoperativo",
+                    userMessage,
+                    observacion
                 );
                 break;
         }
     }
 
-    private async Task<string?> HandleFinalizadoEquiposRetorno(
+    private async Task<(string? AuditDetail, string? UserMessage, bool HasDamagedEquipment)> HandleFinalizadoEquiposRetorno(
         int id,
         string? observacion,
         PrestamoDto? body
     )
     {
         if (body?.EquiposRetorno == null || body.EquiposRetorno.Count == 0)
-            return null;
+            return (null, null, false);
 
         var statesByCodigoImt = new Dictionary<int, EstadoEquipo>();
 
@@ -246,8 +309,11 @@ public class PrestamoService : Service<PrestamoEntity, PrestamoRepository, Prest
         }
 
         var appliedReturns = await Repository.ApplyEstadoEquipoRetorno(id, statesByCodigoImt);
+        var affectedEquipment = appliedReturns
+            .Where(equipment => equipment.EstadoEquipo != "operativo")
+            .ToList();
 
-        return JsonSerializer.Serialize(
+        var auditDetail = JsonSerializer.Serialize(
             new
             {
                 observacion,
@@ -259,6 +325,31 @@ public class PrestamoService : Service<PrestamoEntity, PrestamoRepository, Prest
                 }),
             }
         );
+
+        if (affectedEquipment.Count == 0)
+            return (auditDetail, null, false);
+
+        var inoperableEquipment = affectedEquipment
+            .Where(equipment => equipment.EstadoEquipo == "inoperativo")
+            .ToList();
+        var selectedEquipment = inoperableEquipment.Count > 0
+            ? inoperableEquipment
+            : affectedEquipment;
+
+        var equipmentNames = string.Join(
+            ", ",
+            selectedEquipment.Select(equipment =>
+                $"{equipment.NombreGrupoEquipo ?? "Equipo"} IMT {equipment.CodigoImt}"
+            )
+        );
+        var stateText = inoperableEquipment.Count > 0
+            ? "inoperativo"
+            : "con observación";
+        var message = selectedEquipment.Count == 1
+            ? $"Se ha marcado {equipmentNames} como {stateText} en tu préstamo."
+            : $"Se han marcado estos equipos como {stateText} en tu préstamo: {equipmentNames}.";
+
+        return (auditDetail, message, true);
     }
 
     private static EstadoEquipo ParseEstadoEquipo(string? estado) =>
