@@ -142,12 +142,19 @@
   min-height: 45px;
   max-width: 100%;
   overflow: hidden;
-  cursor: default;
 }
 .dia-celda:hover {
   background: var(--interactive-subtle);
   border-color: rgba(255, 215, 0, 0.5);
   transform: none;
+}
+.dia-celda--solo-lectura {
+  cursor: not-allowed;
+  opacity: 0.68;
+}
+.dia-celda--solo-lectura:hover {
+  background: var(--surface);
+  border-color: #f0f0f0;
 }
 .dia-celda-seleccionado {
   aspect-ratio: 1;

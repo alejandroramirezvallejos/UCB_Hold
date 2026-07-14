@@ -37,7 +37,13 @@
       } @else {
         <div
           class="dia-celda"
+          [class.dia-celda--solo-lectura]="soloAvisoFechasOcupadas"
           [class.dia-celda-seleccionado]="esFechaSeleccionada(dia)"
+          [title]="
+            soloAvisoFechasOcupadas
+              ? 'Esta fecha ya está libre'
+              : 'Seleccionar fecha'
+          "
           (click)="seleccionarFecha(dia)"
         >
           <span class="dia-numero">{{ dia.getDate() }}</span>

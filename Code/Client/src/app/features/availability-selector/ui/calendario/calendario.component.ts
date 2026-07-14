@@ -31,6 +31,7 @@ export class CalendarioComponent {
   }
   @Input() fechaInicioSeleccionada: WritableSignal<Date | null> = signal(null);
   @Input() fechaFinSeleccionada: WritableSignal<Date | null> = signal(null);
+  @Input() soloAvisoFechasOcupadas = false;
   @Output() avisarDisponibilidad = new EventEmitter<string>();
   carrito: Carrito = {};
   disponibilidadPorFecha: Map<string, Map<number, number>> = new Map();
@@ -115,6 +116,8 @@ export class CalendarioComponent {
   }
 
   seleccionarFecha(fecha: Date): void {
+    if (this.soloAvisoFechasOcupadas) return;
+
     if (
       !this.fechaInicioSeleccionada() ||
       (this.fechaInicioSeleccionada() && this.fechaFinSeleccionada())
@@ -179,6 +182,8 @@ export class CalendarioComponent {
     return this.disponibilidadPorFecha.size > 0;
   }
   emitirAviso(dia: Date): void {
+    if (!this.estaOcupado(dia)) return;
+
     this.avisarDisponibilidad.emit(this.toLocalISOString(dia));
   }
 
