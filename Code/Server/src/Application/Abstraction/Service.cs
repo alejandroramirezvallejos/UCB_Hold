@@ -1,20 +1,22 @@
+using System.Globalization;
 using Ardalis.Result;
 using FluentValidation;
 using IMT_Reservas.Server.Application.Features.AuditLog;
 using IMT_Reservas.Server.Core.Abstraction;
 using IMT_Reservas.Server.Infrastructure.Repositories.Abstraction;
-namespace IMT_Reservas.Server.Application.Abstraction;
 
+namespace IMT_Reservas.Server.Application.Abstraction;
 
 public class Service<TEntity, TRepository, TDto>
     where TEntity : Entity
     where TRepository : Repository<TEntity, TDto>
     where TDto : class
 {
-    protected readonly TRepository Repository;
-    protected readonly IValidator<TDto> Validator;
-    protected AuditLogService? Audit;
     private readonly IMapper<TEntity, TDto> _mapper;
+
+    protected TRepository Repository { get; }
+    protected IValidator<TDto> Validator { get; }
+    protected AuditLogService? Audit { get; }
 
     public Service(
         TRepository repository,
@@ -51,7 +53,10 @@ public class Service<TEntity, TRepository, TDto>
 
         if (result.IsSuccess && Audit != null)
         {
-            var id = typeof(TDto).GetProperty("Id")?.GetValue(result.Value)?.ToString();
+            var id = Convert.ToString(
+                typeof(TDto).GetProperty("Id")?.GetValue(result.Value),
+                CultureInfo.InvariantCulture
+            );
             await Audit.Log(AuditAccion.Crear, typeof(TEntity).Name, id);
         }
 
@@ -63,7 +68,11 @@ public class Service<TEntity, TRepository, TDto>
         var result = await ValidateAndUpdate(id, dto);
 
         if (result.IsSuccess && Audit != null)
-            await Audit.Log(AuditAccion.Editar, typeof(TEntity).Name, id.ToString());
+            await Audit.Log(
+                AuditAccion.Editar,
+                typeof(TEntity).Name,
+                id.ToString(CultureInfo.InvariantCulture)
+            );
 
         return result;
     }
@@ -73,7 +82,11 @@ public class Service<TEntity, TRepository, TDto>
         var result = await Repository.Delete(id);
 
         if (result.IsSuccess && Audit != null)
-            await Audit.Log(AuditAccion.Eliminar, typeof(TEntity).Name, id.ToString());
+            await Audit.Log(
+                AuditAccion.Eliminar,
+                typeof(TEntity).Name,
+                id.ToString(CultureInfo.InvariantCulture)
+            );
 
         return result;
     }
@@ -82,7 +95,7 @@ public class Service<TEntity, TRepository, TDto>
 
     public virtual async Task<Result<List<TDto>>> GetAll() => await Repository.GetAll();
 
-    protected async Task<Result<TDto>> ValidateAndCreate(TDto dto)
+    private async Task<Result<TDto>> ValidateAndCreate(TDto dto)
     {
         var validation = await Validator.ValidateAsync(dto);
 
@@ -92,7 +105,7 @@ public class Service<TEntity, TRepository, TDto>
         return await CreateEntity(MapToEntity(dto));
     }
 
-    protected async Task<Result<TDto>> ValidateAndUpdate(int id, TDto dto)
+    private async Task<Result<TDto>> ValidateAndUpdate(int id, TDto dto)
     {
         var validation = await Validator.ValidateAsync(dto);
 

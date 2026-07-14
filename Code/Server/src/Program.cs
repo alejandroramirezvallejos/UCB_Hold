@@ -3,10 +3,12 @@ using System.Threading.RateLimiting;
 using Elastic.Clients.Elasticsearch;
 using FluentValidation;
 using Hangfire;
+using Hangfire.Dashboard;
 using Hangfire.PostgreSql;
 using IMT_Reservas.Server.Application.Abstraction;
 using IMT_Reservas.Server.Application.Features.Accesorio;
 using IMT_Reservas.Server.Application.Features.AuditLog;
+using IMT_Reservas.Server.Application.Features.AvisoDisponibilidad;
 using IMT_Reservas.Server.Application.Features.Carrera;
 using IMT_Reservas.Server.Application.Features.Carrito;
 using IMT_Reservas.Server.Application.Features.Categoria;
@@ -18,6 +20,7 @@ using IMT_Reservas.Server.Application.Features.Gavetero;
 using IMT_Reservas.Server.Application.Features.GrupoEquipo;
 using IMT_Reservas.Server.Application.Features.Mantenimiento;
 using IMT_Reservas.Server.Application.Features.Mueble;
+using IMT_Reservas.Server.Application.Features.Notificacion;
 using IMT_Reservas.Server.Application.Features.Prestamo;
 using IMT_Reservas.Server.Application.Features.Usuario;
 using IMT_Reservas.Server.Core.Entities;
@@ -43,6 +46,8 @@ using MuebleEntity = IMT_Reservas.Server.Core.Entities.Mueble;
 AppContext.SetSwitch("Npgsql.EnableLegacyTimestampBehavior", true);
 
 var builder = WebApplication.CreateBuilder(args);
+ServerConfigurationValidator.Validate(builder.Configuration);
+
 var connectionString = builder.Configuration.GetConnectionString("PostgreSQL");
 
 var dataSourceBuilder = new NpgsqlDataSourceBuilder(connectionString);
@@ -153,12 +158,10 @@ builder.Services.AddScoped<UsuarioService>();
 builder.Services.AddScoped<CarritoService>();
 builder.Services.AddScoped<PrestamoService>();
 builder.Services.AddScoped<EquipoService>();
-builder.Services.AddScoped<AccesorioService>();
 builder.Services.AddScoped<GrupoEquipoService>();
 builder.Services.AddScoped<MantenimientoService>();
 builder.Services.AddScoped<GaveteroService>();
 builder.Services.AddScoped<ContratoService>();
-builder.Services.AddScoped<ComponenteService>();
 
 builder.Services.AddScoped<
     Service<CarreraEntity, Repository<CarreraEntity, CarreraDto>, CarreraDto>
@@ -170,6 +173,8 @@ builder.Services.AddScoped<Service<MuebleEntity, Repository<MuebleEntity, Mueble
 builder.Services.AddScoped<
     Service<EmpresaMantenimientoEntity, EmpresaMantenimientoRepository, EmpresaMantenimientoDto>
 >();
+builder.Services.AddScoped<Service<Accesorio, AccesorioRepository, AccesorioDto>>();
+builder.Services.AddScoped<Service<Componente, ComponenteRepository, ComponenteDto>>();
 
 builder.Services.AddSingleton<UsuarioMapper>();
 builder.Services.AddSingleton<PrestamoMapper>();
@@ -280,6 +285,10 @@ builder.Services.Configure<CookiePolicyOptions>(options =>
 builder.Services.AddHttpContextAccessor();
 builder.Services.AddScoped<AuditLogRepository>();
 builder.Services.AddScoped<AuditLogService>();
+builder.Services.AddScoped<NotificacionRepository>();
+builder.Services.AddScoped<NotificacionService>();
+builder.Services.AddScoped<AvisoDisponibilidadRepository>();
+builder.Services.AddScoped<AvisoDisponibilidadService>();
 
 builder.Services.AddHangfire(config =>
     config.UsePostgreSqlStorage(options => options.UseNpgsqlConnection(connectionString))
@@ -322,10 +331,11 @@ builder.Services.AddRateLimiter(options =>
 });
 
 var app = builder.Build();
+var useHttpsRedirection = builder.Configuration.GetValue("HttpsRedirection:Enabled", true);
 
 app.UseCookiePolicy();
 
-if (!app.Environment.IsDevelopment())
+if (!app.Environment.IsDevelopment() && useHttpsRedirection)
 {
     app.UseHsts();
     app.UseHttpsRedirection();
@@ -341,7 +351,7 @@ app.Use(
             "Permissions-Policy",
             "camera=(), microphone=(), geolocation=()"
         );
-        ctx.Response.Headers.Append("X-XSS-Protection", "1; mode=block");
+        ctx.Response.Headers.Append("X-XSS-Protection", "0");
 
         if (ctx.Request.Path.StartsWithSegments("/api"))
         {
@@ -377,7 +387,10 @@ app.UseAuthentication();
 app.UseAuthorization();
 app.MapControllers();
 app.MapHealthChecks("/api/health");
-app.UseHangfireDashboard();
+app.UseHangfireDashboard(
+    "/hangfire",
+    new DashboardOptions { Authorization = [new HangfireDashboardAuthorizationFilter()] }
+);
 RecurringJob.AddOrUpdate<EstadoPrestamoJob>(
     "estado-prestamo",
     job => job.Execute(),

@@ -1,7 +1,10 @@
+using IMT_Reservas.Server.Application.Abstraction;
 using IMT_Reservas.Server.Application.Features.Componente;
+using IMT_Reservas.Server.Infrastructure.Repositories.Implementations;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Controller = IMT_Reservas.Server.Presentation.Controllers.Abstraction.Controller;
+using ComponenteEntity = IMT_Reservas.Server.Core.Entities.Componente;
 
 namespace IMT_Reservas.Server.Presentation.Controllers.Implementations;
 
@@ -9,9 +12,11 @@ namespace IMT_Reservas.Server.Presentation.Controllers.Implementations;
 [Route("api/[controller]")]
 public class ComponenteController : Controller
 {
-    private readonly ComponenteService _service;
+    private readonly Service<ComponenteEntity, ComponenteRepository, ComponenteDto> _service;
 
-    public ComponenteController(ComponenteService service) => _service = service;
+    public ComponenteController(
+        Service<ComponenteEntity, ComponenteRepository, ComponenteDto> service
+    ) => _service = service;
 
     [HttpGet]
     public async Task<IActionResult> GetAll() => ToResponse(await _service.GetAll());

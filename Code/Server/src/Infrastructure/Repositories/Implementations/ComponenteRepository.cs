@@ -1,6 +1,6 @@
+using System.Globalization;
 using Ardalis.Result;
 using IMT_Reservas.Server.Application.Features.Componente;
-using IMT_Reservas.Server.Core.Abstraction;
 using IMT_Reservas.Server.Infrastructure.Config;
 using IMT_Reservas.Server.Infrastructure.Repositories.Abstraction;
 using Microsoft.EntityFrameworkCore;
@@ -31,59 +31,64 @@ public class ComponenteRepository : Repository<ComponenteEntity, ComponenteDto>
 
     public override async Task<Result<List<ComponenteDto>>> GetAll()
     {
-        var dtos = await (
+        var rows = await (
             from componente in DbContext.Componentes.AsNoTracking()
             join equipo in DbContext.Equipos.AsNoTracking()
                 on componente.IdEquipo equals equipo.Id
                 into equipoJoin
             from equipo in equipoJoin.DefaultIfEmpty()
-            select new ComponenteDto
+            select new
             {
-                Id = componente.Id,
-                Nombre = componente.Nombre,
-                Modelo = componente.Modelo,
-                Tipo = componente.Tipo,
-                Descripcion = componente.Descripcion,
-                PrecioReferencia = componente.PrecioReferencia,
-                IdEquipo = componente.IdEquipo,
+                Componente = componente,
+                CodigoImtEquipo = equipo != null ? (int?)equipo.CodigoImt : null,
                 NombreEquipo = equipo != null ? equipo.Descripcion : null,
-                CodigoImtEquipo = equipo != null ? equipo.CodigoImt.ToString() : null,
-                UrlDataSheet = componente.UrlDataSheet,
             }
         ).ToListAsync();
+
+        var dtos = rows
+            .Select(row => ToDto(row.Componente, row.CodigoImtEquipo, row.NombreEquipo))
+            .ToList();
 
         return Result<List<ComponenteDto>>.Success(dtos);
     }
 
     public override async Task<Result<ComponenteDto>> Get(int id)
     {
-        var dto = await (
+        var row = await (
             from componente in DbContext.Componentes.AsNoTracking().Where(c => c.Id == id)
             join equipo in DbContext.Equipos.AsNoTracking()
                 on componente.IdEquipo equals equipo.Id
                 into equipoJoin
             from equipo in equipoJoin.DefaultIfEmpty()
-            select new ComponenteDto
+            select new
             {
-                Id = componente.Id,
-                Nombre = componente.Nombre,
-                Modelo = componente.Modelo,
-                Tipo = componente.Tipo,
-                Descripcion = componente.Descripcion,
-                PrecioReferencia = componente.PrecioReferencia,
-                IdEquipo = componente.IdEquipo,
+                Componente = componente,
+                CodigoImtEquipo = equipo != null ? (int?)equipo.CodigoImt : null,
                 NombreEquipo = equipo != null ? equipo.Descripcion : null,
-                CodigoImtEquipo = equipo != null ? equipo.CodigoImt.ToString() : null,
-                UrlDataSheet = componente.UrlDataSheet,
             }
         ).FirstOrDefaultAsync();
+
+        var dto = row == null ? null : ToDto(row.Componente, row.CodigoImtEquipo, row.NombreEquipo);
 
         return dto == null ? Result<ComponenteDto>.NotFound() : Result<ComponenteDto>.Success(dto);
     }
 
-    public async Task<int?> GetEquipoByCodigoImt(int codigoImt) =>
-        await DbContext
-            .Equipos.Where(equipo => equipo.CodigoImt == codigoImt && !equipo.EstadoEliminado)
-            .Select(equipo => equipo.Id)
-            .FirstOrDefaultAsync();
+    private static ComponenteDto ToDto(
+        ComponenteEntity componente,
+        int? codigoImtEquipo,
+        string? nombreEquipo
+    ) =>
+        new()
+        {
+            Id = componente.Id,
+            Nombre = componente.Nombre,
+            Modelo = componente.Modelo,
+            Tipo = componente.Tipo,
+            Descripcion = componente.Descripcion,
+            PrecioReferencia = componente.PrecioReferencia,
+            IdEquipo = componente.IdEquipo,
+            NombreEquipo = nombreEquipo,
+            CodigoImtEquipo = codigoImtEquipo?.ToString(CultureInfo.InvariantCulture),
+            UrlDataSheet = componente.UrlDataSheet,
+        };
 }

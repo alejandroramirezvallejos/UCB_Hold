@@ -1,7 +1,10 @@
+using IMT_Reservas.Server.Application.Abstraction;
 using IMT_Reservas.Server.Application.Features.Accesorio;
+using IMT_Reservas.Server.Infrastructure.Repositories.Implementations;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Controller = IMT_Reservas.Server.Presentation.Controllers.Abstraction.Controller;
+using AccesorioEntity = IMT_Reservas.Server.Core.Entities.Accesorio;
 
 namespace IMT_Reservas.Server.Presentation.Controllers.Implementations;
 
@@ -9,9 +12,11 @@ namespace IMT_Reservas.Server.Presentation.Controllers.Implementations;
 [Route("api/[controller]")]
 public class AccesorioController : Controller
 {
-    private readonly AccesorioService _service;
+    private readonly Service<AccesorioEntity, AccesorioRepository, AccesorioDto> _service;
 
-    public AccesorioController(AccesorioService service) => _service = service;
+    public AccesorioController(
+        Service<AccesorioEntity, AccesorioRepository, AccesorioDto> service
+    ) => _service = service;
 
     [HttpGet]
     public async Task<IActionResult> GetAll() => ToResponse(await _service.GetAll());
