@@ -4,15 +4,16 @@
       <ul class="cart__list">
         @for (item of carrito | keyvalue; track item.key) {
           <li class="cart__item">
-            @if (tieneImagenProducto(item.value.imagen)) {
+            @if (obtenerImagenProducto(item.value.imagen); as imageUrl) {
               <img
                 class="cart__product-image"
-                [src]="item.value.imagen"
+                [src]="imageUrl"
                 alt="{{ item.value.nombre }}"
                 width="70"
                 height="70"
                 loading="lazy"
                 decoding="async"
+                (error)="registrarImagenFallida(imageUrl)"
               />
             } @else {
               <app-equipment-image-placeholder

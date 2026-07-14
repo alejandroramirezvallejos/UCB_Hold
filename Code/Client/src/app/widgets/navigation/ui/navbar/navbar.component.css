@@ -373,15 +373,24 @@
   font-size: 0.9rem;
 }
 .notif__mark-all {
-  background: none;
-  border: none;
+  min-height: 28px;
+  padding: 0 0.65rem;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-full);
   color: var(--ink-secondary);
   font-size: 0.75rem;
   font-weight: 600;
   cursor: pointer;
-  transition: color var(--t-fast);
+  font-family: var(--font);
+  transition:
+    background-color var(--t-fast),
+    border-color var(--t-fast),
+    color var(--t-fast);
 }
 .notif__mark-all:hover {
+  background: var(--dropdown-hover-bg);
+  border-color: rgba(255, 215, 0, 0.45);
   color: var(--brand-text);
 }
 .notif__tabs {
@@ -416,8 +425,8 @@
   color: var(--ink);
 }
 .notif__tab--active {
-  background: var(--dropdown-active-bg);
-  border-color: rgba(255, 215, 0, 0.48);
+  background: var(--brand);
+  border-color: var(--brand);
   color: var(--brand-text);
 }
 .notif__tab span {
@@ -429,6 +438,10 @@
   color: var(--brand-text);
   font-size: 0.55rem;
   line-height: 14px;
+}
+.notif__tab--active span {
+  background: rgba(255, 255, 255, 0.72);
+  color: var(--brand-text);
 }
 .notif__list {
   max-height: 360px;
@@ -474,17 +487,23 @@
   align-self: flex-start;
   margin-top: 0.15rem;
   padding: 0.25rem 0.55rem;
-  border: 1px solid rgba(255, 215, 0, 0.4);
+  border: 1px solid var(--border);
   border-radius: var(--radius-full);
-  background: var(--dropdown-hover-bg);
-  color: var(--brand-text);
+  background: var(--surface);
+  color: var(--ink-secondary);
   cursor: pointer;
   font-family: var(--font);
   font-size: 0.68rem;
   font-weight: 700;
+  transition:
+    background-color var(--t-fast),
+    border-color var(--t-fast),
+    color var(--t-fast);
 }
 .notif__details-toggle:hover {
-  background: var(--dropdown-active-bg);
+  background: var(--dropdown-hover-bg);
+  border-color: rgba(255, 215, 0, 0.45);
+  color: var(--brand-text);
 }
 .notif__detail-panel {
   display: grid;

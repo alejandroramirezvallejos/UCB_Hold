@@ -47,6 +47,7 @@ export class CarritoComponent {
   motivoBloqueo: WritableSignal<string> = signal('');
 
   private readonly fechaActual: Date = new Date();
+  private readonly imagenesFallidas = new Set<string>();
 
   readonly validacionFechas = computed(() =>
     this.cartDateValidationService.validate(
@@ -186,8 +187,21 @@ export class CarritoComponent {
     return Array.from({ length: cantidad }, (_, i) => i + 1);
   }
 
-  tieneImagenProducto(imagen: string | null | undefined): boolean {
-    return !!imagen?.trim();
+  obtenerImagenProducto(imagen: string | null | undefined): string | null {
+    const imageUrl = imagen?.trim();
+
+    if (!imageUrl) return null;
+    if (this.imagenesFallidas.has(imageUrl)) return null;
+
+    return imageUrl;
+  }
+
+  registrarImagenFallida(imagen: string): void {
+    const imageUrl = imagen.trim();
+
+    if (!imageUrl) return;
+
+    this.imagenesFallidas.add(imageUrl);
   }
 
   cambiarCantidad(key: string, n: number): void {
