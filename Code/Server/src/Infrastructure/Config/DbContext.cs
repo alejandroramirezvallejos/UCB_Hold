@@ -27,6 +27,8 @@ public class ApplicationDbContext : DbContext
     public DbSet<DetallePrestamo> DetallesPrestamos { get; set; }
     public DbSet<Contrato> Contratos { get; set; }
     public DbSet<AuditLog> AuditLogs { get; set; }
+    public DbSet<Notificacion> Notificaciones { get; set; }
+    public DbSet<AvisoDisponibilidad> AvisosDisponibilidad { get; set; }
 
     public ApplicationDbContext(DbContextOptions<ApplicationDbContext> options)
         : base(options) { }
@@ -379,6 +381,8 @@ public class ApplicationDbContext : DbContext
                 .HasDefaultValue(TipoUsuario.Estudiante)
                 .HasColumnName("rol");
             entity.Property(e => e.IdCarrera).HasColumnName("id_carrera");
+            entity.Property(e => e.Bloqueado).HasColumnName("bloqueado");
+            entity.Property(e => e.MotivoBloqueo).HasColumnName("motivo_bloqueo");
             entity.Property(e => e.EstadoEliminado).HasColumnName(EstadoEliminadoCol);
             entity.Property(e => e.ImagenFrenteCarnet).HasColumnName("imagen_frente_carnet");
             entity.Property(e => e.ImagenAtrasCarnet).HasColumnName("imagen_atras_carnet");
@@ -418,6 +422,10 @@ public class ApplicationDbContext : DbContext
                 .HasColumnName("estado_prestamo");
             entity.Property(e => e.IdContrato).HasColumnName("id_contrato");
             entity.Property(e => e.Carnet).HasMaxLength(20).HasColumnName("carnet");
+            entity
+                .Property(e => e.RecordatorioEnviado)
+                .HasColumnName("recordatorio_enviado")
+                .HasDefaultValue(false);
             entity.Property(e => e.EstadoEliminado).HasColumnName(EstadoEliminadoCol);
             entity.HasOne<Usuario>().WithMany().HasForeignKey(e => e.Carnet).IsRequired();
             entity.HasOne<Contrato>().WithMany().HasForeignKey(e => e.IdContrato);
@@ -484,8 +492,58 @@ public class ApplicationDbContext : DbContext
             entity.Property(e => e.EntidadId).HasColumnName("entidad_id");
             entity.Property(e => e.Detalle).HasColumnName("detalle");
             entity.Property(e => e.Timestamp).HasColumnName("timestamp");
-            entity.HasIndex(e => new { e.AdminCarnet, e.Timestamp });
-            entity.HasIndex(e => new { e.Entidad, e.EntidadId });
+            entity.Property(e => e.EstadoEliminado).HasColumnName(EstadoEliminadoCol);
+            entity.HasIndex(e => new
+            {
+                e.AdminCarnet,
+                e.Timestamp,
+                e.EstadoEliminado,
+            });
+            entity.HasIndex(e => new
+            {
+                e.Entidad,
+                e.EntidadId,
+                e.EstadoEliminado,
+            });
+            entity.HasQueryFilter(e => !e.EstadoEliminado);
+        });
+
+        modelBuilder.Entity<Notificacion>(entity =>
+        {
+            entity.ToTable("notificaciones");
+            entity.HasKey(e => e.Id);
+            entity.Property(e => e.Id).HasColumnName("id_notificacion");
+            entity.Property(e => e.CarnetUsuario).HasColumnName("carnet_usuario").HasMaxLength(20);
+            entity.Property(e => e.Tipo).HasColumnName("tipo").HasMaxLength(50);
+            entity.Property(e => e.Titulo).HasColumnName("titulo");
+            entity.Property(e => e.Contenido).HasColumnName("contenido");
+            entity.Property(e => e.Detalle).HasColumnName("detalle");
+            entity.Property(e => e.Leido).HasColumnName("leido");
+            entity.Property(e => e.FechaEnvio).HasColumnName("fecha_envio");
+            entity.Property(e => e.EstadoEliminado).HasColumnName(EstadoEliminadoCol);
+            entity.HasIndex(e => new
+            {
+                e.CarnetUsuario,
+                e.Leido,
+                e.EstadoEliminado,
+            });
+            entity.HasQueryFilter(e => !e.EstadoEliminado);
+        });
+
+        modelBuilder.Entity<AvisoDisponibilidad>(entity =>
+        {
+            entity.ToTable("avisos_disponibilidad");
+            entity.HasKey(e => e.Id);
+            entity.Property(e => e.Id).HasColumnName("id_aviso");
+            entity.Property(e => e.CarnetUsuario).HasColumnName("carnet_usuario").HasMaxLength(20);
+            entity.Property(e => e.IdGrupoEquipo).HasColumnName("id_grupo_equipo");
+            entity.Property(e => e.Fecha).HasColumnName("fecha");
+            entity.Property(e => e.Cantidad).HasColumnName("cantidad");
+            entity.Property(e => e.Notificado).HasColumnName("notificado");
+            entity.Property(e => e.FechaCreacion).HasColumnName("fecha_creacion");
+            entity.Property(e => e.EstadoEliminado).HasColumnName(EstadoEliminadoCol);
+            entity.HasIndex(e => new { e.Notificado, e.EstadoEliminado });
+            entity.HasQueryFilter(e => !e.EstadoEliminado);
         });
     }
 }

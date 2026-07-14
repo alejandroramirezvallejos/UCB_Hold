@@ -1,6 +1,5 @@
 using Ardalis.Result;
 using IMT_Reservas.Server.Infrastructure.Repositories.Implementations;
-using AuditLogEntity = IMT_Reservas.Server.Core.Entities.AuditLog;
 
 namespace IMT_Reservas.Server.Application.Features.AuditLog;
 
@@ -22,23 +21,17 @@ public class AuditLogService
         string? detalle = null
     )
     {
-        var adminCarnet =
-            _httpContextAccessor.HttpContext?.User.FindFirst("sub")?.Value ?? "sistema";
-        var adminNombre =
-            _httpContextAccessor.HttpContext?.User.FindFirst("nombre")?.Value ?? string.Empty;
+        var actor = GetActor();
+        await _repository.WriteLog(accion, entidad, entidadId, detalle, actor.Carnet, actor.Nombre);
+    }
 
-        await _repository.WriteLog(
-            new AuditLogEntity
-            {
-                AdminCarnet = adminCarnet,
-                AdminNombre = adminNombre,
-                Accion = accion.ToString(),
-                Entidad = entidad,
-                EntidadId = entidadId,
-                Detalle = detalle,
-                Timestamp = DateTime.UtcNow,
-            }
-        );
+    public async Task LogMany(IReadOnlyCollection<AuditEntry> entries)
+    {
+        if (entries.Count == 0)
+            return;
+
+        var actor = GetActor();
+        await _repository.WriteMany(entries, actor.Carnet, actor.Nombre);
     }
 
     public async Task<Result<List<AuditLogDto>>> GetFiltered(
@@ -52,4 +45,10 @@ public class AuditLogService
 
         return Result<List<AuditLogDto>>.Success(logs);
     }
+
+    private (string Carnet, string Nombre) GetActor() =>
+        (
+            _httpContextAccessor.HttpContext?.User.FindFirst("sub")?.Value ?? "sistema",
+            _httpContextAccessor.HttpContext?.User.FindFirst("nombre")?.Value ?? string.Empty
+        );
 }

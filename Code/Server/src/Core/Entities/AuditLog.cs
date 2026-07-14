@@ -1,8 +1,9 @@
+using IMT_Reservas.Server.Core.Abstraction;
+
 namespace IMT_Reservas.Server.Core.Entities;
 
-public class AuditLog
+public class AuditLog : Entity
 {
-    public int Id { get; set; }
     public string AdminCarnet { get; set; } = string.Empty;
     public string AdminNombre { get; set; } = string.Empty;
     public string Accion { get; set; } = string.Empty;

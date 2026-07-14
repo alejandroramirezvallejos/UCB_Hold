@@ -11,4 +11,6 @@ public enum AuditAccion
     Devolver,
     Cancelar,
     AtrasadoAutomatico,
+    Bloquear,
+    Desbloquear,
 }

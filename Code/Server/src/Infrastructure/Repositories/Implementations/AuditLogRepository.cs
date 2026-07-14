@@ -11,9 +11,46 @@ public class AuditLogRepository
 
     public AuditLogRepository(ApplicationDbContext db) => _db = db;
 
-    public async Task WriteLog(AuditLogEntity entry)
+    public async Task WriteLog(
+        AuditAccion accion,
+        string entidad,
+        string? entidadId,
+        string? detalle,
+        string adminCarnet,
+        string adminNombre
+    )
     {
-        _db.AuditLogs.Add(entry);
+        _db.AuditLogs.Add(
+            BuildLog(accion, entidad, entidadId, detalle, adminCarnet, adminNombre, DateTime.UtcNow)
+        );
+        await _db.SaveChangesAsync();
+    }
+
+    public async Task WriteMany(
+        IReadOnlyCollection<AuditEntry> entries,
+        string adminCarnet,
+        string adminNombre
+    )
+    {
+        if (entries.Count == 0)
+            return;
+
+        var now = DateTime.UtcNow;
+        var logs = entries
+            .Select(entry =>
+                BuildLog(
+                    entry.Accion,
+                    entry.Entidad,
+                    entry.EntidadId,
+                    entry.Detalle,
+                    adminCarnet,
+                    adminNombre,
+                    now
+                )
+            )
+            .ToList();
+
+        _db.AuditLogs.AddRange(logs);
         await _db.SaveChangesAsync();
     }
 
@@ -51,4 +88,24 @@ public class AuditLogRepository
             })
             .ToListAsync();
     }
+
+    private static AuditLogEntity BuildLog(
+        AuditAccion accion,
+        string entidad,
+        string? entidadId,
+        string? detalle,
+        string adminCarnet,
+        string adminNombre,
+        DateTime timestamp
+    ) =>
+        new()
+        {
+            AdminCarnet = adminCarnet,
+            AdminNombre = adminNombre,
+            Accion = accion.ToString(),
+            Entidad = entidad,
+            EntidadId = entidadId,
+            Detalle = detalle,
+            Timestamp = timestamp,
+        };
 }
