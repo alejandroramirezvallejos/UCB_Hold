@@ -130,11 +130,14 @@
             }
             <div class="notif__list">
               @for (n of notificacionesVisibles(); track n.Id) {
-                <button
-                  type="button"
+                <div
                   class="notif__item"
                   [class.notif__item--unread]="!n.Leido"
+                  role="button"
+                  tabindex="0"
                   (click)="abrirNotificacion(n)"
+                  (keydown.enter)="abrirNotificacion(n)"
+                  (keydown.space)="abrirNotificacion(n)"
                 >
                   <span class="notif__title">{{ n.Titulo }}</span>
                   @if (n.Contenido) {
@@ -181,10 +184,12 @@
                         }
                       </div>
                     }
-                  } @else if (obtenerDetalleTexto(n); as detalleTexto) {
-                    <span class="notif__detail">{{ detalleTexto }}</span>
+                  } @else {
+                    @if (obtenerDetalleTexto(n); as detalleTexto) {
+                      <span class="notif__detail">{{ detalleTexto }}</span>
+                    }
                   }
-                </button>
+                </div>
               }
               @if (notificacionesVisibles().length === 0) {
                 <div class="notif__empty">Sin notificaciones</div>
