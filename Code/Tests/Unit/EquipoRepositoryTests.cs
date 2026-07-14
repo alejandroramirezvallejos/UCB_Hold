@@ -101,7 +101,7 @@ public class EquipoRepositoryTests
         var grupo = new GrupoEquipo { Id = 5, Nombre = "G1" };
         var grupo2 = new GrupoEquipo { Id = 6, Nombre = "G2" };
         _dbContext.GruposEquipos.AddRange(grupo, grupo2);
-        
+
         _dbContext.Equipos.Add(new Equipo { Id = 1, IdGrupoEquipo = 5, GrupoEquipo = grupo, NumeroSerial = "E1", EstadoEliminado = false });
         _dbContext.Equipos.Add(new Equipo { Id = 2, IdGrupoEquipo = 5, GrupoEquipo = grupo, NumeroSerial = "E2", EstadoEliminado = false });
         _dbContext.Equipos.Add(new Equipo { Id = 3, IdGrupoEquipo = 6, GrupoEquipo = grupo2, NumeroSerial = "E3", EstadoEliminado = false });
@@ -120,7 +120,7 @@ public class EquipoRepositoryTests
         var grupo = new GrupoEquipo { Id = 1, Nombre = "G1" };
         _dbContext.Gaveteros.Add(gavetero);
         _dbContext.GruposEquipos.Add(grupo);
-        
+
         _dbContext.Equipos.Add(new Equipo { Id = 1, IdGavetero = 10, Gavetero = gavetero, IdGrupoEquipo = 1, GrupoEquipo = grupo, NumeroSerial = "E1", EstadoEliminado = false });
         await _dbContext.SaveChangesAsync();
 

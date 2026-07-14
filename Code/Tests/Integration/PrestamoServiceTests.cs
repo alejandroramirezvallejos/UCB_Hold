@@ -1,5 +1,6 @@
 using FluentAssertions;
 using IMT_Reservas.Server.Application.Features.AuditLog;
+using IMT_Reservas.Server.Application.Features.Notificacion;
 using Microsoft.AspNetCore.Http;
 using IMT_Reservas.Server.Application.Features.Prestamo;
 using IMT_Reservas.Server.Core.Entities;
@@ -11,18 +12,19 @@ namespace IMT_Reservas.Tests.Integration;
 [TestFixture]
 internal class PrestamoServiceTests : ServiceTest<PrestamoService>
 {
-    private const string Carnet  = "U001";
-    private const int    GrupoId = 1;
-    private const int    EquipoId = 1;
+    private const string Carnet = "U001";
+    private const int GrupoId = 1;
+    private const int EquipoId = 1;
 
     protected override PrestamoService CreateService(ApplicationDbContext db)
     {
-        var mapper    = new PrestamoMapper();
-        var repo      = new PrestamoRepository(db, mapper);
+        var mapper = new PrestamoMapper();
+        var repo = new PrestamoRepository(db, mapper);
         var validator = new PrestamoValidator(db);
-        
+
         var audit = new AuditLogService(new AuditLogRepository(db), new HttpContextAccessor());
-        return new PrestamoService(repo, mapper, validator, audit);
+        var notifications = new NotificacionService(new NotificacionRepository(db));
+        return new PrestamoService(repo, mapper, validator, audit, notifications);
     }
 
     [SetUp]
@@ -30,30 +32,30 @@ internal class PrestamoServiceTests : ServiceTest<PrestamoService>
     {
         Db.Usuarios.Add(new Usuario
         {
-            Carnet          = Carnet,
-            Nombre          = "Test",
+            Carnet = Carnet,
+            Nombre = "Test",
             ApellidoPaterno = "User",
-            Email           = "u001@ucb.edu.bo",
-            Contrasena      = "hashed",
+            Email = "u001@ucb.edu.bo",
+            Contrasena = "hashed",
             EstadoEliminado = false
         });
 
         Db.GruposEquipos.Add(new GrupoEquipo
         {
-            Id          = GrupoId,
-            Nombre      = "Grupo Test",
-            Modelo      = "M1",
-            Marca       = "Marca",
+            Id = GrupoId,
+            Nombre = "Grupo Test",
+            Modelo = "M1",
+            Marca = "Marca",
             IdCategoria = 1,
-            Cantidad    = 1
+            Cantidad = 1
         });
 
         Db.Equipos.Add(new Equipo
         {
-            Id              = EquipoId,
-            IdGrupoEquipo   = GrupoId,
-            CodigoImt       = 1,
-            EstadoEquipo    = EstadoEquipo.Operativo,
+            Id = EquipoId,
+            IdGrupoEquipo = GrupoId,
+            CodigoImt = 1,
+            EstadoEquipo = EstadoEquipo.Operativo,
             FechaIngresoEquipo = DateOnly.FromDateTime(DateTime.Today),
             EstadoEliminado = false
         });
@@ -76,7 +78,7 @@ internal class PrestamoServiceTests : ServiceTest<PrestamoService>
     public async Task Create_EquipoAprobadoInSameDates_ReturnsError()
     {
         var fechaInicio = DateTime.Today;
-        var fechaFin    = DateTime.Today.AddDays(3);
+        var fechaFin = DateTime.Today.AddDays(3);
         await SeedActiveLoan(EstadoPrestamo.Aprobado, fechaInicio, fechaFin);
 
         var result = await Sut.Create(BuildValidPrestamo(Carnet, GrupoId, fechaInicio, fechaFin));
@@ -89,7 +91,7 @@ internal class PrestamoServiceTests : ServiceTest<PrestamoService>
     public async Task Create_EquipoActivoInSameDates_ReturnsError()
     {
         var fechaInicio = DateTime.Today;
-        var fechaFin    = DateTime.Today.AddDays(3);
+        var fechaFin = DateTime.Today.AddDays(3);
         await SeedActiveLoan(EstadoPrestamo.Activo, fechaInicio, fechaFin);
 
         var result = await Sut.Create(BuildValidPrestamo(Carnet, GrupoId, fechaInicio, fechaFin));
@@ -102,7 +104,7 @@ internal class PrestamoServiceTests : ServiceTest<PrestamoService>
     public async Task Create_EquipoPendienteInSameDates_DoesNotBlock()
     {
         var fechaInicio = DateTime.Today;
-        var fechaFin    = DateTime.Today.AddDays(3);
+        var fechaFin = DateTime.Today.AddDays(3);
         await SeedActiveLoan(EstadoPrestamo.Pendiente, fechaInicio, fechaFin);
 
         var result = await Sut.Create(BuildValidPrestamo(Carnet, GrupoId, fechaInicio, fechaFin));
@@ -124,7 +126,7 @@ internal class PrestamoServiceTests : ServiceTest<PrestamoService>
     public async Task UpdateStatus_ValidTransition_Succeeds()
     {
         var createResult = await Sut.Create(BuildValidPrestamo(Carnet, GrupoId, DateTime.Today, DateTime.Today.AddDays(3)));
-        var prestamoId   = createResult.Value.Id!.Value;
+        var prestamoId = createResult.Value.Id!.Value;
 
         var result = await Sut.UpdateStatus(prestamoId, "rechazado");
 
@@ -136,7 +138,7 @@ internal class PrestamoServiceTests : ServiceTest<PrestamoService>
     public async Task UpdateStatus_InvalidTransition_ReturnsError()
     {
         var createResult = await Sut.Create(BuildValidPrestamo(Carnet, GrupoId, DateTime.Today, DateTime.Today.AddDays(3)));
-        var prestamoId   = createResult.Value.Id!.Value;
+        var prestamoId = createResult.Value.Id!.Value;
 
         var result = await Sut.UpdateStatus(prestamoId, "activo");
 
@@ -148,7 +150,7 @@ internal class PrestamoServiceTests : ServiceTest<PrestamoService>
     public async Task UpdateStatus_UnknownStatus_ReturnsError()
     {
         var createResult = await Sut.Create(BuildValidPrestamo(Carnet, GrupoId, DateTime.Today, DateTime.Today.AddDays(3)));
-        var prestamoId   = createResult.Value.Id!.Value;
+        var prestamoId = createResult.Value.Id!.Value;
 
         var result = await Sut.UpdateStatus(prestamoId, "estado_inventado");
 
@@ -169,10 +171,10 @@ internal class PrestamoServiceTests : ServiceTest<PrestamoService>
     public async Task UpdateStatus_ApproveWithConflict_ReturnsError()
     {
         var fechaInicio = DateTime.Today;
-        var fechaFin    = DateTime.Today.AddDays(3);
+        var fechaFin = DateTime.Today.AddDays(3);
 
         var createResult = await Sut.Create(BuildValidPrestamo(Carnet, GrupoId, fechaInicio, fechaFin));
-        var prestamoId   = createResult.Value.Id!.Value;
+        var prestamoId = createResult.Value.Id!.Value;
 
         await SeedActiveLoanForEquipo(EquipoId, EstadoPrestamo.Aprobado, fechaInicio, fechaFin);
 
@@ -186,7 +188,7 @@ internal class PrestamoServiceTests : ServiceTest<PrestamoService>
     public async Task UpdateStatus_ApproveWithoutConflict_Succeeds()
     {
         var createResult = await Sut.Create(BuildValidPrestamo(Carnet, GrupoId, DateTime.Today, DateTime.Today.AddDays(3)));
-        var prestamoId   = createResult.Value.Id!.Value;
+        var prestamoId = createResult.Value.Id!.Value;
 
         var result = await Sut.UpdateStatus(prestamoId, "aprobado");
 
@@ -229,21 +231,21 @@ internal class PrestamoServiceTests : ServiceTest<PrestamoService>
     {
         var prestamo = new Prestamo
         {
-            Carnet                  = Carnet,
-            EstadoPrestamo          = estado,
-            FechaSolicitud          = DateTime.UtcNow,
-            FechaPrestamoEsperada   = inicio,
+            Carnet = Carnet,
+            EstadoPrestamo = estado,
+            FechaSolicitud = DateTime.UtcNow,
+            FechaPrestamoEsperada = inicio,
             FechaDevolucionEsperada = fin,
-            EstadoEliminado         = false
+            EstadoEliminado = false
         };
-        
+
         Db.Prestamos.Add(prestamo);
         await Db.SaveChangesAsync();
 
         Db.DetallesPrestamos.Add(new DetallePrestamo
         {
-            IdPrestamo      = prestamo.Id,
-            IdEquipo        = EquipoId,
+            IdPrestamo = prestamo.Id,
+            IdEquipo = EquipoId,
             EstadoEliminado = false
         });
 
@@ -254,20 +256,20 @@ internal class PrestamoServiceTests : ServiceTest<PrestamoService>
     {
         var prestamo = new Prestamo
         {
-            Carnet                  = Carnet,
-            EstadoPrestamo          = estado,
-            FechaSolicitud          = DateTime.UtcNow,
-            FechaPrestamoEsperada   = inicio,
+            Carnet = Carnet,
+            EstadoPrestamo = estado,
+            FechaSolicitud = DateTime.UtcNow,
+            FechaPrestamoEsperada = inicio,
             FechaDevolucionEsperada = fin,
-            EstadoEliminado         = false
+            EstadoEliminado = false
         };
         Db.Prestamos.Add(prestamo);
         await Db.SaveChangesAsync();
 
         Db.DetallesPrestamos.Add(new DetallePrestamo
         {
-            IdPrestamo      = prestamo.Id,
-            IdEquipo        = equipoId,
+            IdPrestamo = prestamo.Id,
+            IdEquipo = equipoId,
             EstadoEliminado = false
         });
 
@@ -276,9 +278,9 @@ internal class PrestamoServiceTests : ServiceTest<PrestamoService>
 
     private static PrestamoDto BuildValidPrestamo(string carnet, int grupoId, DateTime inicio, DateTime fin) => new()
     {
-        CarnetUsuario           = carnet,
-        GrupoEquipoId           = [grupoId],
-        FechaPrestamoEsperada   = inicio,
+        CarnetUsuario = carnet,
+        GrupoEquipoId = [grupoId],
+        FechaPrestamoEsperada = inicio,
         FechaDevolucionEsperada = fin
     };
 }

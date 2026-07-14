@@ -10,14 +10,14 @@ namespace IMT_Reservas.Tests.Integration;
 [TestFixture]
 internal class CarritoServiceTests : ServiceTest<CarritoService>
 {
-    private const int GrupoId  = 1;
+    private const int GrupoId = 1;
     private const int EquipoId = 1;
-    private const int Total    = 2;
+    private const int Total = 2;
 
     protected override CarritoService CreateService(ApplicationDbContext db)
     {
         var repo = new CarritoRepository(db);
-        
+
         return new CarritoService(repo, NullLogger<CarritoService>.Instance);
     }
 
@@ -26,16 +26,16 @@ internal class CarritoServiceTests : ServiceTest<CarritoService>
     {
         Db.GruposEquipos.Add(new GrupoEquipo
         {
-            Id          = GrupoId,
-            Nombre      = "Grupo Test",
-            Modelo      = "M1",
-            Marca       = "Marca",
+            Id = GrupoId,
+            Nombre = "Grupo Test",
+            Modelo = "M1",
+            Marca = "Marca",
             IdCategoria = 1,
-            Cantidad    = Total
+            Cantidad = Total
         });
 
         Db.Equipos.AddRange(
-            new Equipo { Id = EquipoId,     IdGrupoEquipo = GrupoId, CodigoImt = 1, EstadoEquipo = EstadoEquipo.Operativo, FechaIngresoEquipo = DateOnly.FromDateTime(DateTime.Today), EstadoEliminado = false },
+            new Equipo { Id = EquipoId, IdGrupoEquipo = GrupoId, CodigoImt = 1, EstadoEquipo = EstadoEquipo.Operativo, FechaIngresoEquipo = DateOnly.FromDateTime(DateTime.Today), EstadoEliminado = false },
             new Equipo { Id = EquipoId + 1, IdGrupoEquipo = GrupoId, CodigoImt = 2, EstadoEquipo = EstadoEquipo.Operativo, FechaIngresoEquipo = DateOnly.FromDateTime(DateTime.Today), EstadoEliminado = false }
         );
 
@@ -46,8 +46,8 @@ internal class CarritoServiceTests : ServiceTest<CarritoService>
     public async Task GetDisponibilidad_NoLoans_ReturnsFullCapacityEveryDay()
     {
         var fechaInicio = DateTime.Today;
-        var fechaFin    = DateTime.Today.AddDays(2);
-        var request     = BuildRequest([GrupoId], fechaInicio, fechaFin);
+        var fechaFin = DateTime.Today.AddDays(2);
+        var request = BuildRequest([GrupoId], fechaInicio, fechaFin);
 
         var result = await Sut.GetDisponibilidad(request);
 
@@ -59,7 +59,7 @@ internal class CarritoServiceTests : ServiceTest<CarritoService>
     public async Task GetDisponibilidad_OneActiveLoan_ReducesCapacity()
     {
         var fechaInicio = DateTime.Today;
-        var fechaFin    = DateTime.Today.AddDays(2);
+        var fechaFin = DateTime.Today.AddDays(2);
         await SeedLoan(EstadoPrestamo.Activo, EquipoId, fechaInicio, fechaFin);
         var request = BuildRequest([GrupoId], fechaInicio, fechaFin);
 
@@ -73,7 +73,7 @@ internal class CarritoServiceTests : ServiceTest<CarritoService>
     public async Task GetDisponibilidad_AprobadoLoan_ReducesCapacity()
     {
         var fechaInicio = DateTime.Today;
-        var fechaFin    = DateTime.Today.AddDays(2);
+        var fechaFin = DateTime.Today.AddDays(2);
         await SeedLoan(EstadoPrestamo.Aprobado, EquipoId, fechaInicio, fechaFin);
         var request = BuildRequest([GrupoId], fechaInicio, fechaFin);
 
@@ -87,7 +87,7 @@ internal class CarritoServiceTests : ServiceTest<CarritoService>
     public async Task GetDisponibilidad_PendienteLoan_DoesNotReduceCapacity()
     {
         var fechaInicio = DateTime.Today;
-        var fechaFin    = DateTime.Today.AddDays(2);
+        var fechaFin = DateTime.Today.AddDays(2);
         await SeedLoan(EstadoPrestamo.Pendiente, EquipoId, fechaInicio, fechaFin);
         var request = BuildRequest([GrupoId], fechaInicio, fechaFin);
 
@@ -134,16 +134,16 @@ internal class CarritoServiceTests : ServiceTest<CarritoService>
     [Test]
     public async Task GetDisponibilidad_TwoGroups_CalculatesIndependently()
     {
-        const int GrupoId2  = 2;
+        const int GrupoId2 = 2;
         const int EquipoId3 = 3;
-        const int Total2    = 1;
+        const int Total2 = 1;
 
         Db.GruposEquipos.Add(new GrupoEquipo { Id = GrupoId2, Nombre = "Grupo B", Modelo = "M2", Marca = "Marca", IdCategoria = 1, Cantidad = Total2 });
         Db.Equipos.Add(new Equipo { Id = EquipoId3, IdGrupoEquipo = GrupoId2, CodigoImt = 3, EstadoEquipo = EstadoEquipo.Operativo, FechaIngresoEquipo = DateOnly.FromDateTime(DateTime.Today), EstadoEliminado = false });
         await Db.SaveChangesAsync();
 
         var fechaInicio = DateTime.Today;
-        var fechaFin    = DateTime.Today;
+        var fechaFin = DateTime.Today;
         await SeedLoan(EstadoPrestamo.Activo, EquipoId, fechaInicio, fechaFin);
         var request = BuildRequest([GrupoId, GrupoId2], fechaInicio, fechaFin);
 
@@ -158,11 +158,11 @@ internal class CarritoServiceTests : ServiceTest<CarritoService>
     {
         var prestamo = new Prestamo
         {
-            EstadoPrestamo          = estado,
-            FechaSolicitud          = DateTime.UtcNow,
-            FechaPrestamoEsperada   = inicio,
+            EstadoPrestamo = estado,
+            FechaSolicitud = DateTime.UtcNow,
+            FechaPrestamoEsperada = inicio,
             FechaDevolucionEsperada = fin,
-            EstadoEliminado         = false
+            EstadoEliminado = false
         };
         Db.Prestamos.Add(prestamo);
         await Db.SaveChangesAsync();
@@ -173,8 +173,8 @@ internal class CarritoServiceTests : ServiceTest<CarritoService>
 
     private static CarritoDto BuildRequest(List<int> grupoIds, DateTime inicio, DateTime fin) => new()
     {
-        ArrayIds    = grupoIds,
+        ArrayIds = grupoIds,
         FechaInicio = inicio,
-        FechaFin    = fin
+        FechaFin = fin
     };
 }

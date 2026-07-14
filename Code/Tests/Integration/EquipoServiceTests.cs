@@ -12,15 +12,15 @@ namespace IMT_Reservas.Tests.Integration;
 [TestFixture]
 internal class EquipoServiceTests : ServiceTest<EquipoService>
 {
-    private const int GrupoId  = 1;
+    private const int GrupoId = 1;
     private const int GrupoId2 = 2;
 
     protected override EquipoService CreateService(ApplicationDbContext db)
     {
-        var mapper    = new EquipoMapper();
-        var repo      = new EquipoRepository(db, mapper);
+        var mapper = new EquipoMapper();
+        var repo = new EquipoRepository(db, mapper);
         var validator = new EquipoValidator(db);
-        var audit     = new AuditLogService(new AuditLogRepository(db), new HttpContextAccessor());
+        var audit = new AuditLogService(new AuditLogRepository(db), new HttpContextAccessor());
 
         return new EquipoService(repo, mapper, validator, audit);
     }
@@ -29,7 +29,7 @@ internal class EquipoServiceTests : ServiceTest<EquipoService>
     public async Task SeedGrupos()
     {
         Db.GruposEquipos.AddRange(
-            new GrupoEquipo { Id = GrupoId,  Nombre = "Grupo A", Modelo = "M1", Marca = "Marca", IdCategoria = 1 },
+            new GrupoEquipo { Id = GrupoId, Nombre = "Grupo A", Modelo = "M1", Marca = "Marca", IdCategoria = 1 },
             new GrupoEquipo { Id = GrupoId2, Nombre = "Grupo B", Modelo = "M2", Marca = "Marca", IdCategoria = 1 }
         );
         await Db.SaveChangesAsync();
@@ -64,7 +64,7 @@ internal class EquipoServiceTests : ServiceTest<EquipoService>
 
         await Sut.Create(BuildValidEquipo(GrupoId));
 
-        var after     = DateOnly.FromDateTime(DateTime.Now);
+        var after = DateOnly.FromDateTime(DateTime.Now);
         var fechaIngreso = Db.Equipos.Single().FechaIngresoEquipo;
 
         fechaIngreso.Should().BeOnOrAfter(before).And.BeOnOrBefore(after);
@@ -94,7 +94,7 @@ internal class EquipoServiceTests : ServiceTest<EquipoService>
     public async Task Update_PreservesFechaIngreso()
     {
         await Sut.Create(BuildValidEquipo(GrupoId));
-        var equipo        = Db.Equipos.AsNoTracking().Single();
+        var equipo = Db.Equipos.AsNoTracking().Single();
         var originalFecha = equipo.FechaIngresoEquipo;
 
         await NewSut().Update(equipo.Id, BuildValidEquipo(GrupoId));
@@ -151,6 +151,6 @@ internal class EquipoServiceTests : ServiceTest<EquipoService>
     private static EquipoDto BuildValidEquipo(int idGrupo) => new()
     {
         IdGrupoEquipo = idGrupo,
-        EstadoEquipo  = "operativo"
+        EstadoEquipo = "operativo"
     };
 }

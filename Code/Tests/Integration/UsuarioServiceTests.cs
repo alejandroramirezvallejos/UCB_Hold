@@ -1,6 +1,7 @@
 using BCryptLib = BCrypt.Net.BCrypt;
 using FluentAssertions;
 using IMT_Reservas.Server.Application.Features.AuditLog;
+using IMT_Reservas.Server.Application.Features.Notificacion;
 using Microsoft.AspNetCore.Http;
 using IMT_Reservas.Server.Application.Features.Jwt;
 using IMT_Reservas.Server.Application.Features.Prestamo;
@@ -21,26 +22,36 @@ internal class UsuarioServiceTests : ServiceTest<UsuarioService>
 {
     private static readonly JwtSettings TestJwtSettings = new()
     {
-        Key                    = "test_key_at_least_32_chars_long!!",
-        Issuer                 = "TestIssuer",
-        Audience               = "TestAudience",
-        ExpiresInMinutes       = 60,
+        Key = "test_key_at_least_32_chars_long!!",
+        Issuer = "TestIssuer",
+        Audience = "TestAudience",
+        ExpiresInMinutes = 60,
         RefreshTokenExpiryDays = 7
     };
 
     protected override UsuarioService CreateService(ApplicationDbContext db)
     {
-        var jwtOptions    = Options.Create(TestJwtSettings);
-        var mapper        = new UsuarioMapper();
-        var repo          = new UsuarioRepository(db, mapper, new PrestamoRepository(db, new PrestamoMapper()));
-        var validator     = new UsuarioValidator(db);
-        var jwt           = new JwtService(jwtOptions);
-        var memoryCache   = new MemoryDistributedCache(Options.Create(new MemoryDistributedCacheOptions()));
-        var cacheService  = new CacheRepository(memoryCache);
+        var jwtOptions = Options.Create(TestJwtSettings);
+        var mapper = new UsuarioMapper();
+        var repo = new UsuarioRepository(db, mapper, new PrestamoRepository(db, new PrestamoMapper()));
+        var validator = new UsuarioValidator(db);
+        var jwt = new JwtService(jwtOptions);
+        var memoryCache = new MemoryDistributedCache(Options.Create(new MemoryDistributedCacheOptions()));
+        var cacheService = new CacheRepository(memoryCache);
 
         var audit = new AuditLogService(new AuditLogRepository(db), new HttpContextAccessor());
-        
-        return new UsuarioService(repo, mapper, validator, jwt, jwtOptions, cacheService, audit);
+        var notifications = new NotificacionService(new NotificacionRepository(db));
+
+        return new UsuarioService(
+            repo,
+            mapper,
+            validator,
+            jwt,
+            jwtOptions,
+            cacheService,
+            audit,
+            notifications
+        );
     }
 
     [SetUp]
@@ -59,7 +70,7 @@ internal class UsuarioServiceTests : ServiceTest<UsuarioService>
 
         result.IsSuccess.Should().BeTrue();
         var stored = Db.Usuarios.Single(u => u.Carnet == "U001");
-        
+
         BCryptLib.Verify("Test@1234", stored.Contrasena).Should().BeTrue();
     }
 
@@ -191,7 +202,7 @@ internal class UsuarioServiceTests : ServiceTest<UsuarioService>
         await Sut.Create(BuildValidUsuario("U001", "u001@ucb.edu.bo"));
 
         var usuario = Db.Usuarios.Single(u => u.Carnet == "U001");
-        usuario.RefreshToken       = "expired-token";
+        usuario.RefreshToken = "expired-token";
         usuario.RefreshTokenExpiry = DateTime.UtcNow.AddDays(-1);
         await Db.SaveChangesAsync();
 
@@ -269,7 +280,7 @@ internal class UsuarioServiceTests : ServiceTest<UsuarioService>
     {
         await Sut.Create(BuildValidUsuario("U001", "u001@ucb.edu.bo"));
 
-        var result = await Sut.Update("U001", BuildValidUsuario("U001", "u001@ucb.edu.bo", contrasena: null), callerCarnet: "U999", esAdmin: true);
+        var result = await Sut.Update("U001", BuildValidUsuario("U001", "u001@ucb.edu.bo", contrasena: null), callerCarnet: "U999", isAdmin: true);
 
         result.IsSuccess.Should().BeTrue();
     }
@@ -293,7 +304,7 @@ internal class UsuarioServiceTests : ServiceTest<UsuarioService>
         var dto = BuildValidUsuario("U001", "u001@ucb.edu.bo");
         dto.Rol = "administrador";
 
-        var result = await Sut.Create(dto, esAdmin: false);
+        var result = await Sut.Create(dto, isAdmin: false);
 
         result.IsSuccess.Should().BeTrue();
         Db.Usuarios.Single(u => u.Carnet == "U001").Rol.Should().Be(TipoUsuario.Estudiante);
@@ -305,7 +316,7 @@ internal class UsuarioServiceTests : ServiceTest<UsuarioService>
         var dto = BuildValidUsuario("U001", "u001@ucb.edu.bo");
         dto.Rol = "administrador";
 
-        var result = await Sut.Create(dto, esAdmin: true);
+        var result = await Sut.Create(dto, isAdmin: true);
 
         result.IsSuccess.Should().BeTrue();
         Db.Usuarios.Single(u => u.Carnet == "U001").Rol.Should().Be(TipoUsuario.Administrador);
@@ -322,18 +333,55 @@ internal class UsuarioServiceTests : ServiceTest<UsuarioService>
         Db.Usuarios.IgnoreQueryFilters().Single(u => u.Carnet == "U001").EstadoEliminado.Should().BeTrue();
     }
 
-    private static UsuarioDto BuildValidUsuario(
-        string  carnet,
-        string  email,
-        string? telefono  = null,
-        string? contrasena = "Test@1234") => new()
+    [Test]
+    public async Task SetBlocked_Admin_BloqueaUsuario()
     {
-        Carnet          = carnet,
-        Nombre          = "Test",
-        ApellidoPaterno = "Usuario",
-        Email           = email,
-        Telefono        = telefono,
-        Contrasena      = contrasena,
-        IdCarrera       = 1
-    };
+        await Sut.Create(BuildValidUsuario("U001", "u001@ucb.edu.bo"), isAdmin: true);
+
+        var result = await Sut.SetBlocked("U001", true, "Rompió un equipo", isAdmin: true);
+
+        result.IsSuccess.Should().BeTrue();
+        var stored = Db.Usuarios.Single(u => u.Carnet == "U001");
+        stored.Bloqueado.Should().BeTrue();
+        stored.MotivoBloqueo.Should().Be("Rompió un equipo");
+    }
+
+    [Test]
+    public async Task SetBlocked_Desbloquea_LimpiaMotivo()
+    {
+        await Sut.Create(BuildValidUsuario("U001", "u001@ucb.edu.bo"), isAdmin: true);
+        await Sut.SetBlocked("U001", true, "motivo", isAdmin: true);
+
+        var result = await Sut.SetBlocked("U001", false, null, isAdmin: true);
+
+        result.IsSuccess.Should().BeTrue();
+        var stored = Db.Usuarios.Single(u => u.Carnet == "U001");
+        stored.Bloqueado.Should().BeFalse();
+        stored.MotivoBloqueo.Should().BeNull();
+    }
+
+    [Test]
+    public async Task SetBlocked_NoAdmin_ReturnsForbidden()
+    {
+        await Sut.Create(BuildValidUsuario("U001", "u001@ucb.edu.bo"), isAdmin: true);
+
+        var result = await Sut.SetBlocked("U001", true, "x", isAdmin: false);
+
+        result.Status.Should().Be(Ardalis.Result.ResultStatus.Forbidden);
+    }
+
+    private static UsuarioDto BuildValidUsuario(
+        string carnet,
+        string email,
+        string? telefono = null,
+        string? contrasena = "Test@1234") => new()
+        {
+            Carnet = carnet,
+            Nombre = "Test",
+            ApellidoPaterno = "Usuario",
+            Email = email,
+            Telefono = telefono,
+            Contrasena = contrasena,
+            IdCarrera = 1
+        };
 }

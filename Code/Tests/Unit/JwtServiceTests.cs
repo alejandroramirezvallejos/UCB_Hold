@@ -13,19 +13,19 @@ internal class JwtServiceTests
 
     private static readonly JwtSettings TestSettings = new()
     {
-        Key                    = "test_key_at_least_32_chars_long!!",
-        Issuer                 = "TestIssuer",
-        Audience               = "TestAudience",
-        ExpiresInMinutes       = 60,
+        Key = "test_key_at_least_32_chars_long!!",
+        Issuer = "TestIssuer",
+        Audience = "TestAudience",
+        ExpiresInMinutes = 60,
         RefreshTokenExpiryDays = 7
     };
 
     private static UsuarioDto BuildUsuarioDto() => new()
     {
         Carnet = "U001",
-        Email  = "u001@ucb.edu.bo",
+        Email = "u001@ucb.edu.bo",
         Nombre = "Test",
-        Rol    = "estudiante"
+        Rol = "estudiante"
     };
 
     [SetUp]
@@ -82,7 +82,7 @@ internal class JwtServiceTests
     [Test]
     public void GenerateRefreshToken_IsDifferentEachCall()
     {
-        var firstToken  = JwtService.GenerateRefreshToken();
+        var firstToken = JwtService.GenerateRefreshToken();
         var secondToken = JwtService.GenerateRefreshToken();
 
         firstToken.Should().NotBe(secondToken);
