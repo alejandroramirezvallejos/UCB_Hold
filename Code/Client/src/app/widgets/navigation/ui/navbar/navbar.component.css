@@ -328,7 +328,7 @@
   height: 12px;
   padding: 0 2px;
   background: var(--brand);
-  color: var(--brand-text);
+  color: #8f9195;
   border-radius: 999px;
   font-size: 0.5rem;
   font-weight: 700;
@@ -430,18 +430,18 @@
   color: var(--brand-text);
 }
 .notif__tab span {
-  min-width: 14px;
-  height: 14px;
-  padding: 0 0.2rem;
+  min-width: 16px;
+  height: 16px;
+  padding: 0 0.25rem;
   border-radius: var(--radius-full);
   background: var(--brand);
-  color: var(--brand-text);
-  font-size: 0.55rem;
-  line-height: 14px;
+  color: #8f9195;
+  font-size: 0.6rem;
+  font-weight: 800;
+  line-height: 16px;
 }
 .notif__tab--active span {
-  background: rgba(255, 255, 255, 0.72);
-  color: var(--brand-text);
+  display: none;
 }
 .notif__list {
   max-height: 360px;
