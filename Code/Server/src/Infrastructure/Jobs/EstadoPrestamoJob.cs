@@ -1,78 +1,177 @@
+using System.Globalization;
 using IMT_Reservas.Server.Application.Features.AuditLog;
-using IMT_Reservas.Server.Core.Entities;
-using IMT_Reservas.Server.Infrastructure.Config;
-using Microsoft.EntityFrameworkCore;
+using IMT_Reservas.Server.Application.Features.Notificacion;
+using IMT_Reservas.Server.Application.Features.Prestamo;
+using IMT_Reservas.Server.Infrastructure.Repositories.Implementations;
 using PrestamoEntity = IMT_Reservas.Server.Core.Entities.Prestamo;
 
 namespace IMT_Reservas.Server.Infrastructure.Jobs;
 
 public class EstadoPrestamoJob
 {
-    private readonly ApplicationDbContext _db;
+    private readonly NotificacionService _notifications;
     private readonly AuditLogService _audit;
+    private readonly PrestamoRepository _prestamoRepository;
+    private readonly AvisoDisponibilidadRepository _availabilityWatches;
 
-    public EstadoPrestamoJob(ApplicationDbContext db, AuditLogService audit)
+    public EstadoPrestamoJob(
+        NotificacionService notifications,
+        AuditLogService audit,
+        PrestamoRepository prestamoRepository,
+        AvisoDisponibilidadRepository availabilityWatches
+    )
     {
-        _db = db;
+        _notifications = notifications;
         _audit = audit;
+        _prestamoRepository = prestamoRepository;
+        _availabilityWatches = availabilityWatches;
     }
 
     public async Task Execute()
     {
         var today = DateTime.UtcNow.Date;
 
-        var atrasadosIds = await _db
-            .Prestamos.Where(p =>
-                p.EstadoPrestamo == EstadoPrestamo.Activo
-                && p.FechaDevolucionEsperada.Date < today
-                && !p.EstadoEliminado
-            )
-            .Select(p => p.Id)
-            .ToListAsync();
+        await ProcessOverdue(today);
+        await ProcessExpired(today);
+        await ProcessReminders(today);
+        await ProcessAvailabilityWatches();
+    }
 
-        if (atrasadosIds.Count > 0)
-        {
-            await _db
-                .Prestamos.Where(p => atrasadosIds.Contains(p.Id))
-                .ExecuteUpdateAsync(s =>
-                    s.SetProperty(p => p.EstadoPrestamo, EstadoPrestamo.Atrasado)
-                );
+    private async Task ProcessOverdue(DateTime today)
+    {
+        var overdue = await _prestamoRepository.GetOverdueLoans(today);
 
-            foreach (var id in atrasadosIds)
-                await _audit.Log(
+        if (overdue.Count == 0)
+            return;
+
+        await _prestamoRepository.MarkAsOverdue(overdue.Select(GetLoanId).ToList());
+
+        await _audit.LogMany(
+            overdue
+                .Select(loan => new AuditEntry(
                     AuditAccion.AtrasadoAutomatico,
                     nameof(PrestamoEntity),
-                    id.ToString()
-                );
-        }
+                    GetLoanIdText(loan),
+                    null
+                ))
+                .ToList()
+        );
 
-        var rechazadosIds = await _db
-            .Prestamos.Where(p =>
-                (
-                    p.EstadoPrestamo == EstadoPrestamo.Pendiente
-                    || p.EstadoPrestamo == EstadoPrestamo.Aprobado
-                )
-                && p.FechaPrestamoEsperada.Date < today
-                && !p.EstadoEliminado
-            )
-            .Select(p => p.Id)
-            .ToListAsync();
+        await _notifications.CreateMany(
+            overdue
+                .Select(loan => new NotificacionDto
+                {
+                    CarnetUsuario = loan.CarnetUsuario,
+                    Tipo = nameof(TipoNotificacion.PrestamoAtrasado),
+                    Titulo = "Préstamo atrasado",
+                    Contenido =
+                        "Tu préstamo está atrasado. Devuelve los equipos; no podrás reservar hasta regularizarlo.",
+                })
+                .ToList()
+        );
 
-        if (rechazadosIds.Count > 0)
-        {
-            await _db
-                .Prestamos.Where(p => rechazadosIds.Contains(p.Id))
-                .ExecuteUpdateAsync(s =>
-                    s.SetProperty(p => p.EstadoPrestamo, EstadoPrestamo.Rechazado)
-                );
+        await _notifications.CreateForAdmins(
+            TipoNotificacion.AdminPrestamoAtrasado,
+            "Préstamo atrasado",
+            $"Hay {overdue.Count} préstamo(s) atrasado(s) sin devolver."
+        );
+    }
 
-            foreach (var id in rechazadosIds)
-                await _audit.Log(
+    private async Task ProcessExpired(DateTime today)
+    {
+        var expired = await _prestamoRepository.GetExpiredPendingLoans(today);
+
+        if (expired.Count == 0)
+            return;
+
+        await _prestamoRepository.MarkAsRejected(expired.Select(GetLoanId).ToList());
+
+        await _audit.LogMany(
+            expired
+                .Select(loan => new AuditEntry(
                     AuditAccion.Rechazar,
                     nameof(PrestamoEntity),
-                    id.ToString(),
+                    GetLoanIdText(loan),
                     "Auto-rechazado por exceder fecha de inicio"
-                );
-        }
+                ))
+                .ToList()
+        );
+
+        await _notifications.CreateMany(
+            expired
+                .Select(loan => new NotificacionDto
+                {
+                    CarnetUsuario = loan.CarnetUsuario,
+                    Tipo = nameof(TipoNotificacion.PrestamoRechazado),
+                    Titulo = "Préstamo rechazado",
+                    Contenido =
+                        "Tu solicitud fue rechazada automáticamente por exceder la fecha de inicio.",
+                })
+                .ToList()
+        );
     }
+
+    private async Task ProcessReminders(DateTime today)
+    {
+        var dueTomorrow = await _prestamoRepository.GetLoansDueForReminder(today.AddDays(1));
+
+        if (dueTomorrow.Count == 0)
+            return;
+
+        await _prestamoRepository.MarkReminderSent(dueTomorrow.Select(GetLoanId).ToList());
+
+        await _notifications.CreateMany(
+            dueTomorrow
+                .Select(loan => new NotificacionDto
+                {
+                    CarnetUsuario = loan.CarnetUsuario,
+                    Tipo = nameof(TipoNotificacion.RecordatorioDevolucion),
+                    Titulo = "Recordatorio de devolución",
+                    Contenido = "Tu préstamo vence mañana. No olvides devolver los equipos a tiempo.",
+                })
+                .ToList()
+        );
+    }
+
+    private async Task ProcessAvailabilityWatches()
+    {
+        var pending = await _availabilityWatches.GetPending();
+
+        if (pending.Count == 0)
+            return;
+
+        var notified = new List<int>();
+        var notifications = new List<NotificacionDto>();
+
+        foreach (var watch in pending)
+        {
+            var date = watch.Fecha.ToDateTime(TimeOnly.MinValue);
+
+            if (await _prestamoRepository.HasAvailableEquipo(watch.IdGrupoEquipo, date, date))
+            {
+                notifications.Add(
+                    new NotificacionDto
+                    {
+                        CarnetUsuario = watch.CarnetUsuario,
+                        Tipo = nameof(TipoNotificacion.DisponibilidadLiberada),
+                        Titulo = "Disponibilidad liberada",
+                        Contenido =
+                            $"Un equipo que esperabas está disponible para el {watch.Fecha:dd/MM/yyyy}.",
+                    }
+                );
+                notified.Add(watch.Id);
+            }
+        }
+
+        if (notified.Count == 0)
+            return;
+
+        await _notifications.CreateMany(notifications);
+        await _availabilityWatches.MarkAsNotified(notified);
+    }
+
+    private static int GetLoanId(PrestamoDto loan) => loan.Id.GetValueOrDefault();
+
+    private static string GetLoanIdText(PrestamoDto loan) =>
+        GetLoanId(loan).ToString(CultureInfo.InvariantCulture);
 }
