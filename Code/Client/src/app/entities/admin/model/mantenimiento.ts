@@ -8,6 +8,6 @@ export class Mantenimientos extends BaseModel {
   Descripcion: string | null = null;
   TipoMantenimiento: string | null = null;
   NombreGrupoEquipo: string | null = null;
-  CodigoImtEquipo: number | null = null;
+  CodigoImtEquipo: string | null = null;
   DescripcionEquipo: string | null = null;
 }

@@ -20,23 +20,25 @@ export class MantenimientoService {
       { TipoMantenimiento: string; DescripcionEquipo: string; nombre: string }
     >,
   ) {
-    const codigosimt: number[] = [];
-    const tiposmantenimiento: string[] = [];
-    const descripcionequipos: string[] = [];
+    const codigosImt: number[] = [];
+    const tiposMantenimiento: string[] = [];
+    const descripcionesEquipos: string[] = [];
+
     equipos.forEach((value, key) => {
-      codigosimt.push(key);
-      tiposmantenimiento.push(value.TipoMantenimiento);
-      descripcionequipos.push(value.DescripcionEquipo);
+      codigosImt.push(key);
+      tiposMantenimiento.push(value.TipoMantenimiento);
+      descripcionesEquipos.push(value.DescripcionEquipo);
     });
+
     const envio = {
       FechaMantenimiento: mantenimiento.FechaMantenimiento,
       FechaFinalMantenimiento: mantenimiento.FechaFinalDeMantenimiento,
       NombreEmpresaMantenimiento: mantenimiento.NombreEmpresaMantenimiento,
       Costo: mantenimiento.Costo,
       Descripcion: mantenimiento.DescripcionMantenimiento,
-      CodigoIMT: codigosimt,
-      TiposMantenimiento: tiposmantenimiento,
-      DescripcionesEquipo: descripcionequipos,
+      CodigoImt: codigosImt,
+      TiposMantenimiento: tiposMantenimiento,
+      DescripcionesEquipo: descripcionesEquipos,
     };
     return this.http.post<unknown>(this.apiUrl, envio);
   }

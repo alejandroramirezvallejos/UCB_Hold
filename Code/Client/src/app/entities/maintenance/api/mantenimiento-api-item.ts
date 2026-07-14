@@ -7,6 +7,6 @@ export interface MantenimientoApiItem {
   Descripcion: string | null;
   TipoMantenimiento: string | null;
   NombreGrupoEquipo: string | null;
-  CodigoImtEquipo: number | null;
+  CodigoImtEquipo: string | null;
   DescripcionEquipo: string | null;
 }

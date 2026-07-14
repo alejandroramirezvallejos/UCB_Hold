@@ -9,11 +9,12 @@ import { AccesorioApiItem } from './accesorio-api-item';
   providedIn: 'root',
 })
 export class AccesoriosService {
-  private readonly apiurl = environment.apiUrl + '/api/Accesorio';
+  private readonly apiUrl = environment.apiUrl + '/api/Accesorio';
+
   constructor(private readonly http: HttpClient) {}
 
   obtenerAccesorios(): Observable<Accesorio[]> {
-    return this.http.get<ApiResponse<AccesorioApiItem[]>>(this.apiurl).pipe(
+    return this.http.get<ApiResponse<AccesorioApiItem[]>>(this.apiUrl).pipe(
       map((data) =>
         extractApiValue(data, []).map((item) => ({
           Id: item.Id,
@@ -36,17 +37,16 @@ export class AccesoriosService {
       Nombre: accesorio.nombre,
       Modelo: accesorio.modelo,
       Tipo: accesorio.tipo,
-      CodigoImtEquipoAsociado: accesorio.codigo_imt,
       Descripcion: accesorio.descripcion,
       Precio: accesorio.precio,
       UrlDataSheet: accesorio.url_data_sheet,
       IdEquipo: accesorio.id_equipo,
     };
-    return this.http.post<unknown>(this.apiurl, envio);
+    return this.http.post<unknown>(this.apiUrl, envio);
   }
 
   eliminarAccesorio(id: number) {
-    return this.http.delete<unknown>(`${this.apiurl}/${id}`);
+    return this.http.delete<unknown>(`${this.apiUrl}/${id}`);
   }
 
   editarAccesorio(accesorio: Accesorio) {
@@ -55,12 +55,11 @@ export class AccesoriosService {
       Nombre: accesorio.nombre,
       Modelo: accesorio.modelo,
       Tipo: accesorio.tipo,
-      CodigoImtEquipoAsociado: accesorio.codigo_imt,
       Descripcion: accesorio.descripcion,
       Precio: accesorio.precio,
       UrlDataSheet: accesorio.url_data_sheet,
       IdEquipo: accesorio.id_equipo,
     };
-    return this.http.put<unknown>(`${this.apiurl}/${accesorio.Id}`, envio);
+    return this.http.put<unknown>(`${this.apiUrl}/${accesorio.Id}`, envio);
   }
 }

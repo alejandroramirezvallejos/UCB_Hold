@@ -17,7 +17,6 @@ export class ComponenteService {
       Nombre: componente.Nombre,
       Modelo: componente.Modelo,
       Tipo: componente.Tipo,
-      CodigoImtEquipo: componente.CodigoImtEquipo,
       Descripcion: componente.Descripcion,
       PrecioReferencia: componente.PrecioReferencia,
       UrlDataSheet: componente.UrlDataSheet,
@@ -39,6 +38,7 @@ export class ComponenteService {
           NombreEquipo: item.NombreEquipo,
           CodigoImtEquipo: item.CodigoImtEquipo,
           UrlDataSheet: item.UrlDataSheet,
+          IdEquipo: item.IdEquipo,
         })),
       ),
     );
@@ -50,7 +50,6 @@ export class ComponenteService {
       Nombre: componente.Nombre,
       Modelo: componente.Modelo,
       Tipo: componente.Tipo,
-      CodigoImtEquipo: componente.CodigoImtEquipo,
       Descripcion: componente.Descripcion,
       PrecioReferencia: componente.PrecioReferencia,
       UrlDataSheet: componente.UrlDataSheet,

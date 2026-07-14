@@ -40,7 +40,7 @@ export class ComponentesEditarComponent extends BaseTablaComponent {
   equipos: Equipos[] = [];
   get equiposOpciones(): OpcionSelect[] {
     return this.equipos.map((equipo) => ({
-      value: equipo.CodigoImt,
+      value: equipo.Id,
       label: `${equipo.NombreGrupoEquipo} ${equipo.CodigoImt}`,
     }));
   }

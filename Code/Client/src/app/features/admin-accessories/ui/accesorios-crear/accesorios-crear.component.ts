@@ -39,7 +39,7 @@ export class AccesoriosCrearComponent extends BaseTablaComponent {
   accesorio: Accesorio = new Accesorio();
   get equiposOpciones(): OpcionSelect[] {
     return this.equipos.map((e) => ({
-      value: e.CodigoImt,
+      value: e.Id,
       label: `${e.NombreGrupoEquipo} ${e.Modelo} ${e.Marca} - ${e.CodigoImt}`,
     }));
   }
