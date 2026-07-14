@@ -4281,7 +4281,8 @@ CREATE TABLE public.prestamos (
     estado_eliminado boolean DEFAULT false NOT NULL,
     fecha_devolucion timestamp without time zone,
     fecha_prestamo_esperada timestamp without time zone NOT NULL,
-    id_contrato integer
+    id_contrato integer,
+    recordatorio_enviado boolean DEFAULT false NOT NULL
 );
 
 
@@ -4320,7 +4321,8 @@ CREATE TABLE public.audit_logs (
     entidad character varying(100) NOT NULL,
     entidad_id text,
     detalle text,
-    "timestamp" timestamp with time zone DEFAULT now() NOT NULL
+    "timestamp" timestamp with time zone DEFAULT now() NOT NULL,
+    estado_eliminado boolean DEFAULT false NOT NULL
 );
 
 
@@ -4346,6 +4348,38 @@ ALTER SEQUENCE public.audit_logs_id_seq OWNER TO postgres;
 --
 
 ALTER SEQUENCE public.audit_logs_id_seq OWNED BY public.audit_logs.id;
+
+
+--
+-- Name: avisos_disponibilidad; Type: TABLE; Schema: public; Owner: postgres
+--
+
+CREATE TABLE public.avisos_disponibilidad (
+    id_aviso integer NOT NULL,
+    carnet_usuario character varying(20) NOT NULL,
+    id_grupo_equipo integer NOT NULL,
+    fecha date NOT NULL,
+    cantidad integer DEFAULT 1 NOT NULL,
+    notificado boolean DEFAULT false NOT NULL,
+    fecha_creacion timestamp with time zone DEFAULT now() NOT NULL,
+    estado_eliminado boolean DEFAULT false NOT NULL
+);
+
+
+ALTER TABLE public.avisos_disponibilidad OWNER TO postgres;
+
+--
+-- Name: avisos_disponibilidad_id_aviso_seq; Type: SEQUENCE; Schema: public; Owner: postgres
+--
+
+ALTER TABLE public.avisos_disponibilidad ALTER COLUMN id_aviso ADD GENERATED ALWAYS AS IDENTITY (
+    SEQUENCE NAME public.avisos_disponibilidad_id_aviso_seq
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1
+);
 
 
 --
@@ -4506,6 +4540,39 @@ ALTER TABLE public.contratos ALTER COLUMN id ADD GENERATED ALWAYS AS IDENTITY (
 
 
 --
+-- Name: notificaciones; Type: TABLE; Schema: public; Owner: postgres
+--
+
+CREATE TABLE public.notificaciones (
+    id_notificacion integer NOT NULL,
+    carnet_usuario character varying(20) NOT NULL,
+    tipo character varying(50) NOT NULL,
+    titulo text NOT NULL,
+    contenido text,
+    detalle text,
+    leido boolean DEFAULT false NOT NULL,
+    fecha_envio timestamp with time zone DEFAULT now() NOT NULL,
+    estado_eliminado boolean DEFAULT false NOT NULL
+);
+
+
+ALTER TABLE public.notificaciones OWNER TO postgres;
+
+--
+-- Name: notificaciones_id_notificacion_seq; Type: SEQUENCE; Schema: public; Owner: postgres
+--
+
+ALTER TABLE public.notificaciones ALTER COLUMN id_notificacion ADD GENERATED ALWAYS AS IDENTITY (
+    SEQUENCE NAME public.notificaciones_id_notificacion_seq
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1
+);
+
+
+--
 -- Name: usuarios; Type: TABLE; Schema: public; Owner: postgres
 --
 
@@ -4526,7 +4593,9 @@ CREATE TABLE public.usuarios (
     imagen_frente_carnet bytea,
     imagen_atras_carnet bytea,
     refresh_token text,
-    refresh_token_expiry timestamp with time zone
+    refresh_token_expiry timestamp with time zone,
+    bloqueado boolean DEFAULT false NOT NULL,
+    motivo_bloqueo text
 );
 
 
@@ -4651,23 +4720,25 @@ ALTER TABLE ONLY public.audit_logs ALTER COLUMN id SET DEFAULT nextval('public.a
 --
 
 COPY hangfire.aggregatedcounter (id, key, value, expireat) FROM stdin;
-1	stats:succeeded:2026-06-01	2	2026-06-30 22:50:00.66743-04
+556	stats:succeeded:2026-07-02-15	5	2026-07-03 11:50:05.010268-04
 277	stats:succeeded:2026-06-07	5	2026-07-06 23:40:07.965354-04
-292	stats:succeeded:2026-06-11-23	1	2026-06-12 19:56:33.601991-04
 294	stats:succeeded:2026-06-11	1	2026-07-11 19:56:32.601991-04
 189	stats:succeeded:2026-06-05	22	2026-07-05 19:57:25.730095-04
+398	stats:succeeded:2026-06-13	7	2026-07-12 21:40:13.066799-04
 7	stats:succeeded:2026-06-03	9	2026-07-03 19:02:15.151647-04
-338	stats:succeeded:2026-06-12-03	6	2026-06-12 23:50:04.624147-04
-290	stats:succeeded:2026-06-12-00	6	2026-06-12 20:50:09.095883-04
-312	stats:succeeded:2026-06-12-01	4	2026-06-12 21:50:06.817735-04
-356	stats:succeeded:2026-06-12-04	6	2026-06-13 00:50:13.979423-04
-374	stats:succeeded:2026-06-12-05	1	2026-06-13 01:00:01.143367-04
-377	stats:succeeded:2026-06-12-14	1	2026-06-13 10:54:38.987424-04
+572	stats:succeeded:2026-07-02-16	4	2026-07-03 12:30:07.822425-04
+584	stats:succeeded:2026-07-02-17	1	2026-07-03 13:51:31.046399-04
+587	stats:succeeded:2026-07-02-18	4	2026-07-03 14:58:18.197062-04
+503	stats:succeeded:2026-07-01	17	2026-08-01 14:50:12.654047-04
+3	stats:succeeded	222	\N
+546	stats:succeeded:2026-07-02-04	1	2026-07-03 00:16:49.808061-04
 243	stats:succeeded:2026-06-06	11	2026-07-05 23:46:25.802054-04
-379	stats:succeeded:2026-06-12-15	2	2026-06-13 11:50:06.611433-04
-291	stats:succeeded:2026-06-12	32	2026-07-12 11:50:05.611433-04
-3	stats:succeeded	138	\N
-320	stats:succeeded:2026-06-12-02	6	2026-06-12 22:50:05.854412-04
+594	stats:succeeded:2026-07-02-19	3	2026-07-03 15:20:11.392289-04
+547	stats:succeeded:2026-07-02	24	2026-08-02 15:20:10.392289-04
+551	stats:succeeded:2026-07-02-05	5	2026-07-03 01:40:11.653728-04
+419	stats:succeeded:2026-06-14	29	2026-07-14 14:20:00.385235-04
+557	stats:succeeded:2026-07-02-06	1	2026-07-03 02:54:37.180028-04
+291	stats:succeeded:2026-06-12	38	2026-07-12 19:58:49.950992-04
 24	stats:succeeded:2026-06-04	56	2026-07-04 19:30:05.605239-04
 \.
 
@@ -4677,9 +4748,6 @@ COPY hangfire.aggregatedcounter (id, key, value, expireat) FROM stdin;
 --
 
 COPY hangfire.counter (id, key, value, expireat) FROM stdin;
-417	stats:succeeded:2026-06-12	1	2026-07-12 12:00:07.952546-04
-418	stats:succeeded:2026-06-12-16	1	2026-06-13 12:00:08.952546-04
-419	stats:succeeded	1	\N
 \.
 
 
@@ -4694,9 +4762,9 @@ COPY hangfire.hash (id, key, field, value, expireat, updatecount) FROM stdin;
 4	recurring-job:estado-prestamo	Job	{"Type":"IMT_Reservas.Server.Infrastructure.Jobs.EstadoPrestamoJob, IMT_Reservas.Server, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null","Method":"Execute","ParameterTypes":"[]","Arguments":"[]"}	\N	0
 5	recurring-job:estado-prestamo	CreatedAt	2026-06-01T02:32:59.4235310Z	\N	0
 7	recurring-job:estado-prestamo	V	2	\N	0
-8	recurring-job:estado-prestamo	LastExecution	2026-06-12T16:00:08.8978866Z	\N	0
-6	recurring-job:estado-prestamo	NextExecution	2026-06-12T16:10:00.0000000Z	\N	0
-9	recurring-job:estado-prestamo	LastJobId	139	\N	0
+8	recurring-job:estado-prestamo	LastExecution	2026-07-02T19:20:11.3045214Z	\N	0
+6	recurring-job:estado-prestamo	NextExecution	2026-07-02T19:30:00.0000000Z	\N	0
+9	recurring-job:estado-prestamo	LastJobId	221	\N	0
 \.
 
 
@@ -4705,40 +4773,30 @@ COPY hangfire.hash (id, key, field, value, expireat, updatecount) FROM stdin;
 --
 
 COPY hangfire.job (id, stateid, statename, invocationdata, arguments, createdat, expireat, updatecount) FROM stdin;
-127	381	Succeeded	{"Type": "IMT_Reservas.Server.Infrastructure.Jobs.EstadoPrestamoJob, IMT_Reservas.Server, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null", "Method": "Execute", "Arguments": "[]", "ParameterTypes": "[]"}	[]	2026-06-12 03:40:02.939591-04	2026-06-12 23:40:02.97561-04	0
-112	336	Succeeded	{"Type": "IMT_Reservas.Server.Infrastructure.Jobs.EstadoPrestamoJob, IMT_Reservas.Server, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null", "Method": "Execute", "Arguments": "[]", "ParameterTypes": "[]"}	[]	2026-06-12 00:50:08.792415-04	2026-06-12 20:50:09.095883-04	0
-121	363	Succeeded	{"Type": "IMT_Reservas.Server.Infrastructure.Jobs.EstadoPrestamoJob, IMT_Reservas.Server, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null", "Method": "Execute", "Arguments": "[]", "ParameterTypes": "[]"}	[]	2026-06-12 02:40:03.386129-04	2026-06-12 22:40:03.440899-04	0
-131	393	Succeeded	{"Type": "IMT_Reservas.Server.Infrastructure.Jobs.EstadoPrestamoJob, IMT_Reservas.Server, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null", "Method": "Execute", "Arguments": "[]", "ParameterTypes": "[]"}	[]	2026-06-12 04:20:06.860424-04	2026-06-13 00:20:06.934628-04	0
-115	345	Succeeded	{"Type": "IMT_Reservas.Server.Infrastructure.Jobs.EstadoPrestamoJob, IMT_Reservas.Server, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null", "Method": "Execute", "Arguments": "[]", "ParameterTypes": "[]"}	[]	2026-06-12 01:49:36.19304-04	2026-06-12 21:49:38.514756-04	0
-106	318	Succeeded	{"Type": "IMT_Reservas.Server.Infrastructure.Jobs.EstadoPrestamoJob, IMT_Reservas.Server, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null", "Method": "Execute", "Arguments": "[]", "ParameterTypes": "[]"}	[]	2026-06-11 23:56:28.800863-04	2026-06-12 19:56:33.601991-04	0
-125	375	Succeeded	{"Type": "IMT_Reservas.Server.Infrastructure.Jobs.EstadoPrestamoJob, IMT_Reservas.Server, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null", "Method": "Execute", "Arguments": "[]", "ParameterTypes": "[]"}	[]	2026-06-12 03:20:13.293545-04	2026-06-12 23:20:13.342271-04	0
-132	396	Succeeded	{"Type": "IMT_Reservas.Server.Infrastructure.Jobs.EstadoPrestamoJob, IMT_Reservas.Server, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null", "Method": "Execute", "Arguments": "[]", "ParameterTypes": "[]"}	[]	2026-06-12 04:30:09.044989-04	2026-06-13 00:30:09.113134-04	0
-118	354	Succeeded	{"Type": "IMT_Reservas.Server.Infrastructure.Jobs.EstadoPrestamoJob, IMT_Reservas.Server, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null", "Method": "Execute", "Arguments": "[]", "ParameterTypes": "[]"}	[]	2026-06-12 02:10:11.394298-04	2026-06-12 22:10:11.446674-04	0
-109	327	Succeeded	{"Type": "IMT_Reservas.Server.Infrastructure.Jobs.EstadoPrestamoJob, IMT_Reservas.Server, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null", "Method": "Execute", "Arguments": "[]", "ParameterTypes": "[]"}	[]	2026-06-12 00:20:04.290662-04	2026-06-12 20:20:04.336025-04	0
-138	414	Succeeded	{"Type": "IMT_Reservas.Server.Infrastructure.Jobs.EstadoPrestamoJob, IMT_Reservas.Server, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null", "Method": "Execute", "Arguments": "[]", "ParameterTypes": "[]"}	[]	2026-06-12 15:50:06.515694-04	2026-06-13 11:50:06.611433-04	0
-135	405	Succeeded	{"Type": "IMT_Reservas.Server.Infrastructure.Jobs.EstadoPrestamoJob, IMT_Reservas.Server, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null", "Method": "Execute", "Arguments": "[]", "ParameterTypes": "[]"}	[]	2026-06-12 05:00:01.099271-04	2026-06-13 01:00:01.143367-04	0
-129	387	Succeeded	{"Type": "IMT_Reservas.Server.Infrastructure.Jobs.EstadoPrestamoJob, IMT_Reservas.Server, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null", "Method": "Execute", "Arguments": "[]", "ParameterTypes": "[]"}	[]	2026-06-12 04:00:05.288808-04	2026-06-13 00:00:05.343648-04	0
-130	390	Succeeded	{"Type": "IMT_Reservas.Server.Infrastructure.Jobs.EstadoPrestamoJob, IMT_Reservas.Server, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null", "Method": "Execute", "Arguments": "[]", "ParameterTypes": "[]"}	[]	2026-06-12 04:10:05.854865-04	2026-06-13 00:10:05.898217-04	0
-126	378	Succeeded	{"Type": "IMT_Reservas.Server.Infrastructure.Jobs.EstadoPrestamoJob, IMT_Reservas.Server, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null", "Method": "Execute", "Arguments": "[]", "ParameterTypes": "[]"}	[]	2026-06-12 03:30:00.478733-04	2026-06-12 23:30:00.538407-04	0
-113	339	Succeeded	{"Type": "IMT_Reservas.Server.Infrastructure.Jobs.EstadoPrestamoJob, IMT_Reservas.Server, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null", "Method": "Execute", "Arguments": "[]", "ParameterTypes": "[]"}	[]	2026-06-12 01:00:09.630912-04	2026-06-12 21:00:09.737352-04	0
-122	366	Succeeded	{"Type": "IMT_Reservas.Server.Infrastructure.Jobs.EstadoPrestamoJob, IMT_Reservas.Server, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null", "Method": "Execute", "Arguments": "[]", "ParameterTypes": "[]"}	[]	2026-06-12 02:50:05.820926-04	2026-06-12 22:50:05.854412-04	0
-133	399	Succeeded	{"Type": "IMT_Reservas.Server.Infrastructure.Jobs.EstadoPrestamoJob, IMT_Reservas.Server, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null", "Method": "Execute", "Arguments": "[]", "ParameterTypes": "[]"}	[]	2026-06-12 04:40:11.417108-04	2026-06-13 00:40:11.465659-04	0
-116	348	Succeeded	{"Type": "IMT_Reservas.Server.Infrastructure.Jobs.EstadoPrestamoJob, IMT_Reservas.Server, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null", "Method": "Execute", "Arguments": "[]", "ParameterTypes": "[]"}	[]	2026-06-12 01:50:06.738766-04	2026-06-12 21:50:06.817735-04	0
-107	321	Succeeded	{"Type": "IMT_Reservas.Server.Infrastructure.Jobs.EstadoPrestamoJob, IMT_Reservas.Server, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null", "Method": "Execute", "Arguments": "[]", "ParameterTypes": "[]"}	[]	2026-06-12 00:00:15.071701-04	2026-06-12 20:00:15.319504-04	0
-124	372	Succeeded	{"Type": "IMT_Reservas.Server.Infrastructure.Jobs.EstadoPrestamoJob, IMT_Reservas.Server, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null", "Method": "Execute", "Arguments": "[]", "ParameterTypes": "[]"}	[]	2026-06-12 03:10:10.600715-04	2026-06-12 23:10:10.662014-04	0
-136	408	Succeeded	{"Type": "IMT_Reservas.Server.Infrastructure.Jobs.EstadoPrestamoJob, IMT_Reservas.Server, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null", "Method": "Execute", "Arguments": "[]", "ParameterTypes": "[]"}	[]	2026-06-12 14:54:32.830518-04	2026-06-13 10:54:38.987424-04	0
-110	330	Succeeded	{"Type": "IMT_Reservas.Server.Infrastructure.Jobs.EstadoPrestamoJob, IMT_Reservas.Server, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null", "Method": "Execute", "Arguments": "[]", "ParameterTypes": "[]"}	[]	2026-06-12 00:30:05.751526-04	2026-06-12 20:30:06.117073-04	0
-119	357	Succeeded	{"Type": "IMT_Reservas.Server.Infrastructure.Jobs.EstadoPrestamoJob, IMT_Reservas.Server, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null", "Method": "Execute", "Arguments": "[]", "ParameterTypes": "[]"}	[]	2026-06-12 02:20:13.901039-04	2026-06-12 22:20:13.956114-04	0
-139	417	Succeeded	{"Type": "IMT_Reservas.Server.Infrastructure.Jobs.EstadoPrestamoJob, IMT_Reservas.Server, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null", "Method": "Execute", "Arguments": "[]", "ParameterTypes": "[]"}	[]	2026-06-12 16:00:08.907334-04	2026-06-13 12:00:08.952546-04	0
-114	342	Succeeded	{"Type": "IMT_Reservas.Server.Infrastructure.Jobs.EstadoPrestamoJob, IMT_Reservas.Server, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null", "Method": "Execute", "Arguments": "[]", "ParameterTypes": "[]"}	[]	2026-06-12 01:35:09.370951-04	2026-06-12 21:35:12.700623-04	0
-108	324	Succeeded	{"Type": "IMT_Reservas.Server.Infrastructure.Jobs.EstadoPrestamoJob, IMT_Reservas.Server, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null", "Method": "Execute", "Arguments": "[]", "ParameterTypes": "[]"}	[]	2026-06-12 00:10:02.061014-04	2026-06-12 20:10:02.237775-04	0
-123	369	Succeeded	{"Type": "IMT_Reservas.Server.Infrastructure.Jobs.EstadoPrestamoJob, IMT_Reservas.Server, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null", "Method": "Execute", "Arguments": "[]", "ParameterTypes": "[]"}	[]	2026-06-12 03:00:08.270679-04	2026-06-12 23:00:08.336041-04	0
-134	402	Succeeded	{"Type": "IMT_Reservas.Server.Infrastructure.Jobs.EstadoPrestamoJob, IMT_Reservas.Server, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null", "Method": "Execute", "Arguments": "[]", "ParameterTypes": "[]"}	[]	2026-06-12 04:50:13.93315-04	2026-06-13 00:50:13.979423-04	0
-111	333	Succeeded	{"Type": "IMT_Reservas.Server.Infrastructure.Jobs.EstadoPrestamoJob, IMT_Reservas.Server, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null", "Method": "Execute", "Arguments": "[]", "ParameterTypes": "[]"}	[]	2026-06-12 00:40:06.662386-04	2026-06-12 20:40:06.72763-04	0
-117	351	Succeeded	{"Type": "IMT_Reservas.Server.Infrastructure.Jobs.EstadoPrestamoJob, IMT_Reservas.Server, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null", "Method": "Execute", "Arguments": "[]", "ParameterTypes": "[]"}	[]	2026-06-12 02:00:09.333159-04	2026-06-12 22:00:09.407291-04	0
-128	384	Succeeded	{"Type": "IMT_Reservas.Server.Infrastructure.Jobs.EstadoPrestamoJob, IMT_Reservas.Server, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null", "Method": "Execute", "Arguments": "[]", "ParameterTypes": "[]"}	[]	2026-06-12 03:50:04.588983-04	2026-06-12 23:50:04.624147-04	0
-137	411	Succeeded	{"Type": "IMT_Reservas.Server.Infrastructure.Jobs.EstadoPrestamoJob, IMT_Reservas.Server, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null", "Method": "Execute", "Arguments": "[]", "ParameterTypes": "[]"}	[]	2026-06-12 15:48:50.858356-04	2026-06-13 11:48:55.876126-04	0
-120	360	Succeeded	{"Type": "IMT_Reservas.Server.Infrastructure.Jobs.EstadoPrestamoJob, IMT_Reservas.Server, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null", "Method": "Execute", "Arguments": "[]", "ParameterTypes": "[]"}	[]	2026-06-12 02:30:01.295451-04	2026-06-12 22:30:01.340576-04	0
+202	606	Succeeded	{"Type": "IMT_Reservas.Server.Infrastructure.Jobs.EstadoPrestamoJob, IMT_Reservas.Server, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null", "Method": "Execute", "Arguments": "[]", "ParameterTypes": "[]"}	[]	2026-07-02 05:38:55.419643-04	2026-07-03 01:39:04.62077-04	0
+212	636	Succeeded	{"Type": "IMT_Reservas.Server.Infrastructure.Jobs.EstadoPrestamoJob, IMT_Reservas.Server, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null", "Method": "Execute", "Arguments": "[]", "ParameterTypes": "[]"}	[]	2026-07-02 16:20:05.10734-04	2026-07-03 12:20:05.237954-04	0
+203	609	Succeeded	{"Type": "IMT_Reservas.Server.Infrastructure.Jobs.EstadoPrestamoJob, IMT_Reservas.Server, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null", "Method": "Execute", "Arguments": "[]", "ParameterTypes": "[]"}	[]	2026-07-02 05:40:11.050632-04	2026-07-03 01:40:11.653728-04	0
+214	642	Succeeded	{"Type": "IMT_Reservas.Server.Infrastructure.Jobs.EstadoPrestamoJob, IMT_Reservas.Server, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null", "Method": "Execute", "Arguments": "[]", "ParameterTypes": "[]"}	[]	2026-07-02 17:51:26.744468-04	2026-07-03 13:51:31.046399-04	0
+204	612	Succeeded	{"Type": "IMT_Reservas.Server.Infrastructure.Jobs.EstadoPrestamoJob, IMT_Reservas.Server, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null", "Method": "Execute", "Arguments": "[]", "ParameterTypes": "[]"}	[]	2026-07-02 06:54:37.089134-04	2026-07-03 02:54:37.180028-04	0
+216	648	Succeeded	{"Type": "IMT_Reservas.Server.Infrastructure.Jobs.EstadoPrestamoJob, IMT_Reservas.Server, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null", "Method": "Execute", "Arguments": "[]", "ParameterTypes": "[]"}	[]	2026-07-02 18:20:13.440868-04	2026-07-03 14:20:13.525004-04	0
+205	615	Succeeded	{"Type": "IMT_Reservas.Server.Infrastructure.Jobs.EstadoPrestamoJob, IMT_Reservas.Server, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null", "Method": "Execute", "Arguments": "[]", "ParameterTypes": "[]"}	[]	2026-07-02 15:11:56.058119-04	2026-07-03 11:11:56.431335-04	0
+218	654	Succeeded	{"Type": "IMT_Reservas.Server.Infrastructure.Jobs.EstadoPrestamoJob, IMT_Reservas.Server, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null", "Method": "Execute", "Arguments": "[]", "ParameterTypes": "[]"}	[]	2026-07-02 18:58:09.100019-04	2026-07-03 14:58:18.197062-04	0
+206	618	Succeeded	{"Type": "IMT_Reservas.Server.Infrastructure.Jobs.EstadoPrestamoJob, IMT_Reservas.Server, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null", "Method": "Execute", "Arguments": "[]", "ParameterTypes": "[]"}	[]	2026-07-02 15:20:12.795867-04	2026-07-03 11:20:12.919476-04	0
+220	660	Succeeded	{"Type": "IMT_Reservas.Server.Infrastructure.Jobs.EstadoPrestamoJob, IMT_Reservas.Server, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null", "Method": "Execute", "Arguments": "[]", "ParameterTypes": "[]"}	[]	2026-07-02 19:10:10.441047-04	2026-07-03 15:10:10.519907-04	0
+207	621	Succeeded	{"Type": "IMT_Reservas.Server.Infrastructure.Jobs.EstadoPrestamoJob, IMT_Reservas.Server, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null", "Method": "Execute", "Arguments": "[]", "ParameterTypes": "[]"}	[]	2026-07-02 15:30:14.876326-04	2026-07-03 11:30:14.997825-04	0
+198	594	Succeeded	{"Type": "IMT_Reservas.Server.Infrastructure.Jobs.EstadoPrestamoJob, IMT_Reservas.Server, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null", "Method": "Execute", "Arguments": "[]", "ParameterTypes": "[]"}	[]	2026-07-02 04:16:43.66472-04	2026-07-03 00:16:49.808061-04	0
+208	624	Succeeded	{"Type": "IMT_Reservas.Server.Infrastructure.Jobs.EstadoPrestamoJob, IMT_Reservas.Server, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null", "Method": "Execute", "Arguments": "[]", "ParameterTypes": "[]"}	[]	2026-07-02 15:40:02.524986-04	2026-07-03 11:40:02.559152-04	0
+199	597	Succeeded	{"Type": "IMT_Reservas.Server.Infrastructure.Jobs.EstadoPrestamoJob, IMT_Reservas.Server, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null", "Method": "Execute", "Arguments": "[]", "ParameterTypes": "[]"}	[]	2026-07-02 05:08:38.958652-04	2026-07-03 01:08:48.664866-04	0
+209	627	Succeeded	{"Type": "IMT_Reservas.Server.Infrastructure.Jobs.EstadoPrestamoJob, IMT_Reservas.Server, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null", "Method": "Execute", "Arguments": "[]", "ParameterTypes": "[]"}	[]	2026-07-02 15:50:04.940201-04	2026-07-03 11:50:05.010268-04	0
+200	600	Succeeded	{"Type": "IMT_Reservas.Server.Infrastructure.Jobs.EstadoPrestamoJob, IMT_Reservas.Server, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null", "Method": "Execute", "Arguments": "[]", "ParameterTypes": "[]"}	[]	2026-07-02 05:10:09.829402-04	2026-07-03 01:10:10.08869-04	0
+201	603	Succeeded	{"Type": "IMT_Reservas.Server.Infrastructure.Jobs.EstadoPrestamoJob, IMT_Reservas.Server, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null", "Method": "Execute", "Arguments": "[]", "ParameterTypes": "[]"}	[]	2026-07-02 05:20:12.506398-04	2026-07-03 01:20:13.060574-04	0
+211	633	Succeeded	{"Type": "IMT_Reservas.Server.Infrastructure.Jobs.EstadoPrestamoJob, IMT_Reservas.Server, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null", "Method": "Execute", "Arguments": "[]", "ParameterTypes": "[]"}	[]	2026-07-02 16:10:02.436412-04	2026-07-03 12:10:08.891821-04	0
+210	630	Succeeded	{"Type": "IMT_Reservas.Server.Infrastructure.Jobs.EstadoPrestamoJob, IMT_Reservas.Server, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null", "Method": "Execute", "Arguments": "[]", "ParameterTypes": "[]"}	[]	2026-07-02 16:00:07.03528-04	2026-07-03 12:00:07.104895-04	0
+213	639	Succeeded	{"Type": "IMT_Reservas.Server.Infrastructure.Jobs.EstadoPrestamoJob, IMT_Reservas.Server, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null", "Method": "Execute", "Arguments": "[]", "ParameterTypes": "[]"}	[]	2026-07-02 16:30:07.688386-04	2026-07-03 12:30:07.822425-04	0
+215	645	Succeeded	{"Type": "IMT_Reservas.Server.Infrastructure.Jobs.EstadoPrestamoJob, IMT_Reservas.Server, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null", "Method": "Execute", "Arguments": "[]", "ParameterTypes": "[]"}	[]	2026-07-02 18:18:58.189398-04	2026-07-03 14:19:01.054274-04	0
+217	651	Succeeded	{"Type": "IMT_Reservas.Server.Infrastructure.Jobs.EstadoPrestamoJob, IMT_Reservas.Server, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null", "Method": "Execute", "Arguments": "[]", "ParameterTypes": "[]"}	[]	2026-07-02 18:43:59.708007-04	2026-07-03 14:44:10.376817-04	0
+219	657	Succeeded	{"Type": "IMT_Reservas.Server.Infrastructure.Jobs.EstadoPrestamoJob, IMT_Reservas.Server, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null", "Method": "Execute", "Arguments": "[]", "ParameterTypes": "[]"}	[]	2026-07-02 19:00:09.469312-04	2026-07-03 15:00:09.657226-04	0
+221	663	Succeeded	{"Type": "IMT_Reservas.Server.Infrastructure.Jobs.EstadoPrestamoJob, IMT_Reservas.Server, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null", "Method": "Execute", "Arguments": "[]", "ParameterTypes": "[]"}	[]	2026-07-02 19:20:11.322085-04	2026-07-03 15:20:11.392289-04	0
 \.
 
 
@@ -4747,142 +4805,102 @@ COPY hangfire.job (id, stateid, statename, invocationdata, arguments, createdat,
 --
 
 COPY hangfire.jobparameter (id, jobid, name, value, updatecount) FROM stdin;
-421	106	RecurringJobId	"estado-prestamo"	0
-422	106	Time	1781222188	0
-423	106	CurrentCulture	"es-MX"	0
-424	106	CurrentUICulture	"es-MX"	0
-433	109	RecurringJobId	"estado-prestamo"	0
-434	109	Time	1781223604	0
-435	109	CurrentCulture	"es-MX"	0
-436	109	CurrentUICulture	"es-MX"	0
-445	112	RecurringJobId	"estado-prestamo"	0
-446	112	Time	1781225408	0
-447	112	CurrentCulture	"es-MX"	0
-448	112	CurrentUICulture	"es-MX"	0
-457	115	RecurringJobId	"estado-prestamo"	0
-458	115	Time	1781228975	0
-459	115	CurrentCulture	"es-MX"	0
-460	115	CurrentUICulture	"es-MX"	0
-469	118	RecurringJobId	"estado-prestamo"	0
-470	118	Time	1781230211	0
-471	118	CurrentCulture	"es-MX"	0
-472	118	CurrentUICulture	"es-MX"	0
-481	121	RecurringJobId	"estado-prestamo"	0
-482	121	Time	1781232003	0
-483	121	CurrentCulture	"es-MX"	0
-484	121	CurrentUICulture	"es-MX"	0
-509	128	RecurringJobId	"estado-prestamo"	0
-510	128	Time	1781236204	0
-511	128	CurrentCulture	"es-MX"	0
-512	128	CurrentUICulture	"es-MX"	0
-533	134	RecurringJobId	"estado-prestamo"	0
-534	134	Time	1781239813	0
-535	134	CurrentCulture	"es-MX"	0
-536	134	CurrentUICulture	"es-MX"	0
-545	137	RecurringJobId	"estado-prestamo"	0
-546	137	Time	1781279330	0
-547	137	CurrentCulture	"es-MX"	0
-548	137	CurrentUICulture	"es-MX"	0
-425	107	RecurringJobId	"estado-prestamo"	0
-426	107	Time	1781222415	0
-427	107	CurrentCulture	"es-MX"	0
-428	107	CurrentUICulture	"es-MX"	0
-437	110	RecurringJobId	"estado-prestamo"	0
-438	110	Time	1781224205	0
-439	110	CurrentCulture	"es-MX"	0
-440	110	CurrentUICulture	"es-MX"	0
-449	113	RecurringJobId	"estado-prestamo"	0
-450	113	Time	1781226009	0
-451	113	CurrentCulture	"es-MX"	0
-452	113	CurrentUICulture	"es-MX"	0
-461	116	RecurringJobId	"estado-prestamo"	0
-462	116	Time	1781229006	0
-463	116	CurrentCulture	"es-MX"	0
-464	116	CurrentUICulture	"es-MX"	0
-473	119	RecurringJobId	"estado-prestamo"	0
-474	119	Time	1781230813	0
-475	119	CurrentCulture	"es-MX"	0
-476	119	CurrentUICulture	"es-MX"	0
-489	123	RecurringJobId	"estado-prestamo"	0
-490	123	Time	1781233208	0
-491	123	CurrentCulture	"es-MX"	0
-492	123	CurrentUICulture	"es-MX"	0
-497	125	RecurringJobId	"estado-prestamo"	0
-498	125	Time	1781234413	0
-499	125	CurrentCulture	"es-MX"	0
-500	125	CurrentUICulture	"es-MX"	0
-505	127	RecurringJobId	"estado-prestamo"	0
-506	127	Time	1781235602	0
-507	127	CurrentCulture	"es-MX"	0
-508	127	CurrentUICulture	"es-MX"	0
-513	129	RecurringJobId	"estado-prestamo"	0
-514	129	Time	1781236805	0
-515	129	CurrentCulture	"es-MX"	0
-516	129	CurrentUICulture	"es-MX"	0
-517	130	RecurringJobId	"estado-prestamo"	0
-518	130	Time	1781237405	0
-519	130	CurrentCulture	"es-MX"	0
-520	130	CurrentUICulture	"es-MX"	0
-537	135	RecurringJobId	"estado-prestamo"	0
-538	135	Time	1781240401	0
-539	135	CurrentCulture	"es-MX"	0
-540	135	CurrentUICulture	"es-MX"	0
-549	138	RecurringJobId	"estado-prestamo"	0
-550	138	Time	1781279406	0
-551	138	CurrentCulture	"es-MX"	0
-552	138	CurrentUICulture	"es-MX"	0
-429	108	RecurringJobId	"estado-prestamo"	0
-430	108	Time	1781223002	0
-431	108	CurrentCulture	"es-MX"	0
-432	108	CurrentUICulture	"es-MX"	0
-441	111	RecurringJobId	"estado-prestamo"	0
-442	111	Time	1781224806	0
-443	111	CurrentCulture	"es-MX"	0
-444	111	CurrentUICulture	"es-MX"	0
-453	114	RecurringJobId	"estado-prestamo"	0
-454	114	Time	1781228109	0
-455	114	CurrentCulture	"es-MX"	0
-456	114	CurrentUICulture	"es-MX"	0
-465	117	RecurringJobId	"estado-prestamo"	0
-466	117	Time	1781229609	0
-467	117	CurrentCulture	"es-MX"	0
-468	117	CurrentUICulture	"es-MX"	0
-477	120	RecurringJobId	"estado-prestamo"	0
-478	120	Time	1781231401	0
-479	120	CurrentCulture	"es-MX"	0
-480	120	CurrentUICulture	"es-MX"	0
-485	122	RecurringJobId	"estado-prestamo"	0
-486	122	Time	1781232605	0
-487	122	CurrentCulture	"es-MX"	0
-488	122	CurrentUICulture	"es-MX"	0
-493	124	RecurringJobId	"estado-prestamo"	0
-494	124	Time	1781233810	0
-495	124	CurrentCulture	"es-MX"	0
-496	124	CurrentUICulture	"es-MX"	0
-501	126	RecurringJobId	"estado-prestamo"	0
-502	126	Time	1781235000	0
-503	126	CurrentCulture	"es-MX"	0
-504	126	CurrentUICulture	"es-MX"	0
-521	131	RecurringJobId	"estado-prestamo"	0
-522	131	Time	1781238006	0
-523	131	CurrentCulture	"es-MX"	0
-524	131	CurrentUICulture	"es-MX"	0
-525	132	RecurringJobId	"estado-prestamo"	0
-526	132	Time	1781238609	0
-527	132	CurrentCulture	"es-MX"	0
-528	132	CurrentUICulture	"es-MX"	0
-529	133	RecurringJobId	"estado-prestamo"	0
-530	133	Time	1781239211	0
-531	133	CurrentCulture	"es-MX"	0
-532	133	CurrentUICulture	"es-MX"	0
-541	136	RecurringJobId	"estado-prestamo"	0
-542	136	Time	1781276072	0
-543	136	CurrentCulture	"es-MX"	0
-544	136	CurrentUICulture	"es-MX"	0
-553	139	RecurringJobId	"estado-prestamo"	0
-554	139	Time	1781280008	0
-555	139	CurrentCulture	"es-MX"	0
-556	139	CurrentUICulture	"es-MX"	0
+873	219	RecurringJobId	"estado-prestamo"	0
+874	219	Time	1783018809	0
+875	219	CurrentCulture	"es-MX"	0
+876	219	CurrentUICulture	"es-MX"	0
+877	220	RecurringJobId	"estado-prestamo"	0
+878	220	Time	1783019410	0
+879	220	CurrentCulture	"es-MX"	0
+880	220	CurrentUICulture	"es-MX"	0
+881	221	RecurringJobId	"estado-prestamo"	0
+882	221	Time	1783020011	0
+883	221	CurrentCulture	"es-MX"	0
+884	221	CurrentUICulture	"es-MX"	0
+789	198	RecurringJobId	"estado-prestamo"	0
+790	198	Time	1782965803	0
+791	198	CurrentCulture	"es-MX"	0
+792	198	CurrentUICulture	"es-MX"	0
+793	199	RecurringJobId	"estado-prestamo"	0
+794	199	Time	1782968918	0
+795	199	CurrentCulture	"es-MX"	0
+796	199	CurrentUICulture	"es-MX"	0
+797	200	RecurringJobId	"estado-prestamo"	0
+798	200	Time	1782969009	0
+799	200	CurrentCulture	"es-MX"	0
+800	200	CurrentUICulture	"es-MX"	0
+801	201	RecurringJobId	"estado-prestamo"	0
+802	201	Time	1782969612	0
+803	201	CurrentCulture	"es-MX"	0
+804	201	CurrentUICulture	"es-MX"	0
+805	202	RecurringJobId	"estado-prestamo"	0
+806	202	Time	1782970735	0
+807	202	CurrentCulture	"es-MX"	0
+808	202	CurrentUICulture	"es-MX"	0
+809	203	RecurringJobId	"estado-prestamo"	0
+810	203	Time	1782970811	0
+811	203	CurrentCulture	"es-MX"	0
+812	203	CurrentUICulture	"es-MX"	0
+813	204	RecurringJobId	"estado-prestamo"	0
+814	204	Time	1782975277	0
+815	204	CurrentCulture	"es-MX"	0
+816	204	CurrentUICulture	"es-MX"	0
+817	205	RecurringJobId	"estado-prestamo"	0
+818	205	Time	1783005116	0
+819	205	CurrentCulture	"es-MX"	0
+820	205	CurrentUICulture	"es-MX"	0
+821	206	RecurringJobId	"estado-prestamo"	0
+822	206	Time	1783005612	0
+823	206	CurrentCulture	"es-MX"	0
+824	206	CurrentUICulture	"es-MX"	0
+825	207	RecurringJobId	"estado-prestamo"	0
+826	207	Time	1783006214	0
+827	207	CurrentCulture	"es-MX"	0
+828	207	CurrentUICulture	"es-MX"	0
+829	208	RecurringJobId	"estado-prestamo"	0
+830	208	Time	1783006802	0
+831	208	CurrentCulture	"es-MX"	0
+832	208	CurrentUICulture	"es-MX"	0
+833	209	RecurringJobId	"estado-prestamo"	0
+834	209	Time	1783007404	0
+835	209	CurrentCulture	"es-MX"	0
+836	209	CurrentUICulture	"es-MX"	0
+837	210	RecurringJobId	"estado-prestamo"	0
+838	210	Time	1783008007	0
+839	210	CurrentCulture	"es-MX"	0
+840	210	CurrentUICulture	"es-MX"	0
+841	211	RecurringJobId	"estado-prestamo"	0
+842	211	Time	1783008602	0
+843	211	CurrentCulture	"es-MX"	0
+844	211	CurrentUICulture	"es-MX"	0
+845	212	RecurringJobId	"estado-prestamo"	0
+846	212	Time	1783009205	0
+847	212	CurrentCulture	"es-MX"	0
+848	212	CurrentUICulture	"es-MX"	0
+849	213	RecurringJobId	"estado-prestamo"	0
+850	213	Time	1783009807	0
+851	213	CurrentCulture	"es-MX"	0
+852	213	CurrentUICulture	"es-MX"	0
+853	214	RecurringJobId	"estado-prestamo"	0
+854	214	Time	1783014686	0
+855	214	CurrentCulture	"es-MX"	0
+856	214	CurrentUICulture	"es-MX"	0
+857	215	RecurringJobId	"estado-prestamo"	0
+858	215	Time	1783016337	0
+859	215	CurrentCulture	"es-MX"	0
+860	215	CurrentUICulture	"es-MX"	0
+861	216	RecurringJobId	"estado-prestamo"	0
+862	216	Time	1783016413	0
+863	216	CurrentCulture	"es-MX"	0
+864	216	CurrentUICulture	"es-MX"	0
+865	217	RecurringJobId	"estado-prestamo"	0
+866	217	Time	1783017837	0
+867	217	CurrentCulture	"es-MX"	0
+868	217	CurrentUICulture	"es-MX"	0
+869	218	RecurringJobId	"estado-prestamo"	0
+870	218	Time	1783018688	0
+871	218	CurrentCulture	"es-MX"	0
+872	218	CurrentUICulture	"es-MX"	0
 \.
 
 
@@ -4932,7 +4950,7 @@ COPY hangfire.server (id, data, lastheartbeat, updatecount) FROM stdin;
 --
 
 COPY hangfire.set (id, key, score, value, expireat, updatecount) FROM stdin;
-1	recurring-jobs	1781280600	estado-prestamo	\N	0
+1	recurring-jobs	1783020600	estado-prestamo	\N	0
 \.
 
 
@@ -4941,108 +4959,78 @@ COPY hangfire.set (id, key, score, value, expireat, updatecount) FROM stdin;
 --
 
 COPY hangfire.state (id, jobid, name, reason, createdat, data, updatecount) FROM stdin;
-321	107	Succeeded	\N	2026-06-12 00:00:15.322751-04	{"Latency": "171", "SucceededAt": "2026-06-12T00:00:15.2974402Z", "PerformanceDuration": "54"}	0
-330	110	Succeeded	\N	2026-06-12 00:30:06.139365-04	{"Latency": "256", "SucceededAt": "2026-06-12T00:30:06.0819050Z", "PerformanceDuration": "72"}	0
-336	112	Succeeded	\N	2026-06-12 00:50:09.101446-04	{"Latency": "190", "SucceededAt": "2026-06-12T00:50:09.0594112Z", "PerformanceDuration": "75"}	0
-344	115	Processing	\N	2026-06-12 01:49:36.555345-04	{"ServerId": "x:14740:3b7026c2-5033-4ef1-b6d4-010a6bad9ae5", "WorkerId": "6976f811-0e88-4af3-a182-55637ef8383f", "StartedAt": "2026-06-12T01:49:36.5265361Z"}	0
-351	117	Succeeded	\N	2026-06-12 02:00:09.408934-04	{"Latency": "45", "SucceededAt": "2026-06-12T02:00:09.3993280Z", "PerformanceDuration": "21"}	0
-376	126	Enqueued	Triggered by recurring job scheduler	2026-06-12 03:30:00.488966-04	{"Queue": "default", "EnqueuedAt": "2026-06-12T03:30:00.4884263Z"}	0
-389	130	Processing	\N	2026-06-12 04:10:05.880602-04	{"ServerId": "x:14740:3b7026c2-5033-4ef1-b6d4-010a6bad9ae5", "WorkerId": "fceeaa19-f73a-481b-8791-fc66838f1cd5", "StartedAt": "2026-06-12T04:10:05.8723762Z"}	0
-392	131	Processing	\N	2026-06-12 04:20:06.924098-04	{"ServerId": "x:14740:3b7026c2-5033-4ef1-b6d4-010a6bad9ae5", "WorkerId": "f47d9775-0bc5-4b32-98ca-ebb99906aa56", "StartedAt": "2026-06-12T04:20:06.9165420Z"}	0
-395	132	Processing	\N	2026-06-12 04:30:09.081738-04	{"ServerId": "x:14740:3b7026c2-5033-4ef1-b6d4-010a6bad9ae5", "WorkerId": "0347da5f-0937-414d-91f3-044e817e0525", "StartedAt": "2026-06-12T04:30:09.0749450Z"}	0
-398	133	Processing	\N	2026-06-12 04:40:11.457063-04	{"ServerId": "x:14740:3b7026c2-5033-4ef1-b6d4-010a6bad9ae5", "WorkerId": "69a4c2e5-9793-4757-b656-09656158fbea", "StartedAt": "2026-06-12T04:40:11.4524202Z"}	0
-402	134	Succeeded	\N	2026-06-12 04:50:13.980837-04	{"Latency": "32", "SucceededAt": "2026-06-12T04:50:13.9742525Z", "PerformanceDuration": "9"}	0
-408	136	Succeeded	\N	2026-06-12 14:54:39.015562-04	{"Latency": "382", "SucceededAt": "2026-06-12T14:54:38.8724860Z", "PerformanceDuration": "5660"}	0
-415	139	Enqueued	Triggered by recurring job scheduler	2026-06-12 16:00:08.915539-04	{"Queue": "default", "EnqueuedAt": "2026-06-12T16:00:08.9152594Z"}	0
-416	139	Processing	\N	2026-06-12 16:00:08.928265-04	{"ServerId": "x:21768:5f8a7391-72d8-4c56-8b02-9e31eee73ebc", "WorkerId": "90e16590-7d8b-405c-b9a4-8724f9e82a71", "StartedAt": "2026-06-12T16:00:08.9254987Z"}	0
-417	139	Succeeded	\N	2026-06-12 16:00:08.976648-04	{"Latency": "24", "SucceededAt": "2026-06-12T16:00:08.9450498Z", "PerformanceDuration": "13"}	0
-316	106	Enqueued	Triggered by recurring job scheduler	2026-06-11 23:56:29.051585-04	{"Queue": "default", "EnqueuedAt": "2026-06-11T23:56:29.0256813Z"}	0
-322	108	Enqueued	Triggered by recurring job scheduler	2026-06-12 00:10:02.074065-04	{"Queue": "default", "EnqueuedAt": "2026-06-12T00:10:02.0737456Z"}	0
-323	108	Processing	\N	2026-06-12 00:10:02.091123-04	{"ServerId": "x:7152:49468b21-b203-4ba3-adaf-63e5b009efcd", "WorkerId": "b8f2f8f3-bc1c-4443-885b-7e3f0215ca6a", "StartedAt": "2026-06-12T00:10:02.0876265Z"}	0
-324	108	Succeeded	\N	2026-06-12 00:10:02.238963-04	{"Latency": "34", "SucceededAt": "2026-06-12T00:10:02.2328223Z", "PerformanceDuration": "137"}	0
-331	111	Enqueued	Triggered by recurring job scheduler	2026-06-12 00:40:06.672641-04	{"Queue": "default", "EnqueuedAt": "2026-06-12T00:40:06.6720768Z"}	0
-337	113	Enqueued	Triggered by recurring job scheduler	2026-06-12 01:00:09.671568-04	{"Queue": "default", "EnqueuedAt": "2026-06-12T01:00:09.6710912Z"}	0
-338	113	Processing	\N	2026-06-12 01:00:09.697907-04	{"ServerId": "x:6856:4ebcee2b-800a-4c8b-8a3f-0a0e183acf84", "WorkerId": "8105bdf2-fd45-401e-bc30-eff94802c557", "StartedAt": "2026-06-12T01:00:09.6919752Z"}	0
-339	113	Succeeded	\N	2026-06-12 01:00:09.74108-04	{"Latency": "73", "SucceededAt": "2026-06-12T01:00:09.7257141Z", "PerformanceDuration": "20"}	0
-345	115	Succeeded	\N	2026-06-12 01:49:38.51859-04	{"Latency": "374", "SucceededAt": "2026-06-12T01:49:38.4390319Z", "PerformanceDuration": "1871"}	0
-352	118	Enqueued	Triggered by recurring job scheduler	2026-06-12 02:10:11.40815-04	{"Queue": "default", "EnqueuedAt": "2026-06-12T02:10:11.4077703Z"}	0
-354	118	Succeeded	\N	2026-06-12 02:10:11.447749-04	{"Latency": "35", "SucceededAt": "2026-06-12T02:10:11.4423410Z", "PerformanceDuration": "12"}	0
-377	126	Processing	\N	2026-06-12 03:30:00.511895-04	{"ServerId": "x:14740:3b7026c2-5033-4ef1-b6d4-010a6bad9ae5", "WorkerId": "3312d301-9f6e-49a6-babc-59f640203c40", "StartedAt": "2026-06-12T03:30:00.5034621Z"}	0
-390	130	Succeeded	\N	2026-06-12 04:10:05.899182-04	{"Latency": "29", "SucceededAt": "2026-06-12T04:10:05.8926046Z", "PerformanceDuration": "8"}	0
-391	131	Enqueued	Triggered by recurring job scheduler	2026-06-12 04:20:06.907617-04	{"Queue": "default", "EnqueuedAt": "2026-06-12T04:20:06.9073818Z"}	0
-393	131	Succeeded	\N	2026-06-12 04:20:06.935222-04	{"Latency": "67", "SucceededAt": "2026-06-12T04:20:06.9316709Z", "PerformanceDuration": "4"}	0
-394	132	Enqueued	Triggered by recurring job scheduler	2026-06-12 04:30:09.05631-04	{"Queue": "default", "EnqueuedAt": "2026-06-12T04:30:09.0560023Z"}	0
-396	132	Succeeded	\N	2026-06-12 04:30:09.115444-04	{"Latency": "44", "SucceededAt": "2026-06-12T04:30:09.1037810Z", "PerformanceDuration": "14"}	0
-397	133	Enqueued	Triggered by recurring job scheduler	2026-06-12 04:40:11.428211-04	{"Queue": "default", "EnqueuedAt": "2026-06-12T04:40:11.4279990Z"}	0
-399	133	Succeeded	\N	2026-06-12 04:40:11.466213-04	{"Latency": "42", "SucceededAt": "2026-06-12T04:40:11.4628419Z", "PerformanceDuration": "3"}	0
-401	134	Processing	\N	2026-06-12 04:50:13.962606-04	{"ServerId": "x:14740:3b7026c2-5033-4ef1-b6d4-010a6bad9ae5", "WorkerId": "86b80cc4-3c43-432e-9102-0c141a0b0e7a", "StartedAt": "2026-06-12T04:50:13.9601569Z"}	0
-409	137	Enqueued	Triggered by recurring job scheduler	2026-06-12 15:48:50.970336-04	{"Queue": "default", "EnqueuedAt": "2026-06-12T15:48:50.9427026Z"}	0
-413	138	Processing	\N	2026-06-12 15:50:06.55514-04	{"ServerId": "x:21768:5f8a7391-72d8-4c56-8b02-9e31eee73ebc", "WorkerId": "504d969f-49ab-45a2-8641-3ec5da54474a", "StartedAt": "2026-06-12T15:50:06.5483421Z"}	0
-317	106	Processing	\N	2026-06-11 23:56:29.215203-04	{"ServerId": "x:7152:49468b21-b203-4ba3-adaf-63e5b009efcd", "WorkerId": "17805fde-ebb3-41f3-8ddf-e9b4420cdf99", "StartedAt": "2026-06-11T23:56:29.1751758Z"}	0
-325	109	Enqueued	Triggered by recurring job scheduler	2026-06-12 00:20:04.303651-04	{"Queue": "default", "EnqueuedAt": "2026-06-12T00:20:04.3033568Z"}	0
-332	111	Processing	\N	2026-06-12 00:40:06.697826-04	{"ServerId": "x:28772:7ad13435-85c7-4ec2-90bc-140c8ff0caa3", "WorkerId": "2a5a5fc6-8fa8-4142-8eee-6ba74270d369", "StartedAt": "2026-06-12T00:40:06.6917249Z"}	0
-340	114	Enqueued	Triggered by recurring job scheduler	2026-06-12 01:35:09.493453-04	{"Queue": "default", "EnqueuedAt": "2026-06-12T01:35:09.4541845Z"}	0
-346	116	Enqueued	Triggered by recurring job scheduler	2026-06-12 01:50:06.75281-04	{"Queue": "default", "EnqueuedAt": "2026-06-12T01:50:06.7520642Z"}	0
-355	119	Enqueued	Triggered by recurring job scheduler	2026-06-12 02:20:13.912965-04	{"Queue": "default", "EnqueuedAt": "2026-06-12T02:20:13.9126038Z"}	0
-357	119	Succeeded	\N	2026-06-12 02:20:13.958629-04	{"Latency": "38", "SucceededAt": "2026-06-12T02:20:13.9514566Z", "PerformanceDuration": "12"}	0
-378	126	Succeeded	\N	2026-06-12 03:30:00.540464-04	{"Latency": "39", "SucceededAt": "2026-06-12T03:30:00.5257178Z", "PerformanceDuration": "6"}	0
-400	134	Enqueued	Triggered by recurring job scheduler	2026-06-12 04:50:13.951419-04	{"Queue": "default", "EnqueuedAt": "2026-06-12T04:50:13.9511764Z"}	0
-404	135	Processing	\N	2026-06-12 05:00:01.134138-04	{"ServerId": "x:14740:3b7026c2-5033-4ef1-b6d4-010a6bad9ae5", "WorkerId": "9fa3572e-2a93-4100-a41e-8070788d665f", "StartedAt": "2026-06-12T05:00:01.1313647Z"}	0
-410	137	Processing	\N	2026-06-12 15:48:51.054358-04	{"ServerId": "x:21768:5f8a7391-72d8-4c56-8b02-9e31eee73ebc", "WorkerId": "504d969f-49ab-45a2-8641-3ec5da54474a", "StartedAt": "2026-06-12T15:48:51.0245712Z"}	0
-318	106	Succeeded	\N	2026-06-11 23:56:33.620609-04	{"Latency": "426", "SucceededAt": "2026-06-11T23:56:33.5820806Z", "PerformanceDuration": "4355"}	0
-326	109	Processing	\N	2026-06-12 00:20:04.320933-04	{"ServerId": "x:7152:49468b21-b203-4ba3-adaf-63e5b009efcd", "WorkerId": "0c75b1f9-67c0-4de5-9670-0bd19bf17cf5", "StartedAt": "2026-06-12T00:20:04.3152961Z"}	0
-327	109	Succeeded	\N	2026-06-12 00:20:04.33683-04	{"Latency": "33", "SucceededAt": "2026-06-12T00:20:04.3330328Z", "PerformanceDuration": "8"}	0
-333	111	Succeeded	\N	2026-06-12 00:40:06.730032-04	{"Latency": "40", "SucceededAt": "2026-06-12T00:40:06.7157062Z", "PerformanceDuration": "13"}	0
-341	114	Processing	\N	2026-06-12 01:35:09.59191-04	{"ServerId": "x:31768:f87a1240-2f03-4eeb-ad7c-327430ad76f6", "WorkerId": "6dcf34dd-898c-4489-89f4-fdd5af5a927b", "StartedAt": "2026-06-12T01:35:09.5632346Z"}	0
-347	116	Processing	\N	2026-06-12 01:50:06.780219-04	{"ServerId": "x:14740:3b7026c2-5033-4ef1-b6d4-010a6bad9ae5", "WorkerId": "6976f811-0e88-4af3-a182-55637ef8383f", "StartedAt": "2026-06-12T01:50:06.7681880Z"}	0
-356	119	Processing	\N	2026-06-12 02:20:13.933185-04	{"ServerId": "x:14740:3b7026c2-5033-4ef1-b6d4-010a6bad9ae5", "WorkerId": "3312d301-9f6e-49a6-babc-59f640203c40", "StartedAt": "2026-06-12T02:20:13.9247074Z"}	0
-358	120	Enqueued	Triggered by recurring job scheduler	2026-06-12 02:30:01.301779-04	{"Queue": "default", "EnqueuedAt": "2026-06-12T02:30:01.3015136Z"}	0
-360	120	Succeeded	\N	2026-06-12 02:30:01.341878-04	{"Latency": "29", "SucceededAt": "2026-06-12T02:30:01.3359627Z", "PerformanceDuration": "11"}	0
-362	121	Processing	\N	2026-06-12 02:40:03.43235-04	{"ServerId": "x:14740:3b7026c2-5033-4ef1-b6d4-010a6bad9ae5", "WorkerId": "558481b3-77e0-4b9b-a859-40fd899f9a1a", "StartedAt": "2026-06-12T02:40:03.4269547Z"}	0
-364	122	Enqueued	Triggered by recurring job scheduler	2026-06-12 02:50:05.825497-04	{"Queue": "default", "EnqueuedAt": "2026-06-12T02:50:05.8252133Z"}	0
-368	123	Processing	\N	2026-06-12 03:00:08.322773-04	{"ServerId": "x:14740:3b7026c2-5033-4ef1-b6d4-010a6bad9ae5", "WorkerId": "fceeaa19-f73a-481b-8791-fc66838f1cd5", "StartedAt": "2026-06-12T03:00:08.3200425Z"}	0
-370	124	Enqueued	Triggered by recurring job scheduler	2026-06-12 03:10:10.610794-04	{"Queue": "default", "EnqueuedAt": "2026-06-12T03:10:10.6105521Z"}	0
-371	124	Processing	\N	2026-06-12 03:10:10.6327-04	{"ServerId": "x:14740:3b7026c2-5033-4ef1-b6d4-010a6bad9ae5", "WorkerId": "86b80cc4-3c43-432e-9102-0c141a0b0e7a", "StartedAt": "2026-06-12T03:10:10.6277353Z"}	0
-372	124	Succeeded	\N	2026-06-12 03:10:10.664299-04	{"Latency": "39", "SucceededAt": "2026-06-12T03:10:10.6569955Z", "PerformanceDuration": "17"}	0
-382	128	Enqueued	Triggered by recurring job scheduler	2026-06-12 03:50:04.592716-04	{"Queue": "default", "EnqueuedAt": "2026-06-12T03:50:04.5925699Z"}	0
-383	128	Processing	\N	2026-06-12 03:50:04.607537-04	{"ServerId": "x:14740:3b7026c2-5033-4ef1-b6d4-010a6bad9ae5", "WorkerId": "558481b3-77e0-4b9b-a859-40fd899f9a1a", "StartedAt": "2026-06-12T03:50:04.6027039Z"}	0
-384	128	Succeeded	\N	2026-06-12 03:50:04.625861-04	{"Latency": "20", "SucceededAt": "2026-06-12T03:50:04.6183169Z", "PerformanceDuration": "8"}	0
-403	135	Enqueued	Triggered by recurring job scheduler	2026-06-12 05:00:01.117507-04	{"Queue": "default", "EnqueuedAt": "2026-06-12T05:00:01.1170563Z"}	0
-405	135	Succeeded	\N	2026-06-12 05:00:01.144558-04	{"Latency": "36", "SucceededAt": "2026-06-12T05:00:01.1410843Z", "PerformanceDuration": "4"}	0
-411	137	Succeeded	\N	2026-06-12 15:48:55.87981-04	{"Latency": "207", "SucceededAt": "2026-06-12T15:48:55.7811535Z", "PerformanceDuration": "4714"}	0
-319	107	Enqueued	Triggered by recurring job scheduler	2026-06-12 00:00:15.110746-04	{"Queue": "default", "EnqueuedAt": "2026-06-12T00:00:15.1102881Z"}	0
-328	110	Enqueued	Triggered by recurring job scheduler	2026-06-12 00:30:05.871419-04	{"Queue": "default", "EnqueuedAt": "2026-06-12T00:30:05.8296394Z"}	0
-334	112	Enqueued	Triggered by recurring job scheduler	2026-06-12 00:50:08.871051-04	{"Queue": "default", "EnqueuedAt": "2026-06-12T00:50:08.8385505Z"}	0
-342	114	Succeeded	\N	2026-06-12 01:35:12.706546-04	{"Latency": "233", "SucceededAt": "2026-06-12T01:35:12.6593984Z", "PerformanceDuration": "3055"}	0
-349	117	Enqueued	Triggered by recurring job scheduler	2026-06-12 02:00:09.34942-04	{"Queue": "default", "EnqueuedAt": "2026-06-12T02:00:09.3488143Z"}	0
-359	120	Processing	\N	2026-06-12 02:30:01.319188-04	{"ServerId": "x:14740:3b7026c2-5033-4ef1-b6d4-010a6bad9ae5", "WorkerId": "880ad0d1-0896-4193-a19b-092c00624057", "StartedAt": "2026-06-12T02:30:01.3105431Z"}	0
-361	121	Enqueued	Triggered by recurring job scheduler	2026-06-12 02:40:03.42076-04	{"Queue": "default", "EnqueuedAt": "2026-06-12T02:40:03.4205390Z"}	0
-363	121	Succeeded	\N	2026-06-12 02:40:03.453109-04	{"Latency": "48", "SucceededAt": "2026-06-12T02:40:03.4380137Z", "PerformanceDuration": "3"}	0
-365	122	Processing	\N	2026-06-12 02:50:05.839184-04	{"ServerId": "x:14740:3b7026c2-5033-4ef1-b6d4-010a6bad9ae5", "WorkerId": "28cbb8d0-e357-4d2b-96a8-03695ca75648", "StartedAt": "2026-06-12T02:50:05.8355729Z"}	0
-366	122	Succeeded	\N	2026-06-12 02:50:05.855225-04	{"Latency": "21", "SucceededAt": "2026-06-12T02:50:05.8503820Z", "PerformanceDuration": "8"}	0
-385	129	Enqueued	Triggered by recurring job scheduler	2026-06-12 04:00:05.296993-04	{"Queue": "default", "EnqueuedAt": "2026-06-12T04:00:05.2967822Z"}	0
-386	129	Processing	\N	2026-06-12 04:00:05.328848-04	{"ServerId": "x:14740:3b7026c2-5033-4ef1-b6d4-010a6bad9ae5", "WorkerId": "28cbb8d0-e357-4d2b-96a8-03695ca75648", "StartedAt": "2026-06-12T04:00:05.3243287Z"}	0
-387	129	Succeeded	\N	2026-06-12 04:00:05.34565-04	{"Latency": "42", "SucceededAt": "2026-06-12T04:00:05.3383536Z", "PerformanceDuration": "7"}	0
-406	136	Enqueued	Triggered by recurring job scheduler	2026-06-12 14:54:33.022585-04	{"Queue": "default", "EnqueuedAt": "2026-06-12T14:54:32.9878633Z"}	0
-412	138	Enqueued	Triggered by recurring job scheduler	2026-06-12 15:50:06.531868-04	{"Queue": "default", "EnqueuedAt": "2026-06-12T15:50:06.5312412Z"}	0
-320	107	Processing	\N	2026-06-12 00:00:15.236501-04	{"ServerId": "x:7152:49468b21-b203-4ba3-adaf-63e5b009efcd", "WorkerId": "17805fde-ebb3-41f3-8ddf-e9b4420cdf99", "StartedAt": "2026-06-12T00:00:15.2241447Z"}	0
-329	110	Processing	\N	2026-06-12 00:30:05.996433-04	{"ServerId": "x:28772:7ad13435-85c7-4ec2-90bc-140c8ff0caa3", "WorkerId": "d6977b51-eedc-492a-95aa-3411cdf20b84", "StartedAt": "2026-06-12T00:30:05.9561040Z"}	0
-335	112	Processing	\N	2026-06-12 00:50:08.972762-04	{"ServerId": "x:6856:4ebcee2b-800a-4c8b-8a3f-0a0e183acf84", "WorkerId": "f91e5bfe-1cb3-4aca-ad41-88f0a818b513", "StartedAt": "2026-06-12T00:50:08.9307288Z"}	0
-343	115	Enqueued	Triggered by recurring job scheduler	2026-06-12 01:49:36.468623-04	{"Queue": "default", "EnqueuedAt": "2026-06-12T01:49:36.4476093Z"}	0
-348	116	Succeeded	\N	2026-06-12 01:50:06.819942-04	{"Latency": "47", "SucceededAt": "2026-06-12T01:50:06.8125408Z", "PerformanceDuration": "26"}	0
-350	117	Processing	\N	2026-06-12 02:00:09.372439-04	{"ServerId": "x:14740:3b7026c2-5033-4ef1-b6d4-010a6bad9ae5", "WorkerId": "86b80cc4-3c43-432e-9102-0c141a0b0e7a", "StartedAt": "2026-06-12T02:00:09.3629997Z"}	0
-353	118	Processing	\N	2026-06-12 02:10:11.426504-04	{"ServerId": "x:14740:3b7026c2-5033-4ef1-b6d4-010a6bad9ae5", "WorkerId": "9fa3572e-2a93-4100-a41e-8070788d665f", "StartedAt": "2026-06-12T02:10:11.4224170Z"}	0
-367	123	Enqueued	Triggered by recurring job scheduler	2026-06-12 03:00:08.307649-04	{"Queue": "default", "EnqueuedAt": "2026-06-12T03:00:08.3070374Z"}	0
-369	123	Succeeded	\N	2026-06-12 03:00:08.33699-04	{"Latency": "55", "SucceededAt": "2026-06-12T03:00:08.3325337Z", "PerformanceDuration": "6"}	0
-373	125	Enqueued	Triggered by recurring job scheduler	2026-06-12 03:20:13.306281-04	{"Queue": "default", "EnqueuedAt": "2026-06-12T03:20:13.3059358Z"}	0
-374	125	Processing	\N	2026-06-12 03:20:13.320406-04	{"ServerId": "x:14740:3b7026c2-5033-4ef1-b6d4-010a6bad9ae5", "WorkerId": "9fa3572e-2a93-4100-a41e-8070788d665f", "StartedAt": "2026-06-12T03:20:13.3162870Z"}	0
-375	125	Succeeded	\N	2026-06-12 03:20:13.342857-04	{"Latency": "31", "SucceededAt": "2026-06-12T03:20:13.3377408Z", "PerformanceDuration": "12"}	0
-379	127	Enqueued	Triggered by recurring job scheduler	2026-06-12 03:40:02.94428-04	{"Queue": "default", "EnqueuedAt": "2026-06-12T03:40:02.9440827Z"}	0
-380	127	Processing	\N	2026-06-12 03:40:02.957764-04	{"ServerId": "x:14740:3b7026c2-5033-4ef1-b6d4-010a6bad9ae5", "WorkerId": "880ad0d1-0896-4193-a19b-092c00624057", "StartedAt": "2026-06-12T03:40:02.9537270Z"}	0
-381	127	Succeeded	\N	2026-06-12 03:40:02.976471-04	{"Latency": "22", "SucceededAt": "2026-06-12T03:40:02.9714694Z", "PerformanceDuration": "9"}	0
-388	130	Enqueued	Triggered by recurring job scheduler	2026-06-12 04:10:05.86364-04	{"Queue": "default", "EnqueuedAt": "2026-06-12T04:10:05.8634610Z"}	0
-407	136	Processing	\N	2026-06-12 14:54:33.200842-04	{"ServerId": "x:27084:a7a69097-9eaf-49b8-aabb-7cae67f57dbd", "WorkerId": "394299af-ff3b-4c3a-9299-d43857193a50", "StartedAt": "2026-06-12T14:54:33.1574864Z"}	0
-414	138	Succeeded	\N	2026-06-12 15:50:06.613844-04	{"Latency": "45", "SucceededAt": "2026-06-12T15:50:06.5935609Z", "PerformanceDuration": "32"}	0
+594	198	Succeeded	\N	2026-07-02 04:16:49.826916-04	{"Latency": "281", "SucceededAt": "2026-07-02T04:16:49.7852545Z", "PerformanceDuration": "5838"}	0
+597	199	Succeeded	\N	2026-07-02 05:08:48.686724-04	{"Latency": "502", "SucceededAt": "2026-07-02T05:08:48.3828784Z", "PerformanceDuration": "8919"}	0
+598	200	Enqueued	Triggered by recurring job scheduler	2026-07-02 05:10:09.839864-04	{"Queue": "default", "EnqueuedAt": "2026-07-02T05:10:09.8392210Z"}	0
+601	201	Enqueued	Triggered by recurring job scheduler	2026-07-02 05:20:12.521891-04	{"Queue": "default", "EnqueuedAt": "2026-07-02T05:20:12.5214282Z"}	0
+602	201	Processing	\N	2026-07-02 05:20:12.561125-04	{"ServerId": "x:38508:4f69c811-fbe7-4bfe-8173-52ed869a9873", "WorkerId": "d494a03c-112e-4782-b860-8bcbdb2f9c20", "StartedAt": "2026-07-02T05:20:12.5560175Z"}	0
+603	201	Succeeded	\N	2026-07-02 05:20:13.063715-04	{"Latency": "59", "SucceededAt": "2026-07-02T05:20:12.9866742Z", "PerformanceDuration": "420"}	0
+606	202	Succeeded	\N	2026-07-02 05:39:04.630091-04	{"Latency": "482", "SucceededAt": "2026-07-02T05:39:04.5590405Z", "PerformanceDuration": "8654"}	0
+609	203	Succeeded	\N	2026-07-02 05:40:11.658021-04	{"Latency": "80", "SucceededAt": "2026-07-02T05:40:11.5577374Z", "PerformanceDuration": "426"}	0
+612	204	Succeeded	\N	2026-07-02 06:54:37.181724-04	{"Latency": "56", "SucceededAt": "2026-07-02T06:54:37.1701911Z", "PerformanceDuration": "24"}	0
+613	205	Enqueued	Triggered by recurring job scheduler	2026-07-02 15:11:56.085346-04	{"Queue": "default", "EnqueuedAt": "2026-07-02T15:11:56.0850026Z"}	0
+619	207	Enqueued	Triggered by recurring job scheduler	2026-07-02 15:30:14.895845-04	{"Queue": "default", "EnqueuedAt": "2026-07-02T15:30:14.8954557Z"}	0
+622	208	Enqueued	Triggered by recurring job scheduler	2026-07-02 15:40:02.530931-04	{"Queue": "default", "EnqueuedAt": "2026-07-02T15:40:02.5306337Z"}	0
+624	208	Succeeded	\N	2026-07-02 15:40:02.571487-04	{"Latency": "21", "SucceededAt": "2026-07-02T15:40:02.5552502Z", "PerformanceDuration": "8"}	0
+625	209	Enqueued	Triggered by recurring job scheduler	2026-07-02 15:50:04.949341-04	{"Queue": "default", "EnqueuedAt": "2026-07-02T15:50:04.9487524Z"}	0
+629	210	Processing	\N	2026-07-02 16:00:07.067573-04	{"ServerId": "x:2652:7525cdbe-7f5f-4fb3-9520-732b1615d3df", "WorkerId": "85c5d056-a2ce-4b7e-bc1d-12bfffac1062", "StartedAt": "2026-07-02T16:00:07.0640379Z"}	0
+631	211	Enqueued	Triggered by recurring job scheduler	2026-07-02 16:10:02.748462-04	{"Queue": "default", "EnqueuedAt": "2026-07-02T16:10:02.6869668Z"}	0
+634	212	Enqueued	Triggered by recurring job scheduler	2026-07-02 16:20:05.180283-04	{"Queue": "default", "EnqueuedAt": "2026-07-02T16:20:05.1795739Z"}	0
+635	212	Processing	\N	2026-07-02 16:20:05.205149-04	{"ServerId": "x:35052:74d12a0b-b856-4c43-ac6b-e8f70e6883f1", "WorkerId": "33880127-1b62-47bc-8c40-895d300cc116", "StartedAt": "2026-07-02T16:20:05.1991647Z"}	0
+636	212	Succeeded	\N	2026-07-02 16:20:05.240621-04	{"Latency": "103", "SucceededAt": "2026-07-02T16:20:05.2297608Z", "PerformanceDuration": "19"}	0
+638	213	Processing	\N	2026-07-02 16:30:07.765745-04	{"ServerId": "x:35052:74d12a0b-b856-4c43-ac6b-e8f70e6883f1", "WorkerId": "270b9d17-94a7-41f9-830d-734a6d6f8f1c", "StartedAt": "2026-07-02T16:30:07.7513938Z"}	0
+641	214	Processing	\N	2026-07-02 17:51:27.259052-04	{"ServerId": "x:27004:a29913a3-b9df-4813-a3cc-35c917b2b8d9", "WorkerId": "48861a7b-c9c7-4e02-b389-2530c818ff37", "StartedAt": "2026-07-02T17:51:27.1725549Z"}	0
+644	215	Processing	\N	2026-07-02 18:18:58.368052-04	{"ServerId": "x:21600:c8627ef7-39fc-4060-8a70-a35b3d2d08e2", "WorkerId": "7e58ad67-c28f-477d-bc9b-010845fadabe", "StartedAt": "2026-07-02T18:18:58.3384225Z"}	0
+647	216	Processing	\N	2026-07-02 18:20:13.475159-04	{"ServerId": "x:21600:c8627ef7-39fc-4060-8a70-a35b3d2d08e2", "WorkerId": "7e58ad67-c28f-477d-bc9b-010845fadabe", "StartedAt": "2026-07-02T18:20:13.4647286Z"}	0
+651	217	Succeeded	\N	2026-07-02 18:44:10.398024-04	{"Latency": "635", "SucceededAt": "2026-07-02T18:44:10.0810176Z", "PerformanceDuration": "9729"}	0
+654	218	Succeeded	\N	2026-07-02 18:58:18.206757-04	{"Latency": "234", "SucceededAt": "2026-07-02T18:58:18.0620283Z", "PerformanceDuration": "8724"}	0
+655	219	Enqueued	Triggered by recurring job scheduler	2026-07-02 19:00:09.537356-04	{"Queue": "default", "EnqueuedAt": "2026-07-02T19:00:09.5367998Z"}	0
+658	220	Enqueued	Triggered by recurring job scheduler	2026-07-02 19:10:10.45722-04	{"Queue": "default", "EnqueuedAt": "2026-07-02T19:10:10.4567880Z"}	0
+659	220	Processing	\N	2026-07-02 19:10:10.480893-04	{"ServerId": "x:39192:3fba42cd-17ce-4213-9e2c-d6447f87ba77", "WorkerId": "dd9645a9-0966-4c77-8da2-b49bfa47c575", "StartedAt": "2026-07-02T19:10:10.4743809Z"}	0
+660	220	Succeeded	\N	2026-07-02 19:10:10.523634-04	{"Latency": "45", "SucceededAt": "2026-07-02T19:10:10.5123260Z", "PerformanceDuration": "25"}	0
+592	198	Enqueued	Triggered by recurring job scheduler	2026-07-02 04:16:43.793863-04	{"Queue": "default", "EnqueuedAt": "2026-07-02T04:16:43.7671104Z"}	0
+595	199	Enqueued	Triggered by recurring job scheduler	2026-07-02 05:08:39.280366-04	{"Queue": "default", "EnqueuedAt": "2026-07-02T05:08:39.2339611Z"}	0
+599	200	Processing	\N	2026-07-02 05:10:09.85913-04	{"ServerId": "x:38508:4f69c811-fbe7-4bfe-8173-52ed869a9873", "WorkerId": "dd15c805-82f2-448d-899b-f4c313ca8ded", "StartedAt": "2026-07-02T05:10:09.8505699Z"}	0
+604	202	Enqueued	Triggered by recurring job scheduler	2026-07-02 05:38:55.714734-04	{"Queue": "default", "EnqueuedAt": "2026-07-02T05:38:55.6560123Z"}	0
+607	203	Enqueued	Triggered by recurring job scheduler	2026-07-02 05:40:11.07685-04	{"Queue": "default", "EnqueuedAt": "2026-07-02T05:40:11.0757463Z"}	0
+610	204	Enqueued	Triggered by recurring job scheduler	2026-07-02 06:54:37.105275-04	{"Queue": "default", "EnqueuedAt": "2026-07-02T06:54:37.1048963Z"}	0
+614	205	Processing	\N	2026-07-02 15:11:56.122739-04	{"ServerId": "x:2652:7525cdbe-7f5f-4fb3-9520-732b1615d3df", "WorkerId": "bd2387d1-e04f-4471-8780-3acdf6cffca3", "StartedAt": "2026-07-02T15:11:56.1023650Z"}	0
+615	205	Succeeded	\N	2026-07-02 15:11:56.434962-04	{"Latency": "69", "SucceededAt": "2026-07-02T15:11:56.3557930Z", "PerformanceDuration": "227"}	0
+620	207	Processing	\N	2026-07-02 15:30:14.962652-04	{"ServerId": "x:2652:7525cdbe-7f5f-4fb3-9520-732b1615d3df", "WorkerId": "cc37134c-fe44-4bc9-ac8e-3215d2d31615", "StartedAt": "2026-07-02T15:30:14.9513494Z"}	0
+621	207	Succeeded	\N	2026-07-02 15:30:15.002018-04	{"Latency": "96", "SucceededAt": "2026-07-02T15:30:14.9882268Z", "PerformanceDuration": "15"}	0
+623	208	Processing	\N	2026-07-02 15:40:02.544402-04	{"ServerId": "x:2652:7525cdbe-7f5f-4fb3-9520-732b1615d3df", "WorkerId": "e753781d-1ce6-4fcc-aa22-4190c3cff2ec", "StartedAt": "2026-07-02T15:40:02.5413675Z"}	0
+626	209	Processing	\N	2026-07-02 15:50:04.967174-04	{"ServerId": "x:2652:7525cdbe-7f5f-4fb3-9520-732b1615d3df", "WorkerId": "61082c0f-6921-4b08-bfec-6d102ee66487", "StartedAt": "2026-07-02T15:50:04.9620739Z"}	0
+627	209	Succeeded	\N	2026-07-02 15:50:05.011573-04	{"Latency": "29", "SucceededAt": "2026-07-02T15:50:05.0050529Z", "PerformanceDuration": "34"}	0
+632	211	Processing	\N	2026-07-02 16:10:02.943296-04	{"ServerId": "x:35052:74d12a0b-b856-4c43-ac6b-e8f70e6883f1", "WorkerId": "33880127-1b62-47bc-8c40-895d300cc116", "StartedAt": "2026-07-02T16:10:02.8980979Z"}	0
+637	213	Enqueued	Triggered by recurring job scheduler	2026-07-02 16:30:07.728128-04	{"Queue": "default", "EnqueuedAt": "2026-07-02T16:30:07.7274988Z"}	0
+639	213	Succeeded	\N	2026-07-02 16:30:07.825101-04	{"Latency": "85", "SucceededAt": "2026-07-02T16:30:07.8146835Z", "PerformanceDuration": "41"}	0
+642	214	Succeeded	\N	2026-07-02 17:51:31.050259-04	{"Latency": "539", "SucceededAt": "2026-07-02T17:51:31.0074068Z", "PerformanceDuration": "3722"}	0
+645	215	Succeeded	\N	2026-07-02 18:19:01.059156-04	{"Latency": "189", "SucceededAt": "2026-07-02T18:19:01.0206443Z", "PerformanceDuration": "2641"}	0
+649	217	Enqueued	Triggered by recurring job scheduler	2026-07-02 18:44:00.025281-04	{"Queue": "default", "EnqueuedAt": "2026-07-02T18:43:59.9250827Z"}	0
+652	218	Enqueued	Triggered by recurring job scheduler	2026-07-02 18:58:09.201842-04	{"Queue": "default", "EnqueuedAt": "2026-07-02T18:58:09.1725331Z"}	0
+656	219	Processing	\N	2026-07-02 19:00:09.601886-04	{"ServerId": "x:39192:3fba42cd-17ce-4213-9e2c-d6447f87ba77", "WorkerId": "6c905f06-6041-41a8-8058-7a6550a8e7b3", "StartedAt": "2026-07-02T19:00:09.5827653Z"}	0
+661	221	Enqueued	Triggered by recurring job scheduler	2026-07-02 19:20:11.340118-04	{"Queue": "default", "EnqueuedAt": "2026-07-02T19:20:11.3397957Z"}	0
+593	198	Processing	\N	2026-07-02 04:16:43.931278-04	{"ServerId": "x:20300:38dc0033-3d41-4f4d-bc47-e41f08dcbdae", "WorkerId": "f2139875-7cf1-43e5-915f-af8483d6ff1b", "StartedAt": "2026-07-02T04:16:43.8916585Z"}	0
+596	199	Processing	\N	2026-07-02 05:08:39.441676-04	{"ServerId": "x:38508:4f69c811-fbe7-4bfe-8173-52ed869a9873", "WorkerId": "dd15c805-82f2-448d-899b-f4c313ca8ded", "StartedAt": "2026-07-02T05:08:39.3902125Z"}	0
+600	200	Succeeded	\N	2026-07-02 05:10:10.092688-04	{"Latency": "34", "SucceededAt": "2026-07-02T05:10:10.0024494Z", "PerformanceDuration": "138"}	0
+605	202	Processing	\N	2026-07-02 05:38:55.883883-04	{"ServerId": "x:2652:7525cdbe-7f5f-4fb3-9520-732b1615d3df", "WorkerId": "8ecbc6f2-e833-4855-8c35-bf2eb4a06e70", "StartedAt": "2026-07-02T05:38:55.8232034Z"}	0
+608	203	Processing	\N	2026-07-02 05:40:11.121656-04	{"ServerId": "x:2652:7525cdbe-7f5f-4fb3-9520-732b1615d3df", "WorkerId": "8ecbc6f2-e833-4855-8c35-bf2eb4a06e70", "StartedAt": "2026-07-02T05:40:11.1144666Z"}	0
+611	204	Processing	\N	2026-07-02 06:54:37.137718-04	{"ServerId": "x:2652:7525cdbe-7f5f-4fb3-9520-732b1615d3df", "WorkerId": "8ecbc6f2-e833-4855-8c35-bf2eb4a06e70", "StartedAt": "2026-07-02T06:54:37.1228426Z"}	0
+616	206	Enqueued	Triggered by recurring job scheduler	2026-07-02 15:20:12.843912-04	{"Queue": "default", "EnqueuedAt": "2026-07-02T15:20:12.8435072Z"}	0
+617	206	Processing	\N	2026-07-02 15:20:12.88888-04	{"ServerId": "x:2652:7525cdbe-7f5f-4fb3-9520-732b1615d3df", "WorkerId": "164cf906-3cde-4714-b02f-1632a760c8b3", "StartedAt": "2026-07-02T15:20:12.8856747Z"}	0
+618	206	Succeeded	\N	2026-07-02 15:20:12.943258-04	{"Latency": "99", "SucceededAt": "2026-07-02T15:20:12.9107121Z", "PerformanceDuration": "15"}	0
+628	210	Enqueued	Triggered by recurring job scheduler	2026-07-02 16:00:07.049299-04	{"Queue": "default", "EnqueuedAt": "2026-07-02T16:00:07.0487946Z"}	0
+630	210	Succeeded	\N	2026-07-02 16:00:07.10656-04	{"Latency": "37", "SucceededAt": "2026-07-02T16:00:07.0975773Z", "PerformanceDuration": "24"}	0
+633	211	Succeeded	\N	2026-07-02 16:10:08.898359-04	{"Latency": "526", "SucceededAt": "2026-07-02T16:10:08.7699750Z", "PerformanceDuration": "5805"}	0
+640	214	Enqueued	Triggered by recurring job scheduler	2026-07-02 17:51:27.026166-04	{"Queue": "default", "EnqueuedAt": "2026-07-02T17:51:26.9313665Z"}	0
+643	215	Enqueued	Triggered by recurring job scheduler	2026-07-02 18:18:58.283323-04	{"Queue": "default", "EnqueuedAt": "2026-07-02T18:18:58.2588749Z"}	0
+646	216	Enqueued	Triggered by recurring job scheduler	2026-07-02 18:20:13.452216-04	{"Queue": "default", "EnqueuedAt": "2026-07-02T18:20:13.4520402Z"}	0
+648	216	Succeeded	\N	2026-07-02 18:20:13.526513-04	{"Latency": "38", "SucceededAt": "2026-07-02T18:20:13.5165278Z", "PerformanceDuration": "37"}	0
+650	217	Processing	\N	2026-07-02 18:44:00.317509-04	{"ServerId": "x:36520:da0c8a71-f09a-4245-94bd-c4ffb5a7ce86", "WorkerId": "8022ea5d-f35b-466d-85f9-e258f1eeb05f", "StartedAt": "2026-07-02T18:44:00.2172675Z"}	0
+653	218	Processing	\N	2026-07-02 18:58:09.317927-04	{"ServerId": "x:39192:3fba42cd-17ce-4213-9e2c-d6447f87ba77", "WorkerId": "6c905f06-6041-41a8-8058-7a6550a8e7b3", "StartedAt": "2026-07-02T18:58:09.2704619Z"}	0
+657	219	Succeeded	\N	2026-07-02 19:00:09.660668-04	{"Latency": "142", "SucceededAt": "2026-07-02T19:00:09.6364448Z", "PerformanceDuration": "24"}	0
+662	221	Processing	\N	2026-07-02 19:20:11.364824-04	{"ServerId": "x:39192:3fba42cd-17ce-4213-9e2c-d6447f87ba77", "WorkerId": "8659dc12-a3b4-467c-b0a9-838f32e92c26", "StartedAt": "2026-07-02T19:20:11.3563829Z"}	0
+663	221	Succeeded	\N	2026-07-02 19:20:11.394078-04	{"Latency": "48", "SucceededAt": "2026-07-02T19:20:11.3839703Z", "PerformanceDuration": "13"}	0
 \.
 
 
@@ -5074,67 +5062,89 @@ COPY public.accesorios (id_accesorio, nombre, descripcion, modelo, url_data_shee
 -- Data for Name: audit_logs; Type: TABLE DATA; Schema: public; Owner: postgres
 --
 
-COPY public.audit_logs (id, admin_carnet, admin_nombre, accion, entidad, entidad_id, detalle, "timestamp") FROM stdin;
-1	sistema		AtrasadoAutomatico	PrestamoEntity	230	Auto-rechazado por exceder fecha de inicio	2026-06-03 05:04:57.968706-04
-2	sistema		AtrasadoAutomatico	PrestamoEntity	228	Auto-rechazado por exceder fecha de inicio	2026-06-03 05:04:59.092436-04
-3	sistema		AtrasadoAutomatico	PrestamoEntity	229	Auto-rechazado por exceder fecha de inicio	2026-06-03 05:04:59.11666-04
-4	12890061	Fernando	Recoger	PrestamoEntity	231	\N	2026-06-03 13:00:39.314541-04
-5	12890061	Fernando	Devolver	PrestamoEntity	231	\N	2026-06-03 13:00:45.566309-04
-6	12890061	Fernando	Crear	CarreraEntity	48	\N	2026-06-03 13:03:42.730319-04
-7	12890061	Fernando	Eliminar	Prestamo	228	\N	2026-06-03 17:37:04.053889-04
-8	12890061	Fernando	Eliminar	Carrera	48	\N	2026-06-03 17:38:08.003556-04
-9	12890061	Fernando	Crear	PrestamoEntity	232	\N	2026-06-03 17:38:57.042305-04
-10	12890061	Fernando	Aprobar	PrestamoEntity	232	\N	2026-06-03 17:39:06.976268-04
-11	12890061	Fernando	Recoger	PrestamoEntity	232	\N	2026-06-03 17:39:10.612578-04
-12	12890061	Fernando	Devolver	PrestamoEntity	232	\N	2026-06-03 17:39:18.705133-04
-13	12890061	Fernando	Crear	Prestamo	233	\N	2026-06-03 21:45:36.983285-04
-14	12890061	Fernando	Aprobar	Prestamo	233	\N	2026-06-03 21:46:02.761909-04
-15	12890061	Fernando	Recoger	Prestamo	233	\N	2026-06-03 21:46:19.010525-04
-16	12890061	Fernando	Devolver	Prestamo	233	\N	2026-06-04 00:11:09.650793-04
-17	12890061	Fernando	Crear	Prestamo	234	\N	2026-06-04 00:15:32.301454-04
-18	sistema		Rechazar	PrestamoEntity	234	Auto-rechazado por exceder fecha de inicio	2026-06-04 00:20:15.116688-04
-19	12890061	Fernando	Crear	Prestamo	235	\N	2026-06-04 02:46:59.304736-04
-20	sistema		Rechazar	PrestamoEntity	235	Auto-rechazado por exceder fecha de inicio	2026-06-04 02:50:08.212638-04
-21	12890061	Fernando	Crear	Prestamo	236	\N	2026-06-04 12:00:25.755302-04
-22	sistema		Rechazar	PrestamoEntity	236	Auto-rechazado por exceder fecha de inicio	2026-06-05 00:46:39.66447-04
-23	12890061	Fernando	Crear	Prestamo	237	\N	2026-06-05 00:53:53.418886-04
-24	12890061	Fernando	Editar	Equipo	125	\N	2026-06-05 00:58:28.563629-04
-25	12890061	Fernando	Crear	Prestamo	238	\N	2026-06-05 00:58:47.950576-04
-26	sistema		Rechazar	PrestamoEntity	237	Auto-rechazado por exceder fecha de inicio	2026-06-05 01:00:09.609708-04
-27	sistema		Rechazar	PrestamoEntity	238	Auto-rechazado por exceder fecha de inicio	2026-06-05 01:00:09.62739-04
-28	12890061	Fernando	Crear	Prestamo	239	\N	2026-06-05 01:01:31.412742-04
-29	12890061	Fernando	Rechazar	Prestamo	239	\N	2026-06-05 01:01:41.984142-04
-30	12890061	Fernando	Crear	Prestamo	240	\N	2026-06-05 02:12:03.17475-04
-31	sistema		Rechazar	PrestamoEntity	240	Auto-rechazado por exceder fecha de inicio	2026-06-05 02:47:56.741735-04
-32	12890061	Fernando	Crear	Prestamo	241	\N	2026-06-05 02:57:34.024847-04
-33	12890061	Fernando	Editar	Equipo	131	\N	2026-06-05 03:01:05.48879-04
-34	12890061	Fernando	Rechazar	Prestamo	241	\N	2026-06-05 17:14:34.372209-04
-35	12890061	Fernando	Rechazar	Prestamo	242	\N	2026-06-05 17:14:38.436154-04
-36	12890061	Fernando	Rechazar	Prestamo	243	\N	2026-06-05 17:14:43.640293-04
-37	12890061	Fernando	Rechazar	Prestamo	244	\N	2026-06-05 23:30:00.415131-04
-38	12890061	Fernando	Aprobar	Prestamo	245	\N	2026-06-05 23:30:03.865809-04
-39	12890061	Fernando	Recoger	Prestamo	245	\N	2026-06-05 23:30:09.630514-04
-40	12890061	Fernando	Devolver	Prestamo	245	\N	2026-06-05 23:31:53.954576-04
-41	12890061	Fernando	Crear	Prestamo	246	\N	2026-06-06 00:02:54.910616-04
-42	12890061	Fernando	Aprobar	Prestamo	246	\N	2026-06-06 00:03:05.913046-04
-43	12890061	Fernando	Recoger	Prestamo	246	\N	2026-06-06 00:03:09.728353-04
-44	12890061	Fernando	Devolver	Prestamo	246	\N	2026-06-06 00:03:18.454845-04
-45	12890061	Fernando	Crear	Prestamo	247	\N	2026-06-06 00:07:57.664393-04
-46	12890061	Fernando	Aprobar	Prestamo	247	\N	2026-06-06 00:08:05.194095-04
-47	12890061	Fernando	Recoger	Prestamo	247	\N	2026-06-06 00:08:08.817232-04
-48	12890061	Fernando	Devolver	Prestamo	247	\N	2026-06-06 00:08:15.985716-04
-49	12890061	Fernando	Crear	Prestamo	248	\N	2026-06-06 02:44:17.292338-04
-50	12890061	Fernando	Aprobar	Prestamo	248	\N	2026-06-06 02:44:41.926533-04
-51	12890061	Fernando	Recoger	Prestamo	248	\N	2026-06-06 02:44:50.483044-04
-52	12890061	Fernando	Devolver	Prestamo	248	{"observacion":"Se arruino","equipos":[{"codigo":240000040,"nombre":"Adaptador verde 250V - 20A","estado":"parcialmente_operativo"}]}	2026-06-06 02:45:04.052446-04
-53	12890061	Fernando	Editar	GrupoEquipo	22	\N	2026-06-06 02:50:15.465299-04
-54	12890061	Fernando	Crear	Prestamo	249	\N	2026-06-06 02:52:05.244368-04
-55	sistema		Rechazar	PrestamoEntity	249	Auto-rechazado por exceder fecha de inicio	2026-06-06 03:20:40.552589-04
-56	12890061	Fernando	Crear	Prestamo	250	\N	2026-06-07 03:10:18.695507-04
-57	12890061	Fernando	Aprobar	Prestamo	250	\N	2026-06-07 03:11:06.98523-04
-58	12890061	Fernando	Recoger	Prestamo	250	\N	2026-06-07 03:11:10.747903-04
-59	12890061	Fernando	Devolver	Prestamo	250	{"observacion":"Todo bien","equipos":[{"codigo":290000006,"nombre":"Cargador Litio\\u2011Ion 7.2V \\u2011 12V max","estado":"operativo"}]}	2026-06-07 03:11:18.203253-04
-60	sistema		Crear	Usuario	99988877	\N	2026-06-12 02:00:04.020858-04
+COPY public.audit_logs (id, admin_carnet, admin_nombre, accion, entidad, entidad_id, detalle, "timestamp", estado_eliminado) FROM stdin;
+1	sistema		AtrasadoAutomatico	PrestamoEntity	230	Auto-rechazado por exceder fecha de inicio	2026-06-03 05:04:57.968706-04	f
+2	sistema		AtrasadoAutomatico	PrestamoEntity	228	Auto-rechazado por exceder fecha de inicio	2026-06-03 05:04:59.092436-04	f
+3	sistema		AtrasadoAutomatico	PrestamoEntity	229	Auto-rechazado por exceder fecha de inicio	2026-06-03 05:04:59.11666-04	f
+4	12890061	Fernando	Recoger	PrestamoEntity	231	\N	2026-06-03 13:00:39.314541-04	f
+5	12890061	Fernando	Devolver	PrestamoEntity	231	\N	2026-06-03 13:00:45.566309-04	f
+6	12890061	Fernando	Crear	CarreraEntity	48	\N	2026-06-03 13:03:42.730319-04	f
+7	12890061	Fernando	Eliminar	Prestamo	228	\N	2026-06-03 17:37:04.053889-04	f
+8	12890061	Fernando	Eliminar	Carrera	48	\N	2026-06-03 17:38:08.003556-04	f
+9	12890061	Fernando	Crear	PrestamoEntity	232	\N	2026-06-03 17:38:57.042305-04	f
+10	12890061	Fernando	Aprobar	PrestamoEntity	232	\N	2026-06-03 17:39:06.976268-04	f
+11	12890061	Fernando	Recoger	PrestamoEntity	232	\N	2026-06-03 17:39:10.612578-04	f
+12	12890061	Fernando	Devolver	PrestamoEntity	232	\N	2026-06-03 17:39:18.705133-04	f
+13	12890061	Fernando	Crear	Prestamo	233	\N	2026-06-03 21:45:36.983285-04	f
+14	12890061	Fernando	Aprobar	Prestamo	233	\N	2026-06-03 21:46:02.761909-04	f
+15	12890061	Fernando	Recoger	Prestamo	233	\N	2026-06-03 21:46:19.010525-04	f
+16	12890061	Fernando	Devolver	Prestamo	233	\N	2026-06-04 00:11:09.650793-04	f
+17	12890061	Fernando	Crear	Prestamo	234	\N	2026-06-04 00:15:32.301454-04	f
+18	sistema		Rechazar	PrestamoEntity	234	Auto-rechazado por exceder fecha de inicio	2026-06-04 00:20:15.116688-04	f
+19	12890061	Fernando	Crear	Prestamo	235	\N	2026-06-04 02:46:59.304736-04	f
+20	sistema		Rechazar	PrestamoEntity	235	Auto-rechazado por exceder fecha de inicio	2026-06-04 02:50:08.212638-04	f
+21	12890061	Fernando	Crear	Prestamo	236	\N	2026-06-04 12:00:25.755302-04	f
+22	sistema		Rechazar	PrestamoEntity	236	Auto-rechazado por exceder fecha de inicio	2026-06-05 00:46:39.66447-04	f
+23	12890061	Fernando	Crear	Prestamo	237	\N	2026-06-05 00:53:53.418886-04	f
+24	12890061	Fernando	Editar	Equipo	125	\N	2026-06-05 00:58:28.563629-04	f
+25	12890061	Fernando	Crear	Prestamo	238	\N	2026-06-05 00:58:47.950576-04	f
+26	sistema		Rechazar	PrestamoEntity	237	Auto-rechazado por exceder fecha de inicio	2026-06-05 01:00:09.609708-04	f
+27	sistema		Rechazar	PrestamoEntity	238	Auto-rechazado por exceder fecha de inicio	2026-06-05 01:00:09.62739-04	f
+28	12890061	Fernando	Crear	Prestamo	239	\N	2026-06-05 01:01:31.412742-04	f
+29	12890061	Fernando	Rechazar	Prestamo	239	\N	2026-06-05 01:01:41.984142-04	f
+30	12890061	Fernando	Crear	Prestamo	240	\N	2026-06-05 02:12:03.17475-04	f
+31	sistema		Rechazar	PrestamoEntity	240	Auto-rechazado por exceder fecha de inicio	2026-06-05 02:47:56.741735-04	f
+32	12890061	Fernando	Crear	Prestamo	241	\N	2026-06-05 02:57:34.024847-04	f
+33	12890061	Fernando	Editar	Equipo	131	\N	2026-06-05 03:01:05.48879-04	f
+34	12890061	Fernando	Rechazar	Prestamo	241	\N	2026-06-05 17:14:34.372209-04	f
+35	12890061	Fernando	Rechazar	Prestamo	242	\N	2026-06-05 17:14:38.436154-04	f
+36	12890061	Fernando	Rechazar	Prestamo	243	\N	2026-06-05 17:14:43.640293-04	f
+37	12890061	Fernando	Rechazar	Prestamo	244	\N	2026-06-05 23:30:00.415131-04	f
+38	12890061	Fernando	Aprobar	Prestamo	245	\N	2026-06-05 23:30:03.865809-04	f
+39	12890061	Fernando	Recoger	Prestamo	245	\N	2026-06-05 23:30:09.630514-04	f
+40	12890061	Fernando	Devolver	Prestamo	245	\N	2026-06-05 23:31:53.954576-04	f
+41	12890061	Fernando	Crear	Prestamo	246	\N	2026-06-06 00:02:54.910616-04	f
+42	12890061	Fernando	Aprobar	Prestamo	246	\N	2026-06-06 00:03:05.913046-04	f
+43	12890061	Fernando	Recoger	Prestamo	246	\N	2026-06-06 00:03:09.728353-04	f
+44	12890061	Fernando	Devolver	Prestamo	246	\N	2026-06-06 00:03:18.454845-04	f
+45	12890061	Fernando	Crear	Prestamo	247	\N	2026-06-06 00:07:57.664393-04	f
+46	12890061	Fernando	Aprobar	Prestamo	247	\N	2026-06-06 00:08:05.194095-04	f
+47	12890061	Fernando	Recoger	Prestamo	247	\N	2026-06-06 00:08:08.817232-04	f
+48	12890061	Fernando	Devolver	Prestamo	247	\N	2026-06-06 00:08:15.985716-04	f
+49	12890061	Fernando	Crear	Prestamo	248	\N	2026-06-06 02:44:17.292338-04	f
+50	12890061	Fernando	Aprobar	Prestamo	248	\N	2026-06-06 02:44:41.926533-04	f
+51	12890061	Fernando	Recoger	Prestamo	248	\N	2026-06-06 02:44:50.483044-04	f
+52	12890061	Fernando	Devolver	Prestamo	248	{"observacion":"Se arruino","equipos":[{"codigo":240000040,"nombre":"Adaptador verde 250V - 20A","estado":"parcialmente_operativo"}]}	2026-06-06 02:45:04.052446-04	f
+53	12890061	Fernando	Editar	GrupoEquipo	22	\N	2026-06-06 02:50:15.465299-04	f
+54	12890061	Fernando	Crear	Prestamo	249	\N	2026-06-06 02:52:05.244368-04	f
+55	sistema		Rechazar	PrestamoEntity	249	Auto-rechazado por exceder fecha de inicio	2026-06-06 03:20:40.552589-04	f
+56	12890061	Fernando	Crear	Prestamo	250	\N	2026-06-07 03:10:18.695507-04	f
+57	12890061	Fernando	Aprobar	Prestamo	250	\N	2026-06-07 03:11:06.98523-04	f
+58	12890061	Fernando	Recoger	Prestamo	250	\N	2026-06-07 03:11:10.747903-04	f
+59	12890061	Fernando	Devolver	Prestamo	250	{"observacion":"Todo bien","equipos":[{"codigo":290000006,"nombre":"Cargador Litio\\u2011Ion 7.2V \\u2011 12V max","estado":"operativo"}]}	2026-06-07 03:11:18.203253-04	f
+60	sistema		Crear	Usuario	99988877	\N	2026-06-12 02:00:04.020858-04	f
+61	12890061	Fernando	Cancelar	Prestamo	251	\N	2026-06-12 22:22:11.667735-04	f
+62	12890061	Fernando	Aprobar	Prestamo	252	\N	2026-06-12 22:25:44.19893-04	f
+63	12890061	Fernando	Recoger	Prestamo	252	\N	2026-06-12 22:25:49.082638-04	f
+64	12890061	Fernando	Devolver	Prestamo	252	{"observacion":null,"equipos":[{"codigo":240000010,"nombre":"Mini Dron","estado":"operativo"}]}	2026-06-12 22:25:54.555319-04	f
+66	12890061	Fernando	Crear	Prestamo	256	\N	2026-06-12 23:38:59.978334-04	f
+67	sistema		Rechazar	PrestamoEntity	256	Auto-rechazado por exceder fecha de inicio	2026-06-14 01:04:36.871857-04	f
+68	12890061	Fernando	Crear	Prestamo	257	\N	2026-06-14 16:20:24.741262-04	f
+69	12890061	Fernando	Crear	Prestamo	258	\N	2026-06-14 16:38:36.582046-04	f
+70	12890061	Fernando	Aprobar	Prestamo	258	\N	2026-06-14 16:39:37.488547-04	f
+71	12890061	Fernando	Recoger	Prestamo	258	\N	2026-06-14 16:39:41.755296-04	f
+72	12890061	Fernando	Aprobar	Prestamo	257	\N	2026-06-14 17:04:53.501214-04	f
+73	sistema		AtrasadoAutomatico	PrestamoEntity	258	\N	2026-07-01 04:38:12.134118-04	f
+74	sistema		Rechazar	PrestamoEntity	257	Auto-rechazado por exceder fecha de inicio	2026-07-01 04:38:12.831687-04	f
+75	12890061	Fernando	Devolver	Prestamo	258	{"observacion":null,"equipos":[{"codigo":240000012,"nombre":"L\\u00E1mpara de Aumento (nueva)","estado":"operativo"}]}	2026-07-01 04:44:46.323334-04	f
+\.
+
+
+--
+-- Data for Name: avisos_disponibilidad; Type: TABLE DATA; Schema: public; Owner: postgres
+--
+
+COPY public.avisos_disponibilidad (id_aviso, carnet_usuario, id_grupo_equipo, fecha, cantidad, notificado, fecha_creacion, estado_eliminado) FROM stdin;
 \.
 
 
@@ -5237,6 +5247,7 @@ COPY public.componentes (id_componente, descripcion, modelo, url_data_sheet, tip
 --
 
 COPY public.contratos (id, contrato) FROM stdin;
+12	<div _ngcontent-ng-c852924939="" class="formulario">\n<div class="contrato-container">\n  <h1>Minuta de PRÉSTAMO DE EQUIPOS DE LABORATORIO</h1>\n  \n  <p>\n    A los 12 días del mes de junio de 2026, entre el Sr. <strong>Job Angel Ledezma Pérez</strong>, Director de Carrera de Ingeniería Mecatrónica de la Universidad Católica Boliviana "San Pablo" (UCB) Regional Santa Cruz, identificado con el C.I. <strong>5268336 CB </strong>y con domicilio en la ciudad de Santa Cruz de la Sierra, quien en adelante se denominará el COMODANTE, y de otra parte el usuario <strong>Fernando </strong>, C.I. <strong>12890061</strong>, quien se domicilia en la ciudad de Santa Cruz de la Sierra, celebran por medio de este instrumento el <strong>COMODATO</strong> sobre los equipos de laboratorio y en las condiciones que a continuación se describen:\n  </p>\n  \n  <strong>Primera. Del objeto.-</strong>\n  <p>\n    El COMODANTE entrega al GRUPO COMODATARIO y este recibe, a título de comodato, equipos de laboratorio pertenecientes a la Carrera de Ingeniería Mecatrónica, localizados en el Laboratorio de Robótica y Automatización y bajo la custodia del COMODANTE. El detalle de los equipos a ser otorgados se describe a continuación:\n  </p>\n  \n  <table>\n    <thead>\n      <tr>\n        <th>Código IMT</th>\n        <th>Código UCB</th>\n        <th>Descripción</th>\n        <th># Serie</th>\n        <th>Cantidad</th>\n      </tr>\n    </thead>\n    <tbody>\n      \n      \n        <tr>\n          <td class="imt-code" data-grupo-id="28">Por definirse</td>\n          <td class="ucb-code" data-grupo-id="28">Por definirse</td>\n          <td>\n          <strong>Mini Dron</strong>\n          <p>Marca:   Default </p>\n          <p>Modelo:   Default </p>\n          </td>\n          <td class="serial-code" data-grupo-id="28">Por definirse</td>\n          <td>1</td> \n        </tr>\n      \n    \n    </tbody>\n  </table>\n  \n  <strong>Segunda. Del uso autorizado.-</strong>\n  <p>\n    El GRUPO COMODATARIO podrá utilizar los bienes descritos en el punto primero, única y exclusivamente para la realización de proyectos relacionados con las disciplinas que requieran de los mismos, quedando expresamente prohibido el retiro de dichos equipos fuera de las instalaciones del Campus de la Universidad Católica Boliviana "San Pablo" - Regional Santa Cruz, ubicado en el Km. 9, Carretera al Norte.\n  </p>\n  \n  <strong>Tercera. De las obligaciones del GRUPO COMODATARIO.-</strong>\n  <p>\n    Son obligaciones del GRUPO COMODATARIO mantener en buen estado los bienes recibidos, cuidar el comodato y responder por todo daño o deterioro, salvo los derivados del uso autorizado; asimismo, deberán responder por los daños a terceros que puedan ocasionar dichos bienes y restituir los mismos al COMODANTE o a quien éste designe al finalizar el término pactado o en caso de: <br>\n    (1) Necesidad imprevista y urgente del COMODANTE de disponer de los bienes. <br>\n    (2) Terminación o inviabilidad del proyecto o participación en alguna feria científica para la cual se prestaron los bienes.\n  </p>\n  \n  <strong>Cuarta. De la duración y perfeccionamiento.-</strong>\n  <p>\n    Este Comodato tendrá una vigencia de 1 días contados a partir de la firma del presente contrato, fecha en la cual se realizará la entrega material de los bienes objeto del comodato.\n  </p>\n  \n  <strong>Quinta. Del valor de los bienes.-</strong>\n  <p>\n    A pesar de que el Comodato es un préstamo sin costo, se acuerda que el valor total de los bienes es de 3000 Bs, en caso de que el GRUPO COMODATARIO se vea obligado a reembolsar dicho valor al COMODANTE. La descripción y el valor de cada uno de los bienes se detalla en la siguiente tabla:\n  </p>\n  \n  <table>\n    <thead>\n      <tr>\n        <th>Código IMT</th>\n        <th>Código UCB</th>\n        <th>Descripción</th>\n        <th># Serie</th>\n        <th>Cantidad</th>\n        <th>Precio Unitario (Bs)</th>\n        <th>Precio Total (Bs)</th>\n      </tr>\n    </thead>\n    <tbody>\n      \n      \n        <tr>\n          <td class="imt-code" data-grupo-id="28">Por definirse</td>\n          <td class="ucb-code" data-grupo-id="28">Por definirse</td>\n          <td>\n          <strong>Mini Dron</strong>\n          <p>Marca:   Default </p>\n          <p>Modelo:   Default </p>\n          </td>\n          <td class="serial-code" data-grupo-id="28">Por definirse</td>\n          <td>1</td>\n          <td>3000</td>\n          <td>3000</td> \n        </tr>\n      \n    \n      <tr>\n        <td colspan="6" style="text-align: right;"><strong>Total:</strong></td>\n        <td><strong>3000</strong></td>\n      </tr>\n    </tbody>\n  </table>\n  \n  <strong>Sexta. Del estado de los bienes.-</strong>\n  <p>\n    Al momento de la firma del presente contrato y de la entrega material, los bienes se encuentran en perfecto estado de funcionamiento y sin daño físico visible.\n  </p>\n  \n  <strong>Séptima. De la cláusula compromisoria.-</strong>\n  <p>\n    En caso de conflicto en la ejecución o liquidación del presente contrato, se agotará previamente la vía de conciliación con el apoyo del Departamento Legal de la Universidad Católica Boliviana "San Pablo". Si dicha conciliación fracasa, las diferencias serán sometidas a un Tribunal de Arbitramento, el cual se ubicará en el domicilio del COMODATARIO o en el lugar donde se encuentren los bienes, con los costos a cargo de ambas partes.\n  </p>\n  \n  <p>\n    En la ciudad de Santa Cruz de la Sierra, a los 14 días del mes de 6 de 2026.\n  </p>\n  \n   <div class="signature">\n    <div>\n      <img src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAtAAAAGQCAYAAACH51dtAAAAAXNSR0IArs4c6QAAIABJREFUeF7t3T+vLUt6F+DyNyAwEgm6TIZFQkBgC6NhMjImwAGBdcdyQEDgQbJ1hYQ0jEhGsiVmIhJL9o1AIkD+BHCFJTtAcupsGAmJhMABAZk5773rnemzztp7da/+91b1s6Src2ZOr+6q562992/Xqq7+peZFgAABAgQIECBAgMBsgV+afaQDCRAgQIAAAQIECBBoArRBQIAAAQIECBAgQGCBgAC9AMuhBAgQIECAAAECBARoY4AAAQIECBAgQIDAAgEBegGWQwkQIECAAAECBAgI0MYAAQIECBAgQIAAgQUCAvQCLIcSIECAAAECBAgQEKCNAQIECBAgQIAAAQILBAToBVgOJUCAAAECBAgQICBAGwMECBAgQIAAAQIEFggI0AuwHEqAAAECBAgQIEBAgDYGCBAgQIAAAQIECCwQEKAXYDmUAAECBAgQIECAgABtDBAgQIAAAQIECBBYICBAL8ByKAECBAgQIECAAAEB2hggQIAAAQIECBAgsEBAgF6A5VACBAgQIECAAAECArQxQIAAAQIECBAgQGCBgAC9AMuhBAgQIECAAAECBARoY4AAAQIECBAgQIDAAgEBegGWQwkQIECAAAECBAgI0MYAAQIECBAgQIAAgQUCAvQCLIcSIECAAAECBAgQEKCNAQIECBAgQIAAAQILBAToBVgOJUCAAAECBAgQICBAGwMECBAgQIAAAQIEFggI0AuwHEqAAAECBAgQIEBAgDYGCBAgQIAAAQIECCwQEKAXYDmUAAECBAgQIECAgABtDBAgQIAAAQIECBBYICBAL8ByKAECBAgQIECAAAEB2hggQIAAAQIECBAgsEBAgF6A5VACBAgQIECAAAECArQxQIAAAQIECBAgQGCBgAC9AMuhBAgQIECAAAECBARoY4AAAQIECBAgQIDAAgEBegGWQwkQIECAAAECBAgI0MYAAQIECBAgQIAAgQUCAvQCLIcSIECAAAECBAgQEKCNAQIECBAgQIAAAQILBAToBVgOJUCAAAECBAgQICBAGwMECBAgQIAAAQIEFggI0AuwHEqAAAECBAgQIEBAgDYGCBAgQIAAAQIECCwQEKAXYDmUAAECBAgQIECAgABtDBAgQIAAAQIECBBYICBA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JBChLl6x1OM+UMf/H4E6wrRZ6nVFi8AcvvEodrujrLP0bgIECHwtIEAbCAQIVBKYzlDn36fty1Ad/1/OVguFjyuY29PFEyPjYTdeBAgQILCRgAC9EaTTECCwm0AG6fhzuo46L2im+mP66Zpz29PtNiydmACBKwsI0Feuvr4T6FcgQuI/a639vQ+zq/cz1Tkjncs/Rpl9zX4+mnGP2eZ4xa4n8YrlGm7M7Hd8azkBAsUFBOjiBdI8AgRmCUS4zP96X0+d/chQ/GjWfYqSgTofXCM4zxoyDiJAgMDrAgL063beSYBAbYE566mjBxk4f/bGTXYZUON88ff88x+01v7HhGD6b/cBN2+YzP8/Q3L871yaEn/P0Hz//mhjtO//3q6ZbbL+u/YY1DoCBAYVEKAHLaxuESDwicD9LPWjmxTPYpsuO4mgHIE5t/Y7q02uS4AAAQJvCAjQhgYBAlcXyNnh+z+fufzybTZ4Orucf//s9uYIw/GK/51/z/NmQLbk4pm0fydAgEAxAQG6WEE0hwABAgQIECBAoLaAAF27PlpHgAABAgQIECBQTECALlYQzSFAgAABAgQIEKgtIEDXro/WESBAgAABAgQIFBMQoIsVRHMIECBAgAABAgRqCwjQteujdQQIECBAgAABAsUEBOhiBdEcAgQIECBAgACB2gICdO36aB0BAgQIECBAgEAxAQG6WEE0hwABAgQIECBAoLaAAF27PlpHgAABAgQIECBQTECALlYQzSFAgAABAgQIEKgtIEDXro/WESBAgAABAgQIFBMQoIsVRHMIECBAgAABAgRqCwjQteujdQQIECBAgAABAsUEBOhiBdEcAgQIECBAgACB2gICdO36aB0BAgQIECBAgEAxAQG6WEE0hwABAgQIECBAoLaAAF27PlpHgAABAgQIECBQTECALlYQzSFAgAABAgQIEKgtIEDXro/WESBAgAABAgQIFBMQoIsVRHMIECBAgAABAgRqCwjQteujdQQIECBAgAABAsUEBOhiBdEcAgQIECBAgACB2gICdO36aB0BAgQIECBAgEAxAQG6WEE0hwABAgQIECBAoLaAAF27PlpHgAABAgQIECBQTECALlYQzSFAgAABAgQIEKgtIEDXro/WESBAgAABAgQIFBMQoIsVRHMIECBAgAABAgRqCwjQteujdQQIECBAgAABAsUEBOhiBdEcAgQIECBAgACB2gICdO36aB0BAgQIECBAgEAxAQG6WEE0hwABAgQIECBAoLaAAF27PlpHgAABAgQIECBQTECALlYQzSFAgAABAgQIEKgtIEDXro/WESBAgAABAgQIFBMQoIsVRHMIECBAgAABAgRqCwjQteujdQQIECBAgAABAsUEBOhiBdEcAgQIECBAgACB2gICdO36aB0BAgQIECBAgEAxAQG6WEE0hwABAgQIECBAoLaAAF27PlpHgAABAgQIECBQTECALlYQzSFAgAABAgQIEKgtIEDXro/WESBAgAABAgQIFBMQoIsVRHMIECBAgAABAgRqCwjQteujdQQIECBAgAABAsUEBOhiBdEcAgQIECBAgACB2gICdO36aB0BAgQIECBAgEAxAQG6WEE0hwABAgQIECBAoLaAAF27PlpHgAABAgQIECBQTECALlYQzSFAgAABAgQIEKgtIEDXro/WESBAgAABAgQIFBMQoIsVRHMIECBAgAABAgRqCwjQteujdQQIECBAgAABAsUEBOhiBdEcAgQIECBAgACB2gICdO36aB0BAgQIECBAgEAxAQG6WEE0hwABAgQIECBAoLaAAF27PlpHgAABAgQIECBQTECALlYQzSFAgAABAgQIEKgtIEDXro/WESBAgAABAgQIFBMQoIsVRHMIECBAgAABAgRqCwjQteujdQQIECBAgAABAsUEBOhiBdEcAgQIECBAgACB2gICdO36aB0BAgQIECBAgEAxAQG6WEE0hwABAgQIECBAoLaAAF27PlpHgAABAgQIECBQTECALlYQzSFAgAABAgQIEKgtIEDXro/WESBAgAABAgQIFBMQoIsVRHMIECBAgAABAgRqCwjQteujdQQIECBAgAABAsUEBOhiBdEcAgQIECBAgACB2gICdO36aB0BAgQIECBAgEAxAQG6WEE0hwABAgQIECBAoLaAAF27PlpHgAABAgQIECBQTECALlYQzSFAgAABAgQIEKgtIEDXro/WESBAgAABAgQIFBMQoIsVRHMIECBAgAABAgRqCwjQteujdQQIECBAgAABAsUEBOhiBdEcAgQIECBAgACB2gICdO36aB0BAgQIECBAgEAxAQG6WEE0hwABAgQIECBAoLaAAF27PlpHgAABAgQIECBQTECALlYQzSFAgAABAgQIEKgtIEDXro/WESBAgAABAgQIFBMQoIsVRHMIECBAgAABAgRqCwjQteujdQQIECBAgAABAsUEBOhiBdEcAgQIECBAgACB2gICdO36aB0BAgQIECBAgEAxAQG6WEE0hwABAgQIECBAoLaAAF27PlpHgAABAgQIECBQTECALlYQzSFAgAABAgQIEKgtIEDXro/WESBAgAABAgQIFBMQoIsVRHMIECBAgAABAgRqCwjQteujdQQIECBAgAABAsUEBOhiBdEcAgQIECBAgACB2gICdO36aB0BAgQIECBAgEAxAQG6WEE0hwABAgQIECBAoLaAAF27PlpHgAABAgQIECBQTECALlYQzSFAgAABAgQIEKgtIEDXro/WESBAgAABAgQIFBMQoIsVRHMIECBAgAABAgRqCwjQteujdQQIECBAgAABAsUEBOhiBdEcAgQIECBAgACB2gL/H0fl0PpGZZTJAAAAAElFTkSuQmCC" alt="Firma del COMODANTE">\n      <p>Job Angel Ledezma Dr.Ing</p>\n      <p>Director de Carrera</p>\n      <p>Ingeniería Mecatrónica</p>\n      <p>UNIV. CATÓLICA BOLIVIANA "SAN PABLO"</p>\n      <p>COMODANTE</p>\n    </div>\n    <div>\n      <!-- Este es el espacio que actualizaremos cuando se reciba la firma -->\n      <img id="firmaUsuarioPlaceholder" src="data:image/png;base64,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" alt="Firma del COMODATARIO">\n      <p>Fernando</p>\n      <p>Estudiante de Ingeniería Mecatrónica</p>\n      <p>C.I. 12890061</p>\n      <p>COMODATARIO</p>\n    </div>\n  </div>\n</div></div>
 \.
 
 
@@ -5265,6 +5276,11 @@ COPY public.detalles_mantenimientos (id_detalle_mantenimiento, id_mantenimiento,
 --
 
 COPY public.detalles_prestamos (id_detalle_prestamo, id_equipo, id_prestamo, estado_eliminado, id_grupo_equipo, estado_equipo_retorno) FROM stdin;
+207	\N	251	f	28	\N
+208	131	252	f	28	operativo
+212	\N	256	f	28	\N
+213	132	257	f	29	\N
+214	133	258	f	30	operativo
 \.
 
 
@@ -6211,10 +6227,23 @@ COPY public.muebles (id_mueble, nombre, tipo, ubicacion, numero_gaveteros, estad
 
 
 --
+-- Data for Name: notificaciones; Type: TABLE DATA; Schema: public; Owner: postgres
+--
+
+COPY public.notificaciones (id_notificacion, carnet_usuario, tipo, titulo, contenido, detalle, leido, fecha_envio, estado_eliminado) FROM stdin;
+\.
+
+
+--
 -- Data for Name: prestamos; Type: TABLE DATA; Schema: public; Owner: postgres
 --
 
-COPY public.prestamos (id_prestamo, fecha_solicitud, fecha_prestamo, fecha_devolucion_esperada, observacion, estado_prestamo, carnet, estado_eliminado, fecha_devolucion, fecha_prestamo_esperada, id_contrato) FROM stdin;
+COPY public.prestamos (id_prestamo, fecha_solicitud, fecha_prestamo, fecha_devolucion_esperada, observacion, estado_prestamo, carnet, estado_eliminado, fecha_devolucion, fecha_prestamo_esperada, id_contrato, recordatorio_enviado) FROM stdin;
+251	2026-06-12 22:21:43.346402	2026-06-13 00:00:00	2026-06-14 00:00:00		cancelado	12890061	f	\N	2026-06-13 00:00:00	\N	f
+257	2026-06-14 16:20:23.932819	2026-06-14 00:00:00	2026-06-15 00:00:00		rechazado	12890061	f	\N	2026-06-14 00:00:00	\N	f
+258	2026-06-14 16:38:36.56072	2026-06-14 00:00:00	2026-06-15 00:00:00		finalizado	12890061	f	2026-07-01 04:44:45.618916	2026-06-14 00:00:00	\N	f
+252	2026-06-12 22:22:49.480858	2026-06-13 00:00:00	2026-06-14 00:00:00		finalizado	12890061	f	2026-06-12 22:25:54.205555	2026-06-13 00:00:00	\N	f
+256	2026-06-12 23:38:59.526079	2026-06-13 00:00:00	2026-06-14 00:00:00		rechazado	12890061	f	\N	2026-06-13 00:00:00	12	f
 \.
 
 
@@ -6222,8 +6251,8 @@ COPY public.prestamos (id_prestamo, fecha_solicitud, fecha_prestamo, fecha_devol
 -- Data for Name: usuarios; Type: TABLE DATA; Schema: public; Owner: postgres
 --
 
-COPY public.usuarios (carnet, nombre, apellido_paterno, apellido_materno, rol, contrasena, email, telefono, telefono_referencia, nombre_referencia, email_referencia, estado_eliminado, id_carrera, imagen_frente_carnet, imagen_atras_carnet, refresh_token, refresh_token_expiry) FROM stdin;
-12890061	Fernando	Terrazas	Llanos	administrador	$2a$10$/8JV2T7ZgDGesA4Bd8J1Ne7YprDGYSOIS3vdcXZ9TBf2B4aifVe0G	fernando.terrazas@ucb.edu.bo	799430792	\N	\N	\N	f	2	\N	\N	Nr6GtiKGhYD3plxAAO/53wnGJUir3zwN/EVSQtG3M87pag9RV0lB/iNi0UxGqH6t3QYXj0aX2rNDtCLVcBKmrw==	2026-06-19 15:50:03.630424-04
+COPY public.usuarios (carnet, nombre, apellido_paterno, apellido_materno, rol, contrasena, email, telefono, telefono_referencia, nombre_referencia, email_referencia, estado_eliminado, id_carrera, imagen_frente_carnet, imagen_atras_carnet, refresh_token, refresh_token_expiry, bloqueado, motivo_bloqueo) FROM stdin;
+12890061	Fernando	Terrazas	Llanos	administrador	$2a$10$/8JV2T7ZgDGesA4Bd8J1Ne7YprDGYSOIS3vdcXZ9TBf2B4aifVe0G	fernando.terrazas@ucb.edu.bo	799430792	\N	\N	\N	f	2	\N	\N	d07mtHD3Npu0x5MA5V446qFRD0H6D6hw0apMwi3sWmRCBKl+qmENF/jZ8Y3g6oI/k47qtaXvgqrMkf72rGjNwg==	2026-07-09 19:23:07.756327-04	f	\N
 \.
 
 
@@ -6231,14 +6260,14 @@ COPY public.usuarios (carnet, nombre, apellido_paterno, apellido_materno, rol, c
 -- Name: aggregatedcounter_id_seq; Type: SEQUENCE SET; Schema: hangfire; Owner: postgres
 --
 
-SELECT pg_catalog.setval('hangfire.aggregatedcounter_id_seq', 381, true);
+SELECT pg_catalog.setval('hangfire.aggregatedcounter_id_seq', 602, true);
 
 
 --
 -- Name: counter_id_seq; Type: SEQUENCE SET; Schema: hangfire; Owner: postgres
 --
 
-SELECT pg_catalog.setval('hangfire.counter_id_seq', 419, true);
+SELECT pg_catalog.setval('hangfire.counter_id_seq', 666, true);
 
 
 --
@@ -6252,21 +6281,21 @@ SELECT pg_catalog.setval('hangfire.hash_id_seq', 9, true);
 -- Name: job_id_seq; Type: SEQUENCE SET; Schema: hangfire; Owner: postgres
 --
 
-SELECT pg_catalog.setval('hangfire.job_id_seq', 139, true);
+SELECT pg_catalog.setval('hangfire.job_id_seq', 221, true);
 
 
 --
 -- Name: jobparameter_id_seq; Type: SEQUENCE SET; Schema: hangfire; Owner: postgres
 --
 
-SELECT pg_catalog.setval('hangfire.jobparameter_id_seq', 556, true);
+SELECT pg_catalog.setval('hangfire.jobparameter_id_seq', 884, true);
 
 
 --
 -- Name: jobqueue_id_seq; Type: SEQUENCE SET; Schema: hangfire; Owner: postgres
 --
 
-SELECT pg_catalog.setval('hangfire.jobqueue_id_seq', 139, true);
+SELECT pg_catalog.setval('hangfire.jobqueue_id_seq', 221, true);
 
 
 --
@@ -6280,14 +6309,14 @@ SELECT pg_catalog.setval('hangfire.list_id_seq', 1, false);
 -- Name: set_id_seq; Type: SEQUENCE SET; Schema: hangfire; Owner: postgres
 --
 
-SELECT pg_catalog.setval('hangfire.set_id_seq', 140, true);
+SELECT pg_catalog.setval('hangfire.set_id_seq', 222, true);
 
 
 --
 -- Name: state_id_seq; Type: SEQUENCE SET; Schema: hangfire; Owner: postgres
 --
 
-SELECT pg_catalog.setval('hangfire.state_id_seq', 417, true);
+SELECT pg_catalog.setval('hangfire.state_id_seq', 663, true);
 
 
 --
@@ -6357,14 +6386,21 @@ SELECT pg_catalog.setval('public."Mueble_Id_Mueble_seq"', 16, true);
 -- Name: Prestamo_Id_Prestamo_seq; Type: SEQUENCE SET; Schema: public; Owner: postgres
 --
 
-SELECT pg_catalog.setval('public."Prestamo_Id_Prestamo_seq"', 250, true);
+SELECT pg_catalog.setval('public."Prestamo_Id_Prestamo_seq"', 258, true);
 
 
 --
 -- Name: audit_logs_id_seq; Type: SEQUENCE SET; Schema: public; Owner: postgres
 --
 
-SELECT pg_catalog.setval('public.audit_logs_id_seq', 60, true);
+SELECT pg_catalog.setval('public.audit_logs_id_seq', 75, true);
+
+
+--
+-- Name: avisos_disponibilidad_id_aviso_seq; Type: SEQUENCE SET; Schema: public; Owner: postgres
+--
+
+SELECT pg_catalog.setval('public.avisos_disponibilidad_id_aviso_seq', 1, false);
 
 
 --
@@ -6399,14 +6435,21 @@ SELECT pg_catalog.setval('public.detalles_mantenimientos_id_detalle_mantenimient
 -- Name: detalles_prestamos_id_detalle_prestamo_seq; Type: SEQUENCE SET; Schema: public; Owner: postgres
 --
 
-SELECT pg_catalog.setval('public.detalles_prestamos_id_detalle_prestamo_seq', 206, true);
+SELECT pg_catalog.setval('public.detalles_prestamos_id_detalle_prestamo_seq', 214, true);
 
 
 --
 -- Name: nombre_de_tu_tabla_id_seq; Type: SEQUENCE SET; Schema: public; Owner: postgres
 --
 
-SELECT pg_catalog.setval('public.nombre_de_tu_tabla_id_seq', 9, true);
+SELECT pg_catalog.setval('public.nombre_de_tu_tabla_id_seq', 12, true);
+
+
+--
+-- Name: notificaciones_id_notificacion_seq; Type: SEQUENCE SET; Schema: public; Owner: postgres
+--
+
+SELECT pg_catalog.setval('public.notificaciones_id_notificacion_seq', 1, false);
 
 
 --
@@ -6628,6 +6671,14 @@ ALTER TABLE ONLY public.audit_logs
 
 
 --
+-- Name: avisos_disponibilidad avisos_disponibilidad_pkey; Type: CONSTRAINT; Schema: public; Owner: postgres
+--
+
+ALTER TABLE ONLY public.avisos_disponibilidad
+    ADD CONSTRAINT avisos_disponibilidad_pkey PRIMARY KEY (id_aviso);
+
+
+--
 -- Name: carreras carrera_pkey; Type: CONSTRAINT; Schema: public; Owner: postgres
 --
 
@@ -6657,6 +6708,14 @@ ALTER TABLE ONLY public.detalles_mantenimientos
 
 ALTER TABLE ONLY public.detalles_prestamos
     ADD CONSTRAINT detalles_prestamos_pkey PRIMARY KEY (id_detalle_prestamo);
+
+
+--
+-- Name: notificaciones notificaciones_pkey; Type: CONSTRAINT; Schema: public; Owner: postgres
+--
+
+ALTER TABLE ONLY public.notificaciones
+    ADD CONSTRAINT notificaciones_pkey PRIMARY KEY (id_notificacion);
 
 
 --
@@ -6840,14 +6899,14 @@ CREATE INDEX idx_accesorios_identificadores ON public.accesorios USING btree (no
 -- Name: idx_audit_admin; Type: INDEX; Schema: public; Owner: postgres
 --
 
-CREATE INDEX idx_audit_admin ON public.audit_logs USING btree (admin_carnet, "timestamp" DESC);
+CREATE INDEX idx_audit_admin ON public.audit_logs USING btree (admin_carnet, "timestamp" DESC, estado_eliminado);
 
 
 --
 -- Name: idx_audit_entidad; Type: INDEX; Schema: public; Owner: postgres
 --
 
-CREATE INDEX idx_audit_entidad ON public.audit_logs USING btree (entidad, entidad_id);
+CREATE INDEX idx_audit_entidad ON public.audit_logs USING btree (entidad, entidad_id, estado_eliminado);
 
 
 --
@@ -6942,10 +7001,24 @@ CREATE INDEX idx_usuarios_email ON public.usuarios USING btree (email, estado_el
 
 
 --
+-- Name: ix_avisos_disponibilidad_pendiente; Type: INDEX; Schema: public; Owner: postgres
+--
+
+CREATE INDEX ix_avisos_disponibilidad_pendiente ON public.avisos_disponibilidad USING btree (notificado, estado_eliminado);
+
+
+--
 -- Name: ix_detalles_prestamos_id_equipo; Type: INDEX; Schema: public; Owner: postgres
 --
 
 CREATE INDEX ix_detalles_prestamos_id_equipo ON public.detalles_prestamos USING btree (id_equipo);
+
+
+--
+-- Name: ix_notificaciones_carnet; Type: INDEX; Schema: public; Owner: postgres
+--
+
+CREATE INDEX ix_notificaciones_carnet ON public.notificaciones USING btree (carnet_usuario, leido, estado_eliminado);
 
 
 --
@@ -7120,6 +7193,22 @@ ALTER TABLE ONLY public.prestamos
 
 
 --
+-- Name: avisos_disponibilidad avisos_disponibilidad_carnet_usuario_fkey; Type: FK CONSTRAINT; Schema: public; Owner: postgres
+--
+
+ALTER TABLE ONLY public.avisos_disponibilidad
+    ADD CONSTRAINT avisos_disponibilidad_carnet_usuario_fkey FOREIGN KEY (carnet_usuario) REFERENCES public.usuarios(carnet);
+
+
+--
+-- Name: avisos_disponibilidad avisos_disponibilidad_id_grupo_equipo_fkey; Type: FK CONSTRAINT; Schema: public; Owner: postgres
+--
+
+ALTER TABLE ONLY public.avisos_disponibilidad
+    ADD CONSTRAINT avisos_disponibilidad_id_grupo_equipo_fkey FOREIGN KEY (id_grupo_equipo) REFERENCES public.grupos_equipos(id_grupo_equipo);
+
+
+--
 -- Name: detalles_prestamos detalles_prestamos_id_grupo_equipo_fkey; Type: FK CONSTRAINT; Schema: public; Owner: postgres
 --
 
@@ -7173,6 +7262,14 @@ ALTER TABLE ONLY public.detalles_prestamos
 
 ALTER TABLE ONLY public.usuarios
     ADD CONSTRAINT fk_usuarios_carrera FOREIGN KEY (id_carrera) REFERENCES public.carreras(id_carrera);
+
+
+--
+-- Name: notificaciones notificaciones_carnet_usuario_fkey; Type: FK CONSTRAINT; Schema: public; Owner: postgres
+--
+
+ALTER TABLE ONLY public.notificaciones
+    ADD CONSTRAINT notificaciones_carnet_usuario_fkey FOREIGN KEY (carnet_usuario) REFERENCES public.usuarios(carnet);
 
 
 --
