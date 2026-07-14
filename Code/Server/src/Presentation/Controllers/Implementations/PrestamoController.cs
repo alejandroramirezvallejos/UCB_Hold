@@ -26,6 +26,10 @@ public class PrestamoController : Controller
     [HttpGet("{id:int}")]
     public async Task<IActionResult> Get(int id) => ToResponse(await _service.Get(id));
 
+    [HttpGet("estado-reserva")]
+    public async Task<IActionResult> GetReservationStatus() =>
+        ToResponse(await _service.GetReservationStatus(User.Identity?.Name ?? string.Empty));
+
     [HttpPost]
     public async Task<IActionResult> Create([FromBody] PrestamoDto request)
     {

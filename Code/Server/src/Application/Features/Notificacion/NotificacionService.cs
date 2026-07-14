@@ -57,5 +57,4 @@ public class NotificacionService
 
         return Result<object>.Success(null!);
     }
-
 }

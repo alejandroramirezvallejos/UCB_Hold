@@ -48,6 +48,32 @@ public class PrestamoRepository : Repository<PrestamoEntity, PrestamoDto>
     public async Task<PrestamoEntity?> FindById(int id) =>
         await DbContext.Prestamos.FirstOrDefaultAsync(p => p.Id == id);
 
+    public async Task<string> GetUsuarioDisplayName(string carnet)
+    {
+        var user = await DbContext
+            .Usuarios.AsNoTracking()
+            .Where(usuario => usuario.Carnet == carnet)
+            .Select(usuario => new
+            {
+                usuario.Nombre,
+                usuario.ApellidoPaterno,
+                usuario.ApellidoMaterno,
+            })
+            .FirstOrDefaultAsync();
+
+        if (user == null)
+            return carnet;
+
+        var fullName = string.Join(
+            " ",
+            new[] { user.Nombre, user.ApellidoPaterno, user.ApellidoMaterno }.Where(part =>
+                !string.IsNullOrWhiteSpace(part)
+            )
+        );
+
+        return string.IsNullOrWhiteSpace(fullName) ? carnet : fullName;
+    }
+
     public async Task SavePrestamo(PrestamoEntity entity)
     {
         DbContext.Prestamos.Add(entity);
